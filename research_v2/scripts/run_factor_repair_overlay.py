@@ -18,7 +18,8 @@ import tempfile
 from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
+from itertools import groupby
 from pathlib import Path
 from typing import Any, Protocol, cast
 
@@ -186,6 +187,27 @@ def run_repair(
     source_session: QuerySession,
     target_session: QuerySession,
 ) -> RepairRunnerResult:
+    """Run the repair with guaranteed cleanup for every spool outcome."""
+
+    overlay_spool = tempfile.TemporaryDirectory(prefix="qrv2-factor-repair-")
+    try:
+        return _run_repair_with_spool(
+            args,
+            source_session=source_session,
+            target_session=target_session,
+            spool_dir=Path(overlay_spool.name),
+        )
+    finally:
+        overlay_spool.cleanup()
+
+
+def _run_repair_with_spool(
+    args: argparse.Namespace,
+    *,
+    source_session: QuerySession,
+    target_session: QuerySession,
+    spool_dir: Path,
+) -> RepairRunnerResult:
     """Run the bounded overlay audit using injected sessions."""
 
     factor_ids = resolve_factor_ids(
@@ -205,7 +227,6 @@ def run_repair(
     # Keep only paths in memory during the audit pass.  The raw/clean frames
     # themselves are spooled per factor/month so a five-year run does not hold
     # the complete repaired panel in client memory.
-    overlay_spool = tempfile.TemporaryDirectory(prefix="qrv2-factor-repair-")
     overlay_paths: list[tuple[FactorDefinition, FactorMonth, Path]] = []
     counts: Counter[str] = Counter()
     source_watermarks: list[str] = []
@@ -275,7 +296,7 @@ def run_repair(
                     counts["blocked"] += int(overlay.status is RepairStatus.BLOCKED)
                     counts["audited"] += 1
                     if overlay.status is not RepairStatus.BLOCKED and not overlay.clean.empty:
-                        path = Path(overlay_spool.name) / (
+                        path = spool_dir / (
                             f"{len(overlay_paths):08d}-{definition.factor_id}-"
                             f"{month.logical_partition}.pkl"
                         )
@@ -299,27 +320,13 @@ def run_repair(
     audit_batch = audit_batches[0]
     quarantine_batch = quarantine_batches[0] if quarantine_batches else None
     context = RunContext(run_id=identity.run_id, data_version=identity.data_version)
-    clean_batches: list[StagedBatch] = []
-    for definition, _month, path in overlay_paths:
-        frame = pd.read_pickle(path)
-        materialized = build_technical_factor_batches(
-            frame,
-            definition,
-            source_factor_name=definition.display_name,
-            # The persistence identity is the authoritative watermark for the
-            # repaired clean batch.  Recomputing a factor-local watermark here
-            # would make clean lineage disagree with audit/quarantine lineage.
-            source_watermark_id=identity.source_watermark_id,
-            context=context,
-            record_hash_strategy="fast",
-            include_lineage=True,
-        )
-        clean_batches.append(materialized.clean_batch)
-        counts["clean_rows"] += len(materialized.clean_batch.frame)
-        if materialized.quarantine_batch is not None:
-            counts["source_quarantine_rows"] += len(materialized.quarantine_batch.frame)
-    overlay_spool.cleanup()
-
+    clean_stream = _iter_clean_batches(
+        overlay_paths,
+        context=context,
+        identity=identity,
+        counts=counts,
+    )
+    first_clean_batch: StagedBatch | None = None
     status_counts = tuple(sorted(Counter(str(record.decision_status) for record in audits).items()))
     counts["audit_rows"] = len(audits)
     counts["factor_count"] = len(factor_ids)
@@ -330,11 +337,17 @@ def run_repair(
             target_session,
             audit_batches=audit_batches,
             quarantine_batches=quarantine_batches,
-            clean_batches=clean_batches,
+            clean_batches=clean_stream,
             audits=audits,
             identity=identity,
         )
         published = True
+    else:
+        # Dry-run callers receive one representative batch without retaining
+        # every factor/month batch; the stream has already audited all chunks.
+        for batch in clean_stream:
+            if first_clean_batch is None:
+                first_clean_batch = batch
     return RepairRunnerResult(
         phase=str(args.phase),
         start=args.start,
@@ -342,7 +355,7 @@ def run_repair(
         factor_ids=factor_ids,
         audit_batch=audit_batch,
         quarantine_batch=quarantine_batch,
-        clean_batches=tuple(clean_batches),
+        clean_batches=((first_clean_batch,) if first_clean_batch is not None else ()),
         identity=identity,
         published=published,
         status_counts=status_counts,
@@ -456,7 +469,8 @@ def _provider_for_definition(
     market = cache.copy(deep=True)
     if "trade_date" in market.columns:
         dates = pd.to_datetime(market["trade_date"], errors="coerce").dt.date
-        market = market.loc[(dates >= month.start_date) & (dates <= month.end_date)].copy()
+        lookback_start = month.start_date - timedelta(days=90)
+        market = market.loc[(dates >= lookback_start) & (dates <= month.end_date)].copy()
     required = {"trade_date", "ts_code", "close", "amount", "pct_chg"}
     if not required.issubset(market.columns):
         return NullRepairProvider()
@@ -469,7 +483,7 @@ def _provider_for_definition(
 
 
 def _load_market_cache() -> pd.DataFrame | None:
-    token = os.getenv("TUSHARE_TOKEN")
+    token = os.getenv("QRV2_TUSHARE_TOKEN") or os.getenv("TUSHARE_TOKEN")
     cache_name = os.getenv("QRV2_TUSHARE_CACHE") or os.getenv("TUSHARE_CACHE")
     if not token or not cache_name:
         return None
@@ -678,12 +692,42 @@ def _quarantine_rows(
     return rows
 
 
+def _iter_clean_batches(
+    overlay_paths: Iterable[tuple[FactorDefinition, FactorMonth, Path]],
+    *,
+    context: RunContext,
+    identity: RepairIdentity,
+    counts: Counter[str],
+) -> Iterable[StagedBatch]:
+    """Materialize clean chunks lazily from the bounded overlay spool."""
+
+    for definition, _month, path in overlay_paths:
+        frame = pd.read_pickle(path)
+        materialized = build_technical_factor_batches(
+            frame,
+            definition,
+            source_factor_name=definition.display_name,
+            # The persistence identity is the authoritative watermark for the
+            # repaired clean batch.  Recomputing a factor-local watermark here
+            # would make clean lineage disagree with audit/quarantine lineage.
+            source_watermark_id=identity.source_watermark_id,
+            context=context,
+            record_hash_strategy="fast",
+            include_lineage=True,
+        )
+        counts["clean_batches"] += 1
+        counts["clean_rows"] += len(materialized.clean_batch.frame)
+        if materialized.quarantine_batch is not None:
+            counts["source_quarantine_rows"] += len(materialized.quarantine_batch.frame)
+        yield materialized.clean_batch
+
+
 def _publish(
     target: QuerySession,
     *,
     audit_batches: tuple[StagedBatch, ...],
     quarantine_batches: tuple[StagedBatch, ...],
-    clean_batches: list[StagedBatch],
+    clean_batches: Iterable[StagedBatch],
     audits: list[RepairAuditRecord],
     identity: RepairIdentity,
 ) -> None:
@@ -700,11 +744,10 @@ def _publish(
         publisher.publish(batch, checks)
     for batch in quarantine_batches:
         publisher.publish(batch, checks)
-    by_partition: dict[str, list[StagedBatch]] = {}
-    for batch in clean_batches:
-        by_partition.setdefault(batch.logical_partition, []).append(batch)
-    for partition_batches in by_partition.values():
-        publisher.publish_chunks(partition_batches, checks)
+    for _, partition_batches in groupby(
+        clean_batches, key=lambda batch: batch.logical_partition
+    ):
+        publisher.publish_chunk_stream(partition_batches, checks)
 
 
 def _group_audits_by_partition(

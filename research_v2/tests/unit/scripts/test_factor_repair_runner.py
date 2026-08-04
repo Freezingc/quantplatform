@@ -6,10 +6,13 @@ from types import SimpleNamespace
 
 import pandas as pd
 import pytest
+import run_factor_repair_overlay as runner
 from run_factor_repair_overlay import (
     SOURCE_SCOPE_ID,
     SOURCE_STATUS,
     _iter_months,
+    _load_market_cache,
+    _provider_for_definition,
     _source_watermark,
     main,
     parse_args,
@@ -161,3 +164,81 @@ def test_provider_evidence_watermark_changes_source_watermark() -> None:
     assert _source_watermark(definition, month, provider_a) != _source_watermark(
         definition, month, provider_b
     )
+
+
+def test_market_cache_accepts_qrv2_tushare_token_alias(tmp_path, monkeypatch) -> None:
+    cache_path = tmp_path / "market.pkl"
+    expected = pd.DataFrame(
+        {
+            "trade_date": [pd.Timestamp("2020-01-01")],
+            "ts_code": ["000001.SZ"],
+            "close": [10.0],
+            "amount": [100.0],
+            "pct_chg": [0.1],
+        }
+    )
+    expected.to_pickle(cache_path)
+    monkeypatch.delenv("TUSHARE_TOKEN", raising=False)
+    monkeypatch.setenv("QRV2_TUSHARE_TOKEN", "configured")
+    monkeypatch.setenv("QRV2_TUSHARE_CACHE", str(cache_path))
+
+    loaded = _load_market_cache()
+
+    assert loaded is not None
+    pd.testing.assert_frame_equal(loaded, expected)
+
+
+def test_known_gp_provider_retains_lookback_market_rows() -> None:
+    definition = SimpleNamespace(factor_id="yeslab_391")
+    month = _iter_months(date(2020, 1, 1), date(2020, 1, 31))[0]
+    cache = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(
+                ["2019-09-30", "2019-10-03", "2019-12-31", "2020-01-01"]
+            ),
+            "ts_code": ["000001.SZ"] * 4,
+            "close": [9.0, 9.1, 9.2, 9.3],
+            "amount": [100.0] * 4,
+            "pct_chg": [0.1] * 4,
+        }
+    )
+
+    provider = _provider_for_definition(definition, cache, month)
+
+    assert hasattr(provider, "market")
+    retained_dates = set(pd.to_datetime(provider.market["trade_date"]).dt.date)
+    assert date(2019, 10, 3) in retained_dates
+    assert date(2019, 9, 30) not in retained_dates
+
+
+def test_repair_spool_is_cleaned_when_run_fails(monkeypatch) -> None:
+    class _TrackingSpool:
+        name = "/tmp/qrv2-test-spool"
+        cleaned = False
+
+        def cleanup(self) -> None:
+            self.cleaned = True
+
+    spool = _TrackingSpool()
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("synthetic repair failure")
+
+    monkeypatch.setattr(runner.tempfile, "TemporaryDirectory", lambda **_: spool)
+    monkeypatch.setattr(runner, "_run_repair_with_spool", fail)
+
+    with pytest.raises(RuntimeError, match="synthetic repair failure"):
+        runner.run_repair(
+            parse_args(["--start", "2020-01-01", "--end", "2020-01-31"]),
+            source_session=_FakeSource(),
+            target_session=_FakeTarget(
+                pd.DataFrame(
+                    {
+                        "factor_id": ["yeslab_1"],
+                        "metrics_json": [json.dumps({"decision_status": SOURCE_STATUS})],
+                    }
+                )
+            ),
+        )
+
+    assert spool.cleaned
