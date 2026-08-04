@@ -180,6 +180,7 @@ def build_repair_audit_batch(
         raise RepairPersistenceError("repair audit batch cannot be empty")
     _validate_audit_records(materialized)
     resolved_identity = identity or build_repair_identity(materialized)
+    _validate_identity_scope(resolved_identity, audits=materialized)
     frame = pd.DataFrame(
         [_audit_row(record, resolved_identity) for record in materialized],
         columns=list(_AUDIT_COLUMNS),
@@ -214,6 +215,7 @@ def build_repair_quarantine_batch(
         return None
     _validate_quarantine_rows(materialized)
     resolved_identity = identity or build_repair_identity((), materialized)
+    _validate_identity_scope(resolved_identity, quarantines=materialized)
     frame = pd.DataFrame(
         [_quarantine_row(row, resolved_identity) for row in materialized],
         columns=list(_QUARANTINE_COLUMNS),
@@ -246,6 +248,18 @@ def repair_quality_checks(
     """
 
     status = str(audit.decision_status)
+    identity_scope_valid = True
+    resolved_identity = identity
+    if resolved_identity is None:
+        try:
+            resolved_identity = build_repair_identity([audit])
+        except RepairPersistenceError:
+            identity_scope_valid = False
+    if resolved_identity is not None:
+        try:
+            _validate_identity_scope(resolved_identity, audits=[audit])
+        except RepairPersistenceError:
+            identity_scope_valid = False
     allowed_statuses = {
         RepairDecisionStatus.PASS.value,
         RepairDecisionStatus.PENDING_RECHECK.value,
@@ -259,12 +273,13 @@ def repair_quality_checks(
         _check("repair_unresolved_rows", audit.unresolved_rows == 0),
         _check("repair_definition_hash", bool(_definition_hash(audit).strip())),
         _check("repair_rules_version", audit.rules_version >= 1),
+        _check("repair_identity_scope", identity_scope_valid),
         _check(
             "repair_watermark",
             bool(
                 (
                     audit.source_watermark_id
-                    or (identity.source_watermark_id if identity else "")
+                    or (resolved_identity.source_watermark_id if resolved_identity else "")
                 ).strip()
             ),
         ),
@@ -276,12 +291,50 @@ def repair_quality_checks(
     return checks
 
 
+def repair_batch_quality_checks(
+    records: Iterable[RepairAuditRecord],
+    *,
+    identity: RepairIdentity | None = None,
+) -> list[CheckResult]:
+    """Build uniquely named blocker checks for a multi-factor repair scope."""
+
+    materialized = tuple(records)
+    if not materialized:
+        raise RepairPersistenceError("repair quality scope cannot be empty")
+    resolved_identity = identity or build_repair_identity(materialized)
+    _validate_identity_scope(resolved_identity, audits=materialized)
+    checks: list[CheckResult] = []
+    used_names: set[str] = set()
+    for record in materialized:
+        prefix = f"{record.factor_id}:{record.logical_partition}"
+        suffix = 1
+        for result in repair_quality_checks(record, identity=resolved_identity):
+            check_name = f"{prefix}:{result.check_name}"
+            while check_name in used_names:
+                suffix += 1
+                check_name = f"{prefix}:{suffix}:{result.check_name}"
+            used_names.add(check_name)
+            checks.append(CheckResult(check_name, result.severity, result.status))
+    return checks
+
+
 @dataclass(frozen=True)
 class RepairIdentity:
     data_version: str
     source_watermark_id: str
     run_id: str
     created_at: datetime
+    factor_ids: tuple[str, ...]
+    factor_versions: tuple[tuple[str, int], ...]
+    definition_hashes: tuple[str, ...]
+    provider_hashes: tuple[str, ...]
+    source_tables: tuple[str, ...]
+    factor_names: tuple[str, ...]
+    repair_methods: tuple[str, ...]
+    candidate_hashes: tuple[str, ...]
+    rules_versions: tuple[int, ...]
+    start_date: date
+    end_date: date
 
 
 def build_repair_identity(
@@ -297,7 +350,10 @@ def build_repair_identity(
     if audit_records:
         _validate_audit_records(audit_records)
     if quarantine_rows:
-        _validate_quarantine_rows(quarantine_rows)
+        _validate_quarantine_rows(
+            quarantine_rows,
+            require_provenance=not audit_records,
+        )
     return _identity(audit_records, quarantine_rows)
 
 
@@ -309,6 +365,12 @@ def _identity(
         {
             *(record.factor_id for record in audits),
             *(row.factor_id for row in quarantines),
+        }
+    )
+    factor_versions = sorted(
+        {
+            *((record.factor_id, int(record.factor_version)) for record in audits),
+            *((row.factor_id, int(row.factor_version)) for row in quarantines),
         }
     )
     definition_hashes = sorted(
@@ -384,6 +446,7 @@ def _identity(
     )
     payload = {
         "factor_ids": factor_ids,
+        "factor_versions": factor_versions,
         "definition_hashes": definition_hashes,
         "date_range": [start.isoformat(), end.isoformat()],
         "provider_hashes": provider_hashes,
@@ -423,6 +486,17 @@ def _identity(
         source_watermark_id=source_watermark_id,
         run_id=run_id,
         created_at=created_at,
+        factor_ids=tuple(factor_ids),
+        factor_versions=tuple(factor_versions),
+        definition_hashes=tuple(definition_hashes),
+        provider_hashes=tuple(provider_hashes),
+        source_tables=tuple(source_tables),
+        factor_names=tuple(factor_names),
+        repair_methods=tuple(repair_methods),
+        candidate_hashes=tuple(candidate_hashes),
+        rules_versions=tuple(rules_versions),
+        start_date=start,
+        end_date=end,
     )
 
 
@@ -518,6 +592,111 @@ def _validate_audit_records(records: Sequence[RepairAuditRecord]) -> None:
         _validate_nonnegative_counts(record)
 
 
+def _validate_identity_scope(
+    identity: RepairIdentity,
+    *,
+    audits: Sequence[RepairAuditRecord] = (),
+    quarantines: Sequence[RepairQuarantineRow] = (),
+) -> None:
+    """Ensure records are members of the identity used to publish them."""
+
+    if not identity.factor_ids or not identity.definition_hashes or not identity.provider_hashes:
+        raise RepairPersistenceError("repair identity scope is incomplete")
+    if identity.start_date > identity.end_date:
+        raise RepairPersistenceError("repair identity date range is reversed")
+    for record in audits:
+        if (
+            record.factor_id not in identity.factor_ids
+            or (record.factor_id, int(record.factor_version)) not in identity.factor_versions
+        ):
+            raise RepairPersistenceError("audit record is outside repair identity scope")
+        _validate_scope_values(
+            identity,
+            factor_id=record.factor_id,
+            factor_version=record.factor_version,
+            factor_name=record.source_factor_name,
+            source_table=record.source_table,
+            repair_method=record.repair_method,
+            definition_hash=_definition_hash(record),
+            provider_hash=record.provider_hash,
+            candidate_hash=record.candidate_hash,
+            rules_version=record.rules_version,
+            lower=_date_range(
+                record.start_date,
+                record.end_date,
+                _logical_partition_range(record.logical_partition, record.as_of_date),
+            )[0],
+            upper=_date_range(
+                record.start_date,
+                record.end_date,
+                _logical_partition_range(record.logical_partition, record.as_of_date),
+            )[1],
+        )
+    for row in quarantines:
+        if (
+            row.factor_id not in identity.factor_ids
+            or (row.factor_id, int(row.factor_version)) not in identity.factor_versions
+        ):
+            raise RepairPersistenceError("quarantine row is outside repair identity scope")
+        _validate_scope_values(
+            identity,
+            factor_id=row.factor_id,
+            factor_version=row.factor_version,
+            factor_name=row.factor_name,
+            source_table=row.source_table,
+            repair_method=row.repair_method,
+            definition_hash=_definition_hash(row),
+            provider_hash=row.provider_hash,
+            candidate_hash=row.candidate_hash,
+            rules_version=row.rules_version,
+            lower=_date_range(
+                row.start_date,
+                row.end_date,
+                _month_range(row.observation_date),
+            )[0],
+            upper=_date_range(
+                row.start_date,
+                row.end_date,
+                _month_range(row.observation_date),
+            )[1],
+        )
+
+
+def _validate_scope_values(
+    identity: RepairIdentity,
+    *,
+    factor_id: str,
+    factor_version: int,
+    factor_name: str,
+    source_table: str,
+    repair_method: str,
+    definition_hash: str,
+    provider_hash: str,
+    candidate_hash: str,
+    rules_version: int,
+    lower: date,
+    upper: date,
+) -> None:
+    if (factor_id, int(factor_version)) not in identity.factor_versions:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if factor_name and factor_name not in identity.factor_names:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if source_table and source_table not in identity.source_tables:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if repair_method and repair_method not in identity.repair_methods:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if definition_hash and definition_hash not in identity.definition_hashes:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if provider_hash and provider_hash not in identity.provider_hashes:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if candidate_hash and candidate_hash not in identity.candidate_hashes:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if rules_version not in identity.rules_versions:
+        raise RepairPersistenceError("record is outside repair identity scope")
+    if lower < identity.start_date or upper > identity.end_date:
+        raise RepairPersistenceError("record is outside repair identity date range")
+
+
 def _validate_nonnegative_counts(record: RepairAuditRecord) -> None:
     for name in (
         "source_rows",
@@ -541,7 +720,11 @@ def _validate_nonnegative_counts(record: RepairAuditRecord) -> None:
         raise RepairPersistenceError("repair mismatch maxima must be finite")
 
 
-def _validate_quarantine_rows(rows: Sequence[RepairQuarantineRow]) -> None:
+def _validate_quarantine_rows(
+    rows: Sequence[RepairQuarantineRow],
+    *,
+    require_provenance: bool = False,
+) -> None:
     for row in rows:
         if not row.ts_code.strip() or not row.factor_id.strip() or not row.factor_name.strip():
             raise RepairPersistenceError("repair quarantine business identity cannot be empty")
@@ -554,6 +737,12 @@ def _validate_quarantine_rows(rows: Sequence[RepairQuarantineRow]) -> None:
             raise RepairPersistenceError("repair quarantine identity is invalid")
         if not row.candidate_hash.strip():
             raise RepairPersistenceError("repair quarantine candidate_hash cannot be empty")
+        if require_provenance and (
+            not _definition_hash(row).strip() or not row.provider_hash.strip()
+        ):
+            raise RepairPersistenceError(
+                "repair quarantine provenance hashes are required for a quarantine-only scope"
+            )
         for value in (row.source_value, row.candidate_value):
             if value is not None and not np.isfinite(float(value)):
                 raise RepairPersistenceError("repair quarantine values must be finite or null")

@@ -13,8 +13,10 @@ from research_v2.factors.repair_persistence import (
     build_repair_audit_batch,
     build_repair_identity,
     build_repair_quarantine_batch,
+    repair_batch_quality_checks,
     repair_quality_checks,
 )
+from research_v2.quality.engine import can_publish
 
 
 def _audit(
@@ -325,3 +327,78 @@ def test_quarantine_rules_version_must_be_positive() -> None:
 
     with pytest.raises(RepairPersistenceError, match="identity is invalid"):
         build_repair_quarantine_batch([invalid])
+
+
+def test_batch_quality_checks_prefix_factor_ids_and_pass_publish_gate() -> None:
+    audit_x = _audit(factor_id="yeslab_22")
+    audit_y = _audit(factor_id="yeslab_64").__class__(
+        **{**_audit(factor_id="yeslab_64").__dict__, "source_factor_name": "GP_064"}
+    )
+    identity = build_repair_identity([audit_x, audit_y])
+
+    checks = repair_batch_quality_checks([audit_x, audit_y], identity=identity)
+
+    assert len({result.check_name for result in checks}) == len(checks)
+    assert all(result.check_name.startswith(("yeslab_22:", "yeslab_64:")) for result in checks)
+    assert can_publish(checks)
+
+    class Session:
+        target_database = "dfs://QuantResearchV2Test"
+
+        def __init__(self) -> None:
+            self.uploads: list[tuple[str, pd.DataFrame]] = []
+            self.scripts: list[str] = []
+
+        def upload_frame(self, name: str, frame: pd.DataFrame) -> None:
+            self.uploads.append((name, frame.copy()))
+
+        def execute(self, script: str) -> object:
+            self.scripts.append(script)
+            return None
+
+        def query(self, script: str) -> object:
+            if script.startswith("schema("):
+                return pd.DataFrame({"name": ["as_of_date"], "typeString": ["DATE"]})
+            if "count(*) as row_count" in script:
+                return pd.DataFrame({"row_count": [0]})
+            return pd.DataFrame(columns=["data_version"])
+
+    session = Session()
+    V2BatchPublisher(session).publish_chunk_stream(
+        [build_repair_audit_batch([audit_x, audit_y], identity=identity)],
+        checks,
+    )
+    assert session.uploads
+    assert "published_version" in session.scripts[-1]
+
+
+def test_builder_rejects_record_outside_explicit_identity_scope() -> None:
+    identity = build_repair_identity([_audit(factor_id="yeslab_22")])
+    foreign = _audit(factor_id="yeslab_64").__class__(
+        **{**_audit(factor_id="yeslab_64").__dict__, "source_factor_name": "GP_064"}
+    )
+
+    with pytest.raises(RepairPersistenceError, match="identity scope"):
+        build_repair_audit_batch([foreign], identity=identity)
+
+
+def test_factor_version_is_part_of_identity_scope() -> None:
+    version_two = _audit().__class__(**{**_audit().__dict__, "factor_version": 2})
+    identity = build_repair_identity([_audit()])
+
+    assert identity.data_version != build_repair_identity([version_two]).data_version
+    with pytest.raises(RepairPersistenceError, match="identity scope"):
+        build_repair_audit_batch([version_two], identity=identity)
+
+
+def test_quarantine_only_builder_requires_provenance_hashes() -> None:
+    malformed = _quarantine().__class__(
+        **{
+            **_quarantine().__dict__,
+            "source_definition_hash": "",
+            "provider_hash": "",
+        }
+    )
+
+    with pytest.raises(RepairPersistenceError, match="provenance"):
+        build_repair_quarantine_batch([malformed])
