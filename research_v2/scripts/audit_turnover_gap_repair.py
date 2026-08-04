@@ -46,6 +46,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--impact-start", type=date.fromisoformat, default=date(2020, 9, 14))
     parser.add_argument("--impact-end", type=date.fromisoformat, default=date(2020, 9, 25))
     parser.add_argument("--warmup-days", type=int, default=200)
+    parser.add_argument(
+        "--candidate-output-dir",
+        type=Path,
+        help="optionally write finite fill rows for candidate-ready factors",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     args.factor_id = tuple(args.factor_id or DEFAULT_FACTOR_IDS)
@@ -95,20 +100,37 @@ def run_audit(
         factor_names,
     )
     rows: list[dict[str, object]] = []
+    candidate_artifacts: list[dict[str, object]] = []
     for factor_id in args.factor_id:
         factor_name = names_by_id[factor_id]
         candidate = compute_turnover_gap_candidate(factor_name, market)
         source = factors.loc[factors["factor_name"] == factor_name].copy()
-        rows.append(
-            _audit_factor(
+        audit_row = _audit_factor(
+            factor_id=factor_id,
+            factor_name=factor_name,
+            source=source,
+            candidate=candidate,
+            mature=mature,
+            gap_date=args.gap_date,
+        )
+        rows.append(audit_row)
+        if args.candidate_output_dir is not None and audit_row["status"] == (
+            "TURNOVER_REPAIR_CANDIDATE_READY"
+        ):
+            fill_frame = _candidate_fill_frame(
                 factor_id=factor_id,
                 factor_name=factor_name,
                 source=source,
                 candidate=candidate,
                 mature=mature,
-                gap_date=args.gap_date,
             )
-        )
+            candidate_artifacts.append(
+                _write_candidate_artifact(
+                    args.candidate_output_dir,
+                    factor_id=factor_id,
+                    frame=fill_frame,
+                )
+            )
     return {
         "scope": "TURNOVER_GAP_TUSHARE_REPAIR_AUDIT_V1",
         "gap_date": args.gap_date.isoformat(),
@@ -117,6 +139,7 @@ def run_audit(
         "warmup_start": warmup_start.isoformat(),
         "factor_ids": list(args.factor_id),
         "turnover_evidence": turnover_evidence,
+        "candidate_artifacts": candidate_artifacts,
         "database_writes": False,
         "rows": rows,
     }
@@ -353,6 +376,67 @@ def _audit_factor(
         "overlay_unresolved_rows": overlay.unresolved_rows,
         "overlay_quarantine_reasons": dict(sorted(quarantine_reasons.items())),
         "status": status,
+    }
+
+
+def _candidate_fill_frame(
+    *,
+    factor_id: str,
+    factor_name: str,
+    source: pd.DataFrame,
+    candidate: pd.DataFrame,
+    mature: pd.DataFrame,
+) -> pd.DataFrame:
+    source_values = source.loc[:, ["trade_date", "ts_code", "value"]].copy()
+    source_values = source_values.drop_duplicates(["trade_date", "ts_code"], keep="last")
+    candidate_values = candidate.loc[:, ["trade_date", "ts_code", "candidate_value"]].copy()
+    candidate_values = candidate_values.loc[
+        np.isfinite(pd.to_numeric(candidate_values["candidate_value"], errors="coerce"))
+    ]
+    merged = mature.merge(
+        source_values,
+        left_on=["signal_date", "ts_code"],
+        right_on=["trade_date", "ts_code"],
+        how="left",
+    ).merge(candidate_values, on=["trade_date", "ts_code"], how="left")
+    source_numeric = pd.to_numeric(merged["value"], errors="coerce")
+    candidate_numeric = pd.to_numeric(merged["candidate_value"], errors="coerce")
+    fillable = ~np.isfinite(source_numeric.to_numpy(float)) & np.isfinite(
+        candidate_numeric.to_numpy(float)
+    )
+    frame = pd.DataFrame(
+        {
+            "observation_date": merged.loc[fillable, "signal_date"].to_numpy(),
+            "ts_code": merged.loc[fillable, "ts_code"].astype(str).to_numpy(),
+            "factor_id": factor_id,
+            "factor_version": 1,
+            "factor_name": factor_name,
+            "candidate_value": candidate_numeric.loc[fillable].to_numpy(dtype=float),
+            "source_value": source_numeric.loc[fillable].to_numpy(dtype=float),
+            "repair_method": "TUSHARE_TURNOVER_GAP",
+            "reason": "TURNOVER_RATE_GAP",
+        }
+    )
+    return frame.sort_values(
+        ["observation_date", "ts_code"], kind="mergesort"
+    ).reset_index(drop=True)
+
+
+def _write_candidate_artifact(
+    output_dir: Path,
+    *,
+    factor_id: str,
+    frame: pd.DataFrame,
+) -> dict[str, object]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"{factor_id}_turnover_gap_candidate.csv"
+    frame.to_csv(path, index=False, float_format="%.17g")
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    return {
+        "factor_id": factor_id,
+        "path": str(path),
+        "rows": len(frame),
+        "sha256": digest,
     }
 
 

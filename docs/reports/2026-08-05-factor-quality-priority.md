@@ -191,6 +191,11 @@ Tushare `daily_basic(20200918)` 返回 4,070 条有限 `turnover_rate`，对成�
 
 - [`turnover gap audit script`](../../research_v2/scripts/audit_turnover_gap_repair.py)
 - [`turnover gap audit JSON`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_audit_2020-09-18_v1.json)
+- [`six-factor candidate batch manifest`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_candidates_2020-09-18_v1.json)
+
+候选批次目前是本地、可复核的 pickle 文件，包含 6 个因子的有限候选补行（分别为
+1,386、1,386、1,385、6,853、1,385、8,204 行），不包含 `GP_026`，也没有写入
+DolphinDB。每个批次都有 SHA-256；后续写入新 V2 隔离表时必须用该哈希和同一来源水印做幂等校验。
 
 下一步是仅针对这 6 个候选物化到新的 V2 隔离对象，重新跑 compact coverage 和预测稳定性
 门禁；`GP_026` 留在阻断清单，暂不进入候选表。任何正式发布仍需单独批准。
