@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -223,3 +224,14 @@ def test_repository_repair_migration_declares_repair_tables() -> None:
         "record_hash",
     ):
         assert f"`{column_name}" in repair_migration.script
+
+    for variable_name in ("factorRepairAudit", "factorRepairQuarantine"):
+        declaration = re.search(
+            rf"{variable_name} = table\(1:0,\s+([^,]+),\s+\[([^\]]+)\]\)",
+            repair_migration.script,
+            flags=re.DOTALL,
+        )
+        assert declaration is not None
+        assert declaration.group(1).count("`") == len(
+            [item for item in declaration.group(2).split(",") if item.strip()]
+        )
