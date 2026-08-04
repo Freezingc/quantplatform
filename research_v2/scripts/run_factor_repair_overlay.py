@@ -485,12 +485,13 @@ def _provider_for_definition(
     required = {"trade_date", "ts_code", "close", "amount", "pct_chg"}
     if not required.issubset(market.columns):
         return NullRepairProvider()
-    watermark = hashlib.sha256(
-        pd.util.hash_pandas_object(market.sort_values(sorted(required)), index=False)
-        .to_numpy(dtype="uint64")
-        .tobytes()
-    ).hexdigest()
     source_name = str(market.attrs.get("repair_market_source", "tushare-cache"))
+    source_versions = str(market.attrs.get("repair_market_versions", ""))
+    hash_input = pd.util.hash_pandas_object(
+        market.sort_values(sorted(required)), index=False
+    ).to_numpy(dtype="uint64").tobytes()
+    hash_input += f"|{source_name}|{source_versions}".encode()
+    watermark = hashlib.sha256(hash_input).hexdigest()
     return KnownFormulaCandidateProvider(market, source_watermark_id=f"{source_name}:{watermark}")
 
 
@@ -524,10 +525,41 @@ def _load_v2_market_cache(
     database = str(database_value or os.getenv("QRV2_DDB_DATABASE", "dfs://QuantResearchV2Test"))
     _validate_v2_database(database)
     lookback_start = month.start_date - timedelta(days=180)
+    versions: dict[str, str] = {}
+    periods = pd.period_range(start=lookback_start, end=month.end_date, freq="M")
+    for period in periods:
+        logical_partition = str(period)
+        pointer_query = (
+            "select top 1 data_version from "
+            f"loadTable('{database}','published_version') "
+            "where object_name=`market_daily_clean "
+            f"and logical_partition='{logical_partition}' "
+            "order by published_at desc"
+        )
+        try:
+            pointer = target.query(pointer_query)
+        except (RuntimeError, ValueError):
+            pointer = None
+        if not isinstance(pointer, pd.DataFrame) or pointer.empty or "data_version" not in pointer:
+            if logical_partition == month.logical_partition:
+                return None
+            continue
+        published_version = str(pointer.iloc[0]["data_version"])
+        if not published_version or published_version.lower() in {"nan", "none"}:
+            if logical_partition == month.logical_partition:
+                return None
+            continue
+        versions[logical_partition] = published_version
+    if month.logical_partition not in versions:
+        return None
+    version_literals = ",".join(
+        f"'{value.replace(chr(39), chr(39) + chr(39))}'" for value in sorted(set(versions.values()))
+    )
     query = (
-        "select trade_date,ts_code,raw_close,amount from "
+        "select trade_date,ts_code,raw_close,amount,data_version from "
         f"loadTable('{database}','market_daily_clean') "
-        f"where trade_date between date('{lookback_start:%Y.%m.%d}') "
+        f"where data_version in [{version_literals}] and "
+        f"trade_date between date('{lookback_start:%Y.%m.%d}') "
         f"and date('{month.end_date:%Y.%m.%d}')"
     )
     try:
@@ -536,8 +568,15 @@ def _load_v2_market_cache(
         return None
     if not isinstance(result, pd.DataFrame):
         return None
-    required = {"trade_date", "ts_code", "raw_close", "amount"}
+    required = {"trade_date", "ts_code", "raw_close", "amount", "data_version"}
     if not required.issubset(result.columns) or result.empty:
+        return None
+    result_dates = pd.to_datetime(result["trade_date"], errors="coerce")
+    result_months = result_dates.dt.strftime("%Y-%m")
+    expected_versions = result_months.map(versions)
+    version_mask = expected_versions == result["data_version"].astype(str)
+    result = result.loc[version_mask].copy()
+    if result.empty:
         return None
     market = result.loc[:, ["trade_date", "ts_code", "raw_close", "amount"]].copy()
     market["trade_date"] = pd.to_datetime(market["trade_date"], errors="coerce").dt.date
@@ -551,6 +590,9 @@ def _load_v2_market_cache(
     ).round(12)
     market = market.sort_values(["trade_date", "ts_code"], kind="mergesort").reset_index(drop=True)
     market.attrs["repair_market_source"] = "v2-market-daily-clean"
+    market.attrs["repair_market_versions"] = "|".join(
+        f"{partition}:{versions[partition]}" for partition in sorted(versions)
+    )
     return market.loc[:, ["trade_date", "ts_code", "close", "amount", "pct_chg"]]
 
 

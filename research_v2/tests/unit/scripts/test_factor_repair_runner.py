@@ -254,12 +254,21 @@ def test_v2_market_fallback_derives_pct_chg_from_raw_close() -> None:
 
         def query(self, script: str) -> pd.DataFrame:
             self.queries.append(script)
+            if "published_version" in script:
+                if "logical_partition='2019-12'" in script:
+                    return pd.DataFrame({"data_version": ["v1"]})
+                if "logical_partition='2020-01'" in script:
+                    return pd.DataFrame({"data_version": ["v2"]})
+                return pd.DataFrame(columns=["data_version"])
             return pd.DataFrame(
                 {
-                    "trade_date": pd.to_datetime(["2019-12-31", "2020-01-02"]),
-                    "ts_code": ["000001.SZ", "000001.SZ"],
-                    "raw_close": [10.0, 11.0],
-                    "amount": [100.0, 120.0],
+                    "data_version": ["v1", "v2", "v1", "v2"],
+                    "trade_date": pd.to_datetime(
+                        ["2019-12-31", "2019-12-31", "2020-01-02", "2020-01-02"]
+                    ),
+                    "ts_code": ["000001.SZ"] * 4,
+                    "raw_close": [10.0, 9.0, 8.0, 11.0],
+                    "amount": [100.0, 90.0, 80.0, 120.0],
                 }
             )
 
@@ -270,17 +279,41 @@ def test_v2_market_fallback_derives_pct_chg_from_raw_close() -> None:
 
     assert market is not None
     assert market.attrs["repair_market_source"] == "v2-market-daily-clean"
+    assert market.attrs["repair_market_versions"] == "2019-12:v1|2020-01:v2"
     assert market.loc[1, "close"] == 11.0
     assert market.loc[1, "pct_chg"] == 10.0
     assert {"trade_date", "ts_code", "close", "amount", "pct_chg"}.issubset(
         market.columns
     )
-    assert "market_daily_clean" in target.queries[0]
-    assert "date('2019.07.05')" in target.queries[0]
-    assert "date('2020.01.31')" in target.queries[0]
-    assert "2026" not in target.queries[0]
+    pointer_queries = [query for query in target.queries if "published_version" in query]
+    market_query = next(query for query in target.queries if "select trade_date" in query)
+    assert any("logical_partition='2020-01'" in query for query in pointer_queries)
+    assert "data_version in ['v1','v2']" in market_query
+    assert "date('2019.07.05')" in market_query
+    assert "date('2020.01.31')" in market_query
+    assert all("2026" not in query for query in target.queries)
     provider = _provider_for_definition(SimpleNamespace(factor_id="yeslab_391"), market, month)
     assert provider.source_watermark_id.startswith("v2-market-daily-clean:")
+
+
+def test_v2_market_fallback_without_published_pointer_fails_closed() -> None:
+    class _NoPointerTarget:
+        target_database = "dfs://QuantResearchV2Test"
+
+        def __init__(self) -> None:
+            self.queries: list[str] = []
+
+        def query(self, script: str) -> pd.DataFrame:
+            self.queries.append(script)
+            return pd.DataFrame(columns=["data_version"])
+
+    target = _NoPointerTarget()
+    month = _iter_months(date(2020, 1, 1), date(2020, 1, 31))[0]
+
+    assert _load_v2_market_cache(target, month) is None
+    assert target.queries
+    assert all("published_version" in query for query in target.queries)
+    assert not any("select trade_date" in query for query in target.queries)
 
 
 def test_known_gp_provider_retains_lookback_market_rows() -> None:

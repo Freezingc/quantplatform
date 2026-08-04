@@ -270,7 +270,7 @@ def test_known_formula_all_nan_warmup_is_unresolved_not_blocking(
 ) -> None:
     market = pd.DataFrame(
         {
-            "trade_date": pd.date_range("2025-01-01", periods=10),
+            "trade_date": pd.date_range("2024-12-01", periods=10),
             "ts_code": ["000001.SZ"] * 10,
             "close": np.linspace(10.0, 11.0, 10),
             "amount": np.linspace(100.0, 110.0, 10),
@@ -297,6 +297,37 @@ def test_known_formula_all_nan_warmup_is_unresolved_not_blocking(
     assert result.status is RepairStatus.PASS_WITH_QUARANTINE
     assert result.quarantine["reason"].tolist() == ["NO_FINITE_CANDIDATE"]
     assert result.decision.conflict_groups == 0
+
+
+def test_known_formula_in_month_nonfinite_candidate_remains_blocking() -> None:
+    market = pd.DataFrame(
+        {
+            "trade_date": pd.date_range("2025-01-01", periods=10),
+            "ts_code": ["000001.SZ"] * 10,
+            "close": np.linspace(10.0, 11.0, 10),
+            "amount": np.linspace(100.0, 110.0, 10),
+            "pct_chg": [0.1] * 10,
+        }
+    )
+    source = pd.DataFrame(
+        {
+            "trade_date": [date(2025, 1, 10)],
+            "ts_code": ["000001.SZ"],
+            "factor_name": ["GP_022"],
+            "value": [np.nan],
+        }
+    )
+
+    result = build_repair_overlay(
+        source,
+        KnownFormulaCandidateProvider(market),
+        factor_id="yeslab_391",
+        factor_name="GP_022",
+        logical_partition="2025-01",
+    )
+
+    assert result.status is RepairStatus.BLOCKED
+    assert "NONFINITE_CANDIDATE" in set(result.quarantine["reason"])
 
 
 def test_overlay_quarantines_duplicate_candidate_keys() -> None:
