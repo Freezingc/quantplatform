@@ -54,7 +54,36 @@ python research_v2/scripts/run_factor_repair_overlay.py \
 
 在应用 4 位小数的 `pct_chg` 映射后，2020-12 的 180,334 个有限重叠键中仍有 112 个超过当前重叠门槛，其中 18 个相对误差超过 `1e-4`，最大相对误差约为 `0.266763`。大部分差异已被精度规则消除，但尾部异常仍然存在；当前重叠门槛为 `abs_tol=1e-8`、`rel_tol=1e-6`，因此不能用放宽阈值掩盖尾部异常。
 
-V2 `market_daily_clean` 当前可提供 `raw_close` 和 `amount`，但没有 `pre_close`/`pct_chg` 原始字段；用相邻 `raw_close` 推导的百分比变化不足以证明 GP_022/GP_064 的公式完全一致。要继续补值，需要提供包含精确 `pct_chg`（最好同时包含 `pre_close`）的 Tushare 缓存，或建立经过审计的行情字段映射；不修改既有表结构，也不直接降低重叠门槛。
+V2 `market_daily_clean` 当前可提供 `raw_close` 和 `amount`，但没有 `pre_close`/`pct_chg` 原始字段；仅用相邻 `raw_close` 推导的百分比变化不足以证明 GP_022/GP_064 的公式完全一致。后续若 YesLab 的精确行情不可用，仍需提供包含精确 `pct_chg`（最好同时包含 `pre_close`）的 Tushare 缓存或经过审计的行情字段映射；不修改既有表结构，也不直接降低重叠门槛。
+
+### 已按原始计算器口径切换行情源
+
+进一步核对 `数据库/factor_calculators/base.py` 后确认，GP_022/GP_064 的
+`fetch_data()` 实际读取的是 YesLab 的 `stock_factor_daily`，而不是
+`stock_daily_data`。前者的 `amount` 精度和 `pct_chg` 正是生成源因子时使用的
+输入；后者的金额精度不同，会制造本来不存在的尾差。
+
+修复 runner 现在在只读模式下执行以下顺序：
+
+1. 从 YesLab `trade_calendar` 复现原始 `lookback_days=60` 的预处理起点；
+2. 从 `stock_factor_daily` 读取 `close/pre_close/pct_chg/amount` 到该起点和目标月末；
+3. 校验 `pct_chg` 与 `close/pre_close`（四位小数舍入）一致、业务键无冲突；
+4. 只有行情源不可用时才回退到外部缓存，再回退到 V2 `raw_close` 推导。
+
+这一步没有写入 YesLab 或既有 V2 表，也没有放宽公式重叠门槛。代表性结果如下：
+
+| 窗口 / 因子 | 状态 | clean 行 | 隔离行 | 重叠 mismatch | 说明 |
+| --- | --- | ---: | ---: | ---: | --- |
+| 2020-12 / `yeslab_391` GP_022 | `PASS_WITH_UNRESOLVED_QUARANTINE` | 90,234 | 46,708 | 0 | 非有限源值没有可证明的 60 日候选，保留 `NO_FINITE_CANDIDATE` |
+| 2020-12 / `yeslab_433` GP_064 | `REPAIR_BLOCKED` | 0 | 1 | 6 | `max_abs_diff=66.086938`，`max_rel_diff=0.012042` |
+
+GP_064 的 6 个不一致键集中在
+`601518.SH/2020-12-17`、`000972.SZ/2020-12-07`、
+`600320.SH/2020-12-11`、`003816.SZ/2020-12-02`、
+`600881.SH/2020-12-07`、`000518.SZ/2020-12-01`。独立调用原始
+`GP_Factor_064_Calculator` 后，重算值与当前候选一致，但与 `factor_data9` 已存值
+不同；因此这是源因子存储值/版本的质量异常，而不是修复器偷偷覆盖或收益率口径错误。
+该因子继续阻断发布，直到源值版本或公式输入得到审计确认。
 
 当前已有 47 个 source-qualified 因子的数据库快照均为
 `SOURCE_DQ_PASS_PENDING_SIMILARITY`：全范围有限值比例为 `0.737690–0.849923`，其中 38 个因子低于 0.80；值冲突键为 `0`，但 27 个因子的重复行比例为 `0.50`。这些重复行会进入确定性去重/隔离流程，不能直接当作无问题数据。PIT 键覆盖的 P05 比例最低为 `1.253870`，反映了重复输入对原始覆盖统计的抬升，不能替代去重后的实际覆盖率。
@@ -63,6 +92,8 @@ V2 `market_daily_clean` 当前可提供 `raw_close` 和 `amount`，但没有 `pr
 
 - [`2020-01 smoke v6`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_jan2020_v6_manifest.json)
 - [`2020-12 smoke v3`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_dec2020_v3_manifest.json)
+- [`2020-12 GP_022 exact-input smoke`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_dec2020_source_factor_market_v3_manifest.json)
+- [`2020-12 GP_064 exact-input smoke`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_dec2020_gp064_source_factor_market_v3_manifest.json)
 
 ## 全量运行处置
 
@@ -72,7 +103,7 @@ V2 `market_daily_clean` 当前可提供 `raw_close` 和 `amount`，但没有 `pr
 
 ## 验证结果
 
-- 全量研究测试：`356 passed`；
+- 全量研究测试：`365 passed`；
 - Ruff：`All checks passed`；
 - mypy：`research_v2` 124 个源文件及比较脚本均无错误；
 - 没有执行模型训练，没有发布修复版本，没有查询 2026 数据。

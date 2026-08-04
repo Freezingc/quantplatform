@@ -203,7 +203,7 @@ def _resolve_frame(
     if path.suffix in {".parquet", ".pq"}:
         return pd.read_parquet(path)
     if path.suffix in {".pkl", ".pickle"}:
-        return pd.read_pickle(path)
+        return cast(pd.DataFrame, pd.read_pickle(path))
     return pd.read_csv(path)
 
 
@@ -341,7 +341,7 @@ def _latest_status(statuses: object) -> str:
         "REPAIRED_PENDING_QUALITY_RECHECK": 2,
         "REPAIR_AUDIT_PASS": 1,
     }
-    return max(statuses, key=lambda status: (precedence.get(status, 0), status))
+    return cast(str, max(statuses, key=lambda status: (precedence.get(status, 0), status)))
 
 
 def _delta(after: object, before: object) -> float | None:

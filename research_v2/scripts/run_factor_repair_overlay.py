@@ -23,6 +23,7 @@ from itertools import groupby
 from pathlib import Path
 from typing import Any, Protocol, cast
 
+import numpy as np
 import pandas as pd
 
 from research_v2.contracts.factor import FactorDefinition
@@ -65,6 +66,8 @@ _FACTOR_ID_RE = re.compile(r"^yeslab_[0-9]+$")
 _TABLE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 _KNOWN_FORMULA_IDS = frozenset({"yeslab_391", "yeslab_433"})
 _V2_MARKET_PCT_CHG_DECIMALS = 4
+_SOURCE_MARKET_PCT_CHG_TOLERANCE = 1.1e-4
+_KNOWN_FORMULA_LOOKBACK_DAYS = 60
 
 
 class FactorRepairRunnerError(RuntimeError):
@@ -93,6 +96,9 @@ class RepairRunnerResult:
     audit_batches: tuple[StagedBatch, ...] = ()
     quarantine_batches: tuple[StagedBatch, ...] = ()
     quarantine_reason_counts: tuple[tuple[str, int], ...] = ()
+    overlap_mismatch_rows: int = 0
+    overlap_max_abs_diff: float = 0.0
+    overlap_max_rel_diff: float = 0.0
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -242,7 +248,14 @@ def _run_repair_with_spool(
     )
 
     for month in months:
-        month_cache = cache
+        # Prefer the exact calculator input table over an optional external
+        # cache; a configured Tushare file may use a different precision or
+        # revision.  External/V2 caches remain explicit fallbacks.
+        month_cache = None
+        if needs_market_fallback:
+            month_cache = _load_source_market_cache(source_session, month)
+        if month_cache is None:
+            month_cache = cache
         if month_cache is None and needs_market_fallback:
             month_cache = _load_v2_market_cache(target_session, month)
         for source_table in sorted(grouped):
@@ -366,6 +379,14 @@ def _run_repair_with_spool(
     quarantine_reason_counts = tuple(
         sorted(Counter(row.reason for row in quarantines).items())
     )
+    mismatch_records = [record for record in audits if int(record.mismatch_rows) > 0]
+    overlap_mismatch_rows = sum(int(record.mismatch_rows) for record in mismatch_records)
+    overlap_max_abs_diff = max(
+        (float(record.max_abs_diff) for record in mismatch_records), default=0.0
+    )
+    overlap_max_rel_diff = max(
+        (float(record.max_rel_diff) for record in mismatch_records), default=0.0
+    )
     counts["audit_rows"] = len(audits)
     counts["factor_count"] = len(factor_ids)
     counts["month_count"] = len(months)
@@ -401,6 +422,9 @@ def _run_repair_with_spool(
         audit_batches=audit_batches,
         quarantine_batches=quarantine_batches,
         quarantine_reason_counts=quarantine_reason_counts,
+        overlap_mismatch_rows=overlap_mismatch_rows,
+        overlap_max_abs_diff=overlap_max_abs_diff,
+        overlap_max_rel_diff=overlap_max_rel_diff,
     )
 
 
@@ -448,6 +472,11 @@ def main(
                     "counts": result.counts,
                     "status_counts": result.status_counts,
                     "quarantine_reason_counts": result.quarantine_reason_counts,
+                    "overlap_mismatch": {
+                        "rows": result.overlap_mismatch_rows,
+                        "max_abs_diff": result.overlap_max_abs_diff,
+                        "max_rel_diff": result.overlap_max_rel_diff,
+                    },
                 },
                 ensure_ascii=False,
                 indent=2,
@@ -509,7 +538,8 @@ def _provider_for_definition(
     if definition.factor_id not in _KNOWN_FORMULA_IDS or cache is None:
         return NullRepairProvider()
     market = cache.copy(deep=True)
-    if "trade_date" in market.columns:
+    source_name = str(market.attrs.get("repair_market_source", "tushare-cache"))
+    if "trade_date" in market.columns and source_name != "yeslab-stock-factor-daily":
         dates = pd.to_datetime(market["trade_date"], errors="coerce").dt.date
         # GP_022/GP_064 use rolling windows of roughly 60/73 trading rows;
         # 180 calendar days safely covers weekends and market holidays.
@@ -518,7 +548,6 @@ def _provider_for_definition(
     required = {"trade_date", "ts_code", "close", "amount", "pct_chg"}
     if not required.issubset(market.columns):
         return NullRepairProvider()
-    source_name = str(market.attrs.get("repair_market_source", "tushare-cache"))
     source_versions = str(market.attrs.get("repair_market_versions", ""))
     hash_input = pd.util.hash_pandas_object(
         market.sort_values(sorted(required)), index=False
@@ -544,6 +573,124 @@ def _load_market_cache() -> pd.DataFrame | None:
         return pd.read_csv(path)
     except (OSError, ValueError, ImportError):
         return None
+
+
+def _load_source_market_cache(
+    source: QuerySession,
+    month: FactorMonth,
+) -> pd.DataFrame | None:
+    """Read the exact YesLab daily market fields used by GP calculators.
+
+    ``market_daily_clean`` intentionally stores raw OHLC and does not expose
+    ``pre_close``/``pct_chg``.  Deriving a return from ``raw_close`` can cross
+    a corporate-action boundary and therefore cannot reproduce a source
+    formula.  The calculators fetch their inputs from YesLab's read-only
+    ``stock_factor_daily`` table; using that same table preserves its amount
+    precision and its original ``pct_chg`` field.
+    The query remains bounded to the formula warm-up interval and any schema,
+    duplicate-key, or close/pre-close consistency problem fails closed.
+    """
+
+    lookback_start = _calculator_market_start(source, month)
+    if lookback_start is None:
+        return None
+    script = (
+        "select ts_code,trade_date,close,pre_close,pct_chg,amount from "
+        "loadTable('dfs://YesLab','stock_factor_daily') "
+        f"where trade_date between date('{lookback_start:%Y.%m.%d}') "
+        f"and date('{month.end_date:%Y.%m.%d}')"
+    )
+    try:
+        result = source.query(script)
+    except (RuntimeError, ValueError):
+        return None
+    if not isinstance(result, pd.DataFrame):
+        return None
+    required = {"ts_code", "trade_date", "close", "pre_close", "pct_chg", "amount"}
+    if not required.issubset(result.columns) or result.empty:
+        return None
+    market = result.loc[:, sorted(required)].copy()
+    market["trade_date"] = pd.to_datetime(market["trade_date"], errors="coerce").dt.date
+    market["ts_code"] = market["ts_code"].astype(str)
+    if market["trade_date"].isna().any() or market["ts_code"].eq("").any():
+        return None
+    for column in ("close", "pre_close", "pct_chg", "amount"):
+        market[column] = pd.to_numeric(market[column], errors="coerce")
+    # Exact revision duplicates are harmless; conflicting values are not.
+    market = market.drop_duplicates().reset_index(drop=True)
+    keys = ["trade_date", "ts_code"]
+    if market.duplicated(keys).any():
+        return None
+    close = market["close"].to_numpy(dtype=float)
+    pre_close = market["pre_close"].to_numpy(dtype=float)
+    pct_chg = market["pct_chg"].to_numpy(dtype=float)
+    checkable = (
+        np.isfinite(close)
+        & np.isfinite(pre_close)
+        & np.isfinite(pct_chg)
+        & (np.abs(pre_close) > 1e-12)
+    )
+    if checkable.any():
+        expected = (close[checkable] / pre_close[checkable] - 1.0) * 100.0
+        if np.any(np.abs(expected - pct_chg[checkable]) > _SOURCE_MARKET_PCT_CHG_TOLERANCE):
+            return None
+    market = market.sort_values(keys, kind="mergesort").reset_index(drop=True)
+    market.attrs["repair_market_source"] = "yeslab-stock-factor-daily"
+    market.attrs["repair_market_versions"] = (
+        f"stock_factor_daily:{month.logical_partition}:{lookback_start.isoformat()}"
+    )
+    market.attrs["repair_market_start"] = lookback_start.isoformat()
+    return market.loc[:, ["trade_date", "ts_code", "close", "amount", "pct_chg"]]
+
+
+def _calculator_market_start(
+    source: QuerySession,
+    month: FactorMonth,
+    *,
+    lookback_days: int = _KNOWN_FORMULA_LOOKBACK_DAYS,
+) -> date | None:
+    """Reproduce ``FactorCalculator.preprocess_time_range``'s start date."""
+
+    if lookback_days < 1:
+        raise ValueError("formula lookback_days must be positive")
+    calendar_start = month.start_date - timedelta(days=10 * lookback_days)
+    script = (
+        "select cal_date,is_open from loadTable('dfs://YesLab','trade_calendar') "
+        f"where exchange='SSE' and cal_date between date('{calendar_start:%Y.%m.%d}') "
+        f"and date('{month.end_date:%Y.%m.%d}') order by cal_date"
+    )
+    try:
+        calendar = source.query(script)
+    except (RuntimeError, ValueError):
+        return None
+    if not isinstance(calendar, pd.DataFrame) or not {"cal_date", "is_open"}.issubset(
+        calendar.columns
+    ):
+        return None
+    calendar = calendar.loc[:, ["cal_date", "is_open"]].copy()
+    calendar["cal_date"] = pd.to_datetime(calendar["cal_date"], errors="coerce").dt.date
+    calendar["is_open"] = pd.to_numeric(calendar["is_open"], errors="coerce")
+    calendar = calendar.dropna(subset=["cal_date"]).sort_values("cal_date", kind="mergesort")
+    if calendar.empty:
+        return None
+    dates = calendar["cal_date"].tolist()
+    try:
+        start_index = dates.index(month.start_date)
+    except ValueError:
+        return None
+    current_index = start_index - 1
+    count = 0
+    target_index = -1
+    while count < lookback_days and current_index >= 0:
+        if int(calendar.iloc[current_index]["is_open"]) == 1:
+            count += 1
+        current_index -= 1
+        target_index = current_index
+    target_index += 1
+    if target_index < 0 or target_index >= len(dates):
+        return None
+    processed_start = dates[target_index] - timedelta(days=30)
+    return processed_start
 
 
 def _load_v2_market_cache(

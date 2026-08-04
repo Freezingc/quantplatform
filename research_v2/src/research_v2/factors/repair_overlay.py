@@ -334,8 +334,11 @@ class KnownFormulaCandidateProvider:
         if mismatch.any():
             raise FactorOverlapMismatchError(
                 mismatch_rows=int(mismatch.sum()),
-                max_abs_diff=float(abs_diff.max()),
-                max_rel_diff=float(rel_diff.max()),
+                # Report the magnitude of the rejected rows, rather than an
+                # unrelated finite overlap that may be extremely large due to
+                # a formula's natural scale.
+                max_abs_diff=float(abs_diff[mismatch].max()),
+                max_rel_diff=float(rel_diff[mismatch].max()),
             )
 
 

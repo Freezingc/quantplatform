@@ -14,6 +14,7 @@ from run_factor_repair_overlay import (
     SOURCE_STATUS,
     _iter_months,
     _load_market_cache,
+    _load_source_market_cache,
     _load_v2_market_cache,
     _provider_for_definition,
     _source_watermark,
@@ -227,6 +228,9 @@ def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> No
     assert result.audit_batch.frame["max_abs_diff"].tolist() == [0.25]
     assert result.audit_batch.frame["max_rel_diff"].tolist() == [0.125]
     assert result.audit_batch.frame["unresolved_rows"].tolist() == [0]
+    assert result.overlap_mismatch_rows == 3
+    assert result.overlap_max_abs_diff == 0.25
+    assert result.overlap_max_rel_diff == 0.125
     assert result.quarantine_batch is not None
     assert result.quarantine_batch.frame["reason"].tolist() == [
         "CANDIDATE_OVERLAP_MISMATCH"
@@ -354,6 +358,65 @@ def test_v2_market_fallback_derives_pct_chg_from_raw_close() -> None:
     assert all("2026" not in query for query in target.queries)
     provider = _provider_for_definition(SimpleNamespace(factor_id="yeslab_391"), market, month)
     assert provider.source_watermark_id.startswith("v2-market-daily-clean:")
+
+
+def test_source_market_cache_uses_exact_yeslab_pct_chg_and_validates_bounds() -> None:
+    class _MarketSource:
+        def __init__(self) -> None:
+            self.queries: list[str] = []
+
+        def query(self, script: str) -> pd.DataFrame:
+            self.queries.append(script)
+            if "trade_calendar" in script:
+                dates = pd.date_range("2018-05-01", "2020-01-31", freq="D")
+                return pd.DataFrame({"cal_date": dates, "is_open": 1})
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ", "000001.SZ"],
+                    "trade_date": pd.to_datetime(["2019-12-31", "2020-01-02"]),
+                    "close": [10.0, 11.0123456],
+                    "pre_close": [9.0, 10.0],
+                    "pct_chg": [11.1111, 10.1235],
+                    "amount": [100.0, 120.0],
+                }
+            )
+
+    source = _MarketSource()
+    month = _iter_months(date(2020, 1, 1), date(2020, 1, 31))[0]
+
+    market = _load_source_market_cache(source, month)
+
+    assert market is not None
+    assert market.attrs["repair_market_source"] == "yeslab-stock-factor-daily"
+    assert market.attrs["repair_market_versions"].startswith(
+        "stock_factor_daily:2020-01:"
+    )
+    assert market.loc[1, "pct_chg"] == 10.1235
+    assert {"close", "amount", "pct_chg"}.issubset(market.columns)
+    assert len(source.queries) == 2
+    market_query = next(query for query in source.queries if "stock_factor_daily" in query)
+    assert "loadTable('dfs://YesLab','stock_factor_daily')" in market_query
+    assert "date('2020.01.31')" in market_query
+    assert all("2026" not in query for query in source.queries)
+
+
+def test_source_market_cache_fails_closed_on_pct_chg_conflict() -> None:
+    class _ConflictingMarketSource:
+        def query(self, script: str) -> pd.DataFrame:
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ"],
+                    "trade_date": [pd.Timestamp("2020-01-02")],
+                    "close": [11.0],
+                    "pre_close": [10.0],
+                    "pct_chg": [9.0],
+                    "amount": [120.0],
+                }
+            )
+
+    month = _iter_months(date(2020, 1, 1), date(2020, 1, 31))[0]
+
+    assert _load_source_market_cache(_ConflictingMarketSource(), month) is None
 
 
 def test_v2_market_fallback_without_published_pointer_fails_closed() -> None:
