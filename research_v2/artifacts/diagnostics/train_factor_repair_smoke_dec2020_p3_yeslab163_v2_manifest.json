@@ -1,0 +1,45 @@
+{
+  "counts": {
+    "added_rows": 0,
+    "audit_rows": 1,
+    "audited": 1,
+    "blocked": 0,
+    "clean_batches": 1,
+    "clean_rows": 97085,
+    "factor_count": 1,
+    "filled_rows": 0,
+    "month_count": 1,
+    "quarantine_rows": 39420
+  },
+  "data_version": "aed7c1de70ed7f2690207c300c2dbbc89762f67249a381d549fd7298d3e172d0",
+  "end": "2020-12-31",
+  "factor_ids": [
+    "yeslab_163"
+  ],
+  "overlap_mismatch": {
+    "max_abs_diff": 0.0,
+    "max_rel_diff": 0.0,
+    "rows": 0
+  },
+  "phase": "train",
+  "published": false,
+  "quarantine_reason_counts": [
+    [
+      "NO_EVIDENCE_BACKFILL",
+      39420
+    ]
+  ],
+  "source_quality": {
+    "exact_duplicate_groups": 136505,
+    "exact_duplicate_rows": 136505,
+    "source_nonfinite_rows": 78840
+  },
+  "source_watermark_id": "2df3793b0563e67785a7b38cfcb474c02e936e637f5263f99752ca8935383239",
+  "start": "2020-12-01",
+  "status_counts": [
+    [
+      "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      1
+    ]
+  ]
+}

@@ -99,6 +99,9 @@ class RepairRunnerResult:
     overlap_mismatch_rows: int = 0
     overlap_max_abs_diff: float = 0.0
     overlap_max_rel_diff: float = 0.0
+    exact_duplicate_groups: int = 0
+    exact_duplicate_rows: int = 0
+    source_nonfinite_rows: int = 0
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -387,6 +390,9 @@ def _run_repair_with_spool(
     overlap_max_rel_diff = max(
         (float(record.max_rel_diff) for record in mismatch_records), default=0.0
     )
+    exact_duplicate_groups = sum(int(record.exact_duplicate_groups) for record in audits)
+    exact_duplicate_rows = sum(int(record.exact_duplicate_rows) for record in audits)
+    source_nonfinite_rows = sum(int(record.nonfinite_rows) for record in audits)
     counts["audit_rows"] = len(audits)
     counts["factor_count"] = len(factor_ids)
     counts["month_count"] = len(months)
@@ -425,6 +431,9 @@ def _run_repair_with_spool(
         overlap_mismatch_rows=overlap_mismatch_rows,
         overlap_max_abs_diff=overlap_max_abs_diff,
         overlap_max_rel_diff=overlap_max_rel_diff,
+        exact_duplicate_groups=exact_duplicate_groups,
+        exact_duplicate_rows=exact_duplicate_rows,
+        source_nonfinite_rows=source_nonfinite_rows,
     )
 
 
@@ -476,6 +485,11 @@ def main(
                         "rows": result.overlap_mismatch_rows,
                         "max_abs_diff": result.overlap_max_abs_diff,
                         "max_rel_diff": result.overlap_max_rel_diff,
+                    },
+                    "source_quality": {
+                        "exact_duplicate_groups": result.exact_duplicate_groups,
+                        "exact_duplicate_rows": result.exact_duplicate_rows,
+                        "source_nonfinite_rows": result.source_nonfinite_rows,
                     },
                 },
                 ensure_ascii=False,

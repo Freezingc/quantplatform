@@ -231,6 +231,9 @@ def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> No
     assert result.overlap_mismatch_rows == 3
     assert result.overlap_max_abs_diff == 0.25
     assert result.overlap_max_rel_diff == 0.125
+    assert result.exact_duplicate_groups == 0
+    assert result.exact_duplicate_rows == 0
+    assert result.source_nonfinite_rows == 0
     assert result.quarantine_batch is not None
     assert result.quarantine_batch.frame["reason"].tolist() == [
         "CANDIDATE_OVERLAP_MISMATCH"
