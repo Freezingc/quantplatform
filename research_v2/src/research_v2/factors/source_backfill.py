@@ -33,6 +33,7 @@ from research_v2.factors.materializer import (
 )
 from research_v2.factors.repair_overlay import (
     RepairProvider,
+    RepairStatus,
     build_repair_overlay,
 )
 from research_v2.quality.engine import CheckResult, CheckStatus, Severity
@@ -428,6 +429,18 @@ def iter_clean_factor_batches(
         context,
         repair_provider=repair_provider,
     ):
+        repair_result = getattr(materialized, "repair_overlay", None)
+        if fail_on_quarantine and repair_result is not None:
+            repair_reasons = set(repair_result.quarantine["reason"].astype(str))
+            blocking_reasons = repair_reasons.difference(
+                {"WARMUP_OUT_OF_SCOPE", "NO_EVIDENCE_BACKFILL", "NO_FINITE_CANDIDATE"}
+            )
+            if repair_result.status is RepairStatus.BLOCKED or blocking_reasons:
+                factor_id = str(materialized.clean_batch.frame["factor_id"].iloc[0])
+                raise FactorBackfillError(
+                    f"repair overlay blocked factor materialization: {factor_id} "
+                    f"({sorted(blocking_reasons or {'REPAIR_BLOCKED'})})"
+                )
         if (
             fail_on_quarantine
             and materialized.quarantine_batch is not None
@@ -506,6 +519,11 @@ def iter_factor_materialization_batches(
                     logical_partition=month.logical_partition,
                     source_watermark_id=watermark,
                 )
+                if repair_result.status is RepairStatus.BLOCKED:
+                    raise FactorBackfillError(
+                        "repair overlay blocked factor materialization: "
+                        f"{definition.factor_id} ({month.logical_partition})"
+                    )
                 # The materializer consumes the existing canonical business
                 # columns.  Repair lineage/audit remains attached to the
                 # returned materialization object for the caller.

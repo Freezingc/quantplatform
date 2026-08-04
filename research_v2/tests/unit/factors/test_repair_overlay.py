@@ -17,8 +17,10 @@ from research_v2.factors.repair_overlay import (
     provider_for_factor,
 )
 from research_v2.factors.source_backfill import (
+    FactorBackfillError,
     FactorMonth,
     build_factor_month_context,
+    iter_clean_factor_batches,
     iter_factor_materialization_batches,
 )
 
@@ -258,10 +260,115 @@ def test_overlay_quarantines_candidate_outside_factor_month() -> None:
         definition=_definition(),
         logical_partition="2025-01",
     )
-    assert result.status is RepairStatus.BLOCKED
-    assert "DATE_SCOPE_VIOLATION" in set(result.quarantine["reason"])
+    assert result.status is RepairStatus.PENDING_RECHECK
+    assert "WARMUP_OUT_OF_SCOPE" in set(result.quarantine["reason"])
     assert "000003.SZ" not in set(result.clean["ts_code"])
     assert "000001.SZ" in set(result.clean["ts_code"])
+
+
+def test_source_backfill_allows_pre_month_formula_warmup_and_materializes_in_month_fill() -> None:
+    class WarmupProvider:
+        method = "WARMUP_CANDIDATE"
+
+        def provide(self, source: pd.DataFrame, **_: object) -> pd.DataFrame:
+            del source
+            return pd.DataFrame(
+                {
+                    "trade_date": [date(2024, 10, 1), date(2025, 1, 2)],
+                    "ts_code": ["000099.SZ", "000001.SZ"],
+                    "candidate_value": [9.0, 2.0],
+                }
+            )
+
+    class Session:
+        def query(self, _: str) -> object:
+            return _source()
+
+    definition = _definition()
+    month = FactorMonth.from_partition("2025-01")
+    context = build_factor_month_context(month, (definition,))
+    batches = list(
+        iter_clean_factor_batches(
+            Session(),
+            (definition,),
+            month,
+            context,
+            repair_provider=WarmupProvider(),
+        )
+    )
+    assert len(batches) == 1
+    assert batches[0].frame.loc[:, "value"].tolist() == [2.0, 4.0]
+
+
+def test_known_formula_warmup_rows_are_non_blocking_for_january_materialization() -> None:
+    class Session:
+        def query(self, _: str) -> object:
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ", "000002.SZ"],
+                    "trade_date": [date(2025, 1, 2), date(2025, 1, 2)],
+                    "factor_name": ["GP_022", "GP_022"],
+                    "value": [np.nan, 4.0],
+                }
+            )
+
+    market = pd.DataFrame(
+        {
+            "trade_date": pd.date_range("2024-09-25", periods=100),
+            "ts_code": ["000001.SZ"] * 100,
+            "close": [10.0] * 100,
+            "amount": [100.0] * 100,
+            "pct_chg": [1.0] * 100,
+        }
+    )
+    provider = KnownFormulaCandidateProvider(market)
+    definition = _definition()
+    month = FactorMonth.from_partition("2025-01")
+    context = build_factor_month_context(month, (definition,))
+    batches = list(
+        iter_clean_factor_batches(
+            Session(),
+            (definition,),
+            month,
+            context,
+            repair_provider=provider,
+        )
+    )
+    assert batches[0].frame.loc[:, "value"].tolist() == [100.0, 100.0, 4.0]
+    assert batches[0].frame["signal_date"].min() == date(2025, 1, 1)
+
+
+def test_source_backfill_rejects_post_month_candidate_before_publish() -> None:
+    class FutureProvider:
+        method = "FUTURE_CANDIDATE"
+
+        def provide(self, source: pd.DataFrame, **_: object) -> pd.DataFrame:
+            del source
+            return pd.DataFrame(
+                {
+                    "trade_date": [date(2025, 2, 1)],
+                    "ts_code": ["000003.SZ"],
+                    "candidate_value": [9.0],
+                }
+            )
+
+    class Session:
+        def query(self, _: str) -> object:
+            return _source()
+
+    definition = _definition()
+    month = FactorMonth.from_partition("2025-01")
+    context = build_factor_month_context(month, (definition,))
+    with pytest.raises(FactorBackfillError, match="repair overlay blocked"):
+        list(
+            iter_clean_factor_batches(
+                Session(),
+                (definition,),
+                month,
+                context,
+                repair_provider=FutureProvider(),
+            )
+        )
 
 
 def test_source_backfill_repair_hook_runs_before_materialization_and_keeps_business_columns(

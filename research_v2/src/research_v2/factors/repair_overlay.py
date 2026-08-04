@@ -387,7 +387,7 @@ def build_repair_overlay(
     )
     if candidate is not None and not isinstance(candidate, pd.DataFrame):
         raise TypeError("repair provider must return a DataFrame or None")
-    candidate, scope_quarantine = _restrict_candidate_to_partition(
+    candidate, scope_quarantine, scope_blocking = _restrict_candidate_to_partition(
         candidate,
         factor_name=resolved_name,
         logical_partition=logical_partition,
@@ -408,7 +408,7 @@ def build_repair_overlay(
         )
         decision = replace(
             decision,
-            status=RepairStatus.BLOCKED,
+            status=RepairStatus.BLOCKED if scope_blocking else decision.status,
             quarantine=combined_quarantine,
         )
     method = str(getattr(active_provider, "method", active_provider.__class__.__name__))
@@ -447,7 +447,7 @@ def _restrict_candidate_to_partition(
     *,
     factor_name: str,
     logical_partition: str | None,
-) -> tuple[pd.DataFrame | None, pd.DataFrame]:
+) -> tuple[pd.DataFrame | None, pd.DataFrame, bool]:
     """Drop candidate warmup rows and return them as date-scope quarantine."""
 
     quarantine_columns = [
@@ -459,7 +459,7 @@ def _restrict_candidate_to_partition(
         "reason",
     ]
     if candidate is None or logical_partition is None:
-        return candidate, pd.DataFrame(columns=quarantine_columns)
+        return candidate, pd.DataFrame(columns=quarantine_columns), False
     try:
         period = pd.Period(logical_partition, freq="M")
     except (TypeError, ValueError) as error:
@@ -475,23 +475,23 @@ def _restrict_candidate_to_partition(
     in_scope = (dates >= lower) & (dates <= upper)
     out_of_scope = candidate.loc[~in_scope, list(_CANDIDATE_COLUMNS)].copy(deep=True)
     if out_of_scope.empty:
-        return candidate, pd.DataFrame(columns=quarantine_columns)
+        return candidate, pd.DataFrame(columns=quarantine_columns), False
     out_of_scope["trade_date"] = dates.loc[out_of_scope.index]
     out_of_scope["ts_code"] = out_of_scope["ts_code"].astype(str)
-    scope_quarantine = pd.DataFrame(
-        {
-            "trade_date": out_of_scope["trade_date"],
-            "ts_code": out_of_scope["ts_code"],
-            "factor_name": factor_name,
-            "source_value": np.nan,
-            "candidate_value": out_of_scope["candidate_value"],
-            "reason": "DATE_SCOPE_VIOLATION",
-        }
-    )
+    scope_quarantine = out_of_scope.assign(
+        factor_name=factor_name,
+        source_value=np.nan,
+        reason=np.where(
+            out_of_scope["trade_date"] > upper,
+            "DATE_SCOPE_VIOLATION",
+            "WARMUP_OUT_OF_SCOPE",
+        ),
+    ).loc[:, quarantine_columns]
     scope_quarantine = scope_quarantine.sort_values(
         ["trade_date", "ts_code"], kind="mergesort"
     ).reset_index(drop=True)
-    return candidate.loc[in_scope].copy(deep=True), scope_quarantine
+    blocking = bool((out_of_scope["trade_date"] > upper).any())
+    return candidate.loc[in_scope].copy(deep=True), scope_quarantine, blocking
 
 
 def _invoke_provider(
@@ -558,6 +558,7 @@ __all__ = [
     "RepairOverlayBuildResult",
     "RepairOverlayResult",
     "RepairProvider",
+    "RepairStatus",
     "build_repair_provider_mapping",
     "build_repair_overlay",
     "provider_for_factor",
