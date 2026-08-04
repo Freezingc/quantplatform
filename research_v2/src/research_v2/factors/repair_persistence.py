@@ -334,6 +334,7 @@ class RepairIdentity:
     repair_methods: tuple[str, ...]
     candidate_hashes: tuple[str, ...]
     rules_versions: tuple[int, ...]
+    scope_fingerprints: tuple[str, ...]
     start_date: date
     end_date: date
 
@@ -351,10 +352,7 @@ def build_repair_identity(
     if audit_records:
         _validate_audit_records(audit_records)
     if quarantine_rows:
-        _validate_quarantine_rows(
-            quarantine_rows,
-            require_provenance=not audit_records,
-        )
+        _validate_quarantine_rows(quarantine_rows)
     return _identity(audit_records, quarantine_rows)
 
 
@@ -416,6 +414,12 @@ def _identity(
         }
         - {""}
     )
+    scope_fingerprints = sorted(
+        [
+            *(_scope_fingerprint(record) for record in audits),
+            *(_scope_fingerprint(row) for row in quarantines),
+        ]
+    )
     dates = [
         *(
             _date_range(
@@ -456,6 +460,7 @@ def _identity(
         "repair_methods": repair_methods,
         "candidate_hashes": candidate_hashes,
         "rules_versions": rules_versions,
+        "scope_fingerprints": scope_fingerprints,
     }
     canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
     data_version = hashlib.sha256(("repair-data:" + canonical).encode("utf-8")).hexdigest()
@@ -496,6 +501,7 @@ def _identity(
         repair_methods=tuple(repair_methods),
         candidate_hashes=tuple(candidate_hashes),
         rules_versions=tuple(rules_versions),
+        scope_fingerprints=tuple(scope_fingerprints),
         start_date=start,
         end_date=end,
     )
@@ -605,11 +611,14 @@ def _validate_identity_scope(
 ) -> None:
     """Ensure records are members of the identity used to publish them."""
 
+    _validate_identity_integrity(identity)
     if not identity.factor_ids or not identity.definition_hashes or not identity.provider_hashes:
         raise RepairPersistenceError("repair identity scope is incomplete")
     if identity.start_date > identity.end_date:
         raise RepairPersistenceError("repair identity date range is reversed")
     for record in audits:
+        if _scope_fingerprint(record) not in identity.scope_fingerprints:
+            raise RepairPersistenceError("audit record is outside repair identity scope")
         if (
             record.factor_id not in identity.factor_ids
             or (record.factor_id, int(record.factor_version)) not in identity.factor_versions
@@ -638,6 +647,8 @@ def _validate_identity_scope(
             )[1],
         )
     for row in quarantines:
+        if _scope_fingerprint(row) not in identity.scope_fingerprints:
+            raise RepairPersistenceError("quarantine row is outside repair identity scope")
         if (
             row.factor_id not in identity.factor_ids
             or (row.factor_id, int(row.factor_version)) not in identity.factor_versions
@@ -665,6 +676,36 @@ def _validate_identity_scope(
                 _month_range(row.observation_date),
             )[1],
         )
+
+
+def _validate_identity_integrity(identity: RepairIdentity) -> None:
+    """Reject an identity whose hashes no longer match its scope metadata."""
+
+    payload = {
+        "factor_ids": list(identity.factor_ids),
+        "factor_versions": [list(item) for item in identity.factor_versions],
+        "definition_hashes": list(identity.definition_hashes),
+        "date_range": [identity.start_date.isoformat(), identity.end_date.isoformat()],
+        "provider_hashes": list(identity.provider_hashes),
+        "source_tables": list(identity.source_tables),
+        "factor_names": list(identity.factor_names),
+        "repair_methods": list(identity.repair_methods),
+        "candidate_hashes": list(identity.candidate_hashes),
+        "rules_versions": list(identity.rules_versions),
+        "scope_fingerprints": list(identity.scope_fingerprints),
+    }
+    canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    expected_data_version = hashlib.sha256(
+        ("repair-data:" + canonical).encode("utf-8")
+    ).hexdigest()
+    expected_watermark = hashlib.sha256(
+        ("repair-source:" + canonical).encode("utf-8")
+    ).hexdigest()
+    if (
+        identity.data_version != expected_data_version
+        or identity.source_watermark_id != expected_watermark
+    ):
+        raise RepairPersistenceError("repair identity integrity check failed")
 
 
 def _validate_scope_values(
@@ -725,11 +766,7 @@ def _validate_nonnegative_counts(record: RepairAuditRecord) -> None:
         raise RepairPersistenceError("repair mismatch maxima must be finite")
 
 
-def _validate_quarantine_rows(
-    rows: Sequence[RepairQuarantineRow],
-    *,
-    require_provenance: bool = False,
-) -> None:
+def _validate_quarantine_rows(rows: Sequence[RepairQuarantineRow]) -> None:
     for row in rows:
         if not row.ts_code.strip() or not row.factor_id.strip() or not row.factor_name.strip():
             raise RepairPersistenceError("repair quarantine business identity cannot be empty")
@@ -742,13 +779,13 @@ def _validate_quarantine_rows(
             raise RepairPersistenceError("repair quarantine identity is invalid")
         if not row.candidate_hash.strip():
             raise RepairPersistenceError("repair quarantine candidate_hash cannot be empty")
-        if require_provenance and (
+        if (
             not row.source_table.strip()
             or not _definition_hash(row).strip()
             or not row.provider_hash.strip()
         ):
             raise RepairPersistenceError(
-                "repair quarantine provenance hashes are required for a quarantine-only scope"
+                "repair quarantine provenance hashes are required for every record"
             )
         for value in (row.source_value, row.candidate_value):
             if value is not None and not np.isfinite(float(value)):
@@ -775,6 +812,49 @@ def _definition_hash(value: Any) -> str:
         getattr(value, "source_definition_hash", "")
         or getattr(value, "definition_hash", "")
     )
+
+
+def _scope_fingerprint(value: RepairAuditRecord | RepairQuarantineRow) -> str:
+    """Hash the complete provenance scope for one audit/quarantine record."""
+
+    if isinstance(value, RepairAuditRecord):
+        lower, upper = _date_range(
+            value.start_date,
+            value.end_date,
+            _logical_partition_range(value.logical_partition, value.as_of_date),
+        )
+        payload = {
+            "factor_id": value.factor_id,
+            "factor_version": int(value.factor_version),
+            "source_table": value.source_table,
+            "factor_name": value.source_factor_name,
+            "repair_method": value.repair_method,
+            "definition_hash": _definition_hash(value),
+            "provider_hash": value.provider_hash,
+            "candidate_hash": value.candidate_hash,
+            "rules_version": int(value.rules_version),
+            "date_range": [lower.isoformat(), upper.isoformat()],
+        }
+    else:
+        lower, upper = _date_range(
+            value.start_date,
+            value.end_date,
+            _month_range(value.observation_date),
+        )
+        payload = {
+            "factor_id": value.factor_id,
+            "factor_version": int(value.factor_version),
+            "source_table": value.source_table,
+            "factor_name": value.factor_name,
+            "repair_method": value.repair_method,
+            "definition_hash": _definition_hash(value),
+            "provider_hash": value.provider_hash,
+            "candidate_hash": value.candidate_hash,
+            "rules_version": int(value.rules_version),
+            "date_range": [lower.isoformat(), upper.isoformat()],
+        }
+    canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def _date_range(

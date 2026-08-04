@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date
 
 import pandas as pd
@@ -199,6 +200,49 @@ def test_explicit_identity_quality_check_rejects_missing_row_provenance() -> Non
 
     with pytest.raises(RepairPersistenceError, match="provenance"):
         repair_quality_checks(malformed, identity=identity)
+
+
+def test_audit_backed_quarantine_still_requires_each_row_provenance() -> None:
+    audit = _audit()
+    identity = build_repair_identity([audit], [_quarantine()])
+    malformed = _quarantine().__class__(
+        **{**_quarantine().__dict__, "provider_hash": ""}
+    )
+
+    with pytest.raises(RepairPersistenceError, match="provenance"):
+        build_repair_quarantine_batch([malformed], identity=identity)
+
+
+def test_scope_fingerprint_rejects_cross_factor_metadata_forgery() -> None:
+    audit_a = _audit(factor_id="yeslab_22")
+    audit_b = _audit(factor_id="yeslab_64").__class__(
+        **{
+            **_audit(factor_id="yeslab_64").__dict__,
+            "source_factor_name": "GP_064",
+            "source_definition_hash": "definition-hash-64",
+            "provider_hash": "provider-hash-64",
+        }
+    )
+    identity = build_repair_identity([audit_a, audit_b])
+    forged = audit_a.__class__(
+        **{
+            **audit_a.__dict__,
+            "source_definition_hash": "definition-hash-64",
+            "provider_hash": "provider-hash-64",
+        }
+    )
+
+    with pytest.raises(RepairPersistenceError, match="identity scope"):
+        build_repair_audit_batch([forged], identity=identity)
+
+
+def test_tampered_identity_hashes_are_rejected() -> None:
+    audit = _audit()
+    identity = build_repair_identity([audit])
+    tampered = replace(identity, data_version="bogus-data-version")
+
+    with pytest.raises(RepairPersistenceError, match="integrity"):
+        build_repair_audit_batch([audit], identity=tampered)
 
 
 def test_month_partition_provides_shared_date_range_when_metadata_is_omitted() -> None:
