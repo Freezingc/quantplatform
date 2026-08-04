@@ -104,3 +104,10 @@ P1 smoke 的审计统计为 `136,942` 个 exact duplicate group/row、`94,894` �
 
 - [`P1 yeslab_395`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_dec2020_p1_yeslab395_v2_manifest.json)
 - [`P3 yeslab_163`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_dec2020_p3_yeslab163_v2_manifest.json)
+
+另外重跑了此前受 V2 行情起始日影响的 `2020-01 / yeslab_391 (GP_022)`：切换到
+YesLab 精确 `stock_factor_daily` 后，结果仍为 `clean=56,920`、
+`quarantine=38,344`、`NO_FINITE_CANDIDATE`，且 mismatch 为 0。这说明这 38,344
+行不是简单的 V2 行情表缺失，而是对应证券在原始滚动窗口内确实没有足够的有限候选；
+不能为了提高覆盖率而用常数或横截面填充。详见
+[`2020-01 GP_022 exact-input smoke`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_jan2020_source_factor_market_v1_manifest.json)。
