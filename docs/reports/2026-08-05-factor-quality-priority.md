@@ -111,3 +111,20 @@ YesLab 精确 `stock_factor_daily` 后，结果仍为 `clean=56,920`、
 行不是简单的 V2 行情表缺失，而是对应证券在原始滚动窗口内确实没有足够的有限候选；
 不能为了提高覆盖率而用常数或横截面填充。详见
 [`2020-01 GP_022 exact-input smoke`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_jan2020_source_factor_market_v1_manifest.json)。
+
+### P1/P3 全部 27 个因子的 compact-universe 复核
+
+对 P1/P3 全部 27 个因子执行了 2020-12 的只读审计，分母为
+`cn_liquid_a/v1` 与 `forward_open_5d/v1` 的有效交集，共 64,306 个成熟观测。
+27 个因子全部达到当前 compact coverage 门槛：
+
+| 指标 | 27 个因子最小值 |
+| --- | ---: |
+| 整体 finite coverage | 0.976892 |
+| 最低日覆盖 | 0.974212 |
+| 日覆盖 P05 | 0.974498 |
+| 月覆盖 | 0.976887 |
+
+因此，P1/P3 的全市场低 finite ratio 不能直接作为模型输入拒绝理由；它们需要继续通过全 TRAIN 月度稳定性、PIT 版本、相似度和 FDR 门禁。该结论也不能外推到 P2 或 P0，后两类仍需单独审计。
+
+完整只读结果见 [`P1/P3 compact coverage JSON`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_dec2020_p1_p3_all27_v1.json)。

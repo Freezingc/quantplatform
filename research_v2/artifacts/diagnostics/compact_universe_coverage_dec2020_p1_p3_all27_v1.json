@@ -1,0 +1,525 @@
+{
+  "database_writes": false,
+  "end": "2020-12-31",
+  "label_id": "forward_open_5d",
+  "label_version": 1,
+  "rows": [
+    {
+      "compact_finite_ratio": 0.992768948465151,
+      "compact_finite_rows": 63841,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_114",
+      "factor_name": "惊恐波动",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9907374421090132,
+      "minimum_monthly_finite_ratio": 0.9927708169927161,
+      "p05_daily_finite_ratio": 0.9914447643859409,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136505,
+      "source_rows": 273010,
+      "source_unique_rows": 136505
+    },
+    {
+      "compact_finite_ratio": 0.992768948465151,
+      "compact_finite_rows": 63841,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_115",
+      "factor_name": "原始惊恐",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9907374421090132,
+      "minimum_monthly_finite_ratio": 0.9927708169927161,
+      "p05_daily_finite_ratio": 0.9914447643859409,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136505,
+      "source_rows": 273010,
+      "source_unique_rows": 136505
+    },
+    {
+      "compact_finite_ratio": 0.9923179796597518,
+      "compact_finite_rows": 63812,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_117",
+      "factor_name": "注意力衰减-惊恐波动",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9907308377896613,
+      "minimum_monthly_finite_ratio": 0.9923198088945655,
+      "p05_daily_finite_ratio": 0.9907377719721859,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136505,
+      "source_rows": 273010,
+      "source_unique_rows": 136505
+    },
+    {
+      "compact_finite_ratio": 0.9923179796597518,
+      "compact_finite_rows": 63812,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_118",
+      "factor_name": "注意力衰减-惊恐",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9907308377896613,
+      "minimum_monthly_finite_ratio": 0.9923198088945655,
+      "p05_daily_finite_ratio": 0.9907377719721859,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136505,
+      "source_rows": 273010,
+      "source_unique_rows": 136505
+    },
+    {
+      "compact_finite_ratio": 1.0,
+      "compact_finite_rows": 64306,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_163",
+      "factor_name": "Alpha95",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 1.0,
+      "minimum_monthly_finite_ratio": 1.0,
+      "p05_daily_finite_ratio": 1.0,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136505,
+      "source_rows": 273010,
+      "source_unique_rows": 136505
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_357",
+      "factor_name": "行业内收益标准化绝对值",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 128800,
+      "source_rows": 257600,
+      "source_unique_rows": 128800
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_359",
+      "factor_name": "行业标准化绝对值乘行业波动率",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 128800,
+      "source_rows": 257600,
+      "source_unique_rows": 128800
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_362",
+      "factor_name": "行业标准化绝对值除行业偏度5日均",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 128846,
+      "source_rows": 257692,
+      "source_unique_rows": 128846
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_363",
+      "factor_name": "行业标准化绝对值除行业偏度绝对值",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 128846,
+      "source_rows": 257692,
+      "source_unique_rows": 128846
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_365",
+      "factor_name": "行业标准化绝对值按正偏度过滤",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 128846,
+      "source_rows": 257692,
+      "source_unique_rows": 128846
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_366",
+      "factor_name": "行业标准化绝对值正偏度加权",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 128846,
+      "source_rows": 257692,
+      "source_unique_rows": 128846
+    },
+    {
+      "compact_finite_ratio": 0.9955836158367803,
+      "compact_finite_rows": 64022,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_376",
+      "factor_name": "GP_007",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9946562166013537,
+      "minimum_monthly_finite_ratio": 0.9955842259425066,
+      "p05_daily_finite_ratio": 0.994984773764435,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 1.0,
+      "compact_finite_rows": 64306,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_377",
+      "factor_name": "GP_008",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 1.0,
+      "minimum_monthly_finite_ratio": 1.0,
+      "p05_daily_finite_ratio": 1.0,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 1.0,
+      "compact_finite_rows": 64306,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_380",
+      "factor_name": "GP_011",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 1.0,
+      "minimum_monthly_finite_ratio": 1.0,
+      "p05_daily_finite_ratio": 1.0,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.9972164339252947,
+      "compact_finite_rows": 64127,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9964170548190613,
+      "minimum_monthly_finite_ratio": 0.9972167804635311,
+      "p05_daily_finite_ratio": 0.996435191623691,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_382",
+      "factor_name": "GP_013",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.9972164339252947,
+      "compact_finite_rows": 64127,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_383",
+      "factor_name": "GP_014",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9964170548190613,
+      "minimum_monthly_finite_ratio": 0.9972167804635311,
+      "p05_daily_finite_ratio": 0.996435191623691,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.9972164339252947,
+      "compact_finite_rows": 64127,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_385",
+      "factor_name": "GP_016",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9964170548190613,
+      "minimum_monthly_finite_ratio": 0.9972167804635311,
+      "p05_daily_finite_ratio": 0.996435191623691,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.9996578857338351,
+      "compact_finite_rows": 64284,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_387",
+      "factor_name": "GP_018",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9982187388671179,
+      "minimum_monthly_finite_ratio": 0.999657971974795,
+      "p05_daily_finite_ratio": 0.9989608945107199,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.9970142754952882,
+      "compact_finite_rows": 64114,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_388",
+      "factor_name": "GP_019",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9960812255076594,
+      "minimum_monthly_finite_ratio": 0.9970148947820425,
+      "p05_daily_finite_ratio": 0.996417695546025,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.9768917363854073,
+      "compact_finite_rows": 62820,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_391",
+      "factor_name": "GP_022",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9742120343839542,
+      "minimum_monthly_finite_ratio": 0.9768873799586938,
+      "p05_daily_finite_ratio": 0.9744980421593512,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136942,
+      "source_rows": 273884,
+      "source_unique_rows": 136942
+    },
+    {
+      "compact_finite_ratio": 0.9955836158367803,
+      "compact_finite_rows": 64022,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_393",
+      "factor_name": "GP_024",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9946562166013537,
+      "minimum_monthly_finite_ratio": 0.9955842259425066,
+      "p05_daily_finite_ratio": 0.994984773764435,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.978322396043915,
+      "compact_finite_rows": 62912,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_395",
+      "factor_name": "GP_026",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9756446991404012,
+      "minimum_monthly_finite_ratio": 0.9783180487982297,
+      "p05_daily_finite_ratio": 0.9759347721785427,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136942,
+      "source_rows": 273884,
+      "source_unique_rows": 136942
+    },
+    {
+      "compact_finite_ratio": 0.9972164339252947,
+      "compact_finite_rows": 64127,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_396",
+      "factor_name": "GP_027",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9964170548190613,
+      "minimum_monthly_finite_ratio": 0.9972167804635311,
+      "p05_daily_finite_ratio": 0.996435191623691,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136896,
+      "source_rows": 273792,
+      "source_unique_rows": 136896
+    },
+    {
+      "compact_finite_ratio": 0.992768948465151,
+      "compact_finite_rows": 63841,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_95",
+      "factor_name": "日间反转-换手翻转",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9907374421090132,
+      "minimum_monthly_finite_ratio": 0.9927708169927161,
+      "p05_daily_finite_ratio": 0.9914447643859409,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136505,
+      "source_rows": 273010,
+      "source_unique_rows": 136505
+    },
+    {
+      "compact_finite_ratio": 0.992768948465151,
+      "compact_finite_rows": 63841,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_96",
+      "factor_name": "修正日间反转",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9907374421090132,
+      "minimum_monthly_finite_ratio": 0.9927708169927161,
+      "p05_daily_finite_ratio": 0.9914447643859409,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136551,
+      "source_rows": 273102,
+      "source_unique_rows": 136551
+    },
+    {
+      "compact_finite_ratio": 0.9941996081236587,
+      "compact_finite_rows": 63933,
+      "compact_rows": 64306,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_98",
+      "factor_name": "日内反转-波动翻转",
+      "logical_partition": "2020-12-01..2020-12-31",
+      "minimum_daily_finite_ratio": 0.9921624510153189,
+      "minimum_monthly_finite_ratio": 0.9942014858322521,
+      "p05_daily_finite_ratio": 0.992870636988284,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": 136505,
+      "source_rows": 273010,
+      "source_unique_rows": 136505
+    }
+  ],
+  "scope": "COMPACT_UNIVERSE_COVERAGE_READ_ONLY_V1",
+  "start": "2020-12-01",
+  "universe_id": "cn_liquid_a",
+  "universe_version": 1
+}
