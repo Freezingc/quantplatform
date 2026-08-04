@@ -14,7 +14,7 @@ import hashlib
 import json
 import uuid
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, time
 from enum import StrEnum
 from typing import Any, cast
@@ -335,6 +335,7 @@ class RepairIdentity:
     candidate_hashes: tuple[str, ...]
     rules_versions: tuple[int, ...]
     scope_fingerprints: tuple[str, ...]
+    integrity_hash: str
     start_date: date
     end_date: date
 
@@ -487,7 +488,7 @@ def _identity(
         if value is not None
     ]
     created_at = max(explicit_created, default=datetime.combine(end, time.min))
-    return RepairIdentity(
+    identity = RepairIdentity(
         data_version=data_version,
         source_watermark_id=source_watermark_id,
         run_id=run_id,
@@ -502,9 +503,11 @@ def _identity(
         candidate_hashes=tuple(candidate_hashes),
         rules_versions=tuple(rules_versions),
         scope_fingerprints=tuple(scope_fingerprints),
+        integrity_hash="",
         start_date=start,
         end_date=end,
     )
+    return replace(identity, integrity_hash=_identity_integrity_hash(identity))
 
 
 def _audit_row(record: RepairAuditRecord, identity: RepairIdentity) -> dict[str, object]:
@@ -681,7 +684,44 @@ def _validate_identity_scope(
 def _validate_identity_integrity(identity: RepairIdentity) -> None:
     """Reject an identity whose hashes no longer match its scope metadata."""
 
-    payload = {
+    payload = _identity_scope_payload(identity)
+    canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    expected_data_version = hashlib.sha256(
+        ("repair-data:" + canonical).encode("utf-8")
+    ).hexdigest()
+    expected_watermark = hashlib.sha256(
+        ("repair-source:" + canonical).encode("utf-8")
+    ).hexdigest()
+    integrity_canonical = json.dumps(
+        _identity_integrity_payload(identity),
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    expected_integrity = hashlib.sha256(
+        ("repair-identity:" + integrity_canonical).encode("utf-8")
+    ).hexdigest()
+    if (
+        identity.data_version != expected_data_version
+        or identity.source_watermark_id != expected_watermark
+        or identity.integrity_hash != expected_integrity
+    ):
+        raise RepairPersistenceError("repair identity integrity check failed")
+
+
+def _identity_integrity_payload(identity: RepairIdentity) -> dict[str, object]:
+    payload = _identity_scope_payload(identity)
+    payload.update(
+        {
+            "run_id": identity.run_id,
+            "created_at": identity.created_at.isoformat(),
+        }
+    )
+    return payload
+
+
+def _identity_scope_payload(identity: RepairIdentity) -> dict[str, object]:
+    return {
         "factor_ids": list(identity.factor_ids),
         "factor_versions": [list(item) for item in identity.factor_versions],
         "definition_hashes": list(identity.definition_hashes),
@@ -694,18 +734,12 @@ def _validate_identity_integrity(identity: RepairIdentity) -> None:
         "rules_versions": list(identity.rules_versions),
         "scope_fingerprints": list(identity.scope_fingerprints),
     }
+
+
+def _identity_integrity_hash(identity: RepairIdentity) -> str:
+    payload = _identity_integrity_payload(identity)
     canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
-    expected_data_version = hashlib.sha256(
-        ("repair-data:" + canonical).encode("utf-8")
-    ).hexdigest()
-    expected_watermark = hashlib.sha256(
-        ("repair-source:" + canonical).encode("utf-8")
-    ).hexdigest()
-    if (
-        identity.data_version != expected_data_version
-        or identity.source_watermark_id != expected_watermark
-    ):
-        raise RepairPersistenceError("repair identity integrity check failed")
+    return hashlib.sha256(("repair-identity:" + canonical).encode("utf-8")).hexdigest()
 
 
 def _validate_scope_values(

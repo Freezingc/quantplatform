@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from datetime import date
+from datetime import date, datetime
 
 import pandas as pd
 import pytest
@@ -243,6 +243,18 @@ def test_tampered_identity_hashes_are_rejected() -> None:
 
     with pytest.raises(RepairPersistenceError, match="integrity"):
         build_repair_audit_batch([audit], identity=tampered)
+
+
+def test_tampered_identity_run_id_and_created_at_are_rejected() -> None:
+    audit = _audit()
+    identity = build_repair_identity([audit])
+
+    for tampered in (
+        replace(identity, run_id="tampered-run-id"),
+        replace(identity, created_at=datetime(2030, 1, 1)),
+    ):
+        with pytest.raises(RepairPersistenceError, match="integrity"):
+            build_repair_audit_batch([audit], identity=tampered)
 
 
 def test_month_partition_provides_shared_date_range_when_metadata_is_omitted() -> None:
