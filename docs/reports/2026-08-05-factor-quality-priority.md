@@ -3,7 +3,9 @@
 日期：2026-08-05  
 数据范围：`SCREEN_TRAIN2020_2024_SOURCE_DQ_COMBINED_V1`（2020-01-02–2024-12-31）  
 锁定测试：未读取  
-数据库写入：仅向新建的 `factor_repair_candidate` 表追加候选隔离批次；未修改任何已有业务表、`factor_observation_clean` 或原始 YesLab 因子表
+数据库写入：仅向新建的 `factor_repair_candidate` 表追加候选隔离批次，并向既有
+`factor_quality_snapshot` 追加独立的 `FULL_DAY26_V3` 审计快照；未修改任何业务数据表、
+`factor_observation_clean` 或原始 YesLab 因子表
 
 ## 结论
 
