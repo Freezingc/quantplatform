@@ -260,10 +260,35 @@ def test_overlay_quarantines_candidate_outside_factor_month() -> None:
         definition=_definition(),
         logical_partition="2025-01",
     )
-    assert result.status is RepairStatus.PENDING_RECHECK
+    assert result.status is RepairStatus.PASS_WITH_QUARANTINE
     assert "WARMUP_OUT_OF_SCOPE" in set(result.quarantine["reason"])
     assert "000003.SZ" not in set(result.clean["ts_code"])
     assert "000001.SZ" in set(result.clean["ts_code"])
+
+
+def test_warmup_only_scope_quarantine_promotes_pass_with_quarantine_status() -> None:
+    class WarmupOnlyProvider:
+        method = "WARMUP_ONLY"
+
+        def provide(self, source: pd.DataFrame, **_: object) -> pd.DataFrame:
+            del source
+            return pd.DataFrame(
+                {
+                    "trade_date": [date(2024, 12, 31)],
+                    "ts_code": ["000003.SZ"],
+                    "candidate_value": [9.0],
+                }
+            )
+
+    source = _source().assign(value=[1.0, 4.0])
+    result = build_repair_overlay(
+        source,
+        WarmupOnlyProvider(),
+        definition=_definition(),
+        logical_partition="2025-01",
+    )
+    assert result.status is RepairStatus.PASS_WITH_QUARANTINE
+    assert result.quarantine["reason"].tolist() == ["WARMUP_OUT_OF_SCOPE"]
 
 
 def test_source_backfill_allows_pre_month_formula_warmup_and_materializes_in_month_fill() -> None:

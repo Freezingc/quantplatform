@@ -408,7 +408,11 @@ def build_repair_overlay(
         )
         decision = replace(
             decision,
-            status=RepairStatus.BLOCKED if scope_blocking else decision.status,
+            status=(
+                RepairStatus.BLOCKED
+                if scope_blocking
+                else RepairStatus.PASS_WITH_QUARANTINE
+            ),
             quarantine=combined_quarantine,
         )
     method = str(getattr(active_provider, "method", active_provider.__class__.__name__))
