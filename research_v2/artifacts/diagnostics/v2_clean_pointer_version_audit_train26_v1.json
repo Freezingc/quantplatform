@@ -1,0 +1,577 @@
+{
+  "all_latest_duplicate_groups": 0,
+  "end": "2024-12-31",
+  "factor_ids": [
+    "yeslab_114",
+    "yeslab_115",
+    "yeslab_117",
+    "yeslab_118",
+    "yeslab_163",
+    "yeslab_357",
+    "yeslab_359",
+    "yeslab_362",
+    "yeslab_363",
+    "yeslab_365",
+    "yeslab_366",
+    "yeslab_376",
+    "yeslab_377",
+    "yeslab_380",
+    "yeslab_381",
+    "yeslab_382",
+    "yeslab_383",
+    "yeslab_385",
+    "yeslab_387",
+    "yeslab_388",
+    "yeslab_391",
+    "yeslab_393",
+    "yeslab_396",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "locked_test_read": false,
+  "months": [
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "1545d08110d1b6ec6b7e70c38dcb07332597749233f322bd7b29cae4df8f2120",
+      "latest_rows": 476344,
+      "latest_unique_keys": 476344,
+      "logical_partition": "2020-01",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:05:37.912000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "ac3f4f81a90f9df40ac7d514afe65e9138c03907e215494ea6134fdf43ab20af",
+      "latest_rows": 600815,
+      "latest_unique_keys": 600815,
+      "logical_partition": "2020-02",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:08:41.860000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "9c3be9c58ad73d4648d9cee8cddb96d612b55c5a6a5037894ef74f4277e58fff",
+      "latest_rows": 663562,
+      "latest_unique_keys": 663562,
+      "logical_partition": "2020-03",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:12:08.090000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "c6c87b1cf124c66897fb100d469d34a62fca7f4ff67be138db61236cf2163a24",
+      "latest_rows": 635219,
+      "latest_unique_keys": 635219,
+      "logical_partition": "2020-04",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:15:21.794000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "34a6f965c55b44fb9f9bda6267e4d01a9b254b6a574812b53f68b63e2a2684c7",
+      "latest_rows": 543526,
+      "latest_unique_keys": 543526,
+      "logical_partition": "2020-05",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:18:07.806000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "1d9d89a1d5aa9f6eea7a6e05497d1c6407756e017337acf97c3715d16880eef4",
+      "latest_rows": 606637,
+      "latest_unique_keys": 606637,
+      "logical_partition": "2020-06",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:21:12.458000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "fcb92ff594c438e1c1b89c23113aae24cfb091d385e2c691d9d2ec45e215719c",
+      "latest_rows": 704414,
+      "latest_unique_keys": 704414,
+      "logical_partition": "2020-07",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:24:46.145000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "b4615d0e0429533da5f873d0a6d969c9e0e5b718c66529f321a32bc0cb20b5fb",
+      "latest_rows": 653749,
+      "latest_unique_keys": 653749,
+      "logical_partition": "2020-08",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:27:58.257000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "1f40f6b974fe06178a5100256b2705ae2c93c112447d4c036261be4de4d4e892",
+      "latest_rows": 672982,
+      "latest_unique_keys": 672982,
+      "logical_partition": "2020-09",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:31:19.649000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "4f3813b4fec7e7bf32ac29be43f4bd28be6e1e45946d969fbc5349ce16ace2f5",
+      "latest_rows": 510172,
+      "latest_unique_keys": 510172,
+      "logical_partition": "2020-10",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:33:40.490000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "c43939bd58651a9fd7388103e275aeeb7945d40472dc1af56a2bf4a9bc61c6e8",
+      "latest_rows": 678636,
+      "latest_unique_keys": 678636,
+      "logical_partition": "2020-11",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:36:45.409000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "554e6936b2bfdda1e31d7554ee72d18f2ccd8ae5844ca22642f18f590da706ff",
+      "latest_rows": 750290,
+      "latest_unique_keys": 750290,
+      "logical_partition": "2020-12",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:40:06.651000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "0f0b339fd2203fa60f385a04c349335b2b8a65e5e55c66adaba34609b229d580",
+      "latest_rows": 659639,
+      "latest_unique_keys": 659639,
+      "logical_partition": "2021-01",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:42:57.865000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "8fe7549d9aaa3df9904ba399b5e0327e9877f7dc6b1f56b9d81cd6657627ff5a",
+      "latest_rows": 498738,
+      "latest_unique_keys": 498738,
+      "logical_partition": "2021-02",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:45:03.931000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "36bb8478d7f5bdecabce393bd973129635a46458cf22656a071b4bcb67562ab3",
+      "latest_rows": 770339,
+      "latest_unique_keys": 770339,
+      "logical_partition": "2021-03",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:48:20.209000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "09c21546b0416745bedd7dafa555e01a46583a1980f865d4a634865ce60261bf",
+      "latest_rows": 709633,
+      "latest_unique_keys": 709633,
+      "logical_partition": "2021-04",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:51:17.146000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "5d1364e39adc9a5991d32d8ddcb099092323e357e63d239fa50a50076a87aa7f",
+      "latest_rows": 610983,
+      "latest_unique_keys": 610983,
+      "logical_partition": "2021-05",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:53:48.142000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "d27b1436deca3781413cc743a5d88d17b4c5d95faf53ae80fe5404fc5474cfd6",
+      "latest_rows": 722460,
+      "latest_unique_keys": 722460,
+      "logical_partition": "2021-06",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:56:40.834000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "b37e6f3028142803675c65d39a6a1f6cbb823683891cc40bdd13c73ba60fb292",
+      "latest_rows": 767104,
+      "latest_unique_keys": 767104,
+      "logical_partition": "2021-07",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 14:59:36.166000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "0bfee95bce0d72ac2c556d820656856935674823691fbde3c845ff22ccf279ae",
+      "latest_rows": 779017,
+      "latest_unique_keys": 779017,
+      "logical_partition": "2021-08",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:02:29.889000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "8e847f2b84c30c8c0ec3ffd2a696aa7b0db85deed0b4affc2e11b804af706ce8",
+      "latest_rows": 715899,
+      "latest_unique_keys": 715899,
+      "logical_partition": "2021-09",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:05:02.482000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "6cbc9a16bfaaeb95fd2957a7ce10c360a5e4147c9fc4fa500de093e7801d7fb3",
+      "latest_rows": 577081,
+      "latest_unique_keys": 577081,
+      "logical_partition": "2021-10",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:07:04.877000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "3df2ca20b035246121334b510d5a068726c4d0f6d92953c0dbe33e0dd8832bed",
+      "latest_rows": 803657,
+      "latest_unique_keys": 803657,
+      "logical_partition": "2021-11",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:09:49.803000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "56343748ddc309bf911ebc86fe4e53325601ddfd7cce52e4b54df3ff282f6436",
+      "latest_rows": 851899,
+      "latest_unique_keys": 851899,
+      "logical_partition": "2021-12",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:12:42.901000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "0c7811911836e60d1645a5338f5deed3eb754484234ae18bfe3c430b457524c4",
+      "latest_rows": 709175,
+      "latest_unique_keys": 709175,
+      "logical_partition": "2022-01",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:15:02.964000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "c7d90336f25ccde0b344bbee8c63c028caa1f4523fadeb2cb3dba9885d979751",
+      "latest_rows": 601338,
+      "latest_unique_keys": 601338,
+      "logical_partition": "2022-02",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:16:58.131000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "36851b44080df2877f9fb8030a4305f94150e7a0dddeb9e38a0cd9dc7fd42b18",
+      "latest_rows": 869143,
+      "latest_unique_keys": 869143,
+      "logical_partition": "2022-03",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:19:47.048000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "2e16d592fdbeec71be99accc0306aa1b1304114afd383cf348b79aa71fd437fd",
+      "latest_rows": 721021,
+      "latest_unique_keys": 721021,
+      "logical_partition": "2022-04",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:22:04.063000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "f4332134b49b515cbeb39d04b26a624f78c21d0d5a690288e2af1ce4e2253dce",
+      "latest_rows": 716267,
+      "latest_unique_keys": 716267,
+      "logical_partition": "2022-05",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:24:22.786000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "5a191fc4f2590783756459d892524e868d01287b83c7f324f15db07f1d1bce6f",
+      "latest_rows": 799771,
+      "latest_unique_keys": 799771,
+      "logical_partition": "2022-06",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:27:01.689000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "9d318d6147d45709cc26cc2995d898db7bed5e6ae0ba714ef2e48833ece95a1e",
+      "latest_rows": 803074,
+      "latest_unique_keys": 803074,
+      "logical_partition": "2022-07",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:29:30.239000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "48b2b8e75e797533bfc615ca034b77ec5442a1bf97ce475533c0f3bf8084892c",
+      "latest_rows": 889128,
+      "latest_unique_keys": 889128,
+      "logical_partition": "2022-08",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:32:13.730000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "62082558acf1078ff5fc5e6f25bfcc760573d91d12a13f8b8364a3c35a359cd6",
+      "latest_rows": 820140,
+      "latest_unique_keys": 820140,
+      "logical_partition": "2022-09",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:34:45.044000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "8cd985f2ede76d08f73319f0678da4920e360ad1c1a664c9a170a25fd894ab0e",
+      "latest_rows": 629121,
+      "latest_unique_keys": 629121,
+      "logical_partition": "2022-10",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:36:32.913000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "ab53d99bbaaec3b95a5074df0be4106cf27eea40e87c99f849443d51837f1fd9",
+      "latest_rows": 869988,
+      "latest_unique_keys": 869988,
+      "logical_partition": "2022-11",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:39:04.312000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "9128908a8ee502339cfe0f8a27124f463ccf4242667c89578998f92377fd646e",
+      "latest_rows": 878508,
+      "latest_unique_keys": 878508,
+      "logical_partition": "2022-12",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:41:32.087000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "91869d847f2105e74588a6f00cfe2685ecf3b1a8d262080739650513b0381895",
+      "latest_rows": 643776,
+      "latest_unique_keys": 643776,
+      "logical_partition": "2023-01",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:43:12.711000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "b34cbb11df46ebbd5ddeb4f76425328fa1bda88a16be0b91978ddcd4ddfffbb6",
+      "latest_rows": 807854,
+      "latest_unique_keys": 807854,
+      "logical_partition": "2023-02",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:45:20.688000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "10db43543ce29496d1deed93339d6873bf2d006da1ffa7b6b1a1358de21af346",
+      "latest_rows": 935471,
+      "latest_unique_keys": 935471,
+      "logical_partition": "2023-03",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:47:45.994000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "bd980eaf1b5be9c31b96e4d5c3aa8629d04a5857a374b0abbde1695ea1cda7ce",
+      "latest_rows": 777307,
+      "latest_unique_keys": 777307,
+      "logical_partition": "2023-04",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:49:44.120000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "67c80441bcd9f8fead09d86212545b7df6c3b071153d17dbd0596dcefee14cd1",
+      "latest_rows": 815624,
+      "latest_unique_keys": 815624,
+      "logical_partition": "2023-05",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:51:50.624000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "a8c1bc50d3efea7c5a5a2e34267a9f13612e4ddd581f73b159bfe7c8b5283972",
+      "latest_rows": 821811,
+      "latest_unique_keys": 821811,
+      "logical_partition": "2023-06",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:53:56.899000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "2d59e3ec29a6c7532f97820359b4a9f78076a141df0fccd16de436a36cc92e5f",
+      "latest_rows": 869500,
+      "latest_unique_keys": 869500,
+      "logical_partition": "2023-07",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:56:08.923000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "fcecee113902cea88e6560b87d2492e5b5dfdae27cca700cda186f09b0e4070a",
+      "latest_rows": 960733,
+      "latest_unique_keys": 960733,
+      "logical_partition": "2023-08",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 15:58:29.727000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "03531cfe6134c5ab9e2c5515ef01b782fd0bbeac8e60b71f3aa83d46973fad89",
+      "latest_rows": 840126,
+      "latest_unique_keys": 840126,
+      "logical_partition": "2023-09",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:00:28.650000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "8cbeb433f9dcc143e145941439f2ec01b920b31a9a77898412ab1933838b8ee5",
+      "latest_rows": 716574,
+      "latest_unique_keys": 716574,
+      "logical_partition": "2023-10",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:02:07.250000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "5535d4bd5dbbba7b87a1904b230ab8923996d772a4199ca4ee9f8f8011ae706c",
+      "latest_rows": 930109,
+      "latest_unique_keys": 930109,
+      "logical_partition": "2023-11",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:04:19.085000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "b5f430582b230004bf311768b47be7042bd0c091fd53ed0b8249ec97f13628d5",
+      "latest_rows": 890347,
+      "latest_unique_keys": 890347,
+      "logical_partition": "2023-12",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:06:23.648000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "5be1fbcec3a5b800b35e00a04c08977513f613256e6036493cf0014e67982441",
+      "latest_rows": 935559,
+      "latest_unique_keys": 935559,
+      "logical_partition": "2024-01",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:08:34.427000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "d294e11cbb5acb772d3aed3c0359fc3b304292b593bae26e5015afc5d6e57337",
+      "latest_rows": 639575,
+      "latest_unique_keys": 639575,
+      "logical_partition": "2024-02",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:10:01.186000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "0227163c8817c5d60c7c1f76e13aeb5ec6f1c72bb0f500b1dd131d334534e36b",
+      "latest_rows": 896307,
+      "latest_unique_keys": 896307,
+      "logical_partition": "2024-03",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:12:03.307000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "169a8acbf318add10584ea20bd35d2b588999e6f4bcc469088433497438b6673",
+      "latest_rows": 854539,
+      "latest_unique_keys": 854539,
+      "logical_partition": "2024-04",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:13:59.962000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "9e071c81877e03035a51bce248a84b3f530164f9933e199699b68b2237ab06fe",
+      "latest_rows": 849258,
+      "latest_unique_keys": 849258,
+      "logical_partition": "2024-05",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:15:59.604000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "36b07c366356d6879e262de35c8b2fa121d423fd1f7bd462c5e7b32161172e2a",
+      "latest_rows": 808195,
+      "latest_unique_keys": 808195,
+      "logical_partition": "2024-06",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:17:49.076000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "15a6697d606fe868721bce4f9093f371a17f04b3d6c844b0da6517879af9e11c",
+      "latest_rows": 977878,
+      "latest_unique_keys": 977878,
+      "logical_partition": "2024-07",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:20:04.653000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "8f27b32a5953fb36c254f4eb36625e8ddb4fa20097d4877c59d1ec5505c7da49",
+      "latest_rows": 936990,
+      "latest_unique_keys": 936990,
+      "logical_partition": "2024-08",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:22:11.945000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "e2b8b8de53102ea1c3e9144adff37207be7919c1942858c4fe844992b435c9b9",
+      "latest_rows": 809546,
+      "latest_unique_keys": 809546,
+      "logical_partition": "2024-09",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:24:03.409000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "caaf6bb85664d5b6d7bd3b533fcd237f4b6acc0b6b3f6e4ab48617ecc5e76928",
+      "latest_rows": 767669,
+      "latest_unique_keys": 767669,
+      "logical_partition": "2024-10",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:25:48.205000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "a4be2ff559992d967224541b4eac6d28be4f72981d93dd6c7156eaf5b31ad2f0",
+      "latest_rows": 895989,
+      "latest_unique_keys": 895989,
+      "logical_partition": "2024-11",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:27:50.364000"
+    },
+    {
+      "duplicate_groups_after_pointer": 0,
+      "latest_data_version": "0dbb0b22970b37330d43d78e1c4dd30645613b5021b5469873dd8b6e34271c64",
+      "latest_rows": 940922,
+      "latest_unique_keys": 940922,
+      "logical_partition": "2024-12",
+      "pointer_rows": 2,
+      "published_at": "2026-08-03 16:29:59.134000"
+    }
+  ],
+  "scope": "V2_CLEAN_POINTER_VERSION_AUDIT_TRAIN26_V1",
+  "start": "2020-01-01"
+}

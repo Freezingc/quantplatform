@@ -254,6 +254,42 @@ compact-universe 复核（成熟分母为 `cn_liquid_a/v1 ∩ forward_open_5d/v1
 六因子独立复核见
 [`six-factor focus JSON`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_train2020_2024_turnover_repaired6_focus_v3.json)。
 
-当前状态仍是“结构质量通过、相似度/FDR/年度稳定性待审”，不是最终准入。下一步只对这
-26 个候选通过因子继续做 train-only 相似度与年度稳定性检查，GP_026 保持隔离；在这些
-门禁完成并获得单独批准前，不启动任何模型训练。
+在全日相似度和年度稳定性复核完成前，状态仍是“结构质量通过、相似度/FDR/年度稳定性
+待审”，不是最终准入；GP_026 保持隔离，期间不启动任何模型训练。复核结果见下一节。
+
+### 26 因子 TRAIN 全日相似度与年度稳定性结果
+
+已完成 26 个结构通过因子的 2020–2024 全日横截面相似度计算。相似度计算使用每月
+`published_version` 指向的最新 `factor_observation_clean` 版本；clean 表缺少的因子从
+YesLab 原始表按月读取并做确定性有限值去重；6 个换手率候选继续按“只填充源值缺失键”
+叠加。每个因子对均有 `1,212` 个有效交易日，未读取 2026 locked-test。
+
+结果为 19 个冗余、7 个唯一：
+
+- 冗余簇代表候选包括 `yeslab_114/115`（0.9474）、`yeslab_117/118`（0.9448）、
+  `yeslab_357/359`（0.9675）、`yeslab_365/366`（0.9793）、
+  `yeslab_377/382`（0.9823）、`yeslab_387/388`（0.9824）等；
+- 唯一候选为 `yeslab_163, yeslab_363, yeslab_385, yeslab_396, yeslab_95,
+  yeslab_96, yeslab_98`，它们与最近邻的绝对 Spearman 均低于 0.90。
+
+现有五年年度预筛要求每个年度 ICIR 也达到 0.50，因此只有
+`yeslab_357, yeslab_359, yeslab_376, yeslab_393, yeslab_98` 通过该保守门槛；与全日
+唯一集合交集后，当前最保守的全门禁交集只有 `yeslab_98`。另一方面，主计划规定的
+“五年中至少三年同向、年度均值/正向日占比达标”稳定性规则下，26 个因子均未在年度
+均值或方向占比上失败；这 7 个唯一因子可作为下一轮候选，但不应在未确认年度 ICIR
+规则前直接发布为 frozen factor set。
+
+当前结论：
+
+1. `GP_026 / yeslab_395` 仍因公式 overlap mismatch 阻断；
+2. 其余 26 个通过结构覆盖、日级 HAC/FDR 和全日相似度证据；
+3. 经过严格“年度 ICIR + 全日唯一”双门槛后暂只保留 `yeslab_98`；
+4. 尚未训练任何模型，也未推进 frozen factor set。下一步应先审阅年度 ICIR 的规则
+   是否作为每年硬门槛，再决定对 7 个唯一候选做第二类补救或保守发布。
+
+完整门禁汇总见
+[`TRAIN26 gate report`](../../research_v2/artifacts/diagnostics/factor_quality_train26_gate_report_v4.json)，
+全日原始结果见
+[`TRAIN26 full-day similarity`](../../research_v2/artifacts/diagnostics/train_similarity_full_day_2020_2024_repaired26_v3.csv)，
+clean 版本指针审计见
+[`V2 clean pointer audit`](../../research_v2/artifacts/diagnostics/v2_clean_pointer_version_audit_train26_v1.json)。
