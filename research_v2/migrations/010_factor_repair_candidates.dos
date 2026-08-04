@@ -1,0 +1,10 @@
+// targetDatabase is injected by the V2 migration runner.
+db = database(targetDatabase)
+
+if (!existsTable(targetDatabase, `factor_repair_candidate)) {
+    factorRepairCandidate = table(1:0,
+        `observation_date`ts_code`factor_id`factor_version`factor_name`candidate_value`source_value`repair_method`reason`candidate_hash`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, SYMBOL, SYMBOL, INT, STRING, DOUBLE, DOUBLE, SYMBOL, SYMBOL, STRING, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=factorRepairCandidate, tableName=`factor_repair_candidate,
+        partitionColumns=`observation_date, sortColumns=`factor_id`ts_code`observation_date)
+}

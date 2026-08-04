@@ -235,3 +235,24 @@ def test_repository_repair_migration_declares_repair_tables() -> None:
         assert declaration.group(1).count("`") == len(
             [item for item in declaration.group(2).split(",") if item.strip()]
         )
+
+
+def test_repository_repair_candidate_migration_declares_candidate_table() -> None:
+    migration_directory = Path(__file__).resolve().parents[3] / "migrations"
+    migrations = discover_migrations(migration_directory)
+
+    candidate_migration = next(migration for migration in migrations if migration.version == 10)
+
+    assert "`factor_repair_candidate" in candidate_migration.script
+    for column_name in (
+        "observation_date",
+        "factor_id",
+        "candidate_value",
+        "source_value",
+        "candidate_hash",
+        "run_id",
+        "data_version",
+        "source_watermark_id",
+        "record_hash",
+    ):
+        assert f"`{column_name}" in candidate_migration.script

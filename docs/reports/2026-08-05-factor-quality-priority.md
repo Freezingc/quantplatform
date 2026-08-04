@@ -193,9 +193,21 @@ Tushare `daily_basic(20200918)` 返回 4,070 条有限 `turnover_rate`，对成�
 - [`turnover gap audit JSON`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_audit_2020-09-18_v1.json)
 - [`six-factor candidate batch manifest`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_candidates_2020-09-18_v1.json)
 
-候选批次目前是本地、可复核的 pickle 文件，包含 6 个因子的有限候选补行（分别为
+候选批次目前是本地、可复核的 CSV 文件，包含 6 个因子的有限候选补行（分别为
 1,386、1,386、1,385、6,853、1,385、8,204 行），不包含 `GP_026`，也没有写入
-DolphinDB。每个批次都有 SHA-256；后续写入新 V2 隔离表时必须用该哈希和同一来源水印做幂等校验。
+DolphinDB。每个批次都有 SHA-256；写入新 V2 隔离表时必须用该哈希和同一来源水印做幂等校验。
+
+随后已将 migration 009/010 应用到 `dfs://QuantResearchV2Test`，并把通过 preflight 的
+20,599 行写入新表 `factor_repair_candidate`：
+
+- `data_version=2e74fb7328665c5ef3344f43ce13a22d891b1b890458cd88310d754f395bc731`；
+- 6 个因子均有有限候选值，`source_value` 有限值为 0，业务键无重复；
+- 日期范围为 2020-09-18–2020-09-25，`GP_026` 未写入；
+- `factor_observation_clean` 行数保持 `170,333,348`，没有推进 clean 对象指针；
+- `published_version` 只新增了 `factor_repair_candidate/2020-09` 的隔离指针。
+
+发布前检查报告和发布结果分别见 [`candidate preflight`](../../research_v2/artifacts/diagnostics/turnover_gap_candidate_preflight_2020-09-18_v1.json)
+和 [`candidate publish report`](../../research_v2/artifacts/diagnostics/turnover_gap_candidate_publish_2020-09-18_v1.json)。
 
 下一步是仅针对这 6 个候选物化到新的 V2 隔离对象，重新跑 compact coverage 和预测稳定性
 门禁；`GP_026` 留在阻断清单，暂不进入候选表。任何正式发布仍需单独批准。
