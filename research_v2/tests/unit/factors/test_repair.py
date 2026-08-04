@@ -297,3 +297,37 @@ def test_apply_repair_overlay_quarantines_unresolved_source_and_adds_candidate_o
         {"ts_code": "000003.SZ", "value": 3.0},
     ]
     assert decision.quarantine["reason"].tolist() == ["NO_FINITE_CANDIDATE"]
+
+
+def test_apply_repair_overlay_quarantines_candidates_on_source_conflicts() -> None:
+    source = pd.DataFrame(
+        {
+            "trade_date": [date(2026, 5, 8), date(2026, 5, 8)],
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "factor_name": ["GP_022", "GP_022"],
+            "value": [1.0, 2.0],
+        }
+    )
+    candidate = pd.DataFrame(
+        {
+            "trade_date": [date(2026, 5, 8)],
+            "ts_code": ["000001.SZ"],
+            "candidate_value": [3.0],
+        }
+    )
+
+    decision = apply_repair_overlay(source, candidate, factor_name="GP_022")
+
+    assert decision.status is RepairStatus.BLOCKED
+    assert decision.clean.empty
+    assert decision.quarantine["reason"].value_counts().to_dict() == {
+        "CONFLICT_QUARANTINE": 2,
+        "CANDIDATE_ON_SOURCE_CONFLICT": 1,
+    }
+
+
+def test_audit_factor_source_rejects_malformed_source_columns() -> None:
+    malformed = pd.DataFrame({"trade_date": [date(2026, 5, 8)]})
+
+    with pytest.raises(FactorRepairError, match="factor source is missing columns"):
+        audit_factor_source(malformed)

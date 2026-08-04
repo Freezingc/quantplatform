@@ -217,6 +217,16 @@ def apply_repair_overlay(
             list(_BUSINESS_KEYS), sort=False, dropna=False
         ):
             business_key = _as_business_key(key)
+            if business_key in source_conflict_keys:
+                for _, row in group.iterrows():
+                    quarantine_rows.append(
+                        _candidate_quarantine_row(
+                            row,
+                            "CANDIDATE_ON_SOURCE_CONFLICT",
+                            factor_name=factor_name,
+                        )
+                    )
+                continue
             finite = np.isfinite(group["candidate_value"].to_numpy(dtype=float))
             finite_values = group.loc[finite, "candidate_value"].to_numpy(dtype=float)
             nonfinite_rows = group.loc[~finite]
@@ -363,6 +373,9 @@ def apply_repair_overlay(
 def _normalize_overlay_source(source: pd.DataFrame) -> pd.DataFrame:
     """Normalize a source frame for audit/overlay use."""
 
+    missing = sorted(set(_FACTOR_COLUMNS).difference(source.columns))
+    if missing:
+        raise FactorRepairError(f"factor source is missing columns: {missing}")
     required_keys = ["trade_date", "ts_code", "factor_name"]
     if source.loc[:, required_keys].isna().any().any():
         raise FactorRepairError("factor source business keys cannot be null")
@@ -405,16 +418,13 @@ def _audit_source_frame(frame: pd.DataFrame) -> SourceKeyAudit:
     for _, group in frame.loc[duplicate].groupby(
         list(_SOURCE_KEY_COLUMNS), sort=False, dropna=False
     ):
+        distinct_rows = group.drop_duplicates(list(_SOURCE_KEY_COLUMNS) + ["value"])
         finite_values = group.loc[
             np.isfinite(group["value"].to_numpy(dtype=float)), "value"
         ].to_numpy(dtype=float)
         if _has_distinct_finite_values(finite_values):
             conflict_groups += 1
-        elif len(group.drop_duplicates(list(_SOURCE_KEY_COLUMNS) + ["value"])) == len(group):
-            # This branch is only reached for groups that differ in a value
-            # which is not finite; all-finite identical rows are counted too.
-            pass
-        if len(group.drop_duplicates(list(_SOURCE_KEY_COLUMNS) + ["value"])) == 1:
+        if len(distinct_rows) == 1:
             exact_duplicate_groups += 1
             exact_duplicate_rows += len(group) - 1
     values = frame["value"].to_numpy(dtype=float)
