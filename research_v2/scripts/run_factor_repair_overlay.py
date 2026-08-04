@@ -261,6 +261,8 @@ def _run_repair_with_spool(
                         audits.append(audit)
                         quarantines.extend(quarantine_rows)
                         counts["blocked"] += 1
+                        counts["audited"] += 1
+                        counts["quarantine_rows"] += len(quarantine_rows)
                         continue
                     try:
                         overlay = build_repair_overlay(
@@ -285,6 +287,7 @@ def _run_repair_with_spool(
                         quarantines.extend(quarantine_rows)
                         counts["blocked"] += 1
                         counts["audited"] += 1
+                        counts["quarantine_rows"] += len(quarantine_rows)
                         continue
                     audit = _audit_record(definition, month, overlay, watermark)
                     audits.append(audit)
@@ -469,7 +472,9 @@ def _provider_for_definition(
     market = cache.copy(deep=True)
     if "trade_date" in market.columns:
         dates = pd.to_datetime(market["trade_date"], errors="coerce").dt.date
-        lookback_start = month.start_date - timedelta(days=90)
+        # GP_022/GP_064 use rolling windows of roughly 60/73 trading rows;
+        # 180 calendar days safely covers weekends and market holidays.
+        lookback_start = month.start_date - timedelta(days=180)
         market = market.loc[(dates >= lookback_start) & (dates <= month.end_date)].copy()
     required = {"trade_date", "ts_code", "close", "amount", "pct_chg"}
     if not required.issubset(market.columns):

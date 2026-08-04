@@ -4,6 +4,7 @@ import json
 from datetime import date
 from types import SimpleNamespace
 
+import numpy as np
 import pandas as pd
 import pytest
 import run_factor_repair_overlay as runner
@@ -61,6 +62,14 @@ class _FakeSource:
 
     def execute(self, script: str) -> None:
         raise AssertionError(f"source session write attempted: {script}")
+
+
+class _EmptySource(_FakeSource):
+    def query(self, script: str) -> pd.DataFrame:
+        self.queries.append(script)
+        if "factor_metadata" in script:
+            return super().query(script)
+        return pd.DataFrame(columns=["ts_code", "trade_date", "factor_name", "value"])
 
 
 def test_runner_resolves_only_source_qualified_scope_rows() -> None:
@@ -147,6 +156,53 @@ def test_main_dry_run_reads_bounded_source_and_never_writes_source() -> None:
     assert "2026" not in source_queries
 
 
+def test_missing_source_evidence_counts_audit_and_quarantine_rows() -> None:
+    target = _FakeTarget(
+        pd.DataFrame(
+            {
+                "factor_id": ["yeslab_1"],
+                "metrics_json": [json.dumps({"decision_status": SOURCE_STATUS})],
+            }
+        )
+    )
+
+    result = main(
+        ["--phase", "train", "--start", "2020-01-01", "--end", "2020-01-31"],
+        source_session=_EmptySource(),
+        target_session=target,
+    )
+
+    assert result.counts["audited"] == 1
+    assert result.counts["quarantine_rows"] == 1
+    assert result.counts["blocked"] == 1
+    assert not result.clean_batches
+
+
+def test_provider_failure_counts_quarantine_rows(monkeypatch) -> None:
+    target = _FakeTarget(
+        pd.DataFrame(
+            {
+                "factor_id": ["yeslab_1"],
+                "metrics_json": [json.dumps({"decision_status": SOURCE_STATUS})],
+            }
+        )
+    )
+
+    def fail_overlay(*args, **kwargs):
+        raise ValueError("synthetic provider failure")
+
+    monkeypatch.setattr(runner, "build_repair_overlay", fail_overlay)
+    result = main(
+        ["--phase", "train", "--start", "2020-01-01", "--end", "2020-01-31"],
+        source_session=_FakeSource(),
+        target_session=target,
+    )
+
+    assert result.counts["audited"] == 1
+    assert result.counts["quarantine_rows"] == 1
+    assert result.counts["blocked"] == 1
+
+
 def test_provider_evidence_watermark_changes_source_watermark() -> None:
     definition = SimpleNamespace(
         factor_id="yeslab_1",
@@ -194,12 +250,12 @@ def test_known_gp_provider_retains_lookback_market_rows() -> None:
     cache = pd.DataFrame(
         {
             "trade_date": pd.to_datetime(
-                ["2019-09-30", "2019-10-03", "2019-12-31", "2020-01-01"]
+                ["2019-07-01", "2019-07-05", "2019-10-03", "2019-12-31", "2020-01-01"]
             ),
-            "ts_code": ["000001.SZ"] * 4,
-            "close": [9.0, 9.1, 9.2, 9.3],
-            "amount": [100.0] * 4,
-            "pct_chg": [0.1] * 4,
+            "ts_code": ["000001.SZ"] * 5,
+            "close": [9.0, 9.1, 9.2, 9.3, 9.4],
+            "amount": [100.0] * 5,
+            "pct_chg": [0.1] * 5,
         }
     )
 
@@ -208,7 +264,39 @@ def test_known_gp_provider_retains_lookback_market_rows() -> None:
     assert hasattr(provider, "market")
     retained_dates = set(pd.to_datetime(provider.market["trade_date"]).dt.date)
     assert date(2019, 10, 3) in retained_dates
-    assert date(2019, 9, 30) not in retained_dates
+    assert date(2019, 7, 5) in retained_dates
+    assert date(2019, 7, 1) not in retained_dates
+
+
+@pytest.mark.parametrize(
+    ("factor_id", "factor_name"),
+    [("yeslab_391", "GP_022"), ("yeslab_433", "GP_064")],
+)
+def test_known_gp_candidate_is_finite_at_month_start(
+    factor_id: str, factor_name: str
+) -> None:
+    definition = SimpleNamespace(factor_id=factor_id)
+    month = _iter_months(date(2020, 1, 1), date(2020, 1, 31))[0]
+    dates = pd.bdate_range("2019-07-01", "2020-01-31")
+    cache = pd.DataFrame(
+        {
+            "trade_date": dates,
+            "ts_code": ["000001.SZ"] * len(dates),
+            "close": np.linspace(10.0, 20.0, len(dates)),
+            "amount": np.linspace(100.0, 200.0, len(dates)),
+            "pct_chg": [0.1] * len(dates),
+        }
+    )
+    provider = _provider_for_definition(definition, cache, month)
+    candidate = provider.provide(
+        pd.DataFrame(columns=["trade_date", "ts_code", "factor_name", "value"]),
+        factor_name=factor_name,
+    )
+
+    assert candidate is not None
+    first_day = candidate.loc[candidate["trade_date"] == date(2020, 1, 1)]
+    assert not first_day.empty
+    assert np.isfinite(first_day["candidate_value"].iloc[0])
 
 
 def test_repair_spool_is_cleaned_when_run_fails(monkeypatch) -> None:
