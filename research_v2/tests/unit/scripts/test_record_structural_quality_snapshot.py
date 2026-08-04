@@ -16,6 +16,7 @@ from record_train_similarity_full_day import (
     daily_similarity_values,
     query_clean_factor_month,
     vectorized_clean_technical_sample,
+    write_pair_artifact,
 )
 from record_train_similarity_sample import _pairwise_sample_similarity, classify_similarity_pairs
 from record_validation_quality_snapshot import compute_validation_metrics
@@ -311,6 +312,29 @@ def test_merge_daily_rankic_replaces_only_repaired_factor_dates() -> None:
     result = merge_daily_rankic(existing, repaired)
 
     assert result.sort_values("signal_date")["rank_ic"].tolist() == [0.3, 0.2]
+
+
+def test_write_pair_artifact_persists_complete_similarity_pairs(tmp_path) -> None:
+    pairs = pd.DataFrame(
+        {
+            "factor_id_left": ["yeslab_1"],
+            "factor_id_right": ["yeslab_2"],
+            "median_daily_abs_spearman": [0.91],
+            "valid_days": [1212],
+        }
+    )
+
+    path = tmp_path / "pairs.csv"
+    write_pair_artifact(pairs, path)
+
+    assert pd.read_csv(path).to_dict("records") == [
+        {
+            "factor_id_left": "yeslab_1",
+            "factor_id_right": "yeslab_2",
+            "median_daily_abs_spearman": 0.91,
+            "valid_days": 1212,
+        }
+    ]
 
 
 def test_validation_metrics_use_fixed_train_direction_and_fdr_gate() -> None:

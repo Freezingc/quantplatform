@@ -172,6 +172,28 @@ def query_clean_factor_month(
     return frame.sort_values(key_columns, kind="mergesort").reset_index(drop=True)
 
 
+def write_pair_artifact(pairs: pd.DataFrame, path: Path) -> None:
+    """Persist the complete pairwise similarity matrix for audit/replay."""
+
+    required = {
+        "factor_id_left",
+        "factor_id_right",
+        "median_daily_abs_spearman",
+        "valid_days",
+    }
+    if missing := sorted(required.difference(pairs.columns)):
+        raise ValueError(f"similarity pairs are missing columns: {missing}")
+    if pairs.duplicated(["factor_id_left", "factor_id_right"]).any():
+        raise ValueError("similarity pairs contain duplicate ordered keys")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pairs.loc[:, [
+        "factor_id_left",
+        "factor_id_right",
+        "median_daily_abs_spearman",
+        "valid_days",
+    ]].to_csv(path, index=False)
+
+
 def daily_similarity_values(
     observations: pd.DataFrame, factor_ids: tuple[str, ...]
 ) -> dict[tuple[str, str], list[float]]:
@@ -260,6 +282,11 @@ def main() -> None:
         "--clean-source",
         action="store_true",
         help="read the deduplicated V2 factor_observation_clean panel",
+    )
+    parser.add_argument(
+        "--pairs-output",
+        type=Path,
+        help="optionally persist the complete factor-pair similarity matrix",
     )
     parser.add_argument(
         "--output",
@@ -405,6 +432,8 @@ def main() -> None:
                 }
             )
     pairs = pd.DataFrame(pair_rows)
+    if args.pairs_output is not None:
+        write_pair_artifact(pairs, args.pairs_output)
     classified = classify_similarity_pairs(
         pairs,
         factor_ids=factor_ids,

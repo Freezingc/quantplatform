@@ -1,0 +1,455 @@
+{
+  "candidate_factor_count": 14,
+  "cluster_count": 14,
+  "clusters": [
+    {
+      "internal_edge_count": 1,
+      "maximum_internal_similarity": 0.9473767876475868,
+      "members": [
+        "yeslab_114",
+        "yeslab_115"
+      ],
+      "minimum_internal_similarity": 0.9473767876475868,
+      "minimum_threshold_edge_similarity": 0.9473767876475868,
+      "ranking": [
+        "yeslab_115",
+        "yeslab_114"
+      ],
+      "representative": "yeslab_115",
+      "representative_metrics": {
+        "fdr_q_value": 4.1302139276864994e-27,
+        "icir": -0.5869299377145129,
+        "mean_rank_ic": -0.0770759845270153,
+        "signed_mean_rank_ic": 0.0770759845270153
+      },
+      "threshold_edge_count": 1,
+      "threshold_edges": [
+        {
+          "left": "yeslab_114",
+          "right": "yeslab_115",
+          "similarity": 0.9473767876475868
+        }
+      ]
+    },
+    {
+      "internal_edge_count": 1,
+      "maximum_internal_similarity": 0.944756464211586,
+      "members": [
+        "yeslab_117",
+        "yeslab_118"
+      ],
+      "minimum_internal_similarity": 0.944756464211586,
+      "minimum_threshold_edge_similarity": 0.944756464211586,
+      "ranking": [
+        "yeslab_118",
+        "yeslab_117"
+      ],
+      "representative": "yeslab_118",
+      "representative_metrics": {
+        "fdr_q_value": 4.1553804674802214e-24,
+        "icir": -0.5511654708714391,
+        "mean_rank_ic": -0.0614710939722556,
+        "signed_mean_rank_ic": 0.0614710939722556
+      },
+      "threshold_edge_count": 1,
+      "threshold_edges": [
+        {
+          "left": "yeslab_117",
+          "right": "yeslab_118",
+          "similarity": 0.944756464211586
+        }
+      ]
+    },
+    {
+      "internal_edge_count": 1,
+      "maximum_internal_similarity": 0.9675239598016964,
+      "members": [
+        "yeslab_357",
+        "yeslab_359"
+      ],
+      "minimum_internal_similarity": 0.9675239598016964,
+      "minimum_threshold_edge_similarity": 0.9675239598016964,
+      "ranking": [
+        "yeslab_357",
+        "yeslab_359"
+      ],
+      "representative": "yeslab_357",
+      "representative_metrics": {
+        "fdr_q_value": 2.315620100249188e-88,
+        "icir": -0.9502401992167904,
+        "mean_rank_ic": -0.0499772078825177,
+        "signed_mean_rank_ic": 0.0499772078825177
+      },
+      "threshold_edge_count": 1,
+      "threshold_edges": [
+        {
+          "left": "yeslab_357",
+          "right": "yeslab_359",
+          "similarity": 0.9675239598016964
+        }
+      ]
+    },
+    {
+      "internal_edge_count": 3,
+      "maximum_internal_similarity": 0.9793064713354492,
+      "members": [
+        "yeslab_362",
+        "yeslab_365",
+        "yeslab_366"
+      ],
+      "minimum_internal_similarity": 0.8125704156677609,
+      "minimum_threshold_edge_similarity": 0.9014235982653798,
+      "ranking": [
+        "yeslab_365",
+        "yeslab_366",
+        "yeslab_362"
+      ],
+      "representative": "yeslab_365",
+      "representative_metrics": {
+        "fdr_q_value": 2.415970795717076e-37,
+        "icir": -0.6197425970880444,
+        "mean_rank_ic": -0.0469092008581147,
+        "signed_mean_rank_ic": 0.0469092008581147
+      },
+      "threshold_edge_count": 2,
+      "threshold_edges": [
+        {
+          "left": "yeslab_365",
+          "right": "yeslab_366",
+          "similarity": 0.9793064713354492
+        },
+        {
+          "left": "yeslab_362",
+          "right": "yeslab_365",
+          "similarity": 0.9014235982653798
+        }
+      ]
+    },
+    {
+      "internal_edge_count": 1,
+      "maximum_internal_similarity": 0.9447022271793264,
+      "members": [
+        "yeslab_376",
+        "yeslab_393"
+      ],
+      "minimum_internal_similarity": 0.9447022271793264,
+      "minimum_threshold_edge_similarity": 0.9447022271793264,
+      "ranking": [
+        "yeslab_376",
+        "yeslab_393"
+      ],
+      "representative": "yeslab_376",
+      "representative_metrics": {
+        "fdr_q_value": 4.056377867978455e-38,
+        "icir": -0.7069158414466657,
+        "mean_rank_ic": -0.0824615724689083,
+        "signed_mean_rank_ic": 0.0824615724689083
+      },
+      "threshold_edge_count": 1,
+      "threshold_edges": [
+        {
+          "left": "yeslab_376",
+          "right": "yeslab_393",
+          "similarity": 0.9447022271793264
+        }
+      ]
+    },
+    {
+      "internal_edge_count": 15,
+      "maximum_internal_similarity": 0.9824320364872532,
+      "members": [
+        "yeslab_377",
+        "yeslab_380",
+        "yeslab_382",
+        "yeslab_387",
+        "yeslab_388",
+        "yeslab_391"
+      ],
+      "minimum_internal_similarity": 0.8197827019047699,
+      "minimum_threshold_edge_similarity": 0.9000126099092691,
+      "ranking": [
+        "yeslab_380",
+        "yeslab_387",
+        "yeslab_391",
+        "yeslab_388",
+        "yeslab_377",
+        "yeslab_382"
+      ],
+      "representative": "yeslab_380",
+      "representative_metrics": {
+        "fdr_q_value": 2.658740396568148e-27,
+        "icir": -0.5931262684527654,
+        "mean_rank_ic": -0.0816998960517765,
+        "signed_mean_rank_ic": 0.0816998960517765
+      },
+      "threshold_edge_count": 13,
+      "threshold_edges": [
+        {
+          "left": "yeslab_387",
+          "right": "yeslab_388",
+          "similarity": 0.9824320364872532
+        },
+        {
+          "left": "yeslab_377",
+          "right": "yeslab_382",
+          "similarity": 0.9822913701672576
+        },
+        {
+          "left": "yeslab_380",
+          "right": "yeslab_388",
+          "similarity": 0.980661080677419
+        },
+        {
+          "left": "yeslab_380",
+          "right": "yeslab_387",
+          "similarity": 0.9784941621278438
+        },
+        {
+          "left": "yeslab_377",
+          "right": "yeslab_380",
+          "similarity": 0.9694660938801264
+        },
+        {
+          "left": "yeslab_382",
+          "right": "yeslab_387",
+          "similarity": 0.9664271483033368
+        },
+        {
+          "left": "yeslab_380",
+          "right": "yeslab_382",
+          "similarity": 0.9535325382682748
+        },
+        {
+          "left": "yeslab_382",
+          "right": "yeslab_388",
+          "similarity": 0.951930219654274
+        },
+        {
+          "left": "yeslab_377",
+          "right": "yeslab_388",
+          "similarity": 0.948088628918886
+        },
+        {
+          "left": "yeslab_377",
+          "right": "yeslab_387",
+          "similarity": 0.9465492914532652
+        },
+        {
+          "left": "yeslab_380",
+          "right": "yeslab_391",
+          "similarity": 0.9089500859599932
+        },
+        {
+          "left": "yeslab_388",
+          "right": "yeslab_391",
+          "similarity": 0.908776529552468
+        },
+        {
+          "left": "yeslab_387",
+          "right": "yeslab_391",
+          "similarity": 0.9000126099092691
+        }
+      ]
+    },
+    {
+      "internal_edge_count": 1,
+      "maximum_internal_similarity": 0.9074971133739312,
+      "members": [
+        "yeslab_381",
+        "yeslab_383"
+      ],
+      "minimum_internal_similarity": 0.9074971133739312,
+      "minimum_threshold_edge_similarity": 0.9074971133739312,
+      "ranking": [
+        "yeslab_383",
+        "yeslab_381"
+      ],
+      "representative": "yeslab_383",
+      "representative_metrics": {
+        "fdr_q_value": 3.156945406025237e-31,
+        "icir": -0.5914633969591554,
+        "mean_rank_ic": -0.0718332194550021,
+        "signed_mean_rank_ic": 0.0718332194550021
+      },
+      "threshold_edge_count": 1,
+      "threshold_edges": [
+        {
+          "left": "yeslab_381",
+          "right": "yeslab_383",
+          "similarity": 0.9074971133739312
+        }
+      ]
+    },
+    {
+      "internal_edge_count": 0,
+      "maximum_internal_similarity": null,
+      "members": [
+        "yeslab_163"
+      ],
+      "minimum_internal_similarity": null,
+      "minimum_threshold_edge_similarity": null,
+      "ranking": [
+        "yeslab_163"
+      ],
+      "representative": "yeslab_163",
+      "representative_metrics": {
+        "fdr_q_value": 2.2346008165913493e-22,
+        "icir": -0.544354215764007,
+        "mean_rank_ic": -0.0665525046119665,
+        "signed_mean_rank_ic": 0.0665525046119665
+      },
+      "threshold_edge_count": 0,
+      "threshold_edges": []
+    },
+    {
+      "internal_edge_count": 0,
+      "maximum_internal_similarity": null,
+      "members": [
+        "yeslab_363"
+      ],
+      "minimum_internal_similarity": null,
+      "minimum_threshold_edge_similarity": null,
+      "ranking": [
+        "yeslab_363"
+      ],
+      "representative": "yeslab_363",
+      "representative_metrics": {
+        "fdr_q_value": 1.3084407727779422e-34,
+        "icir": -0.5948175361461776,
+        "mean_rank_ic": -0.0416050011631494,
+        "signed_mean_rank_ic": 0.0416050011631494
+      },
+      "threshold_edge_count": 0,
+      "threshold_edges": []
+    },
+    {
+      "internal_edge_count": 0,
+      "maximum_internal_similarity": null,
+      "members": [
+        "yeslab_385"
+      ],
+      "minimum_internal_similarity": null,
+      "minimum_threshold_edge_similarity": null,
+      "ranking": [
+        "yeslab_385"
+      ],
+      "representative": "yeslab_385",
+      "representative_metrics": {
+        "fdr_q_value": 6.318555337008128e-29,
+        "icir": -0.5758931987815061,
+        "mean_rank_ic": -0.074504513272308,
+        "signed_mean_rank_ic": 0.074504513272308
+      },
+      "threshold_edge_count": 0,
+      "threshold_edges": []
+    },
+    {
+      "internal_edge_count": 0,
+      "maximum_internal_similarity": null,
+      "members": [
+        "yeslab_396"
+      ],
+      "minimum_internal_similarity": null,
+      "minimum_threshold_edge_similarity": null,
+      "ranking": [
+        "yeslab_396"
+      ],
+      "representative": "yeslab_396",
+      "representative_metrics": {
+        "fdr_q_value": 6.873901515766852e-28,
+        "icir": -0.5893124995938508,
+        "mean_rank_ic": -0.0744951533647121,
+        "signed_mean_rank_ic": 0.0744951533647121
+      },
+      "threshold_edge_count": 0,
+      "threshold_edges": []
+    },
+    {
+      "internal_edge_count": 0,
+      "maximum_internal_similarity": null,
+      "members": [
+        "yeslab_95"
+      ],
+      "minimum_internal_similarity": null,
+      "minimum_threshold_edge_similarity": null,
+      "ranking": [
+        "yeslab_95"
+      ],
+      "representative": "yeslab_95",
+      "representative_metrics": {
+        "fdr_q_value": 3.0560141700843986e-22,
+        "icir": -0.5237317600799918,
+        "mean_rank_ic": -0.0578338184690284,
+        "signed_mean_rank_ic": 0.0578338184690284
+      },
+      "threshold_edge_count": 0,
+      "threshold_edges": []
+    },
+    {
+      "internal_edge_count": 0,
+      "maximum_internal_similarity": null,
+      "members": [
+        "yeslab_96"
+      ],
+      "minimum_internal_similarity": null,
+      "minimum_threshold_edge_similarity": null,
+      "ranking": [
+        "yeslab_96"
+      ],
+      "representative": "yeslab_96",
+      "representative_metrics": {
+        "fdr_q_value": 1.5856322144974185e-27,
+        "icir": -0.5821390760368069,
+        "mean_rank_ic": -0.0614055033990588,
+        "signed_mean_rank_ic": 0.0614055033990588
+      },
+      "threshold_edge_count": 0,
+      "threshold_edges": []
+    },
+    {
+      "internal_edge_count": 0,
+      "maximum_internal_similarity": null,
+      "members": [
+        "yeslab_98"
+      ],
+      "minimum_internal_similarity": null,
+      "minimum_threshold_edge_similarity": null,
+      "ranking": [
+        "yeslab_98"
+      ],
+      "representative": "yeslab_98",
+      "representative_metrics": {
+        "fdr_q_value": 1.1961410179115827e-28,
+        "icir": -0.5810137081350284,
+        "mean_rank_ic": -0.0438173196849931,
+        "signed_mean_rank_ic": 0.0438173196849931
+      },
+      "threshold_edge_count": 0,
+      "threshold_edges": []
+    }
+  ],
+  "factor_count": 26,
+  "locked_test_read": false,
+  "pair_count": 325,
+  "representatives": [
+    "yeslab_115",
+    "yeslab_118",
+    "yeslab_163",
+    "yeslab_357",
+    "yeslab_363",
+    "yeslab_365",
+    "yeslab_376",
+    "yeslab_380",
+    "yeslab_383",
+    "yeslab_385",
+    "yeslab_396",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "requires_policy_review": true,
+  "scope": "TRAIN26_FULL_PAIR_CLUSTER_REPRESENTATIVE_PROPOSAL_V2",
+  "threshold": 0.9,
+  "valid_days_max": 1212,
+  "valid_days_min": 1212
+}

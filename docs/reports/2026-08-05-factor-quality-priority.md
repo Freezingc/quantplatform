@@ -317,17 +317,19 @@ clean 版本指针审计见
 
 ### 冗余簇代表候选（尚未冻结）
 
-如果按全日相似度阈值 `0.90` 将“每个因子的最近邻冗余边”组成连通分量，再按
-`FDR q → signed mean RankIC → |ICIR| → factor_id` 排序选代表，可以得到 15 个代表候选：
+已保存完整的 325 个因子对矩阵。按全日相似度阈值 `0.90` 的全部边组成连通分量，再按
+`FDR q → signed mean RankIC → |ICIR| → factor_id` 排序选代表，可以得到 14 个代表候选：
 
 ```text
 yeslab_115, yeslab_118, yeslab_163, yeslab_357, yeslab_363,
-yeslab_365, yeslab_376, yeslab_377, yeslab_380, yeslab_383,
-yeslab_385, yeslab_396, yeslab_95, yeslab_96, yeslab_98
+yeslab_365, yeslab_376, yeslab_380, yeslab_383, yeslab_385,
+yeslab_396, yeslab_95, yeslab_96, yeslab_98
 ```
 
-这正好落在主计划的 15–40 个特征目标范围内，但当前证据文件只持久化了每个因子的最近邻
-边，而不是完整 325 个因子对矩阵。因此这只是“候选代表集”，不能直接冻结；冻结前还需
-保存完整 pair matrix、复核每个连通分量的所有边，并确认年度 ICIR 硬门槛采用“每年硬失败”
-还是主计划中的“至少三年同向”规则。候选代表提案见
-[`TRAIN26 cluster proposal`](../../research_v2/artifacts/diagnostics/train26_cluster_representative_proposal_v1.json)。
+该代表集略低于主计划的 15–40 个特征目标，但目标是 soft target，不应为了凑数放回冗余
+因子。完整 pair matrix 的每对有效日数均为 1,212，连通分量和阈值边均已落盘；因此这仍
+是“候选代表集”，不能直接冻结，冻结前还需确认年度 ICIR 硬门槛采用“每年硬失败”还是
+主计划中的“至少三年同向”规则。候选代表提案见
+[`TRAIN26 full-pair cluster proposal`](../../research_v2/artifacts/diagnostics/train26_cluster_representative_proposal_v2.json)，
+完整 pair matrix 见
+[`TRAIN26 pair matrix`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_repaired26_v1.csv)。
