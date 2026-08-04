@@ -37,6 +37,22 @@ _MARKET_COLUMNS = ("trade_date", "ts_code", "close", "amount", "pct_chg")
 _CANDIDATE_COLUMNS = ("trade_date", "ts_code", "candidate_value")
 
 
+class FactorOverlapMismatchError(FactorRepairError):
+    """Known-formula overlap mismatch with auditable difference statistics."""
+
+    def __init__(
+        self,
+        *,
+        mismatch_rows: int,
+        max_abs_diff: float,
+        max_rel_diff: float,
+    ) -> None:
+        super().__init__("known formula overlap mismatch")
+        self.mismatch_rows = int(mismatch_rows)
+        self.max_abs_diff = float(max_abs_diff)
+        self.max_rel_diff = float(max_rel_diff)
+
+
 class RepairProvider(Protocol):
     """Contract for one bounded factor/month candidate provider.
 
@@ -316,7 +332,11 @@ class KnownFormulaCandidateProvider:
         rel_diff = abs_diff / np.maximum(np.abs(source_values[finite]), 1e-12)
         mismatch = (abs_diff > self.abs_tolerance) & (rel_diff > self.rel_tolerance)
         if mismatch.any():
-            raise FactorRepairError("known formula overlap mismatch")
+            raise FactorOverlapMismatchError(
+                mismatch_rows=int(mismatch.sum()),
+                max_abs_diff=float(abs_diff.max()),
+                max_rel_diff=float(rel_diff.max()),
+            )
 
 
 # Explicit by-factor registration.  Providers need market dependencies at
@@ -577,6 +597,7 @@ RepairOverlayAssembly = RepairOverlayBuildResult
 
 __all__ = [
     "EXPLICIT_FACTOR_PROVIDER_METHODS",
+    "FactorOverlapMismatchError",
     "KnownFormulaCandidateProvider",
     "MarketCandidateProvider",
     "NullRepairProvider",

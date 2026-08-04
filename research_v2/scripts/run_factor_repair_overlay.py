@@ -31,6 +31,7 @@ from research_v2.db.session import V2WriteSession, YesLabReadOnlySession
 from research_v2.factors.materializer import build_technical_factor_batches
 from research_v2.factors.repair import FactorRepairError, RepairStatus, audit_factor_source
 from research_v2.factors.repair_overlay import (
+    FactorOverlapMismatchError,
     KnownFormulaCandidateProvider,
     NullRepairProvider,
     RepairProvider,
@@ -63,6 +64,7 @@ _GROUP_SIZE = 3
 _FACTOR_ID_RE = re.compile(r"^yeslab_[0-9]+$")
 _TABLE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 _KNOWN_FORMULA_IDS = frozenset({"yeslab_391", "yeslab_433"})
+_V2_MARKET_PCT_CHG_DECIMALS = 4
 
 
 class FactorRepairRunnerError(RuntimeError):
@@ -281,12 +283,15 @@ def _run_repair_with_spool(
                             logical_partition=month.logical_partition,
                             source_watermark_id=watermark,
                         )
-                    except (TypeError, ValueError, KeyError) as error:
+                    except (TypeError, ValueError, KeyError, FactorRepairError) as error:
+                        overlap_error = (
+                            error if isinstance(error, FactorOverlapMismatchError) else None
+                        )
                         overlap_mismatch = (
                             isinstance(provider, KnownFormulaCandidateProvider)
-                            and isinstance(error, FactorRepairError)
-                            and "overlap mismatch" in str(error).lower()
+                            and overlap_error is not None
                         )
+                        overlap_stats = overlap_error if overlap_mismatch else None
                         audit, quarantine_rows = _provider_failure(
                             definition,
                             month,
@@ -299,7 +304,15 @@ def _run_repair_with_spool(
                                 if overlap_mismatch
                                 else "PROVIDER_FAILURE"
                             ),
-                            mismatch_rows=1 if overlap_mismatch else 0,
+                            mismatch_rows=(
+                                overlap_stats.mismatch_rows if overlap_stats is not None else 0
+                            ),
+                            max_abs_diff=(
+                                overlap_stats.max_abs_diff if overlap_stats is not None else 0.0
+                            ),
+                            max_rel_diff=(
+                                overlap_stats.max_rel_diff if overlap_stats is not None else 0.0
+                            ),
                             unresolved_rows=0 if overlap_mismatch else 1,
                         )
                         audits.append(audit)
@@ -607,7 +620,7 @@ def _load_v2_market_cache(
     market = market.sort_values(["ts_code", "trade_date"], kind="mergesort").reset_index(drop=True)
     market["pct_chg"] = (
         market.groupby("ts_code", sort=False)["close"].pct_change() * 100.0
-    ).round(12)
+    ).round(_V2_MARKET_PCT_CHG_DECIMALS)
     market = market.sort_values(["trade_date", "ts_code"], kind="mergesort").reset_index(drop=True)
     market.attrs["repair_market_source"] = "v2-market-daily-clean"
     market.attrs["repair_market_versions"] = "|".join(
@@ -724,6 +737,8 @@ def _provider_failure(
     *,
     reason: str = "PROVIDER_FAILURE",
     mismatch_rows: int = 0,
+    max_abs_diff: float = 0.0,
+    max_rel_diff: float = 0.0,
     unresolved_rows: int = 1,
 ) -> tuple[RepairAuditRecord, list[RepairQuarantineRow]]:
     """Turn provider/schema failures into a visible, blocking audit row."""
@@ -748,6 +763,8 @@ def _provider_failure(
         nonfinite_rows=source_audit.nonfinite_rows if source_audit is not None else 0,
         remaining_nonfinite_rows=unresolved_rows,
         mismatch_rows=mismatch_rows,
+        max_abs_diff=max_abs_diff,
+        max_rel_diff=max_rel_diff,
         unresolved_rows=unresolved_rows,
         decision_status=RepairDecisionStatus.BLOCKED.value,
         rules_version=1,

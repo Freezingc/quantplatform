@@ -9,6 +9,7 @@ import pytest
 from research_v2.contracts.factor import AvailabilityPolicy, FactorDefinition, FactorType
 from research_v2.factors.repair import RepairStatus
 from research_v2.factors.repair_overlay import (
+    FactorOverlapMismatchError,
     KnownFormulaCandidateProvider,
     MarketCandidateProvider,
     NullRepairProvider,
@@ -185,8 +186,11 @@ def test_known_formula_provider_rejects_overlap_mismatch() -> None:
     )
     provider = KnownFormulaCandidateProvider(market)
 
-    with pytest.raises(ValueError, match="overlap mismatch"):
+    with pytest.raises(FactorOverlapMismatchError, match="overlap mismatch") as exc_info:
         provider.provide(source, factor_name="GP_022")
+    assert exc_info.value.mismatch_rows == 1
+    assert exc_info.value.max_abs_diff > 0.0
+    assert exc_info.value.max_rel_diff > 0.0
 
 
 @pytest.mark.parametrize(

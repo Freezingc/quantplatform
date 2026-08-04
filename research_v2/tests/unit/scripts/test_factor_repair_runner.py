@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 import run_factor_repair_overlay as runner
 from run_factor_repair_overlay import (
+    _V2_MARKET_PCT_CHG_DECIMALS,
     SOURCE_SCOPE_ID,
     SOURCE_STATUS,
     _iter_months,
@@ -203,7 +204,11 @@ def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> No
     )
 
     def fail_overlap(*args, **kwargs):
-        raise runner.FactorRepairError("known formula overlap mismatch")
+        raise runner.FactorOverlapMismatchError(
+            mismatch_rows=3,
+            max_abs_diff=0.25,
+            max_rel_diff=0.125,
+        )
 
     monkeypatch.setattr(runner, "build_repair_overlay", fail_overlap)
     monkeypatch.setattr(
@@ -218,7 +223,9 @@ def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> No
     )
 
     assert result.counts["blocked"] == 1
-    assert result.audit_batch.frame["mismatch_rows"].tolist() == [1]
+    assert result.audit_batch.frame["mismatch_rows"].tolist() == [3]
+    assert result.audit_batch.frame["max_abs_diff"].tolist() == [0.25]
+    assert result.audit_batch.frame["max_rel_diff"].tolist() == [0.125]
     assert result.audit_batch.frame["unresolved_rows"].tolist() == [0]
     assert result.quarantine_batch is not None
     assert result.quarantine_batch.frame["reason"].tolist() == [
@@ -319,7 +326,7 @@ def test_v2_market_fallback_derives_pct_chg_from_raw_close() -> None:
                         ["2019-12-31", "2019-12-31", "2020-01-02", "2020-01-02"]
                     ),
                     "ts_code": ["000001.SZ"] * 4,
-                    "raw_close": [10.0, 9.0, 8.0, 11.0],
+                    "raw_close": [10.0, 9.0, 8.0, 11.0123456],
                     "amount": [100.0, 90.0, 80.0, 120.0],
                 }
             )
@@ -332,8 +339,9 @@ def test_v2_market_fallback_derives_pct_chg_from_raw_close() -> None:
     assert market is not None
     assert market.attrs["repair_market_source"] == "v2-market-daily-clean"
     assert market.attrs["repair_market_versions"] == "2019-12:v1|2020-01:v2"
-    assert market.loc[1, "close"] == 11.0
-    assert market.loc[1, "pct_chg"] == 10.0
+    assert market.loc[1, "close"] == 11.0123456
+    assert market.loc[1, "pct_chg"] == 10.1235
+    assert _V2_MARKET_PCT_CHG_DECIMALS == 4
     assert {"trade_date", "ts_code", "close", "amount", "pct_chg"}.issubset(
         market.columns
     )
