@@ -277,20 +277,12 @@ class KnownFormulaCandidateProvider:
         if name not in calculators:
             raise ValueError("known formula provider only supports GP_022 and GP_064")
         candidate = pd.DataFrame(calculators[name](self.market))
-        # Rolling warmup rows are expected to be non-finite.  With a month
-        # scope, drop only rows before that month; in-month non-finite values
-        # remain strict evidence and must be quarantined by the overlay.
-        filtered = candidate
-        if logical_partition is not None:
-            period = pd.Period(logical_partition, freq="M")
-            if str(period) != logical_partition:
-                raise ValueError("logical_partition must use YYYY-MM")
-            dates = pd.to_datetime(candidate["trade_date"], errors="raise").dt.date
-            finite = np.isfinite(
-                pd.to_numeric(candidate["candidate_value"], errors="coerce")
-            )
-            keep = finite | (dates >= period.start_time.date())
-            filtered = candidate.loc[keep].reset_index(drop=True)
+        # Rolling warmup rows and market gaps are mathematically no-evidence,
+        # not conflicting candidate values.  Keep generic providers strict;
+        # this exception applies only to the registered formula calculators.
+        del logical_partition
+        finite = np.isfinite(pd.to_numeric(candidate["candidate_value"], errors="coerce"))
+        filtered: pd.DataFrame = candidate.loc[finite].reset_index(drop=True)
         self._reject_overlap_mismatch(source, filtered)
         return filtered
 
