@@ -13,6 +13,7 @@ from run_factor_repair_overlay import (
     SOURCE_STATUS,
     _iter_months,
     _load_market_cache,
+    _load_v2_market_cache,
     _provider_for_definition,
     _source_watermark,
     main,
@@ -242,6 +243,44 @@ def test_market_cache_accepts_qrv2_tushare_token_alias(tmp_path, monkeypatch) ->
 
     assert loaded is not None
     pd.testing.assert_frame_equal(loaded, expected)
+
+
+def test_v2_market_fallback_derives_pct_chg_from_raw_close() -> None:
+    class _MarketTarget:
+        target_database = "dfs://QuantResearchV2Test"
+
+        def __init__(self) -> None:
+            self.queries: list[str] = []
+
+        def query(self, script: str) -> pd.DataFrame:
+            self.queries.append(script)
+            return pd.DataFrame(
+                {
+                    "trade_date": pd.to_datetime(["2019-12-31", "2020-01-02"]),
+                    "ts_code": ["000001.SZ", "000001.SZ"],
+                    "raw_close": [10.0, 11.0],
+                    "amount": [100.0, 120.0],
+                }
+            )
+
+    target = _MarketTarget()
+    month = _iter_months(date(2020, 1, 1), date(2020, 1, 31))[0]
+
+    market = _load_v2_market_cache(target, month)
+
+    assert market is not None
+    assert market.attrs["repair_market_source"] == "v2-market-daily-clean"
+    assert market.loc[1, "close"] == 11.0
+    assert market.loc[1, "pct_chg"] == 10.0
+    assert {"trade_date", "ts_code", "close", "amount", "pct_chg"}.issubset(
+        market.columns
+    )
+    assert "market_daily_clean" in target.queries[0]
+    assert "date('2019.07.05')" in target.queries[0]
+    assert "date('2020.01.31')" in target.queries[0]
+    assert "2026" not in target.queries[0]
+    provider = _provider_for_definition(SimpleNamespace(factor_id="yeslab_391"), market, month)
+    assert provider.source_watermark_id.startswith("v2-market-daily-clean:")
 
 
 def test_known_gp_provider_retains_lookback_market_rows() -> None:

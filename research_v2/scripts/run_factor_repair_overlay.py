@@ -234,8 +234,14 @@ def _run_repair_with_spool(
     grouped: dict[str, list[FactorDefinition]] = {}
     for definition in definitions:
         grouped.setdefault(definition.source_table, []).append(definition)
+    needs_market_fallback = any(
+        definition.factor_id in _KNOWN_FORMULA_IDS for definition in definitions
+    )
 
     for month in months:
+        month_cache = cache
+        if month_cache is None and needs_market_fallback:
+            month_cache = _load_v2_market_cache(target_session, month)
         for source_table in sorted(grouped):
             table_definitions = sorted(grouped[source_table], key=lambda item: item.factor_id)
             for offset in range(0, len(table_definitions), int(args.group_size)):
@@ -251,7 +257,7 @@ def _run_repair_with_spool(
                     factor_source = source.loc[
                         source["factor_name"].astype(str) == definition.display_name
                     ].copy()
-                    provider = _provider_for_definition(definition, cache, month)
+                    provider = _provider_for_definition(definition, month_cache, month)
                     watermark = _source_watermark(definition, month, provider)
                     source_watermarks.append(watermark)
                     if factor_source.empty:
@@ -484,7 +490,8 @@ def _provider_for_definition(
         .to_numpy(dtype="uint64")
         .tobytes()
     ).hexdigest()
-    return KnownFormulaCandidateProvider(market, source_watermark_id=f"tushare-cache:{watermark}")
+    source_name = str(market.attrs.get("repair_market_source", "tushare-cache"))
+    return KnownFormulaCandidateProvider(market, source_watermark_id=f"{source_name}:{watermark}")
 
 
 def _load_market_cache() -> pd.DataFrame | None:
@@ -503,6 +510,48 @@ def _load_market_cache() -> pd.DataFrame | None:
         return pd.read_csv(path)
     except (OSError, ValueError, ImportError):
         return None
+
+
+def _load_v2_market_cache(
+    target: QuerySession,
+    month: FactorMonth,
+    *,
+    target_database: str | None = None,
+) -> pd.DataFrame | None:
+    """Read one bounded V2 market chunk for formula repair warmup."""
+
+    database_value = target_database or getattr(target, "target_database", None)
+    database = str(database_value or os.getenv("QRV2_DDB_DATABASE", "dfs://QuantResearchV2Test"))
+    _validate_v2_database(database)
+    lookback_start = month.start_date - timedelta(days=180)
+    query = (
+        "select trade_date,ts_code,raw_close,amount from "
+        f"loadTable('{database}','market_daily_clean') "
+        f"where trade_date between date('{lookback_start:%Y.%m.%d}') "
+        f"and date('{month.end_date:%Y.%m.%d}')"
+    )
+    try:
+        result = target.query(query)
+    except (RuntimeError, ValueError):
+        return None
+    if not isinstance(result, pd.DataFrame):
+        return None
+    required = {"trade_date", "ts_code", "raw_close", "amount"}
+    if not required.issubset(result.columns) or result.empty:
+        return None
+    market = result.loc[:, ["trade_date", "ts_code", "raw_close", "amount"]].copy()
+    market["trade_date"] = pd.to_datetime(market["trade_date"], errors="coerce").dt.date
+    market["ts_code"] = market["ts_code"].astype(str)
+    market["close"] = pd.to_numeric(market["raw_close"], errors="coerce")
+    market["amount"] = pd.to_numeric(market["amount"], errors="coerce")
+    market = market.dropna(subset=["trade_date", "ts_code"])
+    market = market.sort_values(["ts_code", "trade_date"], kind="mergesort").reset_index(drop=True)
+    market["pct_chg"] = (
+        market.groupby("ts_code", sort=False)["close"].pct_change() * 100.0
+    ).round(12)
+    market = market.sort_values(["trade_date", "ts_code"], kind="mergesort").reset_index(drop=True)
+    market.attrs["repair_market_source"] = "v2-market-daily-clean"
+    return market.loc[:, ["trade_date", "ts_code", "close", "amount", "pct_chg"]]
 
 
 def _audit_record(
