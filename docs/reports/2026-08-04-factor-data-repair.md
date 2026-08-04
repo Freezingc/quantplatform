@@ -39,13 +39,32 @@ python research_v2/scripts/run_factor_repair_overlay.py \
 完整 manifest 保存在
 [`train_factor_repair_smoke_manifest.json`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_manifest.json)。
 
-该结果说明当前运行环境没有配置可用的 `QRV2_TUSHARE_TOKEN` 和本地行情缓存，因此 GP 候选补值没有启用；现有源数据中的非有限/未解析行进入隔离区。即使没有 `BLOCKED` 状态，`PASS_WITH_UNRESOLVED_QUARANTINE` 也会被发布质量门禁拒绝，不能绕过。
+该结果最初是在没有配置 `QRV2_TUSHARE_TOKEN` 和本地行情缓存的情况下执行的；随后已增加只读的 V2 `market_daily_clean` 回退，并按预热区间每个逻辑月解析 `published_version`。对于 2020-01，V2 行情表本身从 2020-01 才开始，GP_022 滚动窗口没有足够历史行情，因此 38,344 行被正确标记为 `NO_FINITE_CANDIDATE`。即使没有 `BLOCKED` 状态，`PASS_WITH_UNRESOLVED_QUARANTINE` 也会被发布质量门禁拒绝，不能绕过。
+
+## V2 行情回退与公式一致性 smoke
+
+后续 smoke 使用同一只读 runner、无外部 Tushare token：
+
+| 窗口 | 结果 | clean 行 | 隔离行 | 主要原因 |
+| --- | --- | ---: | ---: | --- |
+| 2020-01 / `yeslab_391` GP_022 | `PASS_WITH_UNRESOLVED_QUARANTINE` | 56,920 | 38,344 | `NO_FINITE_CANDIDATE` |
+| 2020-12 / `yeslab_391` GP_022 | `REPAIR_BLOCKED` | 0 | 1 | `CANDIDATE_OVERLAP_MISMATCH` |
+
+2020-12 有足够行情预热，公式候选可以计算，但与源因子重叠值不一致；修复器拒绝覆盖并记录 `mismatch_rows=1`。这不是可以忽略的工程错误，而是需要重新核对 GP_022 原始计算所用行情字段、复权口径或公式版本的质量问题。
+
+当前已有 47 个 source-qualified 因子的数据库快照均为
+`SOURCE_DQ_PASS_PENDING_SIMILARITY`：全范围有限值比例为 `0.737690–0.849923`，值冲突键为 `0`，重复行比例为 `0–0.50`。重复行会进入确定性去重/隔离流程，不能直接当作无问题数据。
+
+对应 manifest：
+
+- [`2020-01 smoke v6`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_jan2020_v6_manifest.json)
+- [`2020-12 smoke v3`](../../research_v2/artifacts/diagnostics/train_factor_repair_smoke_dec2020_v3_manifest.json)
 
 ## 全量运行处置
 
 曾启动 2020–2024 TRAIN 全量只读干运行。由于完整因子/月分块在当前数据量下超过 30 分钟，任务被安全中止；堆栈显示耗时集中在重复键审计，未发生写入，且没有生成全量 manifest。随后已将重复键审计改为向量化分组统计，并通过 4,000 组回归测试验证语义不变。
 
-在行情候选缓存配置完成、且 smoke 结果先达到 `REPAIR_AUDIT_PASS` 或 `REPAIRED_PENDING_QUALITY_RECHECK` 后，再恢复全量 TRAIN 分段干运行。任何隔离行、冲突键或候选重叠不一致都会继续阻止发布。
+在 2020-12 的公式重叠不一致被解释并重新验证、且 smoke 结果达到 `REPAIR_AUDIT_PASS` 或 `REPAIRED_PENDING_QUALITY_RECHECK` 后，再恢复全量 TRAIN 分段干运行。任何隔离行、冲突键或候选重叠不一致都会继续阻止发布。
 
 ## 验证结果
 
@@ -53,4 +72,3 @@ python research_v2/scripts/run_factor_repair_overlay.py \
 - Ruff：`All checks passed`；
 - mypy：`research_v2` 124 个源文件及比较脚本均无错误；
 - 没有执行模型训练，没有发布修复版本，没有查询 2026 数据。
-
