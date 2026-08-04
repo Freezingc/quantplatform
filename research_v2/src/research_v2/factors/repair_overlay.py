@@ -274,14 +274,14 @@ class KnownFormulaCandidateProvider:
         calculators = {"GP_022": compute_gp022_candidate, "GP_064": compute_gp064_candidate}
         if name not in calculators:
             raise ValueError("known formula provider only supports GP_022 and GP_064")
-        candidate = calculators[name](self.market)
+        candidate = pd.DataFrame(calculators[name](self.market))
         # Rolling warmup rows are expected to be non-finite.  They are not
         # evidence of a conflicting candidate and should become ordinary
         # unresolved source rows in the overlay rather than blocking it.
         finite = np.isfinite(pd.to_numeric(candidate["candidate_value"], errors="coerce"))
-        candidate = candidate.loc[finite].reset_index(drop=True)
-        self._reject_overlap_mismatch(source, candidate)
-        return candidate
+        filtered: pd.DataFrame = candidate.loc[finite].reset_index(drop=True)
+        self._reject_overlap_mismatch(source, filtered)
+        return filtered
 
     __call__ = provide
 
