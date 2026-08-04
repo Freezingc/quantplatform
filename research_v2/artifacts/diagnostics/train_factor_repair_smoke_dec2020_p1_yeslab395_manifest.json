@@ -1,0 +1,40 @@
+{
+  "counts": {
+    "added_rows": 0,
+    "audit_rows": 1,
+    "audited": 1,
+    "blocked": 0,
+    "clean_batches": 1,
+    "clean_rows": 89495,
+    "factor_count": 1,
+    "filled_rows": 0,
+    "month_count": 1,
+    "quarantine_rows": 47447
+  },
+  "data_version": "e67e31676c92638f7ab4764fd5947f59f7f1c2d13ccb207eefe23d9665f6a49c",
+  "end": "2020-12-31",
+  "factor_ids": [
+    "yeslab_395"
+  ],
+  "overlap_mismatch": {
+    "max_abs_diff": 0.0,
+    "max_rel_diff": 0.0,
+    "rows": 0
+  },
+  "phase": "train",
+  "published": false,
+  "quarantine_reason_counts": [
+    [
+      "NO_EVIDENCE_BACKFILL",
+      47447
+    ]
+  ],
+  "source_watermark_id": "b5cd6f526aa6bc91c4eeac0dfcb5073089d5f8ff92960f93b2b1ea00add4c9d5",
+  "start": "2020-12-01",
+  "status_counts": [
+    [
+      "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      1
+    ]
+  ]
+}
