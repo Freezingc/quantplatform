@@ -7,14 +7,17 @@ import json
 import os
 import re
 from collections.abc import Sequence
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
 
 from research_v2.db.session import V2WriteSession, YesLabReadOnlySession
-from research_v2.factors.compact_coverage import summarize_compact_coverage
+from research_v2.factors.compact_coverage import (
+    summarize_compact_coverage,
+    summarize_compact_coverage_counts,
+)
 
 LOCKED_TEST_START = date(2026, 1, 1)
 _FACTOR_ID_RE = re.compile(r"^yeslab_[0-9]+$")
@@ -26,6 +29,10 @@ class QuerySession(Protocol):
     def query(self, script: str) -> object: ...
 
 
+class TargetSession(QuerySession, Protocol):
+    def upload_frame(self, name: str, frame: pd.DataFrame) -> None: ...
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--factor-id", action="append", required=True)
@@ -35,6 +42,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--universe-version", type=int, default=1)
     parser.add_argument("--label-id", default="forward_open_5d")
     parser.add_argument("--label-version", type=int, default=1)
+    parser.add_argument(
+        "--server-aggregate",
+        action="store_true",
+        help="query finite distinct keys server-side instead of transferring raw values",
+    )
     parser.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
     if args.start > args.end:
@@ -56,7 +68,7 @@ def run_audit(
     args: argparse.Namespace,
     *,
     source_session: QuerySession,
-    target_session: QuerySession,
+    target_session: TargetSession,
 ) -> list[dict[str, object]]:
     ids = tuple(sorted(set(str(value) for value in args.factor_id)))
     numeric_ids = ",".join(str(value.removeprefix("yeslab_")) for value in ids)
@@ -75,6 +87,29 @@ def run_audit(
         raise ValueError(f"factor metadata is missing requested IDs: {missing}")
     universe = _query_universe(target_session, args)
     labels = _query_labels(target_session, args)
+    if args.server_aggregate:
+        target_session.upload_frame("compact_mature_keys", _mature_keys(universe, labels))
+        factors_by_table: dict[str, list[str]] = {}
+        for factor_id in ids:
+            table = str(metadata.loc[factor_id, "store_factor"])
+            factor_name = str(metadata.loc[factor_id, "factor_name"])
+            if _TABLE_RE.fullmatch(table) is None:
+                raise ValueError(f"unsafe source table: {table!r}")
+            factors_by_table.setdefault(table, []).append(factor_name)
+        finite_by_name: dict[str, pd.DataFrame] = {}
+        for table, factor_names in factors_by_table.items():
+            aggregate = _query_finite_key_counts(
+                source_session,
+                table,
+                tuple(factor_names),
+                args.start,
+                args.end,
+            )
+            for factor_name in factor_names:
+                finite_by_name[factor_name] = aggregate.loc[
+                    aggregate["factor_name"] == factor_name,
+                    ["trade_date", "finite_keys"],
+                ].rename(columns={"trade_date": "signal_date"})
     output: list[dict[str, object]] = []
     for factor_id in ids:
         meta = metadata.loc[factor_id]
@@ -82,15 +117,26 @@ def run_audit(
         factor_name = str(meta["factor_name"])
         if _TABLE_RE.fullmatch(table) is None:
             raise ValueError(f"unsafe source table: {table!r}")
-        source = _query_factor(source_session, table, factor_name, args.start, args.end)
-        result = summarize_compact_coverage(
-            universe,
-            labels,
-            source,
-            factor_id=factor_id,
-            factor_name=factor_name,
-            logical_partition=f"{args.start.isoformat()}..{args.end.isoformat()}",
-        )
+        if args.server_aggregate:
+            finite_keys = finite_by_name[factor_name]
+            result = summarize_compact_coverage_counts(
+                universe,
+                labels,
+                finite_keys,
+                factor_id=factor_id,
+                factor_name=factor_name,
+                logical_partition=f"{args.start.isoformat()}..{args.end.isoformat()}",
+            )
+        else:
+            source = _query_factor(source_session, table, factor_name, args.start, args.end)
+            result = summarize_compact_coverage(
+                universe,
+                labels,
+                source,
+                factor_id=factor_id,
+                factor_name=factor_name,
+                logical_partition=f"{args.start.isoformat()}..{args.end.isoformat()}",
+            )
         output.append(dict(result))
     return output
 
@@ -135,6 +181,86 @@ def _query_factor(
     )
 
 
+def _query_finite_key_counts(
+    source: QuerySession,
+    table: str,
+    factor_names: tuple[str, ...],
+    start: date,
+    end: date,
+) -> pd.DataFrame:
+    if not factor_names:
+        return pd.DataFrame(columns=["factor_name", "trade_date", "finite_keys"])
+    names = ",".join("'" + name.replace("'", "''") + "'" for name in factor_names)
+    script = (
+        "s = select distinct factor_name,trade_date,ts_code from "
+        f"loadTable('dfs://YesLab','{table}') "
+        f"where factor_name in [{names}] and trade_date between date('{start:%Y.%m.%d}') "
+        f"and date('{end:%Y.%m.%d}') and isValid(value); "
+        "select factor_name,trade_date,count(*) as finite_keys from "
+        "ej(s,compact_mature_keys,`trade_date`ts_code) group by factor_name,trade_date"
+    )
+    try:
+        result = _frame_query(source, script, f"finite keys {table}")
+    except RuntimeError as error:
+        if "out of memory" not in str(error).lower():
+            raise
+        if start.year != end.year:
+            parts = [
+                _query_finite_key_counts(
+                    source, table, factor_names, chunk_start, chunk_end
+                )
+                for chunk_start, chunk_end in _split_date_range(start, end)
+            ]
+            return pd.concat(parts, ignore_index=True)
+        if len(factor_names) > 1:
+            parts = [
+                _query_finite_key_counts(source, table, (factor_name,), start, end)
+                for factor_name in factor_names
+            ]
+            return pd.concat(parts, ignore_index=True)
+        if start >= end:
+            raise
+        chunks = _split_date_range(start, end)
+        parts = [
+            _query_finite_key_counts(source, table, factor_names, chunk_start, chunk_end)
+            for chunk_start, chunk_end in chunks
+        ]
+        return pd.concat(parts, ignore_index=True)
+    required = {"factor_name", "trade_date", "finite_keys"}
+    if not required.issubset(result.columns):
+        raise RuntimeError(f"finite key aggregate is missing columns: {sorted(required)}")
+    return result.loc[:, ["factor_name", "trade_date", "finite_keys"]]
+
+
+def _split_date_range(start: date, end: date) -> tuple[tuple[date, date], ...]:
+    """Split an OOM-prone range into calendar-year queries."""
+
+    if start.year == end.year:
+        midpoint = start + timedelta(days=(end - start).days // 2)
+        return ((start, midpoint), (midpoint + timedelta(days=1), end))
+    chunks: list[tuple[date, date]] = []
+    cursor = start
+    while cursor <= end:
+        chunk_end = min(date(cursor.year, 12, 31), end)
+        chunks.append((cursor, chunk_end))
+        cursor = chunk_end + timedelta(days=1)
+    return tuple(chunks)
+
+
+def _mature_keys(universe: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
+    universe_keys = universe.loc[
+        universe["is_member"].fillna(False), ["signal_date", "ts_code"]
+    ]
+    label_keys = labels.loc[
+        labels["label_valid"].fillna(False), ["signal_date", "ts_code"]
+    ]
+    mature = universe_keys.merge(label_keys, on=["signal_date", "ts_code"], how="inner")
+    mature = mature.drop_duplicates(["signal_date", "ts_code"])
+    mature = mature.rename(columns={"signal_date": "trade_date"})
+    mature["trade_date"] = pd.to_datetime(mature["trade_date"], errors="raise").dt.date
+    return mature.loc[:, ["trade_date", "ts_code"]]
+
+
 def _frame_query(session: QuerySession, script: str, label: str) -> pd.DataFrame:
     result = session.query(script)
     if not isinstance(result, pd.DataFrame):
@@ -152,7 +278,9 @@ def _connect(target_database: str) -> tuple[YesLabReadOnlySession, V2WriteSessio
         os.getenv("QRV2_DDB_USERNAME", "xiahongjie"),
         os.getenv("QRV2_DDB_PASSWORD", "123456"),
     )
-    return YesLabReadOnlySession(client), V2WriteSession(client, target_database=target_database)
+    return YesLabReadOnlySession(client), V2WriteSession(
+        client, target_database=target_database
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> list[dict[str, object]]:
@@ -167,6 +295,7 @@ def main(argv: Sequence[str] | None = None) -> list[dict[str, object]]:
         "universe_version": args.universe_version,
         "label_id": args.label_id,
         "label_version": args.label_version,
+        "server_aggregate": bool(args.server_aggregate),
         "database_writes": False,
         "rows": rows,
     }

@@ -128,3 +128,33 @@ YesLab 精确 `stock_factor_daily` 后，结果仍为 `clean=56,920`、
 因此，P1/P3 的全市场低 finite ratio 不能直接作为模型输入拒绝理由；它们需要继续通过全 TRAIN 月度稳定性、PIT 版本、相似度和 FDR 门禁。该结论也不能外推到 P2 或 P0，后两类仍需单独审计。
 
 完整只读结果见 [`P1/P3 compact coverage JSON`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_dec2020_p1_p3_all27_v1.json)。
+
+### P1/P3 全 TRAIN（2020–2024）compact-universe 复核
+
+随后将同一口径扩展到完整 TRAIN 区间（2020-01-01–2024-12-31）。本次查询按
+`store_factor` 分组并在 DolphinDB 服务端执行有限值 `(trade_date, ts_code)` 去重；成熟分母仍是
+`cn_liquid_a/v1 ∩ forward_open_5d/v1`，只使用会话级临时键，不写入任何数据库表。
+
+27 个因子的结果为：20 个通过结构覆盖门槛、7 个因最低日覆盖失败。通过这里只表示
+`COMPACT_DQ_PASS_PENDING_SIMILARITY`，尚未通过相似度、FDR、年度稳定性或准入发布门禁。
+
+| 结果 | 数量 | 因子 |
+| --- | ---: | --- |
+| `COMPACT_DQ_PASS_PENDING_SIMILARITY` | 20 | `yeslab_114, 115, 117, 118, 163, 357, 359, 362, 363, 365, 366, 376, 381, 383, 391, 393, 396, 95, 96, 98` |
+| `COMPACT_DQ_FAIL` | 7 | `yeslab_377, 380, 382, 385, 387, 388, 395` |
+
+全 TRAIN 的总体范围如下：
+
+| 指标 | 27 个因子最小值 | 说明 |
+| --- | ---: | --- |
+| 整体 finite coverage | 0.983577 | GP_022；仍明显高于全市场分母下的代理值 |
+| 最低日覆盖 | 0.481387 | GP_026；7 个失败因子的共同门禁触发项约为 0.48–0.49 |
+| 日覆盖 P05 | 0.968101 | GP_022；失败因子并非全期间普遍缺失 |
+| 最低月覆盖 | 0.788443 | GP_019；其余失败因子月度最低值仍在 0.88 以上 |
+
+这 7 个因子的失败主要表现为少数交易日的断崖式缺失，而不是整体覆盖率不足；不能用
+横截面均值或常数填充掩盖。下一步应定位这些最低覆盖交易日，核对对应公式的滚动预热、依赖字段
+及源表生成批次；在没有可复算证据前，将这些日期的记录保留在 quarantine。其余 20 个因子可以
+进入下一道 train-only similarity/FDR/年度稳定性检查，但不能据此直接扩大 frozen factor set。
+
+完整结果见 [`P1/P3 全 TRAIN compact coverage JSON`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_train2020_2024_p1_p3_all27_v1.json)。

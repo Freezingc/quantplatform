@@ -4,7 +4,10 @@ from datetime import date
 
 import pandas as pd
 
-from research_v2.factors.compact_coverage import summarize_compact_coverage
+from research_v2.factors.compact_coverage import (
+    summarize_compact_coverage,
+    summarize_compact_coverage_counts,
+)
 
 
 def _universe() -> pd.DataFrame:
@@ -80,3 +83,25 @@ def test_compact_coverage_blocks_distinct_source_values_for_one_key() -> None:
 
     assert result["source_conflict_keys"] == 1
     assert result["decision_status"] == "COMPACT_DQ_BLOCKED"
+
+
+def test_compact_coverage_counts_uses_zero_for_missing_days() -> None:
+    finite_keys = pd.DataFrame(
+        {
+            "signal_date": [date(2020, 12, 1)],
+            "finite_keys": [4],
+        }
+    )
+    result = summarize_compact_coverage_counts(
+        _universe(),
+        _labels(),
+        finite_keys,
+        factor_id="yeslab_1",
+        factor_name="F",
+        logical_partition="2020-12",
+    )
+
+    assert result["compact_rows"] == 4
+    assert result["compact_finite_rows"] == 4
+    assert result["finite_key_overflow_days"] == 0
+    assert result["decision_status"] == "COMPACT_DQ_PASS_PENDING_SIMILARITY"

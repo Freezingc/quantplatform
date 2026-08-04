@@ -35,14 +35,8 @@ def summarize_compact_coverage(
     _require_columns(universe, {"signal_date", "ts_code", "is_member"}, "universe")
     _require_columns(labels, {"signal_date", "ts_code", "label_valid"}, "labels")
     _require_columns(source, {"trade_date", "ts_code", "value"}, "source")
-    universe_frame = _normalize_keys(universe, "signal_date", "universe")
-    labels_frame = _normalize_keys(labels, "signal_date", "labels")
+    mature = _mature_universe(universe, labels)
     source_frame = _normalize_keys(source, "trade_date", "source")
-    universe_frame = universe_frame.loc[universe_frame["is_member"].fillna(False)].copy()
-    labels_frame = labels_frame.loc[labels_frame["label_valid"].fillna(False)].copy()
-    universe_frame = universe_frame.drop_duplicates(list(_KEYS)).loc[:, list(_KEYS)]
-    labels_frame = labels_frame.drop_duplicates(list(_KEYS)).loc[:, list(_KEYS)]
-    mature = universe_frame.merge(labels_frame, on=list(_KEYS), how="inner", validate="one_to_one")
 
     source_rows = len(source_frame)
     source_frame["value"] = pd.to_numeric(source_frame["value"], errors="coerce")
@@ -113,8 +107,96 @@ def summarize_compact_coverage(
     )
 
 
+def summarize_compact_coverage_counts(
+    universe: pd.DataFrame,
+    labels: pd.DataFrame,
+    finite_keys: pd.DataFrame,
+    *,
+    factor_id: str,
+    factor_name: str,
+    logical_partition: str,
+    source_rows: int | None = None,
+    source_unique_rows: int | None = None,
+    source_exact_duplicate_rows: int | None = None,
+    source_conflict_keys: int = 0,
+    minimum_overall_ratio: float = 0.80,
+    minimum_daily_ratio: float = 0.70,
+    minimum_p05_ratio: float = 0.70,
+    minimum_monthly_ratio: float = 0.70,
+) -> Mapping[str, object]:
+    """Summarize server-side finite-key counts without transferring raw values."""
+
+    _require_columns(universe, {"signal_date", "ts_code", "is_member"}, "universe")
+    _require_columns(labels, {"signal_date", "ts_code", "label_valid"}, "labels")
+    _require_columns(finite_keys, {"signal_date", "finite_keys"}, "finite_keys")
+    mature = _mature_universe(universe, labels)
+    counts = finite_keys.loc[:, ["signal_date", "finite_keys"]].copy()
+    counts["signal_date"] = pd.to_datetime(counts["signal_date"], errors="raise").dt.date
+    counts["finite_keys"] = pd.to_numeric(counts["finite_keys"], errors="coerce").fillna(0)
+    counts_frame = counts.groupby("signal_date", as_index=False, sort=True)["finite_keys"].sum()
+    denominators = mature.groupby("signal_date", sort=True).size().astype(float)
+    finite_by_day = counts_frame.set_index("signal_date")["finite_keys"].reindex(
+        denominators.index, fill_value=0.0
+    )
+    daily = finite_by_day / denominators
+    overflow_days = int((finite_by_day > denominators).sum())
+    compact_rows = int(denominators.sum())
+    compact_finite_rows = int(finite_by_day.sum())
+    overall_ratio = compact_finite_rows / compact_rows if compact_rows else 0.0
+    monthly = daily.groupby(
+        daily.index.to_series().map(lambda value: value.strftime("%Y-%m"))
+    ).mean()
+    minimum_daily = float(daily.min()) if not daily.empty else 0.0
+    p05_daily = float(daily.quantile(0.05)) if not daily.empty else 0.0
+    minimum_monthly = float(monthly.min()) if not monthly.empty else 0.0
+    gate = bool(
+        compact_rows
+        and overflow_days == 0
+        and overall_ratio >= minimum_overall_ratio
+        and minimum_daily >= minimum_daily_ratio
+        and p05_daily >= minimum_p05_ratio
+        and minimum_monthly >= minimum_monthly_ratio
+    )
+    if overflow_days:
+        status = "COMPACT_DQ_BLOCKED"
+        reasons = ("FINITE_KEY_OVERFLOW",)
+    else:
+        status = "COMPACT_DQ_PASS_PENDING_SIMILARITY" if gate else "COMPACT_DQ_FAIL"
+        reasons = ("COMPACT_FINITE_COVERAGE_PASS",) if gate else ("LOW_COMPACT_FINITE_COVERAGE",)
+    return _result(
+        factor_id=factor_id,
+        factor_name=factor_name,
+        logical_partition=logical_partition,
+        source_rows=source_rows,
+        source_unique_rows=source_unique_rows,
+        source_exact_duplicate_rows=source_exact_duplicate_rows,
+        source_conflict_keys=source_conflict_keys,
+        compact_rows=compact_rows,
+        compact_finite_rows=compact_finite_rows,
+        compact_finite_ratio=overall_ratio,
+        minimum_daily_finite_ratio=minimum_daily,
+        p05_daily_finite_ratio=p05_daily,
+        minimum_monthly_finite_ratio=minimum_monthly,
+        finite_key_overflow_days=overflow_days,
+        decision_status=status,
+        reason_codes=reasons,
+    )
+
+
 def _result(**values: object) -> Mapping[str, object]:
     return values
+
+
+def _mature_universe(universe: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
+    universe_frame = _normalize_keys(universe, "signal_date", "universe")
+    labels_frame = _normalize_keys(labels, "signal_date", "labels")
+    universe_frame = universe_frame.loc[universe_frame["is_member"].fillna(False)].copy()
+    labels_frame = labels_frame.loc[labels_frame["label_valid"].fillna(False)].copy()
+    universe_frame = universe_frame.drop_duplicates(list(_KEYS)).loc[:, list(_KEYS)]
+    labels_frame = labels_frame.drop_duplicates(list(_KEYS)).loc[:, list(_KEYS)]
+    return universe_frame.merge(
+        labels_frame, on=list(_KEYS), how="inner", validate="one_to_one"
+    )
 
 
 def _require_columns(frame: pd.DataFrame, required: set[str], label: str) -> None:
