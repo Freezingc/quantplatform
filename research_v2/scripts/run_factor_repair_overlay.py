@@ -90,6 +90,7 @@ class RepairRunnerResult:
     counts: Mapping[str, int]
     audit_batches: tuple[StagedBatch, ...] = ()
     quarantine_batches: tuple[StagedBatch, ...] = ()
+    quarantine_reason_counts: tuple[tuple[str, int], ...] = ()
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -349,6 +350,9 @@ def _run_repair_with_spool(
     )
     first_clean_batch: StagedBatch | None = None
     status_counts = tuple(sorted(Counter(str(record.decision_status) for record in audits).items()))
+    quarantine_reason_counts = tuple(
+        sorted(Counter(row.reason for row in quarantines).items())
+    )
     counts["audit_rows"] = len(audits)
     counts["factor_count"] = len(factor_ids)
     counts["month_count"] = len(months)
@@ -383,6 +387,7 @@ def _run_repair_with_spool(
         counts=dict(counts),
         audit_batches=audit_batches,
         quarantine_batches=quarantine_batches,
+        quarantine_reason_counts=quarantine_reason_counts,
     )
 
 
@@ -413,6 +418,8 @@ def main(
     )
     for status, count in result.status_counts:
         print(f"{status}: {count}", flush=True)
+    for reason, count in result.quarantine_reason_counts:
+        print(f"quarantine_reason {reason}: {count}", flush=True)
     if args.manifest is not None:
         args.manifest.parent.mkdir(parents=True, exist_ok=True)
         args.manifest.write_text(
@@ -427,6 +434,7 @@ def main(
                     "published": result.published,
                     "counts": result.counts,
                     "status_counts": result.status_counts,
+                    "quarantine_reason_counts": result.quarantine_reason_counts,
                 },
                 ensure_ascii=False,
                 indent=2,

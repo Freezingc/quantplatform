@@ -157,7 +157,7 @@ def test_main_dry_run_reads_bounded_source_and_never_writes_source() -> None:
     assert "2026" not in source_queries
 
 
-def test_missing_source_evidence_counts_audit_and_quarantine_rows() -> None:
+def test_missing_source_evidence_counts_audit_and_quarantine_rows(tmp_path) -> None:
     target = _FakeTarget(
         pd.DataFrame(
             {
@@ -168,7 +168,16 @@ def test_missing_source_evidence_counts_audit_and_quarantine_rows() -> None:
     )
 
     result = main(
-        ["--phase", "train", "--start", "2020-01-01", "--end", "2020-01-31"],
+        [
+            "--phase",
+            "train",
+            "--start",
+            "2020-01-01",
+            "--end",
+            "2020-01-31",
+            "--manifest",
+            str(tmp_path / "manifest.json"),
+        ],
         source_session=_EmptySource(),
         target_session=target,
     )
@@ -178,6 +187,9 @@ def test_missing_source_evidence_counts_audit_and_quarantine_rows() -> None:
     assert result.counts["blocked"] == 1
     assert result.quarantine_batch is not None
     assert result.quarantine_batch.frame["reason"].tolist() == ["NO_SOURCE_EVIDENCE"]
+    assert result.quarantine_reason_counts == (("NO_SOURCE_EVIDENCE", 1),)
+    manifest = json.loads((tmp_path / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["quarantine_reason_counts"] == [["NO_SOURCE_EVIDENCE", 1]]
 
 
 def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> None:
@@ -212,6 +224,7 @@ def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> No
     assert result.quarantine_batch.frame["reason"].tolist() == [
         "CANDIDATE_OVERLAP_MISMATCH"
     ]
+    assert result.quarantine_reason_counts == (("CANDIDATE_OVERLAP_MISMATCH", 1),)
     assert not result.clean_batches
 
 
@@ -240,6 +253,7 @@ def test_provider_failure_counts_quarantine_rows(monkeypatch) -> None:
     assert result.counts["blocked"] == 1
     assert result.quarantine_batch is not None
     assert result.quarantine_batch.frame["reason"].tolist() == ["PROVIDER_FAILURE"]
+    assert result.quarantine_reason_counts == (("PROVIDER_FAILURE", 1),)
 
 
 def test_provider_evidence_watermark_changes_source_watermark() -> None:
