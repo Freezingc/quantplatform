@@ -291,6 +291,36 @@ def test_warmup_only_scope_quarantine_promotes_pass_with_quarantine_status() -> 
     assert result.quarantine["reason"].tolist() == ["WARMUP_OUT_OF_SCOPE"]
 
 
+def test_warmup_scope_quarantine_does_not_downgrade_in_month_conflict() -> None:
+    class ConflictWithWarmupProvider:
+        method = "CONFLICT_WITH_WARMUP"
+
+        def provide(self, source: pd.DataFrame, **_: object) -> pd.DataFrame:
+            del source
+            return pd.DataFrame(
+                {
+                    "trade_date": [
+                        date(2024, 12, 31),
+                        date(2025, 1, 2),
+                        date(2025, 1, 2),
+                    ],
+                    "ts_code": ["000003.SZ", "000001.SZ", "000001.SZ"],
+                    "candidate_value": [9.0, 2.0, 3.0],
+                }
+            )
+
+    result = build_repair_overlay(
+        _source(),
+        ConflictWithWarmupProvider(),
+        definition=_definition(),
+        logical_partition="2025-01",
+    )
+    assert result.status is RepairStatus.BLOCKED
+    assert {"WARMUP_OUT_OF_SCOPE", "CONFLICT_QUARANTINE"}.issubset(
+        set(result.quarantine["reason"])
+    )
+
+
 def test_source_backfill_allows_pre_month_formula_warmup_and_materializes_in_month_fill() -> None:
     class WarmupProvider:
         method = "WARMUP_CANDIDATE"

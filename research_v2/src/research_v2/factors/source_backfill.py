@@ -31,7 +31,9 @@ from research_v2.factors.materializer import (
     _record_hashes,
     build_technical_factor_batches,
 )
+from research_v2.factors.repair import RepairOverlayResult
 from research_v2.factors.repair_overlay import (
+    RepairOverlayBuildResult,
     RepairProvider,
     RepairStatus,
     build_repair_overlay,
@@ -48,8 +50,8 @@ class FactorBackfillError(ValueError):
 class RepairFactorMaterializationBatches(FactorMaterializationBatches):
     """Materialization pair carrying optional in-memory repair evidence."""
 
-    repair_overlay: object | None = None
-    repair_audit: object | None = None
+    repair_overlay: RepairOverlayBuildResult | None = None
+    repair_audit: RepairOverlayResult | None = None
 
 
 class YesLabFactorSession(Protocol):

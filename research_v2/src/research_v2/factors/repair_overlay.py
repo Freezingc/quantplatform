@@ -410,7 +410,7 @@ def build_repair_overlay(
             decision,
             status=(
                 RepairStatus.BLOCKED
-                if scope_blocking
+                if scope_blocking or decision.status is RepairStatus.BLOCKED
                 else RepairStatus.PASS_WITH_QUARANTINE
             ),
             quarantine=combined_quarantine,
