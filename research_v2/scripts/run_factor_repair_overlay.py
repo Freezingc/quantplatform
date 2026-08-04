@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import re
+import tempfile
 from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
@@ -53,6 +54,10 @@ from research_v2.runs.context import RunContext
 SOURCE_SCOPE_ID = "SCREEN_TRAIN2020_2024_SOURCE_DQ_COMBINED_V1"
 SOURCE_STATUS = "SOURCE_DQ_PASS_PENDING_SIMILARITY"
 LOCKED_TEST_START = date(2026, 1, 1)
+TRAIN_START = date(2020, 1, 1)
+TRAIN_END = date(2024, 12, 31)
+VALIDATION_START = date(2025, 1, 1)
+VALIDATION_END = date(2025, 12, 31)
 _GROUP_SIZE = 3
 _FACTOR_ID_RE = re.compile(r"^yeslab_[0-9]+$")
 _TABLE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
@@ -106,8 +111,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     args = parser.parse_args(argv)
 
     defaults = {
-        "train": (date(2020, 1, 1), date(2024, 12, 31)),
-        "validation": (date(2025, 1, 1), date(2025, 12, 31)),
+        "train": (TRAIN_START, TRAIN_END),
+        "validation": (VALIDATION_START, VALIDATION_END),
     }
     default_start, default_end = defaults[str(args.phase)]
     args.start = args.start or default_start
@@ -116,6 +121,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         raise ValueError("repair start date must not be after end date")
     if args.end >= LOCKED_TEST_START:
         raise ValueError("factor repair cannot read 2026 locked-test data")
+    phase_lower, phase_upper = defaults[str(args.phase)]
+    if args.start < phase_lower or args.end > phase_upper:
+        raise ValueError(
+            f"{args.phase} repair must remain within "
+            f"{phase_lower.isoformat()}..{phase_upper.isoformat()}"
+        )
     if args.publish and args.dry_run:
         raise ValueError("--publish and --dry-run cannot be combined")
     if args.group_size < 1:
@@ -191,7 +202,11 @@ def run_repair(
 
     audits: list[RepairAuditRecord] = []
     quarantines: list[RepairQuarantineRow] = []
-    overlay_frames: list[tuple[FactorDefinition, FactorMonth, pd.DataFrame]] = []
+    # Keep only paths in memory during the audit pass.  The raw/clean frames
+    # themselves are spooled per factor/month so a five-year run does not hold
+    # the complete repaired panel in client memory.
+    overlay_spool = tempfile.TemporaryDirectory(prefix="qrv2-factor-repair-")
+    overlay_paths: list[tuple[FactorDefinition, FactorMonth, Path]] = []
     counts: Counter[str] = Counter()
     source_watermarks: list[str] = []
 
@@ -260,7 +275,12 @@ def run_repair(
                     counts["blocked"] += int(overlay.status is RepairStatus.BLOCKED)
                     counts["audited"] += 1
                     if overlay.status is not RepairStatus.BLOCKED and not overlay.clean.empty:
-                        overlay_frames.append((definition, month, overlay.clean.copy(deep=True)))
+                        path = Path(overlay_spool.name) / (
+                            f"{len(overlay_paths):08d}-{definition.factor_id}-"
+                            f"{month.logical_partition}.pkl"
+                        )
+                        overlay.clean.to_pickle(path)
+                        overlay_paths.append((definition, month, path))
 
     if not audits:
         raise FactorRepairRunnerError("repair run produced no audit rows")
@@ -280,12 +300,16 @@ def run_repair(
     quarantine_batch = quarantine_batches[0] if quarantine_batches else None
     context = RunContext(run_id=identity.run_id, data_version=identity.data_version)
     clean_batches: list[StagedBatch] = []
-    for definition, month, frame in overlay_frames:
+    for definition, _month, path in overlay_paths:
+        frame = pd.read_pickle(path)
         materialized = build_technical_factor_batches(
             frame,
             definition,
             source_factor_name=definition.display_name,
-            source_watermark_id=_source_watermark(definition, month, None),
+            # The persistence identity is the authoritative watermark for the
+            # repaired clean batch.  Recomputing a factor-local watermark here
+            # would make clean lineage disagree with audit/quarantine lineage.
+            source_watermark_id=identity.source_watermark_id,
             context=context,
             record_hash_strategy="fast",
             include_lineage=True,
@@ -294,6 +318,7 @@ def run_repair(
         counts["clean_rows"] += len(materialized.clean_batch.frame)
         if materialized.quarantine_batch is not None:
             counts["source_quarantine_rows"] += len(materialized.quarantine_batch.frame)
+    overlay_spool.cleanup()
 
     status_counts = tuple(sorted(Counter(str(record.decision_status) for record in audits).items()))
     counts["audit_rows"] = len(audits)
@@ -753,6 +778,7 @@ def _source_watermark(
     provider: RepairProvider | None,
 ) -> str:
     method = str(getattr(provider, "method", "NO_EVIDENCE_BACKFILL"))
+    provider_watermark = str(getattr(provider, "source_watermark_id", ""))
     return _hash_text(
         "|".join(
             (
@@ -762,6 +788,7 @@ def _source_watermark(
                 month.logical_partition,
                 definition.definition_hash,
                 method,
+                provider_watermark,
             )
         )
     )

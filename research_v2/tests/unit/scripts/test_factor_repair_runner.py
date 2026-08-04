@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import json
 from datetime import date
+from types import SimpleNamespace
 
 import pandas as pd
 import pytest
 from run_factor_repair_overlay import (
     SOURCE_SCOPE_ID,
     SOURCE_STATUS,
+    _iter_months,
+    _source_watermark,
     main,
     parse_args,
     resolve_factor_ids,
@@ -93,6 +96,14 @@ def test_parser_rejects_unknown_phase_and_locked_test_end_date() -> None:
     with pytest.raises(ValueError, match="2026"):
         parse_args(["--phase", "train", "--start", "2025-01-01", "--end", "2026-01-01"])
 
+    with pytest.raises(ValueError, match="train repair must remain"):
+        parse_args(["--phase", "train", "--start", "2019-12-01", "--end", "2020-01-31"])
+
+    with pytest.raises(ValueError, match="validation repair must remain"):
+        parse_args(
+            ["--phase", "validation", "--start", "2024-12-01", "--end", "2025-01-31"]
+        )
+
 
 def test_explicit_factor_id_must_be_in_resolved_scope() -> None:
     target = _FakeTarget(
@@ -125,6 +136,28 @@ def test_main_dry_run_reads_bounded_source_and_never_writes_source() -> None:
 
     assert result.published is False
     assert result.counts["audit_rows"] == 1
+    assert set(result.clean_batches[0].frame["source_watermark_id"]) == {
+        result.identity.source_watermark_id
+    }
     source_queries = "\n".join(source.queries)
     assert "trade_date between date('2020.01.01')" in source_queries
     assert "2026" not in source_queries
+
+
+def test_provider_evidence_watermark_changes_source_watermark() -> None:
+    definition = SimpleNamespace(
+        factor_id="yeslab_1",
+        source_table="factor_data1",
+        definition_hash="definition-a",
+    )
+    month = _iter_months(date(2020, 1, 1), date(2020, 1, 31))[0]
+    provider_a = SimpleNamespace(
+        method="KNOWN_FORMULA_RECONSTRUCTION", source_watermark_id="cache-a"
+    )
+    provider_b = SimpleNamespace(
+        method="KNOWN_FORMULA_RECONSTRUCTION", source_watermark_id="cache-b"
+    )
+
+    assert _source_watermark(definition, month, provider_a) != _source_watermark(
+        definition, month, provider_b
+    )
