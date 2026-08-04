@@ -71,3 +71,58 @@ def test_main_writes_csv_from_injected_frames_without_database_access(tmp_path) 
     assert output.exists()
     assert result["factor_id"].tolist() == ["yeslab_1", "yeslab_2"]
     assert pd.read_csv(output)["factor_id"].tolist() == ["yeslab_1", "yeslab_2"]
+
+
+def test_main_writes_dependency_free_markdown(tmp_path) -> None:
+    output = tmp_path / "comparison.md"
+    main(
+        ["--output", str(output), "--format", "markdown"],
+        audit_frame=_audit(),
+        before_frame=pd.DataFrame({"factor_id": ["yeslab_1"], "finite_ratio": [0.7]}),
+        after_frame=pd.DataFrame({"factor_id": ["yeslab_1"], "finite_ratio": [0.9]}),
+    )
+
+    text = output.read_text(encoding="utf-8")
+    assert text.startswith("| factor_id |")
+    assert "yeslab_1" in text
+
+
+def test_nested_snapshot_metrics_are_flattened_with_leaf_aliases() -> None:
+    before = pd.DataFrame(
+        {
+            "factor_id": ["yeslab_1"],
+            "metrics_json": [
+                json.dumps(
+                    {
+                        "predictive": {"finite_ratio": 0.70, "mean_rank_ic": 0.02},
+                        "validation": {"finite_ratio": 0.60},
+                        "structural": {"valid_day_count": 40},
+                    }
+                )
+            ],
+        }
+    )
+    after = pd.DataFrame(
+        {
+            "factor_id": ["yeslab_1"],
+            "metrics_json": [
+                json.dumps(
+                    {
+                        "predictive": {"finite_ratio": 0.90, "mean_rank_ic": 0.03},
+                        "validation": {"finite_ratio": 0.80},
+                        "structural": {"valid_day_count": 60},
+                    }
+                )
+            ],
+        }
+    )
+
+    report = build_comparison_report(_audit().iloc[[1]], before, after)
+
+    assert report.loc[0, "before_finite_ratio"] == 0.70
+    assert report.loc[0, "after_finite_ratio"] == 0.90
+    assert report.loc[0, "finite_ratio_delta"] == 0.20
+    assert report.loc[0, "before_predictive.finite_ratio"] == 0.70
+    assert report.loc[0, "before_predictive_finite_ratio"] == 0.70
+    assert report.loc[0, "valid_day_count_delta"] == 20.0
+    assert report.loc[0, "mean_rank_ic_delta"] == 0.01

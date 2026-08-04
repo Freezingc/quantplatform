@@ -176,7 +176,7 @@ def main(
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     if output_format == "markdown":
-        args.output.write_text(report.to_markdown(index=False) + "\n", encoding="utf-8")
+        args.output.write_text(_markdown_table(report), encoding="utf-8")
     else:
         report.to_csv(args.output, index=False)
     print(
@@ -205,6 +205,27 @@ def _resolve_frame(
     if path.suffix in {".pkl", ".pickle"}:
         return pd.read_pickle(path)
     return pd.read_csv(path)
+
+
+def _markdown_table(frame: pd.DataFrame) -> str:
+    """Serialize a DataFrame without requiring the optional tabulate package."""
+
+    columns = [str(column) for column in frame.columns]
+    lines = [
+        "| " + " | ".join(_markdown_cell(column) for column in columns) + " |",
+        "| " + " | ".join("---" for _ in columns) + " |",
+    ]
+    for values in frame.itertuples(index=False, name=None):
+        lines.append(
+            "| " + " | ".join(_markdown_cell(value) for value in values) + " |"
+        )
+    return "\n".join(lines) + "\n"
+
+
+def _markdown_cell(value: object) -> str:
+    if _is_null(value):
+        return ""
+    return str(value).replace("|", "\\|").replace("\n", " ")
 
 
 def _normalise_audit(frame: pd.DataFrame) -> dict[str, dict[str, object]]:
@@ -254,14 +275,52 @@ def _extract_metrics(row: Mapping[str, object]) -> dict[str, object]:
         except (TypeError, ValueError, json.JSONDecodeError):
             parsed = {}
         if isinstance(parsed, dict):
-            source = parsed.get("train", parsed)
-            if isinstance(source, dict):
-                metrics.update({str(key): value for key, value in source.items()})
+            flattened = _flatten_mapping(parsed)
+            metrics.update(flattened)
+            metrics.update(_leaf_aliases(flattened))
     for key, value in row.items():
         if key in {"factor_id", "metrics_json"} or _is_null(value):
             continue
         metrics[str(key)] = _jsonable(value)
     return metrics
+
+
+def _flatten_mapping(
+    value: Mapping[str, object],
+    prefix: str = "",
+) -> dict[str, object]:
+    """Flatten nested snapshot sections into stable dotted metric names."""
+
+    flattened: dict[str, object] = {}
+    for key, item in value.items():
+        name = f"{prefix}.{key}" if prefix else str(key)
+        if isinstance(item, Mapping):
+            flattened.update(_flatten_mapping(item, name))
+        else:
+            flattened[name] = _jsonable(item)
+    return flattened
+
+
+def _leaf_aliases(flattened: Mapping[str, object]) -> dict[str, object]:
+    """Add stable underscore and unqualified aliases for nested metrics."""
+
+    aliases = {
+        path.replace(".", "_"): value for path, value in flattened.items() if "." in path
+    }
+    paths_by_leaf: dict[str, list[str]] = {}
+    for path in flattened:
+        leaf = path.rsplit(".", 1)[-1]
+        paths_by_leaf.setdefault(leaf, []).append(path)
+    for leaf, paths in paths_by_leaf.items():
+        selected = min(paths, key=_metric_path_sort_key)
+        aliases[leaf] = flattened[selected]
+    return aliases
+
+
+def _metric_path_sort_key(path: str) -> tuple[int, str]:
+    section = path.split(".", 1)[0]
+    preferred = {"predictive": 0, "train": 1, "validation": 2, "structural": 3}
+    return preferred.get(section, 4), path
 
 
 def _normalise_factor_id(value: object) -> str | None:
