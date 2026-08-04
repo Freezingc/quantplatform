@@ -284,7 +284,7 @@ def _latest_status(statuses: object) -> str:
 def _delta(after: object, before: object) -> float | None:
     if not _is_numeric(after) or not _is_numeric(before):
         return None
-    return float(str(after)) - float(str(before))
+    return round(float(str(after)) - float(str(before)), 12)
 
 
 def _as_int(value: object) -> int:
