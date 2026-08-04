@@ -293,3 +293,24 @@ YesLab 原始表按月读取并做确定性有限值去重；6 个换手率候�
 [`TRAIN26 full-day similarity`](../../research_v2/artifacts/diagnostics/train_similarity_full_day_2020_2024_repaired26_v3.csv)，
 clean 版本指针审计见
 [`V2 clean pointer audit`](../../research_v2/artifacts/diagnostics/v2_clean_pointer_version_audit_train26_v1.json)。
+
+### 修复后 RankIC 再检验
+
+按照数据修复设计，未直接沿用修复前的 RankIC。针对 2020-09-18–2020-10-09 的换手率
+候选影响窗口，重新计算 6 个修复因子的每日横截面 RankIC，并把这 60 条受影响记录
+替换到本地 2020–2024 RankIC 面板，再重新计算 26 因子的 HAC/FDR/ICIR。结果显示：
+
+- 6 个因子各自仍有 `1,212` 个有效 TRAIN 日；
+- 60 条 RankIC 记录发生替换，26 因子的每日 predictive gate 全部保持通过；
+- 指标变化很小，没有因修复而制造新的显著性或方向性：例如 GP_019 的 mean RankIC
+  从 `-0.082160` 变为 `-0.081981`，ICIR 从 `-0.573622` 变为 `-0.570411`，仍满足
+  当前绝对值阈值；
+- 该再检验只写本地 CSV/JSON，不写入已有 `factor_rank_ic_daily` 表，也不改变模型或
+  frozen factor 指针。
+
+对应证据见
+[`repaired RankIC report`](../../research_v2/artifacts/diagnostics/repaired_factor_rankic_train26_v1.json)、
+[`repaired RankIC impact rows`](../../research_v2/artifacts/diagnostics/repaired_factor_rankic_train26_v1_impact.csv)、
+[`repaired TRAIN metrics`](../../research_v2/artifacts/diagnostics/repaired_factor_rankic_train26_v1_metrics.csv)
+和更新后的
+[`TRAIN26 gate report V3`](../../research_v2/artifacts/diagnostics/factor_quality_train26_gate_report_v5.json)。

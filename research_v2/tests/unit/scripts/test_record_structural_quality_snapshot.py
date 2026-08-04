@@ -7,6 +7,7 @@ import pytest
 from record_raw_conflict_snapshot import classify_conflict_metrics
 from record_raw_pit_key_snapshot import summarize_finite_key_coverage
 from record_raw_source_quality_snapshot import classify_raw_metrics, summarize_raw_aggregates
+from record_repaired_factor_rankic import merge_daily_rankic
 from record_source_quality_combined_snapshot import combine_source_statuses
 from record_structural_quality_snapshot import compute_structural_metrics
 from record_train_rankic_similarity import rankic_similarity_pairs
@@ -293,6 +294,23 @@ def test_query_clean_factor_month_uses_v2_factor_panel() -> None:
     assert result[["factor_id", "ts_code"]].to_dict("records") == [
         {"factor_id": "yeslab_377", "ts_code": "S1"}
     ]
+
+
+def test_merge_daily_rankic_replaces_only_repaired_factor_dates() -> None:
+    existing = pd.DataFrame(
+        {
+            "signal_date": pd.to_datetime(["2020-09-18", "2020-09-19"]),
+            "factor_id": ["yeslab_377", "yeslab_377"],
+            "factor_version": [1, 1],
+            "rank_ic": [0.1, 0.2],
+            "sample_count": [100, 100],
+        }
+    )
+    repaired = existing.iloc[[0]].assign(rank_ic=0.3)
+
+    result = merge_daily_rankic(existing, repaired)
+
+    assert result.sort_values("signal_date")["rank_ic"].tolist() == [0.3, 0.2]
 
 
 def test_validation_metrics_use_fixed_train_direction_and_fdr_gate() -> None:
