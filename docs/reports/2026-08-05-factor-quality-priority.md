@@ -181,14 +181,16 @@ Tushare `daily_basic(20200918)` 返回 4,070 条有限 `turnover_rate`，对成�
 | `yeslab_388 / GP_019` | 0 | 1,377（含滚动传导共 8,204） | `TURNOVER_REPAIR_CANDIDATE_READY` |
 | `yeslab_395 / GP_026` | 2,016 | 1,348 | `TURNOVER_REPAIR_BLOCKED_OVERLAP` |
 
-六个候选的有限重叠值完全一致，说明可先生成隔离的 V2 repair candidate；这不代表可以
-覆盖 YesLab 原表，也不代表已经发布。`GP_026` 的重叠值仍有较大不一致（最大绝对差
-约 `42,249.21`），继续按公式一致性门禁阻断，不能因为外部换手率完整就强行补值。
+六个候选的有限重叠值完全一致，并已通过纯内存 overlay dry-run：状态均为
+`REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE`。它们只填充有有限候选的缺失行，
+其余 `NO_FINITE_CANDIDATE` 行继续隔离；这不代表可以覆盖 YesLab 原表，也不代表已经发布。
+`GP_026` 的重叠值仍有较大不一致（最大绝对差约 `42,249.21`），overlay 为
+`REPAIR_BLOCKED`，不能因为外部换手率完整就强行补值。
 
 补救审计脚本和结果：
 
 - [`turnover gap audit script`](../../research_v2/scripts/audit_turnover_gap_repair.py)
 - [`turnover gap audit JSON`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_audit_2020-09-18_v1.json)
 
-下一步是仅针对这 6 个 `CANDIDATE_READY` 因子生成 V2 隔离候选和 quarantine 对照，复核
-candidate 的 PIT 日期、重复键和来源水印；`GP_026` 留在阻断清单，暂不进入候选表。
+下一步是仅针对这 6 个候选物化到新的 V2 隔离对象，重新跑 compact coverage 和预测稳定性
+门禁；`GP_026` 留在阻断清单，暂不进入候选表。任何正式发布仍需单独批准。

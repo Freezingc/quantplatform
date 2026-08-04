@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+from collections import Counter
 from collections.abc import Sequence
 from datetime import date, timedelta
 from pathlib import Path
@@ -20,6 +21,7 @@ import numpy as np
 import pandas as pd
 
 from research_v2.db.session import V2WriteSession, YesLabReadOnlySession
+from research_v2.factors.repair import apply_repair_overlay
 from research_v2.factors.turnover_repair import (
     TURNOVER_GAP_FORMULAS,
     compute_turnover_gap_candidate,
@@ -314,6 +316,15 @@ def _audit_factor(
     ).to_numpy(float)
     fillable = ~np.isfinite(mature_source) & np.isfinite(mature_candidate)
     gap_mask = mature_window["signal_date"].eq(gap_date).to_numpy()
+    finite_candidate = np.isfinite(
+        pd.to_numeric(candidate["candidate_value"], errors="coerce")
+    )
+    overlay = apply_repair_overlay(
+        source,
+        candidate.loc[finite_candidate].copy(),
+        factor_name=factor_name,
+    )
+    quarantine_reasons = Counter(str(value) for value in overlay.quarantine["reason"])
     status = (
         "TURNOVER_REPAIR_CANDIDATE_READY"
         if not mismatch.any()
@@ -335,6 +346,12 @@ def _audit_factor(
         "compact_candidate_finite_rows": int(np.isfinite(mature_candidate).sum()),
         "compact_fillable_rows": int(fillable.sum()),
         "compact_fillable_gap_date_rows": int((fillable & gap_mask).sum()),
+        "overlay_status": overlay.status.value,
+        "overlay_clean_rows": len(overlay.clean),
+        "overlay_quarantine_rows": len(overlay.quarantine),
+        "overlay_filled_rows": overlay.filled_rows,
+        "overlay_unresolved_rows": overlay.unresolved_rows,
+        "overlay_quarantine_reasons": dict(sorted(quarantine_reasons.items())),
         "status": status,
     }
 
