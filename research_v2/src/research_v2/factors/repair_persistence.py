@@ -247,6 +247,7 @@ def repair_quality_checks(
     accepted here; the predictive quality gate remains a separate workflow.
     """
 
+    _validate_audit_records((audit,))
     status = str(audit.decision_status)
     identity_scope_valid = True
     resolved_identity = identity
@@ -738,7 +739,9 @@ def _validate_quarantine_rows(
         if not row.candidate_hash.strip():
             raise RepairPersistenceError("repair quarantine candidate_hash cannot be empty")
         if require_provenance and (
-            not _definition_hash(row).strip() or not row.provider_hash.strip()
+            not row.source_table.strip()
+            or not _definition_hash(row).strip()
+            or not row.provider_hash.strip()
         ):
             raise RepairPersistenceError(
                 "repair quarantine provenance hashes are required for a quarantine-only scope"

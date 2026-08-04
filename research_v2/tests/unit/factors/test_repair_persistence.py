@@ -171,6 +171,16 @@ def test_quality_checks_accept_an_explicit_generated_identity_watermark() -> Non
     assert watermark_check.status.value == "PASS"
 
 
+def test_quality_checks_fail_closed_for_malformed_explicit_identity_audit() -> None:
+    audit = _audit().__class__(
+        **{**_audit().__dict__, "filled_rows": -1, "max_abs_diff": float("nan")}
+    )
+    identity = build_repair_identity([_audit()])
+
+    with pytest.raises(RepairPersistenceError, match="cannot be negative|finite"):
+        repair_quality_checks(audit, identity=identity)
+
+
 def test_month_partition_provides_shared_date_range_when_metadata_is_omitted() -> None:
     audit = _audit().__class__(
         **{**_audit().__dict__, "start_date": None, "end_date": None}
@@ -398,6 +408,15 @@ def test_quarantine_only_builder_requires_provenance_hashes() -> None:
             "source_definition_hash": "",
             "provider_hash": "",
         }
+    )
+
+    with pytest.raises(RepairPersistenceError, match="provenance"):
+        build_repair_quarantine_batch([malformed])
+
+
+def test_quarantine_only_builder_requires_source_table() -> None:
+    malformed = _quarantine().__class__(
+        **{**_quarantine().__dict__, "source_table": ""}
     )
 
     with pytest.raises(RepairPersistenceError, match="provenance"):
