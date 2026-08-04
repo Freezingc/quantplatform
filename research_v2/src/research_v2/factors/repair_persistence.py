@@ -108,6 +108,7 @@ class RepairQuarantineRow:
     created_at: datetime | pd.Timestamp | None = None
     source_watermark_id: str | None = None
     record_hash: str | None = None
+    source_table: str = ""
     source_definition_hash: str = ""
     definition_hash: str = ""
     provider_hash: str = ""
@@ -167,16 +168,20 @@ _QUARANTINE_COLUMNS: tuple[str, ...] = (
 )
 
 
-def build_repair_audit_batch(records: Iterable[RepairAuditRecord]) -> StagedBatch:
+def build_repair_audit_batch(
+    records: Iterable[RepairAuditRecord],
+    *,
+    identity: RepairIdentity | None = None,
+) -> StagedBatch:
     """Map repair decisions to one deterministic ``factor_repair_audit`` batch."""
 
     materialized = tuple(records)
     if not materialized:
         raise RepairPersistenceError("repair audit batch cannot be empty")
     _validate_audit_records(materialized)
-    identity = _identity(materialized, ())
+    resolved_identity = identity or build_repair_identity(materialized)
     frame = pd.DataFrame(
-        [_audit_row(record, identity) for record in materialized],
+        [_audit_row(record, resolved_identity) for record in materialized],
         columns=list(_AUDIT_COLUMNS),
     )
     frame = frame.sort_values(
@@ -186,7 +191,7 @@ def build_repair_audit_batch(records: Iterable[RepairAuditRecord]) -> StagedBatc
     return StagedBatch.create(
         object_name="factor_repair_audit",
         logical_partition=partition,
-        data_version=identity.data_version,
+        data_version=resolved_identity.data_version,
         frame=frame,
         business_keys=("as_of_date", "factor_id", "factor_version"),
         partition_date_column=date_column,
@@ -195,6 +200,8 @@ def build_repair_audit_batch(records: Iterable[RepairAuditRecord]) -> StagedBatc
 
 def build_repair_quarantine_batch(
     rows: Iterable[RepairQuarantineRow],
+    *,
+    identity: RepairIdentity | None = None,
 ) -> StagedBatch | None:
     """Map rejected observations to ``factor_repair_quarantine``.
 
@@ -206,9 +213,9 @@ def build_repair_quarantine_batch(
     if not materialized:
         return None
     _validate_quarantine_rows(materialized)
-    identity = _identity((), materialized)
+    resolved_identity = identity or build_repair_identity((), materialized)
     frame = pd.DataFrame(
-        [_quarantine_row(row, identity) for row in materialized],
+        [_quarantine_row(row, resolved_identity) for row in materialized],
         columns=list(_QUARANTINE_COLUMNS),
     )
     frame = frame.sort_values(
@@ -218,14 +225,18 @@ def build_repair_quarantine_batch(
     return StagedBatch.create(
         object_name="factor_repair_quarantine",
         logical_partition=partition,
-        data_version=identity.data_version,
+        data_version=resolved_identity.data_version,
         frame=frame,
         business_keys=("observation_date", "ts_code", "factor_id", "factor_version", "reason"),
         partition_date_column=date_column,
     )
 
 
-def repair_quality_checks(audit: RepairAuditRecord) -> list[CheckResult]:
+def repair_quality_checks(
+    audit: RepairAuditRecord,
+    *,
+    identity: RepairIdentity | None = None,
+) -> list[CheckResult]:
     """Return fail-closed blocker checks for one repair decision.
 
     Quarantine and unresolved evidence never gets silently promoted: any
@@ -235,6 +246,10 @@ def repair_quality_checks(audit: RepairAuditRecord) -> list[CheckResult]:
     """
 
     status = str(audit.decision_status)
+    allowed_statuses = {
+        RepairDecisionStatus.PASS.value,
+        RepairDecisionStatus.PENDING_RECHECK.value,
+    }
     checks = [
         _check("repair_source_rows", audit.source_rows > 0),
         _check("repair_keys_unique", audit.conflict_groups == 0),
@@ -244,24 +259,52 @@ def repair_quality_checks(audit: RepairAuditRecord) -> list[CheckResult]:
         _check("repair_unresolved_rows", audit.unresolved_rows == 0),
         _check("repair_definition_hash", bool(_definition_hash(audit).strip())),
         _check("repair_rules_version", audit.rules_version >= 1),
-        _check("repair_watermark", bool((audit.source_watermark_id or "").strip())),
-        _check("repair_decision_status", status != RepairDecisionStatus.BLOCKED.value),
+        _check(
+            "repair_watermark",
+            bool(
+                (
+                    audit.source_watermark_id
+                    or (identity.source_watermark_id if identity else "")
+                ).strip()
+            ),
+        ),
+        _check(
+            "repair_decision_status",
+            status in allowed_statuses and status != RepairDecisionStatus.BLOCKED.value,
+        ),
     ]
     return checks
 
 
 @dataclass(frozen=True)
-class _RepairIdentity:
+class RepairIdentity:
     data_version: str
     source_watermark_id: str
     run_id: str
     created_at: datetime
 
 
+def build_repair_identity(
+    audits: Iterable[RepairAuditRecord],
+    quarantines: Iterable[RepairQuarantineRow] = (),
+) -> RepairIdentity:
+    """Build one scope identity for audit rows and any quarantine subset."""
+
+    audit_records = tuple(audits)
+    quarantine_rows = tuple(quarantines)
+    if not audit_records and not quarantine_rows:
+        raise RepairPersistenceError("repair identity scope cannot be empty")
+    if audit_records:
+        _validate_audit_records(audit_records)
+    if quarantine_rows:
+        _validate_quarantine_rows(quarantine_rows)
+    return _identity(audit_records, quarantine_rows)
+
+
 def _identity(
     audits: Sequence[RepairAuditRecord],
     quarantines: Sequence[RepairQuarantineRow],
-) -> _RepairIdentity:
+) -> RepairIdentity:
     factor_ids = sorted(
         {
             *(record.factor_id for record in audits),
@@ -279,6 +322,34 @@ def _identity(
         {
             *(record.provider_hash for record in audits),
             *(row.provider_hash for row in quarantines),
+        }
+        - {""}
+    )
+    source_tables = sorted(
+        {
+            *(record.source_table for record in audits),
+            *(row.source_table for row in quarantines),
+        }
+        - {""}
+    )
+    factor_names = sorted(
+        {
+            *(record.source_factor_name for record in audits),
+            *(row.factor_name for row in quarantines),
+        }
+        - {""}
+    )
+    repair_methods = sorted(
+        {
+            *(record.repair_method for record in audits),
+            *(row.repair_method for row in quarantines),
+        }
+        - {""}
+    )
+    candidate_hashes = sorted(
+        {
+            *(record.candidate_hash for record in audits),
+            *(row.candidate_hash for row in quarantines),
         }
         - {""}
     )
@@ -309,13 +380,17 @@ def _identity(
             *(record.rules_version for record in audits),
             *(row.rules_version for row in quarantines),
         }
-        - {""}
+        - {0}
     )
     payload = {
         "factor_ids": factor_ids,
         "definition_hashes": definition_hashes,
         "date_range": [start.isoformat(), end.isoformat()],
         "provider_hashes": provider_hashes,
+        "source_tables": source_tables,
+        "factor_names": factor_names,
+        "repair_methods": repair_methods,
+        "candidate_hashes": candidate_hashes,
         "rules_versions": rules_versions,
     }
     canonical = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
@@ -343,7 +418,7 @@ def _identity(
         if value is not None
     ]
     created_at = max(explicit_created, default=datetime.combine(end, time.min))
-    return _RepairIdentity(
+    return RepairIdentity(
         data_version=data_version,
         source_watermark_id=source_watermark_id,
         run_id=run_id,
@@ -351,7 +426,7 @@ def _identity(
     )
 
 
-def _audit_row(record: RepairAuditRecord, identity: _RepairIdentity) -> dict[str, object]:
+def _audit_row(record: RepairAuditRecord, identity: RepairIdentity) -> dict[str, object]:
     row = {
         "as_of_date": _as_date(record.as_of_date),
         "logical_partition": record.logical_partition,
@@ -387,7 +462,7 @@ def _audit_row(record: RepairAuditRecord, identity: _RepairIdentity) -> dict[str
     return row
 
 
-def _quarantine_row(row: RepairQuarantineRow, identity: _RepairIdentity) -> dict[str, object]:
+def _quarantine_row(row: RepairQuarantineRow, identity: RepairIdentity) -> dict[str, object]:
     mapped = {
         "observation_date": _as_date(row.observation_date),
         "ts_code": row.ts_code,
@@ -422,6 +497,18 @@ def _validate_audit_records(records: Sequence[RepairAuditRecord]) -> None:
     for record in records:
         if not record.factor_id.strip() or not record.logical_partition.strip():
             raise RepairPersistenceError("repair audit factor identity cannot be empty")
+        try:
+            period = pd.Period(record.logical_partition, freq="M")
+        except (TypeError, ValueError) as error:
+            raise RepairPersistenceError(
+                "repair audit logical_partition must use YYYY-MM"
+            ) from error
+        if str(period) != record.logical_partition or period != pd.Period(
+            record.as_of_date, freq="M"
+        ):
+            raise RepairPersistenceError(
+                "repair audit logical_partition does not match as_of_date"
+            )
         if record.factor_version < 1:
             raise RepairPersistenceError("factor_version must be positive")
         if not record.source_table.strip() or not record.source_factor_name.strip():
@@ -458,7 +545,12 @@ def _validate_quarantine_rows(rows: Sequence[RepairQuarantineRow]) -> None:
     for row in rows:
         if not row.ts_code.strip() or not row.factor_id.strip() or not row.factor_name.strip():
             raise RepairPersistenceError("repair quarantine business identity cannot be empty")
-        if row.factor_version < 1 or not row.reason.strip() or not row.repair_method.strip():
+        if (
+            row.factor_version < 1
+            or row.rules_version < 1
+            or not row.reason.strip()
+            or not row.repair_method.strip()
+        ):
             raise RepairPersistenceError("repair quarantine identity is invalid")
         if not row.candidate_hash.strip():
             raise RepairPersistenceError("repair quarantine candidate_hash cannot be empty")
@@ -475,9 +567,11 @@ def _partition(
     months = sorted(
         pd.to_datetime(frame[date_column], errors="raise").dt.strftime("%Y-%m").unique()
     )
-    if len(months) == 1:
-        return str(months[0]), date_column
-    return str(logical_partitions or f"{months[0]}_{months[-1]}"), None
+    if len(months) != 1:
+        raise RepairPersistenceError(
+            f"repair batch cannot span multiple calendar months: {months}"
+        )
+    return str(months[0]), date_column
 
 
 def _definition_hash(value: Any) -> str:

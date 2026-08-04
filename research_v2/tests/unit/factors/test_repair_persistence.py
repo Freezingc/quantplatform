@@ -8,8 +8,10 @@ import pytest
 from research_v2.db.publish import PublishValidationError, V2BatchPublisher
 from research_v2.factors.repair_persistence import (
     RepairAuditRecord,
+    RepairPersistenceError,
     RepairQuarantineRow,
     build_repair_audit_batch,
+    build_repair_identity,
     build_repair_quarantine_batch,
     repair_quality_checks,
 )
@@ -63,6 +65,7 @@ def _quarantine() -> RepairQuarantineRow:
         candidate_value=None,
         repair_method="KNOWN_FORMULA_RECONSTRUCTION",
         candidate_hash="candidate-hash-22",
+        source_table="factor_data1",
         source_definition_hash="definition-hash-22",
         provider_hash="provider-hash-22",
         rules_version=1,
@@ -75,8 +78,9 @@ def test_repair_batches_share_deterministic_run_and_data_version() -> None:
     audit_records = [_audit()]
     quarantine_rows = [_quarantine()]
 
-    audit_batch = build_repair_audit_batch(audit_records)
-    quarantine_batch = build_repair_quarantine_batch(quarantine_rows)
+    identity = build_repair_identity(audit_records, quarantine_rows)
+    audit_batch = build_repair_audit_batch(audit_records, identity=identity)
+    quarantine_batch = build_repair_quarantine_batch(quarantine_rows, identity=identity)
 
     assert quarantine_batch is not None
     assert audit_batch.object_name == "factor_repair_audit"
@@ -139,6 +143,32 @@ def test_repair_identity_is_independent_of_input_order() -> None:
     assert left.frame["record_hash"].tolist() == right.frame["record_hash"].tolist()
 
 
+def test_no_arg_single_scope_builders_share_identity_when_lineage_matches() -> None:
+    audit = _audit().__class__(
+        **{**_audit().__dict__, "candidate_hash": "candidate-hash-22"}
+    )
+    quarantine = _quarantine()
+
+    audit_batch = build_repair_audit_batch([audit])
+    quarantine_batch = build_repair_quarantine_batch([quarantine])
+
+    assert quarantine_batch is not None
+    assert audit_batch.data_version == quarantine_batch.data_version
+    assert audit_batch.frame.loc[0, "source_watermark_id"] == (
+        quarantine_batch.frame.loc[0, "source_watermark_id"]
+    )
+
+
+def test_quality_checks_accept_an_explicit_generated_identity_watermark() -> None:
+    audit = _audit()
+    identity = build_repair_identity([audit])
+
+    checks = repair_quality_checks(audit, identity=identity)
+
+    watermark_check = next(item for item in checks if item.check_name == "repair_watermark")
+    assert watermark_check.status.value == "PASS"
+
+
 def test_month_partition_provides_shared_date_range_when_metadata_is_omitted() -> None:
     audit = _audit().__class__(
         **{**_audit().__dict__, "start_date": None, "end_date": None}
@@ -147,8 +177,9 @@ def test_month_partition_provides_shared_date_range_when_metadata_is_omitted() -
         **{**_quarantine().__dict__, "start_date": None, "end_date": None}
     )
 
-    audit_batch = build_repair_audit_batch([audit])
-    quarantine_batch = build_repair_quarantine_batch([quarantine])
+    identity = build_repair_identity([audit], [quarantine])
+    audit_batch = build_repair_audit_batch([audit], identity=identity)
+    quarantine_batch = build_repair_quarantine_batch([quarantine], identity=identity)
 
     assert quarantine_batch is not None
     assert audit_batch.data_version == quarantine_batch.data_version
@@ -204,3 +235,93 @@ def test_failed_repair_blocker_does_not_advance_pointer() -> None:
 
 def test_empty_quarantine_does_not_create_a_batch() -> None:
     assert build_repair_quarantine_batch([]) is None
+
+
+def test_unknown_or_unresolved_repair_status_fails_closed() -> None:
+    for status, unresolved_rows in (
+        ("UNKNOWN_STATUS", 0),
+        ("REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE", 1),
+    ):
+        audit = _audit().__class__(
+            **{
+                **_audit().__dict__,
+                "decision_status": status,
+                "unresolved_rows": unresolved_rows,
+                "source_watermark_id": "watermark",
+            }
+        )
+        checks = repair_quality_checks(audit)
+        assert any(result.status.value == "FAIL" for result in checks)
+
+    blocked = _audit().__class__(
+        **{
+            **_audit().__dict__,
+            "decision_status": "REPAIR_BLOCKED",
+            "source_watermark_id": "watermark",
+        }
+    )
+    assert all(result.status.value == "PASS" for result in repair_quality_checks(blocked)) is False
+
+
+def test_shared_scope_identity_allows_quarantine_subset() -> None:
+    audit_x = _audit(factor_id="yeslab_22")
+    audit_y = _audit(factor_id="yeslab_64").__class__(
+        **{
+            **_audit(factor_id="yeslab_64").__dict__,
+            "source_factor_name": "GP_064",
+            "candidate_hash": "candidate-hash-64",
+        }
+    )
+    quarantine_x = _quarantine()
+    identity = build_repair_identity([audit_x, audit_y], [quarantine_x])
+
+    audit_batch = build_repair_audit_batch([audit_x, audit_y], identity=identity)
+    quarantine_batch = build_repair_quarantine_batch([quarantine_x], identity=identity)
+
+    assert quarantine_batch is not None
+    assert audit_batch.data_version == quarantine_batch.data_version == identity.data_version
+    assert audit_batch.frame.loc[0, "run_id"] == quarantine_batch.frame.loc[0, "run_id"]
+    assert audit_batch.frame.loc[0, "source_watermark_id"] == identity.source_watermark_id
+
+
+def test_mixed_calendar_months_are_rejected_for_each_batch() -> None:
+    february = _audit(as_of_date=date(2025, 2, 28)).__class__(
+        **{**_audit(as_of_date=date(2025, 2, 28)).__dict__, "logical_partition": "2025-02"}
+    )
+    with pytest.raises(RepairPersistenceError, match="calendar month"):
+        build_repair_audit_batch([_audit(), february])
+
+    mismatched_partition = _audit().__class__(
+        **{**_audit().__dict__, "logical_partition": "2025-02"}
+    )
+    with pytest.raises(RepairPersistenceError, match="logical_partition"):
+        build_repair_audit_batch([mismatched_partition])
+
+    january_quarantine = _quarantine()
+    february_quarantine = january_quarantine.__class__(
+        **{**january_quarantine.__dict__, "observation_date": date(2025, 2, 3)}
+    )
+    with pytest.raises(RepairPersistenceError, match="calendar month"):
+        build_repair_quarantine_batch([january_quarantine, february_quarantine])
+
+
+def test_identity_changes_when_repair_provenance_changes() -> None:
+    baseline = build_repair_identity([_audit()], [_quarantine()])
+    changed = _audit().__class__(
+        **{
+            **_audit().__dict__,
+            "candidate_hash": "candidate-hash-new",
+            "repair_method": "SECONDARY_SOURCE",
+        }
+    )
+    changed_identity = build_repair_identity([changed], [_quarantine()])
+
+    assert baseline.data_version != changed_identity.data_version
+    assert baseline.source_watermark_id != changed_identity.source_watermark_id
+
+
+def test_quarantine_rules_version_must_be_positive() -> None:
+    invalid = _quarantine().__class__(**{**_quarantine().__dict__, "rules_version": 0})
+
+    with pytest.raises(RepairPersistenceError, match="identity is invalid"):
+        build_repair_quarantine_batch([invalid])
