@@ -281,8 +281,10 @@ def _run_repair_with_spool(
                             source_watermark_id=watermark,
                         )
                     except (TypeError, ValueError, KeyError) as error:
-                        overlap_mismatch = isinstance(error, FactorRepairError) and (
-                            "overlap mismatch" in str(error).lower()
+                        overlap_mismatch = (
+                            isinstance(provider, KnownFormulaCandidateProvider)
+                            and isinstance(error, FactorRepairError)
+                            and "overlap mismatch" in str(error).lower()
                         )
                         audit, quarantine_rows = _provider_failure(
                             definition,

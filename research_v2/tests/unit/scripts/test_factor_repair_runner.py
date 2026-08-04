@@ -194,6 +194,11 @@ def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> No
         raise runner.FactorRepairError("known formula overlap mismatch")
 
     monkeypatch.setattr(runner, "build_repair_overlay", fail_overlap)
+    monkeypatch.setattr(
+        runner,
+        "_provider_for_definition",
+        lambda *args, **kwargs: runner.KnownFormulaCandidateProvider(pd.DataFrame()),
+    )
     result = main(
         ["--phase", "train", "--start", "2020-01-01", "--end", "2020-01-31"],
         source_session=_FakeSource(),
@@ -221,7 +226,7 @@ def test_provider_failure_counts_quarantine_rows(monkeypatch) -> None:
     )
 
     def fail_overlay(*args, **kwargs):
-        raise ValueError("synthetic provider failure")
+        raise runner.FactorRepairError("known formula overlap mismatch")
 
     monkeypatch.setattr(runner, "build_repair_overlay", fail_overlay)
     result = main(
