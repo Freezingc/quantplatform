@@ -164,6 +164,62 @@ def test_audit_factor_source_counts_exact_duplicates_and_finite_conflicts() -> N
     assert audit.nonfinite_rows == 1
 
 
+def test_audit_factor_source_scales_across_many_duplicate_groups(monkeypatch) -> None:
+    import research_v2.factors.repair as repair_module
+
+    monkeypatch.setattr(
+        repair_module,
+        "_has_distinct_finite_values",
+        lambda _: (_ for _ in ()).throw(AssertionError("per-group scan used")),
+    )
+    rows: list[dict[str, object]] = []
+    for index in range(1000):
+        code = f"{index:06d}.SZ"
+        day = date(2026, 1, 1) + timedelta(days=index % 20)
+        rows.extend(
+            [
+                {
+                    "trade_date": day,
+                    "ts_code": code,
+                    "factor_name": "GP_022",
+                    "value": 1.0,
+                },
+                {
+                    "trade_date": day,
+                    "ts_code": code,
+                    "factor_name": "GP_022",
+                    "value": 1.0,
+                },
+            ]
+        )
+    for index in range(1000, 2000):
+        code = f"{index:06d}.SZ"
+        day = date(2026, 1, 1) + timedelta(days=index % 20)
+        rows.extend(
+            [
+                {
+                    "trade_date": day,
+                    "ts_code": code,
+                    "factor_name": "GP_022",
+                    "value": 1.0,
+                },
+                {
+                    "trade_date": day,
+                    "ts_code": code,
+                    "factor_name": "GP_022",
+                    "value": 2.0,
+                },
+            ]
+        )
+
+    audit = audit_factor_source(pd.DataFrame(rows))
+
+    assert audit.source_rows == 4000
+    assert audit.exact_duplicate_groups == 1000
+    assert audit.exact_duplicate_rows == 1000
+    assert audit.conflict_groups == 1000
+
+
 def test_apply_repair_overlay_blocks_conflicting_source_values() -> None:
     source = pd.DataFrame(
         {

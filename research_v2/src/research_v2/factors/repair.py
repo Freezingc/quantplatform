@@ -411,22 +411,34 @@ def _normalize_overlay_candidate(candidate: pd.DataFrame) -> pd.DataFrame:
 def _audit_source_frame(frame: pd.DataFrame) -> SourceKeyAudit:
     """Compute key counts for a normalized source frame."""
 
-    duplicate = frame.duplicated(list(_SOURCE_KEY_COLUMNS), keep=False)
-    exact_duplicate_groups = 0
-    exact_duplicate_rows = 0
-    conflict_groups = 0
-    for _, group in frame.loc[duplicate].groupby(
-        list(_SOURCE_KEY_COLUMNS), sort=False, dropna=False
-    ):
-        distinct_rows = group.drop_duplicates(list(_SOURCE_KEY_COLUMNS) + ["value"])
-        finite_values = group.loc[
-            np.isfinite(group["value"].to_numpy(dtype=float)), "value"
-        ].to_numpy(dtype=float)
-        if _has_distinct_finite_values(finite_values):
-            conflict_groups += 1
-        if len(distinct_rows) == 1:
-            exact_duplicate_groups += 1
-            exact_duplicate_rows += len(group) - 1
+    keys = list(_SOURCE_KEY_COLUMNS)
+    grouped_sizes = frame.groupby(keys, sort=False, dropna=False).size()
+    duplicate_sizes = grouped_sizes.loc[grouped_sizes > 1]
+    if duplicate_sizes.empty:
+        exact_duplicate_groups = 0
+        exact_duplicate_rows = 0
+        conflict_groups = 0
+    else:
+        distinct_counts = frame.groupby(keys, sort=False, dropna=False)["value"].nunique(
+            dropna=False
+        )
+        duplicate_distinct_counts = distinct_counts.reindex(duplicate_sizes.index)
+        exact_groups = duplicate_distinct_counts.eq(1)
+        exact_duplicate_groups = int(exact_groups.sum())
+        exact_duplicate_rows = int((duplicate_sizes.loc[exact_groups] - 1).sum())
+
+        finite_mask = np.isfinite(frame["value"].to_numpy(dtype=float))
+        finite_frame = frame.loc[finite_mask, [*keys, "value"]]
+        if finite_frame.empty:
+            conflict_groups = 0
+        else:
+            finite_distinct_counts = finite_frame.groupby(
+                keys, sort=False, dropna=False
+            )["value"].nunique(dropna=False)
+            duplicate_finite_counts = finite_distinct_counts.reindex(
+                duplicate_sizes.index, fill_value=0
+            )
+            conflict_groups = int(duplicate_finite_counts.gt(1).sum())
     values = frame["value"].to_numpy(dtype=float)
     finite_rows = int(np.isfinite(values).sum())
     return SourceKeyAudit(
