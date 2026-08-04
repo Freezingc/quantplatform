@@ -93,6 +93,7 @@ class RepairOverlayResult:
     source_audit: SourceKeyAudit
     candidate_audit: SourceKeyAudit | None
     filled_rows: int
+    added_rows: int
     conflict_groups: int
     exact_duplicate_groups: int
     pit_violation_rows: int
@@ -194,7 +195,7 @@ def apply_repair_overlay(
 
     candidate_rows_by_key: dict[tuple[date, str], pd.Series] = {}
     candidate_conflict_keys: set[tuple[date, str]] = set()
-    pit_candidate_codes: set[str] = set()
+    candidate_nonfinite_keys: set[tuple[date, str]] = set()
     pit_violation_rows = 0
     if candidate_normalized is not None:
         admissible_candidate = candidate_normalized
@@ -202,7 +203,6 @@ def apply_repair_overlay(
             pit_mask = candidate_normalized["trade_date"] > normalized_signal_date
             pit_rows = candidate_normalized.loc[pit_mask]
             pit_violation_rows = len(pit_rows)
-            pit_candidate_codes.update(pit_rows["ts_code"].tolist())
             for _, row in pit_rows.iterrows():
                 quarantine_rows.append(
                     _candidate_quarantine_row(
@@ -219,6 +219,27 @@ def apply_repair_overlay(
             business_key = _as_business_key(key)
             finite = np.isfinite(group["candidate_value"].to_numpy(dtype=float))
             finite_values = group.loc[finite, "candidate_value"].to_numpy(dtype=float)
+            nonfinite_rows = group.loc[~finite]
+            if not nonfinite_rows.empty:
+                candidate_nonfinite_keys.add(business_key)
+                candidate_conflict_keys.add(business_key)
+                for _, row in nonfinite_rows.iterrows():
+                    quarantine_rows.append(
+                        _candidate_quarantine_row(
+                            row,
+                            "NONFINITE_CANDIDATE",
+                            factor_name=factor_name,
+                        )
+                    )
+                for _, row in group.loc[finite].iterrows():
+                    quarantine_rows.append(
+                        _candidate_quarantine_row(
+                            row,
+                            "CONFLICT_QUARANTINE",
+                            factor_name=factor_name,
+                        )
+                    )
+                continue
             if _has_distinct_finite_values(finite_values):
                 candidate_conflict_keys.add(business_key)
                 for _, row in group.iterrows():
@@ -236,14 +257,16 @@ def apply_repair_overlay(
 
     clean_rows: list[pd.Series] = []
     filled_rows = 0
+    added_rows = 0
     unresolved_rows = 0
     mismatch_keys: set[tuple[date, str]] = set()
     mismatch_abs: list[float] = []
     mismatch_rel: list[float] = []
-    source_has_pit_candidate = pit_candidate_codes
-
     for business_key, source_row in source_representatives.items():
-        if business_key in candidate_conflict_keys:
+        if (
+            business_key in candidate_conflict_keys
+            and business_key not in candidate_nonfinite_keys
+        ):
             # Candidate rows are already quarantined above. Keep the source
             # out of clean so a conflicting candidate can never be selected.
             quarantine_rows.append(_source_quarantine_row(source_row, "CONFLICT_QUARANTINE"))
@@ -285,12 +308,26 @@ def apply_repair_overlay(
             continue
 
         # A rejected future candidate is represented by its PIT quarantine;
-        # adding a second unresolved row would obscure the root cause.
-        if str(source_row["ts_code"]) in source_has_pit_candidate:
-            clean_rows.append(source_row)
-        else:
-            unresolved_rows += 1
-            quarantine_rows.append(_source_quarantine_row(source_row, "NO_FINITE_CANDIDATE"))
+        # the source key still has no admissible finite evidence and remains
+        # visible in the unresolved quarantine as well.
+        unresolved_rows += 1
+        quarantine_rows.append(_source_quarantine_row(source_row, "NO_FINITE_CANDIDATE"))
+
+    source_keys = set(source_representatives) | source_conflict_keys
+    for business_key, candidate_row in candidate_rows_by_key.items():
+        if business_key in source_keys or business_key in candidate_conflict_keys:
+            continue
+        clean_rows.append(
+            pd.Series(
+                {
+                    "trade_date": business_key[0],
+                    "ts_code": business_key[1],
+                    "factor_name": factor_name,
+                    "value": candidate_row["candidate_value"],
+                }
+            )
+        )
+        added_rows += 1
 
     clean = _clean_overlay_frame(clean_rows)
     quarantine = _quarantine_frame(quarantine_rows)
@@ -300,7 +337,7 @@ def apply_repair_overlay(
         status = RepairStatus.BLOCKED
     elif unresolved_rows or not quarantine.empty:
         status = RepairStatus.PASS_WITH_QUARANTINE
-    elif filled_rows:
+    elif filled_rows or added_rows:
         status = RepairStatus.PENDING_RECHECK
     else:
         status = RepairStatus.PASS
@@ -312,6 +349,7 @@ def apply_repair_overlay(
         source_audit=source_audit,
         candidate_audit=candidate_audit,
         filled_rows=filled_rows,
+        added_rows=added_rows,
         conflict_groups=len(conflict_keys),
         exact_duplicate_groups=source_audit.exact_duplicate_groups,
         pit_violation_rows=pit_violation_rows,
