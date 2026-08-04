@@ -232,6 +232,9 @@ class KnownFormulaCandidateProvider:
     """Reconstruct only the approved GP_022 and GP_064 expressions."""
 
     method = "KNOWN_FORMULA_RECONSTRUCTION"
+    # Formula candidates intentionally include pre-month rolling warmup rows;
+    # the overlay may drop those rows without treating them as rejected data.
+    allow_warmup = True
 
     def __init__(
         self,
@@ -392,6 +395,7 @@ def build_repair_overlay(
         candidate,
         factor_name=resolved_name,
         logical_partition=logical_partition,
+        allow_warmup=bool(getattr(active_provider, "allow_warmup", False)),
     )
     decision = apply_repair_overlay(
         source,
@@ -452,8 +456,9 @@ def _restrict_candidate_to_partition(
     *,
     factor_name: str,
     logical_partition: str | None,
+    allow_warmup: bool = False,
 ) -> tuple[pd.DataFrame | None, pd.DataFrame, bool]:
-    """Drop candidate warmup rows and return them as date-scope quarantine."""
+    """Scope candidates, optionally dropping approved rolling warmup rows."""
 
     quarantine_columns = [
         "trade_date",
@@ -483,6 +488,14 @@ def _restrict_candidate_to_partition(
         return candidate, pd.DataFrame(columns=quarantine_columns), False
     out_of_scope["trade_date"] = dates.loc[out_of_scope.index]
     out_of_scope["ts_code"] = out_of_scope["ts_code"].astype(str)
+    if allow_warmup:
+        out_of_scope = out_of_scope.loc[out_of_scope["trade_date"] > upper].copy()
+        if out_of_scope.empty:
+            return (
+                candidate.loc[in_scope].copy(deep=True),
+                pd.DataFrame(columns=quarantine_columns),
+                False,
+            )
     scope_quarantine = out_of_scope.assign(
         factor_name=factor_name,
         source_value=np.nan,

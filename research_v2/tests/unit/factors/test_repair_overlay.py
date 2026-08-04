@@ -189,6 +189,78 @@ def test_known_formula_provider_rejects_overlap_mismatch() -> None:
         provider.provide(source, factor_name="GP_022")
 
 
+@pytest.mark.parametrize(
+    ("factor_id", "factor_name"),
+    [("yeslab_391", "GP_022"), ("yeslab_433", "GP_064")],
+)
+def test_known_formula_warmup_rows_are_dropped_without_quarantine(
+    factor_id: str, factor_name: str
+) -> None:
+    dates = pd.bdate_range("2024-07-01", "2025-01-31")
+    market = pd.DataFrame(
+        {
+            "trade_date": dates,
+            "ts_code": ["000001.SZ"] * len(dates),
+            "close": np.linspace(10.0, 20.0, len(dates)),
+            "amount": np.linspace(100.0, 200.0, len(dates)),
+            "pct_chg": [0.1] * len(dates),
+        }
+    )
+    source = pd.DataFrame(
+        {
+            "trade_date": [date(2025, 1, 2)],
+            "ts_code": ["000001.SZ"],
+            "factor_name": [factor_name],
+            "value": [np.nan],
+        }
+    )
+    provider = KnownFormulaCandidateProvider(market)
+    result = build_repair_overlay(
+        source,
+        provider,
+        factor_id=factor_id,
+        factor_name=factor_name,
+        logical_partition="2025-01",
+    )
+
+    assert result.status is RepairStatus.PENDING_RECHECK
+    assert result.filled_rows == 1
+    assert result.quarantine.empty
+    assert "WARMUP_OUT_OF_SCOPE" not in set(result.quarantine.get("reason", ()))
+
+
+def test_known_formula_post_month_rows_remain_blocking() -> None:
+    dates = pd.bdate_range("2024-07-01", "2025-02-03")
+    market = pd.DataFrame(
+        {
+            "trade_date": dates,
+            "ts_code": ["000001.SZ"] * len(dates),
+            "close": np.linspace(10.0, 20.0, len(dates)),
+            "amount": np.linspace(100.0, 200.0, len(dates)),
+            "pct_chg": [0.1] * len(dates),
+        }
+    )
+    source = pd.DataFrame(
+        {
+            "trade_date": [date(2025, 1, 2)],
+            "ts_code": ["000001.SZ"],
+            "factor_name": ["GP_022"],
+            "value": [np.nan],
+        }
+    )
+
+    result = build_repair_overlay(
+        source,
+        KnownFormulaCandidateProvider(market),
+        factor_id="yeslab_391",
+        factor_name="GP_022",
+        logical_partition="2025-01",
+    )
+
+    assert result.status is RepairStatus.BLOCKED
+    assert "DATE_SCOPE_VIOLATION" in set(result.quarantine["reason"])
+
+
 def test_overlay_quarantines_duplicate_candidate_keys() -> None:
     class DuplicateProvider:
         method = "DUPLICATE_CANDIDATE"
