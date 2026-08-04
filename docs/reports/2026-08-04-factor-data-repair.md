@@ -57,7 +57,7 @@ python research_v2/scripts/run_factor_repair_overlay.py \
 V2 `market_daily_clean` 当前可提供 `raw_close` 和 `amount`，但没有 `pre_close`/`pct_chg` 原始字段；用相邻 `raw_close` 推导的百分比变化不足以证明 GP_022/GP_064 的公式完全一致。要继续补值，需要提供包含精确 `pct_chg`（最好同时包含 `pre_close`）的 Tushare 缓存，或建立经过审计的行情字段映射；不修改既有表结构，也不直接降低重叠门槛。
 
 当前已有 47 个 source-qualified 因子的数据库快照均为
-`SOURCE_DQ_PASS_PENDING_SIMILARITY`：全范围有限值比例为 `0.737690–0.849923`，值冲突键为 `0`，重复行比例为 `0–0.50`。重复行会进入确定性去重/隔离流程，不能直接当作无问题数据。
+`SOURCE_DQ_PASS_PENDING_SIMILARITY`：全范围有限值比例为 `0.737690–0.849923`，其中 38 个因子低于 0.80；值冲突键为 `0`，但 27 个因子的重复行比例为 `0.50`。这些重复行会进入确定性去重/隔离流程，不能直接当作无问题数据。PIT 键覆盖的 P05 比例最低为 `1.253870`，反映了重复输入对原始覆盖统计的抬升，不能替代去重后的实际覆盖率。
 
 对应 manifest：
 
