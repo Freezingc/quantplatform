@@ -261,6 +261,44 @@ def test_known_formula_post_month_rows_remain_blocking() -> None:
     assert "DATE_SCOPE_VIOLATION" in set(result.quarantine["reason"])
 
 
+@pytest.mark.parametrize(
+    ("factor_id", "factor_name"),
+    [("yeslab_391", "GP_022"), ("yeslab_433", "GP_064")],
+)
+def test_known_formula_all_nan_warmup_is_unresolved_not_blocking(
+    factor_id: str, factor_name: str
+) -> None:
+    market = pd.DataFrame(
+        {
+            "trade_date": pd.date_range("2025-01-01", periods=10),
+            "ts_code": ["000001.SZ"] * 10,
+            "close": np.linspace(10.0, 11.0, 10),
+            "amount": np.linspace(100.0, 110.0, 10),
+            "pct_chg": [0.1] * 10,
+        }
+    )
+    source = pd.DataFrame(
+        {
+            "trade_date": [date(2025, 1, 10)],
+            "ts_code": ["000001.SZ"],
+            "factor_name": [factor_name],
+            "value": [np.nan],
+        }
+    )
+
+    result = build_repair_overlay(
+        source,
+        KnownFormulaCandidateProvider(market),
+        factor_id=factor_id,
+        factor_name=factor_name,
+        logical_partition="2025-01",
+    )
+
+    assert result.status is RepairStatus.PASS_WITH_QUARANTINE
+    assert result.quarantine["reason"].tolist() == ["NO_FINITE_CANDIDATE"]
+    assert result.decision.conflict_groups == 0
+
+
 def test_overlay_quarantines_duplicate_candidate_keys() -> None:
     class DuplicateProvider:
         method = "DUPLICATE_CANDIDATE"
