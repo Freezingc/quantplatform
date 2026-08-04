@@ -588,6 +588,10 @@ def _validate_audit_records(records: Sequence[RepairAuditRecord]) -> None:
             raise RepairPersistenceError("factor_version must be positive")
         if not record.source_table.strip() or not record.source_factor_name.strip():
             raise RepairPersistenceError("repair audit source identity cannot be empty")
+        if not _definition_hash(record).strip() or not record.provider_hash.strip():
+            raise RepairPersistenceError(
+                "repair audit provenance hashes are required for every record"
+            )
         if not record.repair_method.strip() or record.rules_version < 1:
             raise RepairPersistenceError("repair audit method/rules cannot be empty")
         _validate_nonnegative_counts(record)

@@ -181,6 +181,26 @@ def test_quality_checks_fail_closed_for_malformed_explicit_identity_audit() -> N
         repair_quality_checks(audit, identity=identity)
 
 
+def test_each_audit_record_requires_definition_and_provider_provenance() -> None:
+    malformed = _audit().__class__(
+        **{**_audit().__dict__, "provider_hash": ""}
+    )
+
+    with pytest.raises(RepairPersistenceError, match="provenance"):
+        build_repair_audit_batch([malformed])
+
+
+def test_explicit_identity_quality_check_rejects_missing_row_provenance() -> None:
+    valid = _audit()
+    malformed = valid.__class__(
+        **{**valid.__dict__, "source_definition_hash": ""}
+    )
+    identity = build_repair_identity([valid])
+
+    with pytest.raises(RepairPersistenceError, match="provenance"):
+        repair_quality_checks(malformed, identity=identity)
+
+
 def test_month_partition_provides_shared_date_range_when_metadata_is_omitted() -> None:
     audit = _audit().__class__(
         **{**_audit().__dict__, "start_date": None, "end_date": None}
