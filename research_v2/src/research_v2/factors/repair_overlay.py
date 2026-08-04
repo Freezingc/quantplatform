@@ -14,7 +14,7 @@ import hashlib
 import inspect
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from typing import Any, Protocol, cast
 
@@ -324,6 +324,8 @@ def provider_for_factor(
 ) -> RepairProvider:
     """Return the explicitly registered provider, or a fail-closed null one."""
 
+    if factor_id not in EXPLICIT_FACTOR_PROVIDER_METHODS:
+        return NullRepairProvider()
     if providers is not None:
         provider = providers.get(factor_id)
         if provider is not None:
@@ -385,6 +387,11 @@ def build_repair_overlay(
     )
     if candidate is not None and not isinstance(candidate, pd.DataFrame):
         raise TypeError("repair provider must return a DataFrame or None")
+    candidate, scope_quarantine = _restrict_candidate_to_partition(
+        candidate,
+        factor_name=resolved_name,
+        logical_partition=logical_partition,
+    )
     decision = apply_repair_overlay(
         source,
         candidate,
@@ -393,6 +400,17 @@ def build_repair_overlay(
         abs_tolerance=abs_tolerance,
         rel_tolerance=rel_tolerance,
     )
+    if not scope_quarantine.empty:
+        combined_quarantine = (
+            scope_quarantine.copy(deep=True)
+            if decision.quarantine.empty
+            else pd.concat([decision.quarantine, scope_quarantine], ignore_index=True)
+        )
+        decision = replace(
+            decision,
+            status=RepairStatus.BLOCKED,
+            quarantine=combined_quarantine,
+        )
     method = str(getattr(active_provider, "method", active_provider.__class__.__name__))
     watermark = source_watermark_id or source_watermark or str(
         getattr(active_provider, "source_watermark_id", "")
@@ -422,6 +440,58 @@ def build_repair_overlay(
         decision=decision,
         provider=active_provider,
     )
+
+
+def _restrict_candidate_to_partition(
+    candidate: pd.DataFrame | None,
+    *,
+    factor_name: str,
+    logical_partition: str | None,
+) -> tuple[pd.DataFrame | None, pd.DataFrame]:
+    """Drop candidate warmup rows and return them as date-scope quarantine."""
+
+    quarantine_columns = [
+        "trade_date",
+        "ts_code",
+        "factor_name",
+        "source_value",
+        "candidate_value",
+        "reason",
+    ]
+    if candidate is None or logical_partition is None:
+        return candidate, pd.DataFrame(columns=quarantine_columns)
+    try:
+        period = pd.Period(logical_partition, freq="M")
+    except (TypeError, ValueError) as error:
+        raise ValueError("logical_partition must use YYYY-MM") from error
+    if str(period) != logical_partition:
+        raise ValueError("logical_partition must use YYYY-MM")
+    missing = sorted(set(_CANDIDATE_COLUMNS).difference(candidate.columns))
+    if missing:
+        raise FactorRepairError(f"factor candidate is missing columns: {missing}")
+    dates = pd.to_datetime(candidate["trade_date"], errors="raise").dt.date
+    lower = period.start_time.date()
+    upper = period.end_time.date()
+    in_scope = (dates >= lower) & (dates <= upper)
+    out_of_scope = candidate.loc[~in_scope, list(_CANDIDATE_COLUMNS)].copy(deep=True)
+    if out_of_scope.empty:
+        return candidate, pd.DataFrame(columns=quarantine_columns)
+    out_of_scope["trade_date"] = dates.loc[out_of_scope.index]
+    out_of_scope["ts_code"] = out_of_scope["ts_code"].astype(str)
+    scope_quarantine = pd.DataFrame(
+        {
+            "trade_date": out_of_scope["trade_date"],
+            "ts_code": out_of_scope["ts_code"],
+            "factor_name": factor_name,
+            "source_value": np.nan,
+            "candidate_value": out_of_scope["candidate_value"],
+            "reason": "DATE_SCOPE_VIOLATION",
+        }
+    )
+    scope_quarantine = scope_quarantine.sort_values(
+        ["trade_date", "ts_code"], kind="mergesort"
+    ).reset_index(drop=True)
+    return candidate.loc[in_scope].copy(deep=True), scope_quarantine
 
 
 def _invoke_provider(
@@ -488,6 +558,7 @@ __all__ = [
     "RepairOverlayBuildResult",
     "RepairOverlayResult",
     "RepairProvider",
+    "build_repair_provider_mapping",
     "build_repair_overlay",
     "provider_for_factor",
 ]
