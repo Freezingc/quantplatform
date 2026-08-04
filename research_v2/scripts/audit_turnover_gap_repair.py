@@ -45,6 +45,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--gap-date", type=date.fromisoformat, default=date(2020, 9, 18))
     parser.add_argument("--impact-start", type=date.fromisoformat, default=date(2020, 9, 14))
     parser.add_argument("--impact-end", type=date.fromisoformat, default=date(2020, 9, 25))
+    parser.add_argument("--candidate-start", type=date.fromisoformat)
     parser.add_argument("--warmup-days", type=int, default=200)
     parser.add_argument(
         "--candidate-output-dir",
@@ -58,6 +59,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         raise ValueError("impact start date must not be after impact end date")
     if args.gap_date < args.impact_start or args.gap_date > args.impact_end:
         raise ValueError("gap date must be inside the impact range")
+    if args.candidate_start is not None and not (
+        args.impact_start <= args.candidate_start <= args.impact_end
+    ):
+        raise ValueError("candidate start date must be inside the impact range")
     if args.impact_end >= LOCKED_TEST_START:
         raise ValueError("turnover-gap audit cannot read 2026 locked-test data")
     if args.warmup_days < 60:
@@ -123,6 +128,7 @@ def run_audit(
                 source=source,
                 candidate=candidate,
                 mature=mature,
+                candidate_start=args.candidate_start,
             )
             candidate_artifacts.append(
                 _write_candidate_artifact(
@@ -136,6 +142,9 @@ def run_audit(
         "gap_date": args.gap_date.isoformat(),
         "impact_start": args.impact_start.isoformat(),
         "impact_end": args.impact_end.isoformat(),
+        "candidate_start": (
+            args.candidate_start.isoformat() if args.candidate_start is not None else None
+        ),
         "warmup_start": warmup_start.isoformat(),
         "factor_ids": list(args.factor_id),
         "turnover_evidence": turnover_evidence,
@@ -386,24 +395,29 @@ def _candidate_fill_frame(
     source: pd.DataFrame,
     candidate: pd.DataFrame,
     mature: pd.DataFrame,
+    candidate_start: date | None = None,
 ) -> pd.DataFrame:
     source_values = source.loc[:, ["trade_date", "ts_code", "value"]].copy()
-    source_values = source_values.drop_duplicates(["trade_date", "ts_code"], keep="last")
+    source_values["value"] = pd.to_numeric(source_values["value"], errors="coerce")
+    source_values["source_finite"] = np.isfinite(
+        source_values["value"].to_numpy(dtype=float)
+    )
+    source_finite = source_values.groupby(
+        ["trade_date", "ts_code"], as_index=False, sort=False
+    )["source_finite"].any()
     candidate_values = candidate.loc[:, ["trade_date", "ts_code", "candidate_value"]].copy()
     candidate_values = candidate_values.loc[
         np.isfinite(pd.to_numeric(candidate_values["candidate_value"], errors="coerce"))
     ]
     merged = mature.merge(
-        source_values,
+        source_finite,
         left_on=["signal_date", "ts_code"],
         right_on=["trade_date", "ts_code"],
         how="left",
     ).merge(candidate_values, on=["trade_date", "ts_code"], how="left")
-    source_numeric = pd.to_numeric(merged["value"], errors="coerce")
+    source_finite_mask = merged["source_finite"].fillna(False).to_numpy(dtype=bool)
     candidate_numeric = pd.to_numeric(merged["candidate_value"], errors="coerce")
-    fillable = ~np.isfinite(source_numeric.to_numpy(float)) & np.isfinite(
-        candidate_numeric.to_numpy(float)
-    )
+    fillable = ~source_finite_mask & np.isfinite(candidate_numeric.to_numpy(float))
     frame = pd.DataFrame(
         {
             "observation_date": merged.loc[fillable, "signal_date"].to_numpy(),
@@ -412,11 +426,13 @@ def _candidate_fill_frame(
             "factor_version": 1,
             "factor_name": factor_name,
             "candidate_value": candidate_numeric.loc[fillable].to_numpy(dtype=float),
-            "source_value": source_numeric.loc[fillable].to_numpy(dtype=float),
+            "source_value": float("nan"),
             "repair_method": "TUSHARE_TURNOVER_GAP",
             "reason": "TURNOVER_RATE_GAP",
         }
     )
+    if candidate_start is not None:
+        frame = frame.loc[frame["observation_date"] >= candidate_start].copy()
     return frame.sort_values(
         ["observation_date", "ts_code"], kind="mergesort"
     ).reset_index(drop=True)

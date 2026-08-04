@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "name": "candidate_scope_approved_factors",
+      "severity": "BLOCKER",
+      "status": "PASS"
+    },
+    {
+      "name": "candidate_values_finite",
+      "severity": "BLOCKER",
+      "status": "PASS"
+    },
+    {
+      "name": "candidate_no_overwrite",
+      "severity": "BLOCKER",
+      "status": "PASS"
+    },
+    {
+      "name": "candidate_keys_unique",
+      "severity": "BLOCKER",
+      "status": "PASS"
+    },
+    {
+      "name": "candidate_not_locked_test",
+      "severity": "BLOCKER",
+      "status": "PASS"
+    }
+  ],
+  "database_writes": true,
+  "identity": {
+    "created_at": "2026-08-04T22:07:06.015029",
+    "data_version": "8e1a35b9a5b85b88a1a7e5366be34993e15d2c05bd5337d4f96c2d2f802be262",
+    "factor_ids": [
+      "yeslab_377",
+      "yeslab_380",
+      "yeslab_382",
+      "yeslab_385",
+      "yeslab_387",
+      "yeslab_388"
+    ],
+    "logical_partition": "2020-09",
+    "row_count": 24659,
+    "run_id": "34e273a2-42fd-541b-b2fe-b04a4136c7ed",
+    "source_watermark_id": "836c443b9893e4a4bfa0efecaf794c32ace902b71153c930a789e416f311c896"
+  },
+  "publish_requested": true,
+  "published": true,
+  "scope": "TURNOVER_GAP_CANDIDATE_PREPARE_V1"
+}

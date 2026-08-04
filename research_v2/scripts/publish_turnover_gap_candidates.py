@@ -22,13 +22,15 @@ from research_v2.db.publish import StagedBatch, V2BatchPublisher
 from research_v2.db.session import V2WriteSession
 from research_v2.quality.engine import CheckResult, CheckStatus, Severity
 
-EXPECTED_FACTOR_IDS = (
-    "yeslab_377",
-    "yeslab_380",
-    "yeslab_382",
-    "yeslab_385",
-    "yeslab_387",
-    "yeslab_388",
+APPROVED_FACTOR_IDS = frozenset(
+    {
+        "yeslab_377",
+        "yeslab_380",
+        "yeslab_382",
+        "yeslab_385",
+        "yeslab_387",
+        "yeslab_388",
+    }
 )
 BLOCKED_FACTOR_IDS = frozenset({"yeslab_395"})
 LOCKED_TEST_START = pd.Timestamp("2026-01-01").date()
@@ -71,8 +73,8 @@ def load_candidate_scope(manifest_path: Path, candidate_dir: Path | None = None)
     if not isinstance(artifacts, list) or not artifacts:
         raise ValueError("manifest contains no candidate artifacts")
     factor_ids = tuple(sorted(str(item.get("factor_id")) for item in artifacts))
-    if factor_ids != tuple(sorted(EXPECTED_FACTOR_IDS)):
-        raise ValueError(f"candidate scope must contain exactly six approved IDs: {factor_ids}")
+    if not factor_ids or not set(factor_ids).issubset(APPROVED_FACTOR_IDS):
+        raise ValueError(f"candidate scope contains an unapproved factor: {factor_ids}")
     if BLOCKED_FACTOR_IDS.intersection(factor_ids):
         raise ValueError("blocked factor is present in candidate scope")
     frames: list[pd.DataFrame] = []
@@ -162,9 +164,15 @@ def build_candidate_batch(frame: pd.DataFrame) -> tuple[StagedBatch, dict[str, o
         ).hexdigest(),
         axis=1,
     )
+    partitions = tuple(
+        sorted(pd.to_datetime(staged["observation_date"]).dt.strftime("%Y-%m").unique())
+    )
+    if len(partitions) != 1:
+        raise ValueError(f"candidate batch must contain one month: {partitions}")
+    logical_partition = partitions[0]
     batch = StagedBatch.create(
         object_name="factor_repair_candidate",
-        logical_partition="2020-09",
+        logical_partition=logical_partition,
         data_version=data_version,
         frame=staged,
         business_keys=_BUSINESS_KEYS,
@@ -177,7 +185,7 @@ def build_candidate_batch(frame: pd.DataFrame) -> tuple[StagedBatch, dict[str, o
         "created_at": created_at.isoformat(),
         "row_count": len(staged),
         "factor_ids": sorted(set(staged["factor_id"])),
-        "logical_partition": "2020-09",
+        "logical_partition": logical_partition,
     }
     return batch, identity
 
@@ -186,7 +194,7 @@ def preflight(frame: pd.DataFrame) -> tuple[StagedBatch, dict[str, object], list
     batch, identity = build_candidate_batch(frame)
     batch.validate()
     checks = [
-        CheckResult("candidate_scope_exact_six", Severity.BLOCKER, CheckStatus.PASS),
+        CheckResult("candidate_scope_approved_factors", Severity.BLOCKER, CheckStatus.PASS),
         CheckResult("candidate_values_finite", Severity.BLOCKER, CheckStatus.PASS),
         CheckResult("candidate_no_overwrite", Severity.BLOCKER, CheckStatus.PASS),
         CheckResult("candidate_keys_unique", Severity.BLOCKER, CheckStatus.PASS),

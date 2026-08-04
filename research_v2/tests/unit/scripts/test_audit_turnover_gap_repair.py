@@ -137,3 +137,37 @@ def test_candidate_fill_frame_contains_only_nonfinite_source_rows(tmp_path) -> N
     assert frame.iloc[0]["ts_code"] == "000001.SZ"
     assert artifact["rows"] == 1
     assert (tmp_path / "yeslab_380_turnover_gap_candidate.csv").is_file()
+
+
+def test_candidate_fill_frame_does_not_overwrite_mixed_finite_revision() -> None:
+    source = pd.DataFrame(
+        {
+            "trade_date": [date(2020, 9, 18), date(2020, 9, 18), date(2020, 9, 18)],
+            "ts_code": ["000001.SZ", "000001.SZ", "000002.SZ"],
+            "factor_name": ["GP_011"] * 3,
+            "value": [float("nan"), 5.0, float("nan")],
+        }
+    )
+    candidate = pd.DataFrame(
+        {
+            "trade_date": [date(2020, 9, 18)] * 2,
+            "ts_code": ["000001.SZ", "000002.SZ"],
+            "candidate_value": [3.0, 6.0],
+        }
+    )
+    mature = pd.DataFrame(
+        {
+            "signal_date": [date(2020, 9, 18)] * 2,
+            "ts_code": ["000001.SZ", "000002.SZ"],
+        }
+    )
+
+    frame = audit._candidate_fill_frame(
+        factor_id="yeslab_380",
+        factor_name="GP_011",
+        source=source,
+        candidate=candidate,
+        mature=mature,
+    )
+
+    assert frame["ts_code"].tolist() == ["000002.SZ"]

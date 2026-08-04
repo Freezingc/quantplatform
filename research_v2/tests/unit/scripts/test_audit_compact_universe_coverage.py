@@ -143,3 +143,26 @@ def test_oom_date_split_makes_progress_inside_one_year() -> None:
         (date(2020, 1, 1), date(2020, 1, 2)),
         (date(2020, 1, 3), date(2020, 1, 3)),
     )
+
+
+def test_candidate_fill_counts_are_added_as_server_aggregate_rows(tmp_path) -> None:
+    path = tmp_path / "yeslab_395_turnover_gap_candidate.csv"
+    pd.DataFrame(
+        {
+            "observation_date": ["2020-12-01", "2020-12-01"],
+            "ts_code": ["000001.SZ", "000002.SZ"],
+            "factor_id": ["yeslab_395", "yeslab_395"],
+            "candidate_value": [1.0, 2.0],
+        }
+    ).to_csv(path, index=False)
+    finite = pd.DataFrame(
+        {"signal_date": [date(2020, 12, 1)], "finite_keys": [3.0]}
+    )
+
+    result = audit._add_candidate_fill_counts(
+        finite,
+        factor_id="yeslab_395",
+        candidate_dir=tmp_path,
+    )
+
+    assert result["finite_keys"].sum() == 5.0

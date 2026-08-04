@@ -21,7 +21,7 @@ def _frame() -> pd.DataFrame:
                 "000005.SZ",
                 "000006.SZ",
             ],
-            "factor_id": list(publish.EXPECTED_FACTOR_IDS),
+            "factor_id": list(sorted(publish.APPROVED_FACTOR_IDS)),
             "factor_version": [1] * 6,
             "factor_name": ["F"] * 6,
             "candidate_value": [1.0] * 6,
@@ -55,7 +55,7 @@ def test_load_candidate_scope_verifies_manifest_hashes(tmp_path) -> None:
                 "rows": 1,
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             }
-            for factor_id in publish.EXPECTED_FACTOR_IDS
+            for factor_id in sorted(publish.APPROVED_FACTOR_IDS)
         ],
     }
     # Keep the test focused on hash checking; six manifest entries point to

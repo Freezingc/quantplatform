@@ -1,0 +1,38 @@
+{
+  "candidate_overlay": true,
+  "database_writes": false,
+  "end": "2020-10-31",
+  "label_id": "forward_open_5d",
+  "label_version": 1,
+  "rows": [
+    {
+      "compact_finite_ratio": 0.992676029334228,
+      "compact_finite_rows": 103551,
+      "compact_rows": 104315,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_388",
+      "factor_name": "GP_019",
+      "finite_key_overflow_days": 0,
+      "logical_partition": "2020-09-01..2020-10-31",
+      "minimum_daily_finite_keys": 2694,
+      "minimum_daily_finite_ratio": 0.9810633648943918,
+      "minimum_daily_mature_rows": 2746,
+      "minimum_daily_signal_date": "2020-09-29",
+      "minimum_month": "2020-09",
+      "minimum_monthly_finite_ratio": 0.9915320058454488,
+      "p05_daily_finite_ratio": 0.9820614798987306,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": null,
+      "source_rows": null,
+      "source_unique_rows": null
+    }
+  ],
+  "scope": "COMPACT_UNIVERSE_COVERAGE_READ_ONLY_V1",
+  "server_aggregate": true,
+  "start": "2020-09-01",
+  "universe_id": "cn_liquid_a",
+  "universe_version": 1
+}

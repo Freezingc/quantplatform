@@ -1,0 +1,69 @@
+{
+  "candidate_artifacts": [
+    {
+      "factor_id": "yeslab_388",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_2020-10-15_v3/yeslab_388_turnover_gap_candidate.csv",
+      "rows": 13607,
+      "sha256": "4e84ac3c9b7c70977293e9d1cedc51461d8aa1befae8bca51e437ee76d89d99c"
+    }
+  ],
+  "candidate_start": "2020-09-18",
+  "database_writes": false,
+  "factor_ids": [
+    "yeslab_388"
+  ],
+  "gap_date": "2020-09-18",
+  "impact_end": "2020-10-15",
+  "impact_start": "2020-09-18",
+  "rows": [
+    {
+      "candidate_finite_rows": 51433,
+      "compact_candidate_finite_rows": 37966,
+      "compact_fillable_gap_date_rows": 1377,
+      "compact_fillable_rows": 13607,
+      "compact_rows": 38415,
+      "compact_source_finite_rows": 24359,
+      "factor_id": "yeslab_388",
+      "factor_name": "GP_019",
+      "formula": "mul(ts_sum_10(turnover), abs(amount))",
+      "overlap_finite_rows": 37633,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 51433,
+      "overlay_filled_rows": 13800,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 31895
+      },
+      "overlay_quarantine_rows": 31895,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 31895,
+      "source_finite_rows": 37633,
+      "source_rows": 83328,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    }
+  ],
+  "scope": "TURNOVER_GAP_TUSHARE_REPAIR_AUDIT_V1",
+  "turnover_evidence": {
+    "gap_date": "2020-09-18",
+    "replacement_rows": 1386,
+    "replacement_symbol_count": 1386,
+    "replacement_symbol_hash": "69432b4a5a62cc791c1e449d496b2b21954fe36a8e31bf71fd13488e0d9927fe",
+    "replacement_symbol_sample": [
+      "000001.SZ",
+      "000002.SZ",
+      "000004.SZ",
+      "000007.SZ",
+      "000009.SZ",
+      "000010.SZ",
+      "000021.SZ",
+      "000025.SZ",
+      "000026.SZ",
+      "000027.SZ"
+    ],
+    "source_missing_mature_rows": 1386,
+    "tushare_finite_rows": 4070,
+    "tushare_rows": 4070
+  },
+  "warmup_start": "2020-03-02"
+}

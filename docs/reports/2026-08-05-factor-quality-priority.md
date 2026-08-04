@@ -3,7 +3,7 @@
 日期：2026-08-05  
 数据范围：`SCREEN_TRAIN2020_2024_SOURCE_DQ_COMBINED_V1`（2020-01-02–2024-12-31）  
 锁定测试：未读取  
-数据库写入：无；本报告只读取已有质量快照
+数据库写入：仅向新建的 `factor_repair_candidate` 表追加候选隔离批次；未修改任何已有业务表、`factor_observation_clean` 或原始 YesLab 因子表
 
 ## 结论
 
@@ -193,9 +193,9 @@ Tushare `daily_basic(20200918)` 返回 4,070 条有限 `turnover_rate`，对成�
 - [`turnover gap audit JSON`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_audit_2020-09-18_v1.json)
 - [`six-factor candidate batch manifest`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_candidates_2020-09-18_v1.json)
 
-候选批次目前是本地、可复核的 CSV 文件，包含 6 个因子的有限候选补行（分别为
-1,386、1,386、1,385、6,853、1,385、8,204 行），不包含 `GP_026`，也没有写入
-DolphinDB。每个批次都有 SHA-256；写入新 V2 隔离表时必须用该哈希和同一来源水印做幂等校验。
+首批候选批次先以本地、可复核的 CSV 形式生成，包含 6 个因子的有限候选补行（分别为
+1,386、1,386、1,385、6,853、1,385、8,204 行），不包含 `GP_026`。每个批次都有
+SHA-256；写入新 V2 隔离表时必须用该哈希和同一来源水印做幂等校验。
 
 随后已将 migration 009/010 应用到 `dfs://QuantResearchV2Test`，并把通过 preflight 的
 20,599 行写入新表 `factor_repair_candidate`：
@@ -209,5 +209,51 @@ DolphinDB。每个批次都有 SHA-256；写入新 V2 隔离表时必须用该�
 发布前检查报告和发布结果分别见 [`candidate preflight`](../../research_v2/artifacts/diagnostics/turnover_gap_candidate_preflight_2020-09-18_v1.json)
 和 [`candidate publish report`](../../research_v2/artifacts/diagnostics/turnover_gap_candidate_publish_2020-09-18_v1.json)。
 
-下一步是仅针对这 6 个候选物化到新的 V2 隔离对象，重新跑 compact coverage 和预测稳定性
-门禁；`GP_026` 留在阻断清单，暂不进入候选表。任何正式发布仍需单独批准。
+首批候选随后已物化到新的 V2 隔离对象；后续延长窗口和全 TRAIN 复核见下一节。
+`GP_026` 始终留在阻断清单，暂不进入候选表。任何正式发布仍需单独批准。
+
+### GP_019 延长窗口补救与全 TRAIN 复核
+
+对 `yeslab_388 / GP_019` 继续追踪到 2020-10-15 后，发现源表在
+2020-09-18–2020-10-09 对大量证券各写入两条空值 revision（每个键的两条记录均为
+非有限值），因此只修复 9 月批次仍会在 10 月 9 日的 10 日滚动窗口留下缺口。这是
+源表 revision/生成批次问题，不是候选公式与源值不一致。
+
+本次处理采取按月隔离的方式：
+
+- 重新用同一 Tushare `daily_basic(20200918)` 水印和原始预热区间重算 GP_019；
+- 对 2020-10-01 起可补的 1,343 行生成单独的 `2020-10` 候选批次；有限源值重叠
+  `37,633` 行，mismatch `0`，候选值全为有限数，未覆盖任何有限源值；
+- preflight 的五个阻断检查全部 PASS，批次已发布到新表，
+  `data_version=ad03741eca14ea75458938ce121df3b1643afdeb87c4b4360f2ca559797b86a7`，
+  `factor_repair_candidate/2020-10` 指针已推进；原始因子表与 clean 表仍未改变。
+
+数据库核验显示候选表物理行数为 `46,601`（包括首批 9 月版本、9 月延长版本和 10 月批次，
+表本身保持 append-only）；当前版本指针暴露 9 月最新 `24,659` 行和 10 月 `1,343` 行，
+候选值有限行 `46,601`，`source_value` 有限行为 `0`。`factor_observation_clean` 仍为
+`170,333,348` 行，schema migration 记录为 10 条。
+
+局部 2020-09-01–10-31 复核显示 GP_019 的最低日覆盖率为 `0.981063`、最低月覆盖率
+为 `0.991532`。随后对 2020-01-01–2024-12-31 的六个换手率候选因子执行完整
+compact-universe 复核（成熟分母为 `cn_liquid_a/v1 ∩ forward_open_5d/v1`，共
+`3,996,740` 个观测）：
+
+| 因子 | 整体覆盖 | 最低日覆盖 | 最低月覆盖 | 结果 |
+| --- | ---: | ---: | ---: | --- |
+| GP_008 / `yeslab_377` | 0.999998 | 0.998548 | 0.999887 | PASS_PENDING_SIMILARITY |
+| GP_011 / `yeslab_380` | 0.999998 | 0.998548 | 0.999887 | PASS_PENDING_SIMILARITY |
+| GP_013 / `yeslab_382` | 0.999758 | 0.997811 | 0.999263 | PASS_PENDING_SIMILARITY |
+| GP_016 / `yeslab_385` | 0.998109 | 0.987259 | 0.995044 | PASS_PENDING_SIMILARITY |
+| GP_018 / `yeslab_387` | 0.999758 | 0.997811 | 0.999263 | PASS_PENDING_SIMILARITY |
+| GP_019 / `yeslab_388` | 0.997580 | 0.981063 | 0.991532 | PASS_PENDING_SIMILARITY |
+
+将这六行结果与未受 overlay 影响的其余 21 个因子合并后，27 个 P1/P3 因子中有
+26 个达到 compact 双重门槛，唯一仍失败的是 `yeslab_395 / GP_026`。GP_026 继续保持
+`TURNOVER_REPAIR_BLOCKED_OVERLAP`，不进入候选表，也不进入模型输入。完整合并结果见
+[`turnover repaired full TRAIN compact JSON`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_train2020_2024_turnover_repaired6_v3.json)，
+六因子独立复核见
+[`six-factor focus JSON`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_train2020_2024_turnover_repaired6_focus_v3.json)。
+
+当前状态仍是“结构质量通过、相似度/FDR/年度稳定性待审”，不是最终准入。下一步只对这
+26 个候选通过因子继续做 train-only 相似度与年度稳定性检查，GP_026 保持隔离；在这些
+门禁完成并获得单独批准前，不启动任何模型训练。

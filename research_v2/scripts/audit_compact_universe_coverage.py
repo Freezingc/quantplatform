@@ -11,6 +11,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Protocol
 
+import numpy as np
 import pandas as pd
 
 from research_v2.db.session import V2WriteSession, YesLabReadOnlySession
@@ -46,6 +47,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--server-aggregate",
         action="store_true",
         help="query finite distinct keys server-side instead of transferring raw values",
+    )
+    parser.add_argument(
+        "--candidate-dir",
+        type=Path,
+        help="optionally add finite candidate fill keys from factor repair CSVs",
     )
     parser.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
@@ -110,6 +116,17 @@ def run_audit(
                     aggregate["factor_name"] == factor_name,
                     ["trade_date", "finite_keys"],
                 ].rename(columns={"trade_date": "signal_date"})
+                if args.candidate_dir is not None:
+                    factor_id = next(
+                        item
+                        for item in ids
+                        if str(metadata.loc[item, "factor_name"]) == factor_name
+                    )
+                    finite_by_name[factor_name] = _add_candidate_fill_counts(
+                        finite_by_name[factor_name],
+                        factor_id=factor_id,
+                        candidate_dir=args.candidate_dir,
+                    )
     output: list[dict[str, object]] = []
     for factor_id in ids:
         meta = metadata.loc[factor_id]
@@ -232,6 +249,41 @@ def _query_finite_key_counts(
     return result.loc[:, ["factor_name", "trade_date", "finite_keys"]]
 
 
+def _add_candidate_fill_counts(
+    finite_keys: pd.DataFrame,
+    *,
+    factor_id: str,
+    candidate_dir: Path,
+) -> pd.DataFrame:
+    path = candidate_dir / f"{factor_id}_turnover_gap_candidate.csv"
+    if not path.is_file():
+        raise FileNotFoundError(f"candidate overlay file is missing: {path}")
+    candidate = pd.read_csv(path)
+    required = {"observation_date", "ts_code", "factor_id", "candidate_value"}
+    if not required.issubset(candidate.columns):
+        raise ValueError(f"candidate overlay is missing columns: {sorted(required)}")
+    if set(candidate["factor_id"].astype(str)) != {factor_id}:
+        raise ValueError(f"candidate overlay factor ID mismatch: {factor_id}")
+    candidate["signal_date"] = pd.to_datetime(
+        candidate["observation_date"], errors="raise"
+    ).dt.date
+    candidate["candidate_value"] = pd.to_numeric(
+        candidate["candidate_value"], errors="coerce"
+    )
+    if not np.isfinite(candidate["candidate_value"].to_numpy(dtype=float)).all():
+        raise ValueError(f"candidate overlay contains non-finite values: {factor_id}")
+    if candidate.duplicated(["signal_date", "ts_code"]).any():
+        raise ValueError(f"candidate overlay contains duplicate keys: {factor_id}")
+    additions = candidate.groupby("signal_date", as_index=False).size().rename(
+        columns={"size": "finite_keys"}
+    )
+    additions["finite_keys"] = additions["finite_keys"].astype(float)
+    return pd.concat(
+        [finite_keys.loc[:, ["signal_date", "finite_keys"]], additions],
+        ignore_index=True,
+    )
+
+
 def _split_date_range(start: date, end: date) -> tuple[tuple[date, date], ...]:
     """Split an OOM-prone range into calendar-year queries."""
 
@@ -296,6 +348,7 @@ def main(argv: Sequence[str] | None = None) -> list[dict[str, object]]:
         "label_id": args.label_id,
         "label_version": args.label_version,
         "server_aggregate": bool(args.server_aggregate),
+        "candidate_overlay": bool(args.candidate_dir is not None),
         "database_writes": False,
         "rows": rows,
     }
