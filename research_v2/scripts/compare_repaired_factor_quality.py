@@ -335,9 +335,13 @@ def _normalise_factor_id(value: object) -> str | None:
 def _latest_status(statuses: object) -> str:
     if not isinstance(statuses, set) or not statuses:
         return ""
-    if "REPAIR_BLOCKED" in statuses:
-        return "REPAIR_BLOCKED"
-    return sorted(statuses)[-1]
+    precedence = {
+        "REPAIR_BLOCKED": 4,
+        "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE": 3,
+        "REPAIRED_PENDING_QUALITY_RECHECK": 2,
+        "REPAIR_AUDIT_PASS": 1,
+    }
+    return max(statuses, key=lambda status: (precedence.get(status, 0), status))
 
 
 def _delta(after: object, before: object) -> float | None:

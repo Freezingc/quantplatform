@@ -126,3 +126,29 @@ def test_nested_snapshot_metrics_are_flattened_with_leaf_aliases() -> None:
     assert report.loc[0, "before_predictive_finite_ratio"] == 0.70
     assert report.loc[0, "valid_day_count_delta"] == 20.0
     assert report.loc[0, "mean_rank_ic_delta"] == 0.01
+
+
+def test_mixed_repair_statuses_use_blocker_precedence() -> None:
+    audit = pd.DataFrame(
+        {
+            "factor_id": ["yeslab_3"] * 4,
+            "decision_status": [
+                "REPAIR_AUDIT_PASS",
+                "REPAIRED_PENDING_QUALITY_RECHECK",
+                "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+                "REPAIR_AUDIT_PASS",
+            ],
+            "data_version": ["v1"] * 4,
+        }
+    )
+
+    report = build_comparison_report(
+        audit,
+        pd.DataFrame({"factor_id": []}),
+        pd.DataFrame({"factor_id": []}),
+    )
+
+    assert report.loc[0, "decision_status"] == (
+        "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE"
+    )
+    assert report.loc[0, "repair_status"] == "UNRESOLVED"
