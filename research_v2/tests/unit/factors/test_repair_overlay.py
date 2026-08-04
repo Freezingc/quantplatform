@@ -321,6 +321,48 @@ def test_warmup_scope_quarantine_does_not_downgrade_in_month_conflict() -> None:
     )
 
 
+def test_candidate_hash_includes_rejected_warmup_rows() -> None:
+    class CandidateProvider:
+        method = "HASH_SCOPE"
+
+        def __init__(self, include_warmup: bool) -> None:
+            self.include_warmup = include_warmup
+
+        def provide(self, source: pd.DataFrame, **_: object) -> pd.DataFrame:
+            del source
+            rows = [
+                {
+                    "trade_date": date(2025, 1, 2),
+                    "ts_code": "000001.SZ",
+                    "candidate_value": 2.0,
+                }
+            ]
+            if self.include_warmup:
+                rows.append(
+                    {
+                        "trade_date": date(2024, 12, 31),
+                        "ts_code": "000001.SZ",
+                        "candidate_value": 1.0,
+                    }
+                )
+            return pd.DataFrame(rows)
+
+    definition = _definition()
+    in_month = build_repair_overlay(
+        _source(),
+        CandidateProvider(False),
+        definition=definition,
+        logical_partition="2025-01",
+    )
+    with_warmup = build_repair_overlay(
+        _source(),
+        CandidateProvider(True),
+        definition=definition,
+        logical_partition="2025-01",
+    )
+    assert in_month.candidate_hash != with_warmup.candidate_hash
+
+
 def test_source_backfill_allows_pre_month_formula_warmup_and_materializes_in_month_fill() -> None:
     class WarmupProvider:
         method = "WARMUP_CANDIDATE"

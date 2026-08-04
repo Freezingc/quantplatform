@@ -387,6 +387,7 @@ def build_repair_overlay(
     )
     if candidate is not None and not isinstance(candidate, pd.DataFrame):
         raise TypeError("repair provider must return a DataFrame or None")
+    raw_candidate_hash = _candidate_hash(candidate)
     candidate, scope_quarantine, scope_blocking = _restrict_candidate_to_partition(
         candidate,
         factor_name=resolved_name,
@@ -419,7 +420,7 @@ def build_repair_overlay(
     watermark = source_watermark_id or source_watermark or str(
         getattr(active_provider, "source_watermark_id", "")
     )
-    candidate_digest = _candidate_hash(candidate)
+    candidate_digest = raw_candidate_hash
     clean = decision.clean.copy(deep=True)
     quarantine = decision.quarantine.copy(deep=True)
     if isinstance(active_provider, NullRepairProvider) and not quarantine.empty:
