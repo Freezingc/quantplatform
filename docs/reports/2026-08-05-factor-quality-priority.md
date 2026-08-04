@@ -283,7 +283,9 @@ YesLab 原始表按月读取并做确定性有限值去重；6 个换手率候�
 
 1. `GP_026 / yeslab_395` 仍因公式 overlap mismatch 阻断；
 2. 其余 26 个通过结构覆盖、日级 HAC/FDR 和全日相似度证据；
-3. 经过严格“年度 ICIR + 全日唯一”双门槛后暂只保留 `yeslab_98`；
+3. 若要求每个因子本身都必须是全日唯一，严格“年度 ICIR + 全日唯一”交集只有
+   `yeslab_98`；若按冗余簇选代表，严格年度 ICIR 通过的代表为
+   `yeslab_357, yeslab_376, yeslab_98`；
 4. 尚未训练任何模型，也未推进 frozen factor set。下一步应先审阅年度 ICIR 的规则
    是否作为每年硬门槛，再决定对 7 个唯一候选做第二类补救或保守发布。
 
@@ -333,3 +335,5 @@ yeslab_396, yeslab_95, yeslab_96, yeslab_98
 [`TRAIN26 full-pair cluster proposal`](../../research_v2/artifacts/diagnostics/train26_cluster_representative_proposal_v2.json)，
 完整 pair matrix 见
 [`TRAIN26 pair matrix`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_repaired26_v1.csv)。
+年度规则的严格/主计划口径对照见
+[`TRAIN26 annual rule comparison`](../../research_v2/artifacts/diagnostics/train26_annual_rule_comparison_v1.json)。
