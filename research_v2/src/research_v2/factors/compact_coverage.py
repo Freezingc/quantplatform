@@ -149,6 +149,14 @@ def summarize_compact_coverage_counts(
     minimum_daily = float(daily.min()) if not daily.empty else 0.0
     p05_daily = float(daily.quantile(0.05)) if not daily.empty else 0.0
     minimum_monthly = float(monthly.min()) if not monthly.empty else 0.0
+    minimum_daily_date = daily.idxmin() if not daily.empty else None
+    minimum_month = str(monthly.idxmin()) if not monthly.empty else None
+    minimum_daily_finite_keys = (
+        int(finite_by_day.loc[minimum_daily_date]) if minimum_daily_date is not None else 0
+    )
+    minimum_daily_mature_rows = (
+        int(denominators.loc[minimum_daily_date]) if minimum_daily_date is not None else 0
+    )
     gate = bool(
         compact_rows
         and overflow_days == 0
@@ -175,8 +183,14 @@ def summarize_compact_coverage_counts(
         compact_finite_rows=compact_finite_rows,
         compact_finite_ratio=overall_ratio,
         minimum_daily_finite_ratio=minimum_daily,
+        minimum_daily_signal_date=(
+            minimum_daily_date.isoformat() if minimum_daily_date is not None else None
+        ),
+        minimum_daily_finite_keys=minimum_daily_finite_keys,
+        minimum_daily_mature_rows=minimum_daily_mature_rows,
         p05_daily_finite_ratio=p05_daily,
         minimum_monthly_finite_ratio=minimum_monthly,
+        minimum_month=minimum_month,
         finite_key_overflow_days=overflow_days,
         decision_status=status,
         reason_codes=reasons,

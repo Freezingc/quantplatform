@@ -158,3 +158,37 @@ YesLab 精确 `stock_factor_daily` 后，结果仍为 `clean=56,920`、
 进入下一道 train-only similarity/FDR/年度稳定性检查，但不能据此直接扩大 frozen factor set。
 
 完整结果见 [`P1/P3 全 TRAIN compact coverage JSON`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_train2020_2024_p1_p3_all27_v1.json)。
+
+### 2020-09-18 换手率断档的补救审计
+
+对上述 7 个失败因子继续做了日期定位和外部证据核对。异常并非因子公式本身首先产生：
+`stock_factor_daily` 在 `2020-09-18` 的成熟宇宙中只有 `1,354/2,740` 条
+`turnover_rate` 有限值，缺失行的 `amount`、`vol` 仍存在，但股本字段也同时缺失，
+因此不能从 YesLab 现有字段安全反推换手率。5/10 日滚动公式将同一缺口传导到
+`2020-09-22`，解释了最低日覆盖约 0.49 的现象。
+
+Tushare `daily_basic(20200918)` 返回 4,070 条有限 `turnover_rate`，对成熟宇宙的
+1,386 条缺失记录全部有可用替代值。基于这些值只在内存中重算，并对原始有限重叠值
+执行严格核对：
+
+| 因子 | 重叠 mismatch | compact 可补行 | 结论 |
+| --- | ---: | ---: | --- |
+| `yeslab_377 / GP_008` | 0 | 1,386 | `TURNOVER_REPAIR_CANDIDATE_READY` |
+| `yeslab_380 / GP_011` | 0 | 1,386 | `TURNOVER_REPAIR_CANDIDATE_READY` |
+| `yeslab_382 / GP_013` | 0 | 1,385 | `TURNOVER_REPAIR_CANDIDATE_READY` |
+| `yeslab_385 / GP_016` | 0 | 1,377（含滚动传导共 6,853） | `TURNOVER_REPAIR_CANDIDATE_READY` |
+| `yeslab_387 / GP_018` | 0 | 1,385 | `TURNOVER_REPAIR_CANDIDATE_READY` |
+| `yeslab_388 / GP_019` | 0 | 1,377（含滚动传导共 8,204） | `TURNOVER_REPAIR_CANDIDATE_READY` |
+| `yeslab_395 / GP_026` | 2,016 | 1,348 | `TURNOVER_REPAIR_BLOCKED_OVERLAP` |
+
+六个候选的有限重叠值完全一致，说明可先生成隔离的 V2 repair candidate；这不代表可以
+覆盖 YesLab 原表，也不代表已经发布。`GP_026` 的重叠值仍有较大不一致（最大绝对差
+约 `42,249.21`），继续按公式一致性门禁阻断，不能因为外部换手率完整就强行补值。
+
+补救审计脚本和结果：
+
+- [`turnover gap audit script`](../../research_v2/scripts/audit_turnover_gap_repair.py)
+- [`turnover gap audit JSON`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_audit_2020-09-18_v1.json)
+
+下一步是仅针对这 6 个 `CANDIDATE_READY` 因子生成 V2 隔离候选和 quarantine 对照，复核
+candidate 的 PIT 日期、重复键和来源水印；`GP_026` 留在阻断清单，暂不进入候选表。

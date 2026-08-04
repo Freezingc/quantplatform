@@ -104,4 +104,8 @@ def test_compact_coverage_counts_uses_zero_for_missing_days() -> None:
     assert result["compact_rows"] == 4
     assert result["compact_finite_rows"] == 4
     assert result["finite_key_overflow_days"] == 0
+    assert result["minimum_daily_signal_date"] == "2020-12-01"
+    assert result["minimum_daily_finite_keys"] == 4
+    assert result["minimum_daily_mature_rows"] == 4
+    assert result["minimum_month"] == "2020-12"
     assert result["decision_status"] == "COMPACT_DQ_PASS_PENDING_SIMILARITY"
