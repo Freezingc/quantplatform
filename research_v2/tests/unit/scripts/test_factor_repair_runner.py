@@ -176,6 +176,37 @@ def test_missing_source_evidence_counts_audit_and_quarantine_rows() -> None:
     assert result.counts["audited"] == 1
     assert result.counts["quarantine_rows"] == 1
     assert result.counts["blocked"] == 1
+    assert result.quarantine_batch is not None
+    assert result.quarantine_batch.frame["reason"].tolist() == ["NO_SOURCE_EVIDENCE"]
+
+
+def test_known_formula_overlap_mismatch_is_audited_separately(monkeypatch) -> None:
+    target = _FakeTarget(
+        pd.DataFrame(
+            {
+                "factor_id": ["yeslab_1"],
+                "metrics_json": [json.dumps({"decision_status": SOURCE_STATUS})],
+            }
+        )
+    )
+
+    def fail_overlap(*args, **kwargs):
+        raise runner.FactorRepairError("known formula overlap mismatch")
+
+    monkeypatch.setattr(runner, "build_repair_overlay", fail_overlap)
+    result = main(
+        ["--phase", "train", "--start", "2020-01-01", "--end", "2020-01-31"],
+        source_session=_FakeSource(),
+        target_session=target,
+    )
+
+    assert result.counts["blocked"] == 1
+    assert result.audit_batch.frame["mismatch_rows"].tolist() == [1]
+    assert result.audit_batch.frame["unresolved_rows"].tolist() == [0]
+    assert result.quarantine_batch is not None
+    assert result.quarantine_batch.frame["reason"].tolist() == [
+        "CANDIDATE_OVERLAP_MISMATCH"
+    ]
     assert not result.clean_batches
 
 
@@ -202,6 +233,8 @@ def test_provider_failure_counts_quarantine_rows(monkeypatch) -> None:
     assert result.counts["audited"] == 1
     assert result.counts["quarantine_rows"] == 1
     assert result.counts["blocked"] == 1
+    assert result.quarantine_batch is not None
+    assert result.quarantine_batch.frame["reason"].tolist() == ["PROVIDER_FAILURE"]
 
 
 def test_provider_evidence_watermark_changes_source_watermark() -> None:

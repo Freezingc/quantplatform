@@ -29,7 +29,7 @@ from research_v2.contracts.factor import FactorDefinition
 from research_v2.db.publish import StagedBatch, V2BatchPublisher
 from research_v2.db.session import V2WriteSession, YesLabReadOnlySession
 from research_v2.factors.materializer import build_technical_factor_batches
-from research_v2.factors.repair import RepairStatus, audit_factor_source
+from research_v2.factors.repair import FactorRepairError, RepairStatus, audit_factor_source
 from research_v2.factors.repair_overlay import (
     KnownFormulaCandidateProvider,
     NullRepairProvider,
@@ -281,6 +281,9 @@ def _run_repair_with_spool(
                             source_watermark_id=watermark,
                         )
                     except (TypeError, ValueError, KeyError) as error:
+                        overlap_mismatch = isinstance(error, FactorRepairError) and (
+                            "overlap mismatch" in str(error).lower()
+                        )
                         audit, quarantine_rows = _provider_failure(
                             definition,
                             month,
@@ -288,6 +291,13 @@ def _run_repair_with_spool(
                             provider,
                             watermark,
                             str(error),
+                            reason=(
+                                "CANDIDATE_OVERLAP_MISMATCH"
+                                if overlap_mismatch
+                                else "PROVIDER_FAILURE"
+                            ),
+                            mismatch_rows=1 if overlap_mismatch else 0,
+                            unresolved_rows=0 if overlap_mismatch else 1,
                         )
                         audits.append(audit)
                         quarantines.extend(quarantine_rows)
@@ -701,6 +711,10 @@ def _provider_failure(
     provider: RepairProvider,
     watermark: str,
     detail: str,
+    *,
+    reason: str = "PROVIDER_FAILURE",
+    mismatch_rows: int = 0,
+    unresolved_rows: int = 1,
 ) -> tuple[RepairAuditRecord, list[RepairQuarantineRow]]:
     """Turn provider/schema failures into a visible, blocking audit row."""
 
@@ -722,8 +736,9 @@ def _provider_failure(
         source_rows=source_audit.source_rows if source_audit is not None else len(source),
         conflict_groups=source_audit.conflict_groups if source_audit is not None else 0,
         nonfinite_rows=source_audit.nonfinite_rows if source_audit is not None else 0,
-        remaining_nonfinite_rows=1,
-        unresolved_rows=1,
+        remaining_nonfinite_rows=unresolved_rows,
+        mismatch_rows=mismatch_rows,
+        unresolved_rows=unresolved_rows,
         decision_status=RepairDecisionStatus.BLOCKED.value,
         rules_version=1,
         source_watermark_id=watermark,
@@ -739,7 +754,7 @@ def _provider_failure(
         factor_id=definition.factor_id,
         factor_version=definition.factor_version,
         factor_name=definition.display_name,
-        reason="PROVIDER_FAILURE",
+        reason=reason,
         source_value=None,
         candidate_value=None,
         repair_method=method,
