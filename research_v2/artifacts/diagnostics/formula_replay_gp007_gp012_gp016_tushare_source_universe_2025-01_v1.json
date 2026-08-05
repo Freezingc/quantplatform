@@ -1,0 +1,103 @@
+{
+  "code_count": 5390,
+  "database_writes": false,
+  "end": "2025-01-31",
+  "factor_ids": [
+    "yeslab_376",
+    "yeslab_381",
+    "yeslab_385"
+  ],
+  "include_daily_basic": true,
+  "locked_test_read": false,
+  "market_code_count": 5142,
+  "market_date_count": 50,
+  "market_finite_rows": 2304180,
+  "market_hash": "d297d70644c3a5f58ca8e18de8465662630977a713e595fdf7dd749bcb548da9",
+  "market_missing_code_count": 248,
+  "market_rows": 256020,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-11-18",
+  "max_ts_codes": null,
+  "restrict_to_v2_universe": false,
+  "rows": [
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_376",
+      "factor_name": "GP_007",
+      "lookback_days": 10,
+      "max_abs_diff": 0.07365916742539311,
+      "max_rel_diff": 0.9346987665545383,
+      "max_ts_codes": null,
+      "mismatch_date_count": 18,
+      "mismatch_end": "2025-01-27",
+      "mismatch_rows": 91941,
+      "mismatch_start": "2025-01-02",
+      "overlap_finite_rows": 91945,
+      "overlap_rows": 92556,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH",
+        "TUSHARE_MARKET_MISSING_CODES"
+      ],
+      "replay_finite_rows": 91945,
+      "replay_lookback_days": 10,
+      "replay_rows": 92556,
+      "source_finite_rows": 91945,
+      "source_rows": 92556
+    },
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "lookback_days": 5,
+      "max_abs_diff": 31011232.757560946,
+      "max_rel_diff": 1979.0460485714989,
+      "max_ts_codes": null,
+      "mismatch_date_count": 18,
+      "mismatch_end": "2025-01-27",
+      "mismatch_rows": 92150,
+      "mismatch_start": "2025-01-02",
+      "overlap_finite_rows": 92150,
+      "overlap_rows": 92556,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH",
+        "TUSHARE_MARKET_MISSING_CODES"
+      ],
+      "replay_finite_rows": 92150,
+      "replay_lookback_days": 5,
+      "replay_rows": 92556,
+      "source_finite_rows": 92150,
+      "source_rows": 92556
+    },
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_385",
+      "factor_name": "GP_016",
+      "lookback_days": 5,
+      "max_abs_diff": 159.35720725493616,
+      "max_rel_diff": 1884.258250218783,
+      "max_ts_codes": null,
+      "mismatch_date_count": 18,
+      "mismatch_end": "2025-01-27",
+      "mismatch_rows": 92150,
+      "mismatch_start": "2025-01-02",
+      "overlap_finite_rows": 92150,
+      "overlap_rows": 92556,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH",
+        "TUSHARE_MARKET_MISSING_CODES"
+      ],
+      "replay_finite_rows": 92150,
+      "replay_lookback_days": 5,
+      "replay_rows": 92556,
+      "source_finite_rows": 92150,
+      "source_rows": 92556
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2025-01-02",
+  "stock_batch_size": 10000,
+  "universe_mode": "full_market"
+}

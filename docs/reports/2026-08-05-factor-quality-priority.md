@@ -950,3 +950,9 @@ PIT、FDR 和准入决策审阅。当前不修改原 18 因子提案、不写旧
 
 - [`pre_close 变体审计`](../../research_v2/artifacts/diagnostics/formula_repair_preclose_variant_2025-01_v1.json)
 - [`源 universe 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp155_tushare_source_universe_2025-01_v1.json)
+
+对含横截面 z-score 的 `GP_007/GP_012/GP_016` 也做了源因子证券集合重放，2025-01 的
+有限重叠 mismatch 分别为 `91,941/91,945`、`92,150/92,150`、`92,150/92,150`；
+即使放宽到源集合仍无法重现，继续归类为历史输入/生成语义阻断，不做行情填补。
+
+证据：[`GP_007/012/016 源 universe Tushare 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp007_gp012_gp016_tushare_source_universe_2025-01_v1.json)
