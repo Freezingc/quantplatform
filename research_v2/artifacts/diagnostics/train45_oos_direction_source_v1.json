@@ -1,0 +1,117 @@
+{
+  "scope": "SCREEN_TRAIN2020_2024_DAILY_HAC_FDR_V2",
+  "scopes": {
+    "SCREEN_TRAIN2020_2024_DAILY_HAC_FDR_V2": {
+      "rows": [
+        {
+          "factor_id": "yeslab_114",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_117",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_155",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_362",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_381",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_400",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_401",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_405",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_41",
+          "metrics": {
+            "direction": 1
+          }
+        },
+        {
+          "factor_id": "yeslab_425",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_431",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_437",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_439",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_442",
+          "metrics": {
+            "direction": 1
+          }
+        },
+        {
+          "factor_id": "yeslab_443",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_473",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_484",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_94",
+          "metrics": {
+            "direction": -1
+          }
+        }
+      ]
+    }
+  }
+}

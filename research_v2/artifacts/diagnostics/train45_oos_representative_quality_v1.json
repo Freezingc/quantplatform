@@ -1,0 +1,93 @@
+{
+  "blocked_ids": [
+    "yeslab_395",
+    "yeslab_471"
+  ],
+  "locked_test_read": false,
+  "model_training_started": false,
+  "oos_recommended_candidate_count": 23,
+  "oos_recommended_candidates": [
+    "yeslab_114",
+    "yeslab_155",
+    "yeslab_163",
+    "yeslab_357",
+    "yeslab_362",
+    "yeslab_363",
+    "yeslab_376",
+    "yeslab_380",
+    "yeslab_381",
+    "yeslab_385",
+    "yeslab_396",
+    "yeslab_400",
+    "yeslab_401",
+    "yeslab_405",
+    "yeslab_425",
+    "yeslab_431",
+    "yeslab_437",
+    "yeslab_442",
+    "yeslab_443",
+    "yeslab_94",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "oos_removed_redundant_ids": [
+    "yeslab_484"
+  ],
+  "oos_similarity_evaluated_count": 24,
+  "oos_similarity_redundant_edges": [
+    {
+      "left": "yeslab_114",
+      "right": "yeslab_484",
+      "similarity": 0.90524
+    }
+  ],
+  "policy_note": "Proposal only; annual ICIR policy remains a separate decision.",
+  "scope": "TRAIN45_OOS_REPRESENTATIVE_QUALITY_V1",
+  "strict_annual_icir_pass_count": 5,
+  "strict_annual_icir_pass_ids": [
+    "yeslab_155",
+    "yeslab_357",
+    "yeslab_376",
+    "yeslab_442",
+    "yeslab_98"
+  ],
+  "train_cluster_representative_count": 28,
+  "train_cluster_representatives": [
+    "yeslab_380",
+    "yeslab_431",
+    "yeslab_362",
+    "yeslab_114",
+    "yeslab_117",
+    "yeslab_357",
+    "yeslab_376",
+    "yeslab_381",
+    "yeslab_400",
+    "yeslab_155",
+    "yeslab_163",
+    "yeslab_363",
+    "yeslab_385",
+    "yeslab_396",
+    "yeslab_401",
+    "yeslab_405",
+    "yeslab_41",
+    "yeslab_425",
+    "yeslab_437",
+    "yeslab_439",
+    "yeslab_442",
+    "yeslab_443",
+    "yeslab_473",
+    "yeslab_484",
+    "yeslab_94",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "validation_predictive_fail_ids": [
+    "yeslab_117",
+    "yeslab_41",
+    "yeslab_439",
+    "yeslab_473"
+  ],
+  "validation_predictive_pass_count": 24
+}

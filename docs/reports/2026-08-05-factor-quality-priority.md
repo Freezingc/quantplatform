@@ -478,3 +478,49 @@ compact-universe 交集检查。本轮对这 21 个因子执行了 2020–2024 �
 
 这 19 个结构通过因子还没有完成全 TRAIN 相似度和 2025 固定方向验证，因此暂不加入
 当前 13 个 OOS 候选；下一步继续做扩展因子的 train-only 相似度与验证期 RankIC/ICIR。
+
+### 合并 45 因子相似度与扩展代表验证
+
+随后将原有 26 个结构因子与这批修复后通过结构门禁的 19 个因子合并，执行了完整的
+45 因子 TRAIN 矩阵：共 `990` 对、每对 `1,212` 个有效交易日、无 NaN。以绝对
+Spearman `0.90` 组成连通分量后，45 个因子得到 28 个 TRAIN 代表候选。新增的显著关系
+包括：
+
+- `yeslab_400/yeslab_456`：`0.974844`；
+- `yeslab_431/yeslab_432/yeslab_458/yeslab_79`：连通簇，最高 `0.999996`；
+- `yeslab_433` 与已有 `yeslab_391`：`0.910099`；
+- 原有换手率簇扩展为 `yeslab_377/380/382/387/388/391/433`。
+
+因此跨批次合并后，旧代表中的 `115、118、365、383` 被更强的同簇代表
+`114、117、362、381` 替代；不能把之前 14 个代表直接与扩展因子拼接。完整 45 因子
+提案（仅提案，不冻结）见：
+
+- [`TRAIN45 full-day summary`](../../research_v2/artifacts/diagnostics/train_similarity_full_day_2020_2024_combined45_v2.csv)
+- [`TRAIN45 full pair matrix`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv)
+- [`TRAIN45 cluster representatives`](../../research_v2/artifacts/diagnostics/train45_cluster_representative_proposal_v1.json)
+
+对新增的 18 个 TRAIN 代表补做 2025 固定方向验证后，结果为 `14/18` 通过、4 个失败：
+`yeslab_117`、`yeslab_41`、`yeslab_439`、`yeslab_473`，失败原因均为验证期 ICIR
+低于 `0.50`，不是覆盖或方向翻转。每个因子均有 237 个有效日，日期范围为
+2025-01-02–2025-12-23，无 2026 读取。
+
+将原有 10 个仍属于合并簇代表且已验证通过的因子加入后，得到 24 个验证期 predictive
+通过的代表。对这 24 个执行验证期 276 对相似度矩阵，只有一条冗余边：
+`yeslab_114/yeslab_484 = 0.905240`。按 TRAIN 排名保留 `yeslab_114` 后，当前 OOS
+保守候选为 23 个。
+
+这 23 个仍是待审候选，不是 frozen factor set。若采用严格逐年 ICIR 硬门槛，23 个候选中
+只有 `yeslab_155、yeslab_357、yeslab_376、yeslab_442、yeslab_98` 通过；这进一步说明
+逐年 ICIR 应与主计划规则分开，作为监控或保守分支，而不能在没有确认的情况下隐式叠加。
+
+完整扩展 OOS 对照见：
+
+- [`TRAIN45 new representatives validation`](../../research_v2/artifacts/diagnostics/train45_new_representatives_validation_2025_v1/quality_summary.csv)
+- [`TRAIN45 final24 validation similarity`](../../research_v2/artifacts/diagnostics/validation_similarity_full_day_2025_final24_v1.csv)
+- [`TRAIN45 final24 validation pair matrix`](../../research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv)
+- [`TRAIN45 OOS representative quality`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v1.csv)
+- [`TRAIN45 OOS admission proposal`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v1.json)
+
+当前质量结论是：`yeslab_395/GP_026` 和 `yeslab_471/AttentionSpillover` 仍阻断；扩展
+因子中有 4 个通过 TRAIN 但未通过 2025 predictive 的因子；其余 23 个才具备进入下一步
+年度规则审阅的证据。任何候选发布和模型训练仍保持暂停。
