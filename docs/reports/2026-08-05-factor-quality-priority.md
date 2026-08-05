@@ -1271,6 +1271,58 @@ pair 均低于 0.90。提案仍未发布、未写入旧表或新 V2 表，也未
 
 证据：[`沪深准入候选提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_proposal_v1.json)
 
+### 扩展 16 因子的沪深重新物化质量
+
+为避免把前一阶段的 `UNSCREENED` 误认为失败，已将 expanded shortlist 中已有源码计算器的
+16 个因子统一按沪深 universe、Tushare 行情和 `forward_open_5d` 标签重新物化。六个此前未在
+replay registry 中登记但源码已经存在的计算器也已补登记：`GP_008/018/019/022/063/064`；
+这只是让它们可审查，不代表公式一致性门禁自动通过。
+
+结果为：16 个因子 TRAIN 和 2025 VALIDATION 均有完整有效日数（分别 `1212`、`243`），主
+predictive 门槛全部通过。TRAIN 严格年度 `abs(ICIR)>=0.50` 的 5 年通过因子只有
+`yeslab_376`、`yeslab_396`、`yeslab_442`；`yeslab_377/400/433` 为 `3/5`，其余为 `4/5`，
+因此不能仅凭整体 ICIR 把 16 个因子全部冻结。
+
+2025 验证期相似度只作为风险定位：`yeslab_387/388=0.979414`、`yeslab_377/380=0.975552`、
+`yeslab_380/387=0.975030`，说明换手/成交额类因子存在明显冗余簇。正式代表选择仍需使用
+TRAIN 全窗口 pair 证据；本轮没有用验证期相似度直接删因子。
+
+该扩展质量结果仍未改变 6 因子提案：`yeslab_433/GP_064` 保留既有公式重叠 mismatch
+阻断，其他因子仍需 TRAIN 相似度、PIT/FDR 和版本审查。没有发布新版本或启动模型训练。
+
+证据：
+
+- [`16 因子质量聚合`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_quality_16_v1.json)
+- [`16 因子 TRAIN 质量原始摘要`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v1/quality_summary.json)
+- [`16 因子 2025 验证摘要`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_v1/quality_summary.json)
+- [`16 因子 2025 验证相似度定位`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_v1/similarity_summary.json)
+- [`扩展计算器注册测试`](../../research_v2/tests/unit/scripts/test_audit_formula_replay_consistency.py)
+
+### 扩展 GP 的四窗口公式回放与训练冗余簇
+
+对新增注册的六个 GP 因子执行了同一口径的四个 SH/SZ Tushare 窗口回放
+（2020-01、2022-01、2024-01、2025-01）。结果不是“都能重算就都可用”：
+
+| 因子 | 四窗口回放 | 处置 |
+|---|---:|---|
+| `yeslab_387 / GP_018` | 4/4 PASS | 可继续做准入审查 |
+| `yeslab_388 / GP_019` | 4/4 PASS | 可继续做准入审查 |
+| `yeslab_391 / GP_022` | 4/4 PASS | 可继续做准入审查 |
+| `yeslab_377 / GP_008` | 0/4 PASS | 源值重叠 mismatch，阻断 |
+| `yeslab_432 / GP_063` | 0/4 PASS | 源值重叠 mismatch，阻断 |
+| `yeslab_433 / GP_064` | 0/4 PASS | 少量但稳定 mismatch，阻断 |
+
+在六因子的完整 TRAIN 日相似度中，`GP_008/011/018/019` 形成强冗余簇：
+`387/388=0.981729`、`380/388=0.979991`、`380/387=0.977751`、`377/380=0.970053`。
+`GP_022/GP_064` 也达到 `0.911591`，但 GP_064 先因公式 mismatch 被阻断。这个结果支持
+“簇内选代表、先解决公式门禁”的策略；当前没有把这些诊断结果写成新的模型输入集合。
+
+证据：
+
+- [`六因子 TRAIN 相似度`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_cluster_train_v1.json)
+- [`六因子四窗口公式回放汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_replay_train_windows_v1.json)
+- [`2025-01 注册 GP 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos6_tushare_shsz_registered_2025-01_v1.json)
+
 ### 沪深准入预检结果
 
 已补齐重新物化因子与 `yeslab_380` 的直接相似度证据。94/380 和 98/380 的五年聚合中位

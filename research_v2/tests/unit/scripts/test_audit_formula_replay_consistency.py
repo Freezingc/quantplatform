@@ -161,6 +161,24 @@ def test_parser_accepts_structural_predictive_factor_for_replay() -> None:
     assert audit.REPLAY_DEFINITIONS["yeslab_370"].replay_lookback_days == 180
 
 
+def test_registry_includes_existing_gp_calculators_for_shsz_quality_replay() -> None:
+    expected = {
+        "yeslab_377": ("GP_Factor_008_Calculator", "factor_data8", 1),
+        "yeslab_387": ("GP_Factor_018_Calculator", "factor_data9", 1),
+        "yeslab_388": ("GP_Factor_019_Calculator", "factor_data9", 10),
+        "yeslab_391": ("GP_Factor_022_Calculator", "factor_data9", 60),
+        "yeslab_432": ("GP_Factor_063_Calculator", "factor_data9", 5),
+        "yeslab_433": ("GP_Factor_064_Calculator", "factor_data9", 60),
+    }
+
+    for factor_id, (calculator, store_factor, lookback) in expected.items():
+        definition = audit.REPLAY_DEFINITIONS[factor_id]
+        assert definition.calculator_module == calculator
+        assert definition.calculator_class == calculator
+        assert definition.store_factor == store_factor
+        assert definition.lookback_days == lookback
+
+
 def test_run_audit_records_calculator_errors_without_dropping_factor() -> None:
     class Client:
         def run(self, script: str) -> object:

@@ -100,6 +100,43 @@ def test_parser_accepts_low_coverage_gp_replay_factors() -> None:
     assert args.factor_id == ("yeslab_390", "yeslab_404")
 
 
+def test_parser_accepts_registered_gp_quality_replay_factors() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_377",
+            "--factor-id",
+            "yeslab_387",
+            "--factor-id",
+            "yeslab_388",
+            "--factor-id",
+            "yeslab_391",
+            "--factor-id",
+            "yeslab_432",
+            "--factor-id",
+            "yeslab_433",
+            "--full-market",
+            "--restrict-to-v2-universe",
+            "--exclude-bj",
+            "--start",
+            "2025-01-01",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/registered-gp-replay.json",
+        ]
+    )
+
+    assert args.factor_id == (
+        "yeslab_377",
+        "yeslab_387",
+        "yeslab_388",
+        "yeslab_391",
+        "yeslab_432",
+        "yeslab_433",
+    )
+
+
 def test_default_factor_registry_has_unique_ids() -> None:
     args = audit.parse_args(["--output", "/tmp/tushare-default.json"])
 

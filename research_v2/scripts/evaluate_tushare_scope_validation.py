@@ -217,12 +217,24 @@ def _load_validation_inputs(client: object, start: date, end: date) -> pd.DataFr
 
 def _load_directions(path: Path, factor_ids: Sequence[str]) -> dict[str, int]:
     frame = pd.read_csv(path)
-    required = {"factor_id", "validation_direction"}
-    if missing := sorted(required.difference(frame.columns)):
+    direction_column = next(
+        (
+            column
+            for column in ("validation_direction", "frozen_direction", "direction")
+            if column in frame.columns
+        ),
+        None,
+    )
+    missing = []
+    if "factor_id" not in frame.columns:
+        missing.append("factor_id")
+    if direction_column is None:
+        missing.append("validation_direction (or frozen_direction/direction)")
+    if missing:
         raise ValueError(f"direction artifact is missing columns: {missing}")
     selected = frame.loc[frame["factor_id"].astype(str).isin(set(factor_ids))]
     directions = {
-        str(row.factor_id): int(row.validation_direction)
+        str(row.factor_id): int(getattr(row, direction_column))
         for row in selected.itertuples(index=False)
     }
     missing = sorted(set(factor_ids).difference(directions))
@@ -239,6 +251,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--stored-factor-id", action="append")
     parser.add_argument("--direction-artifact", type=Path, default=DEFAULT_DIRECTION_ARTIFACT)
     parser.add_argument("--cache-dir", type=Path, default=Path("research_v2/artifacts/tushare_cache"))
+    parser.add_argument(
+        "--skip-similarity",
+        action="store_true",
+        help="write RankIC quality only; defer the expensive all-pairs similarity calculation",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     args.factor_id = tuple(
@@ -308,7 +325,19 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
         replay_frames[factor_id] = stored.loc[:, ["trade_date", "ts_code", "replay_value"]]
         stored_factor_ids.append(factor_id)
     daily_frame = pd.concat(daily_parts, ignore_index=True) if daily_parts else pd.DataFrame()
-    similarity = compute_pair_daily_spearman(replay_frames)
+    similarity = (
+        pd.DataFrame(
+            columns=[
+                "factor_id_left",
+                "factor_id_right",
+                "median_abs_spearman",
+                "max_abs_spearman",
+                "valid_day_count",
+            ]
+        )
+        if args.skip_similarity
+        else compute_pair_daily_spearman(replay_frames)
+    )
     args.output.mkdir(parents=True, exist_ok=True)
     daily_frame.to_csv(args.output / "daily_rank_ic.csv", index=False)
     similarity.to_json(args.output / "similarity_summary.json", orient="records", indent=2)
@@ -323,6 +352,7 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
                 "code_count": len(codes),
                 "market_start": market_start.isoformat(),
                 "market_source": "Tushare.daily",
+                "similarity_skipped": bool(args.skip_similarity),
                 "excluded_exchanges": ["BJ"],
                 "database_writes": False,
                 "locked_test_read": False,

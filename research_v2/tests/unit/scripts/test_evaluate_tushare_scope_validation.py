@@ -107,3 +107,33 @@ def test_parser_accepts_stored_factor_comparison() -> None:
 
     assert args.factor_id == ("yeslab_155",)
     assert args.stored_factor_id == ("yeslab_380",)
+
+
+def test_load_directions_accepts_frozen_direction_artifact(tmp_path) -> None:
+    path = tmp_path / "directions.csv"
+    pd.DataFrame(
+        {
+            "factor_id": ["yeslab_376"],
+            "frozen_direction": [-1],
+        }
+    ).to_csv(path, index=False)
+
+    assert evaluation._load_directions(path, ("yeslab_376",)) == {"yeslab_376": -1}
+
+
+def test_parser_can_skip_expensive_pair_similarity() -> None:
+    args = evaluation.parse_args(
+        [
+            "--factor-id",
+            "yeslab_376",
+            "--start",
+            "2020-01-01",
+            "--end",
+            "2024-12-31",
+            "--skip-similarity",
+            "--output",
+            "/tmp/train-quality-only",
+        ]
+    )
+
+    assert args.skip_similarity is True
