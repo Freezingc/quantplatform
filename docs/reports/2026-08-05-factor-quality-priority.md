@@ -1197,3 +1197,24 @@ RankIC 证据无需再混入 BJ。对四窗口 canonical 交集的三个因子�
 - [`canonical 核心质量`](../../research_v2/artifacts/diagnostics/tushare_canonical_core_quality_v1.json)
 - [`TRAIN45 候选质量明细`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.csv)
 - [`三因子 TRAIN 相似度 pair`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_oos18_recovered2_2020_2024_v1.csv)
+
+### 横截面因子的沪深重新物化验证
+
+由于 `yeslab_94` 和 `yeslab_98` 含有同日横截面波动判断，旧 YesLab 值可能是在包含 BJ 的
+股票池上生成。本轮不再拿旧值做对照，而是直接用 Tushare 行情在 V2 沪深训练 universe 中
+重新计算，并与 `forward_open_5d` 标签做 2025 验证：
+
+| 因子 | 沪深代码数 | 有效日数 | mean RankIC | ICIR | 方向日占比 | 结果 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `yeslab_94` | 4,911 | 243 | -0.055005 | -0.698123 | 0.761316 | 验证 predictive 通过 |
+| `yeslab_98` | 4,911 | 243 | -0.061364 | -0.759793 | 0.781893 | 验证 predictive 通过 |
+
+这证明两因子在沪深范围重新定义后仍有验证期预测性，但尚未完成 2020–2024 全 TRAIN
+重算，因此暂不改变当前三因子 canonical 交集。TRAIN 任务在 Tushare 历史行情请求阶段
+长时间无响应后中止，未生成不完整摘要；后续将按年份/缓存分段补齐 TRAIN 证据。
+
+证据：
+
+- [`沪深重物化验证脚本`](../../research_v2/scripts/evaluate_tushare_scope_validation.py)
+- [`94/98 沪深 2025 质量摘要`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_94_98_v1/quality_summary.json)
+- [`94/98 沪深 2025 日度 RankIC`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_94_98_v1/daily_rank_ic.csv)
