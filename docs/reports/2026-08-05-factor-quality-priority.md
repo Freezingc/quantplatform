@@ -1014,3 +1014,11 @@ pre_close/pct_chg/vol/turnover_rate` 在浮点容差内一致；`amount` 最大�
 低 mismatch 不是准入通过，只表示恢复完整 BJ 快照后更值得优先复核。
 
 证据：[`14 个候选单批 canonical 重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos14_tushare_full_single_batch_2025-01_fixed.json)
+
+针对低 mismatch 的 `yeslab_94` 和 `yeslab_98`，做了一个不参与准入的诊断性补齐实验：仅将
+Tushare 缺失的 248 个 BJ 证券用 YesLab 原始行情补入横截面，其他证券仍使用 Tushare。两者
+都恢复为 `0` mismatch，最大绝对误差分别为 `1.8e-15` 和 `1.1e-17`，证明当前差异由 BJ
+横截面缺口解释，而不是计算器公式差异。正式状态仍保持 BLOCKED；待 Tushare 能提供完整 BJ
+日行情后，94/98 是第一优先级复核对象。
+
+证据：[`94/98 BJ 补齐诊断`](../../research_v2/artifacts/diagnostics/formula_replay_bj_supplement_diagnostic_94_98_2025-01_v1.json)
