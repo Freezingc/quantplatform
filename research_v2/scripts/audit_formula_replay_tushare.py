@@ -35,6 +35,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--start", type=date.fromisoformat, default=date(2020, 9, 14))
     parser.add_argument("--end", type=date.fromisoformat, default=date(2020, 9, 25))
     parser.add_argument("--max-ts-codes", type=int, default=64)
+    parser.add_argument("--full-market", action="store_true")
+    parser.add_argument("--restrict-to-v2-universe", action="store_true")
+    parser.add_argument("--stock-batch-size", type=int, default=256)
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        default=Path("/tmp/qrv2-tushare-replay-cache"),
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     args.factor_id = tuple(args.factor_id or SUPPORTED_FACTOR_IDS)
@@ -49,6 +57,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         raise ValueError("Tushare formula replay cannot read 2026 locked-test data")
     if args.max_ts_codes < 1:
         raise ValueError("max-ts-codes must be positive")
+    if args.stock_batch_size < 1:
+        raise ValueError("stock-batch-size must be positive")
     return args
 
 
@@ -59,8 +69,11 @@ def normalize_tushare_market(raw: pd.DataFrame, *, codes: Sequence[str]) -> pd.D
         raise ValueError(f"Tushare daily response is missing columns: {missing}")
     frame = raw.copy()
     frame["ts_code"] = frame["ts_code"].astype(str)
-    frame["trade_date"] = pd.to_datetime(
+    parsed_trade_date = pd.to_datetime(
         frame["trade_date"].astype(str), format="%Y%m%d", errors="coerce"
+    )
+    frame["trade_date"] = parsed_trade_date.fillna(
+        pd.to_datetime(frame["trade_date"], errors="coerce")
     ).dt.normalize()
     for column in ("open", "low", "amount", "pct_chg", "close"):
         if column in frame.columns:
@@ -86,7 +99,9 @@ class TushareMarketSession:
         if 'loadTable("dfs://YesLab", "stock_factor_daily")' in script or (
             "loadTable('dfs://YesLab','stock_factor_daily')" in script
         ):
-            return self._market.copy(deep=True)
+            return self._market.loc[
+                self._market["ts_code"].astype(str).isin(self._codes)
+            ].copy(deep=True)
         result = self._base.run(script)
         if isinstance(result, pd.DataFrame) and "ts_code" in result.columns:
             result = result.loc[result["ts_code"].astype(str).isin(self._codes)].copy()
@@ -94,18 +109,50 @@ class TushareMarketSession:
 
 
 def _query_codes(
-    client: object, definition: replay.ReplayDefinition, start: date, end: date, limit: int
+    client: object,
+    definition: replay.ReplayDefinition,
+    start: date,
+    end: date,
+    limit: int | None,
 ) -> tuple[str, ...]:
     result = client.run(
         "select distinct ts_code from "
         f"loadTable('dfs://YesLab','{definition.store_factor}') "
         f"where factor_name == '{definition.factor_name}' "
+        "and isValid(value) "
         f"and trade_date between date('{start:%Y.%m.%d}') "
         f"and date('{end:%Y.%m.%d}') order by ts_code"
     )
     if not isinstance(result, pd.DataFrame) or "ts_code" not in result.columns:
         raise RuntimeError("factor universe query did not return ts_code")
-    return tuple(sorted(result["ts_code"].astype(str).dropna().unique())[:limit])
+    codes = sorted(result["ts_code"].astype(str).dropna().unique())
+    return tuple(codes if limit is None else codes[:limit])
+
+
+def _query_open_dates(client: object, start: date, end: date) -> tuple[date, ...]:
+    result = client.run(
+        "select cal_date from loadTable('dfs://YesLab','trade_calendar') "
+        "where exchange='SSE' and is_open == 1 "
+        f"and cal_date between date('{start:%Y.%m.%d}') "
+        f"and date('{end:%Y.%m.%d}') order by cal_date"
+    )
+    if not isinstance(result, pd.DataFrame) or "cal_date" not in result.columns:
+        raise RuntimeError("trade calendar query did not return cal_date")
+    dates = pd.to_datetime(result["cal_date"], errors="coerce").dropna().dt.date
+    return tuple(sorted(value for value in dates if value < LOCKED_TEST_START))
+
+
+def _query_v2_universe_codes(client: object, start: date, end: date) -> tuple[str, ...]:
+    result = client.run(
+        "select distinct ts_code from "
+        "loadTable('dfs://QuantResearchV2Test','universe_daily_latest') "
+        "where is_member == true "
+        f"and signal_date between date('{start:%Y.%m.%d}') "
+        f"and date('{end:%Y.%m.%d}')"
+    )
+    if not isinstance(result, pd.DataFrame) or "ts_code" not in result.columns:
+        raise RuntimeError("V2 universe query did not return ts_code")
+    return tuple(sorted(result["ts_code"].astype(str).dropna().unique()))
 
 
 def _calculator_market_start(
@@ -123,7 +170,13 @@ def _calculator_market_start(
 
 
 def _fetch_tushare_market(
-    codes: Sequence[str], start: date, end: date, *, token: str
+    codes: Sequence[str],
+    start: date,
+    end: date,
+    *,
+    token: str,
+    open_dates: Sequence[date] | None = None,
+    cache_dir: Path | None = None,
 ) -> pd.DataFrame:
     import tushare as ts  # type: ignore[import-untyped]
 
@@ -131,46 +184,145 @@ def _fetch_tushare_market(
         raise ValueError("QRV2_TUSHARE_TOKEN is required for canonical market replay")
     pro = ts.pro_api(token)
     frames: list[pd.DataFrame] = []
-    for code in codes:
-        result = pro.daily(
-            ts_code=code,
-            start_date=start.strftime("%Y%m%d"),
-            end_date=end.strftime("%Y%m%d"),
-        )
-        if isinstance(result, pd.DataFrame) and not result.empty:
-            frames.append(result)
+    if open_dates is None:
+        for code in codes:
+            result = pro.daily(
+                ts_code=code,
+                start_date=start.strftime("%Y%m%d"),
+                end_date=end.strftime("%Y%m%d"),
+            )
+            if isinstance(result, pd.DataFrame) and not result.empty:
+                frames.append(result)
+    else:
+        resolved_cache = cache_dir or Path("/tmp/qrv2-tushare-replay-cache")
+        resolved_cache.mkdir(parents=True, exist_ok=True)
+        for trade_date in open_dates:
+            cache_path = resolved_cache / f"daily_{trade_date:%Y%m%d}.json"
+            if cache_path.is_file():
+                result = pd.read_json(cache_path, orient="table")
+            else:
+                result = pro.daily(trade_date=trade_date.strftime("%Y%m%d"))
+                if isinstance(result, pd.DataFrame):
+                    cache_path.write_text(
+                        result.to_json(orient="table", date_format="iso"), encoding="utf-8"
+                    )
+            if isinstance(result, pd.DataFrame) and not result.empty:
+                frames.append(result)
     if not frames:
         raise RuntimeError("Tushare daily returned no market rows")
     return normalize_tushare_market(pd.concat(frames, ignore_index=True), codes=codes)
 
 
+def aggregate_comparisons(comparisons: Sequence[dict[str, object]]) -> dict[str, object]:
+    """Aggregate independent stock-batch comparisons without weakening the replay gate."""
+
+    if not comparisons:
+        raise ValueError("at least one batch comparison is required")
+    reason_codes = sorted(
+        {
+            str(reason)
+            for comparison in comparisons
+            for reason in comparison.get("reason_codes", [])
+        }
+    )
+    mismatch_starts = [
+        str(comparison["mismatch_start"])
+        for comparison in comparisons
+        if comparison.get("mismatch_start")
+    ]
+    mismatch_ends = [
+        str(comparison["mismatch_end"])
+        for comparison in comparisons
+        if comparison.get("mismatch_end")
+    ]
+    finite_rows = sum(int(comparison["overlap_finite_rows"]) for comparison in comparisons)
+    mismatch_rows = sum(int(comparison["mismatch_rows"]) for comparison in comparisons)
+    return {
+        "source_rows": sum(int(comparison["source_rows"]) for comparison in comparisons),
+        "replay_rows": sum(int(comparison["replay_rows"]) for comparison in comparisons),
+        "overlap_rows": sum(int(comparison["overlap_rows"]) for comparison in comparisons),
+        "overlap_finite_rows": finite_rows,
+        "mismatch_rows": mismatch_rows,
+        "mismatch_date_count": max(
+            int(comparison["mismatch_date_count"]) for comparison in comparisons
+        ),
+        "mismatch_start": min(mismatch_starts) if mismatch_starts else None,
+        "mismatch_end": max(mismatch_ends) if mismatch_ends else None,
+        "max_abs_diff": max(float(comparison["max_abs_diff"]) for comparison in comparisons),
+        "max_rel_diff": max(float(comparison["max_rel_diff"]) for comparison in comparisons),
+        "decision_status": (
+            "FORMULA_REPLAY_PASS"
+            if finite_rows > 0 and mismatch_rows == 0
+            else "FORMULA_REPLAY_BLOCKED"
+        ),
+        "reason_codes": reason_codes,
+        "batch_count": len(comparisons),
+    }
+
+
 def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -> dict[str, object]:
     definitions = [replay.REPLAY_DEFINITIONS[factor_id] for factor_id in args.factor_id]
+    code_limit = None if args.full_market else args.max_ts_codes
     code_sets = [
-        _query_codes(client, definition, args.start, args.end, args.max_ts_codes)
+        _query_codes(client, definition, args.start, args.end, code_limit)
         for definition in definitions
     ]
-    codes = tuple(sorted(set().union(*map(set, code_sets))))[: args.max_ts_codes]
+    codes = tuple(sorted(set().union(*map(set, code_sets))))
+    if args.restrict_to_v2_universe:
+        universe_codes = set(_query_v2_universe_codes(client, args.start, args.end))
+        codes = tuple(code for code in codes if code in universe_codes)
+    if not codes:
+        raise RuntimeError("factor universe query returned no securities")
+    if not args.full_market:
+        codes = codes[: args.max_ts_codes]
     market_start = min(
         _calculator_market_start(client, definition, args.start, args.end)
         for definition in definitions
     )
-    market = _fetch_tushare_market(codes, market_start, args.end, token=tushare_token)
-    wrapped = TushareMarketSession(client, market, codes)
+    open_dates = _query_open_dates(client, market_start, args.end) if args.full_market else None
+    market = _fetch_tushare_market(
+        codes,
+        market_start,
+        args.end,
+        token=tushare_token,
+        open_dates=open_dates,
+        cache_dir=args.cache_dir,
+    )
+    market_codes = tuple(sorted(set(market["ts_code"].astype(str)).intersection(codes)))
+    missing_market_codes = tuple(sorted(set(codes).difference(market_codes)))
+    if not market_codes:
+        raise RuntimeError("Tushare market has no overlap with factor universe")
+    batch_size = args.stock_batch_size if args.full_market else len(market_codes)
+    comparisons_by_factor: dict[str, list[dict[str, object]]] = {
+        factor_id: [] for factor_id in args.factor_id
+    }
+    for offset in range(0, len(market_codes), batch_size):
+        batch_codes = market_codes[offset : offset + batch_size]
+        wrapped = TushareMarketSession(client, market, batch_codes)
+        for factor_id in args.factor_id:
+            definition = replay.REPLAY_DEFINITIONS[factor_id]
+            comparisons_by_factor[factor_id].append(
+                replay.compare_replay_frames(
+                    replay._query_source(wrapped, definition, args.start, args.end),
+                    replay._replay_factor(wrapped, definition, args.start, args.end),
+                )
+            )
     rows: list[dict[str, object]] = []
     for factor_id in args.factor_id:
         definition = replay.REPLAY_DEFINITIONS[factor_id]
-        comparison = replay.compare_replay_frames(
-            replay._query_source(wrapped, definition, args.start, args.end),
-            replay._replay_factor(wrapped, definition, args.start, args.end),
-        )
+        comparison = aggregate_comparisons(comparisons_by_factor[factor_id])
+        if missing_market_codes:
+            comparison["decision_status"] = "FORMULA_REPLAY_BLOCKED"
+            comparison["reason_codes"] = sorted(
+                set(comparison["reason_codes"]) | {"TUSHARE_MARKET_MISSING_CODES"}
+            )
         rows.append(
             {
                 "factor_id": factor_id,
                 "factor_name": definition.factor_name,
                 "lookback_days": definition.lookback_days,
                 "replay_lookback_days": definition.effective_replay_lookback_days,
-                "max_ts_codes": args.max_ts_codes,
+                "max_ts_codes": None if args.full_market else args.max_ts_codes,
                 **comparison,
             }
         )
@@ -183,7 +335,14 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         "end": args.end.isoformat(),
         "market_start": market_start.isoformat(),
         "factor_ids": list(args.factor_id),
-        "max_ts_codes": args.max_ts_codes,
+        "max_ts_codes": None if args.full_market else args.max_ts_codes,
+        "universe_mode": "full_market" if args.full_market else "bounded_sample",
+        "restrict_to_v2_universe": args.restrict_to_v2_universe,
+        "code_count": len(codes),
+        "market_code_count": len(market_codes),
+        "market_missing_code_count": len(missing_market_codes),
+        "stock_batch_size": batch_size,
+        "market_date_count": int(market["trade_date"].nunique()),
         "market_source": "Tushare.daily",
         "market_rows": len(market),
         "market_finite_rows": int(

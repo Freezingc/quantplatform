@@ -694,3 +694,39 @@ Tushare 行情，当前源文件计算器仍无法重现历史因子值，继续
 - [`4 因子 Tushare 多窗口汇总`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_recovered4_tushare_sample64_multiwindow_v1.json)
 - [`4 因子 TRAIN 方向来源`](../../research_v2/artifacts/diagnostics/train_structural_recovered4_direction_source_v1.json)
 - [`4 因子 2025 验证汇总`](../../research_v2/artifacts/diagnostics/structural_recovered4_validation_2025_v1/quality_summary.csv)
+
+### GP_069/GP_082 全市场复现与相似度复核
+
+随后将 Tushare 复现从 64 只样本提升为按股票批次的全市场审计，并将代码集合限制为实际
+训练输入 `universe_daily_latest.is_member=true`。4 个窗口的 V2 universe 代码均实现完整
+Tushare 覆盖，且两个因子在所有窗口都为 `FORMULA_REPLAY_PASS`、`mismatch_rows=0`：
+
+| 窗口 | universe 代码数 | Tushare 行数 | GP_069/GP_082 |
+| --- | ---: | ---: | --- |
+| 2020-09-14–25 | 2,746 | 581,716 | PASS / PASS |
+| 2022-01-04–31 | 3,337 | 733,375 | PASS / PASS |
+| 2024-01-02–31 | 4,084 | 873,646 | PASS / PASS |
+| 2025-01-02–31 | 4,136 | 897,229 | PASS / PASS |
+
+不限制 V2 universe 时出现的 7 个缺失代码全部是 `.BJ`，且不属于实际训练集合；这次显式
+限制 universe 后 `market_missing_code_count=0`，没有把源表外代码静默排除。
+
+全日 TRAIN 相似度矩阵进一步显示，20 个因子（原 18 个候选加 GP_069/GP_082）形成一个
+高相似度连通簇：
+
+- `GP_069/GP_082`：两者绝对 Spearman 中位数 `0.999999`；
+- `yeslab_431/GP_069`：`0.907429`；
+- `yeslab_431/GP_082`：`0.907413`。
+
+按 `0.90` 相似度门槛，三者属于同一簇。`yeslab_431` 已在当前正式 18 因子候选中，且
+2025 固定方向 signed mean RankIC 为 `0.088039`，高于 GP_069 的 `0.085053` 和 GP_082
+的 `0.085063`，因此保留 `yeslab_431` 作为簇代表，不扩充候选池。当前正式候选仍为 18
+个；这两个 recovered 因子已经完成质量闭环，但因冗余门禁不新增输入维度。
+
+证据：
+
+- [`全市场 Tushare 多窗口汇总`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_recovered2_tushare_full_v2universe_multiwindow_v1.json)
+- [`全市场复现脚本`](../../research_v2/scripts/audit_formula_replay_tushare.py)
+- [`TRAIN 全日相似度汇总`](../../research_v2/artifacts/diagnostics/train_similarity_full_day_oos18_recovered2_2020_2024_v1.csv)
+- [`TRAIN 全日相似度 pair 矩阵`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_oos18_recovered2_2020_2024_v1.csv)
+- [`recovered 因子相似度审计结论`](../../research_v2/artifacts/diagnostics/train_similarity_recovered2_full_day_review_v1.json)

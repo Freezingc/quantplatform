@@ -29,6 +29,29 @@ def test_parser_accepts_bounded_tushare_replay() -> None:
     assert args.start == date(2020, 9, 14)
 
 
+def test_parser_accepts_full_market_batches() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_438",
+            "--full-market",
+            "--restrict-to-v2-universe",
+            "--stock-batch-size",
+            "256",
+            "--start",
+            "2020-09-14",
+            "--end",
+            "2020-09-25",
+            "--output",
+            "/tmp/tushare-replay.json",
+        ]
+    )
+
+    assert args.full_market is True
+    assert args.restrict_to_v2_universe is True
+    assert args.stock_batch_size == 256
+
+
 def test_parser_rejects_locked_test_and_unsupported_factor() -> None:
     with pytest.raises(ValueError, match="2026"):
         audit.parse_args(
@@ -84,6 +107,7 @@ def test_query_codes_deduplicates_top_factor_rows() -> None:
     class Client:
         def run(self, script: str) -> pd.DataFrame:
             assert "select distinct ts_code" in script
+            assert "isValid(value)" in script
             return pd.DataFrame({"ts_code": ["000002.SZ", "000001.SZ", "000001.SZ"]})
 
     codes = audit._query_codes(
@@ -91,3 +115,44 @@ def test_query_codes_deduplicates_top_factor_rows() -> None:
     )
 
     assert codes == ("000001.SZ", "000002.SZ")
+
+
+def test_aggregate_comparisons_preserves_mismatch_gate() -> None:
+    result = audit.aggregate_comparisons(
+        [
+            {
+                "source_rows": 10,
+                "replay_rows": 10,
+                "overlap_rows": 10,
+                "overlap_finite_rows": 9,
+                "mismatch_rows": 0,
+                "mismatch_date_count": 0,
+                "mismatch_start": None,
+                "mismatch_end": None,
+                "max_abs_diff": 0.1,
+                "max_rel_diff": 0.2,
+                "decision_status": "FORMULA_REPLAY_PASS",
+                "reason_codes": [],
+            },
+            {
+                "source_rows": 10,
+                "replay_rows": 10,
+                "overlap_rows": 10,
+                "overlap_finite_rows": 8,
+                "mismatch_rows": 2,
+                "mismatch_date_count": 1,
+                "mismatch_start": "2020-09-18",
+                "mismatch_end": "2020-09-18",
+                "max_abs_diff": 0.3,
+                "max_rel_diff": 0.4,
+                "decision_status": "FORMULA_REPLAY_BLOCKED",
+                "reason_codes": ["FINITE_OVERLAP_MISMATCH"],
+            },
+        ]
+    )
+
+    assert result["source_rows"] == 20
+    assert result["overlap_finite_rows"] == 17
+    assert result["mismatch_rows"] == 2
+    assert result["decision_status"] == "FORMULA_REPLAY_BLOCKED"
+    assert result["reason_codes"] == ["FINITE_OVERLAP_MISMATCH"]
