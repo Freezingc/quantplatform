@@ -1,0 +1,58 @@
+{
+  "scope": "TUSHARE_SHSZ_REGISTERED_GP_QUALITY_REVIEW_V1",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d",
+  "factor_ids": [
+    "yeslab_387",
+    "yeslab_388",
+    "yeslab_391"
+  ],
+  "quality_source": {
+    "train": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
+    "validation": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json",
+    "validation_similarity": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/similarity_summary.json",
+    "train_similarity_status": "PENDING_FULL_DAY_PAIR"
+  },
+  "formula_replay": {
+    "windows": [
+      "2020-01",
+      "2022-01",
+      "2024-01",
+      "2025-01"
+    ],
+    "artifacts": [
+      "research_v2/artifacts/diagnostics/formula_replay_oos3_tushare_shsz_registered_fixed_2020-01_v1.json",
+      "research_v2/artifacts/diagnostics/formula_replay_oos3_tushare_shsz_registered_fixed_2022-01_v1.json",
+      "research_v2/artifacts/diagnostics/formula_replay_oos3_tushare_shsz_registered_fixed_2024-01_v1.json",
+      "research_v2/artifacts/diagnostics/formula_replay_oos3_tushare_shsz_registered_fixed_2025-01_v1.json"
+    ],
+    "pass_window_count": {
+      "yeslab_387": 2,
+      "yeslab_388": 4,
+      "yeslab_391": 4
+    },
+    "precision_monitor_factor_ids": [
+      "yeslab_387"
+    ]
+  },
+  "validation_similarity_risk_locator": {
+    "yeslab_388_vs_yeslab_380_median_abs_spearman": 0.9774063345,
+    "yeslab_391_vs_yeslab_380_median_abs_spearman": 0.8878095314,
+    "interpretation": "Validation similarity is a risk locator only; TRAIN full-day similarity remains required before admission."
+  },
+  "recommendations": {
+    "yeslab_391": "NEXT_ADMISSION_REVIEW_PENDING_TRAIN_SIMILARITY",
+    "yeslab_388": "REDUNDANCY_MONITOR_WITH_YESLAB_380",
+    "yeslab_387": "PRECISION_MONITOR_AND_REPLAY_RECHECK"
+  },
+  "publication_status": "NOT_PUBLISHED",
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false
+}

@@ -1306,23 +1306,27 @@ TRAIN 全窗口 pair 证据；本轮没有用验证期相似度直接删因子�
 
 | 因子 | 四窗口回放 | 处置 |
 |---|---:|---|
-| `yeslab_387 / GP_018` | 4/4 PASS | 可继续做准入审查 |
+| `yeslab_387 / GP_018` | 2/4 PASS | 2020/2025 各有少量金额精度 mismatch，监控 |
 | `yeslab_388 / GP_019` | 4/4 PASS | 可继续做准入审查 |
 | `yeslab_391 / GP_022` | 4/4 PASS | 可继续做准入审查 |
 | `yeslab_377 / GP_008` | 0/4 PASS | 源值重叠 mismatch，阻断 |
 | `yeslab_432 / GP_063` | 0/4 PASS | 源值重叠 mismatch，阻断 |
 | `yeslab_433 / GP_064` | 0/4 PASS | 少量但稳定 mismatch，阻断 |
 
-在六因子的完整 TRAIN 日相似度中，`GP_008/011/018/019` 形成强冗余簇：
+在此前六因子的完整 TRAIN 日相似度中，`GP_008/011/018/019` 形成强冗余簇：
 `387/388=0.981729`、`380/388=0.979991`、`380/387=0.977751`、`377/380=0.970053`。
 `GP_022/GP_064` 也达到 `0.911591`，但 GP_064 先因公式 mismatch 被阻断。这个结果支持
-“簇内选代表、先解决公式门禁”的策略；当前没有把这些诊断结果写成新的模型输入集合。
+“簇内选代表、先解决公式门禁”的策略。修正后的三因子审查显示，验证期 `GP_019/GP_011`
+中位绝对 Spearman 为 `0.977406`，应作为 GP_011 的冗余监控项；`GP_022/GP_011` 为
+`0.887810`，可作为下一轮准入审查候选，但仍必须先完成 TRAIN 全窗口 pair。当前没有把
+这些诊断结果写成新的模型输入集合。
 
 证据：
 
 - [`六因子 TRAIN 相似度`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_cluster_train_v1.json)
 - [`六因子四窗口公式回放汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_replay_train_windows_v1.json)
 - [`2025-01 注册 GP 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos6_tushare_shsz_registered_2025-01_v1.json)
+- [`三因子修正版四窗口回放`](../../research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_quality_review_v1.json)
 
 ### 横截面范围与 GP_064 精度根因
 
