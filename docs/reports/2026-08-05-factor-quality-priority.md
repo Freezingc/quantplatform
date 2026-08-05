@@ -908,3 +908,22 @@ Tushare 口径的可复现输入。
 - [`2020-01 4 因子重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos4_tushare_full_2020-01_v1.json)
 - [`2022-01 4 因子重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos4_tushare_full_2022-01_v1.json)
 - [`2024-01 4 因子重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos4_tushare_full_2024-01_v1.json)
+
+### Tushare canonical 核心因子的 predictive/年度复核
+
+对四个四窗口重放通过者，使用现有 V2 `factor_rank_ic_daily` 与 `raw_return` 结果做训练和
+2025 验证汇总。四个因子的全 TRAIN ICIR 绝对值为 `0.509–0.593`，2025 验证 ICIR 绝对值
+为 `0.572–0.780`，方向全部稳定为 `-1`；因此它们是当前最可信的 Tushare 口径候选。
+
+| 因子 | TRAIN signed mean RankIC | TRAIN ICIR | 2025 signed mean RankIC | 2025 ICIR | 年度 ICIR 达标年数 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `yeslab_163` / Alpha95 | `0.06655` | `-0.544` | `0.07274` | `-0.589` | `3/5` |
+| `yeslab_380` / GP_011 | `0.08167` | `-0.593` | `0.08812` | `-0.572` | `4/5` |
+| `yeslab_431` / GP_062 | `0.06952` | `-0.556` | `0.08804` | `-0.770` | `3/5` |
+| `yeslab_437` / GP_068 | `0.06685` | `-0.509` | `0.08868` | `-0.780` | `2/5` |
+
+如果把“每个年度 ICIR 必须达到 0.50”作为硬门槛，四个因子都不能直接冻结；如果采用主
+计划的“至少三年同向、年度均值和方向占比达标”稳定性规则，四个因子可继续进入相似度、
+PIT、FDR 和准入决策审阅。当前不修改原 18 因子提案、不写旧表、不启动模型训练。
+
+证据：[`Tushare canonical 核心质量汇总`](../../research_v2/artifacts/diagnostics/tushare_canonical_core_quality_v1.json)
