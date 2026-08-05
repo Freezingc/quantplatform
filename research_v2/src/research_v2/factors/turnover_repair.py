@@ -19,6 +19,10 @@ TURNOVER_GAP_FORMULAS: Mapping[str, str] = {
     "GP_016": "ts_max_5(mul(cs_zscore(pct_chg), turnover))",
     "GP_018": "mul(turnover, shift_1(amount))",
     "GP_019": "mul(ts_sum_10(turnover), abs(amount))",
+    "GP_031": "mul(turnover, ts_rank_60(cs_zscore(high)))",
+    "GP_070": "mul(turnover, cs_rank(mul(cs_zscore(amount), "
+    "ts_rank_20(ts_median_5(close)))))",
+    "GP_087": "mul(turnover, ts_rank_60(cs_zscore(open)))",
     "GP_026": "mul(mul(vol, ts_rank_60(cs_rank(close))), "
     "sub(turnover, ts_corr_10(open, sub(close, ts_rank_20(inv(ts_mean_5(close)))))))",
 }
@@ -30,6 +34,9 @@ _REQUIRED_COLUMNS: Mapping[str, tuple[str, ...]] = {
     "GP_016": ("pct_chg", "turnover_rate"),
     "GP_018": ("amount", "turnover_rate"),
     "GP_019": ("amount", "turnover_rate"),
+    "GP_031": ("high", "turnover_rate"),
+    "GP_070": ("close", "amount", "turnover_rate"),
+    "GP_087": ("open", "turnover_rate"),
     "GP_026": ("close", "open", "vol", "turnover_rate"),
 }
 
@@ -99,6 +106,30 @@ def _calculate(factor_name: str, matrices: Mapping[str, pd.DataFrame]) -> pd.Dat
     if factor_name == "GP_019":
         assert amount is not None and turnover is not None
         return turnover.rolling(10).sum() * amount.abs()
+    if factor_name == "GP_031":
+        high = matrices["high"]
+        assert turnover is not None
+        zscore = high.sub(high.mean(axis=1), axis=0).div(
+            high.std(axis=1) + 1e-10, axis=0
+        )
+        return turnover * zscore.rolling(60).rank(pct=True)
+    if factor_name == "GP_070":
+        close = matrices["close"]
+        assert amount is not None and turnover is not None
+        amount_zscore = amount.sub(amount.mean(axis=1), axis=0).div(
+            amount.std(axis=1) + 1e-10, axis=0
+        )
+        close_median = close.rolling(5).median()
+        close_rank = close_median.rolling(20).rank(pct=True)
+        cross_rank = (amount_zscore * close_rank).rank(axis=1, pct=True)
+        return turnover * cross_rank
+    if factor_name == "GP_087":
+        open_ = matrices["open"]
+        assert turnover is not None
+        zscore = open_.sub(open_.mean(axis=1), axis=0).div(
+            open_.std(axis=1) + 1e-10, axis=0
+        )
+        return turnover * zscore.rolling(60).rank(pct=True)
     close = matrices["close"]
     open_ = matrices["open"]
     vol = matrices["vol"]

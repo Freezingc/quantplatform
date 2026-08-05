@@ -1,0 +1,86 @@
+{
+  "candidate_overlay": true,
+  "database_writes": false,
+  "end": "2024-12-31",
+  "label_id": "forward_open_5d",
+  "label_version": 1,
+  "rows": [
+    {
+      "compact_finite_ratio": 0.984419802138743,
+      "compact_finite_rows": 3934470,
+      "compact_rows": 3996740,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_400",
+      "factor_name": "GP_031",
+      "finite_key_overflow_days": 0,
+      "logical_partition": "2020-01-01..2024-12-31",
+      "minimum_daily_finite_keys": 2806,
+      "minimum_daily_finite_ratio": 0.9635989010989011,
+      "minimum_daily_mature_rows": 2912,
+      "minimum_daily_signal_date": "2021-06-29",
+      "minimum_month": "2021-06",
+      "minimum_monthly_finite_ratio": 0.9663988565840521,
+      "p05_daily_finite_ratio": 0.9694114031714924,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": null,
+      "source_rows": null,
+      "source_unique_rows": null
+    },
+    {
+      "compact_finite_ratio": 0.9937071213038626,
+      "compact_finite_rows": 3971589,
+      "compact_rows": 3996740,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_439",
+      "factor_name": "GP_070",
+      "finite_key_overflow_days": 0,
+      "logical_partition": "2020-01-01..2024-12-31",
+      "minimum_daily_finite_keys": 2824,
+      "minimum_daily_finite_ratio": 0.9815780326729232,
+      "minimum_daily_mature_rows": 2877,
+      "minimum_daily_signal_date": "2021-05-25",
+      "minimum_month": "2021-05",
+      "minimum_monthly_finite_ratio": 0.9836205857214458,
+      "p05_daily_finite_ratio": 0.9863193502608582,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": null,
+      "source_rows": null,
+      "source_unique_rows": null
+    },
+    {
+      "compact_finite_ratio": 0.984419802138743,
+      "compact_finite_rows": 3934470,
+      "compact_rows": 3996740,
+      "decision_status": "COMPACT_DQ_PASS_PENDING_SIMILARITY",
+      "factor_id": "yeslab_456",
+      "factor_name": "GP_087",
+      "finite_key_overflow_days": 0,
+      "logical_partition": "2020-01-01..2024-12-31",
+      "minimum_daily_finite_keys": 2806,
+      "minimum_daily_finite_ratio": 0.9635989010989011,
+      "minimum_daily_mature_rows": 2912,
+      "minimum_daily_signal_date": "2021-06-29",
+      "minimum_month": "2021-06",
+      "minimum_monthly_finite_ratio": 0.9663988565840521,
+      "p05_daily_finite_ratio": 0.9694114031714924,
+      "reason_codes": [
+        "COMPACT_FINITE_COVERAGE_PASS"
+      ],
+      "source_conflict_keys": 0,
+      "source_exact_duplicate_rows": null,
+      "source_rows": null,
+      "source_unique_rows": null
+    }
+  ],
+  "scope": "COMPACT_UNIVERSE_COVERAGE_READ_ONLY_V1",
+  "server_aggregate": true,
+  "start": "2020-01-01",
+  "universe_id": "cn_liquid_a",
+  "universe_version": 1
+}

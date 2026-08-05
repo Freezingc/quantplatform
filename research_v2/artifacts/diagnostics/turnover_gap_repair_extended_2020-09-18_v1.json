@@ -1,0 +1,361 @@
+{
+  "candidate_artifacts": [
+    {
+      "factor_id": "yeslab_377",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_377_turnover_gap_candidate.csv",
+      "rows": 1386,
+      "sha256": "c3326d1b6b0df4d5a10be6af5fa36b74cf87b5cfb6269be45d9eb0033aa30eda"
+    },
+    {
+      "factor_id": "yeslab_380",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_380_turnover_gap_candidate.csv",
+      "rows": 1386,
+      "sha256": "51d325b754faf60bff6d55ac4db35175553aee3d0445496bf544ac80b7c074d6"
+    },
+    {
+      "factor_id": "yeslab_382",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_382_turnover_gap_candidate.csv",
+      "rows": 1385,
+      "sha256": "0021e9e59c7df3099f0937179a1af8d0d2f0c805c8cb6f0458adef11c8710b68"
+    },
+    {
+      "factor_id": "yeslab_385",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_385_turnover_gap_candidate.csv",
+      "rows": 6853,
+      "sha256": "666c846725c0d8a78406cfebe98dfada5d3ff276cb515896acf9ecc894cf4c6a"
+    },
+    {
+      "factor_id": "yeslab_387",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_387_turnover_gap_candidate.csv",
+      "rows": 1385,
+      "sha256": "55ee2129280c5c3d6719a2ce0205f98a7d1663920d1be2cb036c119adfcea2da"
+    },
+    {
+      "factor_id": "yeslab_388",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_388_turnover_gap_candidate.csv",
+      "rows": 8204,
+      "sha256": "49f89f0ef93e2c89e52bb93bc9eaba622c636f4e964ccc650c1bac272d382492"
+    },
+    {
+      "factor_id": "yeslab_400",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_400_turnover_gap_candidate.csv",
+      "rows": 1348,
+      "sha256": "8ef266c59270a0c63dd6fe407e6f228006cbbf81d2d24e8336d523c71c45bd20"
+    },
+    {
+      "factor_id": "yeslab_439",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_439_turnover_gap_candidate.csv",
+      "rows": 1364,
+      "sha256": "bb1f79c2d56cef832f84b329e9d3c7953989a68a9b5672a1213355c2bc5a5028"
+    },
+    {
+      "factor_id": "yeslab_456",
+      "path": "research_v2/artifacts/diagnostics/turnover_gap_candidates_extended_2020-09-18_v1/yeslab_456_turnover_gap_candidate.csv",
+      "rows": 1348,
+      "sha256": "ab5d72851afe90a6a9e796964feee771f9c2bd5aec4bb93fbb6decd4a3ab538f"
+    }
+  ],
+  "candidate_start": "2020-09-18",
+  "database_writes": false,
+  "factor_ids": [
+    "yeslab_377",
+    "yeslab_380",
+    "yeslab_382",
+    "yeslab_385",
+    "yeslab_387",
+    "yeslab_388",
+    "yeslab_395",
+    "yeslab_400",
+    "yeslab_439",
+    "yeslab_456"
+  ],
+  "gap_date": "2020-09-18",
+  "impact_end": "2020-09-25",
+  "impact_start": "2020-09-14",
+  "rows": [
+    {
+      "candidate_finite_rows": 39442,
+      "compact_candidate_finite_rows": 27424,
+      "compact_fillable_gap_date_rows": 1386,
+      "compact_fillable_rows": 1386,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 26038,
+      "factor_id": "yeslab_377",
+      "factor_name": "GP_008",
+      "formula": "mul(turnover, cs_rank(amount))",
+      "overlap_finite_rows": 38056,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 39442,
+      "overlay_filled_rows": 1386,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 20078
+      },
+      "overlay_quarantine_rows": 20078,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 20078,
+      "source_finite_rows": 38056,
+      "source_rows": 59520,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 39442,
+      "compact_candidate_finite_rows": 27424,
+      "compact_fillable_gap_date_rows": 1386,
+      "compact_fillable_rows": 1386,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 26038,
+      "factor_id": "yeslab_380",
+      "factor_name": "GP_011",
+      "formula": "mul(turnover, amount)",
+      "overlap_finite_rows": 38056,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 39442,
+      "overlay_filled_rows": 1386,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 20078
+      },
+      "overlay_quarantine_rows": 20078,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 20078,
+      "source_finite_rows": 38056,
+      "source_rows": 59520,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 39380,
+      "compact_candidate_finite_rows": 27404,
+      "compact_fillable_gap_date_rows": 1385,
+      "compact_fillable_rows": 1385,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 26019,
+      "factor_id": "yeslab_382",
+      "factor_name": "GP_013",
+      "formula": "mul(turnover, cs_rank(cs_zscore(shift_1(amount))))",
+      "overlap_finite_rows": 37995,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 39380,
+      "overlay_filled_rows": 1385,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 20140
+      },
+      "overlay_quarantine_rows": 20140,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 20140,
+      "source_finite_rows": 37995,
+      "source_rows": 59520,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 37576,
+      "compact_candidate_finite_rows": 27233,
+      "compact_fillable_gap_date_rows": 1377,
+      "compact_fillable_rows": 6853,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 20380,
+      "factor_id": "yeslab_385",
+      "factor_name": "GP_016",
+      "formula": "ts_max_5(mul(cs_zscore(pct_chg), turnover))",
+      "overlap_finite_rows": 30679,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 37576,
+      "overlay_filled_rows": 6897,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 21944
+      },
+      "overlay_quarantine_rows": 21944,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 21944,
+      "source_finite_rows": 30679,
+      "source_rows": 59520,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 39380,
+      "compact_candidate_finite_rows": 27404,
+      "compact_fillable_gap_date_rows": 1385,
+      "compact_fillable_rows": 1385,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 26019,
+      "factor_id": "yeslab_387",
+      "factor_name": "GP_018",
+      "formula": "mul(turnover, shift_1(amount))",
+      "overlap_finite_rows": 37995,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 39380,
+      "overlay_filled_rows": 1385,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 20140
+      },
+      "overlay_quarantine_rows": 20140,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 20140,
+      "source_finite_rows": 37995,
+      "source_rows": 59520,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 37010,
+      "compact_candidate_finite_rows": 27166,
+      "compact_fillable_gap_date_rows": 1377,
+      "compact_fillable_rows": 8204,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 18962,
+      "factor_id": "yeslab_388",
+      "factor_name": "GP_019",
+      "formula": "mul(ts_sum_10(turnover), abs(amount))",
+      "overlap_finite_rows": 28740,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 37010,
+      "overlay_filled_rows": 8270,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 22510
+      },
+      "overlay_quarantine_rows": 22510,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 22510,
+      "source_finite_rows": 28740,
+      "source_rows": 59520,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 36779,
+      "compact_candidate_finite_rows": 26709,
+      "compact_fillable_gap_date_rows": 1348,
+      "compact_fillable_rows": 1348,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 25361,
+      "factor_id": "yeslab_395",
+      "factor_name": "GP_026",
+      "formula": "mul(mul(vol, ts_rank_60(cs_rank(close))), sub(turnover, ts_corr_10(open, sub(close, ts_rank_20(inv(ts_mean_5(close)))))))",
+      "overlap_finite_rows": 35431,
+      "overlap_max_abs_diff": 42249.21034689993,
+      "overlap_max_rel_diff": 115.1329797888263,
+      "overlap_mismatch_rows": 2016,
+      "overlay_clean_rows": 36779,
+      "overlay_filled_rows": 1348,
+      "overlay_quarantine_reasons": {
+        "CONFLICT_QUARANTINE": 2016,
+        "NO_FINITE_CANDIDATE": 22761
+      },
+      "overlay_quarantine_rows": 24777,
+      "overlay_status": "REPAIR_BLOCKED",
+      "overlay_unresolved_rows": 22761,
+      "source_finite_rows": 35431,
+      "source_rows": 59540,
+      "status": "TURNOVER_REPAIR_BLOCKED_OVERLAP"
+    },
+    {
+      "candidate_finite_rows": 36779,
+      "compact_candidate_finite_rows": 26709,
+      "compact_fillable_gap_date_rows": 1348,
+      "compact_fillable_rows": 1348,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 25361,
+      "factor_id": "yeslab_400",
+      "factor_name": "GP_031",
+      "formula": "mul(turnover, ts_rank_60(cs_zscore(high)))",
+      "overlap_finite_rows": 35431,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 36779,
+      "overlay_filled_rows": 1348,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 22761
+      },
+      "overlay_quarantine_rows": 22761,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 22761,
+      "source_finite_rows": 35431,
+      "source_rows": 59540,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 38265,
+      "compact_candidate_finite_rows": 27059,
+      "compact_fillable_gap_date_rows": 1364,
+      "compact_fillable_rows": 1364,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 25695,
+      "factor_id": "yeslab_439",
+      "factor_name": "GP_070",
+      "formula": "mul(turnover, cs_rank(mul(cs_zscore(amount), ts_rank_20(ts_median_5(close)))))",
+      "overlap_finite_rows": 36901,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 38265,
+      "overlay_filled_rows": 1364,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 21265
+      },
+      "overlay_quarantine_rows": 21265,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 21265,
+      "source_finite_rows": 36901,
+      "source_rows": 59530,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    },
+    {
+      "candidate_finite_rows": 36779,
+      "compact_candidate_finite_rows": 26709,
+      "compact_fillable_gap_date_rows": 1348,
+      "compact_fillable_rows": 1348,
+      "compact_rows": 27424,
+      "compact_source_finite_rows": 25361,
+      "factor_id": "yeslab_456",
+      "factor_name": "GP_087",
+      "formula": "mul(turnover, ts_rank_60(cs_zscore(open)))",
+      "overlap_finite_rows": 35431,
+      "overlap_max_abs_diff": 0.0,
+      "overlap_max_rel_diff": 0.0,
+      "overlap_mismatch_rows": 0,
+      "overlay_clean_rows": 36779,
+      "overlay_filled_rows": 1348,
+      "overlay_quarantine_reasons": {
+        "NO_FINITE_CANDIDATE": 22771
+      },
+      "overlay_quarantine_rows": 22771,
+      "overlay_status": "REPAIR_AUDIT_PASS_WITH_UNRESOLVED_QUARANTINE",
+      "overlay_unresolved_rows": 22771,
+      "source_finite_rows": 35431,
+      "source_rows": 59550,
+      "status": "TURNOVER_REPAIR_CANDIDATE_READY"
+    }
+  ],
+  "scope": "TURNOVER_GAP_TUSHARE_REPAIR_AUDIT_V1",
+  "turnover_evidence": {
+    "gap_date": "2020-09-18",
+    "replacement_rows": 1386,
+    "replacement_symbol_count": 1386,
+    "replacement_symbol_hash": "69432b4a5a62cc791c1e449d496b2b21954fe36a8e31bf71fd13488e0d9927fe",
+    "replacement_symbol_sample": [
+      "000001.SZ",
+      "000002.SZ",
+      "000004.SZ",
+      "000007.SZ",
+      "000009.SZ",
+      "000010.SZ",
+      "000021.SZ",
+      "000025.SZ",
+      "000026.SZ",
+      "000027.SZ"
+    ],
+    "source_missing_mature_rows": 1386,
+    "tushare_finite_rows": 4070,
+    "tushare_rows": 4070
+  },
+  "warmup_start": "2020-03-02"
+}

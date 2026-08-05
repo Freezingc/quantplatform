@@ -30,6 +30,9 @@ REPAIR_FACTOR_IDS = (
     "yeslab_385",
     "yeslab_387",
     "yeslab_388",
+    "yeslab_400",
+    "yeslab_439",
+    "yeslab_456",
 )
 QUALITY_FACTOR_IDS = (
     "yeslab_114",
@@ -58,6 +61,9 @@ QUALITY_FACTOR_IDS = (
     "yeslab_95",
     "yeslab_96",
     "yeslab_98",
+    "yeslab_400",
+    "yeslab_439",
+    "yeslab_456",
 )
 IMPACT_START = date(2020, 9, 18)
 IMPACT_END = date(2020, 10, 9)
@@ -290,7 +296,7 @@ def main() -> None:
     repaired.to_csv(repaired_path, index=False)
     metrics.to_csv(metrics_path, index=False)
     report = {
-        "scope": "REPAIRED_FACTOR_RANKIC_TRAIN26_V1",
+        "scope": "REPAIRED_FACTOR_RANKIC_TRAIN_EXTENDED_V1",
         "impact_start": IMPACT_START.isoformat(),
         "impact_end": IMPACT_END.isoformat(),
         "factor_ids": list(REPAIR_FACTOR_IDS),

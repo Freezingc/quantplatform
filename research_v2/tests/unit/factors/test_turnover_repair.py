@@ -21,6 +21,7 @@ def _market(days: int = 70) -> pd.DataFrame:
                     "ts_code": ts_code,
                     "open": base + 0.1,
                     "close": base + 0.2,
+                    "high": base + 0.3,
                     "vol": base + 1.0,
                     "amount": base + 2.0,
                     "pct_chg": float(symbol_index - 1),
@@ -32,7 +33,18 @@ def _market(days: int = 70) -> pd.DataFrame:
 
 @pytest.mark.parametrize(
     "factor_name",
-    ("GP_008", "GP_011", "GP_013", "GP_016", "GP_018", "GP_019", "GP_026"),
+    (
+        "GP_008",
+        "GP_011",
+        "GP_013",
+        "GP_016",
+        "GP_018",
+        "GP_019",
+        "GP_026",
+        "GP_031",
+        "GP_070",
+        "GP_087",
+    ),
 )
 def test_turnover_gap_candidates_have_canonical_long_shape(factor_name: str) -> None:
     result = compute_turnover_gap_candidate(factor_name, _market())

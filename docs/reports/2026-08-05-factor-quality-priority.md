@@ -430,3 +430,51 @@ yeslab_396, yeslab_95, yeslab_96, yeslab_98
 `yeslab_357, yeslab_376, yeslab_98`；这是一条明确的保守备选，不是当前默认提案。
 无论采用哪条分支，`yeslab_395 / GP_026` 的公式 overlap mismatch 仍然阻断，不能进入
 候选集。
+
+### 剩余 21 个 source-DQ 通过因子的结构复核与输入修复
+
+此前 47 个 source-DQ 通过因子中，有 21 个已经通过 TRAIN predictive 门槛，但尚未完成
+compact-universe 交集检查。本轮对这 21 个因子执行了 2020–2024 的只读成熟分母审计：
+
+- 未修复前 `16/21` 通过 compact coverage；
+- `yeslab_395/GP_026`、`yeslab_400/GP_031`、`yeslab_439/GP_070`、
+  `yeslab_456/GP_087`、`yeslab_471/AttentionSpillover` 在 2020-09-18 出现断崖式最低日覆盖；
+- GP_031、GP_070、GP_087 与此前 6 个 GP 一样依赖 `turnover_rate`，但原有修复函数没有
+  覆盖这 3 个公式，现已按源文件计算器语义补齐候选重算。
+
+扩展 Tushare turnover 审计结果：
+
+| 因子 | overlap mismatch | gap 可补行 | compact 修复后最低日覆盖 | 状态 |
+| --- | ---: | ---: | ---: | --- |
+| `yeslab_400 / GP_031` | 0 | 1,348 | 0.963599 | 候选通过 |
+| `yeslab_439 / GP_070` | 0 | 1,364 | 0.981578 | 候选通过 |
+| `yeslab_456 / GP_087` | 0 | 1,348 | 0.963599 | 候选通过 |
+| `yeslab_395 / GP_026` | 2,016 | 1,348 | — | 继续阻断 |
+
+3 个新候选经过 preflight 的有限值、无覆盖有限源值、业务键唯一、未读锁定测试等 5 个
+阻断检查后，已追加到新建 `factor_repair_candidate` 隔离表；没有修改 YesLab 或
+`factor_observation_clean`。数据库核验为：
+
+- `factor_repair_candidate` 物理行数由 `46,601` 增至 `50,661`，新增 `4,060` 行；
+- `factor_observation_clean` 仍为 `170,333,348` 行；
+- 2020–2024 影响窗口的 9 个换手率修复因子重新计算 RankIC 后，全部保持 TRAIN
+  predictive prefilter，通过方向均为 `-1`；新 3 个因子的 mean RankIC/ICIR 分别为
+  `GP_031: -0.077127/-0.546584`、`GP_070: -0.075355/-0.509775`、
+  `GP_087: -0.076192/-0.532066`。
+
+`AttentionSpillover` 的断档来自 `total_mv`，不是换手率。Tushare 在 2020-09-18 提供
+4,070 条有限 `total_mv`，但按其计算器语义重算后与已有因子值的 35,024 个有限重叠键中
+有 11,214 个 mismatch（最大绝对差 `485.66`），因此该修复被阻断，没有生成或发布候选。
+
+相关证据：
+
+- [`remaining 21 compact coverage`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_train2020_2024_remaining21_v1.json)
+- [`extended turnover repair audit`](../../research_v2/artifacts/diagnostics/turnover_gap_repair_extended_2020-09-18_v1.json)
+- [`extended turnover candidate preflight`](../../research_v2/artifacts/diagnostics/turnover_gap_candidate_preflight_extended_new3_2020-09-18_v1.json)
+- [`extended turnover candidate publish`](../../research_v2/artifacts/diagnostics/turnover_gap_candidate_publish_extended_new3_2020-09-18_v1.json)
+- [`extended repair compact overlay`](../../research_v2/artifacts/diagnostics/compact_universe_coverage_train2020_2024_turnover_extended3_v1.json)
+- [`extended repaired RankIC`](../../research_v2/artifacts/diagnostics/repaired_factor_rankic_train29_extended_v1.json)
+- [`AttentionSpillover total_mv audit`](../../research_v2/artifacts/diagnostics/attention_spillover_gap_repair_audit_2020-09-18_v1.json)
+
+这 19 个结构通过因子还没有完成全 TRAIN 相似度和 2025 固定方向验证，因此暂不加入
+当前 13 个 OOS 候选；下一步继续做扩展因子的 train-only 相似度与验证期 RankIC/ICIR。

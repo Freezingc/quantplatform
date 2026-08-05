@@ -30,6 +30,9 @@ APPROVED_FACTOR_IDS = frozenset(
         "yeslab_385",
         "yeslab_387",
         "yeslab_388",
+        "yeslab_400",
+        "yeslab_439",
+        "yeslab_456",
     }
 )
 BLOCKED_FACTOR_IDS = frozenset({"yeslab_395"})

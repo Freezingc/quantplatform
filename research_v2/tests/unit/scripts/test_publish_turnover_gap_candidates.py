@@ -10,25 +10,25 @@ import pytest
 
 
 def _frame() -> pd.DataFrame:
+    factor_ids = list(sorted(publish.APPROVED_FACTOR_IDS))
     return pd.DataFrame(
         {
-            "observation_date": [date(2020, 9, 18)] * 6,
-            "ts_code": [
-                "000001.SZ",
-                "000002.SZ",
-                "000003.SZ",
-                "000004.SZ",
-                "000005.SZ",
-                "000006.SZ",
-            ],
-            "factor_id": list(sorted(publish.APPROVED_FACTOR_IDS)),
-            "factor_version": [1] * 6,
-            "factor_name": ["F"] * 6,
-            "candidate_value": [1.0] * 6,
-            "source_value": [float("nan")] * 6,
-            "repair_method": ["TUSHARE_TURNOVER_GAP"] * 6,
-            "reason": ["TURNOVER_RATE_GAP"] * 6,
+            "observation_date": [date(2020, 9, 18)] * len(factor_ids),
+            "ts_code": [f"0000{index:02d}.SZ" for index in range(1, len(factor_ids) + 1)],
+            "factor_id": factor_ids,
+            "factor_version": [1] * len(factor_ids),
+            "factor_name": ["F"] * len(factor_ids),
+            "candidate_value": [1.0] * len(factor_ids),
+            "source_value": [float("nan")] * len(factor_ids),
+            "repair_method": ["TUSHARE_TURNOVER_GAP"] * len(factor_ids),
+            "reason": ["TURNOVER_RATE_GAP"] * len(factor_ids),
         }
+    )
+
+
+def test_extended_turnover_formula_candidates_are_approved() -> None:
+    assert {"yeslab_400", "yeslab_439", "yeslab_456"}.issubset(
+        publish.APPROVED_FACTOR_IDS
     )
 
 
@@ -37,7 +37,7 @@ def test_build_candidate_batch_is_unique_and_lineaged() -> None:
 
     batch.validate()
 
-    assert identity["row_count"] == 6
+    assert identity["row_count"] == len(publish.APPROVED_FACTOR_IDS)
     assert batch.data_version == identity["data_version"]
     assert batch.frame["record_hash"].map(lambda value: len(str(value))).eq(64).all()
 

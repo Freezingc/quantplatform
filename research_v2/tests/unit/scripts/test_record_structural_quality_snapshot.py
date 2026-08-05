@@ -7,7 +7,7 @@ import pytest
 from record_raw_conflict_snapshot import classify_conflict_metrics
 from record_raw_pit_key_snapshot import summarize_finite_key_coverage
 from record_raw_source_quality_snapshot import classify_raw_metrics, summarize_raw_aggregates
-from record_repaired_factor_rankic import merge_daily_rankic
+from record_repaired_factor_rankic import REPAIR_FACTOR_IDS, merge_daily_rankic
 from record_source_quality_combined_snapshot import combine_source_statuses
 from record_structural_quality_snapshot import compute_structural_metrics
 from record_train_rankic_similarity import rankic_similarity_pairs
@@ -356,3 +356,7 @@ def test_validation_metrics_use_fixed_train_direction_and_fdr_gate() -> None:
     ).set_index("factor_id")
     assert result.loc["yeslab_1", "decision_status"] == "VALIDATION_2025_FAIL"
     assert result.loc["yeslab_2", "decision_status"] == "VALIDATION_2025_FAIL"
+
+
+def test_repaired_rankic_scope_includes_extended_turnover_candidates() -> None:
+    assert {"yeslab_400", "yeslab_439", "yeslab_456"}.issubset(REPAIR_FACTOR_IDS)

@@ -36,6 +36,9 @@ DEFAULT_FACTOR_IDS = (
     "yeslab_387",
     "yeslab_388",
     "yeslab_395",
+    "yeslab_400",
+    "yeslab_439",
+    "yeslab_456",
 )
 
 
@@ -168,7 +171,7 @@ def _query_metadata(source: YesLabReadOnlySession, factor_ids: tuple[str, ...]) 
 
 def _query_market(source: YesLabReadOnlySession, start: date, end: date) -> pd.DataFrame:
     result = source.query(
-        "select trade_date,ts_code,open,close,vol,amount,pct_chg,turnover_rate "
+        "select trade_date,ts_code,open,high,close,vol,amount,pct_chg,turnover_rate "
         "from loadTable('dfs://YesLab','stock_factor_daily') "
         f"where trade_date between date('{start:%Y.%m.%d}') "
         f"and date('{end:%Y.%m.%d}')"
@@ -179,6 +182,7 @@ def _query_market(source: YesLabReadOnlySession, start: date, end: date) -> pd.D
         "trade_date",
         "ts_code",
         "open",
+        "high",
         "close",
         "vol",
         "amount",
