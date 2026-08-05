@@ -1443,3 +1443,19 @@ yeslab_376, yeslab_396, yeslab_442`。年度监控对象仍为 `yeslab_380/431/4
 
 - [`九因子 v3 提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_proposal_v3.json)
 - [`九因子最终准入预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_preflight_v3.json)
+
+### 九因子 2025 验证期相似度完整性
+
+对最终九因子集合补做了独立的 2025 验证期相似度完整性审计。结果为 `36/36` 条无序边
+全部具备证据，每条边都有 `237` 个有效交易日（2025-01-02–2025-12-23），没有缺失边、
+有效日不足或超过 `0.90` 的冗余边。最高中位绝对 Spearman 为
+`yeslab_396/yeslab_442 = 0.878174`，低于训练期和验证期共同使用的 `0.90` 阈值。
+
+因此当前九因子集合不仅通过 TRAIN 去冗余，也有完整 OOS 结构证据；但年度 MONITOR 因子
+仍需在后续滚动窗口持续观察，不能因为一次验证期相似度通过就永久冻结。
+
+证据与审计脚本：
+
+- [`2025 验证期九因子相似度审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_validation_similarity_admission_v1.json)
+- [`验证期相似度审计脚本`](../../research_v2/scripts/audit_shsz_validation_similarity.py)
+- [`验证期相似度审计测试`](../../research_v2/tests/unit/scripts/test_audit_shsz_validation_similarity.py)

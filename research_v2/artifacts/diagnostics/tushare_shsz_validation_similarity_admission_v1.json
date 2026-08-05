@@ -1,0 +1,361 @@
+{
+  "factor_ids": [
+    "yeslab_380",
+    "yeslab_431",
+    "yeslab_437",
+    "yeslab_155",
+    "yeslab_98",
+    "yeslab_94",
+    "yeslab_376",
+    "yeslab_396",
+    "yeslab_442"
+  ],
+  "required_pair_count": 36,
+  "observed_pair_count": 36,
+  "missing_pairs": [],
+  "pair_failures": [],
+  "pair_results": [
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_376",
+      "metric": 0.324950497426028,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_380",
+      "metric": 0.2896288670045024,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_396",
+      "metric": 0.3353837442833681,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_431",
+      "metric": 0.2120745686793596,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_437",
+      "metric": 0.2477848327892813,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_442",
+      "metric": 0.3112191078086337,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_94",
+      "metric": 0.1330568206227261,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.1428691617768171,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_380",
+      "metric": 0.5744890089473489,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_396",
+      "metric": 0.7962844903449138,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_431",
+      "metric": 0.5520144052142449,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_437",
+      "metric": 0.5138665671233751,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_442",
+      "metric": 0.7248320600905935,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_94",
+      "metric": 0.30119794232268,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.3083422232796817,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_396",
+      "metric": 0.5893697617632813,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_431",
+      "metric": 0.803194020157244,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_437",
+      "metric": 0.8322908581767084,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_442",
+      "metric": 0.5421381971991045,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_94",
+      "metric": 0.2199308708570513,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.2114552166771013,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_396",
+      "factor_id_right": "yeslab_431",
+      "metric": 0.5814295850015825,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_396",
+      "factor_id_right": "yeslab_437",
+      "metric": 0.5183362010568277,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_396",
+      "factor_id_right": "yeslab_442",
+      "metric": 0.8781739163753733,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_396",
+      "factor_id_right": "yeslab_94",
+      "metric": 0.2686736843489132,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_396",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.2706120741531954,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_431",
+      "factor_id_right": "yeslab_437",
+      "metric": 0.786381853815079,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_431",
+      "factor_id_right": "yeslab_442",
+      "metric": 0.5150041451720493,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_431",
+      "factor_id_right": "yeslab_94",
+      "metric": 0.1876292486668058,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_431",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.1702136562978085,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_437",
+      "factor_id_right": "yeslab_442",
+      "metric": 0.4515772035064514,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_437",
+      "factor_id_right": "yeslab_94",
+      "metric": 0.1581159449639199,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_437",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.1474812337370336,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_442",
+      "factor_id_right": "yeslab_94",
+      "metric": 0.2558225024754014,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_442",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.2522075643721492,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_94",
+      "factor_id_right": "yeslab_98",
+      "metric": 0.7396771887369892,
+      "valid_days": 237,
+      "threshold": 0.9,
+      "minimum_valid_days": 200,
+      "status": "PASS"
+    }
+  ],
+  "threshold": 0.9,
+  "minimum_valid_days": 200,
+  "minimum_valid_days_observed": 237,
+  "maximum_valid_days_observed": 237,
+  "max_median_abs_spearman": 0.8781739163753733,
+  "status": "PASS",
+  "database_writes": false,
+  "locked_test_read": false,
+  "scope": "TUSHARE_SHSZ_VALIDATION_SIMILARITY_ADMISSION_V1",
+  "validation_window": "2025-01-02/2025-12-23",
+  "source_artifact": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ]
+}
