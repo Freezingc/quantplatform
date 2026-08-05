@@ -996,3 +996,21 @@ pre_close/pct_chg/vol/turnover_rate` 在浮点容差内一致；`amount` 最大�
 - [`GP_007/012/016 单批 canonical 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp007_gp012_gp016_tushare_single_batch_v2_2025-01_fixed.json)
 - [`横截面单批规则 smoke`](../../research_v2/artifacts/diagnostics/formula_replay_gp007_tushare_auto_full_cross_section_2025-01_fixed.json)
 - [`YesLab/Tushare 原始行情字段对账`](../../research_v2/artifacts/diagnostics/tushare_yeslab_market_field_parity_2024-11-18_2025-01-31_v1.json)
+
+用同一规则补跑其余 14 个候选后，仍为 `14/14 BLOCKED`。但 mismatch 密度可用于安排
+补救优先级：
+
+| 因子 | mismatch / 有限重叠 | 最大绝对差 | 当前判断 |
+| --- | ---: | ---: | --- |
+| `yeslab_94` | `1,722 / 91,606` | `5.4668` | 低 mismatch，优先追 BJ 快照后复核 |
+| `yeslab_98` | `2,057 / 91,606` | `0.04545` | 低 mismatch，优先追 BJ 快照后复核 |
+| `yeslab_95` | `29,978 / 91,606` | `1.62303` | 中等 mismatch，暂阻断 |
+| `yeslab_96` | `31,162 / 91,606` | `5.4668` | 中等 mismatch，暂阻断 |
+| `yeslab_400` | `49,166 / 90,139` | `2.99353` | 低覆盖且阻断 |
+| `yeslab_425` | `63,645 / 91,945` | `0.4` | 中高 mismatch，暂阻断 |
+| 其余 8 个 | `≥90,000` | 依公式而异 | 历史横截面/输入语义优先排查 |
+
+所有行同时带有 `TUSHARE_MARKET_MISSING_CODES`，缺失证券数为 `248` 且全部为 `.BJ`；上述
+低 mismatch 不是准入通过，只表示恢复完整 BJ 快照后更值得优先复核。
+
+证据：[`14 个候选单批 canonical 重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos14_tushare_full_single_batch_2025-01_fixed.json)
