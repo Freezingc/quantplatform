@@ -1063,3 +1063,27 @@ Tushare 缺失的 248 个 BJ 证券用 YesLab 原始行情补入横截面，其�
 - [`BJ 迁移审计单测`](../../research_v2/tests/unit/scripts/test_audit_bj_code_migration.py)
 - [`2025-01 18 因子 alias canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2025-01_v1.json)
 - [`四窗口 alias 汇总`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_bj_alias_window_summary_v1.json)
+
+### 因子源与 YesLab 原始行情覆盖审计
+
+补充审计了因子源有限值是否能在 YesLab `stock_factor_daily` 找到同一业务键。除 Alpha95
+外，18 个候选在 2020/2022/2024/2025 四个窗口均没有有限值 orphan；Alpha95 存在：
+
+| 窗口 | Alpha95 有限值 orphan 行 | orphan 证券数 | 解释 |
+| --- | ---: | ---: | --- |
+| 2020-01 | 750 | 119 | YesLab 原始行情缺行，但因子表仍有有限值 |
+| 2022-01 | 875 | 117 | YesLab 原始行情缺行，但因子表仍有有限值 |
+| 2024-01 | 128 | 18 | 同上 |
+| 2025-01 | 215 | 38 | 同上 |
+
+这项审计描述的是 YesLab 存储完整性，不替代 Tushare canonical 结果：2024/2025 的
+Tushare alias replay 仍然是 `18/18 PASS`，说明这些 Alpha95 值可以由 Tushare 原始行情
+重算；但如果未来不走 Tushare canonical、直接依赖 YesLab 原始表重算，Alpha95 必须先
+阻断并修复缺行。
+
+证据：
+
+- [`2020 因子-原始行情覆盖`](../../research_v2/artifacts/diagnostics/factor_raw_market_coverage_oos18_2020-01_v1.json)
+- [`2022 因子-原始行情覆盖`](../../research_v2/artifacts/diagnostics/factor_raw_market_coverage_oos18_2022-01_v1.json)
+- [`2024 因子-原始行情覆盖`](../../research_v2/artifacts/diagnostics/factor_raw_market_coverage_oos18_2024-01_v1.json)
+- [`2025 因子-原始行情覆盖`](../../research_v2/artifacts/diagnostics/factor_raw_market_coverage_oos18_2025-01_v1.json)
