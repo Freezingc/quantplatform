@@ -956,3 +956,10 @@ PIT、FDR 和准入决策审阅。当前不修改原 18 因子提案、不写旧
 即使放宽到源集合仍无法重现，继续归类为历史输入/生成语义阻断，不做行情填补。
 
 证据：[`GP_007/012/016 源 universe Tushare 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp007_gp012_gp016_tushare_source_universe_2025-01_v1.json)
+
+最后用四窗口 replay artifact 和核心质量摘要实际调用了新的 canonical 选择 API，返回四个
+因子，且每个因子的 `canonical_replay_window_count=4`、选择原因均为
+`DUAL_GATE_STABLE_DIRECTION_TUSHARE_CANONICAL`。这只是选择执行证据，不代表已发布或冻结；
+年度政策分支仍需单独决定。
+
+证据：[`canonical 选择执行结果`](../../research_v2/artifacts/diagnostics/tushare_canonical_selection_execution_v1.json)
