@@ -934,3 +934,19 @@ PIT、FDR 和准入决策审阅。当前不修改原 18 因子提案、不写旧
 监控。该分支尚未代替既有规则，提案仅供批准后执行。
 
 证据：[`Tushare canonical 准入提案`](../../research_v2/artifacts/diagnostics/tushare_canonical_admission_proposal_v1.json)
+
+### 跳空因子 `pre_close` 语义补救审计
+
+对 `yeslab_155 / 跳空去均值绝对值` 检查了一个明确的计算器语义问题：当前计算器以
+`close.shift(1)` 代替 Tushare `pre_close`。新增候选公式
+`abs(open / pre_close - cross_section_mean(open / pre_close))` 后，2025-01 在 V2 宇宙中
+仍有 `75,792/75,792` 个有限重叠 mismatch；再换用 YesLab 源因子实际证券集合重放，仍有
+`92,273/92,274` mismatch，并且 Tushare 对源集合缺少 `248` 个证券。
+
+结论是：该因子还存在源生成横截面/历史输入语义漂移，不能把 `pre_close` 变体当作安全
+补值或新版本候选；旧因子继续隔离，后续需追溯生成时的完整证券集合与行情快照。
+
+证据：
+
+- [`pre_close 变体审计`](../../research_v2/artifacts/diagnostics/formula_repair_preclose_variant_2025-01_v1.json)
+- [`源 universe 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp155_tushare_source_universe_2025-01_v1.json)

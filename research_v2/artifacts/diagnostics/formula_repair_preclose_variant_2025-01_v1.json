@@ -1,0 +1,30 @@
+{
+  "scope": "FORMULA_REPAIR_PRECLOSE_VARIANT_AUDIT_V1",
+  "factor_id": "yeslab_155",
+  "factor_name": "跳空去均值绝对值",
+  "start": "2025-01-02",
+  "end": "2025-01-31",
+  "market_start": "2024-12-03",
+  "market_source": "Tushare.daily.pre_close",
+  "code_count": 4220,
+  "market_rows": 164288,
+  "database_writes": false,
+  "locked_test_read": false,
+  "candidate_formula": "abs(open / pre_close - cross_section_mean(open / pre_close))",
+  "source_rows": 106794,
+  "replay_rows": 75960,
+  "source_finite_rows": 96738,
+  "replay_finite_rows": 75815,
+  "overlap_rows": 75960,
+  "overlap_finite_rows": 75792,
+  "mismatch_rows": 75792,
+  "mismatch_date_count": 18,
+  "mismatch_start": "2025-01-02",
+  "mismatch_end": "2025-01-27",
+  "max_abs_diff": 0.3001313431857864,
+  "max_rel_diff": 4110.872549490356,
+  "decision_status": "FORMULA_REPLAY_BLOCKED",
+  "reason_codes": [
+    "FINITE_OVERLAP_MISMATCH"
+  ]
+}

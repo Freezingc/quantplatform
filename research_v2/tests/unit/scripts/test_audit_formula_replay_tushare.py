@@ -173,6 +173,24 @@ def test_normalize_tushare_market_preserves_daily_basic_turnover() -> None:
     assert normalized.loc[0, "turnover_rate"] == pytest.approx(0.7076)
 
 
+def test_normalize_tushare_market_preserves_pre_close() -> None:
+    raw = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "trade_date": ["20250102"],
+            "open": [10.5],
+            "low": [10.0],
+            "amount": [10.456],
+            "pct_chg": [-0.4],
+            "pre_close": [10.8],
+        }
+    )
+
+    normalized = audit.normalize_tushare_market(raw, codes=("000001.SZ",))
+
+    assert normalized.loc[0, "pre_close"] == pytest.approx(10.8)
+
+
 def test_query_codes_deduplicates_top_factor_rows() -> None:
     class Client:
         def run(self, script: str) -> pd.DataFrame:
