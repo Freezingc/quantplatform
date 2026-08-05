@@ -789,3 +789,30 @@ Tushare 覆盖，且两个因子在所有窗口都为 `FORMULA_REPLAY_PASS`、`m
 
 - [`signed-power 覆盖与源值 smoke`](../../research_v2/artifacts/diagnostics/signed_power_repair_smoke_2020-09-14_2020-09-25_v1.json)
 - [`signed-power 2025 predictive smoke`](../../research_v2/artifacts/diagnostics/signed_power_repair_validation2025_v1/quality_summary.json)
+
+### Signed-power 全周期 walk-forward（Tushare 口径）
+
+按 `5 年训练（2020-01-01–2024-12-31）+ 1 年验证（2025-01-01–2025-12-31）`，
+原始 5 日复权收益 `raw_return`，并对每个阶段末尾 purged 6 个交易日，完成了
+GP_002/GP_020 signed-power 变体的完整日度 RankIC/ICIR 评估。`vol/pct_chg` 来自
+YesLab 中由 Tushare 导入的 `stock_factor_daily`，`turnover_rate` 使用直接 Tushare
+`daily_basic` 覆盖；没有读取 2026、没有写数据库。
+
+| 变体 | 训练 signed mean RankIC | 训练 ICIR | 训练方向日占比 | 2025 signed mean RankIC | 2025 ICIR | 2025 方向日占比 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `yeslab_371` / GP_002 | `0.037042` | `-0.323795` | `63.35%` | `0.052701` | `-0.454263` | `70.46%` |
+| `yeslab_389` / GP_020 | `0.014305` | `-0.099958` | `54.31%` | `0.025377` | `-0.183533` | `56.12%` |
+
+有限覆盖也不是主要问题：训练期 GP_002/GP_020 的最低日覆盖分别为 `96.36%/98.93%`，
+验证期最低日覆盖为 `98.22%/99.32%`。但按当前双重门槛（`abs(mean RankIC) >= 0.02`、
+`abs(ICIR) >= 0.50`、有效日数至少 60、方向日占比至少 55%），两个变体都因 ICIR
+不足 `0.50` 未通过；GP_020 训练期的 signed mean RankIC 也不足 `0.02`。因此本轮
+不发布新因子版本、不扩充正式候选池，变体仅保留为后续公式重构的研究证据。
+
+证据：
+
+- [`walk-forward metadata`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/metadata.json)
+- [`训练摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/train_summary.csv)
+- [`2025 验证摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/validation_summary.csv)
+- [`训练日度覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/train_daily_rank_ic_with_coverage.csv)
+- [`2025 日度覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/validation_daily_rank_ic_with_coverage.csv)

@@ -36,3 +36,11 @@ def test_compute_variants_improves_domain_coverage() -> None:
     assert set(variants) == {"yeslab_371", "yeslab_389"}
     assert variants["yeslab_371"]["value"].notna().sum() > 0
     assert variants["yeslab_389"]["value"].notna().sum() > 0
+
+
+def test_vectorized_slope_matches_linear_series() -> None:
+    values = pd.DataFrame({"000001.SZ": np.arange(1.0, 7.0)})
+
+    result = audit._rolling_slope_matrix(values, 3)
+
+    assert np.allclose(result.iloc[2:, 0].to_numpy(), 1.0)

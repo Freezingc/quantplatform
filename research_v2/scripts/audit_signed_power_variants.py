@@ -24,13 +24,41 @@ def signed_power(base: pd.Series | pd.DataFrame, exponent: pd.Series | pd.DataFr
     return result.replace([np.inf, -np.inf], np.nan)
 
 
-def _slope(values: np.ndarray) -> float:
-    if not np.all(np.isfinite(values)) or len(values) < 2:
-        return np.nan
-    time = np.arange(1, len(values) + 1, dtype=float)
-    covariance = np.mean(time * values) - np.mean(time) * np.mean(values)
-    variance = np.var(time)
-    return np.nan if variance <= 0 else covariance / variance
+def _rolling_slope_matrix(values: pd.DataFrame, window: int) -> pd.DataFrame:
+    """Compute equally spaced rolling slopes with cumulative sums.
+
+    This is algebraically identical to the ordinary least-squares slope used
+    by the previous rolling callback, but avoids one Python callback per
+    security/window. Any non-finite value invalidates its entire window.
+    """
+
+    if window < 2:
+        raise ValueError("slope window must be at least two")
+    array = values.to_numpy(dtype=float)
+    finite = np.isfinite(array)
+    clean = np.where(finite, array, 0.0)
+    index = np.arange(len(values), dtype=float)[:, None]
+    clean_frame = pd.DataFrame(clean, index=values.index, columns=values.columns)
+    weighted_frame = pd.DataFrame(
+        clean * index, index=values.index, columns=values.columns
+    )
+    count_frame = pd.DataFrame(
+        finite.astype(float), index=values.index, columns=values.columns
+    )
+    sum_y = clean_frame.rolling(window, min_periods=window).sum()
+    sum_iy = weighted_frame.rolling(window, min_periods=window).sum()
+    count = count_frame.rolling(window, min_periods=window).sum()
+    end = np.arange(len(values), dtype=float)
+    start = end - window + 1
+    sum_i = window * (start + end) / 2.0
+    sum_i2 = (
+        end * (end + 1.0) * (2.0 * end + 1.0)
+        - (start - 1.0) * start * (2.0 * (start - 1.0) + 1.0)
+    ) / 6.0
+    numerator = window * sum_iy - sum_i[:, None] * sum_y
+    denominator = window * sum_i2 - sum_i**2
+    result = numerator / denominator[:, None]
+    return result.where(count.eq(float(window)))
 
 
 def _matrix(market: pd.DataFrame, column: str) -> pd.DataFrame:
@@ -64,7 +92,7 @@ def compute_signed_power_variants(market: pd.DataFrame) -> dict[str, pd.DataFram
     vol = _matrix(frame, "vol")
     pct_chg = _matrix(frame, "pct_chg").reindex(columns=vol.columns)
     turnover = _matrix(frame, "turnover_rate").reindex(columns=vol.columns)
-    slope_60 = vol.rolling(60).apply(_slope, raw=True)
+    slope_60 = _rolling_slope_matrix(vol, 60)
     gp002 = signed_power(slope_60, turnover)
     gp020 = signed_power(pct_chg, turnover.rolling(10).sum()) + pct_chg
     return {
