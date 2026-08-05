@@ -1222,3 +1222,11 @@ RankIC 证据无需再混入 BJ。对四窗口 canonical 交集的三个因子�
 - [`94/98 沪深 2025 质量摘要`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_94_98_v1/quality_summary.json)
 - [`94/98 沪深 2025 日度 RankIC`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_94_98_v1/daily_rank_ic.csv)
 - [`94/98 沪深 TRAIN/验证汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_quality_94_98_v1.json)
+
+随后对严格年度分支优先级最高的 `yeslab_155 / 跳空去均值绝对值` 做了同口径沪深重新物化。
+其 2020–2024 TRAIN mean RankIC/ICIR 为 `-0.042868/-0.648516`，5 个年度全部通过
+`abs(ICIR)>=0.50`；2025 验证 mean RankIC/ICIR 为 `-0.048908/-0.661084`，方向日占比
+`0.761317`。该因子满足当前双重 predictive 和严格年度分支，但还未与三因子 canonical
+集合做全日相似度比较，状态为 `REMATERIALIZED_CANDIDATE_PENDING_SIMILARITY`，不发布新版本。
+
+证据：[`155 沪深 TRAIN/验证汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_quality_155_v1.json)
