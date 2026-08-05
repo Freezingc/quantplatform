@@ -15,7 +15,7 @@ import importlib
 import json
 import os
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -106,6 +106,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--cache-dir",
         type=Path,
         default=Path("/tmp/qrv2-tushare-replay-cache"),
+    )
+    parser.add_argument(
+        "--bj-alias-map",
+        type=Path,
+        help="explicit old-to-new BJ code alias artifact; disabled by default",
     )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -283,6 +288,34 @@ def requires_full_cross_section(factor_ids: Sequence[str]) -> bool:
     return bool(set(factor_ids).intersection(FULL_CROSS_SECTION_FACTOR_IDS))
 
 
+def load_alias_map(path: Path) -> dict[str, str]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    mapping = payload.get("mapping", payload)
+    if not isinstance(mapping, dict) or not mapping:
+        raise ValueError("BJ alias artifact must contain a non-empty mapping object")
+    aliases = {str(old): str(new) for old, new in mapping.items()}
+    if any(not old.endswith(".BJ") or not new.endswith(".BJ") for old, new in aliases.items()):
+        raise ValueError("BJ aliases must use .BJ security codes")
+    if len(set(aliases.values())) != len(aliases):
+        raise ValueError("duplicate alias target codes")
+    return dict(sorted(aliases.items()))
+
+
+def apply_tushare_aliases(
+    market: pd.DataFrame, aliases: Mapping[str, str]
+) -> pd.DataFrame:
+    if not aliases:
+        return market.copy(deep=True)
+    inverse = {new: old for old, new in aliases.items()}
+    remapped = market.copy(deep=True)
+    remapped["ts_code"] = remapped["ts_code"].astype(str).map(
+        lambda code: inverse.get(code, code)
+    )
+    if remapped.duplicated(["trade_date", "ts_code"]).any():
+        raise ValueError("BJ alias remap created duplicate market business keys")
+    return remapped
+
+
 def fetch_missing_code_ranges(
     pro: object,
     codes: Sequence[str],
@@ -291,19 +324,23 @@ def fetch_missing_code_ranges(
     *,
     cache_dir: Path,
     include_daily_basic: bool,
+    aliases: Mapping[str, str] | None = None,
 ) -> pd.DataFrame:
     """Fetch completely absent securities by code, including optional turnover data."""
 
     frames: list[pd.DataFrame] = []
     cache_dir.mkdir(parents=True, exist_ok=True)
+    aliases = aliases or {}
     for code in codes:
-        safe_code = str(code).replace(".", "_")
+        historical_code = str(code)
+        request_code = aliases.get(historical_code, historical_code)
+        safe_code = request_code.replace(".", "_")
         daily_cache = cache_dir / f"daily_code_{safe_code}_{start:%Y%m%d}_{end:%Y%m%d}.json"
         if daily_cache.is_file():
             daily = pd.read_json(daily_cache, orient="table")
         else:
             daily = pro.daily(
-                ts_code=str(code),
+                ts_code=request_code,
                 start_date=start.strftime("%Y%m%d"),
                 end_date=end.strftime("%Y%m%d"),
             )
@@ -314,6 +351,7 @@ def fetch_missing_code_ranges(
         if not isinstance(daily, pd.DataFrame) or daily.empty:
             continue
         daily = daily.copy()
+        daily["ts_code"] = historical_code
         if include_daily_basic:
             basic_cache = cache_dir / (
                 f"daily_basic_code_{safe_code}_{start:%Y%m%d}_{end:%Y%m%d}.json"
@@ -322,7 +360,7 @@ def fetch_missing_code_ranges(
                 basic = pd.read_json(basic_cache, orient="table")
             else:
                 basic = pro.daily_basic(
-                    ts_code=str(code),
+                    ts_code=request_code,
                     start_date=start.strftime("%Y%m%d"),
                     end_date=end.strftime("%Y%m%d"),
                     fields="ts_code,trade_date,turnover_rate",
@@ -332,6 +370,8 @@ def fetch_missing_code_ranges(
                         basic.to_json(orient="table", date_format="iso"), encoding="utf-8"
                     )
             if isinstance(basic, pd.DataFrame) and not basic.empty:
+                basic = basic.copy()
+                basic["ts_code"] = historical_code
                 daily = daily.merge(
                     basic.loc[:, ["ts_code", "trade_date", "turnover_rate"]],
                     on=["ts_code", "trade_date"],
@@ -352,6 +392,7 @@ def _fetch_tushare_market(
     open_dates: Sequence[date] | None = None,
     cache_dir: Path | None = None,
     include_daily_basic: bool = False,
+    aliases: Mapping[str, str] | None = None,
 ) -> pd.DataFrame:
     import tushare as ts  # type: ignore[import-untyped]
 
@@ -359,14 +400,19 @@ def _fetch_tushare_market(
         raise ValueError("QRV2_TUSHARE_TOKEN is required for canonical market replay")
     pro = ts.pro_api(token)
     frames: list[pd.DataFrame] = []
+    aliases = aliases or {}
     if open_dates is None:
         for code in codes:
+            historical_code = str(code)
+            request_code = aliases.get(historical_code, historical_code)
             result = pro.daily(
-                ts_code=code,
+                ts_code=request_code,
                 start_date=start.strftime("%Y%m%d"),
                 end_date=end.strftime("%Y%m%d"),
             )
             if isinstance(result, pd.DataFrame) and not result.empty:
+                result = result.copy()
+                result["ts_code"] = historical_code
                 frames.append(result)
     else:
         resolved_cache = cache_dir or Path("/tmp/qrv2-tushare-replay-cache")
@@ -406,12 +452,16 @@ def _fetch_tushare_market(
     if not frames:
         raise RuntimeError("Tushare daily returned no market rows")
 
+    normalization_codes = tuple(
+        sorted(set(map(str, codes)).union((aliases or {}).values()))
+    )
     raw_market = pd.concat(frames, ignore_index=True)
     normalized = normalize_tushare_market(
         raw_market,
-        codes=codes,
+        codes=normalization_codes,
         include_daily_basic=include_daily_basic,
     )
+    normalized = apply_tushare_aliases(normalized, aliases or {})
     if open_dates is not None:
         missing_codes = sorted(set(map(str, codes)).difference(normalized["ts_code"].astype(str)))
         if missing_codes:
@@ -422,12 +472,13 @@ def _fetch_tushare_market(
                 end,
                 cache_dir=resolved_cache,
                 include_daily_basic=include_daily_basic,
+                aliases=aliases,
             )
             if not fallback.empty:
                 raw_market = pd.concat([raw_market, fallback], ignore_index=True)
     return normalize_tushare_market(
         raw_market,
-        codes=codes,
+        codes=normalization_codes,
         include_daily_basic=include_daily_basic,
     )
 
@@ -489,6 +540,7 @@ def aggregate_comparisons(comparisons: Sequence[dict[str, object]]) -> dict[str,
 
 def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -> dict[str, object]:
     definitions = [replay.REPLAY_DEFINITIONS[factor_id] for factor_id in args.factor_id]
+    aliases = load_alias_map(args.bj_alias_map) if args.bj_alias_map else {}
     required_fields = required_market_fields(definitions)
     effective_include_daily_basic = args.include_daily_basic or (
         "turnover_rate" in required_fields
@@ -523,7 +575,9 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         open_dates=open_dates,
         cache_dir=args.cache_dir,
         include_daily_basic=effective_include_daily_basic,
+        aliases=aliases,
     )
+    market = apply_tushare_aliases(market, aliases)
     market_codes = tuple(sorted(set(market["ts_code"].astype(str)).intersection(codes)))
     missing_market_codes = tuple(sorted(set(codes).difference(market_codes)))
     if not market_codes:
@@ -581,6 +635,8 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         "restrict_to_v2_universe": args.restrict_to_v2_universe,
         "include_daily_basic": effective_include_daily_basic,
         "required_market_fields": list(required_fields),
+        "bj_alias_map": str(args.bj_alias_map) if args.bj_alias_map else None,
+        "bj_alias_count": len(aliases),
         "code_count": len(codes),
         "market_code_count": len(market_codes),
         "market_missing_code_count": len(missing_market_codes),

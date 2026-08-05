@@ -1039,3 +1039,27 @@ Tushare 缺失的 248 个 BJ 证券用 YesLab 原始行情补入横截面，其�
 
 - [`14 因子 BJ 补齐诊断`](../../research_v2/artifacts/diagnostics/formula_replay_bj_supplement_diagnostic_oos14_2025-01_v1.json)
 - [`Tushare 缺失代码补拉单测`](../../research_v2/tests/unit/scripts/test_audit_formula_replay_tushare.py)
+
+### BJ 代码迁移后的多窗口 canonical 结果
+
+将 BJ 迁移映射按窗口独立生成后，2024-01 和 2025-01 的 18 个候选均达到
+`18/18 FORMULA_REPLAY_PASS`，且 `market_missing_code_count=0`。2020-01 和 2022-01 的
+可覆盖证券上公式误差也已消失，但 Tushare 分别缺少 9 和 16 个历史证券，故严格门禁仍为
+`18/18 BLOCKED`；这不是通过降低覆盖门槛可以解决的问题。
+
+| 窗口 | BJ 映射数 | Tushare 覆盖缺口 | 通过 / 阻断 | 处置 |
+| --- | ---: | ---: | ---: | --- |
+| 2020-01 | 108 | 9 | `0 / 18` | 等待历史 Tushare 行情 |
+| 2022-01 | 180 | 16 | `0 / 18` | 等待历史 Tushare 行情 |
+| 2024-01 | 243 | 0 | `18 / 0` | 可进入年度质量审查 |
+| 2025-01 | 263 | 0 | `18 / 0` | 可进入年度质量审查 |
+
+因此当前不发布新增 14 因子，也不启动模型训练；保留原先 4 个四窗口通过因子作为候选，
+同时把新增候选列入“公式已验证、历史 Tushare 覆盖未完成”的待复核集合。
+
+证据：
+
+- [`BJ 迁移审计脚本`](../../research_v2/scripts/audit_bj_code_migration.py)
+- [`BJ 迁移审计单测`](../../research_v2/tests/unit/scripts/test_audit_bj_code_migration.py)
+- [`2025-01 18 因子 alias canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2025-01_v1.json)
+- [`四窗口 alias 汇总`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_bj_alias_window_summary_v1.json)

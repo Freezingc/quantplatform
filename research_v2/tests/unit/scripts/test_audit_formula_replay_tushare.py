@@ -224,6 +224,35 @@ def test_cross_sectional_replay_requires_one_complete_batch() -> None:
     assert audit.requires_full_cross_section(("yeslab_163", "yeslab_380")) is False
 
 
+def test_alias_map_load_and_market_remap(tmp_path) -> None:
+    path = tmp_path / "aliases.json"
+    path.write_text('{"mapping": {"830001.BJ": "920001.BJ"}}', encoding="utf-8")
+
+    aliases = audit.load_alias_map(path)
+    market = pd.DataFrame(
+        {
+            "trade_date": [pd.Timestamp("2025-01-02")],
+            "ts_code": ["920001.BJ"],
+            "open": [1.0],
+        }
+    )
+
+    remapped = audit.apply_tushare_aliases(market, aliases)
+
+    assert remapped.loc[0, "ts_code"] == "830001.BJ"
+
+
+def test_alias_map_rejects_duplicate_target_codes(tmp_path) -> None:
+    path = tmp_path / "aliases.json"
+    path.write_text(
+        '{"mapping": {"830001.BJ": "920001.BJ", "830002.BJ": "920001.BJ"}}',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="duplicate alias target"):
+        audit.load_alias_map(path)
+
+
 def test_missing_code_range_fetch_uses_daily_basic_when_required(tmp_path) -> None:
     class FakePro:
         def daily(self, **kwargs) -> pd.DataFrame:
