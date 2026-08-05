@@ -1209,12 +1209,16 @@ RankIC 证据无需再混入 BJ。对四窗口 canonical 交集的三个因子�
 | `yeslab_94` | 4,911 | 243 | -0.055005 | -0.698123 | 0.761316 | 验证 predictive 通过 |
 | `yeslab_98` | 4,911 | 243 | -0.061364 | -0.759793 | 0.781893 | 验证 predictive 通过 |
 
-这证明两因子在沪深范围重新定义后仍有验证期预测性，但尚未完成 2020–2024 全 TRAIN
-重算，因此暂不改变当前三因子 canonical 交集。TRAIN 任务在 Tushare 历史行情请求阶段
-长时间无响应后中止，未生成不完整摘要；后续将按年份/缓存分段补齐 TRAIN 证据。
+这证明两因子在沪深范围重新定义后仍有验证期预测性。随后按年度分段完成了
+2020–2024 TRAIN 重算：94 的 TRAIN mean RankIC/ICIR 为 `-0.038897/-0.508468`，5 年中
+有 3 年达到 `abs(ICIR)>=0.50`；98 为 `-0.043933/-0.566906`，5 年全部达到该门槛。
+两者都通过主双重 predictive 门槛，98 还通过严格五年年度 ICIR 分支，94 仍需年度监控。
+这只是新沪深版本的质量证据，尚未完成与现有候选的全量相似度/准入比较，因此不改变当前
+三因子 canonical 交集，也不发布新版本。
 
 证据：
 
 - [`沪深重物化验证脚本`](../../research_v2/scripts/evaluate_tushare_scope_validation.py)
 - [`94/98 沪深 2025 质量摘要`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_94_98_v1/quality_summary.json)
 - [`94/98 沪深 2025 日度 RankIC`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_94_98_v1/daily_rank_ic.csv)
+- [`94/98 沪深 TRAIN/验证汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_quality_94_98_v1.json)
