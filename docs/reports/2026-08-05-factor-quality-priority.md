@@ -976,3 +976,23 @@ PIT、FDR 和准入决策审阅。当前不修改原 18 因子提案、不写旧
 剩余 14 个只有在恢复历史输入快照后才允许重新评估。
 
 证据：[`YesLab/Tushare replay 分歧汇总`](../../research_v2/artifacts/diagnostics/tushare_vs_yeslab_replay_divergence_oos18_v1.json)
+
+### 分批横截面与原始行情字段复核
+
+进一步检查了回放实现本身：此前 `full-market` 默认按 256 只股票分批，含
+`cs_mean/cs_zscore/cs_rank` 的因子可能被错误地按批次计算。将 GP_007/012/016 改为 V2
+证券集合的单批完整横截面，并自动加载其声明的 `turnover_rate`（来自 `daily_basic`）后，
+三者仍分别有 `75,619/75,619`、`75,720/75,720`、`75,720/75,720` 个有限重叠 mismatch，
+因此本轮阻断不是 256 分批造成的假阻断。
+
+同时对 2024-11-18 至 2025-01-31 的原始字段做了只读对账。重叠证券的 `open/high/low/close/
+pre_close/pct_chg/vol/turnover_rate` 在浮点容差内一致；`amount` 最大差异约 `0.005`，属于
+小数精度差异。当前真正影响横截面重放的是 Tushare 缓存相对 YesLab 少了 `248` 个证券，且
+全部是 `.BJ`；YesLab 对这些证券仍有完整的 50 日原始行情。由此，剩余候选继续标记为
+历史证券集合/生成快照语义阻断，不能用当前值直接补写或发布。
+
+证据：
+
+- [`GP_007/012/016 单批 canonical 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp007_gp012_gp016_tushare_single_batch_v2_2025-01_fixed.json)
+- [`横截面单批规则 smoke`](../../research_v2/artifacts/diagnostics/formula_replay_gp007_tushare_auto_full_cross_section_2025-01_fixed.json)
+- [`YesLab/Tushare 原始行情字段对账`](../../research_v2/artifacts/diagnostics/tushare_yeslab_market_field_parity_2024-11-18_2025-01-31_v1.json)

@@ -70,6 +70,26 @@ SUPPORTED_FACTOR_IDS = (
 )
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALCULATOR_ROOT = REPO_ROOT / "数据库"
+# These calculators use same-day cross-sectional means, ranks, or z-scores.
+# They must be replayed against the complete available universe in one batch.
+FULL_CROSS_SECTION_FACTOR_IDS = frozenset(
+    {
+        "yeslab_94",
+        "yeslab_95",
+        "yeslab_96",
+        "yeslab_98",
+        "yeslab_114",
+        "yeslab_155",
+        "yeslab_376",
+        "yeslab_381",
+        "yeslab_385",
+        "yeslab_396",
+        "yeslab_400",
+        "yeslab_405",
+        "yeslab_425",
+        "yeslab_442",
+    }
+)
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -106,7 +126,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     return args
 
 
-def normalize_tushare_market(raw: pd.DataFrame, *, codes: Sequence[str]) -> pd.DataFrame:
+def normalize_tushare_market(
+    raw: pd.DataFrame,
+    *,
+    codes: Sequence[str],
+    include_daily_basic: bool = True,
+) -> pd.DataFrame:
     required = {"ts_code", "trade_date", "open", "low", "amount", "pct_chg"}
     missing = sorted(required.difference(raw.columns))
     if missing:
@@ -130,6 +155,8 @@ def normalize_tushare_market(raw: pd.DataFrame, *, codes: Sequence[str]) -> pd.D
         "pct_chg",
         "turnover_rate",
     ):
+        if column == "turnover_rate" and not include_daily_basic:
+            continue
         if column in frame.columns:
             frame[column] = pd.to_numeric(frame[column], errors="coerce")
     frame = frame.loc[frame["ts_code"].isin(set(map(str, codes)))].copy()
@@ -149,6 +176,7 @@ def normalize_tushare_market(raw: pd.DataFrame, *, codes: Sequence[str]) -> pd.D
             "turnover_rate",
         )
         if column in frame
+        and (column != "turnover_rate" or include_daily_basic)
     ]
     return frame.loc[:, columns].sort_values(["trade_date", "ts_code"]).reset_index(drop=True)
 
@@ -224,15 +252,35 @@ def _query_v2_universe_codes(client: object, start: date, end: date) -> tuple[st
 def _calculator_market_start(
     client: object, definition: replay.ReplayDefinition, start: date, end: date
 ) -> date:
-    if str(CALCULATOR_ROOT) not in sys.path:
-        sys.path.insert(0, str(CALCULATOR_ROOT))
-    module = importlib.import_module(f"factor_calculators.{definition.calculator_module}")
-    calculator_class = getattr(module, definition.calculator_class)
+    calculator_class = _calculator_class(definition)
     calculator = calculator_class(client, definition.effective_replay_lookback_days)
     processed = calculator.preprocess_time_range(
         start.strftime("%Y.%m.%d"), end.strftime("%Y.%m.%d")
     )
     return date.fromisoformat(processed.replace(".", "-")) - timedelta(days=30)
+
+
+def _calculator_class(definition: replay.ReplayDefinition) -> type:
+    if str(CALCULATOR_ROOT) not in sys.path:
+        sys.path.insert(0, str(CALCULATOR_ROOT))
+    module = importlib.import_module(f"factor_calculators.{definition.calculator_module}")
+    return getattr(module, definition.calculator_class)
+
+
+def required_market_fields(
+    definitions: Sequence[replay.ReplayDefinition],
+) -> tuple[str, ...]:
+    """Return raw market fields declared by the selected calculator classes."""
+
+    fields: set[str] = set()
+    for definition in definitions:
+        calculator = _calculator_class(definition)(None, definition.effective_replay_lookback_days)
+        fields.update(str(field) for field in getattr(calculator, "required_factors", ()))
+    return tuple(sorted(fields))
+
+
+def requires_full_cross_section(factor_ids: Sequence[str]) -> bool:
+    return bool(set(factor_ids).intersection(FULL_CROSS_SECTION_FACTOR_IDS))
 
 
 def _fetch_tushare_market(
@@ -297,7 +345,11 @@ def _fetch_tushare_market(
                 frames.append(result)
     if not frames:
         raise RuntimeError("Tushare daily returned no market rows")
-    return normalize_tushare_market(pd.concat(frames, ignore_index=True), codes=codes)
+    return normalize_tushare_market(
+        pd.concat(frames, ignore_index=True),
+        codes=codes,
+        include_daily_basic=include_daily_basic,
+    )
 
 
 def aggregate_comparisons(comparisons: Sequence[dict[str, object]]) -> dict[str, object]:
@@ -357,6 +409,10 @@ def aggregate_comparisons(comparisons: Sequence[dict[str, object]]) -> dict[str,
 
 def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -> dict[str, object]:
     definitions = [replay.REPLAY_DEFINITIONS[factor_id] for factor_id in args.factor_id]
+    required_fields = required_market_fields(definitions)
+    effective_include_daily_basic = args.include_daily_basic or (
+        "turnover_rate" in required_fields
+    )
     code_limit = None if args.full_market else args.max_ts_codes
     code_sets = [
         _query_codes(client, definition, args.start, args.end, code_limit)
@@ -376,7 +432,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
     )
     open_dates = (
         _query_open_dates(client, market_start, args.end)
-        if args.full_market or args.include_daily_basic
+        if args.full_market or effective_include_daily_basic
         else None
     )
     market = _fetch_tushare_market(
@@ -386,13 +442,18 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         token=tushare_token,
         open_dates=open_dates,
         cache_dir=args.cache_dir,
-        include_daily_basic=args.include_daily_basic,
+        include_daily_basic=effective_include_daily_basic,
     )
     market_codes = tuple(sorted(set(market["ts_code"].astype(str)).intersection(codes)))
     missing_market_codes = tuple(sorted(set(codes).difference(market_codes)))
     if not market_codes:
         raise RuntimeError("Tushare market has no overlap with factor universe")
-    batch_size = args.stock_batch_size if args.full_market else len(market_codes)
+    force_full_cross_section = args.full_market and requires_full_cross_section(args.factor_id)
+    batch_size = (
+        len(market_codes)
+        if force_full_cross_section
+        else args.stock_batch_size if args.full_market else len(market_codes)
+    )
     comparisons_by_factor: dict[str, list[dict[str, object]]] = {
         factor_id: [] for factor_id in args.factor_id
     }
@@ -438,11 +499,15 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         "max_ts_codes": None if args.full_market else args.max_ts_codes,
         "universe_mode": "full_market" if args.full_market else "bounded_sample",
         "restrict_to_v2_universe": args.restrict_to_v2_universe,
-        "include_daily_basic": args.include_daily_basic,
+        "include_daily_basic": effective_include_daily_basic,
+        "required_market_fields": list(required_fields),
         "code_count": len(codes),
         "market_code_count": len(market_codes),
         "market_missing_code_count": len(missing_market_codes),
         "stock_batch_size": batch_size,
+        "cross_sectional_replay_mode": (
+            "single_complete_batch" if force_full_cross_section else "configured_batch"
+        ),
         "market_date_count": int(market["trade_date"].nunique()),
         "market_source": "Tushare.daily",
         "market_rows": len(market),

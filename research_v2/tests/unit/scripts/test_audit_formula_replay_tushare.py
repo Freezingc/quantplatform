@@ -173,6 +173,26 @@ def test_normalize_tushare_market_preserves_daily_basic_turnover() -> None:
     assert normalized.loc[0, "turnover_rate"] == pytest.approx(0.7076)
 
 
+def test_normalize_tushare_market_drops_turnover_when_daily_basic_is_disabled() -> None:
+    raw = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "trade_date": ["20200918"],
+            "open": [1.0],
+            "low": [0.5],
+            "amount": [10.456],
+            "pct_chg": [-0.4],
+            "turnover_rate": [0.7076],
+        }
+    )
+
+    normalized = audit.normalize_tushare_market(
+        raw, codes=("000001.SZ",), include_daily_basic=False
+    )
+
+    assert "turnover_rate" not in normalized.columns
+
+
 def test_normalize_tushare_market_preserves_pre_close() -> None:
     raw = pd.DataFrame(
         {
@@ -189,6 +209,19 @@ def test_normalize_tushare_market_preserves_pre_close() -> None:
     normalized = audit.normalize_tushare_market(raw, codes=("000001.SZ",))
 
     assert normalized.loc[0, "pre_close"] == pytest.approx(10.8)
+
+
+def test_required_market_fields_reflect_calculator_inputs() -> None:
+    fields = audit.required_market_fields(
+        (REPLAY_DEFINITIONS["yeslab_95"], REPLAY_DEFINITIONS["yeslab_163"])
+    )
+
+    assert fields == ("amount", "low", "pct_chg", "turnover_rate", "vol")
+
+
+def test_cross_sectional_replay_requires_one_complete_batch() -> None:
+    assert audit.requires_full_cross_section(("yeslab_376", "yeslab_163")) is True
+    assert audit.requires_full_cross_section(("yeslab_163", "yeslab_380")) is False
 
 
 def test_query_codes_deduplicates_top_factor_rows() -> None:

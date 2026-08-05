@@ -1,0 +1,49 @@
+{
+  "scope": "TUSHARE_YESLAB_MARKET_FIELD_PARITY_V1",
+  "window": {
+    "start": "2024-11-18",
+    "end": "2025-01-31",
+    "trade_date_count": 50
+  },
+  "yeslab": {
+    "table": "dfs://YesLab.stock_factor_daily",
+    "rows": 268398,
+    "code_count": 5396
+  },
+  "tushare": {
+    "daily_endpoint": "daily",
+    "daily_basic_endpoint": "daily_basic",
+    "rows_after_join": 256008,
+    "code_count": 5148,
+    "cache_dir": "/tmp/qrv2-tushare-replay-cache"
+  },
+  "field_comparison": {
+    "exact_within_float_tolerance": [
+      "open",
+      "high",
+      "low",
+      "close",
+      "pre_close",
+      "pct_chg",
+      "vol",
+      "turnover_rate"
+    ],
+    "amount": {
+      "finite_rows": 256008,
+      "rows_abs_diff_gt_1e-8": 230335,
+      "max_abs_diff": 0.005000000819563866,
+      "interpretation": "decimal_rounding_scale_difference"
+    }
+  },
+  "universe_difference": {
+    "yeslab_codes_missing_from_tushare_daily": 248,
+    "exchange_breakdown": {
+      "BJ": 248
+    },
+    "missing_code_yeslab_rows": 12390,
+    "missing_code_finite_open_close_pct_chg_amount_rows": 12390
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "conclusion": "Raw fields agree for overlapping securities; the material unresolved difference is the 248-code BJ universe gap plus historical cross-sectional generation semantics. Amount differs only at sub-cent decimal precision in this window."
+}
