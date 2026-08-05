@@ -1,0 +1,21 @@
+{
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_STORED_SIMILARITY_V1",
+  "train_start": "2020-01-01",
+  "train_end": "2024-12-31",
+  "rematerialized_factor_ids": ["yeslab_155"],
+  "stored_tushare_canonical_factor_ids": ["yeslab_380"],
+  "similarity_metric": "median_of_annual_median_abs_daily_spearman",
+  "threshold": 0.9,
+  "excluded_exchanges": ["BJ"],
+  "database_writes": false,
+  "locked_test_read": false,
+  "annual_median_abs_spearman": {
+    "2020": 0.278624585,
+    "2021": 0.294436289,
+    "2022": 0.253011929,
+    "2023": 0.233670176,
+    "2024": 0.227046239
+  },
+  "median_abs_spearman": 0.253011929,
+  "conclusion": "155 and 380 are below the redundancy threshold; 380 is used only as a stored factor whose four-window Tushare replay passed, not as a market-data source."
+}

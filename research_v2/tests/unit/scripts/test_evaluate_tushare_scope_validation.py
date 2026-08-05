@@ -87,3 +87,23 @@ def test_compute_pair_daily_spearman_reports_median_absolute_similarity() -> Non
     assert result.loc[0, "factor_id_right"] == "yeslab_right"
     assert result.loc[0, "median_abs_spearman"] == 1.0
     assert result.loc[0, "valid_day_count"] == 1
+
+
+def test_parser_accepts_stored_factor_comparison() -> None:
+    args = evaluation.parse_args(
+        [
+            "--factor-id",
+            "yeslab_155",
+            "--stored-factor-id",
+            "yeslab_380",
+            "--start",
+            "2025-01-01",
+            "--end",
+            "2025-12-31",
+            "--output",
+            "/tmp/scope-similarity",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_155",)
+    assert args.stored_factor_id == ("yeslab_380",)

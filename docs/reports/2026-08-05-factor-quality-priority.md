@@ -1248,7 +1248,13 @@ RankIC 证据无需再混入 BJ。对四窗口 canonical 交集的三个因子�
 
 因此 94、98、155 暂未因冗余被淘汰；155 的预测性和严格年度稳定性证据最好，优先进入
 下一轮 SH/SZ 准入提案。由于 380 依赖换手率且 2021 年 Tushare `daily_basic` 缓存仍不完整，
-本轮 pair 审计先使用 431/437 作为已重算 canonical 代表，155/380 的补充 pair 仍需在
-换手率缓存补齐后执行。
+本轮先使用 431/437 作为已重算 canonical 代表。
 
 证据：[`沪深 TRAIN 相似度汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_train_5_v1.json)
+
+补充 pair 审计已完成：使用沪深重新物化的 155 与已通过四窗口 Tushare replay 的 380
+存储值逐日比较，五年聚合中位绝对 Spearman 为 `0.253011929`，年度最高仅 `0.294436289`。
+因此 155 与 380 也未触发冗余门槛；380 在此处只作为已通过 canonical replay 的对照因子，
+不是行情数据来源。
+
+证据：[`155/380 沪深 TRAIN 相似度`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_155_380_train_v1.json)

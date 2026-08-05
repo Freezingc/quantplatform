@@ -236,6 +236,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--start", type=date.fromisoformat, default=date(2025, 1, 1))
     parser.add_argument("--end", type=date.fromisoformat, default=date(2025, 12, 31))
     parser.add_argument("--factor-id", action="append")
+    parser.add_argument("--stored-factor-id", action="append")
     parser.add_argument("--direction-artifact", type=Path, default=DEFAULT_DIRECTION_ARTIFACT)
     parser.add_argument("--cache-dir", type=Path, default=Path("research_v2/artifacts/tushare_cache"))
     parser.add_argument("--output", type=Path, required=True)
@@ -243,6 +244,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     args.factor_id = tuple(
         dict.fromkeys(map(str, args.factor_id or DEFAULT_FACTOR_IDS))
     )
+    args.stored_factor_id = tuple(dict.fromkeys(map(str, args.stored_factor_id or ())))
+    unsupported_stored = sorted(
+        set(args.stored_factor_id).difference(replay.REPLAY_DEFINITIONS)
+    )
+    if unsupported_stored:
+        parser.error(f"unsupported stored factor ids: {unsupported_stored}")
     if not args.factor_id:
         parser.error("at least one factor id is required")
     if args.start > args.end or args.end >= LOCKED_TEST_START:
@@ -290,6 +297,16 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
                 **summarize_rank_ic(daily, direction=directions[definition.factor_id]),
             }
         )
+    stored_factor_ids: list[str] = []
+    for factor_id in args.stored_factor_id:
+        if factor_id in replay_frames:
+            continue
+        definition = replay.REPLAY_DEFINITIONS[factor_id]
+        stored = replay._query_source(client, definition, args.start, args.end)
+        stored = stored.loc[stored["ts_code"].astype(str).str.endswith((".SH", ".SZ"))].copy()
+        stored = stored.rename(columns={"value": "replay_value", "trade_date": "trade_date"})
+        replay_frames[factor_id] = stored.loc[:, ["trade_date", "ts_code", "replay_value"]]
+        stored_factor_ids.append(factor_id)
     daily_frame = pd.concat(daily_parts, ignore_index=True) if daily_parts else pd.DataFrame()
     similarity = compute_pair_daily_spearman(replay_frames)
     args.output.mkdir(parents=True, exist_ok=True)
@@ -302,6 +319,7 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
                 "start": args.start.isoformat(),
                 "end": args.end.isoformat(),
                 "factor_ids": list(args.factor_id),
+                "stored_factor_ids": stored_factor_ids,
                 "code_count": len(codes),
                 "market_start": market_start.isoformat(),
                 "market_source": "Tushare.daily",
