@@ -595,3 +595,24 @@ yeslab_431, yeslab_437, yeslab_442, yeslab_94, yeslab_95, yeslab_96, yeslab_98`�
 - [`OOS23 公式复现结果`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_oos23_2020-09-14_2020-09-25_v2.json)
 - [`OOS 质量提案 v2`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v2.json)
 - [`OOS 质量明细 v2`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v2.csv)
+
+### 19 个候选的多时间窗复现门禁
+
+为避免把单个缺失日窗口当作完整公式证据，又对 v2 的 19 个候选执行了四个只读窗口：
+
+- 2020-01-02–2020-01-31；
+- 2022-01-04–2022-01-31；
+- 2024-01-02–2024-01-31；
+- 2025-01-02–2025-01-31。
+
+其中 2020 和 2022 窗口的 19 个因子全部通过；2024 和 2025 窗口均发现
+`yeslab_401 / GP_032` mismatch（分别 2 个和 6 个有限键），其余 18 个因子四个窗口
+全部通过。因此当前多窗口公式门禁后的 OOS 候选进一步收缩为 18 个，`yeslab_401` 进入
+阻断清单。严格年度 ICIR 分支仍为 4 个。
+
+这 18 个是更严格的待审提案，不是 frozen set；在此之前不启动模型训练。多窗口证据和
+提案见：
+
+- [`OOS19 多窗口复现汇总`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_oos19_multiwindow_v1.json)
+- [`OOS 质量提案 v3`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.json)
+- [`OOS 质量明细 v3`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.csv)
