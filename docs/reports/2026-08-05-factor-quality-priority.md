@@ -524,3 +524,28 @@ Spearman `0.90` 组成连通分量后，45 个因子得到 28 个 TRAIN 代表�
 当前质量结论是：`yeslab_395/GP_026` 和 `yeslab_471/AttentionSpillover` 仍阻断；扩展
 因子中有 4 个通过 TRAIN 但未通过 2025 predictive 的因子；其余 23 个才具备进入下一步
 年度规则审阅的证据。任何候选发布和模型训练仍保持暂停。
+
+### 阻断因子的公式复现一致性重放
+
+为区分“输入字段缺失”与“源因子本身无法由当前计算器复现”，本轮新增了只读的公式重放
+门禁。它直接调用 `数据库/factor_calculators` 中的当前计算器，在相同日期窗口重算，再与
+YesLab 已存有限值逐键比较；有限重叠 mismatch 会阻断后续输入修复。
+
+2020-09-14–2020-09-25 的重放结果如下：
+
+| 因子 | 有限重叠 | mismatch | mismatch 日期数 | 最大绝对差 | 状态 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `yeslab_395 / GP_026` | 35,431 | 2,433 | 10 | 83,498.21 | `FORMULA_REPLAY_BLOCKED` |
+| `yeslab_471 / AttentionSpillover` | 35,024 | 9,682 | 10 | 485.66 | `FORMULA_REPLAY_BLOCKED` |
+
+两者 mismatch 都覆盖整个审计窗口，而不是只发生在 2020-09-18。因此即使 Tushare 能
+补齐 `turnover_rate` 或 `total_mv`，也不能把当前计算器输出直接写成这两个因子的历史
+替代值。当前正确处置是继续隔离，并追溯生成源版本/历史输入快照；不降低 overlap 门槛，
+也不把这两个因子并入 23 个 OOS 候选。
+
+重放脚本和证据：
+
+- [`公式复现一致性审计脚本`](../../research_v2/scripts/audit_formula_replay_consistency.py)
+- [`阻断因子重放结果`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_blocked_factors_2020-09-14_2020-09-25_v1.json)
+
+该门禁只读 YesLab，`database_writes=false`，且未读取 2026 locked-test。
