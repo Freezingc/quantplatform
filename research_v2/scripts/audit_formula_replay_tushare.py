@@ -208,8 +208,15 @@ class TushareMarketSession:
         self._codes = set(map(str, codes))
 
     def run(self, script: str) -> object:
-        if 'loadTable("dfs://YesLab", "stock_factor_daily")' in script or (
-            "loadTable('dfs://YesLab','stock_factor_daily')" in script
+        normalized = "".join(str(script).lower().split()).replace("'", '"')
+        # FactorCalculator builds this query through a database handle:
+        # ``database("dfs://YesLab"); loadTable(db, "stock_factor_daily")``.
+        # Match both that form and the direct loadTable form so replay never
+        # silently falls back to the YesLab market table.
+        if (
+            "stock_factor_daily" in normalized
+            and "dfs://yeslab" in normalized
+            and ("loadtable(db," in normalized or "loadtable(\"dfs://yeslab\"," in normalized)
         ):
             return self._market.loc[
                 self._market["ts_code"].astype(str).isin(self._codes)

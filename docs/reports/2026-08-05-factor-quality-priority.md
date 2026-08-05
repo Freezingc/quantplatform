@@ -1498,3 +1498,24 @@ ICIR 通过年数为 `5/5`。
 - [`九因子统一质量矩阵`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_quality_scoreboard_v1.json)
 - [`质量矩阵构建脚本`](../../research_v2/scripts/build_shsz_factor_quality_scoreboard.py)
 - [`质量矩阵测试`](../../research_v2/tests/unit/scripts/test_build_shsz_factor_quality_scoreboard.py)
+
+### Tushare 回放拦截修正与质量证据刷新
+
+在结构覆盖复核中发现并修复了一个会影响质量结论的回放问题：
+`TushareMarketSession` 原先只识别直接 `loadTable("dfs://YesLab", ...)` 形式，而计算器
+实际使用 `database("dfs://YesLab"); loadTable(db, "stock_factor_daily")`。这会让部分重物化
+计算静默回读 YesLab 行情表，尤其使 GP_011 在 2020-09-18 的有效样本错误降到 `1,354`。
+
+修正后同一天的 Tushare SH/SZ 回放样本恢复为 `2,740`，完整 2020–2024 TRAIN 中九因子的
+最小样本/中位数比例为 `0.809–0.812`，2025 验证期为 `0.990–0.995`，所有因子均通过
+`>=0.70` 的结构覆盖门槛。修正后的 TRAIN/验证质量、性能漂移和统一 scoreboard 均保存为
+v2/v3 版本；旧 v1 文件保留为历史对照，不再作为最终质量来源。
+
+修正内容和证据：
+
+- [`TushareMarketSession 修正`](../../research_v2/scripts/audit_formula_replay_tushare.py)
+- [`回放拦截回归测试`](../../research_v2/tests/unit/scripts/test_audit_formula_replay_tushare.py)
+- [`修正后样本覆盖审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_sample_coverage_audit_v2.json)
+- [`修正后性能漂移审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_performance_drift_audit_v2.json)
+- [`修正后统一质量矩阵`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_quality_scoreboard_v3.json)
+- [`样本覆盖审计脚本`](../../research_v2/scripts/audit_shsz_sample_coverage.py)

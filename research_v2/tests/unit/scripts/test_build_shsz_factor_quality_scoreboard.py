@@ -92,3 +92,42 @@ def test_load_annual_pass_years_accepts_canonical_annual_key(tmp_path) -> None:
     result = scoreboard._load_annual_pass_years([artifact], ("yeslab_431", "yeslab_437"))
 
     assert result == {"yeslab_431": 3, "yeslab_437": 2}
+
+
+def test_build_scoreboard_includes_sample_coverage_gate() -> None:
+    result = scoreboard.build_scoreboard(
+        factor_ids=("yeslab_380",),
+        preflight={
+            "preflight_status": "PASS",
+            "monitoring_factor_ids": [],
+            "candidate_results": [
+                {
+                    "factor_id": "yeslab_380",
+                    "predictive_gate": "PASS",
+                    "annual_stability_gate": "PASS",
+                    "formula_scope_gate": "PASS",
+                    "quality_status": "PASS",
+                    "status": "PASS",
+                }
+            ],
+        },
+        drift={
+            "rows": [
+                {
+                    "factor_id": "yeslab_380",
+                    "direction_consistent": True,
+                    "validation_predictive_status": "PASS",
+                    "drift_status": "PASS",
+                }
+            ]
+        },
+        annual_pass_years={"yeslab_380": 4},
+        validation_similarity={"status": "PASS", "pair_results": []},
+        sample_coverage={
+            "status": "PASS",
+            "rows": [{"factor_id": "yeslab_380", "status": "PASS"}],
+        },
+    )
+
+    assert result["sample_coverage_status"] == "PASS"
+    assert result["rows"][0]["sample_coverage_status"] == "PASS"

@@ -258,6 +258,37 @@ def test_required_market_fields_reflect_calculator_inputs() -> None:
     assert fields == ("amount", "low", "pct_chg", "turnover_rate", "vol")
 
 
+def test_tushare_market_session_intercepts_database_handle_market_query() -> None:
+    class Base:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def run(self, script: str) -> object:
+            self.calls += 1
+            raise AssertionError("stock_factor_daily query must not reach YesLab")
+
+    base = Base()
+    market = pd.DataFrame(
+        {
+            "trade_date": [pd.Timestamp("2020-09-18")],
+            "ts_code": ["000001.SZ"],
+            "amount": [100.0],
+            "turnover_rate": [0.5],
+        }
+    )
+    wrapped = audit.TushareMarketSession(base, market, ("000001.SZ",))
+
+    result = wrapped.run(
+        'db = database("dfs://YesLab")\n'
+        't = loadTable(db, "stock_factor_daily")\n'
+        "select trade_date, ts_code, amount, turnover_rate from t"
+    )
+
+    assert isinstance(result, pd.DataFrame)
+    assert result.to_dict("records") == market.to_dict("records")
+    assert base.calls == 0
+
+
 def test_cross_sectional_replay_requires_one_complete_batch() -> None:
     assert audit.requires_full_cross_section(("yeslab_376", "yeslab_163")) is True
     assert audit.requires_full_cross_section(("yeslab_163", "yeslab_380")) is False

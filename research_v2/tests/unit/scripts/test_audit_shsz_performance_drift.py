@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pandas as pd
 
 import audit_shsz_performance_drift as audit
@@ -48,3 +50,48 @@ def test_performance_drift_blocks_direction_flip_and_icir_collapse() -> None:
     assert result["direction_flip_factor_ids"] == ["yeslab_bad_direction"]
     assert result["validation_predictive_fail_factor_ids"] == ["yeslab_bad_direction", "yeslab_bad_icir"]
     assert result["drift_fail_factor_ids"] == ["yeslab_bad_direction", "yeslab_bad_icir"]
+
+
+def test_load_quality_rows_merges_split_train_and_validation_layouts(tmp_path) -> None:
+    train = tmp_path / "train.json"
+    train.write_text(
+        json.dumps(
+            {
+                "start": "2020-01-02",
+                "summaries": [
+                    {
+                        "factor_id": "yeslab_376",
+                        "mean_rank_ic": -0.08,
+                        "icir": -0.70,
+                    }
+                ],
+            }
+        )
+    )
+    validation = tmp_path / "validation.json"
+    validation.write_text(
+        json.dumps(
+            {
+                "start": "2025-01-02",
+                "summaries": [
+                    {
+                        "factor_id": "yeslab_376",
+                        "mean_rank_ic": -0.09,
+                        "icir": -0.78,
+                    }
+                ],
+            }
+        )
+    )
+
+    result = audit.load_quality_rows([train, validation], ("yeslab_376",))
+
+    assert result.to_dict("records") == [
+        {
+            "factor_id": "yeslab_376",
+            "train_mean_rank_ic": -0.08,
+            "train_icir": -0.70,
+            "validation_mean_rank_ic": -0.09,
+            "validation_icir": -0.78,
+        }
+    ]
