@@ -98,6 +98,12 @@ def test_parser_accepts_low_coverage_gp_replay_factors() -> None:
     assert args.factor_id == ("yeslab_390", "yeslab_404")
 
 
+def test_default_factor_registry_has_unique_ids() -> None:
+    args = audit.parse_args(["--output", "/tmp/tushare-default.json"])
+
+    assert len(args.factor_id) == len(set(args.factor_id))
+
+
 def test_parser_rejects_locked_test_and_unsupported_factor() -> None:
     with pytest.raises(ValueError, match="2026"):
         audit.parse_args(

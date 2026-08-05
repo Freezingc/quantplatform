@@ -879,3 +879,32 @@ GP_021 的训练/验证有效日数为 `1,206/237`，训练期最低有限覆盖
 - [`signed-power v3 训练覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v3/train_daily_rank_ic_with_coverage.csv)
 - [`signed-power v3 验证覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v3/validation_daily_rank_ic_with_coverage.csv)
 - [`GP_021/GP_035 源 universe 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp021_gp035_tushare_source_universe_2020-09_v1.json)
+
+### 正式 OOS 候选的 Tushare canonical replay
+
+将当前 18 个 OOS 候选直接切换到 Tushare `daily + daily_basic`，使用完整 V2 宇宙和单批
+横截面重放。2025-01 窗口只有 4 个因子逐键无 mismatch：
+`yeslab_163/Alpha95`、`yeslab_380/GP_011`、`yeslab_431/GP_062`、`yeslab_437/GP_068`；
+其余 14 个在该窗口即被 `FINITE_OVERLAP_MISMATCH` 阻断，不能把 YesLab 派生值直接当作
+Tushare 口径的可复现输入。
+
+对这 4 个通过者再执行 2020-01、2022-01、2024-01 三个窗口，四者全部保持
+`FORMULA_REPLAY_PASS`，且每个窗口 `market_missing_code_count=0`。因此当前形成了一个
+更严格的 Tushare canonical 核心复核集合，但这不是对现有 18 因子表的删除或发布操作；
+现有候选仍保留在提案中，任何新准入审查必须先通过这道行情一致性门槛。
+
+| Tushare canonical 状态 | 因子数 | 因子 |
+| --- | ---: | --- |
+| 四窗口全部 PASS | 4 | `yeslab_163, yeslab_380, yeslab_431, yeslab_437` |
+| 2025-01 即 BLOCKED | 14 | `yeslab_114, 155, 376, 381, 385, 396, 400, 405, 425, 442, 94, 95, 96, 98` |
+
+这 4 个核心因子仍需结合年度稳定性、相似度和最终准入规则审阅，尚未冻结，也没有启动
+模型训练。数据库写入为 `false`，没有读取 2026。
+
+证据：
+
+- [`Tushare canonical 汇总`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_canonical_summary_v1.json)
+- [`2025-01 18 因子重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_2025-01_v1.json)
+- [`2020-01 4 因子重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos4_tushare_full_2020-01_v1.json)
+- [`2022-01 4 因子重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos4_tushare_full_2022-01_v1.json)
+- [`2024-01 4 因子重放`](../../research_v2/artifacts/diagnostics/formula_replay_oos4_tushare_full_2024-01_v1.json)
