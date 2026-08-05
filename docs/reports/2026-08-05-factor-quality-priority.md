@@ -1400,3 +1400,27 @@ Tushare `amount=126465.674`，仅有小数精度差，但非线性指数项把�
 - [`九因子联合提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_proposal_v2.json)
 - [`九因子联合准入预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_preflight_v2.json)
 - [`新增三因子范围扩展相似度`](../../research_v2/artifacts/diagnostics/tushare_shsz_candidate_extension_similarity_v1.json)
+
+### 三个扩展因子的范围转换审计
+
+为给 `formula_scope_gate` 提供可复核依据，已对 `yeslab_376/GP_007`、
+`yeslab_396/GP_027` 和 `yeslab_442/GP_073` 执行只读范围转换审计。V2 的 2025 年实际
+训练 universe 有 `4,912` 个唯一代码，其中 SH `2,180`、SZ `2,732`、BJ `0`；旧 YesLab
+源池分别为 `5,952`、`5,952` 和 `5,955` 个代码，其中 BJ 分别为 `551`、`551` 和
+`552`。这直接证明旧值回放的范围差异是真实存在的，不能把旧值 mismatch 当作新 SH/SZ
+公式失败。
+
+源码语义检查结果也已固化：三个因子都只读取 Tushare `pct_chg`，没有财务、现金流、资产负债表
+或其他因子依赖；都包含当日横截面均值/标准差标准化；滚动窗口分别为 `10`、`5`、`5`；
+没有负 `shift` 前视操作。新版本的范围契约明确为 `SH_SZ_ONLY`，并继续使用独立的 PIT
+和可用性检查。
+
+该审计把状态从“缺少范围证据”推进到“可人工审批”，但不会自动替代审批：
+`formula_scope_gate` 仍为 `PENDING_SCOPE_TRANSITION_REVIEW`，联合九因子预检仍不发布、不
+写库、不训练。审批通过后，下一步才是将这三个候选的 gate 改为 PASS 并重跑 36 边最终预检。
+
+证据与脚本：
+
+- [`范围转换审计结果`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_transition_audit_v1.json)
+- [`范围转换审计脚本`](../../research_v2/scripts/audit_shsz_scope_transition.py)
+- [`范围转换审计单元测试`](../../research_v2/tests/unit/scripts/test_audit_shsz_scope_transition.py)
