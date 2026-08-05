@@ -1355,10 +1355,12 @@ RankIC 仍然良好，但旧值不能直接复用，需先生成 SH/SZ 版本再
 同类结果还包括 `GP_031/yeslab_400` 与 `GP_056/yeslab_425`：四窗口修复后回放均为 `0/4`，
 2025-01 源池分别有 `5,954` 只代码，其中 `551/552` 只为 BJ；它们的 Tushare 重物化质量
 可以继续保留为研究记录，但旧值不能直接进入 SH/SZ 训练样本。剩余扩展因子
-`yeslab_395/GP_026` 与 `yeslab_443/GP_074` 尚未完成修复后回放，当前状态是 `PENDING`，
-不是失败。
+`yeslab_395/GP_026` 与 `yeslab_443/GP_074` 的源码也包含横截面 rank/mean，源池同样含
+551/552 只 BJ；由于 GP_026/074 全市场重放成本高，当前状态是
+`PENDING_EXPENSIVE_FULL_MARKET_REPLAY`，不是失败。
 
 证据：[`GP_031/GP_056 scope 审查`](../../research_v2/artifacts/diagnostics/tushare_shsz_remaining_gp_scope_review_v1.json)
+以及 [`GP_026/GP_074 待审 scope inventory`](../../research_v2/artifacts/diagnostics/tushare_shsz_pending_gp_scope_inventory_v1.json)。
 
 ### 三个严格年度稳定因子的扩展提案（未发布）
 

@@ -1,0 +1,50 @@
+{
+  "scope": "TUSHARE_SHSZ_PENDING_GP_SCOPE_INVENTORY_V1",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_395",
+    "yeslab_443"
+  ],
+  "source_pool_observation_2025_01": {
+    "yeslab_395": {
+      "factor_name": "GP_026",
+      "source_table": "factor_data9",
+      "source_unique_codes": 5954,
+      "source_bj_codes": 551,
+      "formula_contains_cross_sectional_rank": true
+    },
+    "yeslab_443": {
+      "factor_name": "GP_074",
+      "source_table": "factor_data10",
+      "source_unique_codes": 5954,
+      "source_bj_codes": 552,
+      "formula_contains_cross_sectional_rank_or_mean": true
+    }
+  },
+  "canonical_universe_code_count_2025_01": 4220,
+  "formula_replay_status": "PENDING_EXPENSIVE_FULL_MARKET_REPLAY",
+  "static_classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH_LIKELY",
+  "action": "TUSHARE_REMATERIALIZE_REQUIRED_BEFORE_FORMULA_GATE",
+  "tushare_rematerialized_quality": {
+    "yeslab_395": {
+      "train_icir": -0.546769085593266,
+      "validation_icir": -0.6687866945365821,
+      "annual_abs_icir_pass_years": 4
+    },
+    "yeslab_443": {
+      "train_icir": -0.5825681313625996,
+      "validation_icir": -0.7120967390540098,
+      "annual_abs_icir_pass_years": 4
+    }
+  },
+  "publication_status": "NOT_PUBLISHED",
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false
+}
