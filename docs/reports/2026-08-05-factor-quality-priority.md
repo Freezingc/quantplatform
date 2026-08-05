@@ -1424,3 +1424,22 @@ Tushare `amount=126465.674`，仅有小数精度差，但非线性指数项把�
 - [`范围转换审计结果`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_transition_audit_v1.json)
 - [`范围转换审计脚本`](../../research_v2/scripts/audit_shsz_scope_transition.py)
 - [`范围转换审计单元测试`](../../research_v2/tests/unit/scripts/test_audit_shsz_scope_transition.py)
+
+### 九因子最终只读准入预检
+
+基于上述范围审计和你已确认的 SH/SZ-only 研究范围，三个扩展因子的
+`formula_scope_gate` 已在独立 v3 提案中标记为 `PASS`，没有修改 v2 历史提案。重新运行
+九因子 admission preflight 后，`36/36` 条 TRAIN 相似度边全部具备证据且均低于 `0.90`，
+没有缺失边、冗余失败或候选质量失败；最终状态为 `PASS_WITH_MONITORING`。
+
+当前九因子集合为：
+`yeslab_380, yeslab_431, yeslab_437, yeslab_155, yeslab_98, yeslab_94,
+yeslab_376, yeslab_396, yeslab_442`。年度监控对象仍为 `yeslab_380/431/437/94`，其余
+候选的年度门槛为 PASS。这个结果只说明集合已经具备进入人工发布审查的质量证据，不代表
+已写入模型输入：`publication_status=NOT_PUBLISHED`、`database_writes=false`、
+`model_training_started=false`、`locked_test_read=false`。
+
+证据：
+
+- [`九因子 v3 提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_proposal_v3.json)
+- [`九因子最终准入预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_preflight_v3.json)

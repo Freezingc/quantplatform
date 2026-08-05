@@ -1,0 +1,121 @@
+{
+  "scope": "TUSHARE_SHSZ_ADMISSION_PROPOSAL_V3",
+  "market_scope": ["SH", "SZ"],
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d",
+  "train_window": "2020-01-01/2024-12-31",
+  "validation_window": "2025-01-01/2025-12-31",
+  "similarity_threshold": 0.9,
+  "candidate_count": 9,
+  "base_proposals": [
+    "tushare_shsz_admission_proposal_v2.json",
+    "tushare_shsz_scope_transition_audit_v1.json"
+  ],
+  "scope_transition_approval": {
+    "decision": "APPROVED_FOR_SH_SZ_REVIEW",
+    "basis": "user_scope_selection_excludes_BJ",
+    "audit_status": "formula_static_audit_PASS_and_v2_scope_PASS",
+    "approved_factor_ids": ["yeslab_376", "yeslab_396", "yeslab_442"]
+  },
+  "candidates": [
+    {
+      "factor_id": "yeslab_380",
+      "factor_name": "GP_011",
+      "version_scope": "existing_tushare_canonical",
+      "canonical_replay_windows": 4,
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_431",
+      "factor_name": "GP_062",
+      "version_scope": "existing_tushare_canonical",
+      "canonical_replay_windows": 4,
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_437",
+      "factor_name": "GP_068",
+      "version_scope": "existing_tushare_canonical",
+      "canonical_replay_windows": 4,
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_155",
+      "factor_name": "跳空去均值绝对值",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "scope_transition": "rematerialized_without_BJ",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_98",
+      "factor_name": "日内反转-波动翻转",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "scope_transition": "rematerialized_without_BJ",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_94",
+      "factor_name": "日间反转-波动翻转",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "scope_transition": "rematerialized_without_BJ",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_376",
+      "factor_name": "GP_007",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "scope_transition": "rematerialized_without_BJ",
+      "predictive_gate": "PASS",
+      "strict_annual_icir_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_396",
+      "factor_name": "GP_027",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "scope_transition": "rematerialized_without_BJ",
+      "predictive_gate": "PASS",
+      "strict_annual_icir_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_442",
+      "factor_name": "GP_073",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "scope_transition": "rematerialized_without_BJ",
+      "predictive_gate": "PASS",
+      "strict_annual_icir_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    }
+  ],
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "database_writes": false,
+  "locked_test_read": false,
+  "next_gates": [
+    "review final nine-factor preflight result",
+    "keep annual MONITOR factors under post-admission monitoring",
+    "only after explicit publication approval consider model input expansion"
+  ]
+}
