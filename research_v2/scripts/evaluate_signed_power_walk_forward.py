@@ -342,14 +342,14 @@ def main(argv: Sequence[str] | None = None) -> dict[str, object]:
     train_summary.to_csv(args.output / "train_summary.csv", index=False)
     validation_summary.to_csv(args.output / "validation_summary.csv", index=False)
     payload = {
-        "scope": "SIGNED_POWER_WALK_FORWARD_TUSHARE_V2",
+        "scope": "SIGNED_POWER_WALK_FORWARD_TUSHARE_V3",
         "train_start": TRAIN_START.isoformat(),
         "train_end": TRAIN_END.isoformat(),
         "validation_start": VALIDATION_START.isoformat(),
         "validation_end": VALIDATION_END.isoformat(),
         "purge_last_dates": PURGE_LAST_DATES,
         "lookback_days": LOOKBACK_DAYS,
-        "factor_ids": ["yeslab_371", "yeslab_389", "yeslab_390"],
+        "factor_ids": sorted(train_daily["factor_id"].astype(str).unique().tolist()),
         "market_source": "Tushare.daily_basic overlay + YesLab stock_factor_daily imported from Tushare",
         "label_source": "QuantResearchV2Test.label_daily_latest.raw_return",
         "locked_test_read": False,

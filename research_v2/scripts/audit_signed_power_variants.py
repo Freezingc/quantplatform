@@ -1,4 +1,4 @@
-"""Pure signed-power variants for two invalid-domain GP expressions.
+"""Pure signed-power variants for invalid-domain GP expressions.
 
 The source expressions use fractional powers of values that can be negative.
 The signed-power transformation is deliberately isolated here: it creates a
@@ -77,7 +77,7 @@ def _to_long(values: pd.DataFrame, factor_id: str) -> pd.DataFrame:
 
 
 def compute_signed_power_variants(market: pd.DataFrame) -> dict[str, pd.DataFrame]:
-    """Compute GP_002 and GP_020 signed-power variants from a market panel."""
+    """Compute isolated signed-power variants from a Tushare market panel."""
 
     required = {"trade_date", "ts_code", "vol", "amount", "pct_chg", "turnover_rate"}
     if missing := sorted(required.difference(market.columns)):
@@ -99,8 +99,13 @@ def compute_signed_power_variants(market: pd.DataFrame) -> dict[str, pd.DataFram
     volume_rank = vol.rank(axis=1, pct=True)
     amount_delta_ratio = (amount - amount.shift(60)) / amount.shift(60).replace(0, np.nan)
     gp021 = signed_power(pct_chg, volume_rank) + amount_delta_ratio
+    gp001 = signed_power(pct_chg, turnover.rolling(10).sum()).rank(axis=1, pct=True) * turnover
+    turnover_delta_ratio = (turnover - turnover.shift(20)) / turnover.shift(20).replace(0, np.nan)
+    gp003 = signed_power(pct_chg, turnover_delta_ratio).rank(axis=1, pct=True) * turnover
     return {
+        "yeslab_370": _to_long(gp001, "yeslab_370"),
         "yeslab_371": _to_long(gp002, "yeslab_371"),
+        "yeslab_372": _to_long(gp003, "yeslab_372"),
         "yeslab_389": _to_long(gp020, "yeslab_389"),
         "yeslab_390": _to_long(gp021, "yeslab_390"),
     }

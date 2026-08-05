@@ -1,0 +1,77 @@
+{
+  "code_count": 3902,
+  "database_writes": false,
+  "end": "2020-09-25",
+  "factor_ids": [
+    "yeslab_390",
+    "yeslab_404"
+  ],
+  "include_daily_basic": false,
+  "locked_test_read": false,
+  "market_code_count": 3838,
+  "market_date_count": 212,
+  "market_finite_rows": 5598754,
+  "market_hash": "1e83e80b6911861c019f1edc83aa7535b93c9a7ccd81b2a387039f248e829399",
+  "market_missing_code_count": 64,
+  "market_rows": 799822,
+  "market_source": "Tushare.daily",
+  "market_start": "2019-11-18",
+  "max_ts_codes": null,
+  "restrict_to_v2_universe": false,
+  "rows": [
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_390",
+      "factor_name": "GP_021",
+      "lookback_days": 60,
+      "max_abs_diff": 0.3100934124065695,
+      "max_rel_diff": 31.234947217921647,
+      "max_ts_codes": null,
+      "mismatch_date_count": 10,
+      "mismatch_end": "2020-09-25",
+      "mismatch_rows": 15929,
+      "mismatch_start": "2020-09-14",
+      "overlap_finite_rows": 17288,
+      "overlap_rows": 38380,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH",
+        "TUSHARE_MARKET_MISSING_CODES"
+      ],
+      "replay_finite_rows": 17288,
+      "replay_lookback_days": 180,
+      "replay_rows": 38380,
+      "source_finite_rows": 17288,
+      "source_rows": 38380
+    },
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_404",
+      "factor_name": "GP_035",
+      "lookback_days": 60,
+      "max_abs_diff": 3649028.751000017,
+      "max_rel_diff": 1.6952691999999942e+16,
+      "max_ts_codes": null,
+      "mismatch_date_count": 9,
+      "mismatch_end": "2020-09-25",
+      "mismatch_rows": 14101,
+      "mismatch_start": "2020-09-15",
+      "overlap_finite_rows": 32409,
+      "overlap_rows": 38380,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH",
+        "TUSHARE_MARKET_MISSING_CODES"
+      ],
+      "replay_finite_rows": 32409,
+      "replay_lookback_days": 180,
+      "replay_rows": 38380,
+      "source_finite_rows": 35967,
+      "source_rows": 38380
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2020-09-14",
+  "stock_batch_size": 10000,
+  "universe_mode": "full_market"
+}

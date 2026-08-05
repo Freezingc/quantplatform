@@ -34,9 +34,11 @@ def test_compute_variants_improves_domain_coverage() -> None:
 
     variants = audit.compute_signed_power_variants(market)
 
-    assert set(variants) == {"yeslab_371", "yeslab_389", "yeslab_390"}
+    assert set(variants) == {"yeslab_370", "yeslab_371", "yeslab_372", "yeslab_389", "yeslab_390"}
     assert variants["yeslab_371"]["value"].notna().sum() > 0
     assert variants["yeslab_389"]["value"].notna().sum() > 0
+    assert variants["yeslab_370"]["value"].notna().sum() > 0
+    assert variants["yeslab_372"]["value"].notna().sum() > 0
 
 
 def test_gp021_signed_power_variant_avoids_negative_fractional_power_nan() -> None:

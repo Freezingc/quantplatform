@@ -848,3 +848,34 @@ GP_021 的训练/验证有效日数为 `1,206/237`，训练期最低有限覆盖
 - [`signed-power v2 验证摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/validation_summary.csv)
 - [`signed-power v2 训练覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/train_daily_rank_ic_with_coverage.csv)
 - [`signed-power v2 验证覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/validation_daily_rank_ic_with_coverage.csv)
+
+### GP_001/GP_003 signed-power 扩展筛查
+
+继续检查剩余低覆盖 GP 因子后，GP_001/GP_003 也确认存在负底数分数幂：
+
+- GP_001：`pow(pct_chg, ts_sum_10(turnover))`；
+- GP_003：`pow(pct_chg, ts_delta_ratio_20(turnover))`。
+
+新增 signed-power 变体并完成同一 Tushare walk-forward 后，结果如下：
+
+| 变体 | 训练 signed mean RankIC | 训练 ICIR | 训练方向日占比 | 2025 signed mean RankIC | 2025 ICIR | 2025 方向日占比 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `yeslab_370` / GP_001 | `0.036254` | `-0.278` | `61.77%` | `0.033627` | `-0.260` | `62.45%` |
+| `yeslab_372` / GP_003 | `0.046356` | `-0.359` | `64.76%` | `0.042334` | `-0.303` | `64.56%` |
+
+两者有限覆盖均明显改善（训练最低覆盖分别 `98.93%/94.68%`，验证最低覆盖分别
+`99.32%/95.30%`），但 ICIR 在训练和验证均未达到 `0.50`。这说明定义域修复改善了
+可用样本，却没有形成稳定预测增益；不发布新版本、不扩充正式输入，后续不再对这两式做
+无约束调参。
+
+同时，GP_021/GP_035 使用源因子实际证券集合的单批 Tushare 重放仍分别有
+`15,929/17,288`、`14,101/32,409` mismatch，横截面 universe 漂移也不能解释全部差异。
+
+证据：
+
+- [`signed-power v3 metadata`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v3/metadata.json)
+- [`signed-power v3 训练摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v3/train_summary.csv)
+- [`signed-power v3 验证摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v3/validation_summary.csv)
+- [`signed-power v3 训练覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v3/train_daily_rank_ic_with_coverage.csv)
+- [`signed-power v3 验证覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v3/validation_daily_rank_ic_with_coverage.csv)
+- [`GP_021/GP_035 源 universe 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp021_gp035_tushare_source_universe_2020-09_v1.json)
