@@ -1518,10 +1518,26 @@ v2/v3 版本；旧 v1 文件保留为历史对照，不再作为最终质量来�
 - [`回放拦截回归测试`](../../research_v2/tests/unit/scripts/test_audit_formula_replay_tushare.py)
 - [`修正后样本覆盖审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_sample_coverage_audit_v2.json)
 - [`修正后性能漂移审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_performance_drift_audit_v2.json)
-- [`修正后统一质量矩阵`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_quality_scoreboard_v3.json)
+- [`修正后统一质量矩阵`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_quality_scoreboard_v4.json)
 - [`样本覆盖审计脚本`](../../research_v2/scripts/audit_shsz_sample_coverage.py)
 
 修正后补做的四窗口九因子回放显示，Tushare canonical 计算与旧 YesLab 存量值并非同一
 行情口径。`yeslab_155/376/396/442/94/98` 的旧值在四个窗口均出现大范围有限值差异，
 因此这些因子只能使用已经生成的 Tushare SH/SZ 重新物化质量证据；`yeslab_380/431/437`
 也需把少量键级差异保留在监控中。该结果不改变当前“未发布、未训练”的状态。
+
+### 公式回放 mismatch 的精度根因
+
+针对 GP_068 的两个大幅 mismatch 键，进一步抽取了 2023-10-09 至 2024-01-18 的输入序列。
+`603500.SH` 的 73 个匹配交易日中有 65 天、`301230.SZ` 有 67 天的 `amount` 与 Tushare
+不同，最大差异约 `0.005`；YesLab 的 `amount` 保留两位小数，Tushare 保留三位小数。
+GP_068 对 `amount` 做 60 日 rank，这种精度差异会改变历史并列排序并放大为因子值差异，
+例如 `603500.SH/2024-01-18` 的 GP_068 差异为 `333.893933`。这属于源数据精度不一致，
+不是计算器实现错误。
+
+正式 canonical 计算继续使用完整精度 Tushare 输入，不通过舍入来迎合旧 YesLab 值；旧表值
+不再直接进入新训练样本。该诊断只解释 mismatch，不降低公式一致性门槛，也不触发发布。
+
+证据：[`SH/SZ 公式精度诊断`](../../research_v2/artifacts/diagnostics/tushare_shsz_formula_precision_diagnostic_v1.json)
+该诊断已纳入 [`统一质量矩阵 v4`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_quality_scoreboard_v4.json)
+的 `formula_precision_diagnostic_status=MONITOR` 字段，但不改变因子准入 PASS/FAIL 计算。

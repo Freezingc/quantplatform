@@ -131,3 +131,44 @@ def test_build_scoreboard_includes_sample_coverage_gate() -> None:
 
     assert result["sample_coverage_status"] == "PASS"
     assert result["rows"][0]["sample_coverage_status"] == "PASS"
+
+
+def test_build_scoreboard_records_formula_precision_diagnostic_without_failing_gate() -> None:
+    result = scoreboard.build_scoreboard(
+        factor_ids=("yeslab_380",),
+        preflight={
+            "preflight_status": "PASS",
+            "monitoring_factor_ids": [],
+            "candidate_results": [
+                {
+                    "factor_id": "yeslab_380",
+                    "predictive_gate": "PASS",
+                    "annual_stability_gate": "PASS",
+                    "formula_scope_gate": "PASS",
+                    "quality_status": "PASS",
+                    "status": "PASS",
+                }
+            ],
+        },
+        drift={
+            "rows": [
+                {
+                    "factor_id": "yeslab_380",
+                    "validation_predictive_status": "PASS",
+                    "drift_status": "PASS",
+                }
+            ]
+        },
+        annual_pass_years={"yeslab_380": 4},
+        validation_similarity={"status": "PASS", "pair_results": []},
+        formula_precision={
+            "classification": "NUMERIC_PRECISION_SENSITIVE",
+            "canonical_action": "KEEP_FULL_PRECISION_TUSHARE",
+        },
+    )
+
+    assert result["status"] == "PASS"
+    assert result["formula_precision_diagnostic_status"] == "MONITOR"
+    assert result["formula_precision_diagnostic_classification"] == (
+        "NUMERIC_PRECISION_SENSITIVE"
+    )

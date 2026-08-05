@@ -33,6 +33,9 @@ DEFAULT_SCOPE = Path(
 DEFAULT_SAMPLE_COVERAGE = Path(
     "research_v2/artifacts/diagnostics/tushare_shsz_sample_coverage_audit_v2.json"
 )
+DEFAULT_FORMULA_PRECISION = Path(
+    "research_v2/artifacts/diagnostics/tushare_shsz_formula_precision_diagnostic_v1.json"
+)
 DEFAULT_QUALITY_ARTIFACTS = (
     Path("research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_quality_16_v1.json"),
     Path("research_v2/artifacts/diagnostics/tushare_canonical_core_quality_v1.json"),
@@ -62,6 +65,7 @@ def build_scoreboard(
     validation_similarity: Mapping[str, object],
     scope: Mapping[str, object] | None = None,
     sample_coverage: Mapping[str, object] | None = None,
+    formula_precision: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     factor_ids = tuple(str(value) for value in factor_ids)
     if not factor_ids or len(set(factor_ids)) != len(factor_ids):
@@ -93,6 +97,12 @@ def build_scoreboard(
             pair_by_factor[right].append(pair)
     global_validation_status = str(validation_similarity.get("status", "FAIL"))
     monitoring = sorted(str(value) for value in preflight.get("monitoring_factor_ids", []))
+    formula_precision_status = "MONITOR" if formula_precision else "NOT_EVALUATED"
+    formula_precision_classification = (
+        str(formula_precision.get("classification", "UNKNOWN"))
+        if formula_precision
+        else None
+    )
     rows: list[dict[str, object]] = []
     for factor_id in sorted(factor_ids):
         candidate = candidates[factor_id]
@@ -152,6 +162,8 @@ def build_scoreboard(
         "validation_similarity_status": validation_similarity.get("status"),
         "sample_coverage_status": sample_coverage.get("status") if sample_coverage else "PASS",
         "scope_audit_status": scope.get("formula_static_audit") if scope else None,
+        "formula_precision_diagnostic_status": formula_precision_status,
+        "formula_precision_diagnostic_classification": formula_precision_classification,
         "rows": rows,
         "publication_status": "NOT_PUBLISHED",
         "database_writes": False,
@@ -198,6 +210,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--validation-similarity", type=Path, default=DEFAULT_VALIDATION_SIMILARITY)
     parser.add_argument("--scope", type=Path, default=DEFAULT_SCOPE)
     parser.add_argument("--sample-coverage", type=Path, default=DEFAULT_SAMPLE_COVERAGE)
+    parser.add_argument("--formula-precision", type=Path, default=DEFAULT_FORMULA_PRECISION)
     parser.add_argument("--quality-artifact", type=Path, action="append")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -213,6 +226,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     validation_similarity = _load_json(args.validation_similarity)
     scope = _load_json(args.scope)
     sample_coverage = _load_json(args.sample_coverage)
+    formula_precision = _load_json(args.formula_precision)
     annual = _load_annual_pass_years(args.quality_artifact, args.factor_id)
     result = build_scoreboard(
         factor_ids=args.factor_id,
@@ -222,6 +236,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         validation_similarity=validation_similarity,
         scope=scope,
         sample_coverage=sample_coverage,
+        formula_precision=formula_precision,
     )
     result["source_artifacts"] = {
         "preflight": str(args.preflight),
@@ -229,6 +244,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "validation_similarity": str(args.validation_similarity),
         "scope": str(args.scope),
         "sample_coverage": str(args.sample_coverage),
+        "formula_precision": str(args.formula_precision),
         "quality": [str(path) for path in args.quality_artifact],
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
