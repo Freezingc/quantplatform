@@ -1,0 +1,36 @@
+{
+  "codes": 4200,
+  "database_writes": false,
+  "end": "2025-01-23",
+  "label_source": "QuantResearchV2Test.label_daily_latest.raw_return",
+  "locked_test_read": false,
+  "market_source": "Tushare.daily+daily_basic cache",
+  "purged_end_dates": "2025-01-24..2025-01-31",
+  "rows": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.6875,
+      "factor_id": "yeslab_371",
+      "icir": -0.5262129027509144,
+      "mean_rank_ic": -0.06290339500083958,
+      "mean_sample_count": 3862.875,
+      "rank_ic_std": 0.11953981871595275,
+      "signed_mean_rank_ic": 0.06290339500083958,
+      "valid_day_count": 16
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.75,
+      "factor_id": "yeslab_389",
+      "icir": -0.3837373489828218,
+      "mean_rank_ic": -0.0643459121235203,
+      "mean_sample_count": 3905.6875,
+      "rank_ic_std": 0.1676821719180657,
+      "signed_mean_rank_ic": 0.0643459121235203,
+      "valid_day_count": 16
+    }
+  ],
+  "scope": "SIGNED_POWER_FORMULA_REPAIR_VALIDATION2025_SMOKE_V1",
+  "start": "2025-01-02",
+  "universe_source": "QuantResearchV2Test.universe_daily_latest.is_member"
+}

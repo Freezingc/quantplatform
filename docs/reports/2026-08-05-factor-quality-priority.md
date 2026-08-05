@@ -760,3 +760,32 @@ Tushare 覆盖，且两个因子在所有窗口都为 `FORMULA_REPLAY_PASS`、`m
 
 本轮结论是：不降低有限覆盖门槛，不把 Tushare overlay 直接写入旧表；16 个因子继续隔离，
 后续优先转向重新定义公式或重新生成源因子，而不是继续做行情字段填补。
+
+### GP_002/GP_020 signed-power 公式变体探索
+
+进一步检查计算脚本后发现：
+
+- `GP_002 = pow(ts_regression_slope_60(vol), turnover_rate)`；
+- `GP_020 = pow(pct_chg, ts_sum_10(turnover_rate)) + pct_chg`。
+
+两者都会在负底数与非整数指数的组合下产生 NaN，这解释了为什么底层行情字段基本完整，
+因子有限覆盖却只有约 39%。在不覆盖旧因子值的前提下，做了 signed-power 变体探索：
+`sign(x) * abs(x)^p`。2020-09 全市场 smoke 中，GP_002/GP_020 的候选有限覆盖分别
+提升到 `80.87%/82.54%`，但与已有有限源值仍有 `110/642` 个 mismatch。因此它们不是
+可直接填缺的修复，而是需要重新生成全量因子的新公式版本。
+
+2025-01-02–2025-01-23 的 16 个交易日 predictive smoke（方向固定为 `-1`）结果为：
+
+| 变体 | signed mean RankIC | 原始 ICIR | 方向日占比 |
+| --- | ---: | ---: | ---: |
+| GP_002 signed-power | `0.062903` | `-0.526213` | `68.75%` |
+| GP_020 signed-power | `0.064346` | `-0.383737` | `75.00%` |
+
+这只能作为变体筛查证据，不能替代完整 5 年训练、1 年验证和 1 年测试。当前不发布新版本、
+不改变 18 个正式候选，下一步需要在隔离的新因子版本中完成完整 RankIC/ICIR、相似度和
+样本外门禁。
+
+证据：
+
+- [`signed-power 覆盖与源值 smoke`](../../research_v2/artifacts/diagnostics/signed_power_repair_smoke_2020-09-14_2020-09-25_v1.json)
+- [`signed-power 2025 predictive smoke`](../../research_v2/artifacts/diagnostics/signed_power_repair_validation2025_v1/quality_summary.json)
