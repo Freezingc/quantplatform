@@ -1258,3 +1258,15 @@ RankIC 证据无需再混入 BJ。对四窗口 canonical 交集的三个因子�
 不是行情数据来源。
 
 证据：[`155/380 沪深 TRAIN 相似度`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_155_380_train_v1.json)
+
+### 沪深准入候选提案（未发布）
+
+基于当前证据，形成 6 个沪深范围待准入候选：现有 canonical 的 `380、431、437`，以及
+按沪深 universe 重新物化的 `155、98、94`。这不是把旧因子表改成新版本：前三个保持现有
+canonical 版本，后三个必须使用新的 `new_shsz_rematerialized_v1` 版本标识，不能覆盖旧值。
+
+其中 155/98 通过五年严格年度 ICIR 分支，94 为 3/5 年通过、保留监控；所有已审相似度
+pair 均低于 0.90。提案仍未发布、未写入旧表或新 V2 表，也未开始模型训练；下一步只做
+版本标识审批和 admission preflight。
+
+证据：[`沪深准入候选提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_proposal_v1.json)
