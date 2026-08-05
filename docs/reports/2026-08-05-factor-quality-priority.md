@@ -1375,3 +1375,28 @@ Tushare `amount=126465.674`，仅有小数精度差，但非线性指数项把�
 - [`380/431/437 canonical 相似度边`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_canonical_380_431_437_train_v1.json)
 - [`沪深准入预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_preflight_v1.json)
 - [`准入预检脚本`](../../research_v2/scripts/audit_shsz_admission_preflight.py)
+
+### 九因子联合准入预检（范围门禁阻断）
+
+在上述六因子证据基础上，已将 `yeslab_376/GP_007`、`yeslab_396/GP_027` 和
+`yeslab_442/GP_073` 合并为九因子联合提案。预检共要求 `C(9,2)=36` 条 SH/SZ TRAIN
+无序相似度边，实际观测到 `36/36` 条，所有边均低于 `0.90`，没有缺失边或冗余门槛失败。
+九个候选的 predictive/质量门槛也均为通过；其中新增三个因子的严格年度 ICIR 均为
+`5/5`。
+
+联合预检仍判定为 `FAIL`，原因仅为三个新增因子的
+`formula_scope_gate=PENDING_SCOPE_TRANSITION_REVIEW`。这表示它们的 SH/SZ 重新物化
+版本在统计质量和去冗余方面已有证据，但旧源值回放受到股票池范围变化影响，尚未批准
+新版本的公式、PIT 和可用性语义。该门禁是有意的硬阻断，不通过放宽 replay tolerance
+或把旧源值直接当作新版本来绕过。
+
+本次联合提案和预检均为只读证据：`publication_status=NOT_PUBLISHED`、
+`database_writes=false`、`model_training_started=false`、`locked_test_read=false`。
+因此当前可以确认的是“九因子证据已经齐全，但三因子范围语义尚未审批”，而不是九因子
+已经进入模型输入。
+
+证据：
+
+- [`九因子联合提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_proposal_v2.json)
+- [`九因子联合准入预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_preflight_v2.json)
+- [`新增三因子范围扩展相似度`](../../research_v2/artifacts/diagnostics/tushare_shsz_candidate_extension_similarity_v1.json)

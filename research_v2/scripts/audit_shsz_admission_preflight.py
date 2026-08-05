@@ -1,8 +1,9 @@
 """Run a read-only admission preflight for the SH/SZ candidate factor set.
 
 The preflight deliberately stops before publication.  It verifies that every
-candidate pair has an observed TRAIN similarity edge and that the proposal's
-predictive gate is already satisfied.  Missing evidence is a hard failure.
+candidate pair has an observed TRAIN similarity edge, that the proposal's
+predictive and formula-scope gates are satisfied, and that missing evidence is
+a hard failure.
 """
 
 from __future__ import annotations
@@ -143,6 +144,14 @@ def _quality_status(summary: dict[str, Any]) -> str:
                 return "PASS"
         except (TypeError, ValueError):
             pass
+    # Aggregate SH/SZ walk-forward artifacts store the train ICIR at the
+    # summary root instead of nesting it under ``train``.
+    for key in ("icir", "train_icir"):
+        try:
+            if math.isfinite(float(summary.get(key, "nan"))):
+                return "PASS"
+        except (TypeError, ValueError):
+            pass
     return "FAIL"
 
 
@@ -184,12 +193,25 @@ def build_preflight(
     for candidate in candidates:
         factor_id = str(candidate["factor_id"])
         predictive = str(candidate.get("predictive_gate", "FAIL"))
-        annual = str(candidate.get("annual_stability_gate", "FAIL"))
+        annual = str(
+            candidate.get(
+                "annual_stability_gate",
+                candidate.get("strict_annual_icir_gate", "FAIL"),
+            )
+        )
+        formula_scope = str(candidate.get("formula_scope_gate", "PASS"))
         quality = quality_summaries.get(factor_id)
         quality_status = "SKIPPED" if not quality_summaries else (
             _quality_status(quality) if quality is not None else "MISSING"
         )
-        status = "PASS" if predictive == "PASS" and annual in {"PASS", "MONITOR"} and quality_status in {"PASS", "SKIPPED"} else "FAIL"
+        status = (
+            "PASS"
+            if predictive == "PASS"
+            and annual in {"PASS", "MONITOR"}
+            and formula_scope == "PASS"
+            and quality_status in {"PASS", "SKIPPED"}
+            else "FAIL"
+        )
         if status == "FAIL":
             candidate_failures.append(factor_id)
         if annual == "MONITOR":
@@ -199,6 +221,7 @@ def build_preflight(
                 "factor_id": factor_id,
                 "predictive_gate": predictive,
                 "annual_stability_gate": annual,
+                "formula_scope_gate": formula_scope,
                 "quality_status": quality_status,
                 "status": status,
             }

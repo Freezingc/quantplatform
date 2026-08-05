@@ -102,3 +102,35 @@ def test_build_preflight_passes_with_monitoring_when_all_edges_are_below_thresho
     assert result["missing_pairs"] == []
     assert result["monitoring_factor_ids"] == ["yeslab_380"]
     assert result["publication_status"] == "NOT_PUBLISHED"
+
+
+def test_build_preflight_blocks_pending_formula_scope_gate() -> None:
+    proposal = {
+        "market_scope": ["SH", "SZ"],
+        "label": "forward_open_5d",
+        "similarity_threshold": 0.9,
+        "candidates": [
+            {
+                "factor_id": "yeslab_376",
+                "predictive_gate": "PASS",
+                "strict_annual_icir_gate": "PASS",
+                "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW",
+            },
+            {
+                "factor_id": "yeslab_380",
+                "predictive_gate": "PASS",
+                "annual_stability_gate": "MONITOR",
+            },
+        ],
+    }
+    pair = {("yeslab_376", "yeslab_380"): {"metric": 0.4, "source": "test"}}
+
+    result = preflight.build_preflight(proposal, {}, pair)
+
+    assert result["preflight_status"] == "FAIL"
+    assert result["failed_checks"] == ["candidate:yeslab_376"]
+    assert result["candidate_results"][0]["formula_scope_gate"] == "PENDING_SCOPE_TRANSITION_REVIEW"
+
+
+def test_quality_status_accepts_root_level_aggregate_icir() -> None:
+    assert preflight._quality_status({"factor_id": "yeslab_376", "icir": -0.70}) == "PASS"
