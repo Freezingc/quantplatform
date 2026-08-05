@@ -283,6 +283,66 @@ def requires_full_cross_section(factor_ids: Sequence[str]) -> bool:
     return bool(set(factor_ids).intersection(FULL_CROSS_SECTION_FACTOR_IDS))
 
 
+def fetch_missing_code_ranges(
+    pro: object,
+    codes: Sequence[str],
+    start: date,
+    end: date,
+    *,
+    cache_dir: Path,
+    include_daily_basic: bool,
+) -> pd.DataFrame:
+    """Fetch completely absent securities by code, including optional turnover data."""
+
+    frames: list[pd.DataFrame] = []
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    for code in codes:
+        safe_code = str(code).replace(".", "_")
+        daily_cache = cache_dir / f"daily_code_{safe_code}_{start:%Y%m%d}_{end:%Y%m%d}.json"
+        if daily_cache.is_file():
+            daily = pd.read_json(daily_cache, orient="table")
+        else:
+            daily = pro.daily(
+                ts_code=str(code),
+                start_date=start.strftime("%Y%m%d"),
+                end_date=end.strftime("%Y%m%d"),
+            )
+            if isinstance(daily, pd.DataFrame):
+                daily_cache.write_text(
+                    daily.to_json(orient="table", date_format="iso"), encoding="utf-8"
+                )
+        if not isinstance(daily, pd.DataFrame) or daily.empty:
+            continue
+        daily = daily.copy()
+        if include_daily_basic:
+            basic_cache = cache_dir / (
+                f"daily_basic_code_{safe_code}_{start:%Y%m%d}_{end:%Y%m%d}.json"
+            )
+            if basic_cache.is_file():
+                basic = pd.read_json(basic_cache, orient="table")
+            else:
+                basic = pro.daily_basic(
+                    ts_code=str(code),
+                    start_date=start.strftime("%Y%m%d"),
+                    end_date=end.strftime("%Y%m%d"),
+                    fields="ts_code,trade_date,turnover_rate",
+                )
+                if isinstance(basic, pd.DataFrame):
+                    basic_cache.write_text(
+                        basic.to_json(orient="table", date_format="iso"), encoding="utf-8"
+                    )
+            if isinstance(basic, pd.DataFrame) and not basic.empty:
+                daily = daily.merge(
+                    basic.loc[:, ["ts_code", "trade_date", "turnover_rate"]],
+                    on=["ts_code", "trade_date"],
+                    how="left",
+                )
+        frames.append(daily)
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)
+
+
 def _fetch_tushare_market(
     codes: Sequence[str],
     start: date,
@@ -345,8 +405,28 @@ def _fetch_tushare_market(
                 frames.append(result)
     if not frames:
         raise RuntimeError("Tushare daily returned no market rows")
+
+    raw_market = pd.concat(frames, ignore_index=True)
+    normalized = normalize_tushare_market(
+        raw_market,
+        codes=codes,
+        include_daily_basic=include_daily_basic,
+    )
+    if open_dates is not None:
+        missing_codes = sorted(set(map(str, codes)).difference(normalized["ts_code"].astype(str)))
+        if missing_codes:
+            fallback = fetch_missing_code_ranges(
+                pro,
+                missing_codes,
+                start,
+                end,
+                cache_dir=resolved_cache,
+                include_daily_basic=include_daily_basic,
+            )
+            if not fallback.empty:
+                raw_market = pd.concat([raw_market, fallback], ignore_index=True)
     return normalize_tushare_market(
-        pd.concat(frames, ignore_index=True),
+        raw_market,
         codes=codes,
         include_daily_basic=include_daily_basic,
     )

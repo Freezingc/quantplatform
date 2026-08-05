@@ -1,0 +1,58 @@
+{
+  "scope": "FORMULA_REPLAY_BJ_SUPPLEMENT_DIAGNOSTIC_OOS14_V1",
+  "window": {
+    "start": "2025-01-02",
+    "end": "2025-01-31",
+    "market_start": "2024-09-09"
+  },
+  "factor_count": 14,
+  "factor_ids": [
+    "yeslab_114",
+    "yeslab_155",
+    "yeslab_376",
+    "yeslab_381",
+    "yeslab_385",
+    "yeslab_396",
+    "yeslab_400",
+    "yeslab_405",
+    "yeslab_425",
+    "yeslab_442",
+    "yeslab_94",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "strict_tushare_input": {
+    "raw_stock_panel_code_count": 5396,
+    "tushare_daily_code_count": 5148,
+    "missing_code_count": 248,
+    "missing_exchange": "BJ",
+    "decision_status": "FORMULA_REPLAY_BLOCKED"
+  },
+  "diagnostic_supplement": {
+    "supplement_source": "YesLab.stock_factor_daily raw fields for the 248 Tushare-missing BJ codes only",
+    "supplement_is_canonical": false,
+    "complete_raw_panel_code_count": 5396,
+    "combined_market_rows": 498365,
+    "all_factors_pass": true,
+    "rows": [
+      {"factor_id": "yeslab_114", "overlap_finite_rows": 96067, "mismatch_rows": 0, "max_abs_diff": 1.9186319200059643e-11},
+      {"factor_id": "yeslab_155", "overlap_finite_rows": 96738, "mismatch_rows": 0, "max_abs_diff": 2.220446049250313e-16},
+      {"factor_id": "yeslab_376", "overlap_finite_rows": 96409, "mismatch_rows": 0, "max_abs_diff": 1.554312234475219e-14},
+      {"factor_id": "yeslab_381", "overlap_finite_rows": 96614, "mismatch_rows": 0, "max_abs_diff": 5.960464477539063e-08},
+      {"factor_id": "yeslab_385", "overlap_finite_rows": 96614, "mismatch_rows": 0, "max_abs_diff": 9.094947017729282e-13},
+      {"factor_id": "yeslab_396", "overlap_finite_rows": 96614, "mismatch_rows": 0, "max_abs_diff": 3.637978807091713e-12},
+      {"factor_id": "yeslab_400", "overlap_finite_rows": 94573, "mismatch_rows": 0, "max_abs_diff": 0.0},
+      {"factor_id": "yeslab_405", "overlap_finite_rows": 96614, "mismatch_rows": 0, "max_abs_diff": 1.4210854715202004e-14},
+      {"factor_id": "yeslab_425", "overlap_finite_rows": 96409, "mismatch_rows": 0, "max_abs_diff": 0.0},
+      {"factor_id": "yeslab_442", "overlap_finite_rows": 95736, "mismatch_rows": 0, "max_abs_diff": 1.1368683772161603e-13},
+      {"factor_id": "yeslab_94", "overlap_finite_rows": 96067, "mismatch_rows": 0, "max_abs_diff": 1.7763568394002505e-15},
+      {"factor_id": "yeslab_95", "overlap_finite_rows": 96067, "mismatch_rows": 0, "max_abs_diff": 1.7763568394002505e-15},
+      {"factor_id": "yeslab_96", "overlap_finite_rows": 96067, "mismatch_rows": 0, "max_abs_diff": 3.552713678800501e-15},
+      {"factor_id": "yeslab_98", "overlap_finite_rows": 96067, "mismatch_rows": 0, "max_abs_diff": 1.1275702593849246e-17}
+    ]
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "conclusion": "All 14 current candidates replay exactly after the missing BJ raw cross-section is restored diagnostically. This proves the current strict blocks are a Tushare coverage gap, but does not authorize admission until the same BJ rows are obtained from Tushare itself."
+}

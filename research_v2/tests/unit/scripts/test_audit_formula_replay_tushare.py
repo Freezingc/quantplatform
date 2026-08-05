@@ -224,6 +224,44 @@ def test_cross_sectional_replay_requires_one_complete_batch() -> None:
     assert audit.requires_full_cross_section(("yeslab_163", "yeslab_380")) is False
 
 
+def test_missing_code_range_fetch_uses_daily_basic_when_required(tmp_path) -> None:
+    class FakePro:
+        def daily(self, **kwargs) -> pd.DataFrame:
+            assert kwargs["ts_code"] == "830001.BJ"
+            return pd.DataFrame(
+                {
+                    "ts_code": ["830001.BJ"],
+                    "trade_date": ["20250102"],
+                    "open": [10.0],
+                    "low": [9.5],
+                    "amount": [100.0],
+                    "pct_chg": [1.0],
+                }
+            )
+
+        def daily_basic(self, **kwargs) -> pd.DataFrame:
+            assert kwargs["ts_code"] == "830001.BJ"
+            return pd.DataFrame(
+                {
+                    "ts_code": ["830001.BJ"],
+                    "trade_date": ["20250102"],
+                    "turnover_rate": [0.5],
+                }
+            )
+
+    result = audit.fetch_missing_code_ranges(
+        FakePro(),
+        ("830001.BJ",),
+        date(2025, 1, 1),
+        date(2025, 1, 2),
+        cache_dir=tmp_path,
+        include_daily_basic=True,
+    )
+
+    assert result.loc[0, "ts_code"] == "830001.BJ"
+    assert result.loc[0, "turnover_rate"] == pytest.approx(0.5)
+
+
 def test_query_codes_deduplicates_top_factor_rows() -> None:
     class Client:
         def run(self, script: str) -> pd.DataFrame:

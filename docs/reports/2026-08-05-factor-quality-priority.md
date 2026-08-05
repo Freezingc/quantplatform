@@ -1022,3 +1022,20 @@ Tushare 缺失的 248 个 BJ 证券用 YesLab 原始行情补入横截面，其�
 日行情后，94/98 是第一优先级复核对象。
 
 证据：[`94/98 BJ 补齐诊断`](../../research_v2/artifacts/diagnostics/formula_replay_bj_supplement_diagnostic_94_98_2025-01_v1.json)
+
+随后将补齐实验扩大到全部 14 个阻断候选，并使用完整 `stock_factor_daily` 原始证券集合
+`5,396` 个代码作为横截面。14 个因子全部恢复为 `0 mismatch`；这包括此前几乎全量阻断的
+`yeslab_114`、`yeslab_381`、`yeslab_385`、`yeslab_400`、`yeslab_425` 和 `yeslab_442`。
+因此当前证据链已经足以把这 14 个候选统一归因于 Tushare 当前交易日接口缺少 BJ 证券，而
+不是逐个公式需要修补。补齐值仍仅来自 YesLab 诊断，不能用于发布或替代 Tushare canonical
+输入。
+
+为解决这个数据覆盖问题，canonical 获取器已增加严格的缺失代码检测：当按交易日接口整段
+缺少证券时，会尝试用 Tushare 按 `ts_code + start_date/end_date` 补拉 `daily`，需要换手率
+时同步补拉 `daily_basic`；补拉后仍缺失的代码继续触发 `TUSHARE_MARKET_MISSING_CODES`，不
+会回退到 YesLab。
+
+证据：
+
+- [`14 因子 BJ 补齐诊断`](../../research_v2/artifacts/diagnostics/formula_replay_bj_supplement_diagnostic_oos14_2025-01_v1.json)
+- [`Tushare 缺失代码补拉单测`](../../research_v2/tests/unit/scripts/test_audit_formula_replay_tushare.py)
