@@ -1,0 +1,57 @@
+{
+  "scope": "PRECISION_AMOUNT_OVERLAY_REPLAY_V1",
+  "secondary_source": "Tushare.daily.amount",
+  "locked_test_read": false,
+  "database_writes": false,
+  "overlay_policy": "Replace amount only in the in-memory calculator input; never overwrite YesLab.",
+  "results": [
+    {
+      "factor_id": "yeslab_401",
+      "factor_name": "GP_032",
+      "window": "2024-01-02..2024-01-31",
+      "precise_input_rows": 435780,
+      "overlap_finite_rows": 115139,
+      "mismatch_rows": 2,
+      "mismatch_date_count": 1,
+      "mismatch_start": "2024-01-29",
+      "mismatch_end": "2024-01-29",
+      "max_abs_diff": 0.00009370314842582772,
+      "max_rel_diff": 0.00014638573617393067,
+      "status": "PRECISION_OVERLAY_STILL_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_401",
+      "factor_name": "GP_032",
+      "window": "2025-01-02..2025-01-31",
+      "precise_input_rows": 418235,
+      "overlap_finite_rows": 94573,
+      "mismatch_rows": 4,
+      "mismatch_date_count": 2,
+      "mismatch_start": "2025-01-09",
+      "mismatch_end": "2025-01-14",
+      "max_abs_diff": 0.000186358553857624,
+      "max_rel_diff": 0.0010208248264597902,
+      "status": "PRECISION_OVERLAY_STILL_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_443",
+      "factor_name": "GP_074",
+      "window": "2020-09-14..2020-09-25",
+      "precise_input_rows": 161222,
+      "overlap_finite_rows": 38575,
+      "mismatch_rows": 336,
+      "mismatch_date_count": 10,
+      "mismatch_start": "2020-09-14",
+      "mismatch_end": "2020-09-25",
+      "max_abs_diff": 0.3063495457172394,
+      "max_rel_diff": 0.0021313843906258217,
+      "status": "PRECISION_OVERLAY_STILL_BLOCKED"
+    }
+  ],
+  "decision": "KEEP_BLOCKED",
+  "reason_codes": [
+    "TUSHARE_PRECISION_DOES_NOT_REPRODUCE_SOURCE",
+    "FULL_OVERLAY_MISMATCH_REMAINS",
+    "NO_SOURCE_TABLE_OVERWRITE"
+  ]
+}

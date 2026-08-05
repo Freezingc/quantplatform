@@ -623,3 +623,10 @@ yeslab_431, yeslab_437, yeslab_442, yeslab_94, yeslab_95, yeslab_96, yeslab_98`�
 改变；但尚未用高精度 amount 完成全窗口重放，因此不能据此放宽复现门槛或解除阻断。
 
 证据见 [`GP_032/GP_074 精度修订抽查`](../../research_v2/artifacts/diagnostics/precision_revision_mismatch_audit_gp032_gp074_v1.json)。
+
+随后在内存中对相应 warm-up 输入逐日替换 Tushare 三位小数 `amount` 并重放，结果仍不通过：
+GP_032 在 2024/2025 窗口分别剩余 2/4 个 mismatch，GP_074 的 mismatch 反而从 23 个增至
+336 个。因此 Tushare 精度只能解释差异来源之一，不能作为历史源值的等价替代；三个因子
+继续阻断，不发布 amount overlay 候选。
+
+完整结果见 [`高精度 amount overlay 重放`](../../research_v2/artifacts/diagnostics/precision_amount_overlay_replay_gp032_gp074_v1.json)。
