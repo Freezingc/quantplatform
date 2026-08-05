@@ -842,6 +842,7 @@ GP_021 的训练/验证有效日数为 `1,206/237`，训练期最低有限覆盖
 证据：
 
 - [`GP_026 全横截面 Tushare 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp026_tushare_full_unbatched_2020-09_v1.json)
+- [`GP_021/GP_035 原式全横截面 Tushare 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp021_gp035_tushare_full_unbatched_2020-09_v1.json)
 - [`signed-power v2 metadata`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/metadata.json)
 - [`signed-power v2 训练摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/train_summary.csv)
 - [`signed-power v2 验证摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/validation_summary.csv)

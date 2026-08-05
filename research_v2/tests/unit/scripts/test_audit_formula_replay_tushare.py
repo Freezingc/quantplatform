@@ -76,6 +76,28 @@ def test_parser_accepts_isolated_cross_sectional_blocked_factors() -> None:
     assert args.stock_batch_size == 5000
 
 
+def test_parser_accepts_low_coverage_gp_replay_factors() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_390",
+            "--factor-id",
+            "yeslab_404",
+            "--full-market",
+            "--stock-batch-size",
+            "5000",
+            "--start",
+            "2020-09-14",
+            "--end",
+            "2020-09-25",
+            "--output",
+            "/tmp/tushare-low-coverage-gp.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_390", "yeslab_404")
+
+
 def test_parser_rejects_locked_test_and_unsupported_factor() -> None:
     with pytest.raises(ValueError, match="2026"):
         audit.parse_args(
