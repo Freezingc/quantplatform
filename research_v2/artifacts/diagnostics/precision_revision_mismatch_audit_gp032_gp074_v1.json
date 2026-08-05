@@ -1,0 +1,69 @@
+{
+  "scope": "PRECISION_REVISION_MISMATCH_AUDIT_V1",
+  "locked_test_read": false,
+  "database_writes": false,
+  "observations": [
+    {
+      "factor_id": "yeslab_401",
+      "factor_name": "GP_032",
+      "trade_date": "2024-01-15",
+      "ts_code": "688607.SH",
+      "field": "amount",
+      "yeslab_value": 16631.67,
+      "secondary_value": 16631.672,
+      "secondary_source": "Tushare.daily",
+      "source_precision_note": "YesLab is rounded to two decimals; Tushare retains three decimals."
+    },
+    {
+      "factor_id": "yeslab_401",
+      "factor_name": "GP_032",
+      "trade_date": "2024-01-15",
+      "ts_code": "300196.SZ",
+      "field": "amount",
+      "yeslab_value": 16747.76,
+      "secondary_value": 16747.764,
+      "secondary_source": "Tushare.daily",
+      "source_precision_note": "YesLab is rounded to two decimals; Tushare retains three decimals."
+    },
+    {
+      "factor_id": "yeslab_401",
+      "factor_name": "GP_032",
+      "trade_date": "2025-01-09",
+      "ts_code": "002584.SZ",
+      "field": "amount",
+      "yeslab_value": 470370.57,
+      "secondary_value": 470370.572,
+      "secondary_source": "Tushare.daily",
+      "source_precision_note": "YesLab is rounded to two decimals; Tushare retains three decimals."
+    },
+    {
+      "factor_id": "yeslab_443",
+      "factor_name": "GP_074",
+      "trade_date": "2020-09-16",
+      "ts_code": "601985.SH",
+      "field": "amount",
+      "yeslab_value": 111101.64,
+      "secondary_value": 111101.638,
+      "secondary_source": "Tushare.daily",
+      "source_precision_note": "YesLab is rounded to two decimals; Tushare retains three decimals."
+    },
+    {
+      "factor_id": "yeslab_443",
+      "factor_name": "GP_074",
+      "trade_date": "2020-09-17",
+      "ts_code": "002676.SZ",
+      "field": "amount",
+      "yeslab_value": 33809.44,
+      "secondary_value": 33809.437,
+      "secondary_source": "Tushare.daily",
+      "source_precision_note": "YesLab is rounded to two decimals; Tushare retains three decimals."
+    }
+  ],
+  "status": "PRECISION_REVISION_REQUIRES_FULL_OVERLAY_REPLAY",
+  "decision": "KEEP_BLOCKED",
+  "reason_codes": [
+    "LOCALIZED_AMOUNT_PRECISION_DIFFERENCE",
+    "FULL_WINDOW_PRECISION_OVERLAY_NOT_VALIDATED",
+    "NO_SOURCE_TABLE_OVERWRITE"
+  ]
+}

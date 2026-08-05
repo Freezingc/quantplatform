@@ -616,3 +616,10 @@ yeslab_431, yeslab_437, yeslab_442, yeslab_94, yeslab_95, yeslab_96, yeslab_98`�
 - [`OOS19 多窗口复现汇总`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_oos19_multiwindow_v1.json)
 - [`OOS 质量提案 v3`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.json)
 - [`OOS 质量明细 v3`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.csv)
+
+对 `GP_032` 和 `GP_074` 的少量 mismatch 进一步抽查发现，YesLab `amount` 通常保留两位
+小数，而 Tushare `daily` 保留三位小数，例如 `2024-01-15/688607.SH` 为
+`16631.67` 对 `16631.672`。这说明局部差异很可能来自行情精度修订，而不是表达式本身
+改变；但尚未用高精度 amount 完成全窗口重放，因此不能据此放宽复现门槛或解除阻断。
+
+证据见 [`GP_032/GP_074 精度修订抽查`](../../research_v2/artifacts/diagnostics/precision_revision_mismatch_audit_gp032_gp074_v1.json)。
