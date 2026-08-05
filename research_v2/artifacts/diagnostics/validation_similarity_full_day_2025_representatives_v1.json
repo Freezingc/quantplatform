@@ -1,0 +1,29 @@
+{
+  "start_date": "2025-01-01",
+  "end_date": "2025-12-31",
+  "factor_ids": [
+    "yeslab_115",
+    "yeslab_118",
+    "yeslab_163",
+    "yeslab_357",
+    "yeslab_363",
+    "yeslab_365",
+    "yeslab_376",
+    "yeslab_380",
+    "yeslab_383",
+    "yeslab_385",
+    "yeslab_396",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "daily_input": "research_v2/artifacts/diagnostics/train26_representatives_validation_2025_v1/daily_rank_ic.parquet",
+  "valid_date_count": 237,
+  "target_database": "dfs://QuantResearchV2Test",
+  "factor_value_source": "V2_clean_pointer_plus_YesLab_fallback",
+  "threshold": 0.9,
+  "minimum_valid_days": 60,
+  "locked_test_read": false,
+  "database_writes": false,
+  "pair_count": 91
+}

@@ -379,3 +379,31 @@ yeslab_396, yeslab_95, yeslab_96, yeslab_98
 
 下一步应把这 14 个代表与 2025 验证期的日级相似度矩阵合并，再按已经选定的年度门槛
 生成“可训练候选集”；在此之前不发布新 factor set，也不启动模型训练。
+
+### 2025 验证期日级相似度复核
+
+在验证期 RankIC 证据之上，又对 14 个代表的 91 个因子对执行了完整日级绝对 Spearman
+矩阵。每个 pair 均有 `237` 个有效交易日；因子值读取优先使用每月
+`published_version` 指向的最新 clean 版本，clean 缺少的因子才从 YesLab 源表做有限值
+去重 fallback。该命令仍是只读，不写 `factor_quality_snapshot` 或任何业务表。
+
+结果显示，训练期代表关系在验证期发生了结构变化：
+
+- `yeslab_357` 与 `yeslab_365` 的验证期相似度为 `0.946569`，超过 `0.90`，因此这两个
+  在训练期不同簇中的代表在验证期应视为冗余，候选代表应优先保留训练期 signed RankIC
+  更强的 `yeslab_357`；
+- 其余 12 个代表的最近邻相似度均低于 `0.90`，其中 `yeslab_115/118` 为 `0.833597`、
+  `yeslab_95/96` 为 `0.843193`，暂不合并；
+- 因此按验证期阈值做“只合并确认冗余”的保守提案，14 个代表暂时压缩为 13 个候选，
+  但这仍是 OOS 结构证据，不是已冻结的 factor set。
+
+验证期相似度 artifact：
+
+- [`2025 validation similarity summary`](../../research_v2/artifacts/diagnostics/validation_similarity_full_day_2025_representatives_v1.csv)
+- [`2025 validation pair matrix`](../../research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_representatives_v1.csv)
+- [`2025 validation similarity metadata`](../../research_v2/artifacts/diagnostics/validation_similarity_full_day_2025_representatives_v1.json)
+
+当前仍保留两个决策分支：若采用主计划的年度方向稳定性规则，OOS 相似度提案对应 13 个
+候选；若继续采用每年 ICIR `>=0.50` 的保守硬门槛，训练期年度稳定代表只有
+`yeslab_357, yeslab_376, yeslab_98`，验证期相似度不会把这三者再合并。年度规则明确前，
+不发布上述 13 个候选，也不启动模型训练。
