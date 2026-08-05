@@ -1,0 +1,95 @@
+{
+  "scope": "TUSHARE_SHSZ_REGISTERED_GP_SCOPE_PRECISION_REVIEW_V1",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_377",
+    "yeslab_432",
+    "yeslab_433"
+  ],
+  "formula_replay_windows": [
+    "2020-01",
+    "2022-01",
+    "2024-01",
+    "2025-01"
+  ],
+  "formula_replay_pass_window_count": {
+    "yeslab_377": 0,
+    "yeslab_432": 0,
+    "yeslab_433": 0
+  },
+  "mismatch_rows_by_window": {
+    "yeslab_377": [
+      46286,
+      64648,
+      90687,
+      75797
+    ],
+    "yeslab_432": [
+      46206,
+      64602,
+      90678,
+      75720
+    ],
+    "yeslab_433": [
+      4,
+      1,
+      2,
+      1
+    ]
+  },
+  "scope_observations": {
+    "yeslab_377": {
+      "factor_name": "GP_008",
+      "source_unique_codes_2025_01": 5952,
+      "source_bj_codes_2025_01": 551,
+      "classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH",
+      "action": "TUSHARE_REMATERIALIZE_REQUIRED"
+    },
+    "yeslab_432": {
+      "factor_name": "GP_063",
+      "source_unique_codes_2025_01": 5953,
+      "source_bj_codes_2025_01": 552,
+      "classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH",
+      "action": "TUSHARE_REMATERIALIZE_REQUIRED"
+    },
+    "yeslab_433": {
+      "factor_name": "GP_064",
+      "classification": "NUMERIC_PRECISION_SENSITIVE",
+      "example": {
+        "trade_date": "2025-01-22",
+        "ts_code": "600503.SH",
+        "source_amount": 126465.67,
+        "tushare_amount": 126465.674,
+        "replay_value_difference": 7.569971
+      },
+      "action": "KEEP_FULL_PRECISION_TUSHARE_AND_MONITOR"
+    }
+  },
+  "tushare_rematerialized_quality": {
+    "yeslab_377": {
+      "train_icir": -0.5457494772974213,
+      "validation_icir": -0.5100170938228247,
+      "annual_abs_icir_pass_years": 3
+    },
+    "yeslab_432": {
+      "train_icir": -0.5924850478970963,
+      "validation_icir": -0.791534121226344,
+      "annual_abs_icir_pass_years": 4
+    },
+    "yeslab_433": {
+      "train_icir": -0.5355660789146719,
+      "validation_icir": -0.6140078926136774,
+      "annual_abs_icir_pass_years": 3
+    }
+  },
+  "publication_status": "NOT_PUBLISHED",
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false
+}

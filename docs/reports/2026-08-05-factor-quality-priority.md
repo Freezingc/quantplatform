@@ -1327,6 +1327,7 @@ TRAIN 全窗口 pair 证据；本轮没有用验证期相似度直接删因子�
 - [`六因子四窗口公式回放汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_replay_train_windows_v1.json)
 - [`2025-01 注册 GP 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos6_tushare_shsz_registered_2025-01_v1.json)
 - [`三因子修正版四窗口回放`](../../research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_quality_review_v1.json)
+- [`GP_008/063/064 修正版四窗口审查`](../../research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_scope_precision_review_v1.json)
 
 ### 横截面范围与 GP_064 精度根因
 
