@@ -1097,3 +1097,30 @@ Tushare alias replay 仍然是 `18/18 PASS`，说明这些 Alpha95 值可以由 
 
 - [`2020 V2 universe 对照`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_v2universe_2020-01_v1.json)
 - [`2022 V2 universe 对照`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_v2universe_2022-01_v1.json)
+
+### Tushare canonical 源因子覆盖门禁
+
+本轮又增加了一道独立门禁：回放前读取同一窗口的完整源因子有限值，检查其
+`(trade_date, ts_code)` 是否都能在 canonical Tushare 行情集合中找到。这样可以把“行情
+集合缺证券”和“公式数值不一致”分开记录，不能只看有限重叠样本的误差。
+
+带 BJ 迁移映射的最新结果如下：
+
+| 窗口 | Tushare 缺失代码 | 源因子覆盖缺口 | 18 个因子结果 | 说明 |
+| --- | ---: | ---: | --- | --- |
+| 2020-01 | 9 | `yeslab_163`：75 行、9 个代码 | `0 / 18 PASS` | 严格阻断，待历史 Tushare 行情 |
+| 2022-01 | 16 | `yeslab_163`：174 行、16 个代码 | `0 / 18 PASS` | 严格阻断，待历史 Tushare 行情 |
+| 2024-01 | 0 | 0 | `18 / 18 PASS` | 可进入年度质量审查 |
+| 2025-01 | 0 | 0 | `18 / 18 PASS` | 可进入年度质量审查 |
+
+缺口只在 `yeslab_163 / Alpha95` 出现，是因为该因子在两个历史窗口对缺失证券仍有有限
+源值；其他因子的源有限值都落在当前 Tushare 可覆盖代码内，但仍因完整横截面缺失而整体
+阻断。新增原因码为 `TUSHARE_SOURCE_MARKET_COVERAGE_GAP`，不会用 YesLab 行情或横截面
+填充值绕过门禁。
+
+证据：
+
+- [`2020-01 最新 canonical 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2020-01_v2.json)
+- [`2022-01 最新 canonical 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2022-01_v2.json)
+- [`2024-01 最新 canonical 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2024-01_v2.json)
+- [`2025-01 最新 canonical 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2025-01_v2.json)

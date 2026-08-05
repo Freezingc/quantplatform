@@ -253,6 +253,22 @@ def test_alias_map_rejects_duplicate_target_codes(tmp_path) -> None:
         audit.load_alias_map(path)
 
 
+def test_source_market_coverage_counts_uncovered_finite_rows() -> None:
+    source = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2020-01-02", "2020-01-03"]),
+            "ts_code": ["000001.SZ", "830001.BJ"],
+            "value": [1.0, 2.0],
+        }
+    )
+
+    result = audit.source_market_coverage(source, ("000001.SZ",))
+
+    assert result["source_market_uncovered_rows"] == 1
+    assert result["source_market_uncovered_code_count"] == 1
+    assert result["source_market_uncovered_date_count"] == 1
+
+
 def test_missing_code_range_fetch_uses_daily_basic_when_required(tmp_path) -> None:
     class FakePro:
         def daily(self, **kwargs) -> pd.DataFrame:

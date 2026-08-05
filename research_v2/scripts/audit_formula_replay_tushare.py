@@ -316,6 +316,29 @@ def apply_tushare_aliases(
     return remapped
 
 
+def source_market_coverage(
+    source: pd.DataFrame, market_codes: Sequence[str]
+) -> dict[str, int]:
+    required = {"trade_date", "ts_code", "value"}
+    missing = sorted(required.difference(source.columns))
+    if missing:
+        raise ValueError(f"source frame is missing columns: {missing}")
+    frame = source.loc[:, ["trade_date", "ts_code", "value"]].copy()
+    frame["trade_date"] = pd.to_datetime(frame["trade_date"], errors="raise").dt.normalize()
+    frame["ts_code"] = frame["ts_code"].astype(str)
+    frame["value"] = pd.to_numeric(frame["value"], errors="coerce")
+    frame = frame.drop_duplicates(["trade_date", "ts_code"], keep="last")
+    finite = np.isfinite(frame["value"].to_numpy(float))
+    uncovered = finite & ~frame["ts_code"].isin(set(map(str, market_codes))).to_numpy(bool)
+    orphan = frame.loc[uncovered]
+    return {
+        "source_finite_rows_full": int(finite.sum()),
+        "source_market_uncovered_rows": int(uncovered.sum()),
+        "source_market_uncovered_code_count": int(orphan["ts_code"].nunique()),
+        "source_market_uncovered_date_count": int(orphan["trade_date"].nunique()),
+    }
+
+
 def fetch_missing_code_ranges(
     pro: object,
     codes: Sequence[str],
@@ -606,10 +629,17 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
     for factor_id in args.factor_id:
         definition = replay.REPLAY_DEFINITIONS[factor_id]
         comparison = aggregate_comparisons(comparisons_by_factor[factor_id])
+        source_full = replay._query_source(client, definition, args.start, args.end)
+        comparison.update(source_market_coverage(source_full, market_codes))
         if missing_market_codes:
             comparison["decision_status"] = "FORMULA_REPLAY_BLOCKED"
             comparison["reason_codes"] = sorted(
                 set(comparison["reason_codes"]) | {"TUSHARE_MARKET_MISSING_CODES"}
+            )
+        if comparison["source_market_uncovered_rows"]:
+            comparison["decision_status"] = "FORMULA_REPLAY_BLOCKED"
+            comparison["reason_codes"] = sorted(
+                set(comparison["reason_codes"]) | {"TUSHARE_SOURCE_MARKET_COVERAGE_GAP"}
             )
         rows.append(
             {
