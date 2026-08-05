@@ -54,6 +54,28 @@ def test_parser_accepts_full_market_batches() -> None:
     assert args.stock_batch_size == 256
 
 
+def test_parser_accepts_isolated_cross_sectional_blocked_factors() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_395",
+            "--full-market",
+            "--restrict-to-v2-universe",
+            "--stock-batch-size",
+            "5000",
+            "--start",
+            "2020-09-14",
+            "--end",
+            "2020-09-25",
+            "--output",
+            "/tmp/tushare-gp026.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_395",)
+    assert args.stock_batch_size == 5000
+
+
 def test_parser_rejects_locked_test_and_unsupported_factor() -> None:
     with pytest.raises(ValueError, match="2026"):
         audit.parse_args(

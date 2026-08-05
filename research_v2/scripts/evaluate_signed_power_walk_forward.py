@@ -176,7 +176,7 @@ def _query_market(
     end: date,
 ) -> pd.DataFrame:
     result = source.query(
-        "select ts_code,trade_date,vol,pct_chg,turnover_rate "
+        "select ts_code,trade_date,vol,amount,pct_chg,turnover_rate "
         "from loadTable('dfs://YesLab','stock_factor_daily') "
         f"where trade_date between date('{start:%Y.%m.%d}') and date('{end:%Y.%m.%d}')"
     )
@@ -185,7 +185,7 @@ def _query_market(
     frame = result.copy(deep=True)
     frame["trade_date"] = pd.to_datetime(frame["trade_date"], errors="raise").dt.normalize()
     frame["ts_code"] = frame["ts_code"].astype(str)
-    for column in ("vol", "pct_chg", "turnover_rate"):
+    for column in ("vol", "amount", "pct_chg", "turnover_rate"):
         frame[column] = pd.to_numeric(frame[column], errors="coerce")
     if frame.duplicated(["trade_date", "ts_code"]).any():
         raise RuntimeError("Tushare-derived market contains duplicate keys")
@@ -257,6 +257,7 @@ def evaluate_phase(
             minimum_cross_section=30,
             label_column="raw_return",
         )
+        daily["signal_date"] = pd.to_datetime(daily["signal_date"], errors="raise").dt.normalize()
         mature_counts = (
             labels.merge(universe, on=["signal_date", "ts_code"], how="inner", validate="one_to_one")
             .groupby("signal_date", sort=True)
@@ -264,6 +265,9 @@ def evaluate_phase(
             .rename("mature_count")
             .reset_index()
         )
+        mature_counts["signal_date"] = pd.to_datetime(
+            mature_counts["signal_date"], errors="raise"
+        ).dt.normalize()
         daily = daily.merge(mature_counts, on="signal_date", how="left", validate="many_to_one")
         daily["finite_ratio"] = daily["sample_count"] / daily["mature_count"]
         rows.append(daily.rename(columns={"factor_name": "factor_id"}))
@@ -338,13 +342,14 @@ def main(argv: Sequence[str] | None = None) -> dict[str, object]:
     train_summary.to_csv(args.output / "train_summary.csv", index=False)
     validation_summary.to_csv(args.output / "validation_summary.csv", index=False)
     payload = {
-        "scope": "SIGNED_POWER_WALK_FORWARD_TUSHARE_V1",
+        "scope": "SIGNED_POWER_WALK_FORWARD_TUSHARE_V2",
         "train_start": TRAIN_START.isoformat(),
         "train_end": TRAIN_END.isoformat(),
         "validation_start": VALIDATION_START.isoformat(),
         "validation_end": VALIDATION_END.isoformat(),
         "purge_last_dates": PURGE_LAST_DATES,
         "lookback_days": LOOKBACK_DAYS,
+        "factor_ids": ["yeslab_371", "yeslab_389", "yeslab_390"],
         "market_source": "Tushare.daily_basic overlay + YesLab stock_factor_daily imported from Tushare",
         "label_source": "QuantResearchV2Test.label_daily_latest.raw_return",
         "locked_test_read": False,

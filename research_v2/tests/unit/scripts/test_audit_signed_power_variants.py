@@ -25,6 +25,7 @@ def test_compute_variants_improves_domain_coverage() -> None:
                     "trade_date": day,
                     "ts_code": code,
                     "vol": 100.0 + index,
+                    "amount": 1000.0 + 5.0 * index,
                     "pct_chg": -1.0 if index % 2 else 1.0,
                     "turnover_rate": 0.5,
                 }
@@ -33,9 +34,30 @@ def test_compute_variants_improves_domain_coverage() -> None:
 
     variants = audit.compute_signed_power_variants(market)
 
-    assert set(variants) == {"yeslab_371", "yeslab_389"}
+    assert set(variants) == {"yeslab_371", "yeslab_389", "yeslab_390"}
     assert variants["yeslab_371"]["value"].notna().sum() > 0
     assert variants["yeslab_389"]["value"].notna().sum() > 0
+
+
+def test_gp021_signed_power_variant_avoids_negative_fractional_power_nan() -> None:
+    dates = pd.date_range("2020-01-01", periods=65, freq="D")
+    rows = []
+    for code in ("000001.SZ", "000002.SZ"):
+        for index, day in enumerate(dates):
+            rows.append(
+                {
+                    "trade_date": day,
+                    "ts_code": code,
+                    "vol": 100.0 + index,
+                    "amount": 1000.0 + 5.0 * index,
+                    "pct_chg": -1.0 if index % 2 else 1.0,
+                    "turnover_rate": 0.5,
+                }
+            )
+
+    variants = audit.compute_signed_power_variants(pd.DataFrame(rows))
+
+    assert variants["yeslab_390"]["value"].notna().sum() > 0
 
 
 def test_vectorized_slope_matches_linear_series() -> None:

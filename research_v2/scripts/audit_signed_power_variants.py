@@ -79,7 +79,7 @@ def _to_long(values: pd.DataFrame, factor_id: str) -> pd.DataFrame:
 def compute_signed_power_variants(market: pd.DataFrame) -> dict[str, pd.DataFrame]:
     """Compute GP_002 and GP_020 signed-power variants from a market panel."""
 
-    required = {"trade_date", "ts_code", "vol", "pct_chg", "turnover_rate"}
+    required = {"trade_date", "ts_code", "vol", "amount", "pct_chg", "turnover_rate"}
     if missing := sorted(required.difference(market.columns)):
         raise ValueError(f"market frame is missing columns: {missing}")
     frame = market.loc[:, sorted(required)].copy()
@@ -90,14 +90,19 @@ def compute_signed_power_variants(market: pd.DataFrame) -> dict[str, pd.DataFram
     if frame.duplicated(["trade_date", "ts_code"]).any():
         raise ValueError("market frame contains duplicate trade-date/security keys")
     vol = _matrix(frame, "vol")
+    amount = _matrix(frame, "amount").reindex(columns=vol.columns)
     pct_chg = _matrix(frame, "pct_chg").reindex(columns=vol.columns)
     turnover = _matrix(frame, "turnover_rate").reindex(columns=vol.columns)
     slope_60 = _rolling_slope_matrix(vol, 60)
     gp002 = signed_power(slope_60, turnover)
     gp020 = signed_power(pct_chg, turnover.rolling(10).sum()) + pct_chg
+    volume_rank = vol.rank(axis=1, pct=True)
+    amount_delta_ratio = (amount - amount.shift(60)) / amount.shift(60).replace(0, np.nan)
+    gp021 = signed_power(pct_chg, volume_rank) + amount_delta_ratio
     return {
         "yeslab_371": _to_long(gp002, "yeslab_371"),
         "yeslab_389": _to_long(gp020, "yeslab_389"),
+        "yeslab_390": _to_long(gp021, "yeslab_390"),
     }
 
 

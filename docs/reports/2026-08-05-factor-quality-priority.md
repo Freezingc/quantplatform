@@ -816,3 +816,34 @@ YesLab 中由 Tushare 导入的 `stock_factor_daily`，`turnover_rate` 使用直
 - [`2025 验证摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/validation_summary.csv)
 - [`训练日度覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/train_daily_rank_ic_with_coverage.csv)
 - [`2025 日度覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v1/validation_daily_rank_ic_with_coverage.csv)
+
+### GP_026 全横截面复现复核与 GP_021 signed-power 变体
+
+为排除 GP_026 因子包含 `cs_rank` 而被 256 只分批复现器误阻断的可能性，新增了允许隔离
+因子显式进入 Tushare 重放的审计入口，并用完整 V2 训练宇宙单批（`2,796` 只证券）重算
+2020-09-14–25。结果仍有 `19,438/26,464` 个有限重叠 mismatch，最大相对差异约
+`119.5`，因此 GP_026 的阻断不是分批横截面造成，继续禁止行情 overlay 或版本发布。
+
+GP_021 的原式为 `pow(pct_chg, cs_rank(vol)) + ts_delta_ratio_60(amount)`。由于负的
+`pct_chg` 与 0–1 分数指数会产生非法定义域，新增 signed-power 变体：
+`sign(pct_chg) * abs(pct_chg)^cs_rank(vol) + ts_delta_ratio_60(amount)`，并以 Tushare
+导入行情和原始 5 日收益完成完整 walk-forward：
+
+| 变体 | 训练 signed mean RankIC | 训练 ICIR | 训练方向日占比 | 2025 signed mean RankIC | 2025 ICIR | 2025 方向日占比 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `yeslab_390` / GP_021 signed-power | `0.044670` | `-0.359040` | `63.85%` | `0.063484` | `-0.542591` | `72.15%` |
+
+GP_021 的训练/验证有效日数为 `1,206/237`，训练期最低有限覆盖 `99.36%`，验证期最低
+有限覆盖 `99.63%`。验证期达到双重门槛，但训练期绝对 ICIR 仍低于 `0.50`，因此不发布
+新因子版本、不加入正式候选池；它保留为“公式修复后预测性改善、稳定性不足”的后续研究
+候选。GP_026 仍为 `FORMULA_REPLAY_BLOCKED`，GP_021 变体和前述 GP_002/GP_020 变体
+均不改变当前正式候选或模型训练状态。
+
+证据：
+
+- [`GP_026 全横截面 Tushare 重放`](../../research_v2/artifacts/diagnostics/formula_replay_gp026_tushare_full_unbatched_2020-09_v1.json)
+- [`signed-power v2 metadata`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/metadata.json)
+- [`signed-power v2 训练摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/train_summary.csv)
+- [`signed-power v2 验证摘要`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/validation_summary.csv)
+- [`signed-power v2 训练覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/train_daily_rank_ic_with_coverage.csv)
+- [`signed-power v2 验证覆盖`](../../research_v2/artifacts/diagnostics/signed_power_walk_forward_tushare_v2/validation_daily_rank_ic_with_coverage.csv)

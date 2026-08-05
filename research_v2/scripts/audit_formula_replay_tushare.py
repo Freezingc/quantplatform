@@ -45,6 +45,10 @@ SUPPORTED_FACTOR_IDS = (
     "yeslab_438",
     "yeslab_451",
     "yeslab_464",
+    # These two remain isolated by default admission policy, but are allowed
+    # here for explicit full-cross-section diagnostics.
+    "yeslab_395",
+    "yeslab_471",
 )
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALCULATOR_ROOT = REPO_ROOT / "数据库"
