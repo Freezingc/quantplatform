@@ -1459,3 +1459,24 @@ yeslab_376, yeslab_396, yeslab_442`。年度监控对象仍为 `yeslab_380/431/4
 - [`2025 验证期九因子相似度审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_validation_similarity_admission_v1.json)
 - [`验证期相似度审计脚本`](../../research_v2/scripts/audit_shsz_validation_similarity.py)
 - [`验证期相似度审计测试`](../../research_v2/tests/unit/scripts/test_audit_shsz_validation_similarity.py)
+
+### 九因子 TRAIN 到 2025 验证期性能漂移
+
+对九因子的 TRAIN/2025 验证期 mean RankIC、ICIR 和方向做了固定方向漂移审计。结果为：
+
+- `9/9` 因子方向一致，没有方向翻转；
+- `9/9` 因子验证期 mean RankIC/ICIR predictive 门槛通过；
+- 所有因子的验证期绝对 ICIR 都至少保留 TRAIN 的 `50%`，最低比例为
+  `yeslab_380/GP_011 = 0.964`；
+- `yeslab_94/GP_098` 等验证期绝对 RankIC 增强的因子仍保留年度监控，不把短期增强解释为
+  永久 alpha。
+
+该结果说明当前九因子集合没有明显 OOS 性能坍塌，但监控阈值已经明确：后续滚动验证若方向
+翻转、验证期绝对 ICIR 低于 `0.50`，或低于 TRAIN 绝对 ICIR 的 `50%`，应自动退回人工复核，
+而不是继续沿用已发布集合。
+
+证据与脚本：
+
+- [`九因子性能漂移审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_performance_drift_audit_v1.json)
+- [`性能漂移审计脚本`](../../research_v2/scripts/audit_shsz_performance_drift.py)
+- [`性能漂移审计测试`](../../research_v2/tests/unit/scripts/test_audit_shsz_performance_drift.py)
