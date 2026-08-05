@@ -317,19 +317,34 @@ def apply_tushare_aliases(
 
 
 def source_market_coverage(
-    source: pd.DataFrame, market_codes: Sequence[str]
+    source: pd.DataFrame, market: pd.DataFrame
 ) -> dict[str, int]:
     required = {"trade_date", "ts_code", "value"}
     missing = sorted(required.difference(source.columns))
     if missing:
         raise ValueError(f"source frame is missing columns: {missing}")
+    market_missing = sorted({"trade_date", "ts_code"}.difference(market.columns))
+    if market_missing:
+        raise ValueError(f"market frame is missing columns: {market_missing}")
     frame = source.loc[:, ["trade_date", "ts_code", "value"]].copy()
     frame["trade_date"] = pd.to_datetime(frame["trade_date"], errors="raise").dt.normalize()
     frame["ts_code"] = frame["ts_code"].astype(str)
     frame["value"] = pd.to_numeric(frame["value"], errors="coerce")
     frame = frame.drop_duplicates(["trade_date", "ts_code"], keep="last")
+    market_keys = market.loc[:, ["trade_date", "ts_code"]].copy()
+    market_keys["trade_date"] = pd.to_datetime(
+        market_keys["trade_date"], errors="raise"
+    ).dt.normalize()
+    market_keys["ts_code"] = market_keys["ts_code"].astype(str)
+    market_keys = market_keys.drop_duplicates(["trade_date", "ts_code"])
+    covered = frame.loc[:, ["trade_date", "ts_code"]].merge(
+        market_keys.assign(_market_present=True),
+        on=["trade_date", "ts_code"],
+        how="left",
+        sort=False,
+    )["_market_present"].eq(True).to_numpy(bool)
     finite = np.isfinite(frame["value"].to_numpy(float))
-    uncovered = finite & ~frame["ts_code"].isin(set(map(str, market_codes))).to_numpy(bool)
+    uncovered = finite & ~covered
     orphan = frame.loc[uncovered]
     return {
         "source_finite_rows_full": int(finite.sum()),
@@ -630,7 +645,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         definition = replay.REPLAY_DEFINITIONS[factor_id]
         comparison = aggregate_comparisons(comparisons_by_factor[factor_id])
         source_full = replay._query_source(client, definition, args.start, args.end)
-        comparison.update(source_market_coverage(source_full, market_codes))
+        comparison.update(source_market_coverage(source_full, market))
         if missing_market_codes:
             comparison["decision_status"] = "FORMULA_REPLAY_BLOCKED"
             comparison["reason_codes"] = sorted(

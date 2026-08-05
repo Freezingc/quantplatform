@@ -261,8 +261,36 @@ def test_source_market_coverage_counts_uncovered_finite_rows() -> None:
             "value": [1.0, 2.0],
         }
     )
+    market = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2020-01-02"]),
+            "ts_code": ["000001.SZ"],
+        }
+    )
 
-    result = audit.source_market_coverage(source, ("000001.SZ",))
+    result = audit.source_market_coverage(source, market)
+
+    assert result["source_market_uncovered_rows"] == 1
+    assert result["source_market_uncovered_code_count"] == 1
+    assert result["source_market_uncovered_date_count"] == 1
+
+
+def test_source_market_coverage_catches_missing_date_for_known_code() -> None:
+    source = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2020-01-02", "2020-01-03"]),
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "value": [1.0, 2.0],
+        }
+    )
+    market = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2020-01-02"]),
+            "ts_code": ["000001.SZ"],
+        }
+    )
+
+    result = audit.source_market_coverage(source, market)
 
     assert result["source_market_uncovered_rows"] == 1
     assert result["source_market_uncovered_code_count"] == 1
