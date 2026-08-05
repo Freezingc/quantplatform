@@ -1,0 +1,481 @@
+{
+  "database_writes": false,
+  "end": "2024-12-31",
+  "factor_count": 23,
+  "locked_test_read": false,
+  "rows": [
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7208976,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_143",
+      "factor_name": "日换手率波动偏离（1个月内）",
+      "finite": 6614216,
+      "finite_ratio": 0.45874864890658534,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14417952,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7213824,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_370",
+      "factor_name": "GP_001",
+      "finite": 5688630,
+      "finite_ratio": 0.39428671949856275,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14427648,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7216248,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_371",
+      "factor_name": "GP_002",
+      "finite": 5420900,
+      "finite_ratio": 0.37560377636688763,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14432496,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7213824,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_372",
+      "factor_name": "GP_003",
+      "finite": 5487054,
+      "finite_ratio": 0.3803152114606622,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14427648,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7213824,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_379",
+      "factor_name": "GP_010",
+      "finite": 5147286,
+      "finite_ratio": 0.3567654270467369,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14427648,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7213824,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_384",
+      "factor_name": "GP_015",
+      "finite": 5628976,
+      "finite_ratio": 0.39015201923418147,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14427648,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7213824,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_389",
+      "factor_name": "GP_020",
+      "finite": 5688696,
+      "finite_ratio": 0.39429129404875973,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14427648,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7216248,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_390",
+      "factor_name": "GP_021",
+      "finite": 5668932,
+      "finite_ratio": 0.39278943850045067,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14432496,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.5,
+      "duplicate_rows": 7216248,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_397",
+      "factor_name": "GP_028",
+      "finite": 7803478,
+      "finite_ratio": 0.5406880417635314,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 14432496,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_398",
+      "factor_name": "GP_029",
+      "finite": 5504099,
+      "finite_ratio": 0.7627369513908059,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7216248,
+      "reason_codes": [
+        "RAW_FULL_RANGE_COVERAGE_PASS",
+        "PIT_CONFLICT_CHECK_PENDING"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_404",
+      "factor_name": "GP_035",
+      "finite": 4975298,
+      "finite_ratio": 0.6893419568657118,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_406",
+      "factor_name": "GP_037",
+      "finite": 2687577,
+      "finite_ratio": 0.3724966860872212,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7215036,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_411",
+      "factor_name": "GP_042",
+      "finite": 2454266,
+      "finite_ratio": 0.3400456670352174,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_414",
+      "factor_name": "GP_045",
+      "finite": 4993907,
+      "finite_ratio": 0.6919202877466588,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_415",
+      "factor_name": "GP_046",
+      "finite": 2917182,
+      "finite_ratio": 0.4043198121256775,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7215036,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_418",
+      "factor_name": "GP_049",
+      "finite": 5399539,
+      "finite_ratio": 0.7481217769132077,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "RAW_FULL_RANGE_COVERAGE_PASS",
+        "PIT_CONFLICT_CHECK_PENDING"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_420",
+      "factor_name": "GP_051",
+      "finite": 4134016,
+      "finite_ratio": 0.5727798976371189,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_FAIL",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_423",
+      "factor_name": "GP_054",
+      "finite": 2204764,
+      "finite_ratio": 0.3054764418507342,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "LOW_FINITE_VALUE_RATIO"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_430",
+      "factor_name": "GP_061",
+      "finite": 5311472,
+      "finite_ratio": 0.7359198388352689,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "RAW_FULL_RANGE_COVERAGE_PASS",
+        "PIT_CONFLICT_CHECK_PENDING"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_438",
+      "factor_name": "GP_069",
+      "finite": 5214157,
+      "finite_ratio": 0.7224365635555999,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "RAW_FULL_RANGE_COVERAGE_PASS",
+        "PIT_CONFLICT_CHECK_PENDING"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_444",
+      "factor_name": "GP_075",
+      "finite": 5150069,
+      "finite_ratio": 0.7135569854214641,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "RAW_FULL_RANGE_COVERAGE_PASS",
+        "PIT_CONFLICT_CHECK_PENDING"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_451",
+      "factor_name": "GP_082",
+      "finite": 5275043,
+      "finite_ratio": 0.7308724953099844,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "RAW_FULL_RANGE_COVERAGE_PASS",
+        "PIT_CONFLICT_CHECK_PENDING"
+      ]
+    },
+    {
+      "decision_status": "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT",
+      "duplicate_row_ratio": 0.0,
+      "duplicate_rows": 0,
+      "expected_day_count": 1212,
+      "factor_id": "yeslab_464",
+      "factor_name": "GP_095",
+      "finite": 5602300,
+      "finite_ratio": 0.776214901087086,
+      "max_date": "2024-12-31",
+      "min_date": "2020-01-02",
+      "minimum_monthly_day_ratio": 1.0,
+      "missing_month_count": 0,
+      "observed_day_count": 1212,
+      "raw_date_ratio": 1.0,
+      "raw_rows": 7217460,
+      "reason_codes": [
+        "RAW_FULL_RANGE_COVERAGE_PASS",
+        "PIT_CONFLICT_CHECK_PENDING"
+      ]
+    }
+  ],
+  "scope": "STRUCTURAL_FAIL_PREDICTIVE_PASS_RAW_AGG_AUDIT_V1",
+  "start": "2020-01-01",
+  "status_counts": {
+    "RAW_FULL_RANGE_FAIL": 16,
+    "RAW_FULL_RANGE_PASS_PENDING_PIT_CONFLICT": 7
+  }
+}

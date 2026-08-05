@@ -100,6 +100,43 @@ def test_parser_accepts_oos_candidate_replay_factor() -> None:
     assert args.factor_id == ("yeslab_443",)
 
 
+def test_parser_accepts_warmup_recovered_factor() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_398",
+            "--start",
+            "2020-01-02",
+            "--end",
+            "2020-01-31",
+            "--output",
+            "/tmp/replay.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_398",)
+
+
+def test_parser_accepts_bounded_replay_sample() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_398",
+            "--max-ts-codes",
+            "100",
+            "--start",
+            "2020-01-02",
+            "--end",
+            "2020-01-31",
+            "--output",
+            "/tmp/replay.json",
+        ]
+    )
+
+    assert args.max_ts_codes == 100
+    assert audit.REPLAY_DEFINITIONS["yeslab_398"].replay_lookback_days == 180
+
+
 def test_run_audit_records_calculator_errors_without_dropping_factor() -> None:
     class Client:
         def run(self, script: str) -> object:

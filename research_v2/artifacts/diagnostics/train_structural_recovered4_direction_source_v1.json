@@ -1,0 +1,41 @@
+{
+  "scopes": {
+    "SCREEN_TRAIN2020_2024_DAILY_HAC_FDR_V2": {
+      "rows": [
+        {
+          "factor_id": "yeslab_398",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_438",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_451",
+          "metrics": {
+            "direction": -1
+          }
+        },
+        {
+          "factor_id": "yeslab_464",
+          "metrics": {
+            "direction": -1
+          }
+        }
+      ]
+    }
+  },
+  "factor_ids": [
+    "yeslab_398",
+    "yeslab_438",
+    "yeslab_451",
+    "yeslab_464"
+  ],
+  "source_scope": "factor_quality_snapshot",
+  "locked_test_read": false,
+  "database_writes": false
+}

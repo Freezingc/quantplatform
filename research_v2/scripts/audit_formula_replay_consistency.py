@@ -1,10 +1,10 @@
 """Replay source-file calculators against stored YesLab factor observations.
 
-This command is read-only.  It is intentionally limited to the two factors
-whose repair candidates are currently blocked.  A finite overlap mismatch is
-evidence that the stored factor cannot be safely reconstructed from the
-current calculator and market snapshot, even when the missing input field is
-available from a secondary source.
+This command is read-only.  It replays the registered candidate and blocked
+factors against the current calculator and market snapshot.  A finite overlap
+mismatch is evidence that the stored factor cannot be safely reconstructed
+from the current calculator and market snapshot, even when the missing input
+field is available from a secondary source.
 """
 
 from __future__ import annotations
@@ -35,6 +35,11 @@ class ReplayDefinition:
     calculator_module: str
     calculator_class: str
     lookback_days: int
+    replay_lookback_days: int | None = None
+
+    @property
+    def effective_replay_lookback_days(self) -> int:
+        return self.replay_lookback_days or self.lookback_days
 
 
 REPLAY_DEFINITIONS = {
@@ -158,6 +163,15 @@ REPLAY_DEFINITIONS = {
         calculator_class="GP_Factor_027_Calculator",
         lookback_days=5,
     ),
+    "yeslab_398": ReplayDefinition(
+        factor_id="yeslab_398",
+        factor_name="GP_029",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_029_Calculator",
+        calculator_class="GP_Factor_029_Calculator",
+        lookback_days=60,
+        replay_lookback_days=180,
+    ),
     "yeslab_400": ReplayDefinition(
         factor_id="yeslab_400",
         factor_name="GP_031",
@@ -206,6 +220,15 @@ REPLAY_DEFINITIONS = {
         calculator_class="GP_Factor_068_Calculator",
         lookback_days=60,
     ),
+    "yeslab_438": ReplayDefinition(
+        factor_id="yeslab_438",
+        factor_name="GP_069",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_069_Calculator",
+        calculator_class="GP_Factor_069_Calculator",
+        lookback_days=60,
+        replay_lookback_days=180,
+    ),
     "yeslab_442": ReplayDefinition(
         factor_id="yeslab_442",
         factor_name="GP_073",
@@ -221,6 +244,24 @@ REPLAY_DEFINITIONS = {
         calculator_module="GP_Factor_074_Calculator",
         calculator_class="GP_Factor_074_Calculator",
         lookback_days=30,
+    ),
+    "yeslab_451": ReplayDefinition(
+        factor_id="yeslab_451",
+        factor_name="GP_082",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_082_Calculator",
+        calculator_class="GP_Factor_082_Calculator",
+        lookback_days=60,
+        replay_lookback_days=180,
+    ),
+    "yeslab_464": ReplayDefinition(
+        factor_id="yeslab_464",
+        factor_name="GP_095",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_095_Calculator",
+        calculator_class="GP_Factor_095_Calculator",
+        lookback_days=60,
+        replay_lookback_days=180,
     ),
     "yeslab_395": ReplayDefinition(
         factor_id="yeslab_395",
@@ -246,6 +287,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--factor-id", action="append")
     parser.add_argument("--start", type=date.fromisoformat, default=date(2020, 9, 14))
     parser.add_argument("--end", type=date.fromisoformat, default=date(2020, 9, 25))
+    parser.add_argument(
+        "--max-ts-codes",
+        type=int,
+        help="limit each replay query to the first N sorted securities for a bounded smoke audit",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     args.factor_id = tuple(args.factor_id or REPLAY_DEFINITIONS)
@@ -258,7 +304,26 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         raise ValueError("start date must not be after end date")
     if args.end >= LOCKED_TEST_START:
         raise ValueError("formula replay cannot read 2026 locked-test data")
+    if args.max_ts_codes is not None and args.max_ts_codes < 1:
+        raise ValueError("max-ts-codes must be positive")
     return args
+
+
+class _BoundedClient:
+    """Limit stock-panel queries without changing the underlying read-only client."""
+
+    def __init__(self, client: object, max_ts_codes: int | None) -> None:
+        self._client = client
+        self._max_ts_codes = max_ts_codes
+
+    def run(self, script: str) -> object:
+        result = self._client.run(script)
+        if self._max_ts_codes is None or not isinstance(result, pd.DataFrame):
+            return result
+        if "ts_code" not in result.columns or result.empty:
+            return result
+        codes = sorted(result["ts_code"].astype(str).unique())[: self._max_ts_codes]
+        return result.loc[result["ts_code"].astype(str).isin(codes)].copy()
 
 
 def compare_replay_frames(source: pd.DataFrame, replay: pd.DataFrame) -> dict[str, object]:
@@ -343,7 +408,7 @@ def _replay_factor(
         sys.path.insert(0, str(CALCULATOR_ROOT))
     module = importlib.import_module(f"factor_calculators.{definition.calculator_module}")
     calculator_class = getattr(module, definition.calculator_class)
-    wide = calculator_class(client, definition.lookback_days).calculate(
+    wide = calculator_class(client, definition.effective_replay_lookback_days).calculate(
         start.strftime("%Y.%m.%d"), end.strftime("%Y.%m.%d")
     )
     return (
@@ -354,6 +419,7 @@ def _replay_factor(
 
 
 def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
+    bounded_client = _BoundedClient(client, args.max_ts_codes)
     rows: list[dict[str, object]] = []
     for factor_id in args.factor_id:
         definition = REPLAY_DEFINITIONS[factor_id]
@@ -364,11 +430,13 @@ def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
             "start": args.start.isoformat(),
             "end": args.end.isoformat(),
             "lookback_days": definition.lookback_days,
+            "replay_lookback_days": definition.effective_replay_lookback_days,
+            "max_ts_codes": args.max_ts_codes,
         }
         try:
             comparison = compare_replay_frames(
-                _query_source(client, definition, args.start, args.end),
-                _replay_factor(client, definition, args.start, args.end),
+                _query_source(bounded_client, definition, args.start, args.end),
+                _replay_factor(bounded_client, definition, args.start, args.end),
             )
             rows.append({**base_row, **comparison})
         except Exception as exc:

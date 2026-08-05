@@ -1,0 +1,101 @@
+{
+  "database_writes": false,
+  "end": "2024-01-31",
+  "factor_ids": [
+    "yeslab_398",
+    "yeslab_438",
+    "yeslab_451",
+    "yeslab_464"
+  ],
+  "locked_test_read": false,
+  "market_finite_rows": 65435,
+  "market_hash": "acabfb65929ab79cb95c7a9a05556635973ab4e5c276886839bd220e5c6092ae",
+  "market_rows": 13087,
+  "market_source": "Tushare.daily",
+  "market_start": "2023-03-21",
+  "max_ts_codes": 64,
+  "rows": [
+    {
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_398",
+      "factor_name": "GP_029",
+      "lookback_days": 60,
+      "max_abs_diff": 7055914.052974644,
+      "max_rel_diff": 115.15287300859781,
+      "max_ts_codes": 64,
+      "mismatch_date_count": 22,
+      "mismatch_end": "2024-01-31",
+      "mismatch_rows": 1320,
+      "mismatch_start": "2024-01-02",
+      "overlap_finite_rows": 1320,
+      "overlap_rows": 1386,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH"
+      ],
+      "replay_lookback_days": 180,
+      "replay_rows": 1386,
+      "source_rows": 1408
+    },
+    {
+      "decision_status": "FORMULA_REPLAY_PASS",
+      "factor_id": "yeslab_438",
+      "factor_name": "GP_069",
+      "lookback_days": 60,
+      "max_abs_diff": 1.2886812328360975e-07,
+      "max_rel_diff": 6.263670163436101e-12,
+      "max_ts_codes": 64,
+      "mismatch_date_count": 0,
+      "mismatch_end": null,
+      "mismatch_rows": 0,
+      "mismatch_start": null,
+      "overlap_finite_rows": 1276,
+      "overlap_rows": 1386,
+      "reason_codes": [],
+      "replay_lookback_days": 180,
+      "replay_rows": 1386,
+      "source_rows": 1408
+    },
+    {
+      "decision_status": "FORMULA_REPLAY_PASS",
+      "factor_id": "yeslab_451",
+      "factor_name": "GP_082",
+      "lookback_days": 60,
+      "max_abs_diff": 7.275957614183426e-12,
+      "max_rel_diff": 2.0912086659736378e-16,
+      "max_ts_codes": 64,
+      "mismatch_date_count": 0,
+      "mismatch_end": null,
+      "mismatch_rows": 0,
+      "mismatch_start": null,
+      "overlap_finite_rows": 1276,
+      "overlap_rows": 1386,
+      "reason_codes": [],
+      "replay_lookback_days": 180,
+      "replay_rows": 1386,
+      "source_rows": 1408
+    },
+    {
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_464",
+      "factor_name": "GP_095",
+      "lookback_days": 60,
+      "max_abs_diff": 2.946210874615346,
+      "max_rel_diff": 198.50072368030123,
+      "max_ts_codes": 64,
+      "mismatch_date_count": 22,
+      "mismatch_end": "2024-01-31",
+      "mismatch_rows": 1320,
+      "mismatch_start": "2024-01-02",
+      "overlap_finite_rows": 1320,
+      "overlap_rows": 1386,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH"
+      ],
+      "replay_lookback_days": 180,
+      "replay_rows": 1386,
+      "source_rows": 1408
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2024-01-02"
+}

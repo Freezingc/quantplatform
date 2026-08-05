@@ -630,3 +630,67 @@ GP_032 在 2024/2025 窗口分别剩余 2/4 个 mismatch，GP_074 的 mismatch �
 继续阻断，不发布 amount overlay 候选。
 
 完整结果见 [`高精度 amount overlay 重放`](../../research_v2/artifacts/diagnostics/precision_amount_overlay_replay_gp032_gp074_v1.json)。
+
+### 结构覆盖失败但预测通过因子的 warm-up 复核
+
+对 TRAIN predictive-pass 但结构覆盖门禁失败的 23 个因子做了只读 raw-source 全范围聚合。
+其中 7 个因子的 2020–2024 原始有限值比例达到 `0.70`，但标准 compact 门禁仍会因为公式
+预热期的首个交易日覆盖率为零而失败。根据各公式的实际嵌套滚动窗口，增加了一个仅用于
+复核的 `warm-up=60` 交易日排除版本；该版本通过的 4 个因子为：
+
+`yeslab_398/GP_029`、`yeslab_438/GP_069`、`yeslab_451/GP_082`、`yeslab_464/GP_095`。
+
+另外 3 个原始有限值比例足够但 warm-up 后仍有长期断档：`yeslab_418/GP_049` 的最小日
+覆盖率约 `0.488`，`yeslab_430/GP_061` 和 `yeslab_444/GP_075` 存在零覆盖月份，继续
+阻断。剩余 16 个因子的原始有限值比例低于 `0.70`。这一步没有修改全局结构门禁，也没有
+把 warm-up 规则直接用于发布，只把 4 个因子列入复核队列。
+
+证据：
+
+- [`23 个结构失败因子 raw 聚合`](../../research_v2/artifacts/diagnostics/structural_fail_predictive_pass_raw_agg_2020_2024_v1.json)
+- [`7 个 raw 通过因子的标准 compact`](../../research_v2/artifacts/diagnostics/structural_fail_predictive_pass_compact_7_2020_2024_v1.json)
+- [`7 个因子的 warm-up compact`](../../research_v2/artifacts/diagnostics/structural_fail_predictive_pass_compact_7_warmup60_2020_2024_v1.json)
+
+### Tushare canonical market replay 与 4 因子复核结论
+
+按当前约定，公式复现的行情输入改用 `Tushare.daily`，YesLab 仅作为已存因子观测的对照
+目标。4 个公式的实际计算预热窗口按嵌套滚动路径扩展为 180 个交易日，并在 64 只按代码
+排序的受控股票样本上执行 2020-09、2022-01、2024-01、2025-01 四个窗口的只读重放。
+该样本审计用于识别“计算器是否能重现源值”，不是对全市场发布的替代。
+
+结果稳定分成两组：
+
+- `yeslab_438/GP_069` 和 `yeslab_451/GP_082`：4 个窗口均为
+  `FORMULA_REPLAY_PASS`，有限重叠约 `94%–100%`；
+- `yeslab_398/GP_029` 和 `yeslab_464/GP_095`：4 个窗口均为
+  `FORMULA_REPLAY_BLOCKED`，每个窗口的有限重叠几乎全部 mismatch，最大相对差异可达
+  数十至数百倍。
+
+因此，GP_029/GP_095 的问题不能再归因于 YesLab `amount` 小数精度；即使直接使用
+Tushare 行情，当前源文件计算器仍无法重现历史因子值，继续隔离。GP_069/GP_082 只具备
+“可复现候选”证据，仍需完成全市场分块重放后才能进入正式 OOS 候选池。
+
+2025 固定 TRAIN 方向（4 个方向均为 `-1`）的只读验证已完成：每个因子 237 个有效日，
+日期为 2025-01-02–2025-12-23，4 个因子均通过双重 predictive 门槛：
+
+| 因子 | mean RankIC | ICIR | signed mean RankIC | 方向日占比 |
+| --- | ---: | ---: | ---: | ---: |
+| `GP_029` | -0.088695 | -0.843199 | 0.088695 | 0.801688 |
+| `GP_069` | -0.085053 | -0.679709 | 0.085053 | 0.742616 |
+| `GP_082` | -0.085063 | -0.679593 | 0.085063 | 0.742616 |
+| `GP_095` | -0.066156 | -0.649646 | 0.066156 | 0.751055 |
+
+验证结果不能解除公式复现阻断；当前正式 18 个候选保持不变，GP_069/GP_082 进入“待全市场
+复现的 recovered review queue”，GP_029/GP_095 继续 blocked。没有写入 YesLab/V2 新表，
+也没有启动模型训练。
+
+相关产物：
+
+- [`Tushare canonical 复现脚本`](../../research_v2/scripts/audit_formula_replay_tushare.py)
+- [`2020-09 Tushare 复现`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_recovered4_tushare_sample64_2020-09-14_2020-09-25_v2.json)
+- [`2022-01 Tushare 复现`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_recovered4_tushare_sample64_2022-01-04_2022-01-31_v1.json)
+- [`2024-01 Tushare 复现`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_recovered4_tushare_sample64_2024-01-02_2024-01-31_v1.json)
+- [`2025-01 Tushare 复现`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_recovered4_tushare_sample64_2025-01-02_2025-01-31_v1.json)
+- [`4 因子 Tushare 多窗口汇总`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_recovered4_tushare_sample64_multiwindow_v1.json)
+- [`4 因子 TRAIN 方向来源`](../../research_v2/artifacts/diagnostics/train_structural_recovered4_direction_source_v1.json)
+- [`4 因子 2025 验证汇总`](../../research_v2/artifacts/diagnostics/structural_recovered4_validation_2025_v1/quality_summary.csv)
