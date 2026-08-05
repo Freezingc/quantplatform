@@ -927,3 +927,10 @@ Tushare 口径的可复现输入。
 PIT、FDR 和准入决策审阅。当前不修改原 18 因子提案、不写旧表、不启动模型训练。
 
 证据：[`Tushare canonical 核心质量汇总`](../../research_v2/artifacts/diagnostics/tushare_canonical_core_quality_v1.json)
+
+四个核心因子的 TRAIN 和 2025 验证期六个两两相似度均低于 `0.90`，不存在需要再删减的
+内部冗余边。由此形成两种透明的准入分支：按主计划“至少 3 年稳定”可暂列
+`yeslab_163/380/431`，`yeslab_437` 进入监控；按严格“五年每年 ICIR≥0.50”则四个都只能
+监控。该分支尚未代替既有规则，提案仅供批准后执行。
+
+证据：[`Tushare canonical 准入提案`](../../research_v2/artifacts/diagnostics/tushare_canonical_admission_proposal_v1.json)

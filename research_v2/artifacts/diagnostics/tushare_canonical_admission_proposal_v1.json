@@ -1,0 +1,26 @@
+{
+  "scope": "TUSHARE_CANONICAL_ADMISSION_PROPOSAL_V1",
+  "source_core_ids": ["yeslab_163", "yeslab_380", "yeslab_431", "yeslab_437"],
+  "hard_gates": {
+    "tushare_replay_windows": ["2020-01", "2022-01", "2024-01", "2025-01"],
+    "predictive_train_validation": "pass for all four",
+    "full_day_similarity_threshold": 0.90,
+    "similarity_result": "all six pairwise core similarities are below 0.90"
+  },
+  "policy_branches": {
+    "master_plan_at_least_3_stable_years": {
+      "provisional_candidate_ids": ["yeslab_163", "yeslab_380", "yeslab_431"],
+      "monitor_only_ids": ["yeslab_437"],
+      "reason": "yeslab_437 has only 2/5 annual absolute ICIR values >= 0.50"
+    },
+    "strict_every_year_icir_ge_0_50": {
+      "provisional_candidate_ids": [],
+      "monitor_only_ids": ["yeslab_163", "yeslab_380", "yeslab_431", "yeslab_437"],
+      "reason": "none of the four passes all five annual ICIR gates"
+    }
+  },
+  "publication_status": "PROPOSAL_ONLY",
+  "database_writes": false,
+  "locked_test_read": false,
+  "decision": "Do not mutate existing 18-factor proposal or freeze a set until the annual-policy branch is explicitly approved."
+}
