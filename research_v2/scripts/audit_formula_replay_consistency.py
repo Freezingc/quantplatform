@@ -38,6 +38,190 @@ class ReplayDefinition:
 
 
 REPLAY_DEFINITIONS = {
+    "yeslab_94": ReplayDefinition(
+        factor_id="yeslab_94",
+        factor_name="日间反转-波动翻转",
+        store_factor="factor_data3",
+        calculator_module="DayReversalVolatilityCalculator",
+        calculator_class="DayReversalVolatilityCalculator",
+        lookback_days=20,
+    ),
+    "yeslab_95": ReplayDefinition(
+        factor_id="yeslab_95",
+        factor_name="日间反转-换手翻转",
+        store_factor="factor_data3",
+        calculator_module="DayReversalTurnoverCalculator",
+        calculator_class="DayReversalTurnoverCalculator",
+        lookback_days=20,
+    ),
+    "yeslab_96": ReplayDefinition(
+        factor_id="yeslab_96",
+        factor_name="修正日间反转",
+        store_factor="factor_data3",
+        calculator_module="ModifiedDayReversalCalculator",
+        calculator_class="ModifiedDayReversalCalculator",
+        lookback_days=20,
+    ),
+    "yeslab_98": ReplayDefinition(
+        factor_id="yeslab_98",
+        factor_name="日内反转-波动翻转",
+        store_factor="factor_data3",
+        calculator_module="IntradayReversalVolatilityCalculator",
+        calculator_class="IntradayReversalVolatilityCalculator",
+        lookback_days=20,
+    ),
+    "yeslab_114": ReplayDefinition(
+        factor_id="yeslab_114",
+        factor_name="惊恐波动",
+        store_factor="factor_data3",
+        calculator_module="TerriStdCalculator",
+        calculator_class="TerriStdCalculator",
+        lookback_days=20,
+    ),
+    "yeslab_155": ReplayDefinition(
+        factor_id="yeslab_155",
+        factor_name="跳空去均值绝对值",
+        store_factor="factor_data4",
+        calculator_module="SkipDemeanAbsCalculator",
+        calculator_class="SkipDemeanAbsCalculator",
+        lookback_days=1,
+    ),
+    "yeslab_163": ReplayDefinition(
+        factor_id="yeslab_163",
+        factor_name="Alpha95",
+        store_factor="factor_data4",
+        calculator_module="Alpha95Calculator",
+        calculator_class="Alpha95Calculator",
+        lookback_days=19,
+    ),
+    "yeslab_357": ReplayDefinition(
+        factor_id="yeslab_357",
+        factor_name="行业内收益标准化绝对值",
+        store_factor="factor_data8",
+        calculator_module="IndustryStandAbsCalculator",
+        calculator_class="IndustryStandAbsCalculator",
+        lookback_days=1,
+    ),
+    "yeslab_362": ReplayDefinition(
+        factor_id="yeslab_362",
+        factor_name="行业标准化绝对值除行业偏度5日均",
+        store_factor="factor_data8",
+        calculator_module="IndustryStandAbsDivSkewCalculator",
+        calculator_class="IndustryStandAbsDivSkewCalculator",
+        lookback_days=5,
+    ),
+    "yeslab_363": ReplayDefinition(
+        factor_id="yeslab_363",
+        factor_name="行业标准化绝对值除行业偏度绝对值",
+        store_factor="factor_data8",
+        calculator_module="IndustryStandAbsDivSkewAbsCalculator",
+        calculator_class="IndustryStandAbsDivSkewAbsCalculator",
+        lookback_days=5,
+    ),
+    "yeslab_376": ReplayDefinition(
+        factor_id="yeslab_376",
+        factor_name="GP_007",
+        store_factor="factor_data8",
+        calculator_module="GP_Factor_007_Calculator",
+        calculator_class="GP_Factor_007_Calculator",
+        lookback_days=10,
+    ),
+    "yeslab_380": ReplayDefinition(
+        factor_id="yeslab_380",
+        factor_name="GP_011",
+        store_factor="factor_data8",
+        calculator_module="GP_Factor_011_Calculator",
+        calculator_class="GP_Factor_011_Calculator",
+        lookback_days=5,
+    ),
+    "yeslab_381": ReplayDefinition(
+        factor_id="yeslab_381",
+        factor_name="GP_012",
+        store_factor="factor_data8",
+        calculator_module="GP_Factor_012_Calculator",
+        calculator_class="GP_Factor_012_Calculator",
+        lookback_days=5,
+    ),
+    "yeslab_385": ReplayDefinition(
+        factor_id="yeslab_385",
+        factor_name="GP_016",
+        store_factor="factor_data8",
+        calculator_module="GP_Factor_016_Calculator",
+        calculator_class="GP_Factor_016_Calculator",
+        lookback_days=5,
+    ),
+    "yeslab_396": ReplayDefinition(
+        factor_id="yeslab_396",
+        factor_name="GP_027",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_027_Calculator",
+        calculator_class="GP_Factor_027_Calculator",
+        lookback_days=5,
+    ),
+    "yeslab_400": ReplayDefinition(
+        factor_id="yeslab_400",
+        factor_name="GP_031",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_031_Calculator",
+        calculator_class="GP_Factor_031_Calculator",
+        lookback_days=60,
+    ),
+    "yeslab_401": ReplayDefinition(
+        factor_id="yeslab_401",
+        factor_name="GP_032",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_032_Calculator",
+        calculator_class="GP_Factor_032_Calculator",
+        lookback_days=60,
+    ),
+    "yeslab_405": ReplayDefinition(
+        factor_id="yeslab_405",
+        factor_name="GP_036",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_036_Calculator",
+        calculator_class="GP_Factor_036_Calculator",
+        lookback_days=5,
+    ),
+    "yeslab_425": ReplayDefinition(
+        factor_id="yeslab_425",
+        factor_name="GP_056",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_056_Calculator",
+        calculator_class="GP_Factor_056_Calculator",
+        lookback_days=30,
+    ),
+    "yeslab_431": ReplayDefinition(
+        factor_id="yeslab_431",
+        factor_name="GP_062",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_062_Calculator",
+        calculator_class="GP_Factor_062_Calculator",
+        lookback_days=20,
+    ),
+    "yeslab_437": ReplayDefinition(
+        factor_id="yeslab_437",
+        factor_name="GP_068",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_068_Calculator",
+        calculator_class="GP_Factor_068_Calculator",
+        lookback_days=60,
+    ),
+    "yeslab_442": ReplayDefinition(
+        factor_id="yeslab_442",
+        factor_name="GP_073",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_073_Calculator",
+        calculator_class="GP_Factor_073_Calculator",
+        lookback_days=60,
+    ),
+    "yeslab_443": ReplayDefinition(
+        factor_id="yeslab_443",
+        factor_name="GP_074",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_074_Calculator",
+        calculator_class="GP_Factor_074_Calculator",
+        lookback_days=30,
+    ),
     "yeslab_395": ReplayDefinition(
         factor_id="yeslab_395",
         factor_name="GP_026",
@@ -173,21 +357,29 @@ def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
     rows: list[dict[str, object]] = []
     for factor_id in args.factor_id:
         definition = REPLAY_DEFINITIONS[factor_id]
-        comparison = compare_replay_frames(
-            _query_source(client, definition, args.start, args.end),
-            _replay_factor(client, definition, args.start, args.end),
-        )
-        rows.append(
-            {
-                "factor_id": factor_id,
-                "factor_name": definition.factor_name,
-                "calculator": f"{definition.calculator_module}.{definition.calculator_class}",
-                "start": args.start.isoformat(),
-                "end": args.end.isoformat(),
-                "lookback_days": definition.lookback_days,
-                **comparison,
-            }
-        )
+        base_row = {
+            "factor_id": factor_id,
+            "factor_name": definition.factor_name,
+            "calculator": f"{definition.calculator_module}.{definition.calculator_class}",
+            "start": args.start.isoformat(),
+            "end": args.end.isoformat(),
+            "lookback_days": definition.lookback_days,
+        }
+        try:
+            comparison = compare_replay_frames(
+                _query_source(client, definition, args.start, args.end),
+                _replay_factor(client, definition, args.start, args.end),
+            )
+            rows.append({**base_row, **comparison})
+        except Exception as exc:
+            rows.append(
+                {
+                    **base_row,
+                    "decision_status": "FORMULA_REPLAY_ERROR",
+                    "reason_codes": ["CALCULATOR_REPLAY_ERROR"],
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+            )
     return {
         "scope": "FORMULA_REPLAY_CONSISTENCY_AUDIT_V1",
         "start": args.start.isoformat(),

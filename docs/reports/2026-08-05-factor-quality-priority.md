@@ -566,3 +566,32 @@ YesLab 已存有限值逐键比较；有限重叠 mismatch 会阻断后续输入
 不能：后两者包含横截面排序/行业市值分组或依赖历史横截面集合，源因子生成时的输入
 集合已经无法从现有表中恢复。没有历史输入快照前，任何“按当前行情重算并覆盖”的做法
 都会把源版本漂移伪装成修复，继续禁止发布。
+
+### 23 个 OOS 候选的公式复现复核
+
+将同一公式重放门禁扩展到当前 23 个 OOS 候选后，结果为 `19 PASS / 4 BLOCKED`，没有
+计算器接口错误。被阻断的 4 个因子为：
+
+- `yeslab_357`：37,473/37,833 个有限重叠 mismatch；
+- `yeslab_362`：37,433/37,793 个有限重叠 mismatch；
+- `yeslab_363`：37,433/37,793 个有限重叠 mismatch；
+- `yeslab_443 / GP_074`：23 个有限重叠 mismatch，最大绝对差 `0.324917`。
+
+前 3 个行业因子在补通 `DataFetcher.get_stock_industry_info()` 后仍大面积 mismatch，
+说明将当前 `industry` 别名为 `l1_name/l1_code` 不能恢复历史行业分类；GP_074 则是少量
+跨全窗口 mismatch，仍不能通过“精确 overlap”修复门槛。
+
+因此，公式复现门禁后的 OOS 候选从 23 个收缩为 19 个：
+
+`yeslab_114, yeslab_155, yeslab_163, yeslab_376, yeslab_380, yeslab_381,
+yeslab_385, yeslab_396, yeslab_400, yeslab_401, yeslab_405, yeslab_425,
+yeslab_431, yeslab_437, yeslab_442, yeslab_94, yeslab_95, yeslab_96, yeslab_98`。
+
+严格逐年 ICIR 分支相应从 5 个变为 4 个：`yeslab_155、yeslab_376、yeslab_442、yeslab_98`。
+这仍是候选提案，不代表冻结或开始模型训练。
+
+复核产物：
+
+- [`OOS23 公式复现结果`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_oos23_2020-09-14_2020-09-25_v2.json)
+- [`OOS 质量提案 v2`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v2.json)
+- [`OOS 质量明细 v2`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v2.csv)
