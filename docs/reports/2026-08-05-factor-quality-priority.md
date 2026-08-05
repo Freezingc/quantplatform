@@ -1339,6 +1339,24 @@ Tushare `amount=126465.674`，仅有小数精度差，但非线性指数项把�
 
 证据：[`沪深范围 mismatch 根因诊断`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_mismatch_diagnosis_v1.json)
 
+### 三个严格年度稳定因子的扩展提案（未发布）
+
+`yeslab_376/GP_007`、`yeslab_396/GP_027`、`yeslab_442/GP_073` 在 2020–2024 TRAIN 的
+严格年度 ICIR 均为 `5/5`，2025 验证也通过。将它们与当前六因子提案的 SH/SZ 重新物化值
+做完整 pair 后，所有 21 条新增边均低于 `0.90`，最高为 `yeslab_396/yeslab_442=0.880333`。
+
+因此形成独立的 3 因子扩展提案，但不修改原 6 因子提案，也不发布新版本：这三个因子的
+旧源值回放受原始横截面 scope 影响，`formula_scope_gate` 暂标
+`PENDING_SCOPE_TRANSITION_REVIEW`。只有在确认新版本的公式、PIT 和可用性语义后，才可以
+把 9 因子集合送入最终 admission preflight。
+
+证据：
+
+- [`扩展候选 21 条 TRAIN pair`](../../research_v2/artifacts/diagnostics/tushare_shsz_candidate_extension_similarity_v1.json)
+- [`三个因子扩展提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_extension_proposal_v1.json)
+- [`376/396/442 对 canonical TRAIN pair`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_strict_376_396_442_vs_canonical_train_v1/similarity_summary.json)
+- [`376/396/442 对 155/94/98 TRAIN pair`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_strict_376_396_442_vs_rematerialized_155_94_98_train_v1/similarity_summary.json)
+
 ### 沪深准入预检结果
 
 已补齐重新物化因子与 `yeslab_380` 的直接相似度证据。94/380 和 98/380 的五年聚合中位

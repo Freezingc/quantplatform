@@ -1,0 +1,49 @@
+{
+  "scope": "TUSHARE_SHSZ_ADMISSION_EXTENSION_PROPOSAL_V1",
+  "market_scope": ["SH", "SZ"],
+  "label": "forward_open_5d",
+  "train_window": "2020-01-01/2024-12-31",
+  "validation_window": "2025-01-01/2025-12-31",
+  "similarity_threshold": 0.9,
+  "base_proposal": "tushare_shsz_admission_proposal_v1.json",
+  "candidate_count": 3,
+  "candidates": [
+    {
+      "factor_id": "yeslab_376",
+      "factor_name": "GP_007",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "predictive_gate": "PASS",
+      "strict_annual_icir_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW"
+    },
+    {
+      "factor_id": "yeslab_396",
+      "factor_name": "GP_027",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "predictive_gate": "PASS",
+      "strict_annual_icir_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW"
+    },
+    {
+      "factor_id": "yeslab_442",
+      "factor_name": "GP_073",
+      "version_scope": "new_shsz_rematerialized_v1",
+      "predictive_gate": "PASS",
+      "strict_annual_icir_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW"
+    }
+  ],
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "database_writes": false,
+  "locked_test_read": false,
+  "next_gates": [
+    "approve SH/SZ scope-transition formula semantics",
+    "reconcile source availability/PIT for the new version",
+    "merge extension edges into admission preflight",
+    "only then consider model input expansion"
+  ]
+}
