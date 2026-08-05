@@ -1230,3 +1230,25 @@ RankIC 证据无需再混入 BJ。对四窗口 canonical 交集的三个因子�
 集合做全日相似度比较，状态为 `REMATERIALIZED_CANDIDATE_PENDING_SIMILARITY`，不发布新版本。
 
 证据：[`155 沪深 TRAIN/验证汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_quality_155_v1.json)
+
+### 沪深重新物化因子的 TRAIN 相似度
+
+将 94、98、155 与已通过 canonical replay 的 431、437 在沪深 TRAIN 中逐日重算并比较，
+五个年度的“年度中位数再取中位数”结果全部低于 `0.90`：
+
+| 因子对 | 中位绝对 Spearman |
+| --- | ---: |
+| `155 / 431` | 0.196105 |
+| `155 / 437` | 0.225461 |
+| `94 / 431` | 0.129841 |
+| `94 / 437` | 0.129120 |
+| `98 / 431` | 0.120616 |
+| `98 / 437` | 0.121247 |
+| `94 / 98` | 0.741102 |
+
+因此 94、98、155 暂未因冗余被淘汰；155 的预测性和严格年度稳定性证据最好，优先进入
+下一轮 SH/SZ 准入提案。由于 380 依赖换手率且 2021 年 Tushare `daily_basic` 缓存仍不完整，
+本轮 pair 审计先使用 431/437 作为已重算 canonical 代表，155/380 的补充 pair 仍需在
+换手率缓存补齐后执行。
+
+证据：[`沪深 TRAIN 相似度汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_train_5_v1.json)

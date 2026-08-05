@@ -13,6 +13,7 @@ import json
 import os
 from collections.abc import Sequence
 from datetime import date
+from itertools import combinations
 from pathlib import Path
 
 import numpy as np
@@ -129,6 +130,64 @@ def summarize_rank_ic(daily: pd.DataFrame, *, direction: int) -> dict[str, objec
     }
 
 
+def compute_pair_daily_spearman(
+    replay_frames: dict[str, pd.DataFrame],
+    *,
+    minimum_cross_section: int = 30,
+) -> pd.DataFrame:
+    """Summarize absolute daily Spearman similarity for replayed panels."""
+    rows: list[dict[str, object]] = []
+    for left_id, right_id in combinations(sorted(replay_frames), 2):
+        left = replay_frames[left_id].loc[:, ["trade_date", "ts_code", "replay_value"]].copy()
+        right = replay_frames[right_id].loc[:, ["trade_date", "ts_code", "replay_value"]].copy()
+        for frame in (left, right):
+            frame["trade_date"] = pd.to_datetime(frame["trade_date"], errors="raise").dt.normalize()
+            frame["ts_code"] = frame["ts_code"].astype(str)
+            frame["replay_value"] = pd.to_numeric(frame["replay_value"], errors="coerce")
+        left = left.rename(columns={"replay_value": "left_value"})
+        right = right.rename(columns={"replay_value": "right_value"})
+        merged = left.merge(
+            right,
+            on=["trade_date", "ts_code"],
+            how="inner",
+            validate="one_to_one",
+        )
+        values: list[float] = []
+        for _, group in merged.groupby("trade_date", sort=True):
+            group = group.loc[
+                np.isfinite(group["left_value"].to_numpy(float))
+                & np.isfinite(group["right_value"].to_numpy(float))
+            ]
+            if len(group) < minimum_cross_section:
+                continue
+            corr = group["left_value"].rank(method="average").corr(
+                group["right_value"].rank(method="average")
+            )
+            if np.isfinite(corr):
+                values.append(float(corr))
+        if values:
+            absolute = np.abs(np.asarray(values, dtype=float))
+            rows.append(
+                {
+                    "factor_id_left": left_id,
+                    "factor_id_right": right_id,
+                    "median_abs_spearman": float(np.median(absolute)),
+                    "max_abs_spearman": float(np.max(absolute)),
+                    "valid_day_count": len(values),
+                }
+            )
+    return pd.DataFrame(
+        rows,
+        columns=[
+            "factor_id_left",
+            "factor_id_right",
+            "median_abs_spearman",
+            "max_abs_spearman",
+            "valid_day_count",
+        ],
+    )
+
+
 def _load_validation_inputs(client: object, start: date, end: date) -> pd.DataFrame:
     session = V2WriteSession(client, target_database="dfs://QuantResearchV2Test")
     periods = tuple(str(period) for period in pd.period_range(start, end, freq="M"))
@@ -215,10 +274,12 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
     directions = _load_directions(args.direction_artifact, args.factor_id)
     daily_parts: list[pd.DataFrame] = []
     summaries: list[dict[str, object]] = []
+    replay_frames: dict[str, pd.DataFrame] = {}
     for definition in definitions:
         replay_values = replay._replay_factor(
             TushareMarketSession(client, market, codes), definition, args.start, args.end
         )
+        replay_frames[definition.factor_id] = replay_values
         daily = compute_daily_rank_ic(replay_values, inputs)
         daily.insert(0, "factor_id", definition.factor_id)
         daily_parts.append(daily)
@@ -230,8 +291,10 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
             }
         )
     daily_frame = pd.concat(daily_parts, ignore_index=True) if daily_parts else pd.DataFrame()
+    similarity = compute_pair_daily_spearman(replay_frames)
     args.output.mkdir(parents=True, exist_ok=True)
     daily_frame.to_csv(args.output / "daily_rank_ic.csv", index=False)
+    similarity.to_json(args.output / "similarity_summary.json", orient="records", indent=2)
     (args.output / "quality_summary.json").write_text(
         json.dumps(
             {
