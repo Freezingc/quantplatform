@@ -36,6 +36,7 @@ def test_parser_accepts_full_market_batches() -> None:
             "yeslab_438",
             "--full-market",
             "--restrict-to-v2-universe",
+            "--include-daily-basic",
             "--stock-batch-size",
             "256",
             "--start",
@@ -49,6 +50,7 @@ def test_parser_accepts_full_market_batches() -> None:
 
     assert args.full_market is True
     assert args.restrict_to_v2_universe is True
+    assert args.include_daily_basic is True
     assert args.stock_batch_size == 256
 
 
@@ -70,7 +72,7 @@ def test_parser_rejects_locked_test_and_unsupported_factor() -> None:
         audit.parse_args(
             [
                 "--factor-id",
-                "yeslab_443",
+                "yeslab_999",
                 "--output",
                 "/tmp/tushare-replay.json",
             ]
@@ -101,6 +103,24 @@ def test_market_frame_is_normalized_and_restricted_to_codes() -> None:
             "pct_chg": -0.4,
         }
     ]
+
+
+def test_normalize_tushare_market_preserves_daily_basic_turnover() -> None:
+    raw = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "trade_date": ["20200918"],
+            "open": [1.0],
+            "low": [0.5],
+            "amount": [10.456],
+            "pct_chg": [-0.4],
+            "turnover_rate": [0.7076],
+        }
+    )
+
+    normalized = audit.normalize_tushare_market(raw, codes=("000001.SZ",))
+
+    assert normalized.loc[0, "turnover_rate"] == pytest.approx(0.7076)
 
 
 def test_query_codes_deduplicates_top_factor_rows() -> None:

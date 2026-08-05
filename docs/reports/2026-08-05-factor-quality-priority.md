@@ -730,3 +730,33 @@ Tushare 覆盖，且两个因子在所有窗口都为 `FORMULA_REPLAY_PASS`、`m
 - [`TRAIN 全日相似度汇总`](../../research_v2/artifacts/diagnostics/train_similarity_full_day_oos18_recovered2_2020_2024_v1.csv)
 - [`TRAIN 全日相似度 pair 矩阵`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_oos18_recovered2_2020_2024_v1.csv)
 - [`recovered 因子相似度审计结论`](../../research_v2/artifacts/diagnostics/train_similarity_recovered2_full_day_review_v1.json)
+
+### 低覆盖因子的输入缺失与 turnover overlay 复核
+
+对剩余 16 个结构失败、但 TRAIN predictive-pass 的因子，按计算脚本的
+`required_factors` 做了输入字段审计。2020–2024 的 `stock_factor_daily` 结果为：
+
+- `amount/vol/open/high` 的整体有限值比例为 `1.0`；
+- `pct_chg` 的整体有限值比例为 `0.9992458`；
+- `turnover_rate` 的整体有限值比例为 `0.9911484`，唯一低于 70% 的交易日是
+  `2020-09-18`，有限值为 `2,200/4,069`。
+
+这说明 13 个 GP turnover 因子和 `日换手率波动偏离` 确实存在一个可定位的行情输入缺口，
+但缺口并不自动意味着因子可以修复。使用 Tushare `daily_basic.turnover_rate` 对该输入做
+只读 overlay 后，15 个因子在 2020-09-14–25 的受控重放中只有 `GP_002、GP_020、GP_045`
+没有有限源值 mismatch；将这 3 个提升到 V2 实际训练 universe 的全市场分块审计后，仍然
+只有约 `26.1% / 32.8% / 66.5%` 的有限覆盖，低于当前 `70%` 结构门槛。因此这次 overlay
+没有生成任何可发布修复候选。
+
+其余 12 个因子在 overlay 后仍有全窗口 mismatch 或没有有限重叠；其中不依赖 turnover 的
+`GP_021/GP_035` 也被当前计算器复现门禁阻断，说明它们不是单纯的 turnover 缺口问题。
+
+证据：
+
+- [`stock_factor_daily 输入覆盖`](../../research_v2/artifacts/diagnostics/stock_factor_daily_input_coverage_2020_2024_v1.json)
+- [`15 个低覆盖因子 Tushare overlay`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_lowcoverage15_tushare_basic_sample64_2020-09-14_2020-09-25_v2.json)
+- [`GP_002/GP_020/GP_045 全市场 overlay`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_turnover3_tushare_full_v2universe_2020-09-14_2020-09-25_v1.json)
+- [`低覆盖因子 overlay 结论`](../../research_v2/artifacts/diagnostics/low_coverage_turnover_overlay_review_v1.json)
+
+本轮结论是：不降低有限覆盖门槛，不把 Tushare overlay 直接写入旧表；16 个因子继续隔离，
+后续优先转向重新定义公式或重新生成源因子，而不是继续做行情字段填补。

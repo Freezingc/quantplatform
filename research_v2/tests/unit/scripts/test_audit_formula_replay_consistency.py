@@ -28,6 +28,8 @@ def test_compare_replay_frames_passes_exact_finite_overlap() -> None:
 
     assert result["decision_status"] == "FORMULA_REPLAY_PASS"
     assert result["overlap_finite_rows"] == 2
+    assert result["source_finite_rows"] == 2
+    assert result["replay_finite_rows"] == 2
     assert result["mismatch_rows"] == 0
 
 
@@ -52,6 +54,8 @@ def test_compare_replay_frames_blocks_finite_mismatch() -> None:
     assert result["decision_status"] == "FORMULA_REPLAY_BLOCKED"
     assert result["mismatch_rows"] == 1
     assert result["max_abs_diff"] == pytest.approx(0.2)
+    assert result["source_finite_rows"] == 2
+    assert result["replay_finite_rows"] == 2
 
 
 def test_parser_rejects_locked_test_and_unknown_factor() -> None:
@@ -135,6 +139,26 @@ def test_parser_accepts_bounded_replay_sample() -> None:
 
     assert args.max_ts_codes == 100
     assert audit.REPLAY_DEFINITIONS["yeslab_398"].replay_lookback_days == 180
+
+
+def test_parser_accepts_structural_predictive_factor_for_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_370",
+            "--max-ts-codes",
+            "64",
+            "--start",
+            "2020-09-14",
+            "--end",
+            "2020-09-25",
+            "--output",
+            "/tmp/replay.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_370",)
+    assert audit.REPLAY_DEFINITIONS["yeslab_370"].replay_lookback_days == 180
 
 
 def test_run_audit_records_calculator_errors_without_dropping_factor() -> None:

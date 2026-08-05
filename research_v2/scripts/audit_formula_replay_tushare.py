@@ -24,7 +24,28 @@ import numpy as np
 import pandas as pd
 
 LOCKED_TEST_START = date(2026, 1, 1)
-SUPPORTED_FACTOR_IDS = ("yeslab_398", "yeslab_438", "yeslab_451", "yeslab_464")
+SUPPORTED_FACTOR_IDS = (
+    "yeslab_143",
+    "yeslab_370",
+    "yeslab_371",
+    "yeslab_372",
+    "yeslab_379",
+    "yeslab_384",
+    "yeslab_389",
+    "yeslab_390",
+    "yeslab_397",
+    "yeslab_404",
+    "yeslab_406",
+    "yeslab_411",
+    "yeslab_414",
+    "yeslab_415",
+    "yeslab_420",
+    "yeslab_423",
+    "yeslab_398",
+    "yeslab_438",
+    "yeslab_451",
+    "yeslab_464",
+)
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALCULATOR_ROOT = REPO_ROOT / "数据库"
 
@@ -37,6 +58,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-ts-codes", type=int, default=64)
     parser.add_argument("--full-market", action="store_true")
     parser.add_argument("--restrict-to-v2-universe", action="store_true")
+    parser.add_argument("--include-daily-basic", action="store_true")
     parser.add_argument("--stock-batch-size", type=int, default=256)
     parser.add_argument(
         "--cache-dir",
@@ -75,14 +97,34 @@ def normalize_tushare_market(raw: pd.DataFrame, *, codes: Sequence[str]) -> pd.D
     frame["trade_date"] = parsed_trade_date.fillna(
         pd.to_datetime(frame["trade_date"], errors="coerce")
     ).dt.normalize()
-    for column in ("open", "low", "amount", "pct_chg", "close"):
+    for column in (
+        "open",
+        "high",
+        "low",
+        "close",
+        "vol",
+        "amount",
+        "pct_chg",
+        "turnover_rate",
+    ):
         if column in frame.columns:
             frame[column] = pd.to_numeric(frame[column], errors="coerce")
     frame = frame.loc[frame["ts_code"].isin(set(map(str, codes)))].copy()
     frame = frame.dropna(subset=["trade_date", "ts_code"])
     frame = frame.drop_duplicates(["trade_date", "ts_code"], keep="last")
     columns = ["trade_date", "ts_code"] + [
-        column for column in ("open", "low", "close", "amount", "pct_chg") if column in frame
+        column
+        for column in (
+            "open",
+            "high",
+            "low",
+            "close",
+            "vol",
+            "amount",
+            "pct_chg",
+            "turnover_rate",
+        )
+        if column in frame
     ]
     return frame.loc[:, columns].sort_values(["trade_date", "ts_code"]).reset_index(drop=True)
 
@@ -177,6 +219,7 @@ def _fetch_tushare_market(
     token: str,
     open_dates: Sequence[date] | None = None,
     cache_dir: Path | None = None,
+    include_daily_basic: bool = False,
 ) -> pd.DataFrame:
     import tushare as ts  # type: ignore[import-untyped]
 
@@ -207,6 +250,26 @@ def _fetch_tushare_market(
                         result.to_json(orient="table", date_format="iso"), encoding="utf-8"
                     )
             if isinstance(result, pd.DataFrame) and not result.empty:
+                if include_daily_basic:
+                    basic_cache_path = resolved_cache / f"daily_basic_{trade_date:%Y%m%d}.json"
+                    if basic_cache_path.is_file():
+                        basic = pd.read_json(basic_cache_path, orient="table")
+                    else:
+                        basic = pro.daily_basic(
+                            trade_date=trade_date.strftime("%Y%m%d"),
+                            fields="ts_code,turnover_rate",
+                        )
+                        if isinstance(basic, pd.DataFrame):
+                            basic_cache_path.write_text(
+                                basic.to_json(orient="table", date_format="iso"),
+                                encoding="utf-8",
+                            )
+                    if isinstance(basic, pd.DataFrame) and not basic.empty:
+                        result = result.merge(
+                            basic.loc[:, ["ts_code", "turnover_rate"]],
+                            on="ts_code",
+                            how="left",
+                        )
                 frames.append(result)
     if not frames:
         raise RuntimeError("Tushare daily returned no market rows")
@@ -240,6 +303,14 @@ def aggregate_comparisons(comparisons: Sequence[dict[str, object]]) -> dict[str,
     return {
         "source_rows": sum(int(comparison["source_rows"]) for comparison in comparisons),
         "replay_rows": sum(int(comparison["replay_rows"]) for comparison in comparisons),
+        "source_finite_rows": sum(
+            int(comparison.get("source_finite_rows", comparison["overlap_finite_rows"]))
+            for comparison in comparisons
+        ),
+        "replay_finite_rows": sum(
+            int(comparison.get("replay_finite_rows", comparison["overlap_finite_rows"]))
+            for comparison in comparisons
+        ),
         "overlap_rows": sum(int(comparison["overlap_rows"]) for comparison in comparisons),
         "overlap_finite_rows": finite_rows,
         "mismatch_rows": mismatch_rows,
@@ -279,7 +350,11 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         _calculator_market_start(client, definition, args.start, args.end)
         for definition in definitions
     )
-    open_dates = _query_open_dates(client, market_start, args.end) if args.full_market else None
+    open_dates = (
+        _query_open_dates(client, market_start, args.end)
+        if args.full_market or args.include_daily_basic
+        else None
+    )
     market = _fetch_tushare_market(
         codes,
         market_start,
@@ -287,6 +362,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         token=tushare_token,
         open_dates=open_dates,
         cache_dir=args.cache_dir,
+        include_daily_basic=args.include_daily_basic,
     )
     market_codes = tuple(sorted(set(market["ts_code"].astype(str)).intersection(codes)))
     missing_market_codes = tuple(sorted(set(codes).difference(market_codes)))
@@ -338,6 +414,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         "max_ts_codes": None if args.full_market else args.max_ts_codes,
         "universe_mode": "full_market" if args.full_market else "bounded_sample",
         "restrict_to_v2_universe": args.restrict_to_v2_universe,
+        "include_daily_basic": args.include_daily_basic,
         "code_count": len(codes),
         "market_code_count": len(market_codes),
         "market_missing_code_count": len(missing_market_codes),
