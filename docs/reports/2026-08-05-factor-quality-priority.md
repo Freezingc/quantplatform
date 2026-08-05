@@ -1174,3 +1174,26 @@ Tushare alias replay 仍然是 `18/18 PASS`，说明这些 Alpha95 值可以由 
 - [`2024-01 沪深 canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_shsz_2024-01_v1.json)
 - [`2025-01 沪深 canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_shsz_2025-01_v1.json)
 - [`沪深 canonical 选择执行`](../../research_v2/artifacts/diagnostics/tushare_canonical_shsz_selection_execution_v1.json)
+
+### 沪深三因子的 predictive 与冗余复核
+
+V2 训练宇宙实际只包含沪深代码（`2,868` 个 `.SZ`、`2,245` 个 `.SH`），因此现有训练/验证
+RankIC 证据无需再混入 BJ。对四窗口 canonical 交集的三个因子，当前 2020–2024 TRAIN 和
+2025 验证结果如下：
+
+| 因子 | TRAIN mean RankIC | TRAIN ICIR | 2025 mean RankIC | 2025 ICIR | 方向日占比 | 年度 ICIR 通过年数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `yeslab_380 / GP_011` | -0.081672 | -0.592950 | -0.088117 | -0.571801 | 0.708861 | 4 |
+| `yeslab_431 / GP_062` | -0.069519 | -0.555636 | -0.088039 | -0.770018 | 0.776371 | 3 |
+| `yeslab_437 / GP_068` | -0.066848 | -0.509068 | -0.088676 | -0.779731 | 0.780591 | 2 |
+
+三个因子均通过主双重 predictive 门槛，固定方向都是 `-1`；但若采用“五年每年
+`abs(ICIR) >= 0.50`”的严格分支，三者都不能直接冻结，需继续监控年度稳定性。TRAIN
+全日相似度中三者两两最高为 `0.842817`，低于 `0.90` 冗余门槛，因此暂不需要再删减。
+这三因子是当前沪深范围的最小可复现候选集合，不等于已发布模型输入。
+
+证据：
+
+- [`canonical 核心质量`](../../research_v2/artifacts/diagnostics/tushare_canonical_core_quality_v1.json)
+- [`TRAIN45 候选质量明细`](../../research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.csv)
+- [`三因子 TRAIN 相似度 pair`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_oos18_recovered2_2020_2024_v1.csv)
