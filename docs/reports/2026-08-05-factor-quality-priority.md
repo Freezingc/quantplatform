@@ -1323,6 +1323,22 @@ TRAIN 全窗口 pair 证据；本轮没有用验证期相似度直接删因子�
 - [`六因子四窗口公式回放汇总`](../../research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_replay_train_windows_v1.json)
 - [`2025-01 注册 GP 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos6_tushare_shsz_registered_2025-01_v1.json)
 
+### 横截面范围与 GP_064 精度根因
+
+进一步读取 2025-01-02 的 YesLab 源池后确认，`GP_008` 的源横截面有 `5,952` 个唯一代码，
+其中 `551` 个为 `.BJ`；`GP_063` 有 `5,953` 个唯一代码，其中 `552` 个为 `.BJ`。当前 V2
+沪深 universe 只有 `4,220` 个代码。因此这两个因子的旧源值 mismatch 主要反映生成股票池变化，
+不是可以通过放宽误差门槛修复的普通数值误差；它们若继续研究，只能使用 Tushare 在沪深池上
+重新物化的版本。即便不排除 BJ 的完整 Tushare 对照，源代码并不能全部覆盖：源池 `5,395`
+只中 Tushare 只有 `5,147` 只，仍缺 `248` 只历史代码。
+
+`GP_064` 的 mismatch 则不同：`600503.SH/2025-01-22` 的 YesLab `amount=126465.67`，
+Tushare `amount=126465.674`，仅有小数精度差，但非线性指数项把结果差放大为 `7.569971`。
+因此不能对 Tushare amount 做未经批准的四舍五入，也不能放宽 replay tolerance；GP_064 继续
+保持 precision-sensitive 阻断。
+
+证据：[`沪深范围 mismatch 根因诊断`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_mismatch_diagnosis_v1.json)
+
 ### 沪深准入预检结果
 
 已补齐重新物化因子与 `yeslab_380` 的直接相似度证据。94/380 和 98/380 的五年聚合中位

@@ -1,0 +1,31 @@
+{
+  "scope": "TUSHARE_SHSZ_SCOPE_MISMATCH_DIAGNOSIS_V1",
+  "market_scope": ["SH", "SZ"],
+  "excluded_exchanges": ["BJ"],
+  "observation_window": "2025-01-02",
+  "database_writes": false,
+  "locked_test_read": false,
+  "cross_sectional_source_pool": {
+    "GP_008": {"source_unique_codes": 5952, "bj_codes": 551, "sh_codes": 2391, "sz_codes": 3010},
+    "GP_063": {"source_unique_codes": 5953, "bj_codes": 552, "sh_codes": 2391, "sz_codes": 3010},
+    "v2_shsz_universe_codes": 4220
+  },
+  "full_tushare_scope_comparison": {
+    "source_union_codes": 5395,
+    "tushare_market_codes": 5147,
+    "missing_tushare_codes": 248,
+    "conclusion": "Even without excluding BJ, the historical Tushare market snapshot does not cover every source code; old source-value replay cannot be used as a clean formula gate for this scope transition."
+  },
+  "precision_sensitive_gp064_example": {
+    "factor_id": "yeslab_433",
+    "trade_date": "2025-01-22",
+    "ts_code": "600503.SH",
+    "yeslab_amount": 126465.67,
+    "tushare_amount": 126465.674,
+    "source_value": 126465.799873,
+    "tushare_replay_value": 126473.369843,
+    "absolute_difference": 7.569971,
+    "conclusion": "The nonlinear GP_064 expression amplifies a small amount precision difference; do not round Tushare or relax the mismatch gate."
+  },
+  "decision": "Treat GP_008/GP_063 source mismatches as scope-transition evidence requiring SH/SZ rematerialization, not as automatic formula failure; retain GP_064 as precision-sensitive and blocked until a canonical precision policy is approved."
+}
