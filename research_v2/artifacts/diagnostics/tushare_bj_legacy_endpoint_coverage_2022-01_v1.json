@@ -1,0 +1,448 @@
+{
+  "codes": [
+    "830879.BJ",
+    "831167.BJ",
+    "831278.BJ",
+    "832491.BJ",
+    "833030.BJ",
+    "833394.BJ",
+    "834639.BJ",
+    "836395.BJ",
+    "836871.BJ",
+    "838171.BJ",
+    "838402.BJ",
+    "838670.BJ",
+    "839273.BJ",
+    "839790.BJ",
+    "871694.BJ",
+    "872931.BJ"
+  ],
+  "database_writes": false,
+  "end": "2022-01-31",
+  "endpoints": [
+    "daily",
+    "daily_basic",
+    "stk_factor"
+  ],
+  "locked_test_read": false,
+  "rows": [
+    {
+      "code": "830879.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 58,
+          "max_trade_date": "2021-12-10",
+          "min_trade_date": "2021-09-13",
+          "rows": 58,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "831167.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 41,
+          "max_trade_date": "2021-12-31",
+          "min_trade_date": "2021-09-23",
+          "rows": 41,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "831278.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 61,
+          "max_trade_date": "2021-12-16",
+          "min_trade_date": "2021-09-13",
+          "rows": 61,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "832491.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 68,
+          "max_trade_date": "2021-12-24",
+          "min_trade_date": "2021-09-13",
+          "rows": 68,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "833030.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 40,
+          "max_trade_date": "2021-12-27",
+          "min_trade_date": "2021-09-14",
+          "rows": 40,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "833394.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 9,
+          "max_trade_date": "2021-12-20",
+          "min_trade_date": "2021-09-13",
+          "rows": 9,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "834639.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 57,
+          "max_trade_date": "2021-12-24",
+          "min_trade_date": "2021-09-15",
+          "rows": 57,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "836395.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 43,
+          "max_trade_date": "2021-12-29",
+          "min_trade_date": "2021-09-13",
+          "rows": 43,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "836871.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 57,
+          "max_trade_date": "2021-12-24",
+          "min_trade_date": "2021-09-13",
+          "rows": 57,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "838171.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 11,
+          "max_trade_date": "2021-12-28",
+          "min_trade_date": "2021-09-24",
+          "rows": 11,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "838402.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 13,
+          "max_trade_date": "2021-12-24",
+          "min_trade_date": "2021-10-15",
+          "rows": 13,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "838670.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 40,
+          "max_trade_date": "2021-12-21",
+          "min_trade_date": "2021-09-13",
+          "rows": 40,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "839273.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 22,
+          "max_trade_date": "2021-12-13",
+          "min_trade_date": "2021-10-26",
+          "rows": 22,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "839790.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 13,
+          "max_trade_date": "2021-12-27",
+          "min_trade_date": "2021-09-13",
+          "rows": 13,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "871694.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 15,
+          "max_trade_date": "2021-12-17",
+          "min_trade_date": "2021-10-11",
+          "rows": 15,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    },
+    {
+      "code": "872931.BJ",
+      "endpoints": {
+        "daily": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "daily_basic": {
+          "finite_trade_date_rows": 0,
+          "max_trade_date": null,
+          "min_trade_date": null,
+          "rows": 0,
+          "status": "NO_ROWS"
+        },
+        "stk_factor": {
+          "finite_trade_date_rows": 20,
+          "max_trade_date": "2021-12-24",
+          "min_trade_date": "2021-09-30",
+          "rows": 20,
+          "status": "ROWS_PRESENT"
+        }
+      }
+    }
+  ],
+  "scope": "TUSHARE_BJ_LEGACY_ENDPOINT_COVERAGE_V1",
+  "start": "2021-09-11"
+}

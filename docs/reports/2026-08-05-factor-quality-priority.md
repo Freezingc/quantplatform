@@ -1124,3 +1124,26 @@ Tushare alias replay 仍然是 `18/18 PASS`，说明这些 Alpha95 值可以由 
 - [`2022-01 最新 canonical 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2022-01_v2.json)
 - [`2024-01 最新 canonical 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2024-01_v2.json)
 - [`2025-01 最新 canonical 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_2025-01_v2.json)
+
+### 历史 BJ 代码的 Tushare 端点可用性审计
+
+为确认历史缺口不是单一 `daily` 接口造成，针对 2020-01 的 9 个缺失代码和 2022-01 的
+16 个缺失代码，逐代码只读检查了 Tushare `daily`、`daily_basic`、`stk_factor` 三个端点。
+结果是：25 个代码在目标回放窗口内的 `daily` 和 `daily_basic` 均为 0 行；`stk_factor`
+虽能返回部分迁移/停牌前记录，但都在回放窗口开始前结束，不能覆盖因子源有限值所在日期。
+
+| 窗口 | 缺失代码数 | `daily` 有完整窗口 | `daily_basic` 有完整窗口 | `stk_factor` 情况 | 结论 |
+| --- | ---: | ---: | ---: | --- | --- |
+| 2020-01 | 9 | 0 | 0 | 9 个均仅有 2019 年零散记录 | 无法补齐 2020-01 |
+| 2022-01 | 16 | 0 | 0 | 16 个均最晚停在 2021-12 | 无法补齐 2022-01 |
+
+因此本项目不会把 `stk_factor` 的不完整历史记录拼接成 canonical 行情，也不会用 YesLab
+原始行情替代 Tushare。2020/2022 的严格阻断是当前 Tushare 可用历史数据的客观限制，不是
+通过降低覆盖门槛或改变模型输入可以解决的问题；只有获得完整的 Tushare 历史快照后，才会
+重新执行四窗口公式回放。
+
+证据：
+
+- [`2020-01 Tushare 端点覆盖审计`](../../research_v2/artifacts/diagnostics/tushare_bj_legacy_endpoint_coverage_2020-01_v1.json)
+- [`2022-01 Tushare 端点覆盖审计`](../../research_v2/artifacts/diagnostics/tushare_bj_legacy_endpoint_coverage_2022-01_v1.json)
+- [`端点覆盖审计脚本`](../../research_v2/scripts/audit_tushare_bj_legacy_coverage.py)
