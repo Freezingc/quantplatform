@@ -963,3 +963,16 @@ PIT、FDR 和准入决策审阅。当前不修改原 18 因子提案、不写旧
 年度政策分支仍需单独决定。
 
 证据：[`canonical 选择执行结果`](../../research_v2/artifacts/diagnostics/tushare_canonical_selection_execution_v1.json)
+
+### YesLab 与直接 Tushare 的 replay 分歧分类
+
+对 2025-01 的 18 个候选做了来源交叉诊断：使用 YesLab `stock_factor_daily` 和源 universe
+时，18 个当前计算器全部可以重现存储因子；切换到直接 Tushare `daily/daily_basic` 后，
+只有 4 个仍然通过。由此，剩余 14 个不能简单归类为“计算器写错”，更准确的分类是
+`MARKET_SNAPSHOT_OR_UNIVERSE_DIVERGENCE`：历史因子生成时使用的行情快照、证券集合或字段
+修订，与当前直接 Tushare 口径不一致。
+
+处置原则已固定：不把直接 Tushare 重算值覆盖到 YesLab；新准入必须先通过 canonical replay；
+剩余 14 个只有在恢复历史输入快照后才允许重新评估。
+
+证据：[`YesLab/Tushare replay 分歧汇总`](../../research_v2/artifacts/diagnostics/tushare_vs_yeslab_replay_divergence_oos18_v1.json)
