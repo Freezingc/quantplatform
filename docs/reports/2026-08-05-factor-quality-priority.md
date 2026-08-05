@@ -1344,6 +1344,13 @@ Tushare `amount=126465.674`，仅有小数精度差，但非线性指数项把�
 
 证据：[`沪深范围 mismatch 根因诊断`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_mismatch_diagnosis_v1.json)
 
+同样的 scope 问题也出现在 `GP_012/yeslab_381` 和 `GP_036/yeslab_405`：它们在四个窗口均为
+`FORMULA_REPLAY_BLOCKED`，但不是 Tushare 缺行情；2025-01 源池分别含 `551`、`552` 只 BJ
+代码，而 SH/SZ canonical universe 只有 `4,220` 只。两因子的 Tushare 重新物化 TRAIN/验证
+RankIC 仍然良好，但旧值不能直接复用，需先生成 SH/SZ 版本再做相似度和准入审查。
+
+证据：[`GP_012/GP_036 scope 诊断`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_diagnostic_gp012_gp036_v1.json)
+
 ### 三个严格年度稳定因子的扩展提案（未发布）
 
 `yeslab_376/GP_007`、`yeslab_396/GP_027`、`yeslab_442/GP_073` 在 2020–2024 TRAIN 的
