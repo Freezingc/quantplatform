@@ -1480,3 +1480,21 @@ yeslab_376, yeslab_396, yeslab_442`。年度监控对象仍为 `yeslab_380/431/4
 - [`九因子性能漂移审计`](../../research_v2/artifacts/diagnostics/tushare_shsz_performance_drift_audit_v1.json)
 - [`性能漂移审计脚本`](../../research_v2/scripts/audit_shsz_performance_drift.py)
 - [`性能漂移审计测试`](../../research_v2/tests/unit/scripts/test_audit_shsz_performance_drift.py)
+
+### 九因子统一质量矩阵
+
+为避免后续只读取单一 artifact，已将准入预检、年度稳定性、TRAIN/验证性能漂移、2025
+验证期完整相似度和范围语义合并为统一 scoreboard。结果为 `PASS_WITH_MONITORING`，
+9 个因子没有失败项；年度监控因子为 `yeslab_380/431/437/94`，其余 5 个因子的严格年度
+ICIR 通过年数为 `5/5`。
+
+该 scoreboard 是质量证据的汇总，不是发布动作：它明确记录
+`publication_status=NOT_PUBLISHED`、`database_writes=false` 和
+`model_training_started=false`。后续任何模型输入扩展都必须引用这张矩阵，并重新运行
+相同的门槛检查，不能只引用某一个局部 RankIC 或相似度文件。
+
+证据与实现：
+
+- [`九因子统一质量矩阵`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_quality_scoreboard_v1.json)
+- [`质量矩阵构建脚本`](../../research_v2/scripts/build_shsz_factor_quality_scoreboard.py)
+- [`质量矩阵测试`](../../research_v2/tests/unit/scripts/test_build_shsz_factor_quality_scoreboard.py)
