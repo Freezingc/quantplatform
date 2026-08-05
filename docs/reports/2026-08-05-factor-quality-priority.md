@@ -1087,3 +1087,13 @@ Tushare alias replay 仍然是 `18/18 PASS`，说明这些 Alpha95 值可以由 
 - [`2022 因子-原始行情覆盖`](../../research_v2/artifacts/diagnostics/factor_raw_market_coverage_oos18_2022-01_v1.json)
 - [`2024 因子-原始行情覆盖`](../../research_v2/artifacts/diagnostics/factor_raw_market_coverage_oos18_2024-01_v1.json)
 - [`2025 因子-原始行情覆盖`](../../research_v2/artifacts/diagnostics/factor_raw_market_coverage_oos18_2025-01_v1.json)
+
+另外做了一个 V2 universe 对照：2020/2022 在 V2 限制下虽然可以把 Tushare 缺失代码降为
+`0`，但横截面因子仍大面积 mismatch。这证明 V2 universe 不能用于公式重放，否则会把
+“生成时完整股票池”改成“投资时股票池”，误判公式不一致。最终规则固定为：公式 replay 使用
+源因子生成的完整证券集合；模型训练和组合约束才使用 V2 universe。
+
+证据：
+
+- [`2020 V2 universe 对照`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_v2universe_2020-01_v1.json)
+- [`2022 V2 universe 对照`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_full_bj_alias_v2universe_2022-01_v1.json)
