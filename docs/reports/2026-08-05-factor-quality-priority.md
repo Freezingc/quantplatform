@@ -339,3 +339,43 @@ yeslab_396, yeslab_95, yeslab_96, yeslab_98
 [`TRAIN26 pair matrix`](../../research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_repaired26_v1.csv)。
 年度规则的严格/主计划口径对照见
 [`TRAIN26 annual rule comparison`](../../research_v2/artifacts/diagnostics/train26_annual_rule_comparison_v1.json)。
+
+### 14 个代表因子的 2025 验证期复核
+
+为避免把旧的 21 因子验证目录误当成当前代表集证据，新增了一个只读评估器，对上述
+14 个代表逐月从 YesLab 源表重新做严格 PIT 清洗，并使用 V2 最新的成熟股票池与原始
+5 日复权收益标签计算验证期横截面 RankIC。训练期方向从
+`SCREEN_TRAIN2020_2024_DAILY_HAC_FDR_V2` 的已审计门禁报告固定读取，验证期不重新
+估计方向，也不读取 2026 locked-test；为保证 5 日标签成熟度，去除了 2025-12-24–12-31
+的末端日期。
+
+核验结果如下：
+
+| 指标 | 结果 |
+| --- | ---: |
+| 代表因子 | 14 |
+| 日度 RankIC 行数 | 3,318 |
+| 每因子有效交易日 | 237（2025-01-02–2025-12-23） |
+| 训练方向 | 14 个均为 -1，全部来自 TRAIN 报告 |
+| 当前双重门槛预筛 | 14/14 通过 |
+| 验证覆盖率 | 0.994156–1.000000 |
+| 2026 日期读取 | 0 |
+| 数据库写入 | 0 |
+
+代表中验证期表现最强的几个因子为：`yeslab_357`（mean RankIC `-0.061495`，ICIR
+`-1.1740`，方向一致率 `89.87%`）、`yeslab_363`（`-0.057695`，`-0.9145`，
+`82.70%`）和 `yeslab_365`（`-0.054612`，`-0.9108`，`84.81%`）。其余代表也满足
+当前验证门槛，**但这只表示验证期 predictive 预筛通过**，尚未完成验证期相似度复核，
+也没有改变年度 ICIR 规则尚未决策、候选集尚未冻结的状态。
+
+评估器会把“没有有效 RankIC 的因子”显式记录为 `VALIDATION_2025_NO_RANKIC`，而不是
+静默丢弃；本次 14 个代表没有触发该状态。脚本和结果如下：
+
+- [`2025 representatives validation evaluator`](../../research_v2/scripts/evaluate_factor_representatives_validation.py)
+- [`2025 representatives validation quality`](../../research_v2/artifacts/diagnostics/train26_representatives_validation_2025_v1/quality_summary.csv)
+- [`2025 representatives validation daily RankIC`](../../research_v2/artifacts/diagnostics/train26_representatives_validation_2025_v1/daily_rank_ic.parquet)
+- [`2025 representatives validation coverage`](../../research_v2/artifacts/diagnostics/train26_representatives_validation_2025_v1/coverage.csv)
+- [`2025 representatives validation metadata`](../../research_v2/artifacts/diagnostics/train26_representatives_validation_2025_v1/metadata.json)
+
+下一步应把这 14 个代表与 2025 验证期的日级相似度矩阵合并，再按已经选定的年度门槛
+生成“可训练候选集”；在此之前不发布新 factor set，也不启动模型训练。

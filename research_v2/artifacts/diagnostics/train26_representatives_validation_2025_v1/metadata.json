@@ -1,0 +1,52 @@
+{
+  "start_date": "2025-01-01",
+  "end_date": "2025-12-31",
+  "purged_signal_dates": [
+    "2025-12-24",
+    "2025-12-25",
+    "2025-12-26",
+    "2025-12-29",
+    "2025-12-30",
+    "2025-12-31"
+  ],
+  "factor_ids": [
+    "yeslab_115",
+    "yeslab_118",
+    "yeslab_163",
+    "yeslab_357",
+    "yeslab_363",
+    "yeslab_365",
+    "yeslab_376",
+    "yeslab_380",
+    "yeslab_383",
+    "yeslab_385",
+    "yeslab_396",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "factor_names": [
+    "原始惊恐",
+    "注意力衰减-惊恐",
+    "Alpha95",
+    "行业内收益标准化绝对值",
+    "行业标准化绝对值除行业偏度绝对值",
+    "行业标准化绝对值按正偏度过滤",
+    "GP_007",
+    "GP_011",
+    "GP_014",
+    "GP_016",
+    "GP_027",
+    "日间反转-换手翻转",
+    "修正日间反转",
+    "日内反转-波动翻转"
+  ],
+  "target_database": "dfs://QuantResearchV2Test",
+  "locked_test_read": false,
+  "database_writes": false,
+  "train_direction_source": "research_v2/artifacts/diagnostics/factor_quality_train26_gate_report_v5.json",
+  "train_direction_scope": "SCREEN_TRAIN2020_2024_DAILY_HAC_FDR_V2",
+  "minimum_cross_section": 30,
+  "source_materialization": "YesLab strict PIT normalization/deduplication",
+  "output_rows_daily_rank_ic": 3318
+}
