@@ -1,0 +1,44 @@
+{
+  "scope": "TUSHARE_SHSZ_REMAINING_GP_SCOPE_REVIEW_V1",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_400",
+    "yeslab_425"
+  ],
+  "formula_replay_windows": [
+    "2020-01",
+    "2022-01",
+    "2024-01",
+    "2025-01"
+  ],
+  "formula_replay_pass_window_count": {
+    "yeslab_400": 0,
+    "yeslab_425": 0
+  },
+  "source_pool_observation_2025_01": {
+    "yeslab_400": {
+      "factor_name": "GP_031",
+      "source_unique_codes": 5954,
+      "source_bj_codes": 551
+    },
+    "yeslab_425": {
+      "factor_name": "GP_056",
+      "source_unique_codes": 5954,
+      "source_bj_codes": 552
+    }
+  },
+  "canonical_universe_code_count_2025_01": 4220,
+  "classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH",
+  "action": "TUSHARE_REMATERIALIZE_REQUIRED",
+  "quality_reference": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
+  "publication_status": "NOT_PUBLISHED",
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false
+}
