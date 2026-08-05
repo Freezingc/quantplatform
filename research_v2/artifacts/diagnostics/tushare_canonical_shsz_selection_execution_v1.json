@@ -1,0 +1,84 @@
+{
+  "scope": "TUSHARE_CANONICAL_SHSZ_SELECTION_EXECUTION_V1",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_count": 18,
+  "replay_windows": [
+    "2020-01",
+    "2022-01",
+    "2024-01",
+    "2025-01"
+  ],
+  "strict_business_key_gate": true,
+  "pass_by_window": {
+    "2020-01": [
+      "yeslab_95",
+      "yeslab_380",
+      "yeslab_431",
+      "yeslab_437"
+    ],
+    "2022-01": [
+      "yeslab_380",
+      "yeslab_431",
+      "yeslab_437"
+    ],
+    "2024-01": [
+      "yeslab_380",
+      "yeslab_431",
+      "yeslab_437"
+    ],
+    "2025-01": [
+      "yeslab_380",
+      "yeslab_431",
+      "yeslab_437"
+    ]
+  },
+  "selected_factor_ids": [
+    "yeslab_380",
+    "yeslab_431",
+    "yeslab_437"
+  ],
+  "selected_rows": [
+    {
+      "factor_id": "yeslab_380",
+      "canonical_replay_status": "FORMULA_REPLAY_PASS",
+      "canonical_replay_window_count": 4,
+      "selection_reason": "FOUR_WINDOW_TUSHARE_CANONICAL_SHSZ"
+    },
+    {
+      "factor_id": "yeslab_431",
+      "canonical_replay_status": "FORMULA_REPLAY_PASS",
+      "canonical_replay_window_count": 4,
+      "selection_reason": "FOUR_WINDOW_TUSHARE_CANONICAL_SHSZ"
+    },
+    {
+      "factor_id": "yeslab_437",
+      "canonical_replay_status": "FORMULA_REPLAY_PASS",
+      "canonical_replay_window_count": 4,
+      "selection_reason": "FOUR_WINDOW_TUSHARE_CANONICAL_SHSZ"
+    }
+  ],
+  "not_selected_due_to_replay": [
+    "yeslab_114",
+    "yeslab_155",
+    "yeslab_163",
+    "yeslab_376",
+    "yeslab_381",
+    "yeslab_385",
+    "yeslab_396",
+    "yeslab_400",
+    "yeslab_405",
+    "yeslab_425",
+    "yeslab_442",
+    "yeslab_94",
+    "yeslab_95",
+    "yeslab_96",
+    "yeslab_98"
+  ],
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "database_writes": false,
+  "locked_test_read": false,
+  "policy_note": "This is a read-only SH/SZ replay proposal; predictive, annual stability, similarity, and publication gates remain required."
+}

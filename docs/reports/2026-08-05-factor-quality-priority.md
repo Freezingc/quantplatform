@@ -1147,3 +1147,30 @@ Tushare alias replay 仍然是 `18/18 PASS`，说明这些 Alpha95 值可以由 
 - [`2020-01 Tushare 端点覆盖审计`](../../research_v2/artifacts/diagnostics/tushare_bj_legacy_endpoint_coverage_2020-01_v1.json)
 - [`2022-01 Tushare 端点覆盖审计`](../../research_v2/artifacts/diagnostics/tushare_bj_legacy_endpoint_coverage_2022-01_v1.json)
 - [`端点覆盖审计脚本`](../../research_v2/scripts/audit_tushare_bj_legacy_coverage.py)
+
+### 沪深范围的最新 canonical 结果
+
+按新的研究范围，回放代码显式排除 `.BJ`，只保留 `.SH/.SZ`；仍使用源因子生成的完整沪深
+证券集合和单批横截面，覆盖门禁按 `(trade_date, ts_code)` 逐键检查。正式 18 个候选的四个
+窗口结果为：
+
+| 窗口 | 沪深源代码数 | Tushare 市场代码数 | 通过数 | 阻断数 | 备注 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 2020-01 | 3,765 | 3,765 | 4 | 14 | `yeslab_95` 仅在此窗口通过 |
+| 2022-01 | 4,631 | 4,631 | 3 | 15 | 3 个核心因子通过 |
+| 2024-01 | 5,106 | 5,106 | 3 | 15 | 3 个核心因子通过 |
+| 2025-01 | 5,133 | 5,133 | 3 | 15 | 3 个核心因子通过 |
+
+四窗口交集只剩 `yeslab_380 / GP_011`、`yeslab_431 / GP_062`、`yeslab_437 / GP_068`。
+`yeslab_163 / Alpha95` 的公式重叠误差为零，但四个窗口分别有 `147、160、128、215` 个
+有限源业务键没有对应 Tushare 行情，因此按严格门禁不能继续保留。排除 BJ 没有放宽覆盖或
+公式一致性门槛，只移除了用户明确不考虑的交易所；当前三因子仍是“候选提案”，不代表发布
+或模型输入冻结。
+
+证据：
+
+- [`2020-01 沪深 canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_shsz_2020-01_v1.json)
+- [`2022-01 沪深 canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_shsz_2022-01_v1.json)
+- [`2024-01 沪深 canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_shsz_2024-01_v1.json)
+- [`2025-01 沪深 canonical`](../../research_v2/artifacts/diagnostics/formula_replay_oos18_tushare_shsz_2025-01_v1.json)
+- [`沪深 canonical 选择执行`](../../research_v2/artifacts/diagnostics/tushare_canonical_shsz_selection_execution_v1.json)

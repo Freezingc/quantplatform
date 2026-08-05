@@ -100,6 +100,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-ts-codes", type=int, default=64)
     parser.add_argument("--full-market", action="store_true")
     parser.add_argument("--restrict-to-v2-universe", action="store_true")
+    parser.add_argument(
+        "--exclude-bj",
+        action="store_true",
+        help="exclude .BJ securities from the replay universe",
+    )
     parser.add_argument("--include-daily-basic", action="store_true")
     parser.add_argument("--stock-batch-size", type=int, default=256)
     parser.add_argument(
@@ -592,6 +597,8 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
     if args.restrict_to_v2_universe:
         universe_codes = set(_query_v2_universe_codes(client, args.start, args.end))
         codes = tuple(code for code in codes if code in universe_codes)
+    if args.exclude_bj:
+        codes = tuple(code for code in codes if not code.endswith(".BJ"))
     if not codes:
         raise RuntimeError("factor universe query returned no securities")
     if not args.full_market:
@@ -645,6 +652,9 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         definition = replay.REPLAY_DEFINITIONS[factor_id]
         comparison = aggregate_comparisons(comparisons_by_factor[factor_id])
         source_full = replay._query_source(client, definition, args.start, args.end)
+        source_full = source_full.loc[
+            source_full["ts_code"].astype(str).isin(set(codes))
+        ].copy()
         comparison.update(source_market_coverage(source_full, market))
         if missing_market_codes:
             comparison["decision_status"] = "FORMULA_REPLAY_BLOCKED"
@@ -678,6 +688,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         "max_ts_codes": None if args.full_market else args.max_ts_codes,
         "universe_mode": "full_market" if args.full_market else "bounded_sample",
         "restrict_to_v2_universe": args.restrict_to_v2_universe,
+        "exclude_bj": args.exclude_bj,
         "include_daily_basic": effective_include_daily_basic,
         "required_market_fields": list(required_fields),
         "bj_alias_map": str(args.bj_alias_map) if args.bj_alias_map else None,

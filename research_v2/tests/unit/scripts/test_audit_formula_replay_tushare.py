@@ -36,6 +36,7 @@ def test_parser_accepts_full_market_batches() -> None:
             "yeslab_438",
             "--full-market",
             "--restrict-to-v2-universe",
+            "--exclude-bj",
             "--include-daily-basic",
             "--stock-batch-size",
             "256",
@@ -50,6 +51,7 @@ def test_parser_accepts_full_market_batches() -> None:
 
     assert args.full_market is True
     assert args.restrict_to_v2_universe is True
+    assert args.exclude_bj is True
     assert args.include_daily_basic is True
     assert args.stock_batch_size == 256
 
