@@ -1,0 +1,23 @@
+[
+  {
+    "factor_id_left":"yeslab_380",
+    "factor_id_right":"yeslab_94",
+    "median_abs_spearman":0.15248526,
+    "max_abs_spearman":0.4408009062,
+    "valid_day_count":243
+  },
+  {
+    "factor_id_left":"yeslab_380",
+    "factor_id_right":"yeslab_98",
+    "median_abs_spearman":0.1589116918,
+    "max_abs_spearman":0.4641028927,
+    "valid_day_count":243
+  },
+  {
+    "factor_id_left":"yeslab_94",
+    "factor_id_right":"yeslab_98",
+    "median_abs_spearman":0.7095165189,
+    "max_abs_spearman":0.8137828371,
+    "valid_day_count":243
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "scope": "TUSHARE_SHSZ_CANONICAL_TRAIN_SIMILARITY_V1",
+  "train_start": "2020-01-01",
+  "train_end": "2024-12-31",
+  "factor_ids": [
+    "yeslab_380",
+    "yeslab_431",
+    "yeslab_437"
+  ],
+  "similarity_metric": "median_daily_abs_spearman",
+  "threshold": 0.9,
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "source_artifact": "train_similarity_pairs_oos18_recovered2_2020_2024_v1.csv",
+  "pairs": [
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_431",
+      "median_abs_spearman": 0.821005
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_437",
+      "median_abs_spearman": 0.842817
+    }
+  ],
+  "conclusion": "The two canonical edges involving turnover-dependent 380 are retained from the SH/SZ TRAIN full-day matrix; all values remain below the redundancy threshold."
+}

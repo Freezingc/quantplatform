@@ -1,0 +1,61 @@
+{
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_STORED_SIMILARITY_V1",
+  "train_start": "2020-01-01",
+  "train_end": "2024-12-31",
+  "rematerialized_factor_ids": [
+    "yeslab_94",
+    "yeslab_98"
+  ],
+  "stored_tushare_canonical_factor_ids": [
+    "yeslab_380"
+  ],
+  "similarity_metric": "median_of_annual_median_abs_daily_spearman",
+  "threshold": 0.9,
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "database_writes": false,
+  "locked_test_read": false,
+  "annual_median_abs_spearman": {
+    "yeslab_380/yeslab_94": {
+      "2020": 0.1524852600,
+      "2021": 0.1784738801,
+      "2022": 0.1857511286,
+      "2023": 0.1321844893,
+      "2024": 0.1617686850
+    },
+    "yeslab_380/yeslab_98": {
+      "2020": 0.1589116918,
+      "2021": 0.2045543128,
+      "2022": 0.1653799553,
+      "2023": 0.1330287749,
+      "2024": 0.1503330159
+    },
+    "yeslab_94/yeslab_98": {
+      "2020": 0.7095165189,
+      "2021": 0.7532464576,
+      "2022": 0.7411022796,
+      "2023": 0.7553319822,
+      "2024": 0.6978452355
+    }
+  },
+  "pairs": [
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_94",
+      "median_abs_spearman": 0.1617686850
+    },
+    {
+      "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_98",
+      "median_abs_spearman": 0.1589116918
+    },
+    {
+      "factor_id_left": "yeslab_94",
+      "factor_id_right": "yeslab_98",
+      "median_abs_spearman": 0.7411022796
+    }
+  ],
+  "conclusion": "94 and 98 are below the redundancy threshold against stored canonical 380; 380 is used only as a stored factor whose four-window Tushare replay passed, not as a market-data source."
+}

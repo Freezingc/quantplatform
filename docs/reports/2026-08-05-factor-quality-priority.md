@@ -1270,3 +1270,22 @@ pair 均低于 0.90。提案仍未发布、未写入旧表或新 V2 表，也未
 版本标识审批和 admission preflight。
 
 证据：[`沪深准入候选提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_proposal_v1.json)
+
+### 沪深准入预检结果
+
+已补齐重新物化因子与 `yeslab_380` 的直接相似度证据。94/380 和 98/380 的五年聚合中位
+绝对 Spearman 分别为 `0.161769`、`0.158912`，年度最高分别为 `0.185751`、`0.204554`，
+均低于 `0.90`。补齐后，六个候选的 15 条两两相似度边全部具备证据，逐边结果全部 PASS。
+
+对候选提案、三份质量摘要和四份相似度 artifact 执行只读 admission preflight，结果为
+`PASS_WITH_MONITORING`：6 个候选的 predictive gate 均 PASS；155、98 的年度门槛 PASS；
+380、431、437、94 保留年度 MONITOR。该状态只表示证据齐全并可进入人工版本审批，不表示
+已发布或可以直接冻结为模型输入。预检输出仍明确记录 `NOT_PUBLISHED`、`database_writes=false`、
+`model_training_started=false`、`locked_test_read=false`，没有写入任何已有表，也没有开始训练。
+
+证据：
+
+- [`94/98-380 沪深 TRAIN 相似度`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_94_98_380_train_v1.json)
+- [`380/431/437 canonical 相似度边`](../../research_v2/artifacts/diagnostics/tushare_shsz_similarity_canonical_380_431_437_train_v1.json)
+- [`沪深准入预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_admission_preflight_v1.json)
+- [`准入预检脚本`](../../research_v2/scripts/audit_shsz_admission_preflight.py)
