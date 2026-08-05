@@ -547,5 +547,22 @@ YesLab 已存有限值逐键比较；有限重叠 mismatch 会阻断后续输入
 
 - [`公式复现一致性审计脚本`](../../research_v2/scripts/audit_formula_replay_consistency.py)
 - [`阻断因子重放结果`](../../research_v2/artifacts/diagnostics/formula_replay_consistency_blocked_factors_2020-09-14_2020-09-25_v1.json)
+- [`源输入横截面漂移审计`](../../research_v2/artifacts/diagnostics/source_input_universe_drift_2020-09-14_2020-09-25_v1.json)
 
 该门禁只读 YesLab，`database_writes=false`，且未读取 2026 locked-test。
+
+进一步核查显示，这不是简单的单日缺失：
+
+- 2020-09-14–25，`factor_data9/GP_026` 每日有 `11,908` 条原始行、`5,954` 个唯一业务键，
+  即每个键有一条完全重复记录；去重后仍保留 `3,694–3,724` 个有限值。
+- 同一窗口，`factor_data10/AttentionSpillover` 每日有 `5,976` 个唯一键，有限值为
+  `1,991–3,699` 个。
+- 当前 `stock_factor_daily` 每日只有 `4,042–4,080` 个唯一键；2020-09-18 的有限
+  `total_mv/turnover_rate` 更只有 `2,200` 个。
+- 已知旧 `dfs://dayFactorDB/dayFactorTB` 在该 2020 窗口没有记录，无法提供生成时的
+  历史输入横截面。
+
+这解释了为什么部分简单换手率因子可以精确重放，而 GP_026 和 AttentionSpillover
+不能：后两者包含横截面排序/行业市值分组或依赖历史横截面集合，源因子生成时的输入
+集合已经无法从现有表中恢复。没有历史输入快照前，任何“按当前行情重算并覆盖”的做法
+都会把源版本漂移伪装成修复，继续禁止发布。
