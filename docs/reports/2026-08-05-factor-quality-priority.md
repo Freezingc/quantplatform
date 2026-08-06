@@ -1676,3 +1676,10 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 财务数据可用日期和月度覆盖，再决定是否采用修复后的财务口径。
 
 证据：[`CFOA/ROA 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_cfoa_roa_train_2020_quality_v1.json)
+
+源数据月度诊断确认该覆盖失败来自 `factor_data5` 的财务可用性：在沪深范围内，CFOA 的月度有效值比例
+从 2020-01 的 `76.90%` 升至 2020-12 的 `83.16%`，ROA 从 `77.84%` 升至 `83.80%`；有效股票数也
+分别从 `4,016/4,051` 增至 `4,405/4,420`。因此不是 V2 标签或北交所范围问题，而是早期公告数据尚未
+完整覆盖股票池。当前不应以事后数据回填来提高覆盖；需要建立财务数据的 PIT 可用日期修复后再评估。
+
+证据：[`CFOA/ROA 可用性诊断`](../../research_v2/artifacts/diagnostics/financial_cfoa_roa_availability_2020_v1.json)

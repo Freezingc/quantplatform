@@ -1,0 +1,30 @@
+{
+  "scope": "FINANCIAL_CFOA_ROA_SOURCE_AVAILABILITY_2020_V1",
+  "source_table": "YesLab.factor_data5",
+  "market_scope": "SH/SZ",
+  "period": "2020-01-01/2020-12-31",
+  "database_writes": false,
+  "locked_test_read": false,
+  "monthly_source_availability": {
+    "yeslab_219": {
+      "factor_name": "CFOA",
+      "jan_finite_row_ratio": 0.768978,
+      "dec_finite_row_ratio": 0.831571,
+      "minimum_finite_row_ratio": 0.768978,
+      "maximum_finite_row_ratio": 0.831571,
+      "jan_finite_code_count": 4016,
+      "dec_finite_code_count": 4405
+    },
+    "yeslab_220": {
+      "factor_name": "ROA",
+      "jan_finite_row_ratio": 0.778404,
+      "dec_finite_row_ratio": 0.837970,
+      "minimum_finite_row_ratio": 0.778404,
+      "maximum_finite_row_ratio": 0.837970,
+      "jan_finite_code_count": 4051,
+      "dec_finite_code_count": 4420
+    }
+  },
+  "interpretation": "The source financial table has a persistent early-period availability gap that improves as the universe matures. This explains the structural coverage failure; it is not a label or BJ-universe issue.",
+  "decision": "KEEP_ISOLATED_UNTIL_PIT_FINANCIAL_AVAILABILITY_REPAIR"
+}
