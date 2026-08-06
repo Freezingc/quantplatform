@@ -81,14 +81,17 @@
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
     "calculator_root": "数据库/factor_calculators",
-    "catalog_factor_with_matching_calculator_count": 477,
-    "catalog_factor_without_matching_calculator_count": 10,
+    "catalog_factor_with_matching_calculator_count": 484,
+    "catalog_factor_without_matching_calculator_count": 3,
     "catalog_factor_without_matching_calculator_ids": [
-      "yeslab_0", "yeslab_222", "yeslab_224", "yeslab_481", "yeslab_482",
-      "yeslab_483", "yeslab_484", "yeslab_485", "yeslab_486", "yeslab_487"
+      "yeslab_0", "yeslab_222", "yeslab_224"
     ],
-    "matching_policy": "Exact FACTOR_CONFIG factor_name match or GP_NNN source name with GP_Factor_NNN_Calculator.py present.",
-    "interpretation": "Most remaining factors are computationally reproducible in principle; they still require Tushare canonical input, PIT checks, predictive quality, similarity, and formula replay evidence."
+    "matching_policy": "Exact FACTOR_CONFIG factor_name match, GP_NNN source name with GP_Factor_NNN_Calculator.py present, or an explicit CSAD/Corwin-Schultz output adapter mapped by source factor name.",
+    "calculator_present_but_canonical_replay_unready_ids": [
+      "yeslab_481", "yeslab_482", "yeslab_483", "yeslab_484",
+      "yeslab_485", "yeslab_486", "yeslab_487"
+    ],
+    "interpretation": "Most remaining factors are computationally reproducible in principle; seven CSAD/Corwin-Schultz factors still need adjusted-field mapping before Tushare canonical replay. All require PIT checks, predictive quality, similarity, and formula replay evidence."
   },
   "quality_source": "Tushare.daily",
   "label": "raw 5-trading-day forward adjusted return",
