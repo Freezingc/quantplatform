@@ -234,6 +234,17 @@
     "action": "Reject NP_Z. Keep NP_QOQ out of further testing until PIT financial availability repair and a dispersion-robust IC gate are defined.",
     "artifact": "financial_np_qoq_np_z_train_2020_quality_v1.json"
   },
+  "financial_ocf_growth_followup": {
+    "factor_ids": ["yeslab_233", "yeslab_234"],
+    "factor_names": ["OCF_Q_YOY", "OCF_YOY"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_233": {"mean_rank_ic": -0.0010643668, "icir": -0.0532651838, "minimum_monthly_finite_ratio": 0.6246092536, "status": "PREDICTIVE_FAIL"},
+      "yeslab_234": {"mean_rank_ic": 0.0002929478, "icir": 0.0151998397, "minimum_monthly_finite_ratio": 0.6238963128, "status": "PREDICTIVE_FAIL"}
+    },
+    "action": "Reject both OCF growth factors; no annual stability expansion.",
+    "artifact": "financial_ocf_growth_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

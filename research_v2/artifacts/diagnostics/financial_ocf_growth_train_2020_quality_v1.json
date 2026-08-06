@@ -1,0 +1,33 @@
+{
+  "scope": "FINANCIAL_OCF_GROWTH_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_233": {
+      "factor_name": "OCF_Q_YOY",
+      "valid_day_count": 234,
+      "mean_rank_ic": -0.0010643668,
+      "icir": -0.0532651838,
+      "positive_day_share": 0.4615384615,
+      "finite_ratio": 0.9304935837,
+      "minimum_monthly_finite_ratio": 0.6246092536
+    },
+    "yeslab_234": {
+      "factor_name": "OCF_YOY",
+      "valid_day_count": 234,
+      "mean_rank_ic": 0.0002929478,
+      "icir": 0.0151998397,
+      "positive_day_share": 0.4957264957,
+      "finite_ratio": 0.9294818214,
+      "minimum_monthly_finite_ratio": 0.6238963128
+    }
+  },
+  "status": "BOTH_PREDICTIVE_FAIL_COVERAGE_FAIL",
+  "reason": "Both operating-cash-flow growth factors have near-zero predictive strength and fail the early-period structural coverage gate."
+}

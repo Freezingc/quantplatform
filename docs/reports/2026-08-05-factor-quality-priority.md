@@ -1707,3 +1707,8 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 波动，不能作为单独准入依据；NP_Z mean RankIC `-0.00271`、ICIR `-0.14105`，直接淘汰。
 
 证据：[`NP_QOQ/NP_Z 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_np_qoq_np_z_train_2020_quality_v1.json)
+
+`OCF_Q_YOY` 与 `OCF_YOY` 均未通过：mean RankIC 分别为 `-0.00106` 和 `0.00029`，ICIR 为
+`-0.05327` 和 `0.01520`，同时最低月度覆盖率约 `62.4%`。两者直接淘汰，不进入年度稳定性验证。
+
+证据：[`OCF 增长类 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_ocf_growth_train_2020_quality_v1.json)
