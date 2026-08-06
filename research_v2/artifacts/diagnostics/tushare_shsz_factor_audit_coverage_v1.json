@@ -190,6 +190,17 @@
     "artifact": "financial_cfoa_roa_train_2020_quality_v1.json",
     "availability_diagnostic_artifact": "financial_cfoa_roa_availability_2020_v1.json"
   },
+  "financial_growth_followup": {
+    "factor_ids": ["yeslab_225", "yeslab_226"],
+    "factor_names": ["NP_Q_YOY", "ROE_YOY"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_225": {"mean_rank_ic": -0.0035393246, "icir": -0.1943929725, "minimum_monthly_finite_ratio": 0.6246092536, "status": "PREDICTIVE_FAIL"},
+      "yeslab_226": {"mean_rank_ic": 0.0240323576, "icir": 0.4082646689, "minimum_monthly_finite_ratio": 0.6186497998, "status": "PREDICTIVE_PASS_COVERAGE_FAIL"}
+    },
+    "action": "Reject NP_Q_YOY. Keep ROE_YOY isolated pending the same PIT financial availability repair required by CFOA and ROA.",
+    "artifact": "financial_growth_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

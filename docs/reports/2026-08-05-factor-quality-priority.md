@@ -1683,3 +1683,9 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 完整覆盖股票池。当前不应以事后数据回填来提高覆盖；需要建立财务数据的 PIT 可用日期修复后再评估。
 
 证据：[`CFOA/ROA 可用性诊断`](../../research_v2/artifacts/diagnostics/financial_cfoa_roa_availability_2020_v1.json)
+
+财务增长类初筛结果分化：`NP_Q_YOY` 的 mean RankIC 为 `-0.00354`、ICIR `-0.19439`，直接判定
+预测失败；`ROE_YOY` 的 mean RankIC 为 `0.02403`、ICIR `0.40826`，但最低月度覆盖率只有 `61.86%`，
+同样被结构门槛阻断。当前只有 ROE_YOY 值得等待 PIT 财务可用性修复后重测，NP_Q_YOY 不再推进。
+
+证据：[`财务增长类 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_growth_train_2020_quality_v1.json)

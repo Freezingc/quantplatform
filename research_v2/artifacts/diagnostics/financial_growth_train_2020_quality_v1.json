@@ -1,0 +1,33 @@
+{
+  "scope": "FINANCIAL_GROWTH_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_225": {
+      "factor_name": "NP_Q_YOY",
+      "valid_day_count": 234,
+      "mean_rank_ic": -0.0035393246,
+      "icir": -0.1943929725,
+      "positive_day_share": 0.4102564103,
+      "finite_ratio": 0.9304935837,
+      "minimum_monthly_finite_ratio": 0.6246092536
+    },
+    "yeslab_226": {
+      "factor_name": "ROE_YOY",
+      "valid_day_count": 234,
+      "mean_rank_ic": 0.0240323576,
+      "icir": 0.4082646689,
+      "positive_day_share": 0.6666666667,
+      "finite_ratio": 0.9233526165,
+      "minimum_monthly_finite_ratio": 0.6186497998
+    }
+  },
+  "status": "NP_Q_YOY_PREDICTIVE_FAIL_ROE_YOY_COVERAGE_FAIL",
+  "reason": "NP_Q_YOY fails primary predictive quality. ROE_YOY is predictive in 2020 but fails the same early-period structural coverage gate as other PIT financial factors."
+}
