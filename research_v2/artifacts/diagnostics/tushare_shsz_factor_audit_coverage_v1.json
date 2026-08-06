@@ -110,6 +110,23 @@
       "interpretation": "YesLab stores adjusted high/low at a lower effective precision than the Tushare daily*adj_factor product; this precision difference propagates through the Corwin-Schultz rolling calculation."
     }
   },
+  "csad_followup": {
+    "factor_id": "yeslab_481",
+    "factor_name": "羊群效应_CSAD收益波动比20",
+    "replay_window": "2025-01-02/2025-01-31",
+    "market_source": "Tushare.daily + Tushare.adj_factor",
+    "market_code_count": 5121,
+    "market_start": "2024-06-08",
+    "overlap_finite_rows": 92094,
+    "mismatch_rows": 38059,
+    "mismatch_date_count": 18,
+    "max_abs_diff": 1.6510696979710735,
+    "source_market_uncovered_rows": 215,
+    "source_market_uncovered_code_count": 38,
+    "status": "FORMULA_REPLAY_BLOCKED_ADJUSTED_PRECISION_AND_COVERAGE",
+    "reason": "The CSAD rolling peer selection is sensitive to adjusted-price precision, and 38 historical source codes have no Tushare market coverage in the replay window. Neither discrepancy is repaired by the adjusted-field adapter.",
+    "artifact": "formula_replay_oos3_tushare_shsz_csad481_2025-01_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
