@@ -1,0 +1,33 @@
+{
+  "scope": "FINANCIAL_NP_QOQ_NP_Z_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_231": {
+      "factor_name": "NP_QOQ",
+      "valid_day_count": 234,
+      "mean_rank_ic": 0.0092574552,
+      "icir": 0.4294806646,
+      "positive_day_share": 0.6623931624,
+      "finite_ratio": 0.9315489434,
+      "minimum_monthly_finite_ratio": 0.6253221944
+    },
+    "yeslab_232": {
+      "factor_name": "NP_Z",
+      "valid_day_count": 234,
+      "mean_rank_ic": -0.0027068215,
+      "icir": -0.1410504496,
+      "positive_day_share": 0.4273504274,
+      "finite_ratio": 0.9294818214,
+      "minimum_monthly_finite_ratio": 0.6238963128
+    }
+  },
+  "status": "BOTH_COVERAGE_FAIL_NP_Z_PREDICTIVE_FAIL",
+  "reason": "Both factors fail the early-period structural coverage gate. NP_QOQ has weak mean RankIC despite a numerically high ICIR driven by low daily dispersion; NP_Z is negative. Neither advances."
+}

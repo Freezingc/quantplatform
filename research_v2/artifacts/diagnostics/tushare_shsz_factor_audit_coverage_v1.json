@@ -223,6 +223,17 @@
     "action": "Reject CFOAD. Keep ROICD isolated pending PIT financial availability repair.",
     "artifact": "financial_roicd_cfoad_train_2020_quality_v1.json"
   },
+  "financial_np_qoq_np_z_followup": {
+    "factor_ids": ["yeslab_231", "yeslab_232"],
+    "factor_names": ["NP_QOQ", "NP_Z"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_231": {"mean_rank_ic": 0.0092574552, "icir": 0.4294806646, "minimum_monthly_finite_ratio": 0.6253221944, "status": "COVERAGE_FAIL_PREDICTIVE_WEAK"},
+      "yeslab_232": {"mean_rank_ic": -0.0027068215, "icir": -0.1410504496, "minimum_monthly_finite_ratio": 0.6238963128, "status": "COVERAGE_FAIL_PREDICTIVE_FAIL"}
+    },
+    "action": "Reject NP_Z. Keep NP_QOQ out of further testing until PIT financial availability repair and a dispersion-robust IC gate are defined.",
+    "artifact": "financial_np_qoq_np_z_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

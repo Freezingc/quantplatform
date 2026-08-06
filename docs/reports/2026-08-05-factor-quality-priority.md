@@ -1701,3 +1701,9 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 仅 `0.00188`、ICIR `0.04868`。CFOAD 直接淘汰，ROICD 保持在 PIT 财务可用性修复后的重测队列。
 
 证据：[`ROICD/CFOAD 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_roicd_cfoad_train_2020_quality_v1.json)
+
+`NP_QOQ` 和 `NP_Z` 的源数据覆盖接近完整，但进入固定股票池后仍都只有约 `62.5%` 的最低月度覆盖，
+再次表明早期 PIT 财务可用性问题。NP_QOQ mean RankIC 仅 `0.00926`，其较高 ICIR 主要来自低日度
+波动，不能作为单独准入依据；NP_Z mean RankIC `-0.00271`、ICIR `-0.14105`，直接淘汰。
+
+证据：[`NP_QOQ/NP_Z 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_np_qoq_np_z_train_2020_quality_v1.json)
