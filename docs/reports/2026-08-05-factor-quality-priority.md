@@ -1712,3 +1712,9 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 `-0.05327` 和 `0.01520`，同时最低月度覆盖率约 `62.4%`。两者直接淘汰，不进入年度稳定性验证。
 
 证据：[`OCF 增长类 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_ocf_growth_train_2020_quality_v1.json)
+
+`OP_YOY` 与 `1个月振幅调整动量` 也均失败：mean RankIC 分别为 `-0.00157` 和 `-0.00649`。后者的
+整体有限覆盖率仅 `33.93%`、最低月度覆盖率 `22.20%`，属于关键覆盖不足，需单独修复源数据才能
+再次考虑；二者均不进入后续验证。
+
+证据：[`OP_YOY/振幅调整动量 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_op_yoy_amplitude_train_2020_quality_v1.json)

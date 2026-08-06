@@ -245,6 +245,17 @@
     "action": "Reject both OCF growth factors; no annual stability expansion.",
     "artifact": "financial_ocf_growth_train_2020_quality_v1.json"
   },
+  "financial_op_yoy_amplitude_followup": {
+    "factor_ids": ["yeslab_235", "yeslab_236"],
+    "factor_names": ["OP_YOY", "1个月振幅调整动量"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_235": {"mean_rank_ic": -0.0015698321, "icir": -0.1140303694, "minimum_monthly_finite_ratio": 0.6238963128, "status": "PREDICTIVE_FAIL"},
+      "yeslab_236": {"mean_rank_ic": -0.0064887952, "icir": -0.0727144615, "minimum_monthly_finite_ratio": 0.2219730942, "status": "PREDICTIVE_FAIL_CRITICAL_COVERAGE"}
+    },
+    "action": "Reject both factors; the amplitude-adjusted momentum source additionally needs separate coverage remediation before any reconsideration.",
+    "artifact": "financial_op_yoy_amplitude_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
