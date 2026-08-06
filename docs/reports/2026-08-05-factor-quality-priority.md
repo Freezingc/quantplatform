@@ -1689,3 +1689,9 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 同样被结构门槛阻断。当前只有 ROE_YOY 值得等待 PIT 财务可用性修复后重测，NP_Q_YOY 不再推进。
 
 证据：[`财务增长类 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_growth_train_2020_quality_v1.json)
+
+`TA_YOY` 与 `TOE` 的初筛也没有形成可用候选：TA_YOY mean RankIC `0.01765`、ICIR `0.32825`，
+但最低月度覆盖率 `62.44%`；TOE mean RankIC `-0.01029`、ICIR `-0.27550`，直接预测失败。TOE
+不再推进，TA_YOY 保持在财务可用性修复后的重测队列。
+
+证据：[`TA_YOY/TOE 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_ta_toe_train_2020_quality_v1.json)

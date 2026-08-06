@@ -201,6 +201,17 @@
     "action": "Reject NP_Q_YOY. Keep ROE_YOY isolated pending the same PIT financial availability repair required by CFOA and ROA.",
     "artifact": "financial_growth_train_2020_quality_v1.json"
   },
+  "financial_ta_toe_followup": {
+    "factor_ids": ["yeslab_227", "yeslab_228"],
+    "factor_names": ["TA_YOY", "TOE"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_227": {"mean_rank_ic": 0.017650228, "icir": 0.3282487253, "minimum_monthly_finite_ratio": 0.6243716067, "status": "PREDICTIVE_WEAK_COVERAGE_FAIL"},
+      "yeslab_228": {"mean_rank_ic": -0.010288826, "icir": -0.2754967153, "minimum_monthly_finite_ratio": 0.6246092536, "status": "PREDICTIVE_FAIL"}
+    },
+    "action": "Reject TOE. Keep TA_YOY isolated pending PIT financial availability repair; do not expand annual testing yet.",
+    "artifact": "financial_ta_toe_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
