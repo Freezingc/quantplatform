@@ -1622,3 +1622,10 @@ Tushare 质量证据的因子；“有计算器”只代表可重放，不代表
 
 当前尚未匹配的对象为测试因子和两个财务别名；7 个 CSAD/价差因子则属于“源码存在、canonical
 回放未就绪”，已单独记录，暂不纳入模型输入。
+
+随后补充了 Tushare `adj_factor` 适配，使 `high_hfq/low_hfq/close_hfq` 能在内存行情中生成，
+并对 `yeslab_485`、`yeslab_487` 做了 2025-01-02–01-31 全市场回放。适配本身成功，但历史值仍有
+较多差异：`yeslab_485` 为 `21,348 / 92,006` mismatch，`yeslab_487` 为 `12,281 / 91,332`
+mismatch。说明源表的复权/价差实现口径仍未完全一致，不能因为字段已经补齐就解除准入阻断。
+
+证据：[`CS 价差复权字段回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos2_tushare_shsz_csad_corwin_2025-01_v1.json)

@@ -79,6 +79,13 @@ SUPPORTED_FACTOR_IDS = (
     "yeslab_357",
     "yeslab_362",
     "yeslab_363",
+    "yeslab_481",
+    "yeslab_482",
+    "yeslab_483",
+    "yeslab_484",
+    "yeslab_485",
+    "yeslab_486",
+    "yeslab_487",
 )
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALCULATOR_ROOT = REPO_ROOT / "数据库"
@@ -107,6 +114,13 @@ FULL_CROSS_SECTION_FACTOR_IDS = frozenset(
         "yeslab_357",
         "yeslab_362",
         "yeslab_363",
+        "yeslab_481",
+        "yeslab_482",
+        "yeslab_483",
+        "yeslab_484",
+        "yeslab_485",
+        "yeslab_486",
+        "yeslab_487",
     }
 )
 
@@ -183,11 +197,22 @@ def normalize_tushare_market(
         "amount",
         "pct_chg",
         "turnover_rate",
+        "adj_factor",
     ):
         if column == "turnover_rate" and not include_daily_basic:
             continue
         if column in frame.columns:
             frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    if "adj_factor" in frame.columns:
+        for raw_column, adjusted_column in (
+            ("open", "open_hfq"),
+            ("high", "high_hfq"),
+            ("low", "low_hfq"),
+            ("close", "close_hfq"),
+            ("pre_close", "pre_close_hfq"),
+        ):
+            if raw_column in frame.columns:
+                frame[adjusted_column] = frame[raw_column] * frame["adj_factor"]
     frame = frame.loc[frame["ts_code"].isin(set(map(str, codes)))].copy()
     frame = frame.dropna(subset=["trade_date", "ts_code"])
     frame = frame.drop_duplicates(["trade_date", "ts_code"], keep="last")
@@ -203,11 +228,41 @@ def normalize_tushare_market(
             "amount",
             "pct_chg",
             "turnover_rate",
+            "adj_factor",
+            "open_hfq",
+            "high_hfq",
+            "low_hfq",
+            "close_hfq",
+            "pre_close_hfq",
         )
         if column in frame
         and (column != "turnover_rate" or include_daily_basic)
     ]
     return frame.loc[:, columns].sort_values(["trade_date", "ts_code"]).reset_index(drop=True)
+
+
+def merge_tushare_adjustment_factor(
+    daily: pd.DataFrame, adjustment: pd.DataFrame
+) -> pd.DataFrame:
+    """Attach Tushare adj_factor to daily rows using the business key."""
+
+    required_daily = {"ts_code", "trade_date"}
+    required_adjustment = required_daily | {"adj_factor"}
+    if missing := sorted(required_daily.difference(daily.columns)):
+        raise ValueError(f"daily frame is missing columns: {missing}")
+    if missing := sorted(required_adjustment.difference(adjustment.columns)):
+        raise ValueError(f"adjustment frame is missing columns: {missing}")
+    left = daily.copy()
+    right = adjustment.loc[:, ["ts_code", "trade_date", "adj_factor"]].copy()
+    for frame in (left, right):
+        frame["ts_code"] = frame["ts_code"].astype(str)
+        frame["trade_date"] = pd.to_datetime(
+            frame["trade_date"], errors="raise"
+        ).dt.normalize()
+    right["adj_factor"] = pd.to_numeric(right["adj_factor"], errors="coerce")
+    right = right.drop_duplicates(["ts_code", "trade_date"], keep="last")
+    left = left.drop(columns=["adj_factor"], errors="ignore")
+    return left.merge(right, on=["ts_code", "trade_date"], how="left", validate="one_to_one")
 
 
 class TushareMarketSession:
@@ -393,6 +448,7 @@ def fetch_missing_code_ranges(
     *,
     cache_dir: Path,
     include_daily_basic: bool,
+    include_adjusted_fields: bool = False,
     aliases: Mapping[str, str] | None = None,
 ) -> pd.DataFrame:
     """Fetch completely absent securities by code, including optional turnover data."""
@@ -421,6 +477,27 @@ def fetch_missing_code_ranges(
             continue
         daily = daily.copy()
         daily["ts_code"] = historical_code
+        if include_adjusted_fields:
+            adjustment_cache = cache_dir / (
+                f"adj_factor_code_{safe_code}_{start:%Y%m%d}_{end:%Y%m%d}.json"
+            )
+            if adjustment_cache.is_file():
+                adjustment = pd.read_json(adjustment_cache, orient="table")
+            else:
+                adjustment = pro.adj_factor(
+                    ts_code=request_code,
+                    start_date=start.strftime("%Y%m%d"),
+                    end_date=end.strftime("%Y%m%d"),
+                )
+                if isinstance(adjustment, pd.DataFrame):
+                    adjustment_cache.write_text(
+                        adjustment.to_json(orient="table", date_format="iso"),
+                        encoding="utf-8",
+                    )
+            if isinstance(adjustment, pd.DataFrame) and not adjustment.empty:
+                adjustment = adjustment.copy()
+                adjustment["ts_code"] = historical_code
+                daily = merge_tushare_adjustment_factor(daily, adjustment)
         if include_daily_basic:
             basic_cache = cache_dir / (
                 f"daily_basic_code_{safe_code}_{start:%Y%m%d}_{end:%Y%m%d}.json"
@@ -461,6 +538,7 @@ def _fetch_tushare_market(
     open_dates: Sequence[date] | None = None,
     cache_dir: Path | None = None,
     include_daily_basic: bool = False,
+    include_adjusted_fields: bool = False,
     aliases: Mapping[str, str] | None = None,
 ) -> pd.DataFrame:
     import tushare as ts  # type: ignore[import-untyped]
@@ -470,6 +548,8 @@ def _fetch_tushare_market(
     pro = ts.pro_api(token)
     frames: list[pd.DataFrame] = []
     aliases = aliases or {}
+    resolved_cache = cache_dir or Path("/tmp/qrv2-tushare-replay-cache")
+    resolved_cache.mkdir(parents=True, exist_ok=True)
     if open_dates is None:
         for code in codes:
             historical_code = str(code)
@@ -482,10 +562,29 @@ def _fetch_tushare_market(
             if isinstance(result, pd.DataFrame) and not result.empty:
                 result = result.copy()
                 result["ts_code"] = historical_code
+                if include_adjusted_fields:
+                    adjustment_cache = resolved_cache / (
+                        f"adj_factor_code_{request_code.replace('.', '_')}_{start:%Y%m%d}_{end:%Y%m%d}.json"
+                    )
+                    if adjustment_cache.is_file():
+                        adjustment = pd.read_json(adjustment_cache, orient="table")
+                    else:
+                        adjustment = pro.adj_factor(
+                            ts_code=request_code,
+                            start_date=start.strftime("%Y%m%d"),
+                            end_date=end.strftime("%Y%m%d"),
+                        )
+                        if isinstance(adjustment, pd.DataFrame):
+                            adjustment_cache.write_text(
+                                adjustment.to_json(orient="table", date_format="iso"),
+                                encoding="utf-8",
+                            )
+                    if isinstance(adjustment, pd.DataFrame) and not adjustment.empty:
+                        adjustment = adjustment.copy()
+                        adjustment["ts_code"] = historical_code
+                        result = merge_tushare_adjustment_factor(result, adjustment)
                 frames.append(result)
     else:
-        resolved_cache = cache_dir or Path("/tmp/qrv2-tushare-replay-cache")
-        resolved_cache.mkdir(parents=True, exist_ok=True)
         for trade_date in open_dates:
             cache_path = resolved_cache / f"daily_{trade_date:%Y%m%d}.json"
             if cache_path.is_file():
@@ -497,6 +596,23 @@ def _fetch_tushare_market(
                         result.to_json(orient="table", date_format="iso"), encoding="utf-8"
                     )
             if isinstance(result, pd.DataFrame) and not result.empty:
+                if include_adjusted_fields:
+                    adjustment_cache_path = resolved_cache / (
+                        f"adj_factor_{trade_date:%Y%m%d}.json"
+                    )
+                    if adjustment_cache_path.is_file():
+                        adjustment = pd.read_json(adjustment_cache_path, orient="table")
+                    else:
+                        adjustment = pro.adj_factor(
+                            trade_date=trade_date.strftime("%Y%m%d")
+                        )
+                        if isinstance(adjustment, pd.DataFrame):
+                            adjustment_cache_path.write_text(
+                                adjustment.to_json(orient="table", date_format="iso"),
+                                encoding="utf-8",
+                            )
+                    if isinstance(adjustment, pd.DataFrame) and not adjustment.empty:
+                        result = merge_tushare_adjustment_factor(result, adjustment)
                 if include_daily_basic:
                     basic_cache_path = resolved_cache / f"daily_basic_{trade_date:%Y%m%d}.json"
                     if basic_cache_path.is_file():
@@ -541,6 +657,7 @@ def _fetch_tushare_market(
                 end,
                 cache_dir=resolved_cache,
                 include_daily_basic=include_daily_basic,
+                include_adjusted_fields=include_adjusted_fields,
                 aliases=aliases,
             )
             if not fallback.empty:
@@ -646,6 +763,10 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         open_dates=open_dates,
         cache_dir=args.cache_dir,
         include_daily_basic=effective_include_daily_basic,
+        include_adjusted_fields=bool(
+            {"open_hfq", "high_hfq", "low_hfq", "close_hfq", "pre_close_hfq"}
+            & set(required_fields)
+        ),
         aliases=aliases,
     )
     market = apply_tushare_aliases(market, aliases)

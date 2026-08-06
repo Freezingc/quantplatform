@@ -124,6 +124,30 @@ def test_parser_accepts_industry_skew_factors_for_full_market_replay() -> None:
     assert audit.requires_full_cross_section(args.factor_id)
 
 
+def test_parser_accepts_adjusted_csad_and_corwin_schultz_factors() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_481",
+            "--factor-id",
+            "yeslab_487",
+            "--full-market",
+            "--exclude-bj",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/tushare-adjusted-factors.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_481", "yeslab_487")
+    assert audit.required_market_fields(
+        (REPLAY_DEFINITIONS["yeslab_481"], REPLAY_DEFINITIONS["yeslab_487"])
+    ) == ("close_hfq", "high_hfq", "low_hfq")
+
+
 def test_parser_accepts_low_coverage_gp_replay_factors() -> None:
     args = audit.parse_args(
         [
@@ -297,6 +321,50 @@ def test_normalize_tushare_market_preserves_pre_close() -> None:
     normalized = audit.normalize_tushare_market(raw, codes=("000001.SZ",))
 
     assert normalized.loc[0, "pre_close"] == pytest.approx(10.8)
+
+
+def test_normalize_tushare_market_derives_hfq_fields_from_adj_factor() -> None:
+    raw = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "trade_date": ["20250102"],
+            "open": [10.0],
+            "high": [11.0],
+            "low": [9.0],
+            "close": [10.5],
+            "pre_close": [10.2],
+            "amount": [10.456],
+            "pct_chg": [2.94],
+            "adj_factor": [1.2],
+        }
+    )
+
+    normalized = audit.normalize_tushare_market(raw, codes=("000001.SZ",))
+
+    assert normalized.loc[0, "close_hfq"] == pytest.approx(12.6)
+    assert normalized.loc[0, "high_hfq"] == pytest.approx(13.2)
+    assert normalized.loc[0, "low_hfq"] == pytest.approx(10.8)
+
+
+def test_merge_tushare_adjustment_factor_aligns_code_and_date() -> None:
+    daily = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "trade_date": ["20250102", "20250103"],
+            "close": [10.5, 10.8],
+        }
+    )
+    adjustment = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "trade_date": ["20250103", "20250102"],
+            "adj_factor": [1.3, 1.2],
+        }
+    )
+
+    merged = audit.merge_tushare_adjustment_factor(daily, adjustment)
+
+    assert merged["adj_factor"].tolist() == [1.2, 1.3]
 
 
 def test_required_market_fields_reflect_calculator_inputs() -> None:

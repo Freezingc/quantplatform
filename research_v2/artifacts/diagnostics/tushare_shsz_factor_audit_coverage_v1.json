@@ -77,6 +77,30 @@
     "reason": "Both factors depend on the static YesLab industry grouping and cannot be treated as Tushare PIT factors until historical industry membership is available.",
     "artifact": "formula_replay_oos2_tushare_shsz_industry362_363_2025-01_v1.json"
   },
+  "adjusted_market_followup": {
+    "factor_ids": ["yeslab_485", "yeslab_487"],
+    "replay_window": "2025-01-02/2025-01-31",
+    "market_source": "Tushare.daily + Tushare.adj_factor",
+    "market_code_count": 5130,
+    "required_market_fields": ["high_hfq", "low_hfq"],
+    "results": {
+      "yeslab_485": {
+        "overlap_finite_rows": 92006,
+        "mismatch_rows": 21348,
+        "max_abs_diff": 7.429150561025222e-05,
+        "max_rel_diff": 0.004001997281812507
+      },
+      "yeslab_487": {
+        "overlap_finite_rows": 91332,
+        "mismatch_rows": 12281,
+        "max_abs_diff": 4.697571527489952e-06,
+        "max_rel_diff": 0.00012523603615259408
+      }
+    },
+    "status": "FORMULA_REPLAY_BLOCKED_ADJUSTED_SOURCE_DIFFERENCE",
+    "reason": "Adjusted Tushare fields are now available to the calculator, but historical CS spread values still disagree at many rows; retain the factors as isolated until source adjustment convention is reconciled.",
+    "artifact": "formula_replay_oos2_tushare_shsz_csad_corwin_2025-01_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
