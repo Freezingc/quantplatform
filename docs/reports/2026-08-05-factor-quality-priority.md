@@ -1610,3 +1610,13 @@ ICIR 为 `0.78321`，方向一致日占比 `78.48%`。
 Tushare 因子准入候选，除非先补齐 PIT 行业分类映射。
 
 证据：[`yeslab_362/363 行业范围回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos2_tushare_shsz_industry362_363_2025-01_v1.json)
+
+### 剩余因子源码覆盖盘点
+
+对 `数据库/factor_calculators` 做了只读源码匹配：目录中的 `487` 个因子有 `477` 个能匹配到
+计算器（GP 因子按 `GP_NNN` 与 `GP_Factor_NNN_Calculator.py` 规则匹配，其余按
+`FACTOR_CONFIG.factor_name` 匹配），只有 `10` 个没有直接匹配的计算器。后续全库质检优先处理
+这些已有计算器但尚无 Tushare 质量证据的因子；“有计算器”只代表可重放，不代表通过准入。
+
+当前尚未匹配的对象为测试因子、两个财务别名和 5 个 CSAD/价差因子，已记录在覆盖清单中，暂不
+纳入模型输入。
