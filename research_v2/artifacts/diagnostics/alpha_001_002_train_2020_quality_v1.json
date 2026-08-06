@@ -1,0 +1,33 @@
+{
+  "scope": "ALPHA_001_002_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data1 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_1": {
+      "factor_name": "Alpha1",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0152351747,
+      "icir": 0.2325303368,
+      "positive_day_share": 0.5802469136,
+      "finite_ratio": 1.0,
+      "minimum_monthly_finite_ratio": 1.0
+    },
+    "yeslab_2": {
+      "factor_name": "Alpha2",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0028490465,
+      "icir": 0.0288887371,
+      "positive_day_share": 0.5267489712,
+      "finite_ratio": 0.9921223857,
+      "minimum_monthly_finite_ratio": 0.9374805769
+    }
+  },
+  "status": "ALPHA1_PREDICTIVE_WEAK_ALPHA2_PREDICTIVE_FAIL",
+  "reason": "Both factors meet structural coverage, but Alpha1 is below the primary signal-strength level used by admitted factors and Alpha2 is near zero. Neither advances to annual stability."
+}

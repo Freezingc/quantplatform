@@ -1733,3 +1733,11 @@ PIT 财务可用性的最低覆盖要求。当前没有任何一个可进入模�
 财务可用日期，再重测这 8 个条件候选，不能对已拒绝因子反复筛选。
 
 统一状态见 [`核心财务因子初筛矩阵`](../../research_v2/artifacts/diagnostics/financial_core_screen_status_v1.json)。
+
+### Alpha 库初筛
+
+技术因子库的第一批 `Alpha1/Alpha2` 具有良好结构覆盖（最低月度覆盖率 `100%/93.75%`），但信号强度
+不足：Alpha1 mean RankIC `0.01524`、ICIR `0.23253`，低于当前准入集合的基础强度；Alpha2 为
+`0.00285/0.02889`。这说明覆盖充分不能替代预测性，二者均不进入年度稳定性验证。
+
+证据：[`Alpha1/Alpha2 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_001_002_train_2020_quality_v1.json)
