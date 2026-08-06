@@ -1,0 +1,44 @@
+{
+  "scope": "Tushare canonical SH/SZ factor quality audit coverage",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "catalog_source": "research_v2/configs/factors/source_catalog.yaml",
+  "catalog_factor_count": 487,
+  "complete_predictive_quality_factor_count": 16,
+  "complete_predictive_quality_factor_ids": [
+    "yeslab_376", "yeslab_377", "yeslab_380", "yeslab_381",
+    "yeslab_387", "yeslab_388", "yeslab_391", "yeslab_395",
+    "yeslab_396", "yeslab_400", "yeslab_405", "yeslab_425",
+    "yeslab_432", "yeslab_433", "yeslab_442", "yeslab_443"
+  ],
+  "formal_admission_factor_count": 9,
+  "formal_admission_factor_ids": [
+    "yeslab_380", "yeslab_431", "yeslab_437", "yeslab_155",
+    "yeslab_98", "yeslab_94", "yeslab_376", "yeslab_396", "yeslab_442"
+  ],
+  "diagnostic_evidence_factor_count": 62,
+  "diagnostic_evidence_definition": "Factor appears in at least one diagnostic artifact; this is not equivalent to complete predictive quality or admission.",
+  "catalog_without_complete_predictive_quality_count": 471,
+  "catalog_without_any_diagnostic_artifact_count": 425,
+  "quality_source": "Tushare.daily",
+  "label": "raw 5-trading-day forward adjusted return",
+  "training_period": "2020-01-02/2024-12-31",
+  "validation_period": "2025-01-02/2025-12-31",
+  "database_writes": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED",
+  "interpretation": {
+    "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
+    "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
+    "remaining_library": "The remaining catalog factors have not been granted admission evidence by this audit and must remain isolated from model inputs."
+  },
+  "source_artifacts": [
+    "tushare_shsz_factor_quality_scoreboard_v4.json",
+    "tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
+    "tushare_shsz_registered_gp_quality_review_v1.json",
+    "tushare_shsz_scope_diagnostic_gp012_gp036_v1.json",
+    "tushare_shsz_registered_gp_scope_precision_review_v1.json",
+    "tushare_shsz_remaining_gp_scope_review_v1.json",
+    "tushare_shsz_pending_gp_scope_completion_v1.json"
+  ]
+}

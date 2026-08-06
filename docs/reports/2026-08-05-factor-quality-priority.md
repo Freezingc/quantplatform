@@ -1563,3 +1563,15 @@ GP_068 对 `amount` 做 60 日 rank，这种精度差异会改变历史并列排
 证据：[`SH/SZ 公式精度诊断`](../../research_v2/artifacts/diagnostics/tushare_shsz_formula_precision_diagnostic_v1.json)
 该诊断已纳入 [`统一质量矩阵 v4`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_quality_scoreboard_v4.json)
 的 `formula_precision_diagnostic_status=MONITOR` 字段，但不改变因子准入 PASS/FAIL 计算。
+
+### 因子库审计覆盖边界
+
+本轮审计进一步固定了“已检验”和“已准入”的边界。当前因子目录共有 `487` 个条目；其中
+`16` 个完成了 Tushare 沪深范围、5 个交易日收益标签的 TRAIN/验证质量检验，`9` 个进入现有
+统一准入 scoreboard。另有 `62` 个因子在历史诊断文件中出现过，但这只代表存在局部公式、范围、
+精度或候选证据，不能视为通过质量检验。目录中仍有 `425` 个因子没有任何诊断 artifact，必须继续
+隔离，不能进入模型输入。
+
+覆盖清单见 [`因子审计覆盖 v1`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json)。
+该清单不执行数据库写入、版本发布或模型训练；后续应按优先级对剩余因子做 Tushare 重物化质量检验，
+再单独处理相似度、公式一致性、PIT 和准入门槛。
