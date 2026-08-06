@@ -1718,3 +1718,18 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 再次考虑；二者均不进入后续验证。
 
 证据：[`OP_YOY/振幅调整动量 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_op_yoy_amplitude_train_2020_quality_v1.json)
+
+`ROAD` 和 `ROED` 提供了本组中较强的预测信号：mean RankIC 分别为 `0.03837` 和 `0.03434`，ICIR
+为 `0.43764` 和 `0.42503`，但最低月度覆盖率仅 `57.54%`、`61.86%`。它们与 CFOA/ROA/ROICD
+同属“预测通过、早期 PIT 财务可用性阻断”队列，不能绕过结构门槛进入训练。
+
+证据：[`ROAD/ROED 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_road_roed_train_2020_quality_v1.json)
+
+### 核心财务因子初筛汇总
+
+`factor_data5` 中本轮覆盖的 `18` 个核心财务质量/增长/变化因子已经完成初筛：`8` 个因预测失败
+直接拒绝，`2` 个（ROE、ROIC）因年度不稳定拒绝，剩余 `8` 个有一定 2020 预测性但都未达到早期
+PIT 财务可用性的最低覆盖要求。当前没有任何一个可进入模型输入；后续修复优先级是建立 PIT
+财务可用日期，再重测这 8 个条件候选，不能对已拒绝因子反复筛选。
+
+统一状态见 [`核心财务因子初筛矩阵`](../../research_v2/artifacts/diagnostics/financial_core_screen_status_v1.json)。

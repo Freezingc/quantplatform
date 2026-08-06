@@ -1,0 +1,35 @@
+{
+  "scope": "FINANCIAL_CORE_SCREEN_STATUS_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "screen_period": "2020-01-02/2020-12-31",
+  "factor_count": 18,
+  "pit_coverage_repair_required_ids": [
+    "yeslab_219", "yeslab_220", "yeslab_221", "yeslab_223",
+    "yeslab_226", "yeslab_227", "yeslab_229", "yeslab_231"
+  ],
+  "predictive_reject_ids": [
+    "yeslab_225", "yeslab_228", "yeslab_230", "yeslab_232",
+    "yeslab_233", "yeslab_234", "yeslab_235", "yeslab_236"
+  ],
+  "annual_stability_reject_ids": ["yeslab_222", "yeslab_224"],
+  "admission_candidate_ids": [],
+  "status": "FINANCIAL_CORE_NO_ADMISSION_CANDIDATE",
+  "decision": "No raw financial factor in this core group may enter model inputs. PIT coverage repair is a precondition for re-testing the eight conditional candidates; rejected factors are not retried without a separately specified transformation.",
+  "evidence_artifacts": [
+    "financial_aliases_train_2020_quality_v1.json",
+    "financial_aliases_train_2021_quality_v1.json",
+    "financial_cfoa_roa_train_2020_quality_v1.json",
+    "financial_growth_train_2020_quality_v1.json",
+    "financial_ta_toe_train_2020_quality_v1.json",
+    "financial_roicd_cfoad_train_2020_quality_v1.json",
+    "financial_np_qoq_np_z_train_2020_quality_v1.json",
+    "financial_ocf_growth_train_2020_quality_v1.json",
+    "financial_op_yoy_amplitude_train_2020_quality_v1.json",
+    "financial_road_roed_train_2020_quality_v1.json"
+  ],
+  "database_writes": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED"
+}

@@ -256,6 +256,25 @@
     "action": "Reject both factors; the amplitude-adjusted momentum source additionally needs separate coverage remediation before any reconsideration.",
     "artifact": "financial_op_yoy_amplitude_train_2020_quality_v1.json"
   },
+  "financial_road_roed_followup": {
+    "factor_ids": ["yeslab_221", "yeslab_223"],
+    "factor_names": ["ROAD", "ROED"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_221": {"mean_rank_ic": 0.0383670732, "icir": 0.4376432396, "minimum_monthly_finite_ratio": 0.5754163391, "status": "PREDICTIVE_PASS_COVERAGE_FAIL"},
+      "yeslab_223": {"mean_rank_ic": 0.0343369572, "icir": 0.4250348947, "minimum_monthly_finite_ratio": 0.6186497998, "status": "PREDICTIVE_PASS_COVERAGE_FAIL"}
+    },
+    "action": "Keep both factors isolated pending PIT financial availability repair; do not expand annual testing yet.",
+    "artifact": "financial_road_roed_train_2020_quality_v1.json"
+  },
+  "financial_core_screen": {
+    "factor_count": 18,
+    "pit_coverage_repair_required_count": 8,
+    "predictive_reject_count": 8,
+    "annual_stability_reject_count": 2,
+    "admission_candidate_count": 0,
+    "artifact": "financial_core_screen_status_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
