@@ -212,6 +212,17 @@
     "action": "Reject TOE. Keep TA_YOY isolated pending PIT financial availability repair; do not expand annual testing yet.",
     "artifact": "financial_ta_toe_train_2020_quality_v1.json"
   },
+  "financial_roicd_cfoad_followup": {
+    "factor_ids": ["yeslab_229", "yeslab_230"],
+    "factor_names": ["ROICD", "CFOAD"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_229": {"mean_rank_ic": 0.0346988552, "icir": 0.4374752541, "minimum_monthly_finite_ratio": 0.6184121529, "status": "PREDICTIVE_PASS_COVERAGE_FAIL"},
+      "yeslab_230": {"mean_rank_ic": 0.0018810642, "icir": 0.0486753412, "minimum_monthly_finite_ratio": 0.9602939488, "status": "PREDICTIVE_FAIL"}
+    },
+    "action": "Reject CFOAD. Keep ROICD isolated pending PIT financial availability repair.",
+    "artifact": "financial_roicd_cfoad_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

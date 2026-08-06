@@ -1695,3 +1695,9 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 不再推进，TA_YOY 保持在财务可用性修复后的重测队列。
 
 证据：[`TA_YOY/TOE 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_ta_toe_train_2020_quality_v1.json)
+
+`ROICD` 和 `CFOAD` 也呈现“预测性/覆盖性二选一”的结果：ROICD mean RankIC `0.03470`、ICIR
+`0.43748`，但最低月度覆盖率 `61.84%`；CFOAD 覆盖率充足（最低 `96.03%`），但 mean RankIC
+仅 `0.00188`、ICIR `0.04868`。CFOAD 直接淘汰，ROICD 保持在 PIT 财务可用性修复后的重测队列。
+
+证据：[`ROICD/CFOAD 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_roicd_cfoad_train_2020_quality_v1.json)
