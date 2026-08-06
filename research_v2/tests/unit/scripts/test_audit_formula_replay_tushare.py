@@ -115,6 +115,8 @@ def test_parser_accepts_registered_gp_quality_replay_factors() -> None:
             "yeslab_432",
             "--factor-id",
             "yeslab_433",
+            "--factor-id",
+            "yeslab_443",
             "--full-market",
             "--restrict-to-v2-universe",
             "--exclude-bj",
@@ -134,6 +136,7 @@ def test_parser_accepts_registered_gp_quality_replay_factors() -> None:
         "yeslab_391",
         "yeslab_432",
         "yeslab_433",
+        "yeslab_443",
     )
 
 
@@ -291,6 +294,7 @@ def test_tushare_market_session_intercepts_database_handle_market_query() -> Non
 
 def test_cross_sectional_replay_requires_one_complete_batch() -> None:
     assert audit.requires_full_cross_section(("yeslab_376", "yeslab_163")) is True
+    assert audit.requires_full_cross_section(("yeslab_443",)) is True
     assert audit.requires_full_cross_section(("yeslab_163", "yeslab_380")) is False
 
 

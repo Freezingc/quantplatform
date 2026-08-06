@@ -1,0 +1,71 @@
+{
+  "scope": "TUSHARE_SHSZ_PENDING_GP_SCOPE_COMPLETION_V1",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_395",
+    "yeslab_443"
+  ],
+  "formula_replay_windows": [
+    "2020-01",
+    "2022-01",
+    "2024-01",
+    "2025-01"
+  ],
+  "formula_replay_pass_window_count": {
+    "yeslab_395": 0,
+    "yeslab_443": 0
+  },
+  "market_missing_code_count_by_window": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "source_market_uncovered_rows_by_window": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "mismatch_rows_by_window": {
+    "yeslab_395": [
+      27237,
+      42918,
+      61126,
+      44988
+    ],
+    "yeslab_443": [
+      45374,
+      64016,
+      90307,
+      75266
+    ]
+  },
+  "source_pool_observation_2025_01": {
+    "yeslab_395": {
+      "factor_name": "GP_026",
+      "source_unique_codes": 5954,
+      "source_bj_codes": 551,
+      "formula_contains_cross_sectional_rank": true
+    },
+    "yeslab_443": {
+      "factor_name": "GP_074",
+      "source_unique_codes": 5954,
+      "source_bj_codes": 552,
+      "formula_contains_cross_sectional_rank_or_mean": true
+    }
+  },
+  "canonical_universe_code_count_2025_01": 4220,
+  "classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH",
+  "action": "TUSHARE_REMATERIALIZE_REQUIRED_BEFORE_ADMISSION",
+  "publication_status": "NOT_PUBLISHED",
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false
+}
