@@ -1741,3 +1741,8 @@ PIT 财务可用性的最低覆盖要求。当前没有任何一个可进入模�
 `0.00285/0.02889`。这说明覆盖充分不能替代预测性，二者均不进入年度稳定性验证。
 
 证据：[`Alpha1/Alpha2 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_001_002_train_2020_quality_v1.json)
+
+第二批 `Alpha3/Alpha4` 也未形成候选：Alpha3 mean RankIC `-0.02358`、ICIR `-0.19703`，Alpha4
+`0.01161/0.16337`。二者覆盖率均接近完整，但预测强度不足，均在年度稳定性之前拒绝。
+
+证据：[`Alpha3/Alpha4 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_003_004_train_2020_quality_v1.json)
