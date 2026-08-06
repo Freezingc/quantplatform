@@ -1641,3 +1641,10 @@ Tushare `high/low * adj_factor` 并非完全相同：分别有 `1,218` 和 `1,16
 该因子的滚动同伴选择会放大复权价格精度差异，且存在历史代码覆盖缺口，故继续保持隔离。
 
 证据：[`CSAD-20 回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos3_tushare_shsz_csad481_2025-01_v1.json)
+
+同一进程复用 CSAD 核心后，`yeslab_482/483/484` 也完成了相同窗口的全市场回放，均被阻断：
+`yeslab_482` 有 `15,803 / 92,149` mismatch 和 `44` 个未覆盖代码；`yeslab_483` 有
+`37,063 / 92,094` mismatch 和 `38` 个未覆盖代码；`yeslab_484` 有 `28,013 / 92,095`
+mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tushare canonical 准入证据。
+
+证据：[`CSAD 其余三个输出回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json)

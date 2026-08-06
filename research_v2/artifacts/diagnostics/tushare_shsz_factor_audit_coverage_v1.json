@@ -127,6 +127,39 @@
     "reason": "The CSAD rolling peer selection is sensitive to adjusted-price precision, and 38 historical source codes have no Tushare market coverage in the replay window. Neither discrepancy is repaired by the adjusted-field adapter.",
     "artifact": "formula_replay_oos3_tushare_shsz_csad481_2025-01_v1.json"
   },
+  "csad_remaining_outputs_followup": {
+    "factor_ids": ["yeslab_482", "yeslab_483", "yeslab_484"],
+    "replay_window": "2025-01-02/2025-01-31",
+    "market_source": "Tushare.daily + Tushare.adj_factor",
+    "market_start": "2024-06-08",
+    "market_code_count": 5124,
+    "results": {
+      "yeslab_482": {
+        "overlap_finite_rows": 92149,
+        "mismatch_rows": 15803,
+        "source_market_uncovered_rows": 264,
+        "source_market_uncovered_code_count": 44,
+        "max_abs_diff": 0.3452700836227683
+      },
+      "yeslab_483": {
+        "overlap_finite_rows": 92094,
+        "mismatch_rows": 37063,
+        "source_market_uncovered_rows": 215,
+        "source_market_uncovered_code_count": 38,
+        "max_abs_diff": 16.05377490187082
+      },
+      "yeslab_484": {
+        "overlap_finite_rows": 92095,
+        "mismatch_rows": 28013,
+        "source_market_uncovered_rows": 216,
+        "source_market_uncovered_code_count": 38,
+        "max_abs_diff": 0.01322330569215835
+      }
+    },
+    "status": "FORMULA_REPLAY_BLOCKED_ADJUSTED_PRECISION_AND_COVERAGE",
+    "reason": "All remaining CSAD outputs inherit the same rolling peer-selection sensitivity and historical-code coverage gaps as yeslab_481; no CSAD output is eligible for admission.",
+    "artifact": "formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
