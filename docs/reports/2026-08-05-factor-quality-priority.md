@@ -1604,3 +1604,9 @@ ICIR 为 `0.78321`，方向一致日占比 `78.48%`。
 下一步只有在建立 PIT 行业映射后，才有意义进行 Tushare 重物化 RankIC 复核。
 
 证据：[`yeslab_357 行业范围回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos1_tushare_shsz_industry357_2025-01_v1.json)
+
+同窗口补做 `yeslab_362` 和 `yeslab_363` 后，二者均为 `90,386 / 91,142` 个有限重叠值 mismatch，
+最大绝对差约 `30,287.69`。这两个因子的阻断模式与 `yeslab_357` 一致，且差异更大；它们暂不进入
+Tushare 因子准入候选，除非先补齐 PIT 行业分类映射。
+
+证据：[`yeslab_362/363 行业范围回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos2_tushare_shsz_industry362_363_2025-01_v1.json)

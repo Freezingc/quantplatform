@@ -100,6 +100,30 @@ def test_parser_accepts_industry_normalized_factor_for_full_market_replay() -> N
     assert audit.requires_full_cross_section(args.factor_id)
 
 
+def test_parser_accepts_industry_skew_factors_for_full_market_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_362",
+            "--factor-id",
+            "yeslab_363",
+            "--full-market",
+            "--exclude-bj",
+            "--stock-batch-size",
+            "5000",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/tushare-industry-skew.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_362", "yeslab_363")
+    assert audit.requires_full_cross_section(args.factor_id)
+
+
 def test_parser_accepts_low_coverage_gp_replay_factors() -> None:
     args = audit.parse_args(
         [
