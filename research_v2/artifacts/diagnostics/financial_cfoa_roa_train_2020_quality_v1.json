@@ -1,0 +1,35 @@
+{
+  "scope": "FINANCIAL_CFOA_ROA_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_219": {
+      "factor_name": "CFOA",
+      "valid_day_count": 234,
+      "mean_rank_ic": 0.0323422992,
+      "icir": 0.4293529841,
+      "positive_day_share": 0.6965811966,
+      "mean_sample_count": 2572.5341880342,
+      "finite_ratio": 0.9049830421,
+      "minimum_monthly_finite_ratio": 0.6077363216
+    },
+    "yeslab_220": {
+      "factor_name": "ROA",
+      "valid_day_count": 234,
+      "mean_rank_ic": 0.0520630379,
+      "icir": 0.4368774812,
+      "positive_day_share": 0.6794871795,
+      "mean_sample_count": 2553.3931623932,
+      "finite_ratio": 0.8982494859,
+      "minimum_monthly_finite_ratio": 0.6022521617
+    }
+  },
+  "status": "TRAIN_2020_PREDICTIVE_PASS_COVERAGE_FAIL",
+  "reason": "Both factors are predictive in the annual sample, but the minimum monthly finite coverage is below the 0.70 structural gate. They remain isolated pending diagnosis of early-2020 financial availability."
+}

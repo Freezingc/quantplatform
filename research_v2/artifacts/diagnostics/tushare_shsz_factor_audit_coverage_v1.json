@@ -176,6 +176,19 @@
     "train_2020_quality_artifact": "financial_aliases_train_2020_quality_v1.json",
     "train_2021_quality_artifact": "financial_aliases_train_2021_quality_v1.json"
   },
+  "financial_cfoa_roa_followup": {
+    "factor_ids": ["yeslab_219", "yeslab_220"],
+    "factor_names": ["CFOA", "ROA"],
+    "period": "2020-01-02/2020-12-31",
+    "status": "TRAIN_2020_PREDICTIVE_PASS_COVERAGE_FAIL",
+    "structural_gate": "minimum_monthly_finite_ratio >= 0.70",
+    "results": {
+      "yeslab_219": {"mean_rank_ic": 0.0323422992, "icir": 0.4293529841, "minimum_monthly_finite_ratio": 0.6077363216},
+      "yeslab_220": {"mean_rank_ic": 0.0520630379, "icir": 0.4368774812, "minimum_monthly_finite_ratio": 0.6022521617}
+    },
+    "action": "Diagnose early-2020 financial availability before any annual stability or validation expansion.",
+    "artifact": "financial_cfoa_roa_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

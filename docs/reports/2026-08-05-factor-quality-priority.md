@@ -1669,3 +1669,10 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 预测稳定性，停止将它们推进到 2025 验证或相似度阶段，并继续隔离。
 
 证据：[`ROE/ROIC 2021 训练质量`](../../research_v2/artifacts/diagnostics/financial_aliases_train_2021_quality_v1.json)
+
+对 `CFOA` 和 `ROA` 做的 2020 年双因子初筛显示预测性较好：CFOA mean RankIC `0.03234`、ICIR
+`0.42935`，ROA `0.05206`、`0.43688`。但两者最低月度有限覆盖率仅 `0.6077` 和 `0.6023`，低于
+当前 `0.70` 结构门槛，说明早期财务公告可用性存在明显缺口。它们暂不继续扩展年度稳定性，先诊断
+财务数据可用日期和月度覆盖，再决定是否采用修复后的财务口径。
+
+证据：[`CFOA/ROA 2020 初筛`](../../research_v2/artifacts/diagnostics/financial_cfoa_roa_train_2020_quality_v1.json)
