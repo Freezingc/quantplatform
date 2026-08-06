@@ -1,0 +1,34 @@
+{
+  "scope": "FINANCIAL_ALIAS_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "valid_day_count": 243,
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_222": {
+      "factor_name": "ROE",
+      "mean_rank_ic": 0.0487402075,
+      "icir": 0.3978216722,
+      "positive_day_share": 0.670781893,
+      "mean_sample_count": 2625.7407407407,
+      "finite_ratio": 0.9592273323,
+      "minimum_monthly_finite_ratio": 0.9505339304
+    },
+    "yeslab_224": {
+      "factor_name": "ROIC",
+      "mean_rank_ic": 0.0478050854,
+      "icir": 0.3962030997,
+      "positive_day_share": 0.6625514403,
+      "mean_sample_count": 2552.3086419753,
+      "finite_ratio": 0.9324013494,
+      "minimum_monthly_finite_ratio": 0.9255799499
+    }
+  },
+  "status": "TRAIN_2020_PREDICTIVE_PASS_FULL_WALK_FORWARD_PENDING",
+  "reason": "Both aliases have positive 2020 TRAIN RankIC with strong coverage, but 2021-2024 TRAIN stability, frozen direction, 2025 validation, PIT completeness, and redundancy are still required for admission."
+}

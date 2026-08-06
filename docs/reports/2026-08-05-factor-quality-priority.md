@@ -1655,3 +1655,10 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 质量待检验”，不是准入因子。
 
 证据：[`ROE/ROIC 公告日期回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos2_financial_aliases_2025-01_v1.json)
+
+对两者补做的 2020 TRAIN 年度严格质量样本也为正向：ROE mean RankIC 为 `0.04874`、ICIR 为
+`0.39782`，ROIC 为 `0.04781`、`0.39620`；有效日均为 `2,626` 和 `2,552` 个，整体有限覆盖率
+为 `95.92%` 和 `93.24%`。这证明两者值得继续执行 2021–2024 稳定性和 2025 验证，尚不足以改变
+“未准入”的结论。
+
+证据：[`ROE/ROIC 2020 训练质量`](../../research_v2/artifacts/diagnostics/financial_aliases_train_2020_quality_v1.json)
