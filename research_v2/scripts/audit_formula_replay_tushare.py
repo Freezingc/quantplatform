@@ -74,6 +74,9 @@ SUPPORTED_FACTOR_IDS = (
     # here for explicit full-cross-section diagnostics.
     "yeslab_395",
     "yeslab_471",
+    # Industry-normalized factors require full-market replay because their
+    # cross-sectional grouping is performed inside the calculator.
+    "yeslab_357",
 )
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALCULATOR_ROOT = REPO_ROOT / "数据库"
@@ -99,6 +102,7 @@ FULL_CROSS_SECTION_FACTOR_IDS = frozenset(
         "yeslab_432",
         "yeslab_395",
         "yeslab_443",
+        "yeslab_357",
     }
 )
 

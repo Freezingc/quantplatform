@@ -36,6 +36,21 @@
     "reason": "Canonical Tushare rematerialization is predictive, but four-window replay still has localized amount-precision mismatches against historical YesLab values.",
     "artifact": "tushare_shsz_candidate_401_validation_2025_v1/quality_summary.json"
   },
+  "industry_scope_followup": {
+    "factor_id": "yeslab_357",
+    "factor_name": "行业内收益标准化绝对值",
+    "replay_window": "2025-01-02/2025-01-31",
+    "market_source": "Tushare.daily",
+    "market_code_count": 5130,
+    "overlap_finite_rows": 91178,
+    "mismatch_rows": 90420,
+    "mismatch_date_count": 18,
+    "max_abs_diff": 5.133199991818608,
+    "max_rel_diff": 78384.07508398873,
+    "status": "FORMULA_REPLAY_BLOCKED_INDUSTRY_SCOPE",
+    "reason": "The current calculator uses the static YesLab stock_info_table industry mapping; the replay cannot establish point-in-time Tushare industry membership, and the resulting values disagree with historical YesLab values.",
+    "artifact": "formula_replay_oos1_tushare_shsz_industry357_2025-01_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "quality_source": "Tushare.daily",

@@ -1592,3 +1592,15 @@ ICIR 为 `0.78321`，方向一致日占比 `78.48%`。
 暂不通过舍入或覆盖旧表来强行解除公式阻断。
 
 证据：[`GP_032 Tushare 验证结果`](../../research_v2/artifacts/diagnostics/tushare_shsz_candidate_401_validation_2025_v1/quality_summary.json)
+
+### 行业因子 yeslab_357 定向回放
+
+为补齐代表性候选 `yeslab_357` 的证据链，回放器新增了显式全市场模式，并在 2025-01-02–01-31
+对 `5,130` 只沪深股票执行单批次回放。结果为 `91,178` 个有限重叠值中有 `90,420` 个 mismatch，
+最大绝对差 `5.1332`，因此不是数值精度级别的偶发差异。
+
+根因是该计算器按静态 YesLab `stock_info_table` 的行业标签分组，而当前项目要求 Tushare canonical
+且需要 PIT 行业归属；现有静态行业表无法证明历史时点行业集合一致。因此 `yeslab_357` 暂不准入，
+下一步只有在建立 PIT 行业映射后，才有意义进行 Tushare 重物化 RankIC 复核。
+
+证据：[`yeslab_357 行业范围回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos1_tushare_shsz_industry357_2025-01_v1.json)

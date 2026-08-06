@@ -1,0 +1,61 @@
+{
+  "bj_alias_count": 0,
+  "bj_alias_map": null,
+  "code_count": 5130,
+  "cross_sectional_replay_mode": "single_complete_batch",
+  "database_writes": false,
+  "end": "2025-01-31",
+  "exclude_bj": true,
+  "factor_ids": [
+    "yeslab_357"
+  ],
+  "include_daily_basic": false,
+  "locked_test_read": false,
+  "market_code_count": 5130,
+  "market_date_count": 40,
+  "market_finite_rows": 1635064,
+  "market_hash": "a5ccefb4ff3fc14ad7e05e2103552f829ac4e6409ca9f02fc1d08cbc6f39551f",
+  "market_missing_code_count": 0,
+  "market_rows": 204383,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-12-01",
+  "max_ts_codes": null,
+  "required_market_fields": [
+    "close"
+  ],
+  "restrict_to_v2_universe": false,
+  "rows": [
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_357",
+      "factor_name": "行业内收益标准化绝对值",
+      "lookback_days": 1,
+      "max_abs_diff": 5.133199991818608,
+      "max_rel_diff": 78384.07508398873,
+      "max_ts_codes": null,
+      "mismatch_date_count": 18,
+      "mismatch_end": "2025-01-27",
+      "mismatch_rows": 90420,
+      "mismatch_start": "2025-01-02",
+      "overlap_finite_rows": 91178,
+      "overlap_rows": 91476,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH"
+      ],
+      "replay_finite_rows": 91178,
+      "replay_lookback_days": 1,
+      "replay_rows": 91476,
+      "source_finite_rows": 92006,
+      "source_finite_rows_full": 92006,
+      "source_market_uncovered_code_count": 0,
+      "source_market_uncovered_date_count": 0,
+      "source_market_uncovered_rows": 0,
+      "source_rows": 92340
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2025-01-02",
+  "stock_batch_size": 5130,
+  "universe_mode": "full_market"
+}

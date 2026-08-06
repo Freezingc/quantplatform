@@ -78,6 +78,28 @@ def test_parser_accepts_isolated_cross_sectional_blocked_factors() -> None:
     assert args.stock_batch_size == 5000
 
 
+def test_parser_accepts_industry_normalized_factor_for_full_market_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_357",
+            "--full-market",
+            "--exclude-bj",
+            "--stock-batch-size",
+            "5000",
+            "--start",
+            "2020-09-14",
+            "--end",
+            "2020-09-25",
+            "--output",
+            "/tmp/tushare-industry-357.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_357",)
+    assert audit.requires_full_cross_section(args.factor_id)
+
+
 def test_parser_accepts_low_coverage_gp_replay_factors() -> None:
     args = audit.parse_args(
         [
