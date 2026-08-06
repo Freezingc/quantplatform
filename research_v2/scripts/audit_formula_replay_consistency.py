@@ -108,6 +108,22 @@ REPLAY_DEFINITIONS = {
         calculator_class="Alpha95Calculator",
         lookback_days=19,
     ),
+    "yeslab_222": ReplayDefinition(
+        factor_id="yeslab_222",
+        factor_name="ROE",
+        store_factor="factor_data5",
+        calculator_module="ROE_Calculator",
+        calculator_class="ROE_Calculator",
+        lookback_days=1,
+    ),
+    "yeslab_224": ReplayDefinition(
+        factor_id="yeslab_224",
+        factor_name="ROIC",
+        store_factor="factor_data5",
+        calculator_module="ROIC_Calculator",
+        calculator_class="ROIC_Calculator",
+        lookback_days=1,
+    ),
     "yeslab_370": ReplayDefinition(
         factor_id="yeslab_370",
         factor_name="GP_001",

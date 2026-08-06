@@ -104,6 +104,25 @@ def test_parser_accepts_oos_candidate_replay_factor() -> None:
     assert args.factor_id == ("yeslab_443",)
 
 
+def test_parser_accepts_financial_metric_aliases() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_222",
+            "--factor-id",
+            "yeslab_224",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/financial-alias-replay.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_222", "yeslab_224")
+
+
 def test_parser_accepts_warmup_recovered_factor() -> None:
     args = audit.parse_args(
         [

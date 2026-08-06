@@ -1613,15 +1613,14 @@ Tushare 因子准入候选，除非先补齐 PIT 行业分类映射。
 
 ### 剩余因子源码覆盖盘点
 
-对 `数据库/factor_calculators` 做了只读源码匹配：目录中的 `487` 个因子有 `484` 个能匹配到
+对 `数据库/factor_calculators` 做了只读源码匹配：目录中的 `487` 个因子有 `486` 个能匹配到
 计算器（GP 因子按 `GP_NNN` 与 `GP_Factor_NNN_Calculator.py` 规则匹配，其余按
-`FACTOR_CONFIG.factor_name` 或显式 CSAD/Corwin-Schultz 输出适配器匹配），真正没有直接匹配的
-只有 `3` 个。另有 `7` 个 CSAD/Corwin-Schultz 因子虽有计算器，但还没有接入 Tushare adjusted
-market field，因此不能直接执行 canonical 回放。后续全库质检优先处理这些已有计算器但尚无
+`FACTOR_CONFIG.factor_name`、显式 CSAD/Corwin-Schultz 输出适配器或 ROE/ROIC 目录别名匹配），
+真正没有直接匹配的只有测试因子 `yeslab_0`。后续全库质检优先处理这些已有计算器但尚无
 Tushare 质量证据的因子；“有计算器”只代表可重放，不代表通过准入。
 
-当前尚未匹配的对象为测试因子和两个财务别名；7 个 CSAD/价差因子则属于“源码存在、canonical
-回放未就绪”，已单独记录，暂不纳入模型输入。
+此前 7 个 CSAD/价差因子已补齐复权字段回放支持；两个财务别名 `ROE/ROIC` 也已补齐公告日期
+输入的回放定义，均仍暂不纳入模型输入。
 
 随后补充了 Tushare `adj_factor` 适配，使 `high_hfq/low_hfq/close_hfq` 能在内存行情中生成，
 并对 `yeslab_485`、`yeslab_487` 做了 2025-01-02–01-31 全市场回放。适配本身成功，但历史值仍有
@@ -1648,3 +1647,11 @@ Tushare `high/low * adj_factor` 并非完全相同：分别有 `1,218` 和 `1,16
 mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tushare canonical 准入证据。
 
 证据：[`CSAD 其余三个输出回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json)
+
+`yeslab_222 / ROE` 和 `yeslab_224 / ROIC` 的有界回放则精确通过：在 512 只股票、2025-01
+窗口中，分别有 `9,125` 和 `8,963` 个有限重叠值，均为零 mismatch。二者由
+`financial_metrics_table` 的 `ann_date` 输入重建，说明当前存量值与公告日期前向填充逻辑一致。
+但它们尚未完成 Tushare 标签下的 RankIC、PIT 完整性和去冗余检查，因此目前是“公式可重放、预测
+质量待检验”，不是准入因子。
+
+证据：[`ROE/ROIC 公告日期回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos2_financial_aliases_2025-01_v1.json)

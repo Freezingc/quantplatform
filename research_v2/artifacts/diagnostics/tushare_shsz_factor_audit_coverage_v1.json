@@ -160,16 +160,30 @@
     "reason": "All remaining CSAD outputs inherit the same rolling peer-selection sensitivity and historical-code coverage gaps as yeslab_481; no CSAD output is eligible for admission.",
     "artifact": "formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json"
   },
+  "financial_alias_followup": {
+    "factor_ids": ["yeslab_222", "yeslab_224"],
+    "factor_names": ["ROE", "ROIC"],
+    "replay_window": "2025-01-02/2025-01-31",
+    "replay_code_limit": 512,
+    "input_source": "YesLab financial_metrics_table by ann_date",
+    "results": {
+      "yeslab_222": {"overlap_finite_rows": 9125, "mismatch_rows": 0},
+      "yeslab_224": {"overlap_finite_rows": 8963, "mismatch_rows": 0}
+    },
+    "status": "FORMULA_REPLAY_PASS_PREDICTIVE_QUALITY_PENDING",
+    "reason": "The daily values are exactly reproducible from announcement-date financial inputs on the bounded audit. RankIC, PIT completeness, and cross-sectional redundancy remain untested.",
+    "artifact": "formula_replay_oos2_financial_aliases_2025-01_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
     "calculator_root": "数据库/factor_calculators",
-    "catalog_factor_with_matching_calculator_count": 484,
-    "catalog_factor_without_matching_calculator_count": 3,
+    "catalog_factor_with_matching_calculator_count": 486,
+    "catalog_factor_without_matching_calculator_count": 1,
     "catalog_factor_without_matching_calculator_ids": [
-      "yeslab_0", "yeslab_222", "yeslab_224"
+      "yeslab_0"
     ],
-    "matching_policy": "Exact FACTOR_CONFIG factor_name match, GP_NNN source name with GP_Factor_NNN_Calculator.py present, or an explicit CSAD/Corwin-Schultz output adapter mapped by source factor name.",
+    "matching_policy": "Exact FACTOR_CONFIG factor_name match, GP_NNN source name with GP_Factor_NNN_Calculator.py present, explicit CSAD/Corwin-Schultz output adapter, or an explicit catalog alias for ROE/ROIC.",
     "calculator_present_but_canonical_replay_unready_ids": [
       "yeslab_481", "yeslab_482", "yeslab_483", "yeslab_484",
       "yeslab_485", "yeslab_486", "yeslab_487"
