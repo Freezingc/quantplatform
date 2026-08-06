@@ -99,7 +99,16 @@
     },
     "status": "FORMULA_REPLAY_BLOCKED_ADJUSTED_SOURCE_DIFFERENCE",
     "reason": "Adjusted Tushare fields are now available to the calculator, but historical CS spread values still disagree at many rows; retain the factors as isolated until source adjustment convention is reconciled.",
-    "artifact": "formula_replay_oos2_tushare_shsz_csad_corwin_2025-01_v1.json"
+    "artifact": "formula_replay_oos2_tushare_shsz_csad_corwin_2025-01_v1.json",
+    "precision_diagnostic": {
+      "sample_date": "2025-01-02",
+      "source_rows_compared": 5106,
+      "high_hfq_rows_differing": 1218,
+      "low_hfq_rows_differing": 1166,
+      "high_hfq_max_abs_diff": 0.005223999999998341,
+      "low_hfq_max_abs_diff": 0.005040000000001044,
+      "interpretation": "YesLab stores adjusted high/low at a lower effective precision than the Tushare daily*adj_factor product; this precision difference propagates through the Corwin-Schultz rolling calculation."
+    }
   },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,

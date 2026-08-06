@@ -1629,3 +1629,8 @@ Tushare 质量证据的因子；“有计算器”只代表可重放，不代表
 mismatch。说明源表的复权/价差实现口径仍未完全一致，不能因为字段已经补齐就解除准入阻断。
 
 证据：[`CS 价差复权字段回放`](../../research_v2/artifacts/diagnostics/formula_replay_oos2_tushare_shsz_csad_corwin_2025-01_v1.json)
+
+对 2025-01-02 的 `5,106` 个沪深键做输入级抽查发现，YesLab `high_hfq/low_hfq` 与
+Tushare `high/low * adj_factor` 并非完全相同：分别有 `1,218` 和 `1,166` 个键不同，最大差异约
+`0.0052`。因此当前 mismatch 的主要原因已定位为复权高低价精度差异，不能把它误判成 CS 公式实现
+错误；canonical 研究继续保留 Tushare 完整精度，旧值仍保持阻断。
