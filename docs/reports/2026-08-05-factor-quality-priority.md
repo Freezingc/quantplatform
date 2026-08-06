@@ -1579,3 +1579,16 @@ GP_068 对 `amount` 做 60 日 rank，这种精度差异会改变历史并列排
 覆盖清单见 [`因子审计覆盖 v1`](../../research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json)。
 该清单不执行数据库写入、版本发布或模型训练；后续应按优先级对剩余因子做 Tushare 重物化质量检验，
 再单独处理相似度、公式一致性、PIT 和准入门槛。
+
+### GP_032 定向复核
+
+对历史候选中唯一存在多窗口公式回放阻断、但阻断幅度很小的 `yeslab_401 / GP_032` 做了
+一次独立的 Tushare canonical 验证重物化。2025-01-02–2025-12-23 共 `237` 个有效交易日、
+`4,911` 只沪深股票，原始 5 日收益标签下 mean RankIC 为 `-0.09607`，方向取 `-1` 后
+ICIR 为 `0.78321`，方向一致日占比 `78.48%`。
+
+这说明 GP_032 的预测信号本身仍然有效；当前不能准入的原因不是预测能力，而是旧 YesLab
+`amount` 两位小数与 Tushare 三位小数造成的局部公式值差异。继续使用 Tushare 重物化值进行研究，
+暂不通过舍入或覆盖旧表来强行解除公式阻断。
+
+证据：[`GP_032 Tushare 验证结果`](../../research_v2/artifacts/diagnostics/tushare_shsz_candidate_401_validation_2025_v1/quality_summary.json)
