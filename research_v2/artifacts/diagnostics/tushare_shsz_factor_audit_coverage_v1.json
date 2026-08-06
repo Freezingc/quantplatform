@@ -170,10 +170,11 @@
       "yeslab_222": {"overlap_finite_rows": 9125, "mismatch_rows": 0},
       "yeslab_224": {"overlap_finite_rows": 8963, "mismatch_rows": 0}
     },
-    "status": "FORMULA_REPLAY_PASS_PREDICTIVE_QUALITY_PENDING",
-    "reason": "The daily values are exactly reproducible from announcement-date financial inputs on the bounded audit. Both factors also pass the initial 2020 TRAIN quality sample; full 2021-2024 stability, 2025 validation, PIT completeness, and redundancy remain untested.",
+    "status": "FORMULA_REPLAY_PASS_ANNUAL_PREDICTIVE_FAIL",
+    "reason": "The daily values are exactly reproducible from announcement-date financial inputs on the bounded audit, but both factors have near-zero negative 2021 TRAIN RankIC despite strong coverage. They fail annual stability and remain excluded; further validation cannot restore admission without a distinct, pre-specified transformation.",
     "artifact": "formula_replay_oos2_financial_aliases_2025-01_v1.json",
-    "train_2020_quality_artifact": "financial_aliases_train_2020_quality_v1.json"
+    "train_2020_quality_artifact": "financial_aliases_train_2020_quality_v1.json",
+    "train_2021_quality_artifact": "financial_aliases_train_2021_quality_v1.json"
   },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,

@@ -1662,3 +1662,10 @@ mismatch 和 `38` 个未覆盖代码。四个 CSAD 输出均不具备当前 Tush
 “未准入”的结论。
 
 证据：[`ROE/ROIC 2020 训练质量`](../../research_v2/artifacts/diagnostics/financial_aliases_train_2020_quality_v1.json)
+
+继续复核 2021 TRAIN 后，两者均失去预测性：ROE mean RankIC 为 `-0.00363`、ICIR 为
+`-0.02898`，ROIC 为 `-0.00326`、`-0.02689`；覆盖率仍保持 `97.14%` 和 `94.38%`。因此问题
+不是样本缺失，而是跨年度信号不稳定。ROE/ROIC 的当前原始口径已满足“公式可重放”，但不满足年度
+预测稳定性，停止将它们推进到 2025 验证或相似度阶段，并继续隔离。
+
+证据：[`ROE/ROIC 2021 训练质量`](../../research_v2/artifacts/diagnostics/financial_aliases_train_2021_quality_v1.json)
