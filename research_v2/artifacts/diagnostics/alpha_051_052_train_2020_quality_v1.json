@@ -1,0 +1,37 @@
+{
+  "scope": "ALPHA_051_052_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data1 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_51": {
+      "factor_name": "Alpha48",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0274352049,
+      "icir": 0.2392895887,
+      "positive_day_share": 0.5761316872,
+      "finite_ratio": 0.9920201571,
+      "minimum_monthly_finite_ratio": 0.9887289592,
+      "direction": 1,
+      "status": "PREDICTIVE_WEAK_ICIR_FAIL"
+    },
+    "yeslab_52": {
+      "factor_name": "Alpha49",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0205892851,
+      "icir": 0.1713110551,
+      "positive_day_share": 0.5432098765,
+      "finite_ratio": 0.9951215919,
+      "minimum_monthly_finite_ratio": 0.9925537222,
+      "direction": 1,
+      "status": "PREDICTIVE_WEAK_ICIR_FAIL"
+    }
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION",
+  "reason": "Both factors clear the mean RankIC threshold but fail the absolute ICIR 0.50 threshold, indicating insufficient temporal stability. Neither enters annual stability testing or model inputs."
+}

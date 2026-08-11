@@ -1886,3 +1886,9 @@ Alpha49 mean RankIC/ICIR 为 `-0.02358/-0.22782`；Alpha50 为 `0.02677/0.19632`
 ICIR 明显不足。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha49/Alpha50 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_049_050_train_2020_quality_v1.json)
+
+第二十六批 `Alpha51/Alpha52`（源因子名为 Alpha48/Alpha49）覆盖率合格，mean RankIC 分别为 `0.02744` 和
+`0.02059`，但 ICIR 仅为 `0.23929` 和 `0.17131`。两者均属于均值达标但时间稳定性不足，未通过双重预测门槛，
+初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha51/Alpha52 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_051_052_train_2020_quality_v1.json)
