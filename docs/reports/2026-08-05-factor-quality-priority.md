@@ -1851,3 +1851,8 @@ Alpha33 为 `0.02509/0.18839`，Alpha34 为 `0.03544/0.35258`。最低月度覆�
 Alpha37 mean RankIC/ICIR 为 `0.01150/0.13121`，Alpha38 为 `-0.01817/-0.16921`。二者均未通过双重预测门槛，初筛拒绝。
 
 证据：[`Alpha37/Alpha38 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_037_038_train_2020_quality_v1.json)
+
+第二十批 `Alpha39/Alpha40`（源因子名 Alpha39/Alpha41）均未形成候选。Alpha39 mean RankIC/ICIR 为
+`-0.00017/-0.00187`，最低月度覆盖率仅 `90.31%`；Alpha40 为 `0.01377/0.10076`，覆盖率接近完整但信号偏弱。
+
+证据：[`Alpha39/Alpha40 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_039_040_train_2020_quality_v1.json)
