@@ -1806,3 +1806,8 @@ Alpha19 mean RankIC/ICIR 为 `-0.02497/-0.18855`，Alpha20 为 `-0.02616/-0.2026
 RankIC/ICIR 为 `-0.01069/-0.10379`，Alpha24 为 `-0.01980/-0.15985`。二者均未通过双重预测门槛，初筛拒绝。
 
 证据：[`Alpha23/Alpha24 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_023_024_train_2020_quality_v1.json)
+
+第十三批 `Alpha25/Alpha26` 未形成候选。Alpha25 mean RankIC/ICIR 为 `0.00711/0.05539`，最低月度覆盖率
+`98.46%`；Alpha26 为 `0.01767/0.13810`，最低月度覆盖率进一步降至 `90.44%`。二者均未通过双重预测门槛，初筛拒绝。
+
+证据：[`Alpha25/Alpha26 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_025_026_train_2020_quality_v1.json)
