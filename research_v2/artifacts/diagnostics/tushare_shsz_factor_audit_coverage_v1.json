@@ -351,6 +351,17 @@
     "action": "Reject Alpha9 and Alpha10 before annual stability testing.",
     "artifact": "alpha_009_010_train_2020_quality_v1.json"
   },
+  "alpha_011_012_followup": {
+    "factor_ids": ["yeslab_11", "yeslab_12"],
+    "factor_names": ["Alpha11", "Alpha12"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_11": {"mean_rank_ic": -0.0074498385, "icir": -0.0741420957, "minimum_monthly_finite_ratio": 0.8163172038, "status": "PREDICTIVE_FAIL"},
+      "yeslab_12": {"mean_rank_ic": 0.0128997889, "icir": 0.1140428174, "minimum_monthly_finite_ratio": 0.9945307736, "status": "PREDICTIVE_WEAK"}
+    },
+    "action": "Reject Alpha11 and Alpha12 before annual stability testing.",
+    "artifact": "alpha_011_012_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
