@@ -1996,3 +1996,12 @@ Alpha85 mean RankIC/ICIR 为 `-0.00824/-0.10342`，Alpha86 为 `-0.01917/-0.1522
 Alpha89 mean RankIC/ICIR 为 `-0.00041/-0.00322`，Alpha90 为 `0.00493/0.03968`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha89/Alpha90 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_089_090_train_2020_quality_v1.json)
+
+第四十六至四十九批 `Alpha91/Alpha98` 已通过四进程并行完成。Alpha91（股息率）mean RankIC/ICIR 为
+`0.03273/0.33134`，覆盖率 `95.52%`，均值达标但 ICIR 不足；Alpha92–93 信号偏弱；Alpha94–96 为负向弱信号；
+Alpha97–98 也未通过双重门槛。所有因子均拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha91/Alpha92`](../../research_v2/artifacts/diagnostics/alpha_091_092_train_2020_quality_v1.json)、
+[`Alpha93/Alpha94`](../../research_v2/artifacts/diagnostics/alpha_093_094_train_2020_quality_v1.json)、
+[`Alpha95/Alpha96`](../../research_v2/artifacts/diagnostics/alpha_095_096_train_2020_quality_v1.json)、
+[`Alpha97/Alpha98`](../../research_v2/artifacts/diagnostics/alpha_097_098_train_2020_quality_v1.json)
