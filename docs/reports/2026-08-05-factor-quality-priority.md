@@ -1966,3 +1966,8 @@ mean RankIC/ICIR 为 `0.02364/0.41695`，最低月度覆盖率 `98.38%`；Alpha7
 为 `-0.01392/-0.12033`，Alpha78 为 `-0.02491/-0.23066`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha77/Alpha78 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_077_078_train_2020_quality_v1.json)
+
+第四十批 `Alpha79/Alpha80`（源因子名为 Alpha70/Alpha71）覆盖率完整但均为负向弱信号：Alpha79 mean RankIC/ICIR
+为 `-0.03722/-0.29961`，Alpha80 为 `-0.03127/-0.23009`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha79/Alpha80 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_079_080_train_2020_quality_v1.json)
