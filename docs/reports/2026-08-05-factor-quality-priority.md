@@ -1816,3 +1816,8 @@ RankIC/ICIR 为 `-0.01069/-0.10379`，Alpha24 为 `-0.01980/-0.15985`。二者�
 `-0.02820/-0.22475`，Alpha28 为 `-0.00656/-0.05461`。二者均未通过双重预测门槛，初筛拒绝。
 
 证据：[`Alpha27/Alpha28 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_027_028_train_2020_quality_v1.json)
+
+第十五批 `Alpha29/Alpha31` 的最低月度覆盖率为 `99.78%/99.32%`，但预测强度均不足：Alpha29
+mean RankIC/ICIR 为 `-0.02372/-0.20231`，Alpha31 为 `-0.02509/-0.18839`。二者均未通过双重预测门槛，初筛拒绝。
+
+证据：[`Alpha29/Alpha31 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_029_030_train_2020_quality_v1.json)
