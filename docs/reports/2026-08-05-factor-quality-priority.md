@@ -1758,3 +1758,9 @@ Alpha5 已完成 2025-01-02 至 2025-01-31 的 Tushare SH/SZ 全市场公式回�
 覆盖，严格公式门槛暂记为阻断。处理这些停牌/历史代码覆盖缺口后，才进入 2021–2024 年度稳定性检验。
 
 证据：[`Alpha5 Tushare 公式回放`](../../research_v2/artifacts/diagnostics/tushare_shsz_alpha5_formula_replay_2025-01_v1.json)
+
+第四批 `Alpha7/Alpha8` 的结构覆盖率均接近完整（最低月度覆盖率 `99.82%/99.83%`），但预测强度不足：
+Alpha7 mean RankIC/ICIR 为 `0.01034/0.14647`，Alpha8 为 `0.01881/0.14628`。二者均未达到绝对
+mean RankIC `0.02` 与绝对 ICIR `0.50` 的双重门槛，初筛拒绝，不进入年度稳定性检验。
+
+证据：[`Alpha7/Alpha8 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_007_008_train_2020_quality_v1.json)
