@@ -329,6 +329,17 @@
       "artifact": "tushare_shsz_alpha5_formula_replay_2025-01_v1.json"
     }
   },
+  "alpha_007_008_followup": {
+    "factor_ids": ["yeslab_7", "yeslab_8"],
+    "factor_names": ["Alpha7", "Alpha8"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_7": {"mean_rank_ic": 0.0103398628, "icir": 0.1464653591, "minimum_monthly_finite_ratio": 0.9982253918, "status": "PREDICTIVE_WEAK"},
+      "yeslab_8": {"mean_rank_ic": 0.0188127309, "icir": 0.1462829324, "minimum_monthly_finite_ratio": 0.9983249026, "status": "PREDICTIVE_WEAK"}
+    },
+    "action": "Reject Alpha7 and Alpha8 before annual stability testing.",
+    "artifact": "alpha_007_008_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
