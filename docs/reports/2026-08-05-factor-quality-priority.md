@@ -1775,3 +1775,8 @@ mean RankIC/ICIR 为 `-0.01127/-0.09856`；Alpha10 为 `0.02624/0.16350`。Alpha
 `81.63%`；Alpha12 为 `0.01290/0.11404`，覆盖率接近完整。二者均未达到双重预测门槛，初筛拒绝。
 
 证据：[`Alpha11/Alpha12 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_011_012_train_2020_quality_v1.json)
+
+第七批 `Alpha13/Alpha14` 的最低月度覆盖率为 `100%/99.80%`，但预测信号均不足：Alpha13
+mean RankIC/ICIR 为 `0.00530/0.05765`，Alpha14 为 `-0.02180/-0.17115`。二者均未通过双重预测门槛，初筛拒绝。
+
+证据：[`Alpha13/Alpha14 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_013_014_train_2020_quality_v1.json)
