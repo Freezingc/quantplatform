@@ -1,0 +1,17 @@
+{
+  "scope": "ALPHA_111_112_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data2 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_111": {"factor_name": "Alpha89", "valid_day_count": 243, "mean_rank_ic": -0.0162624861, "icir": -0.1645681857, "positive_day_share": 0.4609053498, "finite_ratio": 0.9999143084, "minimum_monthly_finite_ratio": 0.9998009785, "direction": -1, "status": "PREDICTIVE_FAIL"},
+    "yeslab_112": {"factor_name": "Alpha90", "valid_day_count": 243, "mean_rank_ic": 0.0290266129, "icir": 0.4514910686, "positive_day_share": 0.6995884774, "finite_ratio": 0.9979554283, "minimum_monthly_finite_ratio": 0.9971805291, "direction": 1, "status": "PREDICTIVE_BORDERLINE_ICIR"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION",
+  "reason": "Alpha89 fails both predictive thresholds; Alpha90 clears mean RankIC but misses ICIR 0.50 by 0.04851, so it remains an isolated borderline result and does not enter annual stability testing."
+}
