@@ -569,6 +569,17 @@
     "action": "Reject Alpha47 and Alpha48 before annual stability testing; no new admission.",
     "artifact": "alpha_047_048_train_2020_quality_v1.json"
   },
+  "alpha_049_050_followup": {
+    "factor_ids": ["yeslab_49", "yeslab_50"],
+    "factor_names": ["价格上涨加速换手", "Alpha46"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_49": {"mean_rank_ic": -0.0235754596, "icir": -0.2278249722, "minimum_monthly_finite_ratio": 0.9996423351, "status": "PREDICTIVE_FAIL"},
+      "yeslab_50": {"mean_rank_ic": 0.0267680032, "icir": 0.1963227082, "minimum_monthly_finite_ratio": 1.0, "status": "PREDICTIVE_WEAK_ICIR_FAIL"}
+    },
+    "action": "Reject Alpha49 and Alpha50 before annual stability testing; no new admission.",
+    "artifact": "alpha_049_050_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
