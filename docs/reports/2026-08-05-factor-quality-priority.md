@@ -1846,3 +1846,8 @@ Alpha33 为 `0.02509/0.18839`，Alpha34 为 `0.03544/0.35258`。最低月度覆�
 `-0.03458/-0.48386`，Alpha36 为 `0.01378/0.12916`；最低月度覆盖率均超过 `99.3%`，但预测双重门槛均未通过。
 
 证据：[`Alpha35/Alpha36 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_035_036_train_2020_quality_v1.json)
+
+第十九批 `Alpha37/Alpha38`（源因子名 Alpha38/Alpha40）结构覆盖率均为 `100%`，但预测强度不足：
+Alpha37 mean RankIC/ICIR 为 `0.01150/0.13121`，Alpha38 为 `-0.01817/-0.16921`。二者均未通过双重预测门槛，初筛拒绝。
+
+证据：[`Alpha37/Alpha38 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_037_038_train_2020_quality_v1.json)

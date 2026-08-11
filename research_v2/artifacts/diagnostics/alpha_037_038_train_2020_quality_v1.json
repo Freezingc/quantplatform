@@ -1,0 +1,33 @@
+{
+  "scope": "ALPHA_037_038_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data1 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_37": {
+      "factor_name": "Alpha38",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0115040789,
+      "icir": 0.1312095953,
+      "positive_day_share": 0.5390946502,
+      "finite_ratio": 1.0,
+      "minimum_monthly_finite_ratio": 1.0
+    },
+    "yeslab_38": {
+      "factor_name": "Alpha40",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0181651264,
+      "icir": -0.1692112482,
+      "positive_day_share": 0.4567901235,
+      "finite_ratio": 1.0,
+      "minimum_monthly_finite_ratio": 1.0
+    }
+  },
+  "status": "ALPHA37_PREDICTIVE_WEAK_ALPHA38_PREDICTIVE_FAIL",
+  "reason": "Both factors have complete structural coverage but fail the double predictive gate; neither advances to annual stability."
+}
