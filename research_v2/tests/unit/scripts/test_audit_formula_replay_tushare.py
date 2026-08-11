@@ -103,6 +103,30 @@ def test_parser_accepts_alpha62_full_cross_section_replay() -> None:
     )
 
 
+def test_parser_accepts_alpha83_full_cross_section_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_105",
+            "--full-market",
+            "--exclude-bj",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/alpha83-replay.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_105",)
+    assert audit.requires_full_cross_section(args.factor_id)
+    assert audit.required_market_fields((REPLAY_DEFINITIONS["yeslab_105"],)) == (
+        "high",
+        "vol",
+    )
+
+
 def test_parser_accepts_full_market_batches() -> None:
     args = audit.parse_args(
         [
