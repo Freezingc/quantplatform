@@ -1,0 +1,51 @@
+# 排除所有模型权重文件（通常是 .h5, .ckpt, .pt 等格式）
+*.h5
+*.ckpt
+*.pth
+*.pkl
+
+# 排除训练日志文件（通常是 .log 格式）
+*.log
+*.out
+*.pid
+
+# 排除数据集（如果数据集较大，可以考虑只保留数据集的路径，不提交到 Git）
+data/
+datasets/
+*.csv
+*.png
+*.txt
+*.parquet
+*.dmp
+*.jpg
+
+# 排除模型训练时的缓存文件（如 TensorFlow, PyTorch 等）
+__pycache__/
+*.pyc
+graph_port
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Local credentials and machine-specific settings must never enter Git.
+.env
+.env.*
+!.env.example
+settings.local.json
+.mcp.json
+
+# Local coverage and build metadata.
+.coverage
+*.egg-info/
+
+*.tar
+*.gz
+
+# Generated research outputs are reproducible from source and may contain
+# large caches, checkpoints, or vendor market data. Commit only deliberately
+# selected small evidence artifacts with `git add -f` when needed.
+research_v2/artifacts/
+
+# Local Codex skills are installed tooling, not part of this quant project.
+skills/

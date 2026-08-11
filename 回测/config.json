@@ -1,0 +1,9 @@
+{
+    "STGATim_stockes": {
+        "begin_date": "20250102",
+        "end_date": "20260227",
+        "channel_num": 1,
+        "position_cycle": 5
+    }
+    
+}

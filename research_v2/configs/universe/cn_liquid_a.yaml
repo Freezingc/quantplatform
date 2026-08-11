@@ -1,0 +1,10 @@
+universe_id: cn_liquid_a
+version: 1
+allowed_boards: [SH_MAIN, STAR, SZ_MAIN, CHINEXT]
+exclude_st: true
+exclude_suspended_on_signal_date: true
+min_listing_trading_days: 252
+lookback_trading_days: 20
+min_valid_days_in_lookback: 15
+adv20_bottom_quantile_excluded: 0.20
+quantile_tie_break: [adv20_desc, ts_code_asc]

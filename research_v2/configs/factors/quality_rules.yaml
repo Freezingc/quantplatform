@@ -1,0 +1,4 @@
+minimum_coverage: 0.70
+minimum_median_unique_ratio: 1.00
+maximum_zero_dispersion_date_share: 0.20
+maximum_staleness_calendar_days: 180

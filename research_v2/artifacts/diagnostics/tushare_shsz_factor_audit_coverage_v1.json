@@ -297,6 +297,17 @@
     "action": "Reject both Alpha3 and Alpha4 before annual stability testing.",
     "artifact": "alpha_003_004_train_2020_quality_v1.json"
   },
+  "alpha_005_006_followup": {
+    "factor_ids": ["yeslab_5", "yeslab_6"],
+    "factor_names": ["Alpha5", "Alpha6"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_5": {"mean_rank_ic": 0.0345952603, "icir": 0.4741665363, "minimum_monthly_finite_ratio": 0.8622834572, "status": "PREDICTIVE_PASS_FORMULA_REPLAY_PENDING"},
+      "yeslab_6": {"mean_rank_ic": 0.008757106, "icir": 0.0806283419, "minimum_monthly_finite_ratio": 0.9983249026, "status": "PREDICTIVE_WEAK"}
+    },
+    "action": "Promote Alpha5 to annual stability and formula replay review. Reject Alpha6.",
+    "artifact": "alpha_005_006_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

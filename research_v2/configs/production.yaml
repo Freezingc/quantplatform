@@ -1,0 +1,3 @@
+environment: production
+dolphindb:
+  target_database: dfs://QuantResearchV2

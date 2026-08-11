@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quant-research-v2"
+version = "0.1.0"
+description = "Point-in-time A-share quant research platform"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "dolphindb>=3.0,<4",
+  "lightgbm>=4.0,<5",
+  "numpy>=2.0,<3",
+  "pandas>=2.0,<3",
+  "pyarrow>=16,<23",
+  "pydantic>=2.0,<3",
+  "PyYAML>=6.0,<7",
+  "scikit-learn>=1.5,<2",
+  "scipy>=1.12,<2",
+  "statsmodels>=0.14,<1",
+  "torch>=2.5,<3",
+  "tushare>=1.4,<2",
+  "typer>=0.12,<1",
+]
+
+[project.scripts]
+qr-v2 = "research_v2.cli.app:app"
+
+[project.optional-dependencies]
+dev = [
+  "hypothesis>=6.0,<7",
+  "mypy>=1.10,<2",
+  "pandas-stubs>=2.2,<3",
+  "pytest>=8.0,<9",
+  "pytest-cov>=5.0,<7",
+  "ruff>=0.8,<1",
+  "types-PyYAML>=6.0,<7",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+warn_return_any = true
+disallow_any_generics = true
+exclude = ["tests/"]

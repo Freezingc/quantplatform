@@ -1746,3 +1746,9 @@ PIT 财务可用性的最低覆盖要求。当前没有任何一个可进入模�
 `0.01161/0.16337`。二者覆盖率均接近完整，但预测强度不足，均在年度稳定性之前拒绝。
 
 证据：[`Alpha3/Alpha4 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_003_004_train_2020_quality_v1.json)
+
+第三批出现第一个 Alpha 库晋级候选：`Alpha5` mean RankIC `0.03460`、ICIR `0.47417`，最低月度覆盖率
+`86.23%`，已满足 2020 初筛的预测和结构门槛，后续需要补公式回放与 2021–2024 年度稳定性。Alpha6
+`0.00876/0.08063`，因信号偏弱拒绝。
+
+证据：[`Alpha5/Alpha6 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_005_006_train_2020_quality_v1.json)

@@ -1,0 +1,3 @@
+environment: test
+dolphindb:
+  target_database: dfs://QuantResearchV2Test

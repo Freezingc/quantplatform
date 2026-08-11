@@ -1,0 +1,1 @@
+"""Versioned equity-universe construction."""

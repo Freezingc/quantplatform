@@ -1,0 +1,12 @@
+train_years: 5
+validation_years: 1
+test_years: 1
+purge_trading_days: 6
+folds:
+  - {fold_id: F01, train_start_year: 2014, validation_year: 2019, test_year: 2020, locked: false}
+  - {fold_id: F02, train_start_year: 2015, validation_year: 2020, test_year: 2021, locked: false}
+  - {fold_id: F03, train_start_year: 2016, validation_year: 2021, test_year: 2022, locked: false}
+  - {fold_id: F04, train_start_year: 2017, validation_year: 2022, test_year: 2023, locked: false}
+  - {fold_id: F05, train_start_year: 2018, validation_year: 2023, test_year: 2024, locked: false}
+  - {fold_id: F06, train_start_year: 2019, validation_year: 2024, test_year: 2025, locked: false}
+  - {fold_id: FINAL, train_start_year: 2020, validation_year: 2025, test_year: 2026, locked: true}

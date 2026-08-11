@@ -43,6 +43,15 @@ class ReplayDefinition:
 
 
 REPLAY_DEFINITIONS = {
+    "yeslab_5": ReplayDefinition(
+        factor_id="yeslab_5",
+        factor_name="Alpha5",
+        store_factor="factor_data1",
+        calculator_module="Alpha5Calculator",
+        calculator_class="Alpha5Calculator",
+        lookback_days=10,
+        replay_lookback_days=10,
+    ),
     "yeslab_94": ReplayDefinition(
         factor_id="yeslab_94",
         factor_name="日间反转-波动翻转",

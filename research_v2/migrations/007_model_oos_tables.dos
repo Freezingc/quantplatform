@@ -1,0 +1,18 @@
+// targetDatabase is injected by the V2 migration runner.
+db = database(targetDatabase)
+
+if (!existsTable(targetDatabase, `model_oos_rank_ic_daily)) {
+    modelOosRankIcDaily = table(1:0,
+        `signal_date`evaluation_id`model_id`fold_id`role`rank_ic`sample_count`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, STRING, SYMBOL, SYMBOL, SYMBOL, DOUBLE, LONG, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=modelOosRankIcDaily, tableName=`model_oos_rank_ic_daily,
+        partitionColumns=`signal_date, sortColumns=`evaluation_id`model_id`signal_date)
+}
+
+if (!existsTable(targetDatabase, `model_oos_rank_ic_summary)) {
+    modelOosRankIcSummary = table(1:0,
+        `as_of_date`evaluation_id`model_id`fold_id`role`valid_day_count`mean_rank_ic`rank_ic_std`icir`positive_day_share`mean_sample_count`metrics_json`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, STRING, SYMBOL, SYMBOL, SYMBOL, INT, DOUBLE, DOUBLE, DOUBLE, DOUBLE, DOUBLE, STRING, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=modelOosRankIcSummary, tableName=`model_oos_rank_ic_summary,
+        partitionColumns=`as_of_date, sortColumns=`evaluation_id`model_id`as_of_date)
+}
