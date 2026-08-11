@@ -1,0 +1,33 @@
+{
+  "scope": "ALPHA_025_026_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data1 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_25": {
+      "factor_name": "Alpha25",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0071112940,
+      "icir": 0.0553945605,
+      "positive_day_share": 0.4732510288,
+      "finite_ratio": 0.9885985063,
+      "minimum_monthly_finite_ratio": 0.9846136181
+    },
+    "yeslab_26": {
+      "factor_name": "Alpha26",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0176735739,
+      "icir": 0.1381005610,
+      "positive_day_share": 0.5185185185,
+      "finite_ratio": 0.9135657330,
+      "minimum_monthly_finite_ratio": 0.9044207142
+    }
+  },
+  "status": "ALPHA25_PREDICTIVE_FAIL_ALPHA26_PREDICTIVE_WEAK_COVERAGE_REDUCED",
+  "reason": "Alpha25 fails predictive thresholds. Alpha26 also fails predictive thresholds and has materially reduced finite coverage; neither advances to annual stability."
+}
