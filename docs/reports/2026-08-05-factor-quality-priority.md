@@ -1934,3 +1934,9 @@ mean RankIC/ICIR 为 `-0.00457/-0.02822`，Alpha68 为 `0.01549/0.11940`；Alpha
 二者均不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha67/Alpha68 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_067_068_train_2020_quality_v1.json)
+
+第三十五批 `Alpha69/Alpha70`（源因子名为 TTM_EP滚动市盈率倒数/Alpha61）均超过 mean RankIC 门槛，但 ICIR 不足：
+Alpha69 mean RankIC/ICIR 为 `0.02313/0.17968`，最低月度覆盖率 `81.31%`；Alpha70 为 `0.02055/0.20585`，覆盖率 `98.70%`。
+二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha69/Alpha70 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_069_070_train_2020_quality_v1.json)
