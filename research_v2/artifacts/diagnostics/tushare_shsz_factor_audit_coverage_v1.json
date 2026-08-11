@@ -795,6 +795,17 @@
     "action": "Reject Alpha87 and Alpha88 before annual stability testing; no new admission.",
     "artifact": "alpha_087_088_train_2020_quality_v1.json"
   },
+  "alpha_089_090_followup": {
+    "factor_ids": ["yeslab_89", "yeslab_90"],
+    "factor_names": ["SP市销率倒数", "TTM_SP滚动市销率倒数"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_89": {"mean_rank_ic": -0.0004144297, "icir": -0.0032164658, "minimum_monthly_finite_ratio": 0.9766647317, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"},
+      "yeslab_90": {"mean_rank_ic": 0.0049300866, "icir": 0.0396829315, "minimum_monthly_finite_ratio": 0.9766647317, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"}
+    },
+    "action": "Reject Alpha89 and Alpha90 before annual stability testing; no new admission.",
+    "artifact": "alpha_089_090_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
