@@ -1,0 +1,33 @@
+{
+  "scope": "ALPHA_035_036_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data1 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_35": {
+      "factor_name": "Alpha36",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0345826571,
+      "icir": -0.4838620863,
+      "positive_day_share": 0.3251028807,
+      "finite_ratio": 0.9971015190,
+      "minimum_monthly_finite_ratio": 0.9959719887
+    },
+    "yeslab_36": {
+      "factor_name": "Alpha37",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0137791784,
+      "icir": 0.1291640321,
+      "positive_day_share": 0.5267489712,
+      "finite_ratio": 0.9953275524,
+      "minimum_monthly_finite_ratio": 0.9932373755
+    }
+  },
+  "status": "ALPHA35_PREDICTIVE_FAIL_ALPHA36_PREDICTIVE_WEAK",
+  "reason": "Alpha35 has strong but negative-direction signal and fails the absolute mean RankIC/ICIR gate. Alpha36 is weak; neither advances to annual stability."
+}
