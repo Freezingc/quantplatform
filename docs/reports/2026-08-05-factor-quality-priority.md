@@ -1991,3 +1991,8 @@ Alpha85 mean RankIC/ICIR 为 `-0.00824/-0.10342`，Alpha86 为 `-0.01917/-0.1522
 为 `-0.02103/-0.16784`，Alpha88 为 `-0.01413/-0.14805`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha87/Alpha88 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_087_088_train_2020_quality_v1.json)
+
+第四十五批 `Alpha89/Alpha90`（源因子名为 SP市销率倒数/TTM_SP滚动市销率倒数）覆盖率约 `97.67%`，但预测性不足：
+Alpha89 mean RankIC/ICIR 为 `-0.00041/-0.00322`，Alpha90 为 `0.00493/0.03968`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha89/Alpha90 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_089_090_train_2020_quality_v1.json)
