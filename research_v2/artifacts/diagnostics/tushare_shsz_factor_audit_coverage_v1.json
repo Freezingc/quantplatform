@@ -635,6 +635,17 @@
     "action": "Reject Alpha59 and Alpha60 before annual stability testing; no new admission.",
     "artifact": "alpha_059_060_train_2020_quality_v1.json"
   },
+  "alpha_061_062_followup": {
+    "factor_ids": ["yeslab_61", "yeslab_62"],
+    "factor_names": ["Alpha58", "Alpha60"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_61": {"mean_rank_ic": -0.0139069998, "icir": -0.1303497738, "minimum_monthly_finite_ratio": 1.0, "status": "PREDICTIVE_FAIL"},
+      "yeslab_62": {"mean_rank_ic": -0.0205405212, "icir": -0.2171724001, "minimum_monthly_finite_ratio": 0.4182220354, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"}
+    },
+    "action": "Reject Alpha61 and Alpha62 before annual stability testing; Alpha62 also fails structural coverage. No new admission.",
+    "artifact": "alpha_061_062_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

@@ -1912,3 +1912,9 @@ ICIR 明显不足。二者均未通过双重预测门槛，初筛拒绝，不进
 为 `-0.01013/-0.13076`，Alpha60 为 `-0.00420/-0.03426`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha59/Alpha60 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_059_060_train_2020_quality_v1.json)
+
+第三十一批 `Alpha61/Alpha62`（源因子名为 Alpha58/Alpha60）均未形成候选。Alpha61 mean RankIC/ICIR 为
+`-0.01391/-0.13035`，覆盖率完整；Alpha62 为 `-0.02054/-0.21717`，最低月度覆盖率仅 `41.82%`。二者均未通过双重预测门槛，
+Alpha62 另有结构覆盖阻断，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha61/Alpha62 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_061_062_train_2020_quality_v1.json)
