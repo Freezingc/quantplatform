@@ -1,0 +1,33 @@
+{
+  "scope": "ALPHA_011_012_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data1 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_11": {
+      "factor_name": "Alpha11",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0074498385,
+      "icir": -0.0741420957,
+      "positive_day_share": 0.4609053498,
+      "finite_ratio": 0.9765385402,
+      "minimum_monthly_finite_ratio": 0.8163172038
+    },
+    "yeslab_12": {
+      "factor_name": "Alpha12",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0128997889,
+      "icir": 0.1140428174,
+      "positive_day_share": 0.4938271605,
+      "finite_ratio": 0.9963618651,
+      "minimum_monthly_finite_ratio": 0.9945307736
+    }
+  },
+  "status": "ALPHA11_PREDICTIVE_FAIL_ALPHA12_PREDICTIVE_WEAK",
+  "reason": "Both factors fail the double predictive gate. Alpha11 also has a lower but still passing structural coverage ratio; neither advances to annual stability."
+}
