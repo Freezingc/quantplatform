@@ -52,6 +52,32 @@ def test_parser_accepts_alpha5_tushare_replay() -> None:
     )
 
 
+def test_parser_accepts_alpha31_full_cross_section_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_31",
+            "--full-market",
+            "--exclude-bj",
+            "--stock-batch-size",
+            "6000",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/tushare-alpha31.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_31",)
+    assert audit.requires_full_cross_section(args.factor_id)
+    assert audit.required_market_fields((REPLAY_DEFINITIONS["yeslab_31"],)) == (
+        "high",
+        "vol",
+    )
+
+
 def test_parser_accepts_full_market_batches() -> None:
     args = audit.parse_args(
         [

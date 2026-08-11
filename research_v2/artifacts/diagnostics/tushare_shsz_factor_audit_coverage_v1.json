@@ -461,6 +461,26 @@
     "action": "Reject Alpha29 and Alpha30 before annual stability testing.",
     "artifact": "alpha_029_030_train_2020_quality_v1.json"
   },
+  "alpha_031_032_followup": {
+    "factor_ids": ["yeslab_31", "yeslab_32"],
+    "factor_names": ["Alpha32", "Alpha33"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_31": {"mean_rank_ic": 0.034281933, "icir": 0.6093445474, "minimum_monthly_finite_ratio": 0.9969815076, "status": "PREDICTIVE_PASS_ANNUAL_STABILITY_PASS_FORMULA_SCOPE_BLOCKED"},
+      "yeslab_32": {"mean_rank_ic": 0.0165652959, "icir": 0.1465438165, "minimum_monthly_finite_ratio": 0.9945307736, "status": "PREDICTIVE_WEAK"}
+    },
+    "action": "Keep Alpha31 isolated until SH/SZ canonical rematerialization resolves the cross-sectional replay scope mismatch. Reject Alpha32 before annual stability testing.",
+    "formula_replay": {
+      "window": "2025-01-02/2025-01-31",
+      "overlap_finite_rows": 91833,
+      "mismatch_rows": 91829,
+      "mismatch_date_count": 18,
+      "source_market_uncovered_rows": 0,
+      "status": "FORMULA_REPLAY_BLOCKED_SOURCE_CROSS_SECTION_SCOPE_MISMATCH",
+      "artifact": "tushare_shsz_alpha31_formula_replay_2025-01_v1.json"
+    },
+    "artifact": "alpha_031_032_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

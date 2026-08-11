@@ -1821,3 +1821,17 @@ RankIC/ICIR 为 `-0.01069/-0.10379`，Alpha24 为 `-0.01980/-0.15985`。二者�
 mean RankIC/ICIR 为 `-0.02372/-0.20231`，Alpha31 为 `-0.02509/-0.18839`。二者均未通过双重预测门槛，初筛拒绝。
 
 证据：[`Alpha29/Alpha31 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_029_030_train_2020_quality_v1.json)
+
+第十六批出现第二个 Alpha 晋级候选：`yeslab_31` 的源因子名为 `Alpha32`，2020 mean RankIC/ICIR 为
+`0.03428/0.60934`，最低月度覆盖率 `99.70%`。现有年度摘要显示其 2020–2024 五年方向一致，年度
+signed mean RankIC 有 `4/5` 年达标，年度正向日占比 `5/5` 年达标，符合主计划的年度稳定性规则，下一步
+进入 Tushare 公式回放和 TRAIN 相似度检查。`yeslab_32`（源因子 Alpha33）为 `0.01657/0.14654`，初筛拒绝。
+
+证据：[`Alpha31/Alpha32 2020 初筛与年度摘要`](../../research_v2/artifacts/diagnostics/alpha_031_032_train_2020_quality_v1.json)
+
+Alpha31 的 Tushare 全市场公式回放已完成：行情覆盖完整，但 91,829/91,833 个有限重叠行不一致，18 个交易日全部受影响。
+Alpha32 公式包含同日横截面排名，历史 YesLab 计算使用的股票池与当前 SH/SZ 规范池不同（包含 BJ/代码集合差异），因此
+当前结果归类为 `SOURCE_CROSS_SECTION_SCOPE_MISMATCH`，不是行情缺失或单纯数值精度问题。Alpha31 暂时隔离，需先按
+规范 SH/SZ 池重新物化因子，再复核公式和相似度，不能直接进入模型输入。
+
+证据：[`Alpha31 Tushare 公式回放`](../../research_v2/artifacts/diagnostics/tushare_shsz_alpha31_formula_replay_2025-01_v1.json)
