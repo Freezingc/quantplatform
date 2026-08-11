@@ -1780,3 +1780,9 @@ mean RankIC/ICIR 为 `-0.01127/-0.09856`；Alpha10 为 `0.02624/0.16350`。Alpha
 mean RankIC/ICIR 为 `0.00530/0.05765`，Alpha14 为 `-0.02180/-0.17115`。二者均未通过双重预测门槛，初筛拒绝。
 
 证据：[`Alpha13/Alpha14 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_013_014_train_2020_quality_v1.json)
+
+第八批 `Alpha15/Alpha16` 中，Alpha15 mean RankIC/ICIR 为 `0.01558/0.20366`，直接拒绝。Alpha16 为
+`0.03230/0.49509`，覆盖率接近完整且 mean RankIC 达标，但 ICIR 比 `0.50` 门槛低 `0.00491`；严格流程暂不
+进入年度稳定性，仅保留为隔离的边界复核候选。
+
+证据：[`Alpha15/Alpha16 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_015_016_train_2020_quality_v1.json)
