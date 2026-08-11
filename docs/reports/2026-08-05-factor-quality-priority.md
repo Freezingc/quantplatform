@@ -1918,3 +1918,8 @@ ICIR 明显不足。二者均未通过双重预测门槛，初筛拒绝，不进
 Alpha62 另有结构覆盖阻断，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha61/Alpha62 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_061_062_train_2020_quality_v1.json)
+
+第三十二批 `Alpha63/Alpha64`（源因子名为 Alpha59/“价格下跌加速换手”）覆盖率完整但方向均为负：Alpha63
+mean RankIC/ICIR 为 `-0.02818/-0.22843`，Alpha64 为 `-0.01469/-0.17852`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha63/Alpha64 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_063_064_train_2020_quality_v1.json)
