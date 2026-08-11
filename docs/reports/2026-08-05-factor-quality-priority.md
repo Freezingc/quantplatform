@@ -1897,3 +1897,8 @@ ICIR 明显不足。二者均未通过双重预测门槛，初筛拒绝，不进
 为 `-0.02053/-0.17101`，Alpha54 为 `-0.02059/-0.17131`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha53/Alpha54 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_053_054_train_2020_quality_v1.json)
+
+第二十八批 `Alpha55/Alpha56`（源因子名为 Alpha52/Alpha53）覆盖率合格但预测性不足：Alpha55 mean RankIC/ICIR
+为 `-0.01805/-0.13772`，Alpha56 为 `-0.01689/-0.16316`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha55/Alpha56 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_055_056_train_2020_quality_v1.json)
