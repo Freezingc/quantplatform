@@ -1752,3 +1752,9 @@ PIT 财务可用性的最低覆盖要求。当前没有任何一个可进入模�
 `0.00876/0.08063`，因信号偏弱拒绝。
 
 证据：[`Alpha5/Alpha6 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_005_006_train_2020_quality_v1.json)
+
+Alpha5 已完成 2025-01-02 至 2025-01-31 的 Tushare SH/SZ 全市场公式回放。92,196 个重叠观测中重算值与历史值
+`0` 行不一致，说明当前 Alpha5 计算逻辑和输入字段可以精确复现；但仍有 49 行、26 个代码在 Tushare 市场源中没有对应
+覆盖，严格公式门槛暂记为阻断。处理这些停牌/历史代码覆盖缺口后，才进入 2021–2024 年度稳定性检验。
+
+证据：[`Alpha5 Tushare 公式回放`](../../research_v2/artifacts/diagnostics/tushare_shsz_alpha5_formula_replay_2025-01_v1.json)

@@ -29,6 +29,29 @@ def test_parser_accepts_bounded_tushare_replay() -> None:
     assert args.start == date(2020, 9, 14)
 
 
+def test_parser_accepts_alpha5_tushare_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_5",
+            "--exclude-bj",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/tushare-alpha5.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_5",)
+    assert not audit.requires_full_cross_section(args.factor_id)
+    assert audit.required_market_fields((REPLAY_DEFINITIONS["yeslab_5"],)) == (
+        "high",
+        "vol",
+    )
+
+
 def test_parser_accepts_full_market_batches() -> None:
     args = audit.parse_args(
         [

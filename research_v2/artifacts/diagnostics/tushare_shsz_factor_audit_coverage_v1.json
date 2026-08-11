@@ -305,8 +305,21 @@
       "yeslab_5": {"mean_rank_ic": 0.0345952603, "icir": 0.4741665363, "minimum_monthly_finite_ratio": 0.8622834572, "status": "PREDICTIVE_PASS_FORMULA_REPLAY_PENDING"},
       "yeslab_6": {"mean_rank_ic": 0.008757106, "icir": 0.0806283419, "minimum_monthly_finite_ratio": 0.9983249026, "status": "PREDICTIVE_WEAK"}
     },
-    "action": "Promote Alpha5 to annual stability and formula replay review. Reject Alpha6.",
-    "artifact": "alpha_005_006_train_2020_quality_v1.json"
+    "action": "Keep Alpha5 isolated until its Tushare market-coverage gap is resolved, then promote it to annual stability. Reject Alpha6.",
+    "artifact": "alpha_005_006_train_2020_quality_v1.json",
+    "formula_replay": {
+      "window": "2025-01-02/2025-01-31",
+      "market_source": "Tushare.daily",
+      "market_scope": "SH/SZ",
+      "market_start": "2024-11-18",
+      "source_rows": 92196,
+      "overlap_finite_rows": 83179,
+      "mismatch_rows": 0,
+      "source_market_uncovered_rows": 49,
+      "source_market_uncovered_code_count": 26,
+      "status": "FORMULA_REPLAY_BLOCKED_SOURCE_MARKET_COVERAGE_GAP",
+      "artifact": "tushare_shsz_alpha5_formula_replay_2025-01_v1.json"
+    }
   },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
@@ -343,6 +356,7 @@
     "tushare_shsz_scope_diagnostic_gp012_gp036_v1.json",
     "tushare_shsz_registered_gp_scope_precision_review_v1.json",
     "tushare_shsz_remaining_gp_scope_review_v1.json",
-    "tushare_shsz_pending_gp_scope_completion_v1.json"
+    "tushare_shsz_pending_gp_scope_completion_v1.json",
+    "tushare_shsz_alpha5_formula_replay_2025-01_v1.json"
   ]
 }

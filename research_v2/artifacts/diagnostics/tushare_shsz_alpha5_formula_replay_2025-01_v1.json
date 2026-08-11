@@ -1,0 +1,62 @@
+{
+  "bj_alias_count": 0,
+  "bj_alias_map": null,
+  "code_count": 5122,
+  "cross_sectional_replay_mode": "configured_batch",
+  "database_writes": false,
+  "end": "2025-01-31",
+  "exclude_bj": true,
+  "factor_ids": [
+    "yeslab_5"
+  ],
+  "include_daily_basic": false,
+  "locked_test_read": false,
+  "market_code_count": 5122,
+  "market_date_count": 50,
+  "market_finite_rows": 2042184,
+  "market_hash": "117f41ea5308b189cdd8374e76b15b5da26ebaa11988c5cb5305e18e47b18e3c",
+  "market_missing_code_count": 0,
+  "market_rows": 255273,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-11-18",
+  "max_ts_codes": null,
+  "required_market_fields": [
+    "high",
+    "vol"
+  ],
+  "restrict_to_v2_universe": false,
+  "rows": [
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_5",
+      "factor_name": "Alpha5",
+      "lookback_days": 10,
+      "max_abs_diff": 0.0,
+      "max_rel_diff": 0.0,
+      "max_ts_codes": null,
+      "mismatch_date_count": 0,
+      "mismatch_end": null,
+      "mismatch_rows": 0,
+      "mismatch_start": null,
+      "overlap_finite_rows": 83179,
+      "overlap_rows": 92196,
+      "reason_codes": [
+        "TUSHARE_SOURCE_MARKET_COVERAGE_GAP"
+      ],
+      "replay_finite_rows": 83179,
+      "replay_lookback_days": 10,
+      "replay_rows": 92196,
+      "source_finite_rows": 83179,
+      "source_finite_rows_full": 83179,
+      "source_market_uncovered_code_count": 26,
+      "source_market_uncovered_date_count": 17,
+      "source_market_uncovered_rows": 49,
+      "source_rows": 92196
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2025-01-02",
+  "stock_batch_size": 6000,
+  "universe_mode": "full_market"
+}
