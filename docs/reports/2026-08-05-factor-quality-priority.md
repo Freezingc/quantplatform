@@ -1856,3 +1856,9 @@ Alpha37 mean RankIC/ICIR 为 `0.01150/0.13121`，Alpha38 为 `-0.01817/-0.16921`
 `-0.00017/-0.00187`，最低月度覆盖率仅 `90.31%`；Alpha40 为 `0.01377/0.10076`，覆盖率接近完整但信号偏弱。
 
 证据：[`Alpha39/Alpha40 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_039_040_train_2020_quality_v1.json)
+
+第二十一批 `Alpha41/Alpha42`（源因子名分别为 Alpha42/Alpha43）没有新增准入因子。Alpha41 的 mean RankIC/ICIR 为
+`0.04601/0.46426`，最低月度覆盖率 `99.45%`；它超过 mean RankIC 门槛，但 ICIR 比 `0.50` 严格门槛低
+`0.03574`，列为边界候选并隔离。Alpha42 mean RankIC/ICIR 为 `-0.02128/-0.21160`，直接拒绝。二者均不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha41/Alpha42 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_041_042_train_2020_quality_v1.json)
