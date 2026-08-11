@@ -1791,3 +1791,8 @@ mean RankIC/ICIR 为 `0.00530/0.05765`，Alpha14 为 `-0.02180/-0.17115`。二�
 mean RankIC/ICIR 为 `0.01742/0.14355`，Alpha18 为 `-0.02501/-0.18852`。二者均未通过双重预测门槛，初筛拒绝。
 
 证据：[`Alpha17/Alpha18 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_017_018_train_2020_quality_v1.json)
+
+第十批 `Alpha19/Alpha20` 覆盖率接近完整（最低月度覆盖率 `100%/99.78%`），但预测结果均为负且强度不足：
+Alpha19 mean RankIC/ICIR 为 `-0.02497/-0.18855`，Alpha20 为 `-0.02616/-0.20265`。二者均在初筛拒绝。
+
+证据：[`Alpha19/Alpha20 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_019_020_train_2020_quality_v1.json)
