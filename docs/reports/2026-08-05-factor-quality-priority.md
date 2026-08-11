@@ -1764,3 +1764,9 @@ Alpha7 mean RankIC/ICIR 为 `0.01034/0.14647`，Alpha8 为 `0.01881/0.14628`。�
 mean RankIC `0.02` 与绝对 ICIR `0.50` 的双重门槛，初筛拒绝，不进入年度稳定性检验。
 
 证据：[`Alpha7/Alpha8 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_007_008_train_2020_quality_v1.json)
+
+第五批 `Alpha9/Alpha10` 的覆盖率仍接近完整（最低月度覆盖率 `99.91%/100%`），但没有形成候选：Alpha9
+mean RankIC/ICIR 为 `-0.01127/-0.09856`；Alpha10 为 `0.02624/0.16350`。Alpha10 虽超过 mean RankIC
+门槛，但 ICIR 明显低于 `0.50`，因此二者均在初筛拒绝。
+
+证据：[`Alpha9/Alpha10 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_009_010_train_2020_quality_v1.json)
