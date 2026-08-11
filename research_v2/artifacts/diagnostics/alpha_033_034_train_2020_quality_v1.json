@@ -1,0 +1,33 @@
+{
+  "scope": "ALPHA_033_034_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data1 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_33": {
+      "factor_name": "Alpha34",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0250884071,
+      "icir": 0.1883927872,
+      "positive_day_share": 0.5555555556,
+      "finite_ratio": 0.9955350163,
+      "minimum_monthly_finite_ratio": 0.9931634670
+    },
+    "yeslab_34": {
+      "factor_name": "Alpha35",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0354421871,
+      "icir": 0.3525793346,
+      "positive_day_share": 0.6419753086,
+      "finite_ratio": 0.9907197494,
+      "minimum_monthly_finite_ratio": 0.9874355611
+    }
+  },
+  "status": "ALPHA33_ALPHA34_PREDICTIVE_WEAK_ICIR_FAIL",
+  "reason": "Both factors clear the mean RankIC threshold but fail the absolute ICIR threshold of 0.50; neither advances to annual stability."
+}

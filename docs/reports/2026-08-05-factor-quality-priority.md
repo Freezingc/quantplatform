@@ -1835,3 +1835,9 @@ Alpha32 公式包含同日横截面排名，历史 YesLab 计算使用的股票�
 规范 SH/SZ 池重新物化因子，再复核公式和相似度，不能直接进入模型输入。
 
 证据：[`Alpha31 Tushare 公式回放`](../../research_v2/artifacts/diagnostics/tushare_shsz_alpha31_formula_replay_2025-01_v1.json)
+
+第十七批 `Alpha33/Alpha34`（源因子名分别为 Alpha34/Alpha35）均达到 mean RankIC 门槛，但 ICIR 不足：
+Alpha33 为 `0.02509/0.18839`，Alpha34 为 `0.03544/0.35258`。最低月度覆盖率为 `99.32%/98.74%`，二者
+均在初筛拒绝，不进入年度稳定性。
+
+证据：[`Alpha33/Alpha34 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_033_034_train_2020_quality_v1.json)
