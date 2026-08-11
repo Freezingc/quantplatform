@@ -1,0 +1,37 @@
+{
+  "scope": "ALPHA_087_088_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data2 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_87": {
+      "factor_name": "Alpha79",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0210289516,
+      "icir": -0.1678350288,
+      "positive_day_share": 0.4773662551,
+      "finite_ratio": 0.9995489915,
+      "minimum_monthly_finite_ratio": 0.9992536695,
+      "direction": -1,
+      "status": "PREDICTIVE_FAIL"
+    },
+    "yeslab_88": {
+      "factor_name": "Alpha80",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0141313577,
+      "icir": -0.1480521462,
+      "positive_day_share": 0.4156378601,
+      "finite_ratio": 0.9987416864,
+      "minimum_monthly_finite_ratio": 0.9980263703,
+      "direction": -1,
+      "status": "PREDICTIVE_FAIL"
+    }
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION",
+  "reason": "Both factors fail the absolute mean RankIC 0.02 and absolute ICIR 0.50 double threshold despite near-complete coverage. Neither enters annual stability testing or model inputs."
+}
