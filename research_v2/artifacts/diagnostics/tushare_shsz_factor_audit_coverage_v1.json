@@ -707,6 +707,17 @@
     "action": "Keep Alpha62 isolated until canonical SH/SZ rematerialization resolves the cross-sectional replay mismatch; reject Alpha63 before annual stability testing.",
     "artifact": "alpha_071_072_train_2020_quality_v1.json"
   },
+  "alpha_073_074_followup": {
+    "factor_ids": ["yeslab_73", "yeslab_74"],
+    "factor_names": ["Alpha64", "Alpha65"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_73": {"mean_rank_ic": 0.0236395992, "icir": 0.4169453623, "minimum_monthly_finite_ratio": 0.9837868871, "status": "PREDICTIVE_WEAK_ICIR_FAIL"},
+      "yeslab_74": {"mean_rank_ic": 0.0221486128, "icir": 0.1674838742, "minimum_monthly_finite_ratio": 1.0, "status": "PREDICTIVE_WEAK_ICIR_FAIL"}
+    },
+    "action": "Reject Alpha73 and Alpha74 before annual stability testing; no new admission.",
+    "artifact": "alpha_073_074_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

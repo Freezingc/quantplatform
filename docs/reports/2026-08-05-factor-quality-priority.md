@@ -1950,3 +1950,9 @@ Alpha62 已完成 Tushare SH/SZ 全横截面公式回放：行情覆盖完整（
 `SOURCE_CROSS_SECTION_SCOPE_MISMATCH`，暂不进入模型输入；需先在规范 SH/SZ 股票池上重新物化后复核。
 
 证据：[`Alpha71/Alpha72 2020 初筛、年度摘要与回放`](../../research_v2/artifacts/diagnostics/alpha_071_072_train_2020_quality_v1.json)
+
+第三十七批 `Alpha73/Alpha74`（源因子名为 Alpha64/Alpha65）均超过 mean RankIC 门槛但 ICIR 不足：Alpha73
+mean RankIC/ICIR 为 `0.02364/0.41695`，最低月度覆盖率 `98.38%`；Alpha74 为 `0.02215/0.16748`，覆盖率完整。
+二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha73/Alpha74 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_073_074_train_2020_quality_v1.json)
