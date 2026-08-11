@@ -536,6 +536,17 @@
     "action": "Keep Alpha41 isolated for boundary review and reject Alpha42 before annual stability testing; no new admission.",
     "artifact": "alpha_041_042_train_2020_quality_v1.json"
   },
+  "alpha_043_044_followup": {
+    "factor_ids": ["yeslab_43", "yeslab_44"],
+    "factor_names": ["Alpha44", "Alpha45"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_43": {"mean_rank_ic": -0.0203676359, "icir": -0.2483528733, "minimum_monthly_finite_ratio": 0.9854954639, "status": "PREDICTIVE_FAIL"},
+      "yeslab_44": {"mean_rank_ic": -0.0155331201, "icir": -0.1619756405, "minimum_monthly_finite_ratio": 0.9994029356, "status": "PREDICTIVE_FAIL"}
+    },
+    "action": "Reject Alpha43 and Alpha44 before annual stability testing; no new admission.",
+    "artifact": "alpha_043_044_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

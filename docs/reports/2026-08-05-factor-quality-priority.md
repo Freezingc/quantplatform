@@ -1862,3 +1862,9 @@ Alpha37 mean RankIC/ICIR 为 `0.01150/0.13121`，Alpha38 为 `-0.01817/-0.16921`
 `0.03574`，列为边界候选并隔离。Alpha42 mean RankIC/ICIR 为 `-0.02128/-0.21160`，直接拒绝。二者均不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha41/Alpha42 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_041_042_train_2020_quality_v1.json)
+
+第二十二批 `Alpha43/Alpha44`（源因子名分别为 Alpha44/Alpha45）均为负向弱信号：Alpha43 mean RankIC/ICIR
+为 `-0.02037/-0.24835`，最低月度覆盖率 `98.55%`；Alpha44 为 `-0.01553/-0.16198`，覆盖率接近完整。
+二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha43/Alpha44 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_043_044_train_2020_quality_v1.json)
