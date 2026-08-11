@@ -317,6 +317,14 @@
       "mismatch_rows": 0,
       "source_market_uncovered_rows": 49,
       "source_market_uncovered_code_count": 26,
+      "source_market_uncovered_codes": [
+        "000016.SZ", "000408.SZ", "000972.SZ", "002123.SZ", "002647.SZ",
+        "003013.SZ", "300065.SZ", "300069.SZ", "300307.SZ", "300422.SZ",
+        "300630.SZ", "300807.SZ", "300839.SZ", "601121.SH", "601515.SH",
+        "600446.SH", "600933.SH", "603007.SH", "605389.SH", "688073.SH",
+        "688293.SH", "688522.SH", "688567.SH", "688656.SH", "688667.SH",
+        "688720.SH"
+      ],
       "status": "FORMULA_REPLAY_BLOCKED_SOURCE_MARKET_COVERAGE_GAP",
       "artifact": "tushare_shsz_alpha5_formula_replay_2025-01_v1.json"
     }
