@@ -668,6 +668,17 @@
     "action": "Reject Alpha65 and Alpha66 before annual stability testing; no new admission.",
     "artifact": "alpha_065_066_train_2020_quality_v1.json"
   },
+  "alpha_067_068_followup": {
+    "factor_ids": ["yeslab_67", "yeslab_68"],
+    "factor_names": ["BP账面市值比", "Quart_EP单季度市盈率倒数"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_67": {"mean_rank_ic": -0.0045748141, "icir": -0.0282246641, "minimum_monthly_finite_ratio": 0.9758354756, "status": "PREDICTIVE_FAIL"},
+      "yeslab_68": {"mean_rank_ic": 0.0154890039, "icir": 0.1193996438, "minimum_monthly_finite_ratio": 0.890770379, "status": "PREDICTIVE_WEAK_COVERAGE_REDUCED"}
+    },
+    "action": "Reject Alpha67 and Alpha68 before annual stability testing; no new admission.",
+    "artifact": "alpha_067_068_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
