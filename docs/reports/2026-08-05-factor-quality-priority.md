@@ -2014,3 +2014,12 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 历史源池包含 `5935` 个代码，其中 `19,512` 条 BJ 观测，因此归类为 `SOURCE_CROSS_SECTION_SCOPE_MISMATCH`，暂不进入模型输入。
 
 证据：[`Alpha105/Alpha106 2020 初筛、年度摘要与回放`](../../research_v2/artifacts/diagnostics/alpha_105_106_train_2020_quality_v1.json)
+
+第五十一至五十四批 `Alpha107/Alpha114` 已通过四进程并行完成。Alpha107–111 均未通过双重预测门槛，
+其中 Alpha109 最低月度覆盖率仅 `40.43%`；Alpha112（Alpha90）mean RankIC `0.02903` 但 ICIR `0.45149`，
+低于 `0.50`，列为隔离边界结果；Alpha113/114 为负向弱信号。所有因子均不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha107/108`](../../research_v2/artifacts/diagnostics/alpha_107_108_train_2020_quality_v1.json)、
+[`Alpha109/110`](../../research_v2/artifacts/diagnostics/alpha_109_110_train_2020_quality_v1.json)、
+[`Alpha111/112`](../../research_v2/artifacts/diagnostics/alpha_111_112_train_2020_quality_v1.json)、
+[`Alpha113/114`](../../research_v2/artifacts/diagnostics/alpha_113_114_train_2020_quality_v1.json)
