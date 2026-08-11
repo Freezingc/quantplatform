@@ -1928,3 +1928,9 @@ mean RankIC/ICIR 为 `-0.02818/-0.22843`，Alpha64 为 `-0.01469/-0.17852`。二
 Alpha65 mean RankIC/ICIR 为 `-0.02658/-0.27725`，Alpha66 为 `-0.01785/-0.20294`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha65/Alpha66 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_065_066_train_2020_quality_v1.json)
+
+第三十四批 `Alpha67/Alpha68`（源因子名为 BP账面市值比/Quart_EP单季度市盈率倒数）均未形成候选：Alpha67
+mean RankIC/ICIR 为 `-0.00457/-0.02822`，Alpha68 为 `0.01549/0.11940`；Alpha68 最低月度覆盖率为 `89.08%`，仍因预测性不足拒绝。
+二者均不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha67/Alpha68 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_067_068_train_2020_quality_v1.json)
