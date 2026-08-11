@@ -175,6 +175,24 @@ def test_parser_accepts_alpha62_full_cross_section_replay() -> None:
     assert audit.REPLAY_DEFINITIONS["yeslab_71"].calculator_module == "Alpha62Calculator"
 
 
+def test_parser_accepts_alpha83_full_cross_section_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_105",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/alpha83-replay.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_105",)
+    assert audit.REPLAY_DEFINITIONS["yeslab_105"].calculator_module == "Alpha83Calculator"
+
+
 def test_parser_accepts_warmup_recovered_factor() -> None:
     args = audit.parse_args(
         [
@@ -241,6 +259,7 @@ def test_registry_includes_existing_gp_calculators_for_shsz_quality_replay() -> 
         "yeslab_432": ("GP_Factor_063_Calculator", "factor_data9", 5),
         "yeslab_433": ("GP_Factor_064_Calculator", "factor_data9", 60),
         "yeslab_71": ("Alpha62Calculator", "factor_data2", 4),
+        "yeslab_105": ("Alpha83Calculator", "factor_data2", 4),
     }
 
     for factor_id, (calculator, store_factor, lookback) in expected.items():

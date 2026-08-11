@@ -2005,3 +2005,12 @@ Alpha97–98 也未通过双重门槛。所有因子均拒绝，不进入年度�
 [`Alpha93/Alpha94`](../../research_v2/artifacts/diagnostics/alpha_093_094_train_2020_quality_v1.json)、
 [`Alpha95/Alpha96`](../../research_v2/artifacts/diagnostics/alpha_095_096_train_2020_quality_v1.json)、
 [`Alpha97/Alpha98`](../../research_v2/artifacts/diagnostics/alpha_097_098_train_2020_quality_v1.json)
+
+第五十批出现新的 Alpha 晋级候选：`yeslab_105` 的源因子名为 Alpha83，2020 mean RankIC/ICIR 为
+`0.04410/0.63338`，最低月度覆盖率 `99.76%`。其 2020–2024 年度方向一致，年度 signed mean RankIC 有 `4/5` 年达标，
+年度正向日占比 `5/5` 年达标，符合主年度稳定性规则；`yeslab_106`（Alpha84）为 `-0.03381/-0.34767`，初筛拒绝。
+
+Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` 个代码），但 `91,872/91,886` 个有限重叠值不一致。
+历史源池包含 `5935` 个代码，其中 `19,512` 条 BJ 观测，因此归类为 `SOURCE_CROSS_SECTION_SCOPE_MISMATCH`，暂不进入模型输入。
+
+证据：[`Alpha105/Alpha106 2020 初筛、年度摘要与回放`](../../research_v2/artifacts/diagnostics/alpha_105_106_train_2020_quality_v1.json)

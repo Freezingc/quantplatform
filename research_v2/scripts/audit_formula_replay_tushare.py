@@ -28,6 +28,7 @@ SUPPORTED_FACTOR_IDS = (
     "yeslab_5",
     "yeslab_31",
     "yeslab_71",
+    "yeslab_105",
     "yeslab_94",
     "yeslab_95",
     "yeslab_96",
@@ -98,6 +99,7 @@ FULL_CROSS_SECTION_FACTOR_IDS = frozenset(
     {
         "yeslab_31",
         "yeslab_71",
+        "yeslab_105",
         "yeslab_94",
         "yeslab_95",
         "yeslab_96",
