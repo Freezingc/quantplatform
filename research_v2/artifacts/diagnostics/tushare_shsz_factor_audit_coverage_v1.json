@@ -690,6 +690,23 @@
     "action": "Reject Alpha69 and Alpha70 before annual stability testing; no new admission.",
     "artifact": "alpha_069_070_train_2020_quality_v1.json"
   },
+  "alpha_071_072_followup": {
+    "factor_ids": ["yeslab_71", "yeslab_72"],
+    "factor_names": ["Alpha62", "Alpha63"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_71": {"mean_rank_ic": 0.037902465, "icir": 0.5364885981, "minimum_monthly_finite_ratio": 0.9975454018, "status": "PREDICTIVE_PASS_ANNUAL_STABILITY_PASS_FORMULA_SCOPE_BLOCKED"},
+      "yeslab_72": {"mean_rank_ic": -0.0149365726, "icir": -0.1193737352, "minimum_monthly_finite_ratio": 0.9990214777, "status": "PREDICTIVE_FAIL"}
+    },
+    "annual_stability": {
+      "yeslab_71": {"same_direction_years": 5, "annual_signed_mean_rank_ic_pass_years": 4, "annual_signed_positive_share_pass_years": 5, "status": "ANNUAL_STABILITY_PASS_MAIN_RULE"}
+    },
+    "formula_replay": {
+      "yeslab_71": {"window": "2025-01-02/2025-01-31", "canonical_market_code_count": 5127, "overlap_finite_rows": 91880, "mismatch_rows": 91538, "mismatch_date_count": 18, "source_market_uncovered_rows": 0, "status": "FORMULA_REPLAY_BLOCKED_SOURCE_CROSS_SECTION_SCOPE_MISMATCH", "artifact": "tushare_shsz_alpha62_formula_replay_2025-01_v1.json"}
+    },
+    "action": "Keep Alpha62 isolated until canonical SH/SZ rematerialization resolves the cross-sectional replay mismatch; reject Alpha63 before annual stability testing.",
+    "artifact": "alpha_071_072_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {

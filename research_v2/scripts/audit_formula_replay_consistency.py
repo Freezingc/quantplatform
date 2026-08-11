@@ -61,6 +61,15 @@ REPLAY_DEFINITIONS = {
         lookback_days=4,
         replay_lookback_days=4,
     ),
+    "yeslab_71": ReplayDefinition(
+        factor_id="yeslab_71",
+        factor_name="Alpha62",
+        store_factor="factor_data2",
+        calculator_module="Alpha62Calculator",
+        calculator_class="Alpha62Calculator",
+        lookback_days=4,
+        replay_lookback_days=4,
+    ),
     "yeslab_94": ReplayDefinition(
         factor_id="yeslab_94",
         factor_name="日间反转-波动翻转",

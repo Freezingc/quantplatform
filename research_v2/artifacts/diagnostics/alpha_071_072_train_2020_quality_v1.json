@@ -1,0 +1,72 @@
+{
+  "scope": "ALPHA_071_072_TRAIN_2020_QUALITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data2 with strict PIT normalization; V2 latest universe and labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factors": {
+    "yeslab_71": {
+      "factor_name": "Alpha62",
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.037902465,
+      "icir": 0.5364885981,
+      "positive_day_share": 0.7448559671,
+      "finite_ratio": 0.9982470805,
+      "minimum_monthly_finite_ratio": 0.9975454018,
+      "direction": 1,
+      "annual_stability": {
+        "years": [2020, 2021, 2022, 2023, 2024],
+        "annual_signed_mean_rank_ic": {
+          "2020": 0.037902465,
+          "2021": 0.015006673,
+          "2022": 0.037500878,
+          "2023": 0.031703967,
+          "2024": 0.039299345
+        },
+        "annual_positive_day_share": {
+          "2020": 0.7448559671,
+          "2021": 0.6296296296,
+          "2022": 0.7024793388,
+          "2023": 0.6900826446,
+          "2024": 0.7024793388
+        },
+        "same_direction_years": 5,
+        "annual_signed_mean_rank_ic_pass_years": 4,
+        "annual_signed_positive_share_pass_years": 5,
+        "status": "ANNUAL_STABILITY_PASS_MAIN_RULE"
+      },
+      "status": "PREDICTIVE_PASS_ANNUAL_STABILITY_PASS_FORMULA_SCOPE_BLOCKED"
+    },
+    "yeslab_72": {
+      "factor_name": "Alpha63",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0149365726,
+      "icir": -0.1193737352,
+      "positive_day_share": 0.4732510288,
+      "finite_ratio": 0.9994227092,
+      "minimum_monthly_finite_ratio": 0.9990214777,
+      "direction": -1,
+      "status": "PREDICTIVE_FAIL"
+    }
+  },
+  "formula_replay": {
+    "window": "2025-01-02/2025-01-31",
+    "market_source": "Tushare.daily",
+    "market_scope": "SH/SZ",
+    "source_factor_pool_code_count": 5935,
+    "source_factor_pool_bj_rows": 9756,
+    "canonical_market_code_count": 5127,
+    "overlap_finite_rows": 91880,
+    "mismatch_rows": 91538,
+    "mismatch_date_count": 18,
+    "source_market_uncovered_rows": 0,
+    "status": "FORMULA_REPLAY_BLOCKED_SOURCE_CROSS_SECTION_SCOPE_MISMATCH",
+    "artifact": "tushare_shsz_alpha62_formula_replay_2025-01_v1.json"
+  },
+  "status": "ALPHA62_PREDICTIVE_AND_ANNUAL_PASS_FORMULA_SCOPE_BLOCKED_ALPHA63_PREDICTIVE_FAIL",
+  "reason": "Alpha62 passes the 2020 double predictive gate and the five-year main annual stability rule, but its same-day rank(volume) replay disagrees with canonical SH/SZ values because the historical YesLab pool includes BJ and a different cross-sectional universe. Alpha63 fails the predictive gate. Neither is admitted until Alpha62 is rematerialized on the canonical SH/SZ pool."
+}

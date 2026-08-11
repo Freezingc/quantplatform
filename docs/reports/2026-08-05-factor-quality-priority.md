@@ -1940,3 +1940,13 @@ Alpha69 mean RankIC/ICIR 为 `0.02313/0.17968`，最低月度覆盖率 `81.31%`�
 二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha69/Alpha70 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_069_070_train_2020_quality_v1.json)
+
+第三十六批出现新的 Alpha 晋级候选：`yeslab_71` 的源因子名为 Alpha62，2020 mean RankIC/ICIR 为
+`0.03790/0.53649`，最低月度覆盖率 `99.75%`。其 2020–2024 年度方向一致，年度 signed mean RankIC 有 `4/5` 年达标，
+年度正向日占比 `5/5` 年达标，符合主年度稳定性规则。`yeslab_72`（Alpha63）为 `-0.01494/-0.11937`，初筛拒绝。
+
+Alpha62 已完成 Tushare SH/SZ 全横截面公式回放：行情覆盖完整（`5127` 个代码、无缺失），但 `91,538/91,880` 个有限重叠值不一致。
+源 Alpha62 的同日 `RANK(VOLUME)` 使用了包含 BJ 的 `5935` 代码池（其中 `9756` 条 BJ 观测），因此归类为
+`SOURCE_CROSS_SECTION_SCOPE_MISMATCH`，暂不进入模型输入；需先在规范 SH/SZ 股票池上重新物化后复核。
+
+证据：[`Alpha71/Alpha72 2020 初筛、年度摘要与回放`](../../research_v2/artifacts/diagnostics/alpha_071_072_train_2020_quality_v1.json)
