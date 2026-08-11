@@ -373,6 +373,17 @@
     "action": "Reject Alpha13 and Alpha14 before annual stability testing.",
     "artifact": "alpha_013_014_train_2020_quality_v1.json"
   },
+  "alpha_015_016_followup": {
+    "factor_ids": ["yeslab_15", "yeslab_16"],
+    "factor_names": ["Alpha15", "Alpha16"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_15": {"mean_rank_ic": 0.0155776963, "icir": 0.2036567372, "minimum_monthly_finite_ratio": 0.9994029356, "status": "PREDICTIVE_WEAK"},
+      "yeslab_16": {"mean_rank_ic": 0.0323004215, "icir": 0.4950916568, "minimum_monthly_finite_ratio": 0.9979600299, "status": "BORDERLINE_ICIR_FAIL"}
+    },
+    "action": "Reject Alpha15. Keep Alpha16 isolated as a borderline ICIR follow-up; do not run annual stability yet.",
+    "artifact": "alpha_015_016_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
