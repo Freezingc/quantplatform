@@ -1811,3 +1811,8 @@ RankIC/ICIR 为 `-0.01069/-0.10379`，Alpha24 为 `-0.01980/-0.15985`。二者�
 `98.46%`；Alpha26 为 `0.01767/0.13810`，最低月度覆盖率进一步降至 `90.44%`。二者均未通过双重预测门槛，初筛拒绝。
 
 证据：[`Alpha25/Alpha26 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_025_026_train_2020_quality_v1.json)
+
+第十四批 `Alpha27/Alpha28` 覆盖率均高于 `98.9%`，但预测强度不足：Alpha27 mean RankIC/ICIR 为
+`-0.02820/-0.22475`，Alpha28 为 `-0.00656/-0.05461`。二者均未通过双重预测门槛，初筛拒绝。
+
+证据：[`Alpha27/Alpha28 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_027_028_train_2020_quality_v1.json)
