@@ -140,6 +140,23 @@ def test_parser_accepts_alpha5_replay_factor() -> None:
     assert args.factor_id == ("yeslab_5",)
 
 
+def test_parser_accepts_alpha31_replay_factor() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_31",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/alpha31-replay.json",
+        ]
+    )
+
+    assert args.factor_id == ("yeslab_31",)
+
+
 def test_parser_accepts_warmup_recovered_factor() -> None:
     args = audit.parse_args(
         [

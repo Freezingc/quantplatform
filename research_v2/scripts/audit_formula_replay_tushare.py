@@ -26,6 +26,7 @@ import pandas as pd
 LOCKED_TEST_START = date(2026, 1, 1)
 SUPPORTED_FACTOR_IDS = (
     "yeslab_5",
+    "yeslab_31",
     "yeslab_94",
     "yeslab_95",
     "yeslab_96",
@@ -94,6 +95,7 @@ CALCULATOR_ROOT = REPO_ROOT / "数据库"
 # They must be replayed against the complete available universe in one batch.
 FULL_CROSS_SECTION_FACTOR_IDS = frozenset(
     {
+        "yeslab_31",
         "yeslab_94",
         "yeslab_95",
         "yeslab_96",
