@@ -657,6 +657,17 @@
     "action": "Reject Alpha63 and Alpha64 before annual stability testing; no new admission.",
     "artifact": "alpha_063_064_train_2020_quality_v1.json"
   },
+  "alpha_065_066_followup": {
+    "factor_ids": ["yeslab_65", "yeslab_66"],
+    "factor_names": ["成交量上升加速换手", "成交量下降加速换手"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_65": {"mean_rank_ic": -0.0265777013, "icir": -0.2772469945, "minimum_monthly_finite_ratio": 0.9996423351, "status": "PREDICTIVE_FAIL"},
+      "yeslab_66": {"mean_rank_ic": -0.01785086, "icir": -0.2029351251, "minimum_monthly_finite_ratio": 0.9996423351, "status": "PREDICTIVE_FAIL"}
+    },
+    "action": "Reject Alpha65 and Alpha66 before annual stability testing; no new admission.",
+    "artifact": "alpha_065_066_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
