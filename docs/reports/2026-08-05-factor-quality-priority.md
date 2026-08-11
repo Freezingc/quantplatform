@@ -1868,3 +1868,9 @@ Alpha37 mean RankIC/ICIR 为 `0.01150/0.13121`，Alpha38 为 `-0.01817/-0.16921`
 二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha43/Alpha44 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_043_044_train_2020_quality_v1.json)
+
+第二十三批 `Alpha45/Alpha46`（源因子名为“月均换手/ 月换手波动”）的负向 RankIC 较强，但结构覆盖不合格：
+两者最低月度覆盖率均为 `64.21%`，低于 `70%` 门槛；mean RankIC/ICIR 分别为 `-0.06913/-0.43483` 和
+`-0.07880/-0.58871`。覆盖门槛优先于绝对预测强度，二者直接拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha45/Alpha46 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_045_046_train_2020_quality_v1.json)
