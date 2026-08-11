@@ -1786,3 +1786,8 @@ mean RankIC/ICIR 为 `0.00530/0.05765`，Alpha14 为 `-0.02180/-0.17115`。二�
 进入年度稳定性，仅保留为隔离的边界复核候选。
 
 证据：[`Alpha15/Alpha16 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_015_016_train_2020_quality_v1.json)
+
+第九批 `Alpha17/Alpha18` 覆盖率接近完整（最低月度覆盖率 `99.99%/99.80%`），但预测强度仍不足：Alpha17
+mean RankIC/ICIR 为 `0.01742/0.14355`，Alpha18 为 `-0.02501/-0.18852`。二者均未通过双重预测门槛，初筛拒绝。
+
+证据：[`Alpha17/Alpha18 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_017_018_train_2020_quality_v1.json)
