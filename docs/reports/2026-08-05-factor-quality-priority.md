@@ -1874,3 +1874,9 @@ Alpha37 mean RankIC/ICIR 为 `0.01150/0.13121`，Alpha38 为 `-0.01817/-0.16921`
 `-0.07880/-0.58871`。覆盖门槛优先于绝对预测强度，二者直接拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha45/Alpha46 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_045_046_train_2020_quality_v1.json)
+
+第二十四批 `Alpha47/Alpha48`（源因子名为“月度Amihud非流动性/加速换手”）覆盖率均合格，但预测性不足：
+Alpha47 mean RankIC/ICIR 为 `-0.01205/-0.09333`，Alpha48 为 `-0.02565/-0.24573`。二者均未通过双重预测门槛，
+初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha47/Alpha48 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_047_048_train_2020_quality_v1.json)

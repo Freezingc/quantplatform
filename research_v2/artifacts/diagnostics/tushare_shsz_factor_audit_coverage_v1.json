@@ -558,6 +558,17 @@
     "action": "Reject Alpha45 and Alpha46 on structural coverage before annual stability testing; no new admission.",
     "artifact": "alpha_045_046_train_2020_quality_v1.json"
   },
+  "alpha_047_048_followup": {
+    "factor_ids": ["yeslab_47", "yeslab_48"],
+    "factor_names": ["月度Amihud非流动性", "加速换手"],
+    "period": "2020-01-02/2020-12-31",
+    "results": {
+      "yeslab_47": {"mean_rank_ic": -0.012048541, "icir": -0.0933282397, "minimum_monthly_finite_ratio": 0.9872507899, "status": "PREDICTIVE_FAIL"},
+      "yeslab_48": {"mean_rank_ic": -0.025651156, "icir": -0.2457323628, "minimum_monthly_finite_ratio": 0.9999377974, "status": "PREDICTIVE_FAIL"}
+    },
+    "action": "Reject Alpha47 and Alpha48 before annual stability testing; no new admission.",
+    "artifact": "alpha_047_048_train_2020_quality_v1.json"
+  },
   "catalog_without_complete_predictive_quality_count": 471,
   "catalog_without_any_diagnostic_artifact_count": 425,
   "calculator_inventory": {
