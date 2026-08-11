@@ -25,6 +25,7 @@ import pandas as pd
 
 LOCKED_TEST_START = date(2026, 1, 1)
 SUPPORTED_FACTOR_IDS = (
+    "yeslab_5",
     "yeslab_94",
     "yeslab_95",
     "yeslab_96",
