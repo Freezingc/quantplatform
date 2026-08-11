@@ -1981,3 +1981,8 @@ mean RankIC/ICIR 为 `0.02364/0.41695`，最低月度覆盖率 `98.38%`；Alpha7
 为 `-0.04762/-0.63818`，Alpha84 为 `0.00391/0.04096`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
 
 证据：[`Alpha83/Alpha84 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_083_084_train_2020_quality_v1.json)
+
+第四十三批 `Alpha85/Alpha86`（源因子名为 Alpha77/Alpha78）覆盖率分别为 `97.24%/100%`，但预测性不足：
+Alpha85 mean RankIC/ICIR 为 `-0.00824/-0.10342`，Alpha86 为 `-0.01917/-0.15221`。二者均未通过双重预测门槛，初筛拒绝，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha85/Alpha86 2020 初筛`](../../research_v2/artifacts/diagnostics/alpha_085_086_train_2020_quality_v1.json)
