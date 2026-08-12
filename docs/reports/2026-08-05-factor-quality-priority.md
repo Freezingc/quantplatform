@@ -2080,6 +2080,15 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha188/Alpha189`](../../research_v2/artifacts/diagnostics/alpha_188_189_train_2020_quality_v1.json)、
 [`Alpha190/Alpha191`](../../research_v2/artifacts/diagnostics/alpha_190_191_train_2020_quality_v1.json)
 
+第九十三至九十八批 `Alpha192/Alpha203` 使用 6 个并行进程完成严格初筛。本批没有新的年度候选：`Alpha199` mean RankIC `0.02978` 但 ICIR `0.18074`，`Alpha194` 预测性弱且最低月度覆盖率 `54.05%`；其余因子均为弱或负向信号。全部因子均不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha192/Alpha193`](../../research_v2/artifacts/diagnostics/alpha_192_193_train_2020_quality_v1.json)、
+[`Alpha194/Alpha195`](../../research_v2/artifacts/diagnostics/alpha_194_195_train_2020_quality_v1.json)、
+[`Alpha196/Alpha197`](../../research_v2/artifacts/diagnostics/alpha_196_197_train_2020_quality_v1.json)、
+[`Alpha198/Alpha199`](../../research_v2/artifacts/diagnostics/alpha_198_199_train_2020_quality_v1.json)、
+[`Alpha200/Alpha201`](../../research_v2/artifacts/diagnostics/alpha_200_201_train_2020_quality_v1.json)、
+[`Alpha202/Alpha203`](../../research_v2/artifacts/diagnostics/alpha_202_203_train_2020_quality_v1.json)
+
 第六十七至七十批 `Alpha140/Alpha147` 已通过四进程并行完成。`yeslab_140–147` 的 mean RankIC 全部为负（`-0.07876` 至 `-0.02692`），ICIR 为 `-0.58562` 至 `-0.31989`，未通过签名预测准入门槛；其中 `Alpha140–145` 的最低月度覆盖率仅 `38.01%–60.98%`，`Alpha146/147` 虽覆盖率合格但预测性仍失败。本批无新准入因子。
 
 证据：[`Alpha140/Alpha141`](../../research_v2/artifacts/diagnostics/alpha_140_141_train_2020_quality_v1.json)、
