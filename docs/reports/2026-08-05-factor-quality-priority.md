@@ -1605,9 +1605,9 @@ mean RankIC/ICIR 为 `-0.07560/-0.54720`，五年同向，严格年度 `|ICIR|>=
 但月度压力测试显示训练期 `47/60` 月满足 signed mean RankIC 线、验证期仅 `9/12` 月满足；验证
 期 `2025-01/02/04/12` 进入监控。对其历史上最接近的正式因子 Alpha376 已按年完成 Tushare
 canonical 成对预筛，五个年度中位相似度最高为 `0.8278`、单日最高为 `0.8954`，未越过 `0.90`
-冗余线；但这只排除 Alpha376 的直接冗余，不能替代对其余八个正式因子的完整全日检查。因此 Alpha114
-仅记录为“预测性和公式通过、待完整相似度及月度监控审查”，不计入 16 因子完整质量集合、不改变正式
-9 因子，也不触发发布或训练。
+冗余线；第二近邻 Alpha396 的 2020 canonical 中位相似度也仅 `0.6949`。但这些预筛只排除最可能的
+直接冗余，不能替代对全部正式九因子的完整全日检查。因此 Alpha114 仅记录为“预测性和公式通过、待
+完整相似度及月度监控审查”，不计入 16 因子完整质量集合、不改变正式9因子，也不触发发布或训练。
 
 证据：[`Alpha114 canonical 候选复核`](../../research_v2/artifacts/diagnostics/alpha114_tushare_canonical_candidate_review_v1.json)、
 [`Alpha114-Alpha376 年度相似度预筛`](../../research_v2/artifacts/diagnostics/alpha114_tushare_vs_376_annual_similarity_prefilter_v1.json)
