@@ -2058,6 +2058,17 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha280/Alpha281`](../../research_v2/artifacts/diagnostics/alpha_280_281_train_2020_quality_v1.json)、
 [`Alpha282/Alpha283`](../../research_v2/artifacts/diagnostics/alpha_282_283_train_2020_quality_v1.json)
 
+第一百三十九至一百四十六批 `Alpha284/Alpha299` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。`Alpha287/Alpha289` 的 mean RankIC 分别为 `0.02608/0.03313`，但 ICIR 仅 `0.33940/0.43005`；其余因子为负向或弱信号，全部未通过双重预测门槛，不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha284/Alpha285`](../../research_v2/artifacts/diagnostics/alpha_284_285_train_2020_quality_v1.json)、
+[`Alpha286/Alpha287`](../../research_v2/artifacts/diagnostics/alpha_286_287_train_2020_quality_v1.json)、
+[`Alpha288/Alpha289`](../../research_v2/artifacts/diagnostics/alpha_288_289_train_2020_quality_v1.json)、
+[`Alpha290/Alpha291`](../../research_v2/artifacts/diagnostics/alpha_290_291_train_2020_quality_v1.json)、
+[`Alpha292/Alpha293`](../../research_v2/artifacts/diagnostics/alpha_292_293_train_2020_quality_v1.json)、
+[`Alpha294/Alpha295`](../../research_v2/artifacts/diagnostics/alpha_294_295_train_2020_quality_v1.json)、
+[`Alpha296/Alpha297`](../../research_v2/artifacts/diagnostics/alpha_296_297_train_2020_quality_v1.json)、
+[`Alpha298/Alpha299`](../../research_v2/artifacts/diagnostics/alpha_298_299_train_2020_quality_v1.json)
+
 第九十九至一百零六批 `Alpha204/Alpha219` 使用 8 路并行完成严格 2020 初筛。`Alpha206` 与 `Alpha208` 通过 2020 双重预测门槛并进入五年年度复核；其余 14 个因子均因预测门槛、ICIR 或最低月度覆盖率失败而隔离。`Alpha209/211–214` 的预测方向较强，但最低月度覆盖率约 `64.1%–64.2%`，低于结构门槛 `70%`；`Alpha219` mean RankIC `0.03234`，但 ICIR `0.42935` 且最低月度覆盖率 `60.77%`。
 
 年度复核显示，`Alpha206` 与 `Alpha208` 均 5/5 年方向一致，signed 年度 mean RankIC 分别 4/5、5/5 年达标，方向日占比均 5/5 年达标；严格逐年 `|ICIR|>=0.50` 分别仅 2/5、1/5 年。因此两者状态为 `ANNUAL_STABILITY_PASS_WITH_MONITORING`，仅允许进入后续 Tushare 公式回放与相似度审查，尚未发布、尚未训练。
