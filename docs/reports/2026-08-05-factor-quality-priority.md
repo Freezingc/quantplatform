@@ -2047,6 +2047,18 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha136/Alpha137`](../../research_v2/artifacts/diagnostics/alpha_136_137_train_2020_quality_v1.json)、
 [`Alpha138/Alpha139`](../../research_v2/artifacts/diagnostics/alpha_138_139_train_2020_quality_v1.json)
 
+第一百六十三至一百七十批 `Alpha332/Alpha347` 使用 8 路并行完成严格 2020 初筛。仅 `Alpha346`（OP_QOQ）通过 2020 双重门槛，进入五年年度复核；其余 15 个因子均因 ICIR、方向或覆盖门槛失败而隔离。年度复核显示 `Alpha346` 5/5 年方向一致，但 signed 年度 mean RankIC 和方向日占比均仅 1/5 年达标，严格年度 `|ICIR|>=0.50` 也仅 1/5 年，因此状态为 `ANNUAL_STABILITY_FAIL`，不进入公式回放、发布或模型训练。
+
+证据：[`Alpha332/Alpha333`](../../research_v2/artifacts/diagnostics/alpha_332_333_train_2020_quality_v1.json)、
+[`Alpha334/Alpha335`](../../research_v2/artifacts/diagnostics/alpha_334_335_train_2020_quality_v1.json)、
+[`Alpha336/Alpha337`](../../research_v2/artifacts/diagnostics/alpha_336_337_train_2020_quality_v1.json)、
+[`Alpha338/Alpha339`](../../research_v2/artifacts/diagnostics/alpha_338_339_train_2020_quality_v1.json)、
+[`Alpha340/Alpha341`](../../research_v2/artifacts/diagnostics/alpha_340_341_train_2020_quality_v1.json)、
+[`Alpha342/Alpha343`](../../research_v2/artifacts/diagnostics/alpha_342_343_train_2020_quality_v1.json)、
+[`Alpha344/Alpha345`](../../research_v2/artifacts/diagnostics/alpha_344_345_train_2020_quality_v1.json)、
+[`Alpha346/Alpha347`](../../research_v2/artifacts/diagnostics/alpha_346_347_train_2020_quality_v1.json)、
+[`Alpha346 年度复核`](../../research_v2/artifacts/diagnostics/alpha_346_train_2020_2024_annual_v1.json)
+
 第一百三十一至一百三十八批 `Alpha268/Alpha283` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。`Alpha271/Alpha272` 的负向日内振幅波动信号较强但方向为负，不满足正向准入；`Alpha277` 最低月度覆盖率仅 `19.998%`；其余因子均未同时通过 mean RankIC、ICIR 和结构覆盖门槛，全部隔离，不进入模型输入。
 
 证据：[`Alpha268/Alpha269`](../../research_v2/artifacts/diagnostics/alpha_268_269_train_2020_quality_v1.json)、
