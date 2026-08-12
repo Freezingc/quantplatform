@@ -64,6 +64,7 @@ SUPPORTED_FACTOR_IDS = (
     "yeslab_400",
     "yeslab_405",
     "yeslab_425",
+    "yeslab_429",
     "yeslab_431",
     "yeslab_432",
     "yeslab_433",
