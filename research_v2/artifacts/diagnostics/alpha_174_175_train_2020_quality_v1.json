@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_174_175_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_174": {"factor_name": "Alpha106", "valid_day_count": 223, "mean_rank_ic": -0.0320430466, "icir": -0.2652371915, "positive_day_share": 0.4215246637, "finite_ratio": 0.9163093677, "minimum_monthly_finite_ratio": 0.0, "direction": -1, "status": "PREDICTIVE_FAIL_COVERAGE_FAIL"},
+    "yeslab_175": {"factor_name": "Alpha107", "valid_day_count": 243, "mean_rank_ic": 0.0086466049, "icir": 0.1177787497, "positive_day_share": 0.5144032922, "finite_ratio": 0.9996211529, "minimum_monthly_finite_ratio": 0.9994029356, "direction": 1, "status": "PREDICTIVE_FAIL"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Alpha174 has negative predictive evidence and a zero-coverage month; Alpha175 is weak. Both are blocked before annual stability."
+}
