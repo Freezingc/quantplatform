@@ -2081,6 +2081,10 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 
 证据：[`Alpha425 月度稳定性审计`](../../research_v2/artifacts/diagnostics/alpha425_tushare_monthly_stability_audit_v1.json)
 
+对三个范围迁移候选补充同口径月度压力比较。Alpha405/GP_036 的 2025 验证期 `12/12` 月同时通过 signed mean RankIC 与方向日占比监控线；Alpha381/GP_012 为 `11/12`，Alpha425/GP_056 亦为 `11/12`。这使 Alpha405 成为月度表现最稳定的候选，但不改变此前依据相似度和分散化给出的候选顺序：Alpha381 与 Alpha405 仍有较高冗余，Alpha425 与两者仍更具区分度。月度结果只补充风险信息，不构成准入、权重或训练规则。
+
+证据：[`范围迁移候选月度稳定性比较`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_transition_monthly_stability_v1.json)
+
 补齐了先前已完成但未进入正式台账的 `Alpha99/Alpha104` 初筛证据。`Alpha99/100` 覆盖率充足但绝对 ICIR 仅 `0.414/0.028`；`Alpha101/102/103/104` 同时不满足预测门槛，且最低月度覆盖率分别为 `60.98%/47.38%/46.16%/44.47%`。六个因子均不进入年度复核、发布或模型输入。此归档修正将“无诊断证据”的剩余因子数从 `70` 校正为 `64`。
 
 证据：[`Alpha99/Alpha100`](../../research_v2/artifacts/diagnostics/alpha_099_100_train_2020_quality_v1.json)、
