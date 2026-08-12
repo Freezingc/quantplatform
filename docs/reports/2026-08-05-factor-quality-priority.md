@@ -2071,6 +2071,15 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha178/Alpha179`](../../research_v2/artifacts/diagnostics/alpha_178_179_train_2020_quality_v1.json)、
 [`Alpha168 年度复核`](../../research_v2/artifacts/diagnostics/alpha_168_train_2020_2024_annual_v1.json)
 
+第八十七至九十二批 `Alpha180/Alpha191` 使用 6 个并行进程完成严格初筛。本批没有新的年度候选：`Alpha181` mean RankIC `0.06061` 但 ICIR `0.29977`、最低月度覆盖率仅 `11.54%`；`Alpha183` mean RankIC `0.03582` 但 ICIR `0.40220`；其余因子均为弱或负向信号，未通过双重门槛。所有因子均不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha180/Alpha181`](../../research_v2/artifacts/diagnostics/alpha_180_181_train_2020_quality_v1.json)、
+[`Alpha182/Alpha183`](../../research_v2/artifacts/diagnostics/alpha_182_183_train_2020_quality_v1.json)、
+[`Alpha184/Alpha185`](../../research_v2/artifacts/diagnostics/alpha_184_185_train_2020_quality_v1.json)、
+[`Alpha186/Alpha187`](../../research_v2/artifacts/diagnostics/alpha_186_187_train_2020_quality_v1.json)、
+[`Alpha188/Alpha189`](../../research_v2/artifacts/diagnostics/alpha_188_189_train_2020_quality_v1.json)、
+[`Alpha190/Alpha191`](../../research_v2/artifacts/diagnostics/alpha_190_191_train_2020_quality_v1.json)
+
 第六十七至七十批 `Alpha140/Alpha147` 已通过四进程并行完成。`yeslab_140–147` 的 mean RankIC 全部为负（`-0.07876` 至 `-0.02692`），ICIR 为 `-0.58562` 至 `-0.31989`，未通过签名预测准入门槛；其中 `Alpha140–145` 的最低月度覆盖率仅 `38.01%–60.98%`，`Alpha146/147` 虽覆盖率合格但预测性仍失败。本批无新准入因子。
 
 证据：[`Alpha140/Alpha141`](../../research_v2/artifacts/diagnostics/alpha_140_141_train_2020_quality_v1.json)、

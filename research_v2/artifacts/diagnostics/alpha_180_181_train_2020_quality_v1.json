@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_180_181_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_180": {"factor_name": "1个月日内动量", "valid_day_count": 243, "mean_rank_ic": -0.0336685705, "icir": -0.2709488413, "positive_day_share": 0.4444444444, "finite_ratio": 0.9920201571, "minimum_monthly_finite_ratio": 0.9887289592, "direction": -1, "status": "PREDICTIVE_FAIL"},
+    "yeslab_181": {"factor_name": "1年去涨跌停动量", "valid_day_count": 243, "mean_rank_ic": 0.0606117359, "icir": 0.2997651405, "positive_day_share": 0.6748971193, "finite_ratio": 0.1529099066, "minimum_monthly_finite_ratio": 0.1154013622, "direction": 1, "status": "PREDICTIVE_FAIL_COVERAGE_FAIL"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Alpha180 fails both predictive thresholds; Alpha181 has high mean RankIC but fails ICIR and has only 11.54% minimum monthly coverage."
+}
