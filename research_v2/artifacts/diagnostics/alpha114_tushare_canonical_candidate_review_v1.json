@@ -48,7 +48,8 @@
   },
   "similarity_to_formal_nine": {
     "status": "PENDING_COMPLETE_TUSHARE_CANONICAL_FULL_DAY_REPLAY",
-    "reason": "The complete ten-factor canonical replay was stopped before output because the shared DolphinDB market read remained pending. Historical YesLab similarity is not a substitute for this gate."
+    "reason": "The complete ten-factor canonical replay was stopped before output because the shared DolphinDB market read remained pending. Historical YesLab similarity is not a substitute for this gate.",
+    "nearest_neighbor_prefilter": {"reference_factor_id": "yeslab_376", "maximum_annual_median_abs_spearman": 0.8277974334, "maximum_daily_abs_spearman": 0.8954260380, "status": "PASS_WITHOUT_REPLACING_FORMAL_GATE", "artifact": "alpha114_tushare_vs_376_annual_similarity_prefilter_v1.json"}
   },
   "decision": "PREDICTIVE_AND_FORMULA_PASS_PENDING_SIMILARITY_AND_MONTHLY_MONITORING_REVIEW",
   "action": "Do not add Alpha114 to the complete-quality set, formal factor set, publication candidates, or model inputs until complete Tushare-canonical similarity against the formal nine is available and reviewed. Any future admission must retain monthly monitoring.",

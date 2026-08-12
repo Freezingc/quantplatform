@@ -1,0 +1,47 @@
+{
+  "code_count": 3898,
+  "database_writes": false,
+  "end": "2021-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_114",
+    "yeslab_376"
+  ],
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2020-11-04",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": false,
+  "start": "2021-01-01",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.7283950617283951,
+      "end": "2021-12-31",
+      "factor_id": "yeslab_114",
+      "factor_name": "惊恐波动",
+      "icir": -0.5691320388374375,
+      "mean_rank_ic": -0.07260052060576094,
+      "rank_ic_std": 0.12756358041986457,
+      "signed_mean_rank_ic": 0.07260052060576094,
+      "start": "2021-01-04",
+      "valid_day_count": 243
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.7078189300411523,
+      "end": "2021-12-31",
+      "factor_id": "yeslab_376",
+      "factor_name": "GP_007",
+      "icir": -0.5622173004329725,
+      "mean_rank_ic": -0.0694297845767528,
+      "rank_ic_std": 0.12349279277475779,
+      "signed_mean_rank_ic": 0.0694297845767528,
+      "start": "2021-01-04",
+      "valid_day_count": 243
+    }
+  ]
+}
