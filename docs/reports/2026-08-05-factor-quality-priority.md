@@ -2130,6 +2130,17 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha429 公式回放`](../../research_v2/artifacts/diagnostics/formula_replay_alpha429_tushare_shsz_2025-01_v1.json)、
 [`Alpha429 相似度摘要`](../../research_v2/artifacts/diagnostics/alpha429_vs_formal9_train_similarity_2020_2024_v1.csv)
 
+第二百一十九至二百二十六批 `Alpha444/Alpha459` 使用受控只读任务完成严格 2020 初筛。没有年度候选或新增准入。`Alpha444/445/446/451` 分别存在整月零覆盖，`Alpha450` 没有任何有限输出，`Alpha455/459` 的最低月度覆盖率仅约 `47.2%`。其余覆盖合格因子的最高绝对 ICIR 为 `0.463`（`Alpha449/452`），低于 `0.50` 门槛，全部隔离在模型输入之外。
+
+证据：[`Alpha444/Alpha445`](../../research_v2/artifacts/diagnostics/alpha_444_445_train_2020_quality_v1.json)、
+[`Alpha446/Alpha447`](../../research_v2/artifacts/diagnostics/alpha_446_447_train_2020_quality_v1.json)、
+[`Alpha448/Alpha449`](../../research_v2/artifacts/diagnostics/alpha_448_449_train_2020_quality_v1.json)、
+[`Alpha450/Alpha451`](../../research_v2/artifacts/diagnostics/alpha_450_451_train_2020_quality_v1.json)、
+[`Alpha452/Alpha453`](../../research_v2/artifacts/diagnostics/alpha_452_453_train_2020_quality_v1.json)、
+[`Alpha454/Alpha455`](../../research_v2/artifacts/diagnostics/alpha_454_455_train_2020_quality_v1.json)、
+[`Alpha456/Alpha457`](../../research_v2/artifacts/diagnostics/alpha_456_457_train_2020_quality_v1.json)、
+[`Alpha458/Alpha459`](../../research_v2/artifacts/diagnostics/alpha_458_459_train_2020_quality_v1.json)
+
 第一百三十一至一百三十八批 `Alpha268/Alpha283` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。`Alpha271/Alpha272` 的负向日内振幅波动信号较强但方向为负，不满足正向准入；`Alpha277` 最低月度覆盖率仅 `19.998%`；其余因子均未同时通过 mean RankIC、ICIR 和结构覆盖门槛，全部隔离，不进入模型输入。
 
 证据：[`Alpha268/Alpha269`](../../research_v2/artifacts/diagnostics/alpha_268_269_train_2020_quality_v1.json)、
