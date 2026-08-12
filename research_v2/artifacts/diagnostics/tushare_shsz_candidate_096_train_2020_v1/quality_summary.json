@@ -1,0 +1,33 @@
+{
+  "code_count": 3587,
+  "database_writes": false,
+  "end": "2020-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_96"
+  ],
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2019-11-04",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": true,
+  "start": "2020-01-01",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.6666666666666666,
+      "end": "2020-12-31",
+      "factor_id": "yeslab_96",
+      "factor_name": "修正日间反转",
+      "icir": -0.4747976651565737,
+      "mean_rank_ic": -0.04691880093816798,
+      "rank_ic_std": 0.09881851656261957,
+      "signed_mean_rank_ic": 0.04691880093816798,
+      "start": "2020-01-02",
+      "valid_day_count": 243
+    }
+  ]
+}
