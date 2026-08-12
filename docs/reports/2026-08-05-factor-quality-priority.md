@@ -2081,6 +2081,18 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha376/Alpha377`](../../research_v2/artifacts/diagnostics/alpha_376_377_train_2020_quality_v1.json)、
 [`Alpha378/Alpha379`](../../research_v2/artifacts/diagnostics/alpha_378_379_train_2020_quality_v1.json)
 
+第一百八十七至一百九十四批 `Alpha380/Alpha395` 使用 8 路并行完成严格 2020 初筛，并对 `Alpha393/Alpha395` 完成 2020–2024 年度复核。没有新增准入因子。`Alpha384/386/389/390` 因最低月度覆盖率仅 `33.90%/31.06%/35.37%/44.28%` 被结构门槛拒绝，`Alpha394` 仅有 `0.51%` 总体有限覆盖。`Alpha393` 五年均通过年度结构和严格 ICIR，但与已正式准入 `Alpha376` 的全日相似度 `0.94470`，按冗余处理；`Alpha395` 五年预测稳定，但四窗口 SH/SZ 公式回放 `0/4` 通过，存在源横截面范围不一致，保持隔离。`Alpha380` 是既有正式准入因子，本轮仅记录复核。其余覆盖合格的 GP 因子均未达 2020 单年绝对 ICIR `0.50` 门槛。
+
+证据：[`Alpha380/Alpha381`](../../research_v2/artifacts/diagnostics/alpha_380_381_train_2020_quality_v1.json)、
+[`Alpha382/Alpha383`](../../research_v2/artifacts/diagnostics/alpha_382_383_train_2020_quality_v1.json)、
+[`Alpha384/Alpha385`](../../research_v2/artifacts/diagnostics/alpha_384_385_train_2020_quality_v1.json)、
+[`Alpha386/Alpha387`](../../research_v2/artifacts/diagnostics/alpha_386_387_train_2020_quality_v1.json)、
+[`Alpha388/Alpha389`](../../research_v2/artifacts/diagnostics/alpha_388_389_train_2020_quality_v1.json)、
+[`Alpha390/Alpha391`](../../research_v2/artifacts/diagnostics/alpha_390_391_train_2020_quality_v1.json)、
+[`Alpha392/Alpha393`](../../research_v2/artifacts/diagnostics/alpha_392_393_train_2020_quality_v1.json)、
+[`Alpha394/Alpha395`](../../research_v2/artifacts/diagnostics/alpha_394_395_train_2020_quality_v1.json)、
+[`Alpha393/Alpha395 年度复核`](../../research_v2/artifacts/diagnostics/alpha_393_395_train_2020_2024_annual_v1.json)
+
 第一百三十一至一百三十八批 `Alpha268/Alpha283` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。`Alpha271/Alpha272` 的负向日内振幅波动信号较强但方向为负，不满足正向准入；`Alpha277` 最低月度覆盖率仅 `19.998%`；其余因子均未同时通过 mean RankIC、ICIR 和结构覆盖门槛，全部隔离，不进入模型输入。
 
 证据：[`Alpha268/Alpha269`](../../research_v2/artifacts/diagnostics/alpha_268_269_train_2020_quality_v1.json)、
