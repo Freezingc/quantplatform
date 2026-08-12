@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_130_131_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data2 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_130": {"factor_name": "指数衰减换手率加权收益率（1个月内）", "valid_day_count": 243, "mean_rank_ic": -0.0364386073, "icir": -0.3242709427, "positive_day_share": 0.3827160494, "finite_ratio": 0.9477702142, "minimum_monthly_finite_ratio": 0.609813721, "direction": -1, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"},
+    "yeslab_131": {"factor_name": "指数衰减换手率加权收益率（3个月内）", "valid_day_count": 243, "mean_rank_ic": -0.041434884, "icir": -0.3631863091, "positive_day_share": 0.3950617284, "finite_ratio": 0.8448681251, "minimum_monthly_finite_ratio": 0.4737619264, "direction": -1, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Both factors fail predictive thresholds and structural coverage; Alpha131 minimum monthly coverage is only 47.38%."
+}
