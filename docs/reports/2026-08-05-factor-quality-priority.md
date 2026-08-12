@@ -2046,3 +2046,17 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha134/Alpha135`](../../research_v2/artifacts/diagnostics/alpha_134_135_train_2020_quality_v1.json)、
 [`Alpha136/Alpha137`](../../research_v2/artifacts/diagnostics/alpha_136_137_train_2020_quality_v1.json)、
 [`Alpha138/Alpha139`](../../research_v2/artifacts/diagnostics/alpha_138_139_train_2020_quality_v1.json)
+
+第六十七至七十批 `Alpha140/Alpha147` 已通过四进程并行完成。`yeslab_140–147` 的 mean RankIC 全部为负（`-0.07876` 至 `-0.02692`），ICIR 为 `-0.58562` 至 `-0.31989`，未通过签名预测准入门槛；其中 `Alpha140–145` 的最低月度覆盖率仅 `38.01%–60.98%`，`Alpha146/147` 虽覆盖率合格但预测性仍失败。本批无新准入因子。
+
+证据：[`Alpha140/Alpha141`](../../research_v2/artifacts/diagnostics/alpha_140_141_train_2020_quality_v1.json)、
+[`Alpha142/Alpha143`](../../research_v2/artifacts/diagnostics/alpha_142_143_train_2020_quality_v1.json)、
+[`Alpha144/Alpha145`](../../research_v2/artifacts/diagnostics/alpha_144_145_train_2020_quality_v1.json)、
+[`Alpha146/Alpha147`](../../research_v2/artifacts/diagnostics/alpha_146_147_train_2020_quality_v1.json)
+
+第六十三至六十六批 `Alpha132/Alpha139` 已通过四进程并行完成。`yeslab_132–139`（指数衰减换手率加权收益率、日均换手率及其偏离变体）全部为负向或弱预测信号，mean RankIC 为 `-0.06868` 至 `-0.02242`，ICIR 为 `-0.43073` 至 `-0.22005`；最低月度覆盖率为 `38.01%–46.16%`，全部低于结构门槛 `70%`。因此本批无新准入因子，均不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha132/Alpha133`](../../research_v2/artifacts/diagnostics/alpha_132_133_train_2020_quality_v1.json)、
+[`Alpha134/Alpha135`](../../research_v2/artifacts/diagnostics/alpha_134_135_train_2020_quality_v1.json)、
+[`Alpha136/Alpha137`](../../research_v2/artifacts/diagnostics/alpha_136_137_train_2020_quality_v1.json)、
+[`Alpha138/Alpha139`](../../research_v2/artifacts/diagnostics/alpha_138_139_train_2020_quality_v1.json)
