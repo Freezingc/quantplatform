@@ -1626,6 +1626,15 @@ RankIC/ICIR 为 `-0.07510/-0.57762`，严格年度 `|ICIR|>=0.50` 为 `5/5`；20
 
 证据：[`GP_016 canonical 冗余拒绝复核`](../../research_v2/artifacts/diagnostics/alpha385_tushare_canonical_redundancy_rejection_v1.json)
 
+### Alpha96 Canonical 训练拒绝
+
+`yeslab_96 / 修正日间反转` 的历史验证期 ICIR 为 `-0.64685`，且四窗口公式回放通过；但独立
+Tushare SH/SZ canonical 2020 训练重物化的 mean RankIC/ICIR 为 `-0.04692/-0.47480`，未达到
+严格 `|ICIR|>=0.50`。因此它在首个 canonical 训练年度即被拒绝，不再继续年度、月度或相似度计算，
+也不进入完整质量集合、正式9因子、发布候选或模型输入。
+
+证据：[`Alpha96 2020 canonical 训练拒绝`](../../research_v2/artifacts/diagnostics/alpha096_tushare_train2020_rejection_review_v1.json)
+
 ### 行业因子 yeslab_357 定向回放
 
 为补齐代表性候选 `yeslab_357` 的证据链，回放器新增了显式全市场模式，并在 2025-01-02–01-31
