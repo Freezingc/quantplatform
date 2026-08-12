@@ -2077,7 +2077,7 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 证据：[`Alpha425 十因子假设提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_hypothetical_alpha425_extension_proposal_v1.json)、
 [`Alpha425 十因子假设预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_hypothetical_alpha425_extension_preflight_v1.json)
 
-对 Alpha425 补充了月度压力测试，防止全期 IC 由少数异常月份支撑。2020-2024 的 60 个月中，有 `50/60` 个月满足 signed mean RankIC `>=0.02`，2025 验证期为 `11/12`；表明其候选表现并非集中在少数月份。但训练期有 10 个低强度或方向翻转月份，2025-02 的 signed mean RankIC 仅 `0.00545`、方向日占比 `38.89%`，2025-09 的方向日占比也低于监控线。结论保持“可审议候选，按月监控”，不转为自动准入。
+对 Alpha425 补充了月度压力测试，防止全期 IC 由少数异常月份支撑。2020-2024 的 60 个月中，有 `50/60` 个月满足 signed mean RankIC `>=0.02`，2025 验证期为 `11/12`；表明其候选表现并非集中在少数月份。但训练期有 `12` 个触发低强度或方向监控门槛的月份，2025-02 的 signed mean RankIC 仅 `0.00545`、方向日占比 `38.89%`，2025-09 的方向日占比也低于监控线。结论保持“可审议候选，按月监控”，不转为自动准入。
 
 证据：[`Alpha425 月度稳定性审计`](../../research_v2/artifacts/diagnostics/alpha425_tushare_monthly_stability_audit_v1.json)
 

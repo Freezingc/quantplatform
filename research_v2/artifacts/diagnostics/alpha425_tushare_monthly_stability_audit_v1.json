@@ -22,7 +22,7 @@
     "strict_monthly_abs_icir_pass_months": 41,
     "worst_signed_mean_rank_ic": -0.0812002887,
     "worst_directional_day_share": 0.2272727273,
-    "watch_months": ["2020-01", "2020-10", "2020-12", "2021-07", "2021-10", "2022-03", "2022-07", "2022-10", "2023-03", "2024-01"],
+    "watch_months": ["2020-01", "2020-10", "2020-12", "2021-07", "2021-10", "2022-03", "2022-07", "2022-10", "2023-03", "2023-11", "2024-01", "2024-02"],
     "source": "alpha425_tushare_train_2020_2024_monthly_rank_ic_v1.csv"
   },
   "validation_2025": {
