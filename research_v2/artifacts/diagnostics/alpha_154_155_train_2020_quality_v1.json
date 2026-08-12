@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_154_155_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_154": {"factor_name": "纯跳空", "valid_day_count": 243, "mean_rank_ic": 0.0510203274, "icir": 0.3666509287, "positive_day_share": 0.6502057613, "finite_ratio": 0.9959499441, "minimum_monthly_finite_ratio": 0.9938101661, "direction": 1, "status": "PREDICTIVE_BORDERLINE_ICIR"},
+    "yeslab_155": {"factor_name": "跳空去均值绝对值", "valid_day_count": 243, "mean_rank_ic": -0.0368968983, "icir": -0.5400940683, "positive_day_share": 0.2716049383, "finite_ratio": 0.9996211529, "minimum_monthly_finite_ratio": 0.9994029356, "direction": -1, "status": "FORMAL_ADMISSION_EXISTING_REVIEW"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Alpha154 misses ICIR; Alpha155 is already a formal admission factor with stronger Tushare SH/SZ rematerialized evidence, so this source replay is a duplicate review only."
+}

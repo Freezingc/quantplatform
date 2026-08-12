@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_152_153_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_152": {"factor_name": "隔夜跳空10日均值", "valid_day_count": 243, "mean_rank_ic": 0.0107222377, "icir": 0.1002729924, "positive_day_share": 0.6337448560, "finite_ratio": 0.9959499441, "minimum_monthly_finite_ratio": 0.9938101661, "direction": 1, "status": "PREDICTIVE_WEAK"},
+    "yeslab_153": {"factor_name": "隔夜跳空绝对值10日均值", "valid_day_count": 243, "mean_rank_ic": -0.0510925350, "icir": -0.3681539598, "positive_day_share": 0.3497942387, "finite_ratio": 0.9959499441, "minimum_monthly_finite_ratio": 0.9938101661, "direction": -1, "status": "PREDICTIVE_FAIL"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Alpha152 is weak and Alpha153 is negative; neither passes the double predictive threshold."
+}
