@@ -1,0 +1,34 @@
+{
+  "scope": "ALPHA208_TUSHARE_REMATERIALIZED_TRAIN_2020_2024_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2024-12-31",
+  "market_source": "Tushare.daily",
+  "database_writes": false,
+  "locked_test_read": false,
+  "factor": {
+    "factor_id": "yeslab_208",
+    "factor_name": "价格均值标准差乖离乘短期成交量波动",
+    "frozen_train_direction": -1,
+    "formula_pit_contract": "CLOSE/(SMA(CLOSE,60)+3*STD(CLOSE,60))*STD(VOL,10); each signal uses only the current and preceding trading observations.",
+    "annual": {
+      "2020": {"valid_day_count": 243, "mean_rank_ic": -0.0547766655, "icir": -0.5064197496, "signed_mean_rank_ic": 0.0547766655, "directional_day_share": 0.7489711934},
+      "2021": {"valid_day_count": 243, "mean_rank_ic": -0.0331002033, "icir": -0.2552150451, "signed_mean_rank_ic": 0.0331002033, "directional_day_share": 0.6172839506},
+      "2022": {"valid_day_count": 242, "mean_rank_ic": -0.0388909856, "icir": -0.2722980184, "signed_mean_rank_ic": 0.0388909856, "directional_day_share": 0.5867768595},
+      "2023": {"valid_day_count": 242, "mean_rank_ic": -0.0373809564, "icir": -0.2791115647, "signed_mean_rank_ic": 0.0373809564, "directional_day_share": 0.6157024793},
+      "2024": {"valid_day_count": 242, "mean_rank_ic": -0.0303882871, "icir": -0.2198562656, "signed_mean_rank_ic": 0.0303882871, "directional_day_share": 0.5991735537}
+    },
+    "aggregate": {"valid_day_count": 1212, "mean_rank_ic": -0.0389157216, "icir": -0.2967055793, "signed_mean_rank_ic": 0.0389157216, "directional_day_share": 0.6336633663},
+    "annual_gate": {"same_direction_years": 5, "signed_mean_rank_ic_pass_years": 5, "directional_day_share_pass_years": 5, "strict_annual_abs_icir_pass_years": 1, "status": "PASS_WITH_MONITORING"},
+    "status": "TUSHARE_REMATERIALIZED_TRAIN_PASS_WITH_MONITORING"
+  },
+  "reason": "Direct Tushare SH/SZ rematerialization reproduces the five-year training profile using the frozen negative direction. Directional stability is present, but only one of five years reaches the strict annual absolute ICIR threshold of 0.50. This supports continued candidate research only and does not alter the formal nine-factor set, publication status, or model inputs.",
+  "source_artifacts": [
+    "tushare_shsz_alpha208_train_2020_v1/daily_rank_ic.csv",
+    "tushare_shsz_alpha208_train_2021_v1/daily_rank_ic.csv",
+    "tushare_shsz_alpha208_train_2022_v1/daily_rank_ic.csv",
+    "tushare_shsz_alpha208_train_2023_v1/daily_rank_ic.csv",
+    "tushare_shsz_alpha208_train_2024_v1/daily_rank_ic.csv"
+  ]
+}
