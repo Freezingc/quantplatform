@@ -27,7 +27,7 @@
       "monthly_monitoring": {"train_watch_month_count": 9, "validation_watch_month_count": 0, "validation_primary_rule_pass_months": "12/12", "status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING"},
       "formula_and_version_requirement": "Historical stored values have a BJ-inclusive source scope and cannot be mixed with the canonical SH/SZ panel. Any admission requires an isolated Tushare-canonical factor version.",
       "review_disposition": "RECOMMEND_FIRST_EXPLICIT_REVIEW",
-      "reason": "Strongest independent 2025 monthly stability among the scope-transition candidates, with non-redundant formal-nine similarity."
+      "reason": "Strongest independent 2025 monthly stability among the scope-transition candidates, with non-redundant formal-nine similarity and leave-one-month validation ICIR remaining 0.9896."
     },
     {
       "priority": 2,
@@ -41,7 +41,7 @@
       "monthly_monitoring": {"train_watch_month_count": 12, "validation_watch_months": ["2025-02", "2025-09"], "validation_primary_rule_pass_months": "11/12 signed mean; 10/12 directional share", "status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING"},
       "formula_and_version_requirement": "Historical stored values have a BJ-inclusive source scope and cannot be mixed with the canonical SH/SZ panel. Any admission requires an isolated Tushare-canonical factor version.",
       "review_disposition": "RECOMMEND_SECOND_EXPLICIT_REVIEW",
-      "reason": "Predictive evidence is strong and it remains distinct from Alpha405, enabling a diversified two-factor review if both are explicitly approved."
+      "reason": "Predictive evidence is strong, leave-one-month validation ICIR remains 0.7910, and it remains distinct from Alpha405, enabling a diversified two-factor review if both are explicitly approved."
     },
     {
       "priority": 3,
@@ -55,7 +55,7 @@
       "monthly_monitoring": {"train_watch_month_count": 15, "validation_watch_months": ["2025-01", "2025-02", "2025-04", "2025-12"], "validation_primary_rule_pass_months": "9/12 signed mean; 8/12 directional share", "status": "PENDING_MONTHLY_MONITORING_REVIEW"},
       "formula_and_version_requirement": "Formula replay passes all configured windows on the canonical SH/SZ Tushare path; any future version must retain the existing monthly monitoring rules.",
       "review_disposition": "DEFER_PENDING_MONTHLY_REVIEW",
-      "reason": "All hard predictive, formula, and five-year similarity gates pass, but it has the largest training and validation monthly watch burden."
+      "reason": "All hard predictive, formula, and five-year similarity gates pass, but it has the largest training and validation monthly watch burden; validation leave-one-month ICIR falls to 0.4465 when 2025-03 is excluded."
     },
     {
       "priority": 4,
@@ -69,7 +69,7 @@
       "monthly_monitoring": {"train_watch_month_count": 12, "validation_watch_months": ["2025-12"], "validation_primary_rule_pass_months": "11/12", "status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING"},
       "formula_and_version_requirement": "Historical stored values have a BJ-inclusive source scope and cannot be mixed with the canonical SH/SZ panel. Any admission requires an isolated Tushare-canonical factor version.",
       "review_disposition": "DEFER_UNTIL_AFTER_ALPHA405",
-      "reason": "It is individually below the hard redundancy threshold but has elevated candidate-pair similarity with Alpha405."
+      "reason": "It is monthly-robust under leave-one-month stress (validation ICIR floor 0.8328) and individually below the hard redundancy threshold, but has elevated candidate-pair similarity with Alpha405."
     }
   ],
   "candidate_pair_risk": [
@@ -85,6 +85,7 @@
     "alpha425_tushare_rematerialized_candidate_review_v1.json",
     "alpha114_tushare_canonical_candidate_review_v1.json",
     "alpha114_tushare_formal9_full_similarity_audit_v1.json",
-    "tushare_shsz_hypothetical_alpha425_extension_preflight_v1.json"
+    "tushare_shsz_hypothetical_alpha425_extension_preflight_v1.json",
+    "tushare_shsz_candidate_leave_one_month_stress_v1.json"
   ]
 }
