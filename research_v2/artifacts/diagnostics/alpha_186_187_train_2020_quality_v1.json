@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_186_187_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_186": {"factor_name": "Alpha113", "valid_day_count": 243, "mean_rank_ic": 0.0080013593, "icir": 0.1647534465, "positive_day_share": 0.6008230453, "finite_ratio": 0.9690397729, "minimum_monthly_finite_ratio": 0.9592025277, "direction": 1, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"},
+    "yeslab_187": {"factor_name": "Alpha114", "valid_day_count": 243, "mean_rank_ic": 0.0205151652, "icir": 0.1798386040, "positive_day_share": 0.5349794239, "finite_ratio": 1.0, "minimum_monthly_finite_ratio": 1.0, "direction": 1, "status": "PREDICTIVE_FAIL"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Alpha186 is weak with reduced coverage; Alpha187 clears mean RankIC only marginally but fails ICIR."
+}
