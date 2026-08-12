@@ -1,0 +1,48 @@
+{
+  "scope": "ALPHA401_TUSHARE_TRAIN2020_REJECTION_REVIEW_V1",
+  "factor": {
+    "factor_id": "yeslab_401",
+    "factor_name": "GP_032",
+    "frozen_direction": -1
+  },
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "market_source": "Tushare.daily",
+  "database_writes": false,
+  "locked_test_read": false,
+  "canonical_train_2020": {
+    "period": "2020-01-02/2020-12-31",
+    "market_start": "2019-09-09",
+    "code_count": 3587,
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.0409048864,
+    "icir": -0.2904673258,
+    "signed_mean_rank_ic": 0.0409048864,
+    "directional_day_share": 0.6008230453,
+    "strict_abs_icir_threshold": 0.5,
+    "strict_predictive_status": "FAIL"
+  },
+  "existing_validation_2025": {
+    "period": "2025-01-02/2025-12-23",
+    "valid_day_count": 237,
+    "mean_rank_ic": -0.0960701295,
+    "icir": -0.7832148601,
+    "signed_mean_rank_ic": 0.0960701295,
+    "directional_day_share": 0.7848101266,
+    "strict_predictive_status": "PASS"
+  },
+  "formula_replay": {
+    "status": "FORMULA_REPLAY_BLOCKED_MULTWINDOW",
+    "reason": "Historical YesLab amount values have localized precision mismatches against the full-precision Tushare replay."
+  },
+  "decision": "REJECT_BEFORE_FURTHER_TRAINING_OR_SIMILARITY_REVIEW",
+  "reason": "A strong 2025 validation result does not compensate for the canonical 2020 training ICIR failure. The historical multi-window formula replay remains blocked independently.",
+  "action": "Do not add GP_032 to the complete-quality set, formal factor set, publication candidates, or model inputs. Do not run additional annual or similarity computation unless a materially different factor definition or data contract is explicitly approved.",
+  "evidence": [
+    "tushare_shsz_candidate_401_train_2020_v1/quality_summary.json",
+    "tushare_shsz_candidate_401_train_2020_v1/daily_rank_ic.csv",
+    "tushare_shsz_candidate_401_validation_2025_v1/quality_summary.json",
+    "formula_replay_consistency_oos19_multiwindow_v1.json"
+  ]
+}
