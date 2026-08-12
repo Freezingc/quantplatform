@@ -2062,6 +2062,10 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 证据：[`Alpha208 Tushare 五年训练重物化`](../../research_v2/artifacts/diagnostics/alpha208_tushare_rematerialized_train_2020_2024_v1.json)、
 [`Alpha208 Tushare 2025 验证重物化`](../../research_v2/artifacts/diagnostics/alpha208_tushare_rematerialized_validation_2025_v1.json)
 
+对 `Alpha425/GP_056` 补齐了此前分散的 Tushare SH/SZ 重物化证据。它在 2020-2024 TRAIN 的 mean RankIC/ICIR 为 `-0.070955/-0.557681`，2025 验证为 `-0.095586/-0.849381`；五年方向一致，严格年度 `|ICIR|>=0.50` 为 `4/5`。与正式九因子的最大日度横截面相似度在训练和验证分别为 `0.575/0.726`，均低于 `0.90` 冗余阈值。旧 YesLab 值无法回放的原因已定位为源横截面含 552 个 BJ 股票，而本项目 SH/SZ 范围排除 BJ。这不代表 Tushare SH/SZ 重物化因子无效，但意味着旧值不能与新值混用。Alpha425 记录为可人工审议的研究候选；正式 9 因子、发布和模型输入均不自动改变。
+
+证据：[`Alpha425 Tushare 候选审议`](../../research_v2/artifacts/diagnostics/alpha425_tushare_rematerialized_candidate_review_v1.json)
+
 补齐了先前已完成但未进入正式台账的 `Alpha99/Alpha104` 初筛证据。`Alpha99/100` 覆盖率充足但绝对 ICIR 仅 `0.414/0.028`；`Alpha101/102/103/104` 同时不满足预测门槛，且最低月度覆盖率分别为 `60.98%/47.38%/46.16%/44.47%`。六个因子均不进入年度复核、发布或模型输入。此归档修正将“无诊断证据”的剩余因子数从 `70` 校正为 `64`。
 
 证据：[`Alpha99/Alpha100`](../../research_v2/artifacts/diagnostics/alpha_099_100_train_2020_quality_v1.json)、
