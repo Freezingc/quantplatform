@@ -2065,6 +2065,10 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 
 证据：[`Alpha429 2025 验证`](../../research_v2/artifacts/diagnostics/alpha429_validation_2025_v1.json)
 
+对 `Alpha167`（Alpha99）完成了阻断根因诊断。其在 YesLab 原始行情上的 96,614 个有限重叠中仅有 20 个极小数值差异，证明当前计算器能重现历史逻辑；但替换为 Tushare 后，SH/SZ 范围有 `91,870/91,886` 不一致，扩大到历史源证券范围仍有 `92,135/92,150` 不一致，同时还暴露 248 个无 Tushare 代码。这证明问题不是可通过调整 SH/SZ 范围修复的横截面范围差异，而是历史行情源/版本口径不一致。Alpha167 保持硬阻断，不进入模型输入。
+
+证据：[`Alpha167 范围与市场源诊断`](../../research_v2/artifacts/diagnostics/alpha167_scope_replay_diagnostic_2025-01_v1.json)
+
 完成最后一个目录因子 `yeslab_0`（`test_factor`）的严格初筛：覆盖率 `99.70%`，冻结负向后的绝对 ICIR 为 `0.471`，低于 `0.50`，因此不进入年度复核或模型输入。至此，487 个目录因子均已有严格质量证据；正式准入集合仍为原有 9 个。
 
 证据：[`Alpha0`](../../research_v2/artifacts/diagnostics/alpha_000_train_2020_quality_v1.json)
