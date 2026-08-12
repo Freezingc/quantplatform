@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_176_177_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_176": {"factor_name": "Alpha108", "valid_day_count": 243, "mean_rank_ic": 0.0096125264, "icir": 0.1196168373, "positive_day_share": 0.5596707819, "finite_ratio": 0.9524291315, "minimum_monthly_finite_ratio": 0.9484325307, "direction": 1, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"},
+    "yeslab_177": {"factor_name": "Alpha109", "valid_day_count": 243, "mean_rank_ic": -0.0331550144, "icir": -0.3069324302, "positive_day_share": 0.3662551440, "finite_ratio": 0.9997925361, "minimum_monthly_finite_ratio": 0.9995853719, "direction": -1, "status": "PREDICTIVE_FAIL"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Both factors fail the double predictive threshold; Alpha176 also has reduced coverage."
+}
