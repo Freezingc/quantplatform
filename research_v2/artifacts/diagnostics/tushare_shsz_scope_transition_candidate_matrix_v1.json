@@ -43,6 +43,16 @@
       "candidate_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_ELEVATED_REDUNDANCY_MONITOR"
     }
   ],
+  "candidate_pair_similarity": {
+    "metric": "median_daily_abs_spearman",
+    "threshold": 0.9,
+    "pairs": [
+      {"factor_id_left": "yeslab_381", "factor_id_right": "yeslab_405", "train": 0.8281139746, "validation": 0.8565664973, "status": "ELEVATED_PAIR_REDUNDANCY_MONITOR"},
+      {"factor_id_left": "yeslab_381", "factor_id_right": "yeslab_425", "train": 0.5696802965, "validation": 0.5645497305, "status": "PAIR_UNIQUE"},
+      {"factor_id_left": "yeslab_405", "factor_id_right": "yeslab_425", "train": 0.5951888835, "validation": 0.6078935458, "status": "PAIR_UNIQUE"}
+    ],
+    "selection_guidance": "For a one-factor extension, evaluate Alpha425 first. For a two-factor extension, evaluate Alpha425 with Alpha405 before considering Alpha381 with Alpha405. This is a diversification preference, not an admission or weighting rule."
+  },
   "excluded_after_review": {
     "yeslab_400": "Tushare SH/SZ rematerialized quality is positive, but strict annual ICIR passes only 3/5 years.",
     "yeslab_443": "Tushare SH/SZ rematerialized quality is positive, but all four historical replay windows have broad finite-overlap mismatches; the source transition cannot yet be isolated to scope alone.",
