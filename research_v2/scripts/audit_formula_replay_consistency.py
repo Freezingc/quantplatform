@@ -432,6 +432,15 @@ REPLAY_DEFINITIONS = {
         calculator_class="GP_Factor_056_Calculator",
         lookback_days=30,
     ),
+    "yeslab_429": ReplayDefinition(
+        factor_id="yeslab_429",
+        factor_name="GP_060",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_060_Calculator",
+        calculator_class="GP_Factor_060_Calculator",
+        lookback_days=10,
+        replay_lookback_days=180,
+    ),
     "yeslab_431": ReplayDefinition(
         factor_id="yeslab_431",
         factor_name="GP_062",

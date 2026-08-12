@@ -258,6 +258,7 @@ def test_registry_includes_existing_gp_calculators_for_shsz_quality_replay() -> 
         "yeslab_391": ("GP_Factor_022_Calculator", "factor_data9", 60),
         "yeslab_432": ("GP_Factor_063_Calculator", "factor_data9", 5),
         "yeslab_433": ("GP_Factor_064_Calculator", "factor_data9", 60),
+        "yeslab_429": ("GP_Factor_060_Calculator", "factor_data9", 10),
         "yeslab_71": ("Alpha62Calculator", "factor_data2", 4),
         "yeslab_105": ("Alpha83Calculator", "factor_data2", 4),
     }
