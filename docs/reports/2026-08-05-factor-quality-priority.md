@@ -2053,6 +2053,14 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha101/Alpha102`](../../research_v2/artifacts/diagnostics/alpha_101_102_train_2020_quality_v1.json)、
 [`Alpha103/Alpha104`](../../research_v2/artifacts/diagnostics/alpha_103_104_train_2020_quality_v1.json)
 
+完成五个年度结构候选的 SH/SZ 补救审计。`Alpha165/168` 在 Tushare 覆盖的有限值上精确一致，但各有 38 个历史源代码无行情覆盖；`Alpha167` 在 91,886 个有限重叠中有 91,870 个不一致，均保持阻断。`Alpha206/208` 在 2020、2022、2024、2025 四窗口累计 341,456 个有限重叠中均零不一致、零覆盖缺口；其相对正式九因子的全训练期最近相似度分别为 `0.173/0.678`，未触及 `0.90` 冗余阈值。2025 固定训练方向验证中，`Alpha206` 因 ICIR `-0.397` 失败；`Alpha208` 的 mean RankIC/ICIR 为 `-0.0692/-0.7102`，方向日占比 `78.60%`、FDR q 值约 `1.67e-9`，通过双重门槛。Alpha208 仅被记录为新的研究候选，正式 9 因子、发布和模型输入均不改变。
+
+证据：[`五候选 2025 公式回放`](../../research_v2/artifacts/diagnostics/formula_replay_annual5_tushare_shsz_2025-01_v1.json)、
+[`Alpha206/208 多窗口回放`](../../research_v2/artifacts/diagnostics/alpha206_208_formula_replay_multiwindow_v1.json)、
+[`Alpha165/167/168 阻断摘要`](../../research_v2/artifacts/diagnostics/alpha165_167_168_formula_replay_2025-01_v1.json)、
+[`Alpha206/208 训练相似度`](../../research_v2/artifacts/diagnostics/alpha206_208_vs_formal9_train_similarity_2020_2024_v1.csv)、
+[`Alpha206/208 2025 验证`](../../research_v2/artifacts/diagnostics/alpha206_208_validation_2025_v1.json)
+
 完成最后一个目录因子 `yeslab_0`（`test_factor`）的严格初筛：覆盖率 `99.70%`，冻结负向后的绝对 ICIR 为 `0.471`，低于 `0.50`，因此不进入年度复核或模型输入。至此，487 个目录因子均已有严格质量证据；正式准入集合仍为原有 9 个。
 
 证据：[`Alpha0`](../../research_v2/artifacts/diagnostics/alpha_000_train_2020_quality_v1.json)
