@@ -2047,6 +2047,11 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha136/Alpha137`](../../research_v2/artifacts/diagnostics/alpha_136_137_train_2020_quality_v1.json)、
 [`Alpha138/Alpha139`](../../research_v2/artifacts/diagnostics/alpha_138_139_train_2020_quality_v1.json)
 
+对 `Alpha208` 完成 2020-2024 全训练期的逐年 Tushare SH/SZ 独立重物化。五年共 1,212 个有效交易日，冻结负方向后的全期 mean RankIC 为 `0.038916`，方向日占比 `63.37%`；五个年度方向、signed mean RankIC 与方向日占比分别为 `5/5`、`5/5`、`5/5` 达标。但严格逐年 `|ICIR|>=0.50` 仅 `1/5` 年达标，因此状态保持 `PASS_WITH_MONITORING`：可作为研究候选继续观察，不能自动加入正式 9 因子、发布或模型输入。
+
+证据：[`Alpha208 Tushare 五年训练重物化`](../../research_v2/artifacts/diagnostics/alpha208_tushare_rematerialized_train_2020_2024_v1.json)、
+[`Alpha208 Tushare 2025 验证重物化`](../../research_v2/artifacts/diagnostics/alpha208_tushare_rematerialized_validation_2025_v1.json)
+
 补齐了先前已完成但未进入正式台账的 `Alpha99/Alpha104` 初筛证据。`Alpha99/100` 覆盖率充足但绝对 ICIR 仅 `0.414/0.028`；`Alpha101/102/103/104` 同时不满足预测门槛，且最低月度覆盖率分别为 `60.98%/47.38%/46.16%/44.47%`。六个因子均不进入年度复核、发布或模型输入。此归档修正将“无诊断证据”的剩余因子数从 `70` 校正为 `64`。
 
 证据：[`Alpha99/Alpha100`](../../research_v2/artifacts/diagnostics/alpha_099_100_train_2020_quality_v1.json)、
