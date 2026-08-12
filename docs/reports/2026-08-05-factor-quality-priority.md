@@ -2083,6 +2083,17 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha248/Alpha249`](../../research_v2/artifacts/diagnostics/alpha_248_249_train_2020_quality_v1.json)、
 [`Alpha250/Alpha251`](../../research_v2/artifacts/diagnostics/alpha_250_251_train_2020_quality_v1.json)
 
+第一百二十三至一百三十批 `Alpha252/Alpha267` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选：Alpha252/260 等上行波动率因子为负向信号；Alpha256/257、Alpha265 等正向因子 ICIR 仅 `0.119–0.311`；其余因子为弱或负向信号，全部未通过双重预测门槛或覆盖门槛。
+
+证据：[`Alpha252/Alpha253`](../../research_v2/artifacts/diagnostics/alpha_252_253_train_2020_quality_v1.json)、
+[`Alpha254/Alpha255`](../../research_v2/artifacts/diagnostics/alpha_254_255_train_2020_quality_v1.json)、
+[`Alpha256/Alpha257`](../../research_v2/artifacts/diagnostics/alpha_256_257_train_2020_quality_v1.json)、
+[`Alpha258/Alpha259`](../../research_v2/artifacts/diagnostics/alpha_258_259_train_2020_quality_v1.json)、
+[`Alpha260/Alpha261`](../../research_v2/artifacts/diagnostics/alpha_260_261_train_2020_quality_v1.json)、
+[`Alpha262/Alpha263`](../../research_v2/artifacts/diagnostics/alpha_262_263_train_2020_quality_v1.json)、
+[`Alpha264/Alpha265`](../../research_v2/artifacts/diagnostics/alpha_264_265_train_2020_quality_v1.json)、
+[`Alpha266/Alpha267`](../../research_v2/artifacts/diagnostics/alpha_266_267_train_2020_quality_v1.json)
+
 第七十五至八十批 `Alpha156/Alpha167` 使用 6 个并行进程完成严格初筛。`Alpha156/157` 的 mean RankIC 虽为正，但 ICIR 分别为 `0.25803/0.16668`，最低月度覆盖率仅 `38.12%/46.19%`；`Alpha158/159` 同样未通过 ICIR 和覆盖门槛；`Alpha160–164` 未通过双重预测门槛，均不进入年度稳定性或模型输入。
 
 `yeslab_165`（Alpha97）2020 年 mean RankIC/ICIR 为 `-0.05702/-0.54740`，`yeslab_167`（Alpha99）为 `0.03704/0.52846`，且覆盖率均接近完整，进入 2020–2024 年度稳定性复核。两者均 5/5 年同向，年度 signed mean RankIC 和方向日占比均 5/5 年达标；严格每年 `|ICIR|>=0.50` 分支分别为 `1/5` 和 `3/5`。当前状态为 `ANNUAL_STABILITY_PASS_WITH_MONITORING`，只允许进入后续 Tushare 公式回放与相似度审查，尚未发布、尚未训练。
