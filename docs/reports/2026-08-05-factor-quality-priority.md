@@ -2155,6 +2155,16 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha471 公式回放`](../../research_v2/artifacts/diagnostics/formula_replay_alpha471_tushare_shsz_2025-01_v1.json)、
 [`Alpha471 相似度摘要`](../../research_v2/artifacts/diagnostics/alpha471_vs_formal9_train_similarity_2020_2024_v1.csv)
 
+第二百三十五至二百四十批 `Alpha476/Alpha487` 已完成受控只读的严格 2020 初筛和必要年度复核。没有新增正式准入。`Alpha476/479` 的最低月度覆盖率仅 `55.16%/54.75%`；其余未进年度复核的因子均未达到绝对 ICIR `0.50` 门槛。冻结负向后的 `Alpha481/482/484` 通过 2020 双重门槛，但 `Alpha481` 在 2021 年方向翻正，`Alpha482` 在 2021 年签名 RankIC 仅 `0.00679`，均未通过五年稳定性规则；`Alpha484` 已有 Tushare 复算中调整价格精度及历史覆盖阻断，不进入年度复核。所有 CSAD 因子仍保持隔离，不发布、不进入模型输入。
+
+证据：[`Alpha476/Alpha477`](../../research_v2/artifacts/diagnostics/alpha_476_477_train_2020_quality_v1.json)、
+[`Alpha478/Alpha479`](../../research_v2/artifacts/diagnostics/alpha_478_479_train_2020_quality_v1.json)、
+[`Alpha480/Alpha481`](../../research_v2/artifacts/diagnostics/alpha_480_481_train_2020_quality_v1.json)、
+[`Alpha482/Alpha483`](../../research_v2/artifacts/diagnostics/alpha_482_483_train_2020_quality_v1.json)、
+[`Alpha484/Alpha485`](../../research_v2/artifacts/diagnostics/alpha_484_485_train_2020_quality_v1.json)、
+[`Alpha486/Alpha487`](../../research_v2/artifacts/diagnostics/alpha_486_487_train_2020_quality_v1.json)、
+[`Alpha481/Alpha482 年度复核`](../../research_v2/artifacts/diagnostics/alpha_481_482_train_2020_2024_annual_v1.json)
+
 第一百三十一至一百三十八批 `Alpha268/Alpha283` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。`Alpha271/Alpha272` 的负向日内振幅波动信号较强但方向为负，不满足正向准入；`Alpha277` 最低月度覆盖率仅 `19.998%`；其余因子均未同时通过 mean RankIC、ICIR 和结构覆盖门槛，全部隔离，不进入模型输入。
 
 证据：[`Alpha268/Alpha269`](../../research_v2/artifacts/diagnostics/alpha_268_269_train_2020_quality_v1.json)、
