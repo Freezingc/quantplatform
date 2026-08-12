@@ -2047,6 +2047,16 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha136/Alpha137`](../../research_v2/artifacts/diagnostics/alpha_136_137_train_2020_quality_v1.json)、
 [`Alpha138/Alpha139`](../../research_v2/artifacts/diagnostics/alpha_138_139_train_2020_quality_v1.json)
 
+### 主标签口径审计
+
+当前质量管线使用的主标签 `forward_open_5d:v1` 已核对为“原始 5 个交易日复权收益”：在信号日 `T` 后，以 `T+1` 的复权开盘价进场、`T+6` 的复权开盘价出场，计算 `adjusted_open(T+6) / adjusted_open(T+1) - 1`。复权价格由 `open * adj_factor` 构成，标签仅在 `T+6` 可用；缺少任一价格即为无效标签。质量评估读取的 `raw_return` 正是这一标签写入 `label_daily` 后的字段。
+
+因此，现有 2020-2025 RankIC/ICIR 结论满足“原始、复权、5 日收益”这一主目标，但其成交价格约定是开盘到开盘，不是收盘到收盘。后者若要采用，应作为独立标签重新完成因子质量检验，不能与现有 IC 直接混比。本次仅固定语义，不改标签表、不重写历史数据、不发布或训练。
+
+证据：[`主标签口径审计`](../../research_v2/artifacts/diagnostics/primary_label_contract_audit_v1.json)、
+[`标签实现`](../../research_v2/src/research_v2/labels/forward_return.py)、
+[`标签单元测试`](../../research_v2/tests/unit/labels/test_forward_return.py)
+
 对 `Alpha208` 完成 2020-2024 全训练期的逐年 Tushare SH/SZ 独立重物化。五年共 1,212 个有效交易日，冻结负方向后的全期 mean RankIC 为 `0.038916`，方向日占比 `63.37%`；五个年度方向、signed mean RankIC 与方向日占比分别为 `5/5`、`5/5`、`5/5` 达标。但严格逐年 `|ICIR|>=0.50` 仅 `1/5` 年达标，因此状态保持 `PASS_WITH_MONITORING`：可作为研究候选继续观察，不能自动加入正式 9 因子、发布或模型输入。
 
 证据：[`Alpha208 Tushare 五年训练重物化`](../../research_v2/artifacts/diagnostics/alpha208_tushare_rematerialized_train_2020_2024_v1.json)、

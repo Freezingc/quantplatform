@@ -1,0 +1,38 @@
+{
+  "scope": "PRIMARY_LABEL_CONTRACT_AUDIT_V1",
+  "label_id": "forward_open_5d",
+  "label_version": 1,
+  "label_semantics": "raw five-trading-day adjusted return",
+  "signal_timing": {
+    "signal_date": "T",
+    "entry_date": "T+1 trading day",
+    "exit_date": "T+6 trading day",
+    "holding_period_trading_days": 5,
+    "entry_price_field": "adjusted_open",
+    "exit_price_field": "adjusted_open",
+    "raw_return_formula": "adjusted_open(T+6) / adjusted_open(T+1) - 1",
+    "label_available_date": "T+6 trading day"
+  },
+  "adjustment_contract": {
+    "source_fields": ["open", "adj_factor"],
+    "adjusted_open_formula": "open * adj_factor",
+    "requires_positive_finite_prices": true,
+    "invalid_when_entry_or_exit_price_is_missing": true
+  },
+  "quality_evaluation_contract": {
+    "rank_ic_target_column": "raw_return",
+    "database_label_column_source": "raw_return_5d mapped to label_daily.raw_return",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "locked_test_read": false,
+    "database_writes": false
+  },
+  "evidence": {
+    "implementation": "research_v2/src/research_v2/labels/forward_return.py",
+    "market_adjustment": "research_v2/src/research_v2/pit/market.py",
+    "materializer": "research_v2/src/research_v2/materializers/labels.py",
+    "unit_test": "research_v2/tests/unit/labels/test_forward_return.py::test_primary_label_is_t_plus_1_to_t_plus_6_adjusted_open_return",
+    "quality_evaluator": "research_v2/scripts/evaluate_tushare_scope_validation.py"
+  },
+  "conclusion": "The current factor-quality pipeline evaluates the user-selected raw five-trading-day adjusted return. The price convention is explicitly adjusted-open to adjusted-open, rather than adjusted-close to adjusted-close. Existing 2020-2025 quality artifacts are comparable only within this frozen convention; a close-based label would be a separate label contract and requires independent re-evaluation."
+}
