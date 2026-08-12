@@ -1,0 +1,36 @@
+{
+  "scope": "ALPHA114_TUSHARE_VS_376_ANNUAL_SIMILARITY_PREFILTER_V1",
+  "factor_id": "yeslab_114",
+  "reference_factor_id": "yeslab_376",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "market_source": "Tushare.daily",
+  "database_writes": false,
+  "locked_test_read": false,
+  "metric": "median_abs_spearman_of_daily_cross_sections",
+  "threshold": 0.9,
+  "annual_pairs": [
+    {"year": 2020, "median_abs_spearman": 0.8119921660, "max_abs_spearman": 0.8762715887, "valid_day_count": 243},
+    {"year": 2021, "median_abs_spearman": 0.8277974334, "max_abs_spearman": 0.8954260380, "valid_day_count": 243},
+    {"year": 2022, "median_abs_spearman": 0.8015997626, "max_abs_spearman": 0.8700141066, "valid_day_count": 242},
+    {"year": 2023, "median_abs_spearman": 0.8236555898, "max_abs_spearman": 0.8768403164, "valid_day_count": 242},
+    {"year": 2024, "median_abs_spearman": 0.7734123670, "max_abs_spearman": 0.8709355555, "valid_day_count": 242}
+  ],
+  "summary": {
+    "median_of_annual_medians": 0.8119921660,
+    "maximum_annual_median": 0.8277974334,
+    "maximum_daily_abs_spearman": 0.8954260380,
+    "total_valid_day_count": 1212,
+    "status": "NEAREST_NEIGHBOR_PREFILTER_PASS"
+  },
+  "interpretation": "The strongest historical nearest-neighbor risk identified for Alpha114 does not cross the 0.90 threshold in any independently rematerialized training year. This removes only the Alpha376 direct-redundancy concern.",
+  "limitation": "This prefilter is not the formal similarity gate. Complete Tushare-canonical full-day similarity against all nine formal factors remains required before admission review.",
+  "action": "Keep Alpha114 outside the complete-quality set, formal factor set, publication candidates, and model inputs until the complete formal-nine similarity gate is available and reviewed.",
+  "evidence": [
+    "tushare_shsz_alpha114_vs_376_train_2020_v1/similarity_summary.json",
+    "tushare_shsz_alpha114_vs_376_train_2021_v1/similarity_summary.json",
+    "tushare_shsz_alpha114_vs_376_train_2022_v1/similarity_summary.json",
+    "tushare_shsz_alpha114_vs_376_train_2023_v1/similarity_summary.json",
+    "tushare_shsz_alpha114_vs_376_train_2024_v1/similarity_summary.json"
+  ]
+}
