@@ -1,0 +1,7 @@
+{
+  "scope":"ALPHA_214_215_TRAIN_2020_QUALITY_V1","market_scope":"SH/SZ","excluded_exchanges":["BJ"],"label":"raw 5-trading-day forward adjusted return","period":"2020-01-02/2020-12-31","minimum_cross_section":30,"input_source":"YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels","database_writes":false,"locked_test_read":false,
+  "factors":{
+    "yeslab_214":{"factor_name":"量价齐飞乘换手率5日均值","valid_day_count":243,"mean_rank_ic":-0.0775520284,"icir":-0.6318723856,"positive_day_share":0.2469135802,"finite_ratio":0.9503018750,"minimum_monthly_finite_ratio":0.6421172194,"direction":-1,"status":"PREDICTIVE_FAIL_COVERAGE_FAIL"},
+    "yeslab_215":{"factor_name":"1年信息离散度动量","valid_day_count":243,"mean_rank_ic":0.0137865913,"icir":0.1206444472,"positive_day_share":0.5967078189,"finite_ratio":1.0,"minimum_monthly_finite_ratio":1.0,"direction":1,"status":"PREDICTIVE_FAIL"}
+  },"status":"SCREENED_NO_NEW_ADMISSION","reason":"Alpha214 fails coverage and Alpha215 fails both predictive thresholds."
+}

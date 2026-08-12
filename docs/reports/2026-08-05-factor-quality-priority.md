@@ -2047,6 +2047,20 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha136/Alpha137`](../../research_v2/artifacts/diagnostics/alpha_136_137_train_2020_quality_v1.json)、
 [`Alpha138/Alpha139`](../../research_v2/artifacts/diagnostics/alpha_138_139_train_2020_quality_v1.json)
 
+第九十九至一百零六批 `Alpha204/Alpha219` 使用 8 路并行完成严格 2020 初筛。`Alpha206` 与 `Alpha208` 通过 2020 双重预测门槛并进入五年年度复核；其余 14 个因子均因预测门槛、ICIR 或最低月度覆盖率失败而隔离。`Alpha209/211–214` 的预测方向较强，但最低月度覆盖率约 `64.1%–64.2%`，低于结构门槛 `70%`；`Alpha219` mean RankIC `0.03234`，但 ICIR `0.42935` 且最低月度覆盖率 `60.77%`。
+
+年度复核显示，`Alpha206` 与 `Alpha208` 均 5/5 年方向一致，signed 年度 mean RankIC 分别 4/5、5/5 年达标，方向日占比均 5/5 年达标；严格逐年 `|ICIR|>=0.50` 分别仅 2/5、1/5 年。因此两者状态为 `ANNUAL_STABILITY_PASS_WITH_MONITORING`，仅允许进入后续 Tushare 公式回放与相似度审查，尚未发布、尚未训练。
+
+证据：[`Alpha204/Alpha205`](../../research_v2/artifacts/diagnostics/alpha_204_205_train_2020_quality_v1.json)、
+[`Alpha206/Alpha207`](../../research_v2/artifacts/diagnostics/alpha_206_207_train_2020_quality_v1.json)、
+[`Alpha208/Alpha209`](../../research_v2/artifacts/diagnostics/alpha_208_209_train_2020_quality_v1.json)、
+[`Alpha210/Alpha211`](../../research_v2/artifacts/diagnostics/alpha_210_211_train_2020_quality_v1.json)、
+[`Alpha212/Alpha213`](../../research_v2/artifacts/diagnostics/alpha_212_213_train_2020_quality_v1.json)、
+[`Alpha214/Alpha215`](../../research_v2/artifacts/diagnostics/alpha_214_215_train_2020_quality_v1.json)、
+[`Alpha216/Alpha217`](../../research_v2/artifacts/diagnostics/alpha_216_217_train_2020_quality_v1.json)、
+[`Alpha218/Alpha219`](../../research_v2/artifacts/diagnostics/alpha_218_219_train_2020_quality_v1.json)、
+[`Alpha206/Alpha208 年度复核`](../../research_v2/artifacts/diagnostics/alpha_206_208_train_2020_2024_annual_v1.json)
+
 第七十五至八十批 `Alpha156/Alpha167` 使用 6 个并行进程完成严格初筛。`Alpha156/157` 的 mean RankIC 虽为正，但 ICIR 分别为 `0.25803/0.16668`，最低月度覆盖率仅 `38.12%/46.19%`；`Alpha158/159` 同样未通过 ICIR 和覆盖门槛；`Alpha160–164` 未通过双重预测门槛，均不进入年度稳定性或模型输入。
 
 `yeslab_165`（Alpha97）2020 年 mean RankIC/ICIR 为 `-0.05702/-0.54740`，`yeslab_167`（Alpha99）为 `0.03704/0.52846`，且覆盖率均接近完整，进入 2020–2024 年度稳定性复核。两者均 5/5 年同向，年度 signed mean RankIC 和方向日占比均 5/5 年达标；严格每年 `|ICIR|>=0.50` 分支分别为 `1/5` 和 `3/5`。当前状态为 `ANNUAL_STABILITY_PASS_WITH_MONITORING`，只允许进入后续 Tushare 公式回放与相似度审查，尚未发布、尚未训练。
