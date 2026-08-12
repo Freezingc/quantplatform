@@ -326,6 +326,44 @@ def test_parser_accepts_registered_gp_quality_replay_factors() -> None:
     )
 
 
+def test_parser_accepts_annual_stable_candidates_for_tushare_replay() -> None:
+    args = audit.parse_args(
+        [
+            "--factor-id",
+            "yeslab_165",
+            "--factor-id",
+            "yeslab_167",
+            "--factor-id",
+            "yeslab_168",
+            "--factor-id",
+            "yeslab_206",
+            "--factor-id",
+            "yeslab_208",
+            "--full-market",
+            "--exclude-bj",
+            "--stock-batch-size",
+            "5000",
+            "--start",
+            "2025-01-02",
+            "--end",
+            "2025-01-31",
+            "--output",
+            "/tmp/tushare-annual-stable-candidates.json",
+        ]
+    )
+
+    assert args.factor_id == (
+        "yeslab_165",
+        "yeslab_167",
+        "yeslab_168",
+        "yeslab_206",
+        "yeslab_208",
+    )
+    assert audit.required_market_fields(
+        tuple(REPLAY_DEFINITIONS[factor_id] for factor_id in args.factor_id)
+    ) == ("close", "high", "vol")
+
+
 def test_default_factor_registry_has_unique_ids() -> None:
     args = audit.parse_args(["--output", "/tmp/tushare-default.json"])
 

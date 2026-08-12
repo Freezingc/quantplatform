@@ -271,6 +271,34 @@ def test_registry_includes_existing_gp_calculators_for_shsz_quality_replay() -> 
         assert definition.lookback_days == lookback
 
 
+def test_registry_includes_annual_stable_candidate_calculators() -> None:
+    expected = {
+        "yeslab_165": ("Alpha97", "factor_data4", "Alpha97Calculator", 10),
+        "yeslab_167": ("Alpha99", "factor_data4", "Alpha99Calculator", 5),
+        "yeslab_168": ("Alpha100", "factor_data4", "Alpha100Calculator", 20),
+        "yeslab_206": (
+            "60日成交量去均值相对偏离",
+            "factor_data5",
+            "Bias_Vol_Demean_60_Calculator",
+            60,
+        ),
+        "yeslab_208": (
+            "价格均值标准差乖离乘短期成交量波动",
+            "factor_data5",
+            "Bias_Close_Mean_Std_Low_Vol_Std_60_Calculator",
+            60,
+        ),
+    }
+
+    for factor_id, (name, table, calculator, lookback) in expected.items():
+        definition = audit.REPLAY_DEFINITIONS[factor_id]
+        assert definition.factor_name == name
+        assert definition.store_factor == table
+        assert definition.calculator_module == calculator
+        assert definition.calculator_class == calculator
+        assert definition.lookback_days == lookback
+
+
 def test_run_audit_records_calculator_errors_without_dropping_factor() -> None:
     class Client:
         def run(self, script: str) -> object:
