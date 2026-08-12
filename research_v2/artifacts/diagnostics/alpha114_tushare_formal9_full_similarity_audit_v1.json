@@ -1,0 +1,26 @@
+{
+  "scope": "ALPHA114_TUSHARE_CANONICAL_FORMAL9_FULL_SIMILARITY_AUDIT_V1",
+  "factor_id": "yeslab_114",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "market_source": "Tushare.daily",
+  "period": "2020-01-01/2024-12-31",
+  "years": [2020, 2021, 2022, 2023, 2024],
+  "thresholds": {"redundancy_median_abs_spearman": 0.9, "minimum_valid_day_count_per_year": 240},
+  "reference_summary": [
+    {"reference_factor_id": "yeslab_376", "annual_median_abs_spearman": [0.811992166, 0.8277974334, 0.8015997626, 0.8236555898, 0.773412367], "mean_annual_median_abs_spearman": 0.8076914638, "maximum_annual_median_abs_spearman": 0.8277974334, "maximum_daily_abs_spearman": 0.895426038, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_396", "annual_median_abs_spearman": [0.6949388991, 0.7050178524, 0.6711220508, 0.6845506531, 0.6617103941], "mean_annual_median_abs_spearman": 0.6834679699, "maximum_annual_median_abs_spearman": 0.7050178524, "maximum_daily_abs_spearman": 0.7926195785, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_442", "annual_median_abs_spearman": [0.6523501232, 0.6667362543, 0.6256519362, 0.6361245399, 0.6214569661], "mean_annual_median_abs_spearman": 0.6404639639, "maximum_annual_median_abs_spearman": 0.6667362543, "maximum_daily_abs_spearman": 0.7589428286, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_380", "annual_median_abs_spearman": [0.6016984401, 0.6242234252, 0.5859575913, 0.6056459067, 0.5244865103], "mean_annual_median_abs_spearman": 0.5884023747, "maximum_annual_median_abs_spearman": 0.6242234252, "maximum_daily_abs_spearman": 0.746634536, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_431", "annual_median_abs_spearman": [0.51073797, 0.5429878647, 0.5012148477, 0.5221466934, 0.403377318], "mean_annual_median_abs_spearman": 0.4960929388, "maximum_annual_median_abs_spearman": 0.5429878647, "maximum_daily_abs_spearman": 0.6723486585, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_437", "annual_median_abs_spearman": [0.4665405697, 0.4898764589, 0.4583820685, 0.4419559391, 0.3628945212], "mean_annual_median_abs_spearman": 0.4439299115, "maximum_annual_median_abs_spearman": 0.4898764589, "maximum_daily_abs_spearman": 0.6450700264, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_155", "annual_median_abs_spearman": [0.2970044397, 0.3045187752, 0.2722959909, 0.2580618378, 0.2617557142], "mean_annual_median_abs_spearman": 0.2787273516, "maximum_annual_median_abs_spearman": 0.3045187752, "maximum_daily_abs_spearman": 0.4267133402, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_94", "annual_median_abs_spearman": [0.2462039893, 0.2592304102, 0.3339980357, 0.1871812502, 0.3624602446], "mean_annual_median_abs_spearman": 0.277814786, "maximum_annual_median_abs_spearman": 0.3624602446, "maximum_daily_abs_spearman": 0.6954097898, "total_valid_day_count": 1212},
+    {"reference_factor_id": "yeslab_98", "annual_median_abs_spearman": [0.2231426102, 0.2962830342, 0.2921047866, 0.1906450804, 0.273391496], "mean_annual_median_abs_spearman": 0.2551134015, "maximum_annual_median_abs_spearman": 0.2962830342, "maximum_daily_abs_spearman": 0.6507264984, "total_valid_day_count": 1212}
+  ],
+  "summary": {"reference_factor_count": 9, "yearly_pair_count": 45, "all_yearly_pairs_present": true, "all_yearly_pairs_meet_minimum_day_count": true, "all_yearly_medians_below_redundancy_threshold": true, "maximum_annual_median_abs_spearman": 0.8277974334, "maximum_median_reference_factor_id": "yeslab_376", "maximum_daily_abs_spearman": 0.895426038, "maximum_daily_reference_factor_id": "yeslab_376", "status": "PASS_FULL_FIVE_YEAR_SIMILARITY_GATE"},
+  "decision": "Similarity gate passes, but this does not independently admit Alpha114 because monthly monitoring review remains required.",
+  "action": "Do not alter the formal nine, publication, or model inputs. Alpha114 may proceed only to the existing monthly-monitoring review stage.",
+  "database_writes": false,
+  "locked_test_read": false
+}

@@ -1607,12 +1607,15 @@ mean RankIC/ICIR 为 `-0.07560/-0.54720`，五年同向，严格年度 `|ICIR|>=
 canonical 成对预筛，五个年度中位相似度最高为 `0.8278`、单日最高为 `0.8954`，未越过 `0.90`
 冗余线；第二近邻 Alpha396 的 2020 canonical 中位相似度也仅 `0.6949`。随后补齐正式九因子
 2020 首年配对预筛，9/9 对均低于 `0.90`，最高中位相似度为 Alpha376 的 `0.8120`、最高单日为
-`0.8763`。这些结果仅排除首年层面的明显冗余，不能替代对全部正式九因子的完整五年全日检查。
-第三近邻 Alpha442 的 2020 canonical 中位相似度为 `0.6524`，同样远离阈值。因此 Alpha114 仅记录为“预测性和公式通过、待完整相似度及
-月度监控审查”，不计入16因子完整质量集合、不改变正式9因子，也不触发发布或训练。
+`0.8763`。随后完成全部正式九因子的五年全日检查：共 `45` 个年度配对、每年 `242–243` 个有效
+交易日，全部年度中位相似度低于 `0.90`。最接近的仍为 Alpha376，五年最大年度中位为 `0.8278`、
+最大单日为 `0.8954`，未越过冗余线。因此 Alpha114 的五年 Tushare canonical 相似度门禁已通过，
+但训练期有 `15/60` 个月、验证期有 `4/12` 个月进入监控，仍只记录为“预测性、公式和相似度通过，
+待月度监控审查”；不计入16因子完整质量集合、不改变正式9因子，也不触发发布或训练。
 
 证据：[`Alpha114 canonical 候选复核`](../../research_v2/artifacts/diagnostics/alpha114_tushare_canonical_candidate_review_v1.json)、
 [`Alpha114 正式九因子 2020 首年配对预筛`](../../research_v2/artifacts/diagnostics/alpha114_tushare_formal9_2020_pair_prefilter_v1.json)、
+[`Alpha114 正式九因子五年全日相似度审计`](../../research_v2/artifacts/diagnostics/alpha114_tushare_formal9_full_similarity_audit_v1.json)、
 [`Alpha114-Alpha376 年度相似度预筛`](../../research_v2/artifacts/diagnostics/alpha114_tushare_vs_376_annual_similarity_prefilter_v1.json)
 
 ### GP_016 Canonical 冗余拒绝

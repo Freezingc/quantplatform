@@ -47,14 +47,15 @@
     "validation_2025": {"month_count": 12, "signed_mean_rank_ic_pass_months": 9, "directional_day_share_pass_months": 8, "strict_monthly_abs_icir_pass_months": 7, "watch_months": ["2025-01", "2025-02", "2025-04", "2025-12"], "source": "alpha114_tushare_validation_2025_monthly_rank_ic_v1.csv"}
   },
   "similarity_to_formal_nine": {
-    "status": "PENDING_COMPLETE_TUSHARE_CANONICAL_FULL_DAY_REPLAY",
-    "reason": "The complete ten-factor canonical replay was stopped before output because the shared DolphinDB market read remained pending. Historical YesLab similarity is not a substitute for this gate.",
+    "status": "PASS_FULL_FIVE_YEAR_SIMILARITY_GATE",
+    "reason": "All nine formal factors were independently paired with Alpha114 for each TRAIN calendar year using Tushare-canonical SH/SZ replay values. No yearly median absolute Spearman reached the 0.90 redundancy threshold.",
+    "full_five_year_audit": {"reference_factor_count": 9, "yearly_pair_count": 45, "maximum_annual_median_abs_spearman": 0.8277974334, "maximum_median_reference_factor_id": "yeslab_376", "maximum_daily_abs_spearman": 0.8954260380, "maximum_daily_reference_factor_id": "yeslab_376", "status": "PASS_FULL_FIVE_YEAR_SIMILARITY_GATE", "artifact": "alpha114_tushare_formal9_full_similarity_audit_v1.json"},
     "nearest_neighbor_prefilter": {"reference_factor_id": "yeslab_376", "maximum_annual_median_abs_spearman": 0.8277974334, "maximum_daily_abs_spearman": 0.8954260380, "status": "PASS_WITHOUT_REPLACING_FORMAL_GATE", "artifact": "alpha114_tushare_vs_376_annual_similarity_prefilter_v1.json"},
     "second_nearest_first_year_prefilter": {"reference_factor_id": "yeslab_396", "period": "2020", "median_abs_spearman": 0.6949388991, "max_abs_spearman": 0.7584581670, "valid_day_count": 243, "status": "PASS_WITHOUT_REPLACING_FORMAL_GATE", "artifact": "tushare_shsz_alpha114_vs_396_train_2020_v1/similarity_summary.json"},
     "third_nearest_first_year_prefilter": {"reference_factor_id": "yeslab_442", "period": "2020", "median_abs_spearman": 0.6523501232, "max_abs_spearman": 0.7396400897, "valid_day_count": 243, "status": "PASS_WITHOUT_REPLACING_FORMAL_GATE", "artifact": "tushare_shsz_alpha114_vs_442_train_2020_v1/similarity_summary.json"}
   },
-  "decision": "PREDICTIVE_AND_FORMULA_PASS_PENDING_SIMILARITY_AND_MONTHLY_MONITORING_REVIEW",
-  "action": "Do not add Alpha114 to the complete-quality set, formal factor set, publication candidates, or model inputs until complete Tushare-canonical similarity against the formal nine is available and reviewed. Any future admission must retain monthly monitoring.",
+  "decision": "PREDICTIVE_FORMULA_AND_SIMILARITY_PASS_PENDING_MONTHLY_MONITORING_REVIEW",
+  "action": "Do not automatically add Alpha114 to the complete-quality set, formal factor set, publication candidates, or model inputs. The five-year similarity gate is now passed, but any future admission remains conditional on explicit monthly-monitoring review and must retain monthly monitoring.",
   "evidence": [
     "tushare_shsz_candidate_114_train_2020_v1/quality_summary.json",
     "tushare_shsz_candidate_114_train_2021_v1/quality_summary.json",
@@ -62,6 +63,7 @@
     "tushare_shsz_candidate_114_train_2023_v1/quality_summary.json",
     "tushare_shsz_candidate_114_train_2024_v1/quality_summary.json",
     "tushare_shsz_candidate_114_validation_2025_v1/quality_summary.json",
+    "alpha114_tushare_formal9_full_similarity_audit_v1.json",
     "formula_replay_consistency_oos19_multiwindow_v1.json"
   ]
 }
