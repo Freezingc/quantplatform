@@ -1,0 +1,24 @@
+{
+  "scope": "TUSHARE_SHSZ_CANDIDATE_MONTH_BLOCK_BOOTSTRAP_V1",
+  "purpose": "Read-only statistical robustness audit on already materialized signed daily RankIC evidence.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "method": "Calendar-month block bootstrap of signed daily RankIC. Each replicate samples observed month blocks with replacement, retaining all daily observations within each sampled block.",
+  "seed": 20260813,
+  "bootstrap_replicates": 10000,
+  "thresholds": {"minimum_signed_mean_rank_ic": 0.02, "confidence_level": 0.95},
+  "database_writes": false,
+  "locked_test_read": false,
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "formal_factor_set_unchanged": true,
+  "results": [
+    {"factor_id": "yeslab_114", "train_2020_2024": {"valid_day_count": 1212, "month_block_count": 60, "signed_mean_rank_ic": 0.0756031939, "ci95": [0.058621823, 0.0928332643], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 1.0}, "validation_2025": {"valid_day_count": 243, "month_block_count": 12, "signed_mean_rank_ic": 0.076235262, "ci95": [0.0374830205, 0.1198503351], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 0.9986}, "status": "PASS_BOOTSTRAP_MEAN_MONITOR_REGIME_SENSITIVITY", "interpretation": "The signed mean is robust to month-block resampling, but the interval is widest among the candidates and does not remove the separately observed weak-trend/high-volatility regime sensitivity."},
+    {"factor_id": "yeslab_381", "train_2020_2024": {"valid_day_count": 1212, "month_block_count": 60, "signed_mean_rank_ic": 0.0754030749, "ci95": [0.0591804886, 0.091474234], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 1.0}, "validation_2025": {"valid_day_count": 243, "month_block_count": 12, "signed_mean_rank_ic": 0.0950609444, "ci95": [0.0657553948, 0.1219441829], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 1.0}, "status": "PASS_BOOTSTRAP_MEAN", "interpretation": "Both train and validation intervals are comfortably above the signed mean threshold. Candidate-pair redundancy with Alpha405 remains the separate limitation."},
+    {"factor_id": "yeslab_405", "train_2020_2024": {"valid_day_count": 1212, "month_block_count": 60, "signed_mean_rank_ic": 0.06709419, "ci95": [0.0538623806, 0.0796128557], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 1.0}, "validation_2025": {"valid_day_count": 243, "month_block_count": 12, "signed_mean_rank_ic": 0.090169959, "ci95": [0.0709726616, 0.1098418608], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 1.0}, "status": "PASS_BOOTSTRAP_MEAN", "interpretation": "The narrowest validation month-block confidence interval among the candidates, consistent with prior monthly and regime robustness evidence."},
+    {"factor_id": "yeslab_425", "train_2020_2024": {"valid_day_count": 1212, "month_block_count": 60, "signed_mean_rank_ic": 0.0709545539, "ci95": [0.0551828701, 0.0864540749], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 1.0}, "validation_2025": {"valid_day_count": 243, "month_block_count": 12, "signed_mean_rank_ic": 0.0955855105, "ci95": [0.0710441518, 0.1202031051], "probability_signed_mean_positive": 1.0, "probability_signed_mean_at_least_0_02": 1.0}, "status": "PASS_BOOTSTRAP_MEAN", "interpretation": "Train and validation month-block intervals remain above the signed mean threshold; retain the separately defined training high-volatility monitor."}
+  ],
+  "decision": "All four candidates retain a positive signed RankIC confidence interval and a 95% lower bound above 0.02 under the specified monthly block bootstrap. This validates mean-signal robustness only and does not supersede regime, similarity, formula, monthly-monitoring, or explicit-admission gates.",
+  "action": "Do not alter the formal factor set, publish any factor, write factor values, add model inputs, or start model training based on this audit."
+}
