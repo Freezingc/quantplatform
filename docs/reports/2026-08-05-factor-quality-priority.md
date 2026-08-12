@@ -1613,6 +1613,19 @@ canonical 成对预筛，五个年度中位相似度最高为 `0.8278`、单日�
 证据：[`Alpha114 canonical 候选复核`](../../research_v2/artifacts/diagnostics/alpha114_tushare_canonical_candidate_review_v1.json)、
 [`Alpha114-Alpha376 年度相似度预筛`](../../research_v2/artifacts/diagnostics/alpha114_tushare_vs_376_annual_similarity_prefilter_v1.json)
 
+### GP_016 Canonical 冗余拒绝
+
+`yeslab_385 / GP_016` 的独立 Tushare SH/SZ 重物化预测性很强：2020-2024 aggregate mean
+RankIC/ICIR 为 `-0.07510/-0.57762`，严格年度 `|ICIR|>=0.50` 为 `5/5`；2025 验证为
+`-0.08354/-0.68804`，四窗口公式回放也通过。月度监控下训练期 `49/60` 月、验证期 `11/12`
+月满足 signed mean RankIC 线。
+
+但它与 Alpha405/GP_036 在 2020 Tushare canonical 全横截面上的日度中位绝对 Spearman 为
+`0.90134`，超过 `0.90` 硬冗余阈值，单日最高为 `0.93684`。因此 GP_016 被冗余门槛拒绝：
+强预测性不能抵消与现有强候选的高度重合。它不进入完整质量集合、正式9因子、发布候选或模型输入。
+
+证据：[`GP_016 canonical 冗余拒绝复核`](../../research_v2/artifacts/diagnostics/alpha385_tushare_canonical_redundancy_rejection_v1.json)
+
 ### 行业因子 yeslab_357 定向回放
 
 为补齐代表性候选 `yeslab_357` 的证据链，回放器新增了显式全市场模式，并在 2025-01-02–01-31

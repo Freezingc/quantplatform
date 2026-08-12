@@ -1,0 +1,47 @@
+{
+  "code_count": 3587,
+  "database_writes": false,
+  "end": "2020-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_385",
+    "yeslab_405"
+  ],
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2019-11-25",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": false,
+  "start": "2020-01-01",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.6790123456790124,
+      "end": "2020-12-31",
+      "factor_id": "yeslab_385",
+      "factor_name": "GP_016",
+      "icir": -0.5196760253981115,
+      "mean_rank_ic": -0.06504923111398896,
+      "rank_ic_std": 0.12517266130211852,
+      "signed_mean_rank_ic": 0.06504923111398896,
+      "start": "2020-01-02",
+      "valid_day_count": 243
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.6748971193415638,
+      "end": "2020-12-31",
+      "factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "icir": -0.486412195857027,
+      "mean_rank_ic": -0.0530323816393552,
+      "rank_ic_std": 0.10902765615470549,
+      "signed_mean_rank_ic": 0.0530323816393552,
+      "start": "2020-01-02",
+      "valid_day_count": 243
+    }
+  ]
+}

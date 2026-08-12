@@ -1,0 +1,33 @@
+{
+  "code_count": 4911,
+  "database_writes": false,
+  "end": "2025-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_385"
+  ],
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-11-25",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": true,
+  "start": "2025-01-01",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.7613168724279835,
+      "end": "2025-12-31",
+      "factor_id": "yeslab_385",
+      "factor_name": "GP_016",
+      "icir": -0.6880413134962676,
+      "mean_rank_ic": -0.0835416867416853,
+      "rank_ic_std": 0.1214195791778403,
+      "signed_mean_rank_ic": 0.0835416867416853,
+      "start": "2025-01-02",
+      "valid_day_count": 243
+    }
+  ]
+}
