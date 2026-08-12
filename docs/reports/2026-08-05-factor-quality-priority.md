@@ -2066,6 +2066,10 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 
 证据：[`Alpha425 Tushare 候选审议`](../../research_v2/artifacts/diagnostics/alpha425_tushare_rematerialized_candidate_review_v1.json)
 
+对所有“历史因子值因 BJ 横截面范围而无法复现、但可独立生成 SH/SZ Tushare 版本”的强候选进行统一排序。`Alpha425/GP_056`、`Alpha405/GP_036`、`Alpha381/GP_012` 均为五年同向、严格年度 `|ICIR|>=0.50` 为 `4/5`，且 2025 验证通过。它们相对正式九因子的训练/验证最大相似度分别为 `0.695/0.726`、`0.684/0.722`、`0.785/0.783`；因此若日后需要扩展，优先顺序为 Alpha425、Alpha405、Alpha381，后者须额外关注与 Alpha431 的冗余。Alpha400 年度严格 ICIR 仅 `3/5`；Alpha395 和 Alpha443 的历史回放仍存在无法仅归因于范围的广泛 mismatch，继续阻断。该排序不构成准入或发布动作。
+
+证据：[`SH/SZ 范围迁移候选矩阵`](../../research_v2/artifacts/diagnostics/tushare_shsz_scope_transition_candidate_matrix_v1.json)
+
 补齐了先前已完成但未进入正式台账的 `Alpha99/Alpha104` 初筛证据。`Alpha99/100` 覆盖率充足但绝对 ICIR 仅 `0.414/0.028`；`Alpha101/102/103/104` 同时不满足预测门槛，且最低月度覆盖率分别为 `60.98%/47.38%/46.16%/44.47%`。六个因子均不进入年度复核、发布或模型输入。此归档修正将“无诊断证据”的剩余因子数从 `70` 校正为 `64`。
 
 证据：[`Alpha99/Alpha100`](../../research_v2/artifacts/diagnostics/alpha_099_100_train_2020_quality_v1.json)、

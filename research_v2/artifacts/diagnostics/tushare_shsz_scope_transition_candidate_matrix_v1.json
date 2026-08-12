@@ -1,0 +1,61 @@
+{
+  "scope": "TUSHARE_SHSZ_SCOPE_TRANSITION_CANDIDATE_MATRIX_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "market_source": "Tushare.daily and Tushare.daily_basic where required",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_unchanged": true,
+  "eligibility_rule": "Candidate must use a fully Tushare-rematerialized SH/SZ factor version. Historical YesLab values with a BJ-inclusive source cross-section are never mixed into the canonical training panel.",
+  "candidates_ranked_by_max_similarity": [
+    {
+      "factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "direction": -1,
+      "train": {"mean_rank_ic": -0.0709545539, "icir": -0.5576811394, "valid_day_count": 1212},
+      "validation": {"mean_rank_ic": -0.0955855105, "icir": -0.8493809616, "valid_day_count": 243},
+      "annual": {"same_direction_years": 5, "strict_annual_abs_icir_pass_years": 4},
+      "similarity_to_formal_nine": {"train": {"nearest_factor": "yeslab_376", "value": 0.6945446503}, "validation": {"nearest_factor": "yeslab_376", "value": 0.7258978755}},
+      "historical_source_status": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH_BJ_INCLUDED",
+      "candidate_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW"
+    },
+    {
+      "factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "direction": -1,
+      "train": {"mean_rank_ic": -0.0670941900, "icir": -0.6236357196, "valid_day_count": 1212},
+      "validation": {"mean_rank_ic": -0.0901699590, "icir": -1.0391000641, "valid_day_count": 243},
+      "annual": {"same_direction_years": 5, "strict_annual_abs_icir_pass_years": 4},
+      "similarity_to_formal_nine": {"train": {"nearest_factor": "yeslab_396", "value": 0.6841455137}, "validation": {"nearest_factor": "yeslab_396", "value": 0.7218858687}},
+      "historical_source_status": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH_BJ_INCLUDED",
+      "candidate_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW"
+    },
+    {
+      "factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "direction": -1,
+      "train": {"mean_rank_ic": -0.0754030749, "icir": -0.6152942604, "valid_day_count": 1212},
+      "validation": {"mean_rank_ic": -0.0950609444, "icir": -0.8904495365, "valid_day_count": 243},
+      "annual": {"same_direction_years": 5, "strict_annual_abs_icir_pass_years": 4},
+      "similarity_to_formal_nine": {"train": {"nearest_factor": "yeslab_431", "value": 0.7853432509}, "validation": {"nearest_factor": "yeslab_431", "value": 0.7827108372}},
+      "historical_source_status": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH_BJ_INCLUDED",
+      "candidate_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_ELEVATED_REDUNDANCY_MONITOR"
+    }
+  ],
+  "excluded_after_review": {
+    "yeslab_400": "Tushare SH/SZ rematerialized quality is positive, but strict annual ICIR passes only 3/5 years.",
+    "yeslab_443": "Tushare SH/SZ rematerialized quality is positive, but all four historical replay windows have broad finite-overlap mismatches; the source transition cannot yet be isolated to scope alone.",
+    "yeslab_395": "Tushare SH/SZ rematerialized quality is positive, but historical replay has broad mismatch and prior turnover overlap repair is blocked."
+  },
+  "decision": "RETAIN_THREE_SCOPE_TRANSITION_CANDIDATES_FOR_EXPLICIT_ADMISSION_ONLY",
+  "action": "Do not alter the formal nine, publish any factor, or start model training. An explicit admission decision must select zero or more candidates and require a new isolated SH/SZ Tushare-canonical factor version for each selected factor.",
+  "evidence": [
+    "tushare_shsz_scope_diagnostic_gp012_gp036_v1.json",
+    "tushare_shsz_remaining_gp_scope_review_v1.json",
+    "tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
+    "tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json",
+    "train_similarity_pairs_2020_2024_combined45_v2.csv",
+    "validation_similarity_pairs_2025_final24_v1.csv"
+  ]
+}
