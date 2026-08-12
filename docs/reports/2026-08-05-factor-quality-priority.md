@@ -2059,6 +2059,17 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha346/Alpha347`](../../research_v2/artifacts/diagnostics/alpha_346_347_train_2020_quality_v1.json)、
 [`Alpha346 年度复核`](../../research_v2/artifacts/diagnostics/alpha_346_train_2020_2024_annual_v1.json)
 
+第一百七十一至一百七十八批 `Alpha348/Alpha363` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。行业因子 `Alpha354` mean RankIC `0.02888` 但 ICIR `0.28519`；`Alpha357/359/363` 为强负向信号，不满足签名准入；其余因子为弱或负向信号。全部不进入公式回放、发布或模型输入。
+
+证据：[`Alpha348/Alpha349`](../../research_v2/artifacts/diagnostics/alpha_348_349_train_2020_quality_v1.json)、
+[`Alpha350/Alpha351`](../../research_v2/artifacts/diagnostics/alpha_350_351_train_2020_quality_v1.json)、
+[`Alpha352/Alpha353`](../../research_v2/artifacts/diagnostics/alpha_352_353_train_2020_quality_v1.json)、
+[`Alpha354/Alpha355`](../../research_v2/artifacts/diagnostics/alpha_354_355_train_2020_quality_v1.json)、
+[`Alpha356/Alpha357`](../../research_v2/artifacts/diagnostics/alpha_356_357_train_2020_quality_v1.json)、
+[`Alpha358/Alpha359`](../../research_v2/artifacts/diagnostics/alpha_358_359_train_2020_quality_v1.json)、
+[`Alpha360/Alpha361`](../../research_v2/artifacts/diagnostics/alpha_360_361_train_2020_quality_v1.json)、
+[`Alpha362/Alpha363`](../../research_v2/artifacts/diagnostics/alpha_362_363_train_2020_quality_v1.json)
+
 第一百三十一至一百三十八批 `Alpha268/Alpha283` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。`Alpha271/Alpha272` 的负向日内振幅波动信号较强但方向为负，不满足正向准入；`Alpha277` 最低月度覆盖率仅 `19.998%`；其余因子均未同时通过 mean RankIC、ICIR 和结构覆盖门槛，全部隔离，不进入模型输入。
 
 证据：[`Alpha268/Alpha269`](../../research_v2/artifacts/diagnostics/alpha_268_269_train_2020_quality_v1.json)、
