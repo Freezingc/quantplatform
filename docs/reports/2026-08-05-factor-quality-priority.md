@@ -2047,6 +2047,16 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha136/Alpha137`](../../research_v2/artifacts/diagnostics/alpha_136_137_train_2020_quality_v1.json)、
 [`Alpha138/Alpha139`](../../research_v2/artifacts/diagnostics/alpha_138_139_train_2020_quality_v1.json)
 
+补齐了先前已完成但未进入正式台账的 `Alpha99/Alpha104` 初筛证据。`Alpha99/100` 覆盖率充足但绝对 ICIR 仅 `0.414/0.028`；`Alpha101/102/103/104` 同时不满足预测门槛，且最低月度覆盖率分别为 `60.98%/47.38%/46.16%/44.47%`。六个因子均不进入年度复核、发布或模型输入。此归档修正将“无诊断证据”的剩余因子数从 `70` 校正为 `64`。
+
+证据：[`Alpha99/Alpha100`](../../research_v2/artifacts/diagnostics/alpha_099_100_train_2020_quality_v1.json)、
+[`Alpha101/Alpha102`](../../research_v2/artifacts/diagnostics/alpha_101_102_train_2020_quality_v1.json)、
+[`Alpha103/Alpha104`](../../research_v2/artifacts/diagnostics/alpha_103_104_train_2020_quality_v1.json)
+
+完成最后一个目录因子 `yeslab_0`（`test_factor`）的严格初筛：覆盖率 `99.70%`，冻结负向后的绝对 ICIR 为 `0.471`，低于 `0.50`，因此不进入年度复核或模型输入。至此，487 个目录因子均已有严格质量证据；正式准入集合仍为原有 9 个。
+
+证据：[`Alpha0`](../../research_v2/artifacts/diagnostics/alpha_000_train_2020_quality_v1.json)
+
 第一百六十三至一百七十批 `Alpha332/Alpha347` 使用 8 路并行完成严格 2020 初筛。仅 `Alpha346`（OP_QOQ）通过 2020 双重门槛，进入五年年度复核；其余 15 个因子均因 ICIR、方向或覆盖门槛失败而隔离。年度复核显示 `Alpha346` 5/5 年方向一致，但 signed 年度 mean RankIC 和方向日占比均仅 1/5 年达标，严格年度 `|ICIR|>=0.50` 也仅 1/5 年，因此状态为 `ANNUAL_STABILITY_FAIL`，不进入公式回放、发布或模型训练。
 
 证据：[`Alpha332/Alpha333`](../../research_v2/artifacts/diagnostics/alpha_332_333_train_2020_quality_v1.json)、
