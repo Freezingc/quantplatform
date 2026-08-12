@@ -205,6 +205,7 @@ def normalize_tushare_market(
         "amount",
         "pct_chg",
         "turnover_rate",
+        "total_mv",
         "adj_factor",
     ):
         if column == "turnover_rate" and not include_daily_basic:
@@ -236,6 +237,7 @@ def normalize_tushare_market(
             "amount",
             "pct_chg",
             "turnover_rate",
+            "total_mv",
             "adj_factor",
             "open_hfq",
             "high_hfq",
@@ -244,7 +246,7 @@ def normalize_tushare_market(
             "pre_close_hfq",
         )
         if column in frame
-        and (column != "turnover_rate" or include_daily_basic)
+        and (column not in {"turnover_rate", "total_mv"} or include_daily_basic)
     ]
     return frame.loc[:, columns].sort_values(["trade_date", "ts_code"]).reset_index(drop=True)
 
@@ -513,11 +515,13 @@ def fetch_missing_code_ranges(
             if basic_cache.is_file():
                 basic = pd.read_json(basic_cache, orient="table")
             else:
+                basic = pd.DataFrame()
+            if "total_mv" not in basic.columns:
                 basic = pro.daily_basic(
                     ts_code=request_code,
                     start_date=start.strftime("%Y%m%d"),
                     end_date=end.strftime("%Y%m%d"),
-                    fields="ts_code,trade_date,turnover_rate",
+                    fields="ts_code,trade_date,turnover_rate,total_mv",
                 )
                 if isinstance(basic, pd.DataFrame):
                     basic_cache.write_text(
@@ -527,7 +531,9 @@ def fetch_missing_code_ranges(
                 basic = basic.copy()
                 basic["ts_code"] = historical_code
                 daily = daily.merge(
-                    basic.loc[:, ["ts_code", "trade_date", "turnover_rate"]],
+                    basic.reindex(
+                        columns=["ts_code", "trade_date", "turnover_rate", "total_mv"]
+                    ),
                     on=["ts_code", "trade_date"],
                     how="left",
                 )
@@ -626,9 +632,11 @@ def _fetch_tushare_market(
                     if basic_cache_path.is_file():
                         basic = pd.read_json(basic_cache_path, orient="table")
                     else:
+                        basic = pd.DataFrame()
+                    if "total_mv" not in basic.columns:
                         basic = pro.daily_basic(
                             trade_date=trade_date.strftime("%Y%m%d"),
-                            fields="ts_code,turnover_rate",
+                            fields="ts_code,turnover_rate,total_mv",
                         )
                         if isinstance(basic, pd.DataFrame):
                             basic_cache_path.write_text(
@@ -637,7 +645,7 @@ def _fetch_tushare_market(
                             )
                     if isinstance(basic, pd.DataFrame) and not basic.empty:
                         result = result.merge(
-                            basic.loc[:, ["ts_code", "turnover_rate"]],
+                            basic.reindex(columns=["ts_code", "turnover_rate", "total_mv"]),
                             on="ts_code",
                             how="left",
                         )

@@ -2141,6 +2141,20 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha456/Alpha457`](../../research_v2/artifacts/diagnostics/alpha_456_457_train_2020_quality_v1.json)、
 [`Alpha458/Alpha459`](../../research_v2/artifacts/diagnostics/alpha_458_459_train_2020_quality_v1.json)
 
+第二百二十七至二百三十四批 `Alpha460/Alpha475` 使用受控只读任务完成严格 2020 初筛。没有新增正式准入。`Alpha461/464/468` 存在整月零覆盖，`Alpha466` 最低月度覆盖仅 `25.1%`；其余非候选因子均未达到单年双重预测门槛。`Alpha471`（AttentionSpillover）单年与五年结构均通过，五年严格年度 ICIR 为 `5/5`，且与现有正式九因子的最近邻为 `Alpha376`、全训练日相似度仅 `0.560`，不构成重复。但是其完整 SH/SZ Tushare 公式回放覆盖 `74,558` 个有限样本，其中 `74,556` 个不一致，市场覆盖并无缺口，说明历史值和当前公式/输入口径尚未对齐；因此保持隔离，不能发布或用于模型训练。
+
+证据：[`Alpha460/Alpha461`](../../research_v2/artifacts/diagnostics/alpha_460_461_train_2020_quality_v1.json)、
+[`Alpha462/Alpha463`](../../research_v2/artifacts/diagnostics/alpha_462_463_train_2020_quality_v1.json)、
+[`Alpha464/Alpha465`](../../research_v2/artifacts/diagnostics/alpha_464_465_train_2020_quality_v1.json)、
+[`Alpha466/Alpha467`](../../research_v2/artifacts/diagnostics/alpha_466_467_train_2020_quality_v1.json)、
+[`Alpha468/Alpha469`](../../research_v2/artifacts/diagnostics/alpha_468_469_train_2020_quality_v1.json)、
+[`Alpha470/Alpha471`](../../research_v2/artifacts/diagnostics/alpha_470_471_train_2020_quality_v1.json)、
+[`Alpha472/Alpha473`](../../research_v2/artifacts/diagnostics/alpha_472_473_train_2020_quality_v1.json)、
+[`Alpha474/Alpha475`](../../research_v2/artifacts/diagnostics/alpha_474_475_train_2020_quality_v1.json)、
+[`Alpha471 年度复核`](../../research_v2/artifacts/diagnostics/alpha_471_train_2020_2024_annual_v1.json)、
+[`Alpha471 公式回放`](../../research_v2/artifacts/diagnostics/formula_replay_alpha471_tushare_shsz_2025-01_v1.json)、
+[`Alpha471 相似度摘要`](../../research_v2/artifacts/diagnostics/alpha471_vs_formal9_train_similarity_2020_2024_v1.csv)
+
 第一百三十一至一百三十八批 `Alpha268/Alpha283` 使用 8 路并行完成严格 2020 初筛。本批没有新的年度候选。`Alpha271/Alpha272` 的负向日内振幅波动信号较强但方向为负，不满足正向准入；`Alpha277` 最低月度覆盖率仅 `19.998%`；其余因子均未同时通过 mean RankIC、ICIR 和结构覆盖门槛，全部隔离，不进入模型输入。
 
 证据：[`Alpha268/Alpha269`](../../research_v2/artifacts/diagnostics/alpha_268_269_train_2020_quality_v1.json)、
