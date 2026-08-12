@@ -2069,6 +2069,10 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 
 证据：[`Alpha167 范围与市场源诊断`](../../research_v2/artifacts/diagnostics/alpha167_scope_replay_diagnostic_2025-01_v1.json)
 
+对 `Alpha208` 完成了完全脱离 YesLab 存储因子值的 Tushare SH/SZ 重物化验证。使用 4,911 个 SH/SZ 证券、从 2024-09-09 开始的行情历史直接计算 60 日价格统计与 10 日成交量标准差，2025 年得到 mean RankIC `-0.069209`、ICIR `-0.710232`、方向日占比 `78.60%`，与存储因子验证值的差异仅约 `1.9e-6/3.0e-6`。该结果确认 Alpha208 的候选表现可由 Tushare 行情独立复现，并使用了因子信号日及之前的数据；仍不改变正式 9 因子、发布或模型输入。
+
+证据：[`Alpha208 Tushare 重物化验证`](../../research_v2/artifacts/diagnostics/alpha208_tushare_rematerialized_validation_2025_v1.json)
+
 完成最后一个目录因子 `yeslab_0`（`test_factor`）的严格初筛：覆盖率 `99.70%`，冻结负向后的绝对 ICIR 为 `0.471`，低于 `0.50`，因此不进入年度复核或模型输入。至此，487 个目录因子均已有严格质量证据；正式准入集合仍为原有 9 个。
 
 证据：[`Alpha0`](../../research_v2/artifacts/diagnostics/alpha_000_train_2020_quality_v1.json)
