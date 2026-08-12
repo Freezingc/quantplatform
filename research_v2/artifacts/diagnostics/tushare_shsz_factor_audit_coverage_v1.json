@@ -39,6 +39,7 @@
     "reason": "Canonical Tushare rematerialization is predictive in 2025, but fails the strict 2020 absolute ICIR gate and four-window replay still has localized amount-precision mismatches against historical YesLab values.",
     "artifacts": ["tushare_shsz_candidate_401_validation_2025_v1/quality_summary.json", "tushare_shsz_candidate_401_train_2020_v1/quality_summary.json", "alpha401_tushare_train2020_rejection_review_v1.json"]
   },
+  "alpha114_tushare_canonical_followup": {"factor_id": "yeslab_114", "status": "PREDICTIVE_AND_FORMULA_PASS_PENDING_SIMILARITY_AND_MONTHLY_MONITORING_REVIEW", "train": {"mean_rank_ic": -0.0756031939, "icir": -0.5472010451, "strict_annual_abs_icir_pass_years": "4/5"}, "validation": {"mean_rank_ic": -0.0762352620, "icir": -0.5227216040, "status": "PASS"}, "similarity": "PENDING_COMPLETE_TUSHARE_CANONICAL_FULL_DAY_REPLAY", "action": "Do not alter the complete-quality set, formal nine, publication, or model inputs until the Tushare-canonical full-day similarity gate is completed and reviewed.", "artifacts": ["alpha114_tushare_canonical_candidate_review_v1.json", "alpha114_tushare_train_2020_2024_monthly_rank_ic_v1.csv", "alpha114_tushare_validation_2025_monthly_rank_ic_v1.csv"]},
   "industry_scope_followup": {
     "factor_id": "yeslab_357",
     "factor_name": "行业内收益标准化绝对值",

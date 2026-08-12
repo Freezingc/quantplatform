@@ -1596,6 +1596,19 @@ ICIR 为 `0.78321`，方向一致日占比 `78.48%`。
 证据：[`GP_032 Tushare 验证结果`](../../research_v2/artifacts/diagnostics/tushare_shsz_candidate_401_validation_2025_v1/quality_summary.json)、
 [`GP_032 2020 训练拒绝复核`](../../research_v2/artifacts/diagnostics/alpha401_tushare_train2020_rejection_review_v1.json)
 
+### Alpha114 Tushare Canonical 复核
+
+`yeslab_114 / 惊恐波动` 已完成独立 Tushare SH/SZ 重物化训练与验证：2020-2024 aggregate
+mean RankIC/ICIR 为 `-0.07560/-0.54720`，五年同向，严格年度 `|ICIR|>=0.50` 为 `4/5`；独立
+2025 验证为 `-0.07624/-0.52272`，方向一致日占比 `69.55%`。四个既有公式回放窗口均通过。
+
+但月度压力测试显示训练期 `47/60` 月满足 signed mean RankIC 线、验证期仅 `9/12` 月满足；验证
+期 `2025-01/02/04/12` 进入监控。更关键的是，Tushare canonical 对正式九因子的全日相似度尚未
+完成，历史 YesLab 相似度不能替代此门槛。因此 Alpha114 仅记录为“预测性和公式通过、待相似度及
+月度监控审查”，不计入 16 因子完整质量集合、不改变正式 9 因子，也不触发发布或训练。
+
+证据：[`Alpha114 canonical 候选复核`](../../research_v2/artifacts/diagnostics/alpha114_tushare_canonical_candidate_review_v1.json)
+
 ### 行业因子 yeslab_357 定向回放
 
 为补齐代表性候选 `yeslab_357` 的证据链，回放器新增了显式全市场模式，并在 2025-01-02–01-31

@@ -1,0 +1,64 @@
+{
+  "scope": "ALPHA114_TUSHARE_CANONICAL_CANDIDATE_REVIEW_V1",
+  "factor": {
+    "factor_id": "yeslab_114",
+    "factor_name": "惊恐波动",
+    "frozen_direction": -1
+  },
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "market_source": "Tushare.daily",
+  "database_writes": false,
+  "locked_test_read": false,
+  "canonical_train_2020_2024": {
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.0756031939,
+    "icir": -0.5472010451,
+    "signed_mean_rank_ic": 0.0756031939,
+    "directional_day_share": 0.7062706271,
+    "annual": {
+      "2020": {"valid_day_count": 243, "mean_rank_ic": -0.0645386958, "icir": -0.5048541349, "signed_mean_rank_ic": 0.0645386958, "directional_day_share": 0.6707818930},
+      "2021": {"valid_day_count": 243, "mean_rank_ic": -0.0726005206, "icir": -0.5691320388, "signed_mean_rank_ic": 0.0726005206, "directional_day_share": 0.7283950617},
+      "2022": {"valid_day_count": 242, "mean_rank_ic": -0.0845008791, "icir": -0.7136767204, "signed_mean_rank_ic": 0.0845008791, "directional_day_share": 0.7685950413},
+      "2023": {"valid_day_count": 242, "mean_rank_ic": -0.0769807519, "icir": -0.5751253820, "signed_mean_rank_ic": 0.0769807519, "directional_day_share": 0.6776859504},
+      "2024": {"valid_day_count": 242, "mean_rank_ic": -0.0794532510, "icir": -0.4512115505, "signed_mean_rank_ic": 0.0794532510, "directional_day_share": 0.6859504132}
+    },
+    "same_direction_years": 5,
+    "signed_mean_rank_ic_pass_years": 5,
+    "directional_day_share_pass_years": 5,
+    "strict_annual_abs_icir_pass_years": 4
+  },
+  "canonical_validation_2025": {
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.0762352620,
+    "icir": -0.5227216040,
+    "signed_mean_rank_ic": 0.0762352620,
+    "directional_day_share": 0.6954732510,
+    "status": "PASS"
+  },
+  "formula_replay": {
+    "status": "FORMULA_REPLAY_PASS_ALL_WINDOWS",
+    "windows": ["2020-01", "2022-01", "2024-01", "2025-01"]
+  },
+  "monthly_stability": {
+    "rule": {"minimum_signed_mean_rank_ic": 0.02, "minimum_directional_day_share": 0.55, "strict_monthly_abs_icir_monitor": 0.5},
+    "train_2020_2024": {"month_count": 60, "signed_mean_rank_ic_pass_months": 47, "directional_day_share_pass_months": 46, "strict_monthly_abs_icir_pass_months": 32, "watch_month_count": 15, "source": "alpha114_tushare_train_2020_2024_monthly_rank_ic_v1.csv"},
+    "validation_2025": {"month_count": 12, "signed_mean_rank_ic_pass_months": 9, "directional_day_share_pass_months": 8, "strict_monthly_abs_icir_pass_months": 7, "watch_months": ["2025-01", "2025-02", "2025-04", "2025-12"], "source": "alpha114_tushare_validation_2025_monthly_rank_ic_v1.csv"}
+  },
+  "similarity_to_formal_nine": {
+    "status": "PENDING_COMPLETE_TUSHARE_CANONICAL_FULL_DAY_REPLAY",
+    "reason": "The complete ten-factor canonical replay was stopped before output because the shared DolphinDB market read remained pending. Historical YesLab similarity is not a substitute for this gate."
+  },
+  "decision": "PREDICTIVE_AND_FORMULA_PASS_PENDING_SIMILARITY_AND_MONTHLY_MONITORING_REVIEW",
+  "action": "Do not add Alpha114 to the complete-quality set, formal factor set, publication candidates, or model inputs until complete Tushare-canonical similarity against the formal nine is available and reviewed. Any future admission must retain monthly monitoring.",
+  "evidence": [
+    "tushare_shsz_candidate_114_train_2020_v1/quality_summary.json",
+    "tushare_shsz_candidate_114_train_2021_v1/quality_summary.json",
+    "tushare_shsz_candidate_114_train_2022_v1/quality_summary.json",
+    "tushare_shsz_candidate_114_train_2023_v1/quality_summary.json",
+    "tushare_shsz_candidate_114_train_2024_v1/quality_summary.json",
+    "tushare_shsz_candidate_114_validation_2025_v1/quality_summary.json",
+    "formula_replay_consistency_oos19_multiwindow_v1.json"
+  ]
+}
