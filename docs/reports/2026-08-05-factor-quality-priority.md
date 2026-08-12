@@ -2006,6 +2006,14 @@ Alpha97–98 也未通过双重门槛。所有因子均拒绝，不进入年度�
 [`Alpha95/Alpha96`](../../research_v2/artifacts/diagnostics/alpha_095_096_train_2020_quality_v1.json)、
 [`Alpha97/Alpha98`](../../research_v2/artifacts/diagnostics/alpha_097_098_train_2020_quality_v1.json)
 
+第五十五至五十八批 `Alpha115/Alpha122` 已通过四进程并行完成，全部未通过双重预测门槛：Alpha115–118、119–122 均为负向弱信号，
+不进入年度稳定性检验或模型输入。
+
+证据：[`Alpha115/Alpha116`](../../research_v2/artifacts/diagnostics/alpha_115_116_train_2020_quality_v1.json)、
+[`Alpha117/Alpha118`](../../research_v2/artifacts/diagnostics/alpha_117_118_train_2020_quality_v1.json)、
+[`Alpha119/Alpha120`](../../research_v2/artifacts/diagnostics/alpha_119_120_train_2020_quality_v1.json)、
+[`Alpha121/Alpha122`](../../research_v2/artifacts/diagnostics/alpha_121_122_train_2020_quality_v1.json)
+
 第五十批出现新的 Alpha 晋级候选：`yeslab_105` 的源因子名为 Alpha83，2020 mean RankIC/ICIR 为
 `0.04410/0.63338`，最低月度覆盖率 `99.76%`。其 2020–2024 年度方向一致，年度 signed mean RankIC 有 `4/5` 年达标，
 年度正向日占比 `5/5` 年达标，符合主年度稳定性规则；`yeslab_106`（Alpha84）为 `-0.03381/-0.34767`，初筛拒绝。
