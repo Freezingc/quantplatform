@@ -2061,6 +2061,10 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 [`Alpha206/208 训练相似度`](../../research_v2/artifacts/diagnostics/alpha206_208_vs_formal9_train_similarity_2020_2024_v1.csv)、
 [`Alpha206/208 2025 验证`](../../research_v2/artifacts/diagnostics/alpha206_208_validation_2025_v1.json)
 
+随后完成 `Alpha429`（GP_060）的独立 2025 验证。该因子此前已通过 SH/SZ 公式回放并与正式集合保持训练期相似度 `0.744`，但固定训练方向为负时，其验证期 mean RankIC/ICIR 为 `-0.0740/-0.4476`。尽管方向、日占比和 FDR 均通过，绝对 ICIR 低于 `0.50`，因此不进入准入、发布或模型输入。至此，现有年度结构候选中，只有 Alpha208 同时具备可复现、非冗余与独立验证通过证据，仍等待明确准入决定。
+
+证据：[`Alpha429 2025 验证`](../../research_v2/artifacts/diagnostics/alpha429_validation_2025_v1.json)
+
 完成最后一个目录因子 `yeslab_0`（`test_factor`）的严格初筛：覆盖率 `99.70%`，冻结负向后的绝对 ICIR 为 `0.471`，低于 `0.50`，因此不进入年度复核或模型输入。至此，487 个目录因子均已有严格质量证据；正式准入集合仍为原有 9 个。
 
 证据：[`Alpha0`](../../research_v2/artifacts/diagnostics/alpha_000_train_2020_quality_v1.json)
