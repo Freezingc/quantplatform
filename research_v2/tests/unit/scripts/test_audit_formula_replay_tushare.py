@@ -52,6 +52,24 @@ def test_parser_accepts_alpha5_tushare_replay() -> None:
     )
 
 
+def test_normalize_tushare_market_preserves_total_market_value() -> None:
+    raw = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "trade_date": ["20250102"],
+            "open": [10.0],
+            "low": [9.8],
+            "amount": [1_000_000.0],
+            "pct_chg": [1.2],
+            "total_mv": [123_456.78],
+        }
+    )
+
+    result = audit.normalize_tushare_market(raw, codes=("000001.SZ",))
+
+    assert list(result["total_mv"]) == [123_456.78]
+
+
 def test_parser_accepts_alpha31_full_cross_section_replay() -> None:
     args = audit.parse_args(
         [
