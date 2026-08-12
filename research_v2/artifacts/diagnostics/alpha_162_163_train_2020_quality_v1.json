@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_162_163_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_162": {"factor_name": "Alpha94", "valid_day_count": 243, "mean_rank_ic": -0.0323246302, "icir": -0.3137709348, "positive_day_share": 0.3991769547, "finite_ratio": 1.0, "minimum_monthly_finite_ratio": 1.0, "direction": -1, "status": "PREDICTIVE_FAIL"},
+    "yeslab_163": {"factor_name": "Alpha95", "valid_day_count": 243, "mean_rank_ic": -0.0338170400, "icir": -0.2778948998, "positive_day_share": 0.3991769547, "finite_ratio": 1.0, "minimum_monthly_finite_ratio": 1.0, "direction": -1, "status": "PREDICTIVE_FAIL"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Both factors have negative predictive evidence and fail the double predictive threshold."
+}

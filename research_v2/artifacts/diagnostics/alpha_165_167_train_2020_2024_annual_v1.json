@@ -1,0 +1,22 @@
+{
+  "scope": "ALPHA_165_167_TRAIN_2020_2024_ANNUAL_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2024-12-31", "database_writes": false, "locked_test_read": false,
+  "annual_rule": "same direction across 5 years; signed annual mean RankIC >= 0.02 in at least 3/5 years; signed directional day share >= 0.55 in at least 3/5 years",
+  "factors": {
+    "yeslab_165": {"factor_name": "Alpha97", "direction": -1, "annual": {
+      "2020": {"valid_day_count": 243, "mean_rank_ic": -0.0570219030, "icir": -0.5473955257, "signed_mean_rank_ic": 0.0570219030, "signed_directional_day_share": 0.7654320988},
+      "2021": {"valid_day_count": 243, "mean_rank_ic": -0.0328645935, "icir": -0.2663996623, "signed_mean_rank_ic": 0.0328645935, "signed_directional_day_share": 0.6255144033},
+      "2022": {"valid_day_count": 242, "mean_rank_ic": -0.0368761258, "icir": -0.2752283525, "signed_mean_rank_ic": 0.0368761258, "signed_directional_day_share": 0.6074380165},
+      "2023": {"valid_day_count": 242, "mean_rank_ic": -0.0389121017, "icir": -0.3034216768, "signed_mean_rank_ic": 0.0389121017, "signed_directional_day_share": 0.6115702479},
+      "2024": {"valid_day_count": 242, "mean_rank_ic": -0.0265336944, "icir": -0.2132750218, "signed_mean_rank_ic": 0.0265336944, "signed_directional_day_share": 0.5950413223}
+    }, "same_direction_years": 5, "annual_signed_mean_pass_years": 5, "annual_directional_share_pass_years": 5, "strict_annual_abs_icir_pass_years": 1, "annual_stability_status": "PASS_WITH_MONITORING", "action": "Proceed to formula replay and similarity review; do not publish or train yet."},
+    "yeslab_167": {"factor_name": "Alpha99", "direction": 1, "annual": {
+      "2020": {"valid_day_count": 243, "mean_rank_ic": 0.0370379144, "icir": 0.5284643060, "signed_mean_rank_ic": 0.0370379144, "signed_directional_day_share": 0.6913580247},
+      "2021": {"valid_day_count": 243, "mean_rank_ic": 0.0220902570, "icir": 0.3338278883, "signed_mean_rank_ic": 0.0220902570, "signed_directional_day_share": 0.6090534979},
+      "2022": {"valid_day_count": 242, "mean_rank_ic": 0.0398089500, "icir": 0.5720297583, "signed_mean_rank_ic": 0.0398089500, "signed_directional_day_share": 0.7314049587},
+      "2023": {"valid_day_count": 242, "mean_rank_ic": 0.0292275599, "icir": 0.4252199028, "signed_mean_rank_ic": 0.0292275599, "signed_directional_day_share": 0.6487603306},
+      "2024": {"valid_day_count": 242, "mean_rank_ic": 0.0477753457, "icir": 0.5593737660, "signed_mean_rank_ic": 0.0477753457, "signed_directional_day_share": 0.7438016529}
+    }, "same_direction_years": 5, "annual_signed_mean_pass_years": 5, "annual_directional_share_pass_years": 5, "strict_annual_abs_icir_pass_years": 3, "annual_stability_status": "PASS_WITH_MONITORING", "action": "Proceed to formula replay and similarity review; do not publish or train yet."}
+  },
+  "status": "ANNUAL_STABILITY_PASS_NO_PUBLICATION"
+}

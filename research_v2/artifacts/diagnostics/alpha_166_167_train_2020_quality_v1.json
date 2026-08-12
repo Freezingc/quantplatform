@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_166_167_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_166": {"factor_name": "Alpha98", "valid_day_count": 243, "mean_rank_ic": 0.0116324570, "icir": 0.1050456257, "positive_day_share": 0.5349794239, "finite_ratio": 0.9996301731, "minimum_monthly_finite_ratio": 0.9990125158, "direction": 1, "status": "PREDICTIVE_FAIL"},
+    "yeslab_167": {"factor_name": "Alpha99", "valid_day_count": 243, "mean_rank_ic": 0.0370379144, "icir": 0.5284643060, "positive_day_share": 0.6913580247, "finite_ratio": 0.9984319939, "minimum_monthly_finite_ratio": 0.9976449125, "direction": 1, "status": "ANNUAL_STABLE_PROVISIONAL"}
+  },
+  "status": "SCREENED_ANNUAL_FOLLOWUP_REQUIRED", "reason": "Alpha167 passes the 2020 double predictive gate and proceeds to 2020-2024 annual stability; Alpha166 fails predictive thresholds."
+}
