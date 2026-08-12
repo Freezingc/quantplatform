@@ -2072,6 +2072,11 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 
 对三个范围迁移候选之间的全日相似度进一步核验。Alpha381/GP_012 与 Alpha405/GP_036 的训练/验证相似度为 `0.828/0.857`，未触及 `0.90` 硬阈值但应作为同一候选簇监控；Alpha425 与两者的训练/验证相似度均约 `0.56–0.61`。因此，若后续仅审批一个扩展因子，应先评估 Alpha425；若审批两个，优先评估 Alpha425 与 Alpha405 的组合。该建议仅用于降低候选选择的冗余风险，不是准入、权重或训练规则。
 
+对“正式九因子加 Alpha425”的十因子假设池完成预检。全部 `45/45` 条 TRAIN 相似度边齐全、无缺边、无超过 `0.90` 的冗余边，Alpha425 自身预测、年度和范围门槛均为 PASS，结果为 `PASS_WITH_MONITORING`。这只证明候选池在当前规则下没有新的结构性冲突：文件明确标记为 `HYPOTHETICAL_PREFLIGHT_ONLY`，没有准入授权，正式因子数仍为 9，也没有发布或模型训练。
+
+证据：[`Alpha425 十因子假设提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_hypothetical_alpha425_extension_proposal_v1.json)、
+[`Alpha425 十因子假设预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_hypothetical_alpha425_extension_preflight_v1.json)
+
 补齐了先前已完成但未进入正式台账的 `Alpha99/Alpha104` 初筛证据。`Alpha99/100` 覆盖率充足但绝对 ICIR 仅 `0.414/0.028`；`Alpha101/102/103/104` 同时不满足预测门槛，且最低月度覆盖率分别为 `60.98%/47.38%/46.16%/44.47%`。六个因子均不进入年度复核、发布或模型输入。此归档修正将“无诊断证据”的剩余因子数从 `70` 校正为 `64`。
 
 证据：[`Alpha99/Alpha100`](../../research_v2/artifacts/diagnostics/alpha_099_100_train_2020_quality_v1.json)、
