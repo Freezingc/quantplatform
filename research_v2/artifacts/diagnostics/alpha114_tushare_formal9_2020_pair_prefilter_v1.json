@@ -1,0 +1,25 @@
+{
+  "scope": "ALPHA114_TUSHARE_CANONICAL_FORMAL9_2020_PAIR_PREFILTER_V1",
+  "factor_id": "yeslab_114",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "market_source": "Tushare.daily",
+  "period": "2020-01-01/2020-12-31",
+  "valid_day_count": 243,
+  "thresholds": {"redundancy_median_abs_spearman": 0.9, "prefilter_interpretation": "screening_only"},
+  "pair_results": [
+    {"reference_factor_id": "yeslab_380", "median_abs_spearman": 0.6016984401, "max_abs_spearman": 0.691108974, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_431", "median_abs_spearman": 0.51073797, "max_abs_spearman": 0.6010779165, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_437", "median_abs_spearman": 0.4665405697, "max_abs_spearman": 0.6173025054, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_155", "median_abs_spearman": 0.2970044397, "max_abs_spearman": 0.4267133402, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_98", "median_abs_spearman": 0.2231426102, "max_abs_spearman": 0.6507264984, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_94", "median_abs_spearman": 0.2462039893, "max_abs_spearman": 0.6867032687, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_376", "median_abs_spearman": 0.811992166, "max_abs_spearman": 0.8762715887, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_396", "median_abs_spearman": 0.6949388991, "max_abs_spearman": 0.758458167, "valid_day_count": 243},
+    {"reference_factor_id": "yeslab_442", "median_abs_spearman": 0.6523501232, "max_abs_spearman": 0.7396400897, "valid_day_count": 243}
+  ],
+  "summary": {"pair_count": 9, "all_pairs_below_threshold": true, "maximum_median_abs_spearman": 0.811992166, "maximum_median_reference_factor_id": "yeslab_376", "maximum_single_day_abs_spearman": 0.8762715887, "status": "PASS_FIRST_YEAR_PREFILTER_ONLY"},
+  "decision": "Does_not_replace_complete_five_year_Tushare_canonical_similarity_gate",
+  "action": "Keep Alpha114 outside the complete-quality set, formal nine, publication candidates, and model inputs until the full 2020-2024 all-day comparison is completed and reviewed.",
+  "artifacts": ["tushare_shsz_alpha114_vs_380_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_431_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_437_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_155_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_98_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_94_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_376_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_396_train_2020_v1/similarity_summary.json", "tushare_shsz_alpha114_vs_442_train_2020_v1/similarity_summary.json"]
+}
