@@ -1,0 +1,10 @@
+{
+  "scope": "ALPHA_158_159_TRAIN_2020_QUALITY_V1", "market_scope": "SH/SZ", "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return", "period": "2020-01-02/2020-12-31", "minimum_cross_section": 30,
+  "input_source": "YesLab factor_data4 with strict PIT normalization; V2 latest universe and labels", "database_writes": false, "locked_test_read": false,
+  "factors": {
+    "yeslab_158": {"factor_name": "SP历史分位数（2季度）", "valid_day_count": 243, "mean_rank_ic": 0.0220043143, "icir": 0.1786457208, "positive_day_share": 0.5144032922, "finite_ratio": 0.8136402997, "minimum_monthly_finite_ratio": 0.4629940936, "direction": 1, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"},
+    "yeslab_159": {"factor_name": "dv_ttm股息率", "valid_day_count": 243, "mean_rank_ic": 0.0124446359, "icir": 0.0925036294, "positive_day_share": 0.5349794239, "finite_ratio": 0.7300052918, "minimum_monthly_finite_ratio": 0.6713844903, "direction": 1, "status": "PREDICTIVE_FAIL_COVERAGE_REDUCED"}
+  },
+  "status": "SCREENED_NO_NEW_ADMISSION", "reason": "Both factors fail the absolute ICIR 0.50 threshold; coverage is also below 70% at the minimum month."
+}
