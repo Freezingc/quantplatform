@@ -2077,6 +2077,10 @@ Alpha83 的 Tushare SH/SZ 全横截面公式回放行情覆盖完整（`5127` �
 证据：[`Alpha425 十因子假设提案`](../../research_v2/artifacts/diagnostics/tushare_shsz_hypothetical_alpha425_extension_proposal_v1.json)、
 [`Alpha425 十因子假设预检`](../../research_v2/artifacts/diagnostics/tushare_shsz_hypothetical_alpha425_extension_preflight_v1.json)
 
+对 Alpha425 补充了月度压力测试，防止全期 IC 由少数异常月份支撑。2020-2024 的 60 个月中，有 `50/60` 个月满足 signed mean RankIC `>=0.02`，2025 验证期为 `11/12`；表明其候选表现并非集中在少数月份。但训练期有 10 个低强度或方向翻转月份，2025-02 的 signed mean RankIC 仅 `0.00545`、方向日占比 `38.89%`，2025-09 的方向日占比也低于监控线。结论保持“可审议候选，按月监控”，不转为自动准入。
+
+证据：[`Alpha425 月度稳定性审计`](../../research_v2/artifacts/diagnostics/alpha425_tushare_monthly_stability_audit_v1.json)
+
 补齐了先前已完成但未进入正式台账的 `Alpha99/Alpha104` 初筛证据。`Alpha99/100` 覆盖率充足但绝对 ICIR 仅 `0.414/0.028`；`Alpha101/102/103/104` 同时不满足预测门槛，且最低月度覆盖率分别为 `60.98%/47.38%/46.16%/44.47%`。六个因子均不进入年度复核、发布或模型输入。此归档修正将“无诊断证据”的剩余因子数从 `70` 校正为 `64`。
 
 证据：[`Alpha99/Alpha100`](../../research_v2/artifacts/diagnostics/alpha_099_100_train_2020_quality_v1.json)、

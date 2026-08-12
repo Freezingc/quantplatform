@@ -1,0 +1,42 @@
+{
+  "scope": "ALPHA425_TUSHARE_MONTHLY_STABILITY_AUDIT_V1",
+  "factor_id": "yeslab_425",
+  "factor_name": "GP_056",
+  "frozen_direction": -1,
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "market_source": "Tushare.daily and Tushare.daily_basic",
+  "database_writes": false,
+  "locked_test_read": false,
+  "monthly_rule": {
+    "minimum_signed_mean_rank_ic": 0.02,
+    "minimum_directional_day_share": 0.55,
+    "strict_monthly_abs_icir_monitor": 0.5
+  },
+  "train_2020_2024": {
+    "month_count": 60,
+    "signed_mean_rank_ic_pass_months": 50,
+    "directional_day_share_pass_months": 50,
+    "negative_raw_mean_rank_ic_months": 52,
+    "strict_monthly_abs_icir_pass_months": 41,
+    "worst_signed_mean_rank_ic": -0.0812002887,
+    "worst_directional_day_share": 0.2272727273,
+    "watch_months": ["2020-01", "2020-10", "2020-12", "2021-07", "2021-10", "2022-03", "2022-07", "2022-10", "2023-03", "2024-01"],
+    "source": "alpha425_tushare_train_2020_2024_monthly_rank_ic_v1.csv"
+  },
+  "validation_2025": {
+    "month_count": 12,
+    "signed_mean_rank_ic_pass_months": 11,
+    "directional_day_share_pass_months": 10,
+    "negative_raw_mean_rank_ic_months": 12,
+    "strict_monthly_abs_icir_pass_months": 10,
+    "worst_signed_mean_rank_ic": 0.0054471811,
+    "worst_directional_day_share": 0.3888888889,
+    "watch_months": ["2025-02", "2025-09"],
+    "source": "alpha425_tushare_validation_2025_monthly_rank_ic_v1.csv"
+  },
+  "status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING",
+  "conclusion": "The candidate's aggregate quality is not driven by a small number of strong months: most training and validation months clear the signed mean RankIC rule. Direction reversals and weak months are present, so a future admitted version requires monthly monitoring rather than unconditional use. This audit neither grants admission nor changes the formal nine-factor set.",
+  "action": "If Alpha425 receives explicit admission, monitor each completed calendar month. Send the factor to manual review if signed monthly mean RankIC is below 0.02 or directional-day share is below 0.55; do not revise the historical factor values."
+}
