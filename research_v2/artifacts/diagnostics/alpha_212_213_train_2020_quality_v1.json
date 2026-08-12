@@ -1,0 +1,7 @@
+{
+  "scope":"ALPHA_212_213_TRAIN_2020_QUALITY_V1","market_scope":"SH/SZ","excluded_exchanges":["BJ"],"label":"raw 5-trading-day forward adjusted return","period":"2020-01-02/2020-12-31","minimum_cross_section":30,"input_source":"YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels","database_writes":false,"locked_test_read":false,
+  "factors":{
+    "yeslab_212":{"factor_name":"量价齐飞-排名","valid_day_count":243,"mean_rank_ic":-0.0468851405,"icir":-0.5230672209,"positive_day_share":0.3168724280,"finite_ratio":0.9503018750,"minimum_monthly_finite_ratio":0.6421172194,"direction":-1,"status":"PREDICTIVE_FAIL_COVERAGE_FAIL"},
+    "yeslab_213":{"factor_name":"量价齐飞加换手率","valid_day_count":243,"mean_rank_ic":-0.0743949589,"icir":-0.4898605060,"positive_day_share":0.2633744856,"finite_ratio":0.9503018750,"minimum_monthly_finite_ratio":0.6421172194,"direction":-1,"status":"PREDICTIVE_FAIL_COVERAGE_FAIL"}
+  },"status":"SCREENED_NO_NEW_ADMISSION","reason":"Both factors fail the structural coverage gate; Alpha213 also misses the ICIR gate."
+}
