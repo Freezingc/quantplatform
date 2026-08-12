@@ -1,0 +1,84 @@
+{
+  "scope": "TUSHARE_SHSZ_SCOPE_TRANSITION_MONTHLY_STABILITY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "market_source": "Tushare.daily and Tushare.daily_basic where required",
+  "database_writes": false,
+  "locked_test_read": false,
+  "monthly_rule": {
+    "minimum_signed_mean_rank_ic": 0.02,
+    "minimum_directional_day_share": 0.55,
+    "strict_monthly_abs_icir_monitor": 0.5,
+    "watch_definition": "A month enters watch_months if either signed mean RankIC or directional-day share is below its minimum."
+  },
+  "source_daily_rank_ic": {
+    "train_2020_2024": "tushare_shsz_rematerialized_train_16_quality_v2/daily_rank_ic.csv",
+    "validation_2025": "tushare_shsz_rematerialized_validation_16_quality_v2/daily_rank_ic.csv"
+  },
+  "candidates": [
+    {
+      "factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "frozen_direction": -1,
+      "train_2020_2024": {
+        "month_count": 60,
+        "signed_mean_rank_ic_pass_months": 52,
+        "directional_day_share_pass_months": 51,
+        "strict_monthly_abs_icir_pass_months": 39,
+        "watch_months": ["2020-01", "2020-10", "2020-12", "2021-07", "2021-10", "2022-10", "2023-03", "2024-01", "2024-02"]
+      },
+      "validation_2025": {
+        "month_count": 12,
+        "signed_mean_rank_ic_pass_months": 12,
+        "directional_day_share_pass_months": 12,
+        "strict_monthly_abs_icir_pass_months": 11,
+        "watch_months": []
+      },
+      "monthly_stability_status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING"
+    },
+    {
+      "factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "frozen_direction": -1,
+      "train_2020_2024": {
+        "month_count": 60,
+        "signed_mean_rank_ic_pass_months": 51,
+        "directional_day_share_pass_months": 50,
+        "strict_monthly_abs_icir_pass_months": 45,
+        "watch_months": ["2020-01", "2020-06", "2020-09", "2020-10", "2020-12", "2021-01", "2021-05", "2021-07", "2021-10", "2023-03", "2024-01", "2024-02"]
+      },
+      "validation_2025": {
+        "month_count": 12,
+        "signed_mean_rank_ic_pass_months": 11,
+        "directional_day_share_pass_months": 11,
+        "strict_monthly_abs_icir_pass_months": 9,
+        "watch_months": ["2025-12"]
+      },
+      "monthly_stability_status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING"
+    },
+    {
+      "factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "frozen_direction": -1,
+      "train_2020_2024": {
+        "month_count": 60,
+        "signed_mean_rank_ic_pass_months": 50,
+        "directional_day_share_pass_months": 50,
+        "strict_monthly_abs_icir_pass_months": 41,
+        "watch_month_count": 12
+      },
+      "validation_2025": {
+        "month_count": 12,
+        "signed_mean_rank_ic_pass_months": 11,
+        "directional_day_share_pass_months": 10,
+        "strict_monthly_abs_icir_pass_months": 10,
+        "watch_months": ["2025-02", "2025-09"]
+      },
+      "monthly_stability_status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING",
+      "detailed_audit": "alpha425_tushare_monthly_stability_audit_v1.json"
+    }
+  ],
+  "comparative_interpretation": "Alpha405 has the strongest monthly validation stability: all twelve 2025 months clear both primary monitoring rules. Alpha381 has one weak validation month and elevated similarity to Alpha405. Alpha425 has two weak validation months but remains materially less similar to the other two candidates. Monthly stability is an additional risk signal; it does not supersede similarity, grant admission, or define model weights.",
+  "action": "Keep the formal nine unchanged. Any future admission must use an isolated SH/SZ Tushare-canonical version, retain monthly monitoring, and require explicit approval."
+}
