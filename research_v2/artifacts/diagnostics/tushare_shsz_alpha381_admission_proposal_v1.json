@@ -1,0 +1,52 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA381_ADMISSION_PROPOSAL_V1",
+  "proposal_type": "SINGLE_CANDIDATE_READ_ONLY_PREFLIGHT",
+  "market_scope": ["SH", "SZ"],
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d",
+  "train_window": "2020-01-01/2024-12-31",
+  "validation_window": "2025-01-01/2025-12-31",
+  "similarity_threshold": 0.9,
+  "similarity_periods": ["train", "validation"],
+  "admission_authority": "NOT_GRANTED",
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "database_writes": false,
+  "locked_test_read": false,
+  "candidates": [
+    {"factor_id": "yeslab_380", "factor_name": "GP_011", "version_scope": "existing_tushare_canonical", "predictive_gate": "PASS", "annual_stability_gate": "MONITOR", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_431", "factor_name": "GP_062", "version_scope": "existing_tushare_canonical", "predictive_gate": "PASS", "annual_stability_gate": "MONITOR", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_437", "factor_name": "GP_068", "version_scope": "existing_tushare_canonical", "predictive_gate": "PASS", "annual_stability_gate": "MONITOR", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_155", "factor_name": "跳空去均值绝对值", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_98", "factor_name": "日内反转-波动翻转", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_94", "factor_name": "日间反转-波动翻转", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "MONITOR", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_376", "factor_name": "GP_007", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_396", "factor_name": "GP_027", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {"factor_id": "yeslab_442", "factor_name": "GP_073", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
+    {
+      "factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "version_scope": "hypothetical_new_shsz_tushare_rematerialized_v1",
+      "source_transition": "BJ-inclusive historical YesLab values are excluded",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "PASS",
+      "similarity_gate": "PASS_WITH_ELEVATED_PAIR_MONITOR",
+      "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW"
+    }
+  ],
+  "candidate_pair_note": {
+    "yeslab_381_yeslab_405": {
+      "train_median_abs_spearman": 0.8281139746,
+      "validation_median_abs_spearman": 0.8565664973,
+      "threshold": 0.9,
+      "status": "ELEVATED_PAIR_REDUNDANCY_MONITOR",
+      "note": "Alpha405 is not in this ten-factor preflight; the pair is retained as a separate scope-transition risk because it is the nearest candidate neighbor."
+    }
+  },
+  "required_before_any_admission": [
+    "Explicit user admission decision for yeslab_381",
+    "Creation of an isolated SH/SZ Tushare-canonical factor version",
+    "A new non-hypothetical admission preflight referencing that version",
+    "Retain elevated pair monitoring against yeslab_405 if both candidates are ever considered together"
+  ]
+}
