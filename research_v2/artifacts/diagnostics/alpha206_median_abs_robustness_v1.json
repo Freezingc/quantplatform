@@ -1,0 +1,148 @@
+{
+  "scope": "ALPHA206_MEDIAN_ABS_ROBUSTNESS_AUDIT_V1",
+  "candidate_id": "yeslab_206_median_abs_v2",
+  "source_factor_id": "yeslab_206",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1 raw five-trading-day forward return",
+  "method": "Leave-one-calendar-month stress, SH/SZ equal-weight market trend/volatility states, and calendar-month block bootstrap.",
+  "seed": 20260813,
+  "bootstrap_replicates": 10000,
+  "thresholds": {
+    "minimum_signed_mean_rank_ic": 0.02,
+    "minimum_signed_icir": 0.5
+  },
+  "train_2020_2024": {
+    "leave_one_month": {
+      "baseline": {
+        "valid_day_count": 1212,
+        "signed_mean_rank_ic": 0.040849524186372395,
+        "signed_icir": 0.5605326518505653,
+        "directional_day_share": 0.7417491749174917
+      },
+      "month_count": 60,
+      "minimum_leave_one_month_signed_mean_rank_ic": 0.039798545156374,
+      "minimum_leave_one_month_signed_icir": 0.5484296252906099,
+      "worst_signed_mean_exclusion": "2024-11",
+      "worst_icir_exclusion": "2022-05",
+      "status": "PASS"
+    },
+    "regime": {
+      "trend": {
+        "nonpositive": {
+          "valid_day_count": 491,
+          "signed_mean_rank_ic": 0.04082098392110379,
+          "signed_icir": 0.5857790671324707,
+          "directional_day_share": 0.7474541751527495
+        },
+        "positive": {
+          "valid_day_count": 721,
+          "signed_mean_rank_ic": 0.04086896006743604,
+          "signed_icir": 0.5447845310679237,
+          "directional_day_share": 0.7378640776699029
+        }
+      },
+      "volatility": {
+        "high": {
+          "valid_day_count": 612,
+          "signed_mean_rank_ic": 0.04781846390758923,
+          "signed_icir": 0.6504929595549583,
+          "directional_day_share": 0.7712418300653595
+        },
+        "low": {
+          "valid_day_count": 600,
+          "signed_mean_rank_ic": 0.033741205670731224,
+          "signed_icir": 0.47132741803888545,
+          "directional_day_share": 0.7116666666666667
+        }
+      }
+    },
+    "month_block_bootstrap": {
+      "valid_day_count": 1212,
+      "signed_mean_rank_ic": 0.040849524186372395,
+      "signed_icir": 0.5605326518505653,
+      "directional_day_share": 0.7417491749174917,
+      "month_block_count": 60,
+      "bootstrap_replicates": 10000,
+      "ci95": [
+        0.03374018293462404,
+        0.047734021805425055
+      ],
+      "probability_signed_mean_positive": 1.0,
+      "probability_signed_mean_at_least_0_02": 1.0
+    }
+  },
+  "validation_2025": {
+    "leave_one_month": {
+      "baseline": {
+        "valid_day_count": 243,
+        "signed_mean_rank_ic": 0.05046043666518205,
+        "signed_icir": 0.7332265079181722,
+        "directional_day_share": 0.7777777777777778
+      },
+      "month_count": 12,
+      "minimum_leave_one_month_signed_mean_rank_ic": 0.04303344537288215,
+      "minimum_leave_one_month_signed_icir": 0.6567964137486397,
+      "worst_signed_mean_exclusion": "2025-07",
+      "worst_icir_exclusion": "2025-07",
+      "status": "PASS"
+    },
+    "regime": {
+      "trend": {
+        "nonpositive": {
+          "valid_day_count": 66,
+          "signed_mean_rank_ic": 0.027174413137501602,
+          "signed_icir": 0.41301501065227886,
+          "directional_day_share": 0.6515151515151515
+        },
+        "positive": {
+          "valid_day_count": 177,
+          "signed_mean_rank_ic": 0.059143360692452726,
+          "signed_icir": 0.8687913767392543,
+          "directional_day_share": 0.8248587570621468
+        }
+      },
+      "volatility": {
+        "high": {
+          "valid_day_count": 85,
+          "signed_mean_rank_ic": 0.03266377354447527,
+          "signed_icir": 0.5096519595972906,
+          "directional_day_share": 0.6941176470588235
+        },
+        "low": {
+          "valid_day_count": 158,
+          "signed_mean_rank_ic": 0.06003459087568887,
+          "signed_icir": 0.8630339594944361,
+          "directional_day_share": 0.8227848101265823
+        }
+      }
+    },
+    "month_block_bootstrap": {
+      "valid_day_count": 243,
+      "signed_mean_rank_ic": 0.05046043666518205,
+      "signed_icir": 0.7332265079181722,
+      "directional_day_share": 0.7777777777777778,
+      "month_block_count": 12,
+      "bootstrap_replicates": 10000,
+      "ci95": [
+        0.029353961651699154,
+        0.0721191752829216
+      ],
+      "probability_signed_mean_positive": 1.0,
+      "probability_signed_mean_at_least_0_02": 0.9991
+    }
+  },
+  "decision": "ROBUSTNESS_MONITOR_OR_FAIL_PENDING_REVIEW",
+  "checks": {
+    "leave_one_month_pass": true,
+    "regime_pass": false,
+    "month_block_bootstrap_pass": true
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "publication_status": "NOT_PUBLISHED",
+  "formal_factor_set_unchanged": true,
+  "model_training_started": false
+}

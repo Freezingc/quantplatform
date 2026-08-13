@@ -27,9 +27,10 @@
       "validation_2025": {"valid_day_count": 243, "mean_rank_ic": -0.0504604367, "icir": -0.7332265079, "directional_day_share": 0.7777777778, "signed_mean_rank_ic": 0.0504604367, "signed_mean_pass_months": "10/12"},
       "similarity_to_formal_nine": {"train_max_median_abs_spearman": 0.2722883956, "train_max_reference_factor_id": "yeslab_396", "train_valid_days": "9/9 pairs at 1212", "validation_2025_max_median_abs_spearman": 0.2762651265, "validation_2025_max_reference_factor_id": "yeslab_396", "validation_valid_days": "9/9 pairs at 243", "threshold": 0.9, "status": "NON_REDUNDANT"},
       "formula_and_version_requirement": "This is a new isolated version and must never be mixed with historical yeslab_206 values. It uses Tushare daily vol, complete V2 SH/SZ universe, and a 60-day rolling median denominator.",
-      "review_disposition": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
-      "reason": "Median-based volume baseline improves Alpha206 to 4/5 strict annual ICIR passes and clears the 2025 validation double gate; full training and 2025 validation similarity to all formal nine factors remain below 0.90 with complete date coverage.",
-      "artifacts": ["alpha206_volume_variants_2020_2025_v1/quality_summary.json", "alpha206_median_abs_formal9_similarity_2020_2024_v1.json", "alpha206_median_abs_formal9_similarity_2020_2024_v1.csv", "alpha206_median_abs_formal9_similarity_2025_v1.json", "alpha206_median_abs_formal9_similarity_2025_v1.csv"]
+      "review_disposition": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
+      "reason": "Median-based volume baseline improves Alpha206 to 4/5 strict annual ICIR passes and clears the 2025 validation double gate; full training and 2025 validation similarity to all formal nine factors remain below 0.90 with complete date coverage. Robustness passes leave-one-month and month-block bootstrap checks, but training low-volatility ICIR is 0.4713 and 2025 nonpositive-trend ICIR is 0.4130, so admission requires an explicit regime monitor.",
+      "robustness": {"artifact": "alpha206_median_abs_robustness_v1.json", "leave_one_month": "PASS", "month_block_bootstrap": "PASS", "regime_status": "REGIME_SENSITIVE_MONITOR", "train_low_volatility_signed_icir": 0.4713274180, "validation_nonpositive_trend_signed_icir": 0.4130150107},
+      "artifacts": ["alpha206_volume_variants_2020_2025_v1/quality_summary.json", "alpha206_median_abs_formal9_similarity_2020_2024_v1.json", "alpha206_median_abs_formal9_similarity_2020_2024_v1.csv", "alpha206_median_abs_formal9_similarity_2025_v1.json", "alpha206_median_abs_formal9_similarity_2025_v1.csv", "alpha206_median_abs_robustness_v1.json"]
     },
     {
       "priority": 1,
