@@ -142,6 +142,16 @@ def load_quality_summaries(paths: list[Path] | tuple[Path, ...]) -> dict[str, di
     summaries: dict[str, dict[str, Any]] = {}
     for path in paths:
         data = json.loads(path.read_text())
+        if isinstance(data, dict) and isinstance(data.get("factor"), dict):
+            factor_id = data["factor"].get("factor_id")
+            train = data.get("canonical_train_2020_2024")
+            validation = data.get("canonical_validation_2025")
+            if factor_id and isinstance(train, dict) and isinstance(validation, dict):
+                summaries[str(factor_id)] = {
+                    "factor_id": str(factor_id),
+                    "train_icir": train.get("icir"),
+                    "validation_icir": validation.get("icir"),
+                }
         for summary in data.get("rows", []) if isinstance(data, dict) else []:
             if isinstance(summary, dict) and "factor_id" in summary:
                 summaries[str(summary["factor_id"])] = dict(summary)
