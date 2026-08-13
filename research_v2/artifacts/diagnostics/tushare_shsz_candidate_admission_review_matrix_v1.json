@@ -58,8 +58,9 @@
       "similarity_to_formal_nine": {"train_max_median_abs_spearman": 0.6945446503, "validation_max_median_abs_spearman": 0.7258978755, "status": "NON_REDUNDANT"},
       "monthly_monitoring": {"train_watch_month_count": 12, "validation_watch_months": ["2025-02", "2025-09"], "validation_primary_rule_pass_months": "11/12 signed mean; 10/12 directional share", "status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING"},
       "formula_and_version_requirement": "Historical stored values have a BJ-inclusive source scope and cannot be mixed with the canonical SH/SZ panel. Any admission requires an isolated Tushare-canonical factor version.",
-      "review_disposition": "RECOMMEND_SECOND_EXPLICIT_REVIEW",
-      "reason": "Predictive evidence is strong, leave-one-month validation ICIR remains 0.7910, its 2025 month-block bootstrap mean RankIC CI95 is [0.0710, 0.1202], and it remains distinct from Alpha405, enabling a diversified two-factor review if both are explicitly approved; retain a training high-volatility ICIR monitor."
+      "review_disposition": "RECOMMEND_SECOND_EXPLICIT_REVIEW_SCOPE_BLOCKED",
+      "admission_preflight": {"artifact": "tushare_shsz_alpha425_admission_preflight_v1.json", "status": "FAIL_SCOPE_TRANSITION_PENDING", "required_pair_count": 90, "observed_pair_count": 90, "missing_pairs": 0, "pair_failures": 0, "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW", "quality_status": "PASS", "candidate_pair_with_alpha405": {"train_median_abs_spearman": 0.5951888835, "validation_median_abs_spearman": 0.6078935458, "status": "PAIR_UNIQUE"}},
+      "reason": "Predictive evidence is strong, leave-one-month validation ICIR remains 0.7910, its 2025 month-block bootstrap mean RankIC CI95 is [0.0710, 0.1202], and it remains distinct from Alpha405, enabling a diversified two-factor review if both are explicitly approved; retain a training high-volatility ICIR monitor. The single-candidate preflight confirms all 90 train/validation similarity edges and quality checks, but blocks admission until an isolated SH/SZ Tushare-canonical version is explicitly approved."
     },
     {
       "priority": 3,
