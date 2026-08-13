@@ -308,10 +308,11 @@
     "factor_names": ["Alpha5", "Alpha6"],
     "period": "2020-01-02/2020-12-31",
     "results": {
-      "yeslab_5": {"mean_rank_ic": 0.0345952603, "icir": 0.4741665363, "minimum_monthly_finite_ratio": 0.8622834572, "status": "PREDICTIVE_PASS_FORMULA_REPLAY_PENDING"},
+      "yeslab_5": {"mean_rank_ic": 0.0345952603, "icir": 0.4741665363, "minimum_monthly_finite_ratio": 0.8622834572, "status": "CANONICAL_REMATERIALIZATION_REJECT_2020_PREDICTIVE_GATE"},
       "yeslab_6": {"mean_rank_ic": 0.008757106, "icir": 0.0806283419, "minimum_monthly_finite_ratio": 0.9983249026, "status": "PREDICTIVE_WEAK"}
     },
-    "action": "Keep Alpha5 isolated until its Tushare market-coverage gap is resolved, then promote it to annual stability. Reject Alpha6.",
+    "canonical_tushare_shsz_rematerialization": {"period": "2020-01-02/2020-12-31", "market_source": "Tushare.daily", "excluded_exchanges": ["BJ"], "mean_rank_ic": 0.0345952603, "icir": 0.4741665363, "directional_day_share": 0.6872427984, "status": "REJECT_2020_PREDICTIVE_GATE", "artifact": "tushare_shsz_alpha5_rematerialization_audit_v1.json"},
+    "action": "Canonical SH/SZ rematerialization resolves the historical Tushare market-coverage comparison limitation but rejects Alpha5 for failing the unchanged 2020 ICIR gate. Reject Alpha6.",
     "artifact": "alpha_005_006_train_2020_quality_v1.json",
     "formula_replay": {
       "window": "2025-01-02/2025-01-31",
