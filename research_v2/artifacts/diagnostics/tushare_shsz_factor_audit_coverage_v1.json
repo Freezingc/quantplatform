@@ -192,9 +192,10 @@
       "yeslab_219": {"mean_rank_ic": 0.0323422992, "icir": 0.4293529841, "minimum_monthly_finite_ratio": 0.6077363216},
       "yeslab_220": {"mean_rank_ic": 0.0520630379, "icir": 0.4368774812, "minimum_monthly_finite_ratio": 0.6022521617}
     },
-    "action": "Repair or explicitly model early-period PIT financial availability before any annual stability or validation expansion.",
+    "action": "Do not expand annual stability or validation until the confirmed PIT financial materialization-path defect is repaired in a new derived snapshot and independently validated.",
     "artifact": "financial_cfoa_roa_train_2020_quality_v1.json",
-    "availability_diagnostic_artifact": "financial_cfoa_roa_availability_2020_v1.json"
+    "availability_diagnostic_artifact": "financial_cfoa_roa_availability_2020_v1.json",
+    "pit_source_path_audit_artifact": "financial_pit_source_path_audit_v1.json"
   },
   "financial_growth_followup": {
     "factor_ids": ["yeslab_225", "yeslab_226"],

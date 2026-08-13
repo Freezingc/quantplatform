@@ -1,0 +1,63 @@
+{
+  "scope": "FINANCIAL_PIT_SOURCE_PATH_AUDIT_V1",
+  "market_scope": "SH/SZ",
+  "investigation_period": "2019-01-01/2020-12-31",
+  "database_writes": false,
+  "locked_test_read": false,
+  "purpose": "Determine whether early-2020 financial-factor coverage failures originate in source availability or the current financial event-to-daily materialization path.",
+  "observed_source_evidence": {
+    "financial_metrics_table_2020": {
+      "event_rows": 36895,
+      "unique_ts_codes": 4696,
+      "announcement_date_range": "2020-01-03/2020-12-31",
+      "report_period_range": "2016-12-31/2020-09-30",
+      "roa_finite_ratio": 0.9775579347,
+      "roe_finite_ratio": 0.9953652256,
+      "same_ts_code_announcement_date_groups": 14803,
+      "groups_with_multiple_report_periods": 2759,
+      "groups_with_multiple_update_versions": 14225,
+      "rows_collapsed_by_ts_code_announcement_date_key": 22092
+    },
+    "financial_metrics_pre2020_latest": {
+      "latest_event_ts_codes": 4377,
+      "roa_finite_ratio": 0.9682430889,
+      "roe_finite_ratio": 0.9910897875,
+      "stale_over_180_calendar_days_at_2020_01_02": 132
+    },
+    "cfoa_source_inputs_pre2020": {
+      "balance_sheet": {
+        "event_rows": 23217,
+        "unique_ts_codes": 4253,
+        "latest_all_required_fields_finite": 4135,
+        "stale_over_180_calendar_days_at_2020_01_02": 179
+      },
+      "cashflow_table": {
+        "event_rows": 23993,
+        "unique_ts_codes": 4218,
+        "latest_all_required_fields_finite": 4218,
+        "stale_over_180_calendar_days_at_2020_01_02": 196
+      },
+      "all_required_input_intersection": 4118
+    },
+    "existing_factor_output": {
+      "source_table": "YesLab.factor_data5",
+      "factors": {
+        "yeslab_219_CFOA": {"minimum_monthly_finite_ratio": 0.6077363216},
+        "yeslab_220_ROA": {"minimum_monthly_finite_ratio": 0.6022521617}
+      }
+    }
+  },
+  "root_cause": {
+    "status": "MATERIALIZATION_PATH_DEFECT_CONFIRMED",
+    "conclusion": "The low early-2020 factor_data5 coverage cannot be attributed to wholesale absence of historical financial events. The current DataFetcher financial paths query by ann_date, collapse same ts_code/ann_date records by end_date, make events effective on the announcement date, and forward-fill without an explicit event-version selection or staleness contract. This conflicts with the established PIT availability module, which makes a fundamental event available on the next trading day and expires it after bounded staleness."
+  },
+  "required_repair_contract": {
+    "source_grain": "ts_code, report_period(end_date), ann_date, update_flag or stable source revision identifier",
+    "effective_date": "next open-market day after ann_date",
+    "same_day_selection": "deterministically select the latest report_period, then the latest source revision, before expansion",
+    "staleness": "exclude values older than 180 calendar days from their effective date unless an explicitly versioned factor contract specifies another limit",
+    "materialization": "write only to a new derived PIT financial snapshot/table; leave existing YesLab source tables unchanged",
+    "validation": "compare event counts, selected revisions, effective dates, staleness exclusions, monthly cross-sectional coverage, and fresh 2020-2025 fixed-direction RankIC before any admission review"
+  },
+  "action": "Do not reconsider the eight coverage-conditional financial factors until a versioned derived PIT financial snapshot is implemented and independently validated. This audit does not alter the formal factor set, publication status, database tables, or model inputs."
+}
