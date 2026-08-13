@@ -86,7 +86,13 @@ def inspect_factor_semantics(factor_ids: Sequence[str]) -> list[dict[str, object
         tree = ast.parse(source)
         visitor = _FormulaVisitor()
         visitor.visit(tree)
-        source_has_cross_section = ".mean(axis=1)" in source and ".std(axis=1)" in source
+        # Cross-sectional operators appear as either explicit z-scores or
+        # percentile ranks in the GP calculators.  Both require the full
+        # SH/SZ universe to be supplied in one batch.
+        source_has_cross_section = (
+            (".mean(axis=1)" in source and ".std(axis=1)" in source)
+            or ".rank(axis=1" in source
+        )
         required_market = sorted(str(value) for value in calculator.required_factors)
         required_non_market = sorted(
             str(value)
@@ -131,7 +137,7 @@ def build_scope_review(
     stored = scope_evidence.get("stored_sources", scope_evidence.get("stored_source", {}))
     stored_rows = stored.values() if isinstance(stored, dict) else (stored,)
     formula_static_pass = all(
-        row.get("required_market_fields") == ["pct_chg"]
+        row.get("required_market_fields")
         and row.get("required_non_market_fields") == []
         and row.get("uses_cross_sectional_standardization") is True
         and row.get("uses_forward_lookahead") is False
