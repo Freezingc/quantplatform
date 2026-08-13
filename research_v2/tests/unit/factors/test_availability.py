@@ -68,3 +68,28 @@ def test_fundamental_factor_becomes_available_on_next_trading_day_and_expires() 
 
     assert result["signal_date"].tolist() == [date(2025, 3, 31), date(2025, 9, 26)]
     assert result["stale_days"].tolist() == [0, 179]
+
+
+def test_fundamental_event_prefers_latest_report_period_before_revision() -> None:
+    calendar = _calendar()
+    events = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "report_period": [date(2024, 9, 30), date(2024, 12, 31)],
+            "ann_date": [date(2025, 3, 28), date(2025, 3, 28)],
+            "raw_value": [1.0, 2.0],
+            "source_revision_id": ["z-earlier-period", "a-later-period"],
+        }
+    )
+    universe = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 3, 31)],
+            "ts_code": ["000001.SZ"],
+        }
+    )
+
+    result = expand_fundamental_events(events, universe, calendar)
+
+    assert result.loc[0, "report_period"] == date(2024, 12, 31)
+    assert result.loc[0, "raw_value"] == 2.0
+    assert result.loc[0, "source_revision_id"] == "a-later-period"
