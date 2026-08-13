@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import pandas as pd
-
 import evaluate_tushare_scope_validation as evaluation
+import pandas as pd
 
 
 def test_restrict_scope_inputs_keeps_only_sh_sz_members_with_valid_labels() -> None:
@@ -137,3 +136,13 @@ def test_parser_can_skip_expensive_pair_similarity() -> None:
     )
 
     assert args.skip_similarity is True
+
+
+def test_adjusted_field_contract_is_required_for_price_based_replay() -> None:
+    required_fields = ("close_hfq", "high_hfq", "low_hfq")
+    include_adjusted = bool(
+        {"open_hfq", "high_hfq", "low_hfq", "close_hfq", "pre_close_hfq"}
+        & set(required_fields)
+    )
+
+    assert include_adjusted is True

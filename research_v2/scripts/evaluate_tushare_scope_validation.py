@@ -16,10 +16,9 @@ from datetime import date
 from itertools import combinations
 from pathlib import Path
 
+import audit_formula_replay_consistency as replay
 import numpy as np
 import pandas as pd
-
-import audit_formula_replay_consistency as replay
 from audit_formula_replay_tushare import (
     TushareMarketSession,
     _calculator_market_start,
@@ -28,6 +27,7 @@ from audit_formula_replay_tushare import (
     _query_open_dates,
     required_market_fields,
 )
+
 from research_v2.compact.publisher import read_latest_partition
 from research_v2.db.session import V2WriteSession
 
@@ -250,7 +250,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--factor-id", action="append")
     parser.add_argument("--stored-factor-id", action="append")
     parser.add_argument("--direction-artifact", type=Path, default=DEFAULT_DIRECTION_ARTIFACT)
-    parser.add_argument("--cache-dir", type=Path, default=Path("research_v2/artifacts/tushare_cache"))
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        default=Path("research_v2/artifacts/tushare_cache"),
+    )
     parser.add_argument(
         "--skip-similarity",
         action="store_true",
@@ -286,6 +290,10 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
     open_dates = _query_open_dates(client, market_start, args.end)
     required_fields = required_market_fields(definitions)
     include_daily_basic = "turnover_rate" in required_fields
+    include_adjusted_fields = bool(
+        {"open_hfq", "high_hfq", "low_hfq", "close_hfq", "pre_close_hfq"}
+        & set(required_fields)
+    )
     market = _fetch_tushare_market(
         codes,
         market_start,
@@ -294,6 +302,7 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
         open_dates=open_dates,
         cache_dir=args.cache_dir,
         include_daily_basic=include_daily_basic,
+        include_adjusted_fields=include_adjusted_fields,
     )
     directions = _load_directions(args.direction_artifact, args.factor_id)
     daily_parts: list[pd.DataFrame] = []

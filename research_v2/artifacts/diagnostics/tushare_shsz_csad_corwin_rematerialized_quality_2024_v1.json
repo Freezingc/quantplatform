@@ -1,0 +1,58 @@
+{
+  "scope": "TUSHARE_SHSZ_CSAD_CORWIN_REMATERIALIZED_QUALITY_2024_V1",
+  "market_scope": ["SH", "SZ"],
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "period": "2024-01-02/2024-12-31",
+  "market_source": "Tushare.daily + Tushare.adj_factor",
+  "universe": {"code_count": 4882, "market_start": "2023-06-07", "locked_test_read": false},
+  "factors": {
+    "yeslab_484": {
+      "factor_name": "羊群效应_CSAD波动率21",
+      "frozen_direction": -1,
+      "valid_day_count": 242,
+      "mean_rank_ic": -0.0822372864,
+      "icir": -0.5406585809,
+      "signed_mean_rank_ic": 0.0822372864,
+      "signed_icir": 0.5406585809,
+      "directional_day_share": 0.7066115702,
+      "annual_status": "ONE_YEAR_DOUBLE_GATE_PASS_CURRENT_TUSHARE_SCOPE"
+    },
+    "yeslab_485": {
+      "factor_name": "CS价差_日频",
+      "frozen_direction": 1,
+      "valid_day_count": 242,
+      "mean_rank_ic": 0.0564288138,
+      "icir": 0.3360587998,
+      "signed_mean_rank_ic": 0.0564288138,
+      "signed_icir": 0.3360587998,
+      "directional_day_share": 0.6942148760,
+      "annual_status": "ONE_YEAR_ICIR_FAIL"
+    },
+    "yeslab_487": {
+      "factor_name": "CS价差_21日标准差",
+      "frozen_direction": -1,
+      "valid_day_count": 242,
+      "mean_rank_ic": -0.0733638382,
+      "icir": -0.2991185587,
+      "signed_mean_rank_ic": 0.0733638382,
+      "signed_icir": 0.2991185587,
+      "directional_day_share": 0.6446280992,
+      "annual_status": "ONE_YEAR_ICIR_FAIL"
+    }
+  },
+  "formula_replay_context": {
+    "source_internal_hfq_identity": "PASS_WITHIN_1E-5",
+    "2024_january_cross_source_replay": {
+      "yeslab_485_mismatch_rows": 1088,
+      "yeslab_487_mismatch_rows": 668,
+      "max_abs_factor_value_difference": {"yeslab_485": 0.0000022515, "yeslab_487": 0.0000006648}
+    },
+    "interpretation": "The independent Tushare version is evaluated on its own values; historical YesLab row equality is not used as a quality substitute."
+  },
+  "decision": "KEEP_YESLAB_484_ISOLATED_RESEARCH_CANDIDATE",
+  "action": "Alpha484 advances only to multi-year Tushare SH/SZ stability and full similarity review. Do not publish, alter the formal nine, write factor values, add model inputs, or train. Alpha485 and Alpha487 remain outside further admission review unless a separately approved repair is specified.",
+  "database_writes": false,
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false
+}
