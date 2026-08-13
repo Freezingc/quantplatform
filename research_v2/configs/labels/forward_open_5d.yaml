@@ -1,8 +1,0 @@
-label_id: raw_forward_open_return_5d
-version: 1
-signal_time: close
-entry_offset_trading_days: 1
-exit_offset_trading_days: 6
-price_field: adjusted_open
-primary_value: raw_return
-locked_year: 2026

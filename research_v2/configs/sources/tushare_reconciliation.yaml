@@ -1,6 +1,0 @@
-source_name: Tushare
-purpose: secondary_reconciliation_only
-token_env: QRV2_TUSHARE_TOKEN
-rate_limit_seconds: 0.25
-max_attempts: 3
-cache_key: endpoint+params+response_date

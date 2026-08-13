@@ -1,7 +1,0 @@
-{
-  "scope":"ALPHA_208_209_TRAIN_2020_QUALITY_V1","market_scope":"SH/SZ","excluded_exchanges":["BJ"],"label":"raw 5-trading-day forward adjusted return","period":"2020-01-02/2020-12-31","minimum_cross_section":30,"input_source":"YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels","database_writes":false,"locked_test_read":false,
-  "factors":{
-    "yeslab_208":{"factor_name":"价格均值标准差乖离乘短期成交量波动","valid_day_count":243,"mean_rank_ic":-0.0547766655,"icir":-0.5064197496,"positive_day_share":0.2510288066,"finite_ratio":0.9753478779,"minimum_monthly_finite_ratio":0.9695257779,"direction":-1,"status":"ANNUAL_STABILITY_FOLLOWUP"},
-    "yeslab_209":{"factor_name":"量价齐飞","valid_day_count":243,"mean_rank_ic":-0.0537087711,"icir":-0.5421200879,"positive_day_share":0.2757201646,"finite_ratio":0.9503018750,"minimum_monthly_finite_ratio":0.6421172194,"direction":-1,"status":"PREDICTIVE_FAIL_COVERAGE_FAIL"}
-  },"status":"SCREENED_ANNUAL_FOLLOWUP_REQUIRED","reason":"Alpha208 passes predictive gates and requires annual review; Alpha209 fails the structural coverage gate."
-}

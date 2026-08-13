@@ -1,7 +1,0 @@
-{
-  "scope":"ALPHA_218_219_TRAIN_2020_QUALITY_V1","market_scope":"SH/SZ","excluded_exchanges":["BJ"],"label":"raw 5-trading-day forward adjusted return","period":"2020-01-02/2020-12-31","minimum_cross_section":30,"input_source":"YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels","database_writes":false,"locked_test_read":false,
-  "factors":{
-    "yeslab_218":{"factor_name":"1年路径调整动量","valid_day_count":243,"mean_rank_ic":0.0097403907,"icir":0.0583631741,"positive_day_share":0.5390946502,"finite_ratio":0.9073914272,"minimum_monthly_finite_ratio":0.9006085659,"direction":1,"status":"PREDICTIVE_FAIL_COVERAGE_REDUCED"},
-    "yeslab_219":{"factor_name":"CFOA","valid_day_count":234,"mean_rank_ic":0.0323422992,"icir":0.4293529841,"positive_day_share":0.6965811966,"finite_ratio":0.9049830421,"minimum_monthly_finite_ratio":0.6077363216,"direction":1,"status":"PREDICTIVE_FAIL_COVERAGE_REDUCED"}
-  },"status":"SCREENED_NO_NEW_ADMISSION","reason":"Alpha218 fails prediction and reduced coverage; Alpha219 has positive mean RankIC but fails ICIR and coverage."
-}

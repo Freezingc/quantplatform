@@ -1,7 +1,0 @@
-{
-  "scope":"ALPHA_204_205_TRAIN_2020_QUALITY_V1","market_scope":"SH/SZ","excluded_exchanges":["BJ"],"label":"raw 5-trading-day forward adjusted return","period":"2020-01-02/2020-12-31","minimum_cross_section":30,"input_source":"YesLab factor_data5 with strict PIT normalization; V2 latest universe and labels","database_writes":false,"locked_test_read":false,
-  "factors":{
-    "yeslab_204":{"factor_name":"60日价格均线乖离率","valid_day_count":243,"mean_rank_ic":-0.0301288261,"icir":-0.2057540900,"positive_day_share":0.4403292181,"finite_ratio":0.9753478779,"minimum_monthly_finite_ratio":0.9695257779,"direction":-1,"status":"PREDICTIVE_FAIL"},
-    "yeslab_205":{"factor_name":"60日成交量均线乖离率","valid_day_count":243,"mean_rank_ic":-0.0273074085,"icir":-0.2264350721,"positive_day_share":0.4115226337,"finite_ratio":0.9753478779,"minimum_monthly_finite_ratio":0.9695257779,"direction":-1,"status":"PREDICTIVE_FAIL"}
-  },"status":"SCREENED_NO_NEW_ADMISSION","reason":"Both factors fail the double predictive threshold."
-}
