@@ -926,6 +926,36 @@
   "database_writes": false,
   "model_training_started": false,
   "publication_status": "NOT_PUBLISHED",
+  "alpha381_admission_preflight": {
+    "factor_id": "yeslab_381",
+    "factor_name": "GP_012",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "status": "FAIL_SCOPE_TRANSITION_PENDING",
+    "candidate_count": 10,
+    "required_pair_count": 90,
+    "observed_pair_count": 90,
+    "missing_pairs": 0,
+    "pair_failures": 0,
+    "quality_status": "PASS",
+    "predictive_status": "PASS",
+    "similarity_status": "PASS",
+    "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW",
+    "candidate_pair_monitor": {
+      "yeslab_381_yeslab_405": {
+        "train_median_abs_spearman": 0.8281139746,
+        "validation_median_abs_spearman": 0.8565664973,
+        "threshold": 0.9,
+        "status": "ELEVATED_PAIR_REDUNDANCY_MONITOR"
+      }
+    },
+    "action": "Keep the formal nine unchanged. Do not publish, write factor values, or train. If explicitly admitted later, use an isolated SH/SZ Tushare-canonical version and retain elevated monitoring against yeslab_405.",
+    "artifacts": [
+      "tushare_shsz_alpha381_admission_proposal_v1.json",
+      "tushare_shsz_alpha381_admission_preflight_v1.json",
+      "tushare_shsz_scope_transition_audit_381_405_425_v1.json"
+    ]
+  },
   "formal_regime_monitoring": {
     "artifact": "formal_monitored_factor_regime_audit_v1.json",
     "thresholds": {"minimum_signed_mean_rank_ic": 0.02, "minimum_signed_icir": 0.5},
