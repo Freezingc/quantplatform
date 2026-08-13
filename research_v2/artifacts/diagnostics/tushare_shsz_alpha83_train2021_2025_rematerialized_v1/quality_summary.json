@@ -1,0 +1,33 @@
+{
+  "code_count": 5181,
+  "database_writes": false,
+  "end": "2025-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_105"
+  ],
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2020-11-28",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": true,
+  "start": "2021-01-01",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": 1,
+      "directional_day_share": 0.7046204620462047,
+      "end": "2025-12-31",
+      "factor_id": "yeslab_105",
+      "factor_name": "Alpha83",
+      "icir": 0.5237112173630908,
+      "mean_rank_ic": 0.03818051716743742,
+      "rank_ic_std": 0.07290376051076015,
+      "signed_mean_rank_ic": 0.03818051716743742,
+      "start": "2021-01-04",
+      "valid_day_count": 1212
+    }
+  ]
+}
