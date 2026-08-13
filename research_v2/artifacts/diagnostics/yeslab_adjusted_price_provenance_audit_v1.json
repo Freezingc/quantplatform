@@ -1,0 +1,63 @@
+{
+  "scope": "YESLAB_ADJUSTED_PRICE_PROVENANCE_AUDIT_V1",
+  "market_scope": ["SH", "SZ"],
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d",
+  "windows": {
+    "2020-01-02/2020-01-31": {
+      "source_rows": 59930,
+      "internal_consistency": {
+        "tolerance": 0.00001,
+        "high_valid_rows": 59930,
+        "low_valid_rows": 59930,
+        "high_mismatch_rows": 0,
+        "low_mismatch_rows": 0,
+        "max_high_abs_diff": 0.0000050000016927,
+        "max_low_abs_diff": 0.0000050000016927,
+        "mean_high_abs_diff": 0.0000020372601386,
+        "mean_low_abs_diff": 0.0000019669280846
+      },
+      "cross_source": {
+        "status": "NOT_EVALUATED_MISSING_LOCAL_TUSHARE_ADJ_FACTOR_CACHE",
+        "daily_cache_days": 243,
+        "adj_factor_cache_days": 0
+      },
+      "artifact": "yeslab_adjusted_price_provenance_2020-01_source_only_v1.json"
+    },
+    "2025-01-02/2025-01-31": {
+      "source_rows": 92045,
+      "market_rows": 92045,
+      "internal_consistency": {
+        "tolerance": 0.00001,
+        "high_valid_rows": 92045,
+        "low_valid_rows": 92045,
+        "high_mismatch_rows": 0,
+        "low_mismatch_rows": 0,
+        "max_high_abs_diff": 0.0000050000007832,
+        "max_low_abs_diff": 0.0000050000007832,
+        "mean_high_abs_diff": 0.0000007492204937,
+        "mean_low_abs_diff": 0.0000007300342632
+      },
+      "cross_source": {
+        "overlap_rows": 92045,
+        "raw_high_mismatch_rows": 0,
+        "raw_low_mismatch_rows": 0,
+        "adj_factor_mismatch_rows": 22,
+        "derived_high_mismatch_rows": 22,
+        "derived_low_mismatch_rows": 22,
+        "max_adj_factor_abs_diff": 0.0004,
+        "max_derived_high_abs_diff": 0.0055,
+        "max_derived_low_abs_diff": 0.005396,
+        "mismatch_codes": ["000509.SZ", "603115.SH"]
+      },
+      "artifact": "yeslab_adjusted_price_provenance_2025-01_v1.json"
+    }
+  },
+  "classification": "SOURCE_INTERNAL_HFQ_CONSISTENT_CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP",
+  "decision": "KEEP_FORMULA_REPLAY_BLOCKED_UNTIL_ADJ_FACTOR_VERSION_IS_RECONCILED",
+  "interpretation": "YesLab stored high_hfq/low_hfq are internally consistent with raw high/low multiplied by the stored adj_factor. The 2025 cross-source mismatch is confined to 22 rows of adj_factor differences; it is not evidence that the formula or raw high/low fields are wrong. Do not round Tushare inputs and do not overwrite existing source values.",
+  "database_writes": false,
+  "locked_test_read": false,
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false
+}
