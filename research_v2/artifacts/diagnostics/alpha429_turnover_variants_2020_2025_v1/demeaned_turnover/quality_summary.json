@@ -1,0 +1,64 @@
+{
+  "annual": {
+    "2020": {
+      "directional_day_share": 0.6090534979423868,
+      "icir": -0.23214455327229672,
+      "mean_rank_ic": -0.022882860411183606,
+      "signed_mean_rank_ic": 0.022882860411183606,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "directional_day_share": 0.6296296296296297,
+      "icir": -0.3117314079723197,
+      "mean_rank_ic": -0.019479219312846068,
+      "signed_mean_rank_ic": 0.019479219312846068,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "directional_day_share": 0.6239669421487604,
+      "icir": -0.4044476867739017,
+      "mean_rank_ic": -0.030208962266745788,
+      "signed_mean_rank_ic": 0.030208962266745788,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "directional_day_share": 0.7107438016528925,
+      "icir": -0.522553101788115,
+      "mean_rank_ic": -0.03984281870817767,
+      "signed_mean_rank_ic": 0.03984281870817767,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "directional_day_share": 0.6983471074380165,
+      "icir": -0.32809503583367355,
+      "mean_rank_ic": -0.039063036868973076,
+      "signed_mean_rank_ic": 0.039063036868973076,
+      "valid_day_count": 242
+    }
+  },
+  "artifact": "demeaned_turnover/quality_summary.json",
+  "factor_id": "yeslab_429",
+  "factor_name": "GP_060",
+  "return_window": 10,
+  "strict_annual_icir_pass_years": 1,
+  "train_2020_2024": {
+    "directional_day_share": 0.6542904290429042,
+    "icir": -0.34115062422454173,
+    "mean_rank_ic": -0.0302803393491437,
+    "signed_mean_rank_ic": 0.0302803393491437,
+    "valid_day_count": 1212
+  },
+  "train_monthly_directional_share_pass_months": 41,
+  "train_monthly_signed_mean_pass_months": 34,
+  "turnover_window": 20,
+  "validation_2025": {
+    "directional_day_share": 0.7818930041152263,
+    "icir": -0.6622782861419781,
+    "mean_rank_ic": -0.055687582454311296,
+    "signed_mean_rank_ic": 0.055687582454311296,
+    "valid_day_count": 243
+  },
+  "validation_monthly_directional_share_pass_months": 12,
+  "validation_monthly_signed_mean_pass_months": 10,
+  "variant": "demeaned_turnover"
+}

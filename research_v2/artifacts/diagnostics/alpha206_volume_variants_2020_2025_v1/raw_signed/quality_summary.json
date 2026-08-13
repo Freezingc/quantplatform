@@ -1,0 +1,64 @@
+{
+  "annual": {
+    "2020": {
+      "directional_day_share": 0.588477366255144,
+      "icir": -0.226435072143134,
+      "mean_rank_ic": -0.027307408471624512,
+      "signed_mean_rank_ic": 0.027307408471624512,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "directional_day_share": 0.6090534979423868,
+      "icir": -0.31259211367200346,
+      "mean_rank_ic": -0.03344069354948125,
+      "signed_mean_rank_ic": 0.03344069354948125,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "directional_day_share": 0.6776859504132231,
+      "icir": -0.46398510709329277,
+      "mean_rank_ic": -0.04962789787121747,
+      "signed_mean_rank_ic": 0.04962789787121747,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "directional_day_share": 0.71900826446281,
+      "icir": -0.5073375830574516,
+      "mean_rank_ic": -0.051555055125876596,
+      "signed_mean_rank_ic": 0.051555055125876596,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "directional_day_share": 0.6776859504132231,
+      "icir": -0.4998763057974824,
+      "mean_rank_ic": -0.0602881339985947,
+      "signed_mean_rank_ic": 0.0602881339985947,
+      "valid_day_count": 242
+    }
+  },
+  "artifact": "raw_signed/quality_summary.json",
+  "factor_id": "yeslab_206",
+  "factor_name": "60日成交量去均值相对偏离",
+  "frozen_direction": -1,
+  "strict_annual_icir_pass_years": 1,
+  "train_2020_2024": {
+    "directional_day_share": 0.6542904290429042,
+    "icir": -0.39622210351912673,
+    "mean_rank_ic": -0.044420620333403785,
+    "signed_mean_rank_ic": 0.044420620333403785,
+    "valid_day_count": 1212
+  },
+  "train_monthly_directional_share_pass_months": 43,
+  "train_monthly_signed_mean_pass_months": 46,
+  "validation_2025": {
+    "directional_day_share": 0.7654320987654321,
+    "icir": -0.6947672164368673,
+    "mean_rank_ic": -0.07237457897225266,
+    "signed_mean_rank_ic": 0.07237457897225266,
+    "valid_day_count": 243
+  },
+  "validation_monthly_directional_share_pass_months": 11,
+  "validation_monthly_signed_mean_pass_months": 11,
+  "variant": "raw_signed",
+  "window": 60
+}

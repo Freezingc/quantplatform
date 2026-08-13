@@ -16,6 +16,22 @@
   "admission_rule": "This matrix is not an admission action. A factor can move to an isolated SH/SZ Tushare-canonical version only after explicit approval, and no factor may be published or supplied to model training from this record.",
   "candidates": [
     {
+      "priority": 5,
+      "factor_id": "yeslab_206_median_abs_v2",
+      "source_factor_id": "yeslab_206",
+      "factor_name": "60日成交量中位数偏离（修复版）",
+      "candidate_class": "canonical_repair",
+      "direction": -1,
+      "formula": "ABS(vol - rolling_median(vol,60)) / rolling_median(vol,60)",
+      "train_2020_2024": {"valid_day_count": 1212, "mean_rank_ic": -0.0408495242, "icir": -0.5605326519, "directional_day_share": 0.7417491749, "strict_annual_abs_icir_pass_years": "4/5"},
+      "validation_2025": {"valid_day_count": 243, "mean_rank_ic": -0.0504604367, "icir": -0.7332265079, "directional_day_share": 0.7777777778, "signed_mean_rank_ic": 0.0504604367, "signed_mean_pass_months": "10/12"},
+      "similarity_to_formal_nine": {"train_max_median_abs_spearman": 0.2722883956, "train_max_reference_factor_id": "yeslab_396", "train_valid_days": "9/9 pairs at 1212", "validation_2025_max_median_abs_spearman": 0.2762651265, "validation_2025_max_reference_factor_id": "yeslab_396", "validation_valid_days": "9/9 pairs at 243", "threshold": 0.9, "status": "NON_REDUNDANT"},
+      "formula_and_version_requirement": "This is a new isolated version and must never be mixed with historical yeslab_206 values. It uses Tushare daily vol, complete V2 SH/SZ universe, and a 60-day rolling median denominator.",
+      "review_disposition": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+      "reason": "Median-based volume baseline improves Alpha206 to 4/5 strict annual ICIR passes and clears the 2025 validation double gate; full training and 2025 validation similarity to all formal nine factors remain below 0.90 with complete date coverage.",
+      "artifacts": ["alpha206_volume_variants_2020_2025_v1/quality_summary.json", "alpha206_median_abs_formal9_similarity_2020_2024_v1.json", "alpha206_median_abs_formal9_similarity_2020_2024_v1.csv", "alpha206_median_abs_formal9_similarity_2025_v1.json", "alpha206_median_abs_formal9_similarity_2025_v1.csv"]
+    },
+    {
       "priority": 1,
       "factor_id": "yeslab_405",
       "factor_name": "GP_036",

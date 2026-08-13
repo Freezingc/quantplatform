@@ -1,0 +1,64 @@
+{
+  "annual": {
+    "2020": {
+      "directional_day_share": 0.8106995884773662,
+      "icir": -0.6549780686530057,
+      "mean_rank_ic": -0.05242604614436532,
+      "signed_mean_rank_ic": 0.05242604614436532,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "directional_day_share": 0.5802469135802469,
+      "icir": -0.17332923019826812,
+      "mean_rank_ic": -0.009446420441643295,
+      "signed_mean_rank_ic": 0.009446420441643295,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "directional_day_share": 0.6818181818181818,
+      "icir": -0.4037332554800267,
+      "mean_rank_ic": -0.02720562066064404,
+      "signed_mean_rank_ic": 0.02720562066064404,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "directional_day_share": 0.6694214876033058,
+      "icir": -0.4514611545703634,
+      "mean_rank_ic": -0.023927481900340265,
+      "signed_mean_rank_ic": 0.023927481900340265,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "directional_day_share": 0.7644628099173554,
+      "icir": -0.6423546438524906,
+      "mean_rank_ic": -0.04886620712320893,
+      "signed_mean_rank_ic": 0.04886620712320893,
+      "valid_day_count": 242
+    }
+  },
+  "artifact": "raw_sma_abs/quality_summary.json",
+  "factor_id": "yeslab_206",
+  "factor_name": "60日成交量去均值相对偏离",
+  "frozen_direction": -1,
+  "strict_annual_icir_pass_years": 2,
+  "train_2020_2024": {
+    "directional_day_share": 0.7013201320132013,
+    "icir": -0.4697840129071191,
+    "mean_rank_ic": -0.032371982115490805,
+    "signed_mean_rank_ic": 0.032371982115490805,
+    "valid_day_count": 1212
+  },
+  "train_monthly_directional_share_pass_months": 50,
+  "train_monthly_signed_mean_pass_months": 42,
+  "validation_2025": {
+    "directional_day_share": 0.6831275720164609,
+    "icir": -0.39735255787567775,
+    "mean_rank_ic": -0.028743346201460497,
+    "signed_mean_rank_ic": 0.028743346201460497,
+    "valid_day_count": 243
+  },
+  "validation_monthly_directional_share_pass_months": 10,
+  "validation_monthly_signed_mean_pass_months": 8,
+  "variant": "raw_sma_abs",
+  "window": 60
+}
