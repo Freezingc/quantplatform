@@ -75,8 +75,8 @@ def expand_fundamental_events(
         if candidates.empty:
             continue
         latest = candidates.sort_values(
-            ["available_date", "source_revision_id"],
-            ascending=[False, False],
+            ["available_date", "report_period", "source_revision_id"],
+            ascending=[False, False, False],
             kind="mergesort",
         ).iloc[0]
         available_date = _as_date(latest["available_date"])

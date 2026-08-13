@@ -59,5 +59,12 @@
     "materialization": "write only to a new derived PIT financial snapshot/table; leave existing YesLab source tables unchanged",
     "validation": "compare event counts, selected revisions, effective dates, staleness exclusions, monthly cross-sectional coverage, and fresh 2020-2025 fixed-direction RankIC before any admission review"
   },
+  "implementation_progress": {
+    "same_day_selection_rule": "IMPLEMENTED_AND_UNIT_TESTED",
+    "detail": "expand_fundamental_events now orders equal effective dates by latest report_period before source_revision_id. The regression test demonstrates that a later report period wins even when its revision identifier sorts earlier.",
+    "derived_snapshot_table": "NOT_CREATED",
+    "historical_backfill": "NOT_RUN",
+    "coverage_remeasurement": "PENDING_DERIVED_SNAPSHOT_IMPLEMENTATION"
+  },
   "action": "Do not reconsider the eight coverage-conditional financial factors until a versioned derived PIT financial snapshot is implemented and independently validated. This audit does not alter the formal factor set, publication status, database tables, or model inputs."
 }
