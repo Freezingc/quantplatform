@@ -72,8 +72,9 @@
       "similarity_to_formal_nine": {"yearly_pair_count": 45, "maximum_annual_median_abs_spearman": 0.8277974334, "maximum_daily_abs_spearman": 0.895426038, "status": "PASS_FULL_FIVE_YEAR_SIMILARITY_GATE"},
       "monthly_monitoring": {"train_watch_month_count": 15, "validation_watch_months": ["2025-01", "2025-02", "2025-04", "2025-12"], "validation_primary_rule_pass_months": "9/12 signed mean; 8/12 directional share", "status": "PENDING_MONTHLY_MONITORING_REVIEW"},
       "formula_and_version_requirement": "Formula replay passes all configured windows on the canonical SH/SZ Tushare path; any future version must retain the existing monthly monitoring rules.",
-      "review_disposition": "DEFER_PENDING_MONTHLY_REVIEW",
-      "reason": "All hard predictive, formula, and five-year similarity gates pass and its 2025 month-block bootstrap mean RankIC CI95 remains positive at [0.0375, 0.1199], but it has the largest training and validation monthly watch burden; validation leave-one-month ICIR falls to 0.4465 when 2025-03 is excluded and validation ICIR weakens in CSI 300 high-volatility and nonpositive-trend regimes.",
+      "review_disposition": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_MONITORING",
+      "admission_preflight": {"artifact": "tushare_shsz_alpha114_admission_preflight_v1.json", "status": "PASS_WITH_MONITORING", "required_pair_count": 90, "observed_pair_count": 90, "missing_pairs": 0, "pair_failures": 0, "monitoring_factor_ids": ["yeslab_380", "yeslab_431", "yeslab_437", "yeslab_94", "yeslab_114"]},
+      "reason": "All hard predictive, formula, and five-year similarity gates pass and its 2025 month-block bootstrap mean RankIC CI95 remains positive at [0.0375, 0.1199]. The single-candidate preflight passes all 90 train/validation similarity edges, but Alpha114 requires retained monthly monitoring: 2025 signed mean passes 9/12 months, directional share passes 8/12, and watch months are 2025-01, 2025-02, 2025-04, and 2025-12.",
       "variant_repair_review": {
         "artifact": "terri_market_benchmark_variants_2020_2025_v1/quality_summary.json",
         "variants_tested": ["price_mean_change", "equal_weight_return", "median_return", "trimmed_return_10pct"],

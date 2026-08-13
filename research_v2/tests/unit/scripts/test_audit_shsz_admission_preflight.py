@@ -213,3 +213,21 @@ def test_build_preflight_requires_every_declared_similarity_period() -> None:
     assert result["preflight_status"] == "FAIL"
     assert result["missing_pairs"] == [["yeslab_380", "yeslab_405", "validation"]]
     assert result["required_pair_count"] == 2
+
+
+def test_load_quality_summaries_accepts_canonical_candidate_report(tmp_path: Path) -> None:
+    path = tmp_path / "candidate.json"
+    path.write_text(
+        json.dumps(
+            {
+                "factor": {"factor_id": "yeslab_114"},
+                "canonical_train_2020_2024": {"icir": -0.54},
+                "canonical_validation_2025": {"icir": -0.52},
+            }
+        )
+    )
+
+    result = preflight.load_quality_summaries([path])
+
+    assert result["yeslab_114"]["train_icir"] == -0.54
+    assert preflight._quality_status(result["yeslab_114"]) == "PASS"
