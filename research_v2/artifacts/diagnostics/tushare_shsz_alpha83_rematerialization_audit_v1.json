@@ -1,0 +1,95 @@
+{
+  "scope": "ALPHA83_TUSHARE_SHSZ_REMATERIALIZATION_AUDIT_V1",
+  "factor_id": "yeslab_105",
+  "factor_name": "Alpha83",
+  "decision": "REJECT_STRICT_PREDICTIVE_STABILITY_GATE",
+  "decision_reason": "Canonical Tushare SH/SZ rematerialization resolves the prior historical cross-sectional-scope ambiguity, but fails the unchanged strict stability gate: 3 of 5 training years pass, not the required 4 of 5, and aggregate 2020-2024 ICIR is below 0.50.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "raw 5-trading-day forward adjusted return",
+  "direction": 1,
+  "thresholds": {
+    "minimum_signed_mean_rank_ic": 0.02,
+    "minimum_abs_icir": 0.5,
+    "minimum_directional_day_share": 0.55,
+    "minimum_strict_annual_pass_years": 4,
+    "training_years": [
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "validation_year": 2025
+  },
+  "period_metrics": {
+    "2020": {
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.04467708,
+      "icir": 0.6390926928,
+      "directional_day_share": 0.7325102881,
+      "strict_gate": "PASS"
+    },
+    "2021": {
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.0190100402,
+      "icir": 0.2806675707,
+      "directional_day_share": 0.6008230453,
+      "strict_gate": "FAIL_MEAN_RANKIC_AND_ICIR"
+    },
+    "2022": {
+      "valid_day_count": 242,
+      "mean_rank_ic": 0.0392509822,
+      "icir": 0.532640269,
+      "directional_day_share": 0.6983471074,
+      "strict_gate": "PASS"
+    },
+    "2023": {
+      "valid_day_count": 242,
+      "mean_rank_ic": 0.0303951887,
+      "icir": 0.4661573789,
+      "directional_day_share": 0.6487603306,
+      "strict_gate": "FAIL_ICIR"
+    },
+    "2024": {
+      "valid_day_count": 242,
+      "mean_rank_ic": 0.0499271586,
+      "icir": 0.5640604053,
+      "directional_day_share": 0.7561983471,
+      "strict_gate": "PASS"
+    },
+    "train_2020_2024": {
+      "valid_day_count": 1212,
+      "mean_rank_ic": 0.0366441551,
+      "icir": 0.4941509087,
+      "directional_day_share": 0.6872937294,
+      "strict_gate": "FAIL_ICIR"
+    },
+    "validation_2025": {
+      "valid_day_count": 243,
+      "mean_rank_ic": 0.052339923,
+      "icir": 0.8496411484,
+      "directional_day_share": 0.8189300412,
+      "strict_gate": "PASS"
+    }
+  },
+  "strict_annual_pass_years": "3/5",
+  "quality_artifacts": {
+    "direction": "tushare_shsz_alpha83_direction_v1.csv",
+    "train_2020": "tushare_shsz_alpha83_train2020_rematerialized_v1",
+    "train_2021_2025": "tushare_shsz_alpha83_train2021_2025_rematerialized_v1"
+  },
+  "similarity_audit": {
+    "status": "NOT_RUN_NOT_ELIGIBLE",
+    "reason": "A factor that fails the strict predictive stability gate must not proceed to formal-nine redundancy testing."
+  },
+  "publication_status": "NOT_PUBLISHED",
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "database_writes": false,
+  "locked_test_read": false,
+  "action": "Keep yeslab_105 out of the formal factor set, publication candidates, and model inputs. Reconsider only after an explicitly approved factor-definition or signal-repair change, followed by a fresh independent audit."
+}
