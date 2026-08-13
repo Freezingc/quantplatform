@@ -1,0 +1,34 @@
+{
+  "scope": "YESLAB_ADJUSTED_PRICE_PROVENANCE_AUDIT_V1",
+  "start": "2020-01-02",
+  "end": "2020-01-31",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "source_rows": 59930,
+  "market_rows": 0,
+  "internal_consistency": {
+    "rows": 59930,
+    "high_valid_rows": 59930,
+    "low_valid_rows": 59930,
+    "high_mismatch_rows": 0,
+    "low_mismatch_rows": 0,
+    "max_high_abs_diff": 5.000001692678779e-06,
+    "max_low_abs_diff": 5.000001692678779e-06,
+    "mean_high_abs_diff": 2.037260138613125e-06,
+    "mean_low_abs_diff": 1.9669280846444514e-06
+  },
+  "cross_source": {
+    "status": "NOT_EVALUATED_SOURCE_ONLY"
+  },
+  "market_source": "local Tushare.daily + adj_factor cache",
+  "database_writes": false,
+  "locked_test_read": false,
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "interpretation": "Internal identity and cross-source differences are reported separately; no old source value is overwritten."
+}

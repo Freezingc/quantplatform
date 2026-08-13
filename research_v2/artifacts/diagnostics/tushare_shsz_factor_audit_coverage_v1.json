@@ -956,6 +956,18 @@
       "tushare_shsz_scope_transition_audit_381_405_425_v1.json"
     ]
   },
+  "adjusted_price_provenance_audit": {
+    "artifact": "yeslab_adjusted_price_provenance_audit_v1.json",
+    "classification": "SOURCE_INTERNAL_HFQ_CONSISTENT_CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP",
+    "windows": {
+      "2020-01-02/2020-01-31": "INTERNAL_HFQ_IDENTITY_PASS_CROSS_SOURCE_NOT_EVALUATED_ADJ_FACTOR_CACHE_MISSING",
+      "2025-01-02/2025-01-31": "INTERNAL_HFQ_IDENTITY_PASS_CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP_22_ROWS"
+    },
+    "mismatch_codes_2025_01": ["000509.SZ", "603115.SH"],
+    "action": "Keep CSAD/Corwin-Schultz formula replay blocked until the Tushare adj_factor version is reconciled. Do not round Tushare inputs or overwrite YesLab values; no admission or model input changes.",
+    "database_writes": false,
+    "locked_test_read": false
+  },
   "formal_regime_monitoring": {
     "artifact": "formal_monitored_factor_regime_audit_v1.json",
     "thresholds": {"minimum_signed_mean_rank_ic": 0.02, "minimum_signed_icir": 0.5},

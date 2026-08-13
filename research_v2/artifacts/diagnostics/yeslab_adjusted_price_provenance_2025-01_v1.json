@@ -1,0 +1,44 @@
+{
+  "scope": "YESLAB_ADJUSTED_PRICE_PROVENANCE_AUDIT_V1",
+  "start": "2025-01-02",
+  "end": "2025-01-31",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "source_rows": 92045,
+  "market_rows": 92045,
+  "internal_consistency": {
+    "rows": 92045,
+    "high_valid_rows": 92045,
+    "low_valid_rows": 92045,
+    "high_mismatch_rows": 0,
+    "low_mismatch_rows": 0,
+    "max_high_abs_diff": 5.000000783184078e-06,
+    "max_low_abs_diff": 5.000000783184078e-06,
+    "mean_high_abs_diff": 7.492204937824042e-07,
+    "mean_low_abs_diff": 7.300342263115125e-07
+  },
+  "cross_source": {
+    "overlap_rows": 92045,
+    "raw_high_mismatch_rows": 0,
+    "raw_low_mismatch_rows": 0,
+    "adj_factor_mismatch_rows": 22,
+    "derived_high_mismatch_rows": 22,
+    "derived_low_mismatch_rows": 22,
+    "max_raw_high_abs_diff": 8.881784197001252e-16,
+    "max_raw_low_abs_diff": 8.881784197001252e-16,
+    "max_adj_factor_abs_diff": 0.000400000000000178,
+    "max_derived_high_abs_diff": 0.005500000000004945,
+    "max_derived_low_abs_diff": 0.005396000000001067
+  },
+  "market_source": "local Tushare.daily + adj_factor cache",
+  "database_writes": false,
+  "locked_test_read": false,
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "interpretation": "Internal identity and cross-source differences are reported separately; no old source value is overwritten."
+}
