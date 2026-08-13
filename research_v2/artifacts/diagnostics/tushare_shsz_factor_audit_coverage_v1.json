@@ -472,10 +472,11 @@
     "factor_names": ["Alpha32", "Alpha33"],
     "period": "2020-01-02/2020-12-31",
     "results": {
-      "yeslab_31": {"mean_rank_ic": 0.034281933, "icir": 0.6093445474, "minimum_monthly_finite_ratio": 0.9969815076, "status": "PREDICTIVE_PASS_ANNUAL_STABILITY_PASS_FORMULA_SCOPE_BLOCKED"},
+      "yeslab_31": {"mean_rank_ic": 0.034281933, "icir": 0.6093445474, "minimum_monthly_finite_ratio": 0.9969815076, "status": "CANONICAL_REMATERIALIZATION_REJECT_STRICT_STABILITY"},
       "yeslab_32": {"mean_rank_ic": 0.0165652959, "icir": 0.1465438165, "minimum_monthly_finite_ratio": 0.9945307736, "status": "PREDICTIVE_WEAK"}
     },
-    "action": "Keep Alpha31 isolated until SH/SZ canonical rematerialization resolves the cross-sectional replay scope mismatch. Reject Alpha32 before annual stability testing.",
+    "canonical_tushare_shsz_rematerialization": {"period": "2020-01-02/2025-12-31", "market_source": "Tushare.daily", "excluded_exchanges": ["BJ"], "training_icir": 0.4325962656, "strict_annual_pass_years": "1/5", "validation_icir": 0.6942299209, "status": "REJECT_STRICT_PREDICTIVE_STABILITY_GATE", "artifact": "tushare_shsz_alpha31_alpha62_rematerialization_audit_v1.json"},
+    "action": "Canonical SH/SZ rematerialization resolves the historical scope ambiguity but rejects Alpha31 for failing the unchanged strict annual and train ICIR gate. Reject Alpha32 before annual stability testing.",
     "formula_replay": {
       "window": "2025-01-02/2025-01-31",
       "overlap_finite_rows": 91833,
@@ -701,7 +702,7 @@
     "factor_names": ["Alpha62", "Alpha63"],
     "period": "2020-01-02/2020-12-31",
     "results": {
-      "yeslab_71": {"mean_rank_ic": 0.037902465, "icir": 0.5364885981, "minimum_monthly_finite_ratio": 0.9975454018, "status": "PREDICTIVE_PASS_ANNUAL_STABILITY_PASS_FORMULA_SCOPE_BLOCKED"},
+      "yeslab_71": {"mean_rank_ic": 0.037902465, "icir": 0.5364885981, "minimum_monthly_finite_ratio": 0.9975454018, "status": "CANONICAL_REMATERIALIZATION_REJECT_STRICT_STABILITY"},
       "yeslab_72": {"mean_rank_ic": -0.0149365726, "icir": -0.1193737352, "minimum_monthly_finite_ratio": 0.9990214777, "status": "PREDICTIVE_FAIL"}
     },
     "annual_stability": {
@@ -710,7 +711,8 @@
     "formula_replay": {
       "yeslab_71": {"window": "2025-01-02/2025-01-31", "canonical_market_code_count": 5127, "overlap_finite_rows": 91880, "mismatch_rows": 91538, "mismatch_date_count": 18, "source_market_uncovered_rows": 0, "status": "FORMULA_REPLAY_BLOCKED_SOURCE_CROSS_SECTION_SCOPE_MISMATCH", "artifact": "tushare_shsz_alpha62_formula_replay_2025-01_v1.json"}
     },
-    "action": "Keep Alpha62 isolated until canonical SH/SZ rematerialization resolves the cross-sectional replay mismatch; reject Alpha63 before annual stability testing.",
+    "canonical_tushare_shsz_rematerialization": {"period": "2020-01-02/2025-12-31", "market_source": "Tushare.daily", "excluded_exchanges": ["BJ"], "training_icir": 0.4661038475, "strict_annual_pass_years": "4/5", "validation_icir": 0.79960096, "status": "REJECT_STRICT_PREDICTIVE_STABILITY_GATE", "artifact": "tushare_shsz_alpha31_alpha62_rematerialization_audit_v1.json"},
+    "action": "Canonical SH/SZ rematerialization resolves the historical scope ambiguity but rejects Alpha62 because its aggregate training ICIR remains below the unchanged 0.50 gate; reject Alpha63 before annual stability testing.",
     "artifact": "alpha_071_072_train_2020_quality_v1.json"
   },
   "alpha_073_074_followup": {
