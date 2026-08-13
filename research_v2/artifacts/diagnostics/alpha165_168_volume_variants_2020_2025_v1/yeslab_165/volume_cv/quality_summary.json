@@ -1,0 +1,63 @@
+{
+  "annual": {
+    "2020": {
+      "directional_day_share": 0.6872427983539094,
+      "icir": -0.5076049789949485,
+      "mean_rank_ic": -0.036758756478399233,
+      "signed_mean_rank_ic": 0.036758756478399233,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "directional_day_share": 0.5596707818930041,
+      "icir": -0.10052748528177106,
+      "mean_rank_ic": -0.006824340465710392,
+      "signed_mean_rank_ic": 0.006824340465710392,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "directional_day_share": 0.6818181818181818,
+      "icir": -0.4706270723113801,
+      "mean_rank_ic": -0.02932035909157592,
+      "signed_mean_rank_ic": 0.02932035909157592,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "directional_day_share": 0.6446280991735537,
+      "icir": -0.4503150050500828,
+      "mean_rank_ic": -0.024571173071518813,
+      "signed_mean_rank_ic": 0.024571173071518813,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "directional_day_share": 0.7272727272727273,
+      "icir": -0.49026357733066084,
+      "mean_rank_ic": -0.03995086614641546,
+      "signed_mean_rank_ic": 0.03995086614641546,
+      "valid_day_count": 242
+    }
+  },
+  "artifact": "yeslab_165/volume_cv/quality_summary.json",
+  "factor_id": "yeslab_165",
+  "factor_name": "Alpha97",
+  "strict_annual_icir_pass_years": 1,
+  "train_2020_2024": {
+    "directional_day_share": 0.6600660066006601,
+    "icir": -0.396923521767047,
+    "mean_rank_ic": -0.027475703752739358,
+    "signed_mean_rank_ic": 0.027475703752739358,
+    "valid_day_count": 1212
+  },
+  "train_monthly_directional_share_pass_months": 42,
+  "train_monthly_signed_mean_pass_months": 34,
+  "validation_2025": {
+    "directional_day_share": 0.8518518518518519,
+    "icir": -0.9632404536102926,
+    "mean_rank_ic": -0.05299956244453699,
+    "signed_mean_rank_ic": 0.05299956244453699,
+    "valid_day_count": 243
+  },
+  "validation_monthly_directional_share_pass_months": 12,
+  "validation_monthly_signed_mean_pass_months": 11,
+  "variant": "volume_cv",
+  "window": 10
+}

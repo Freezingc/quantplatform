@@ -1,0 +1,63 @@
+{
+  "annual": {
+    "2020": {
+      "directional_day_share": 0.6666666666666666,
+      "icir": -0.34885383932935327,
+      "mean_rank_ic": -0.030063438097034677,
+      "signed_mean_rank_ic": 0.030063438097034677,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "directional_day_share": 0.5802469135802469,
+      "icir": -0.13842613103982152,
+      "mean_rank_ic": -0.009627705786819575,
+      "signed_mean_rank_ic": 0.009627705786819575,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "directional_day_share": 0.6776859504132231,
+      "icir": -0.502370108345523,
+      "mean_rank_ic": -0.03383052910575805,
+      "signed_mean_rank_ic": 0.03383052910575805,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "directional_day_share": 0.6859504132231405,
+      "icir": -0.5123494471752724,
+      "mean_rank_ic": -0.030240746351943782,
+      "signed_mean_rank_ic": 0.030240746351943782,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "directional_day_share": 0.731404958677686,
+      "icir": -0.5527763967313157,
+      "mean_rank_ic": -0.04697738605515536,
+      "signed_mean_rank_ic": 0.04697738605515536,
+      "valid_day_count": 242
+    }
+  },
+  "artifact": "yeslab_165/log_volume_std/quality_summary.json",
+  "factor_id": "yeslab_165",
+  "factor_name": "Alpha97",
+  "strict_annual_icir_pass_years": 3,
+  "train_2020_2024": {
+    "directional_day_share": 0.6683168316831684,
+    "icir": -0.40165019508298705,
+    "mean_rank_ic": -0.030130960437201343,
+    "signed_mean_rank_ic": 0.030130960437201343,
+    "valid_day_count": 1212
+  },
+  "train_monthly_directional_share_pass_months": 45,
+  "train_monthly_signed_mean_pass_months": 35,
+  "validation_2025": {
+    "directional_day_share": 0.8436213991769548,
+    "icir": -1.0400106024634042,
+    "mean_rank_ic": -0.061199101990992294,
+    "signed_mean_rank_ic": 0.061199101990992294,
+    "valid_day_count": 243
+  },
+  "validation_monthly_directional_share_pass_months": 11,
+  "validation_monthly_signed_mean_pass_months": 11,
+  "variant": "log_volume_std",
+  "window": 10
+}

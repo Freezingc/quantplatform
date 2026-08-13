@@ -1,0 +1,63 @@
+{
+  "annual": {
+    "2020": {
+      "directional_day_share": 0.6995884773662552,
+      "icir": -0.513674660742263,
+      "mean_rank_ic": -0.04732695683746512,
+      "signed_mean_rank_ic": 0.04732695683746512,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "directional_day_share": 0.5432098765432098,
+      "icir": -0.07564828467707001,
+      "mean_rank_ic": -0.006802120478788703,
+      "signed_mean_rank_ic": 0.006802120478788703,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "directional_day_share": 0.6570247933884298,
+      "icir": -0.3719315792788065,
+      "mean_rank_ic": -0.02919361781829581,
+      "signed_mean_rank_ic": 0.02919361781829581,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "directional_day_share": 0.6157024793388429,
+      "icir": -0.3198488141812109,
+      "mean_rank_ic": -0.018908767658907397,
+      "signed_mean_rank_ic": 0.018908767658907397,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "directional_day_share": 0.6652892561983471,
+      "icir": -0.49508779540545766,
+      "mean_rank_ic": -0.04870035007466915,
+      "signed_mean_rank_ic": 0.04870035007466915,
+      "valid_day_count": 242
+    }
+  },
+  "artifact": "yeslab_168/volume_cv/quality_summary.json",
+  "factor_id": "yeslab_168",
+  "factor_name": "Alpha100",
+  "strict_annual_icir_pass_years": 1,
+  "train_2020_2024": {
+    "directional_day_share": 0.6361386138613861,
+    "icir": -0.3503274221094068,
+    "mean_rank_ic": -0.0301812110490122,
+    "signed_mean_rank_ic": 0.0301812110490122,
+    "valid_day_count": 1212
+  },
+  "train_monthly_directional_share_pass_months": 42,
+  "train_monthly_signed_mean_pass_months": 35,
+  "validation_2025": {
+    "directional_day_share": 0.7366255144032922,
+    "icir": -0.7063281663065205,
+    "mean_rank_ic": -0.04397759270326188,
+    "signed_mean_rank_ic": 0.04397759270326188,
+    "valid_day_count": 243
+  },
+  "validation_monthly_directional_share_pass_months": 9,
+  "validation_monthly_signed_mean_pass_months": 8,
+  "variant": "volume_cv",
+  "window": 20
+}
