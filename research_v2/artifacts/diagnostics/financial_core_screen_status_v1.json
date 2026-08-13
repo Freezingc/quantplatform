@@ -5,7 +5,8 @@
   "label": "raw 5-trading-day forward adjusted return",
   "screen_period": "2020-01-02/2020-12-31",
   "factor_count": 18,
-  "pit_coverage_repair_required_ids": [
+  "pit_coverage_repair_required_ids": [],
+  "pit_coverage_retested_ids": [
     "yeslab_219", "yeslab_220", "yeslab_221", "yeslab_223",
     "yeslab_226", "yeslab_227", "yeslab_229", "yeslab_231"
   ],
@@ -16,7 +17,7 @@
   "annual_stability_reject_ids": ["yeslab_222", "yeslab_224"],
   "admission_candidate_ids": [],
   "status": "FINANCIAL_CORE_NO_ADMISSION_CANDIDATE",
-  "decision": "No raw financial factor in this core group may enter model inputs. PIT coverage repair is a precondition for re-testing the eight conditional candidates; rejected factors are not retried without a separately specified transformation.",
+  "decision": "No raw financial factor in this core group may enter model inputs. The eight PIT-conditional candidates have now been repaired and re-tested; all fail the fixed 2020 predictive gate, so none advances to annual stability or publication.",
   "evidence_artifacts": [
     "financial_aliases_train_2020_quality_v1.json",
     "financial_aliases_train_2021_quality_v1.json",
@@ -27,7 +28,8 @@
     "financial_np_qoq_np_z_train_2020_quality_v1.json",
     "financial_ocf_growth_train_2020_quality_v1.json",
     "financial_op_yoy_amplitude_train_2020_quality_v1.json",
-    "financial_road_roed_train_2020_quality_v1.json"
+    "financial_road_roed_train_2020_quality_v1.json",
+    "financial_pit_retest_2020_summary_v1.json"
   ],
   "database_writes": false,
   "model_training_started": false,

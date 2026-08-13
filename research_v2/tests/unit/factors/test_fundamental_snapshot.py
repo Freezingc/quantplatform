@@ -62,3 +62,58 @@ def test_snapshot_rejects_duplicate_metric_stock_day_keys() -> None:
         assert "duplicate" in str(error)
     else:
         raise AssertionError("duplicate universe keys must be rejected")
+
+
+def test_snapshot_handles_nontrading_announcements_with_event_lineage() -> None:
+    events = pd.DataFrame(
+        {
+            "metric_id": ["roa"],
+            "ts_code": ["000001.SZ"],
+            "report_period": [date(2024, 12, 31)],
+            "ann_date": [date(2025, 3, 29)],
+            "source_revision_id": ["first"],
+            "raw_value": [2.0],
+        }
+    )
+    universe = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 3, 31), date(2025, 4, 1)],
+            "ts_code": ["000001.SZ", "000001.SZ"],
+        }
+    )
+    calendar = TradingCalendar.from_dates(
+        [date(2025, 3, 28), date(2025, 3, 31), date(2025, 4, 1)]
+    )
+
+    result = build_fundamental_snapshot(events, universe, calendar)
+
+    assert result["available_date"].tolist() == [date(2025, 3, 31)] * 2
+    assert result["stale_days"].tolist() == [0, 1]
+
+
+def test_snapshot_uses_later_effective_event_after_earlier_report_expires() -> None:
+    events = pd.DataFrame(
+        {
+            "metric_id": ["roa", "roa"],
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "report_period": [date(2024, 9, 30), date(2024, 12, 31)],
+            "ann_date": [date(2024, 9, 27), date(2025, 3, 28)],
+            "source_revision_id": ["old", "new"],
+            "raw_value": [1.0, 2.0],
+        }
+    )
+    universe = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 4, 1)],
+            "ts_code": ["000001.SZ"],
+        }
+    )
+    calendar = TradingCalendar.from_dates(
+        [date(2024, 9, 27), date(2024, 9, 30), date(2025, 3, 28), date(2025, 3, 31), date(2025, 4, 1)]
+    )
+
+    result = build_fundamental_snapshot(events, universe, calendar, max_staleness_calendar_days=180)
+
+    assert result[["signal_date", "value"]].to_dict("records") == [
+        {"signal_date": date(2025, 4, 1), "value": 2.0}
+    ]

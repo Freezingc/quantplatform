@@ -1,0 +1,36 @@
+{
+  "scope": "FINANCIAL_PIT_RETEST_2020_SUMMARY_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "raw 5-trading-day forward adjusted return",
+  "period": "2020-01-02/2020-12-31",
+  "minimum_cross_section": 30,
+  "strict_gate": {
+    "signed_mean_rank_ic_gt": 0.02,
+    "absolute_icir_gte": 0.5,
+    "directional_day_share_gte": 0.55,
+    "annual_stability_required": "4/5 years"
+  },
+  "input_source": "QuantResearchV2Test.fundamental_pit_snapshot and latest V2 SH/SZ universe/labels",
+  "database_writes": false,
+  "locked_test_read": false,
+  "results": {
+    "yeslab_219": {"factor_name": "CFOA", "metric_id": "cfoa", "finite_ratio": 0.9360304641, "mean_rank_ic": 0.0277231900, "icir": 0.3549724575, "directional_day_share": 0.6707818930, "decision": "PREDICTIVE_FAIL_ICIR"},
+    "yeslab_220": {"factor_name": "ROA", "metric_id": "roa", "finite_ratio": 0.9290323163, "mean_rank_ic": 0.0457596785, "icir": 0.3774464218, "directional_day_share": 0.6460905350, "decision": "PREDICTIVE_FAIL_ICIR"},
+    "yeslab_221": {"factor_name": "ROAD", "metric_id": "road", "finite_ratio": 0.6669272493, "mean_rank_ic": 0.0097280538, "icir": 0.1321320325, "directional_day_share": 0.5845410628, "decision": "PREDICTIVE_AND_COVERAGE_FAIL"},
+    "yeslab_223": {"factor_name": "ROED", "metric_id": "roed", "finite_ratio": 0.6873849928, "mean_rank_ic": 0.0127507753, "icir": 0.1659609737, "directional_day_share": 0.5797101449, "decision": "PREDICTIVE_AND_COVERAGE_FAIL"},
+    "yeslab_226": {"factor_name": "ROE_YOY", "metric_id": "roe_yoy", "finite_ratio": 0.6873849928, "mean_rank_ic": 0.0231189118, "icir": 0.3127187777, "directional_day_share": 0.6763285025, "decision": "PREDICTIVE_AND_COVERAGE_FAIL"},
+    "yeslab_227": {"factor_name": "TA_YOY", "metric_id": "ta_yoy", "finite_ratio": 0.6707578145, "mean_rank_ic": 0.0251422943, "icir": 0.2558661284, "directional_day_share": 0.6280193237, "decision": "PREDICTIVE_AND_COVERAGE_FAIL"},
+    "yeslab_229": {"factor_name": "ROICD", "metric_id": "roicd", "finite_ratio": 0.6667092619, "mean_rank_ic": 0.0116058253, "icir": 0.1538211335, "directional_day_share": 0.5893719807, "decision": "PREDICTIVE_AND_COVERAGE_FAIL"},
+    "yeslab_231": {"factor_name": "NP_QOQ", "metric_id": "np_qoq", "finite_ratio": 0.9619484167, "mean_rank_ic": 0.0219762244, "icir": 0.4472916107, "directional_day_share": 0.6584362140, "decision": "PREDICTIVE_FAIL_ICIR"}
+  },
+  "summary": {
+    "retested_count": 8,
+    "annual_stability_review_count": 0,
+    "admission_candidate_count": 0,
+    "publication_status": "NOT_PUBLISHED",
+    "model_training_started": false,
+    "conclusion": "PIT repair materially improves coverage for direct financial metrics, but all eight candidates fail the fixed 2020 predictive gate and remain outside annual stability review, formal factor publication, and model inputs."
+  },
+  "artifacts": ["fundamental_pit_snapshot_quality_2020_v1/summary.csv", "fundamental_pit_derived_quality_2020_v1/summary.csv", "fundamental_pit_ta_np_quality_2020_v1/summary.csv"]
+}

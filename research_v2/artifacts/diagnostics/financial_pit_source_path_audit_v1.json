@@ -2,7 +2,7 @@
   "scope": "FINANCIAL_PIT_SOURCE_PATH_AUDIT_V1",
   "market_scope": "SH/SZ",
   "investigation_period": "2019-01-01/2020-12-31",
-  "database_writes": false,
+  "database_writes": true,
   "locked_test_read": false,
   "purpose": "Determine whether early-2020 financial-factor coverage failures originate in source availability or the current financial event-to-daily materialization path.",
   "observed_source_evidence": {
@@ -62,9 +62,99 @@
   "implementation_progress": {
     "same_day_selection_rule": "IMPLEMENTED_AND_UNIT_TESTED",
     "detail": "expand_fundamental_events now orders equal effective dates by latest report_period before source_revision_id. The regression test demonstrates that a later report period wins even when its revision identifier sorts earlier.",
-    "derived_snapshot_table": "NOT_CREATED",
-    "historical_backfill": "NOT_RUN",
-    "coverage_remeasurement": "PENDING_DERIVED_SNAPSHOT_IMPLEMENTATION"
+    "derived_snapshot_table": "CREATED_IN_QuantResearchV2Test",
+    "historical_backfill": "2020_EIGHT_CONDITIONAL_FINANCIAL_METRICS_PUBLISHED",
+    "coverage_remeasurement": "COMPLETED_2020_FOR_ALL_EIGHT",
+    "snapshot_row_counts": {
+      "roa": 618994,
+      "roe": 637031,
+      "cfoa": 623648,
+      "road": 444359,
+      "roed": 457995,
+      "roe_yoy": 457995,
+      "roicd": 444214,
+      "ta_yoy": 446907,
+      "np_qoq": 640926
+    },
+    "snapshot_quality": {
+      "maximum_stale_days": 180,
+      "future_availability_violations": 0,
+      "locked_test_read": false
+    }
   },
-  "action": "Do not reconsider the eight coverage-conditional financial factors until a versioned derived PIT financial snapshot is implemented and independently validated. This audit does not alter the formal factor set, publication status, database tables, or model inputs."
+  "retest_2020": {
+    "scope": "FUNDAMENTAL_PIT_SNAPSHOT_QUALITY_V1",
+    "label": "raw 5-trading-day forward adjusted return",
+    "retested_factor_count": 8,
+    "full_results_artifact": "financial_pit_retest_2020_summary_v1.json",
+    "metrics": {
+      "cfoa": {
+        "finite_ratio": 0.9360304641,
+        "mean_rank_ic": 0.0277231900,
+        "icir": 0.3549724575,
+        "directional_day_share": 0.6707818930,
+        "decision": "PREDICTIVE_FAIL_ICIR"
+      },
+      "roa": {
+        "finite_ratio": 0.9290323163,
+        "mean_rank_ic": 0.0457596785,
+        "icir": 0.3774464218,
+        "directional_day_share": 0.6460905350,
+        "decision": "PREDICTIVE_FAIL_ICIR"
+      },
+      "roe": {
+        "finite_ratio": 0.9560913202,
+        "mean_rank_ic": 0.0479695074,
+        "icir": 0.3895040202,
+        "directional_day_share": 0.6666666667,
+        "decision": "PREDICTIVE_FAIL_ICIR"
+      },
+      "road": {
+        "finite_ratio": 0.6669272493,
+        "mean_rank_ic": 0.0097280538,
+        "icir": 0.1321320325,
+        "directional_day_share": 0.5845410628,
+        "decision": "PREDICTIVE_AND_COVERAGE_FAIL"
+      },
+      "roed": {
+        "finite_ratio": 0.6873849928,
+        "mean_rank_ic": 0.0127507753,
+        "icir": 0.1659609737,
+        "directional_day_share": 0.5797101449,
+        "decision": "PREDICTIVE_AND_COVERAGE_FAIL"
+      },
+      "roe_yoy": {
+        "finite_ratio": 0.6873849928,
+        "mean_rank_ic": 0.0231189118,
+        "icir": 0.3127187777,
+        "directional_day_share": 0.6763285025,
+        "decision": "PREDICTIVE_AND_COVERAGE_FAIL"
+      },
+      "roicd": {
+        "finite_ratio": 0.6667092619,
+        "mean_rank_ic": 0.0116058253,
+        "icir": 0.1538211335,
+        "directional_day_share": 0.5893719807,
+        "decision": "PREDICTIVE_AND_COVERAGE_FAIL"
+      },
+      "ta_yoy": {
+        "finite_ratio": 0.6707578145,
+        "mean_rank_ic": 0.0251422943,
+        "icir": 0.2558661284,
+        "directional_day_share": 0.6280193237,
+        "decision": "PREDICTIVE_AND_COVERAGE_FAIL"
+      },
+      "np_qoq": {
+        "finite_ratio": 0.9619484167,
+        "mean_rank_ic": 0.0219762244,
+        "icir": 0.4472916107,
+        "directional_day_share": 0.6584362140,
+        "decision": "PREDICTIVE_FAIL_ICIR"
+      }
+    },
+    "strict_gate": "signed mean RankIC > 0.02, absolute ICIR >= 0.50, directional day share >= 0.55",
+    "decision": "NO_ANNUAL_ADMISSION_REVIEW",
+    "reason": "All three repaired factors materially improve finite coverage but fail the fixed 2020 ICIR gate. They do not advance to annual stability, publication, factor-set inclusion, or model inputs."
+  },
+  "action": "The derived snapshot fixes the confirmed PIT coverage defect for all eight conditional financial definitions. Their 2020 fixed-gate re-tests still fail predictive quality, so keep all eight out of publication and model inputs; no annual stability review or model training is authorized."
 }

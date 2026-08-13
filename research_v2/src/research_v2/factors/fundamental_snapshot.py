@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from research_v2.factors.availability import expand_fundamental_events
+from research_v2.factors.availability import assign_fundamental_available_date
 from research_v2.pit.calendar import TradingCalendar
 
 _EVENT_COLUMNS = {
@@ -46,7 +46,7 @@ def build_fundamental_snapshot(
 
     results: list[pd.DataFrame] = []
     for metric_id, metric_events in event_frame.groupby("metric_id", sort=True):
-        expanded = expand_fundamental_events(
+        expanded = _expand_metric_events(
             metric_events.drop(columns="metric_id"),
             universe_frame,
             calendar,
@@ -91,3 +91,72 @@ def build_fundamental_snapshot(
     if result.duplicated(["signal_date", "ts_code", "metric_id"], keep=False).any():
         raise ValueError("fundamental snapshot has duplicate business keys")
     return result.reset_index(drop=True)
+
+
+def _expand_metric_events(
+    events: pd.DataFrame,
+    universe: pd.DataFrame,
+    calendar: TradingCalendar,
+    *,
+    max_staleness_calendar_days: int,
+) -> pd.DataFrame:
+    """Vectorized per-security equivalent of fundamental event expansion."""
+    source = events.copy()
+    source["ann_date"] = pd.to_datetime(source["ann_date"], errors="raise")
+    source["report_period"] = pd.to_datetime(source["report_period"], errors="raise")
+    source["available_date"] = source["ann_date"].map(
+        lambda value: pd.Timestamp(assign_fundamental_available_date(value.date(), calendar))
+    )
+    source = source.sort_values(
+        ["ts_code", "available_date", "report_period", "source_revision_id"],
+        kind="mergesort",
+    ).drop_duplicates(["ts_code", "available_date"], keep="last")
+    targets = universe.copy()
+    targets["signal_date"] = pd.to_datetime(targets["signal_date"], errors="raise")
+    rows: list[pd.DataFrame] = []
+    for ts_code, target in targets.groupby("ts_code", sort=False):
+        source_rows = source.loc[source["ts_code"].astype(str) == str(ts_code)]
+        if source_rows.empty:
+            continue
+        merged = pd.merge_asof(
+            target.sort_values("signal_date", kind="mergesort"),
+            source_rows.sort_values("available_date", kind="mergesort"),
+            left_on="signal_date",
+            right_on="available_date",
+            direction="backward",
+            allow_exact_matches=True,
+        )
+        merged["stale_days"] = (merged["signal_date"] - merged["available_date"]).dt.days
+        rows.append(
+            merged.loc[
+                merged["raw_value"].notna()
+                & (merged["stale_days"] <= max_staleness_calendar_days),
+                [
+                    "signal_date",
+                    "ts_code_x",
+                    "raw_value",
+                    "report_period",
+                    "ann_date",
+                    "available_date",
+                    "source_revision_id",
+                    "stale_days",
+                ],
+            ].rename(columns={"ts_code_x": "ts_code"})
+        )
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                "signal_date",
+                "ts_code",
+                "raw_value",
+                "report_period",
+                "ann_date",
+                "available_date",
+                "source_revision_id",
+                "stale_days",
+            ]
+        )
+    result = pd.concat(rows, ignore_index=True)
+    for column in ("signal_date", "report_period", "ann_date", "available_date"):
+        result[column] = pd.to_datetime(result[column], errors="raise").dt.date
+    return result
