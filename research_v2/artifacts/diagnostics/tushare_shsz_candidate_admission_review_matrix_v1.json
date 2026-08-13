@@ -43,8 +43,9 @@
       "similarity_to_formal_nine": {"train_max_median_abs_spearman": 0.6841455137, "validation_max_median_abs_spearman": 0.7218858687, "status": "NON_REDUNDANT"},
       "monthly_monitoring": {"train_watch_month_count": 9, "validation_watch_month_count": 0, "validation_primary_rule_pass_months": "12/12", "status": "CANDIDATE_STABLE_WITH_MONTHLY_MONITORING"},
       "formula_and_version_requirement": "Historical stored values have a BJ-inclusive source scope and cannot be mixed with the canonical SH/SZ panel. Any admission requires an isolated Tushare-canonical factor version.",
-      "review_disposition": "RECOMMEND_FIRST_EXPLICIT_REVIEW",
-      "reason": "Strongest independent 2025 monthly stability among the scope-transition candidates, with non-redundant formal-nine similarity, leave-one-month validation ICIR remaining 0.9896, strict ICIR above 0.50 in every defined CSI 300 regime, and a 2025 month-block bootstrap mean RankIC CI95 of [0.0710, 0.1098]."
+      "review_disposition": "RECOMMEND_FIRST_EXPLICIT_REVIEW_SCOPE_BLOCKED",
+      "admission_preflight": {"artifact": "tushare_shsz_alpha405_admission_preflight_v1.json", "status": "FAIL_SCOPE_TRANSITION_PENDING", "required_pair_count": 90, "observed_pair_count": 90, "missing_pairs": 0, "pair_failures": 0, "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW", "quality_status": "PASS"},
+      "reason": "Strongest independent 2025 monthly stability among the scope-transition candidates, with non-redundant formal-nine similarity, leave-one-month validation ICIR remaining 0.9896, strict ICIR above 0.50 in every defined CSI 300 regime, and a 2025 month-block bootstrap mean RankIC CI95 of [0.0710, 0.1098]. The single-candidate preflight confirms all 90 train/validation similarity edges and all predictive quality checks, but blocks admission until an isolated SH/SZ Tushare-canonical version is explicitly approved."
     },
     {
       "priority": 2,

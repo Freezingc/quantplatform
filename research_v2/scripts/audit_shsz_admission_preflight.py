@@ -41,23 +41,43 @@ def _add_evidence(
     right: str,
     metric: Any,
     source: str,
+    *,
+    period: str | None = None,
 ) -> None:
     key = pair_key(left, right)
     row = {"metric": _finite_metric(metric), "source": source}
     previous = evidence.get(key)
-    if previous is not None and not math.isclose(
-        float(previous["metric"]), float(row["metric"]), rel_tol=0.0, abs_tol=1e-9
+    if previous is None:
+        previous = {"period_metrics": {}}
+        evidence[key] = previous
+    if period is None:
+        if "metric" in previous and not math.isclose(
+            float(previous["metric"]), float(row["metric"]), rel_tol=0.0, abs_tol=1e-9
+        ):
+            raise ValueError(
+                f"conflicting similarity evidence for {key}: "
+                f"{previous['metric']} from {previous['source']} vs {row['metric']} from {source}"
+            )
+        previous.update(row)
+        return
+    period_metrics = previous.setdefault("period_metrics", {})
+    existing = period_metrics.get(period)
+    if existing is not None and not math.isclose(
+        float(existing["metric"]), float(row["metric"]), rel_tol=0.0, abs_tol=1e-9
     ):
         raise ValueError(
-            f"conflicting similarity evidence for {key}: "
-            f"{previous['metric']} from {previous['source']} vs {row['metric']} from {source}"
+            f"conflicting {period} similarity evidence for {key}: "
+            f"{existing['metric']} from {existing['source']} vs {row['metric']} from {source}"
         )
-    evidence[key] = previous or row
+    period_metrics[period] = row
 
 
-def _json_pairs(data: dict[str, Any], source: str) -> list[tuple[str, str, float]]:
+def _json_pairs(
+    data: dict[str, Any] | list[dict[str, Any]], source: str
+) -> list[tuple[str, str, float]]:
     rows: list[tuple[str, str, float]] = []
-    for row in data.get("pairs", []):
+    pair_rows = data if isinstance(data, list) else data.get("pairs", [])
+    for row in pair_rows:
         rows.append(
             (
                 str(row["factor_id_left"]),
@@ -65,7 +85,11 @@ def _json_pairs(data: dict[str, Any], source: str) -> list[tuple[str, str, float
                 _finite_metric(row["median_abs_spearman"]),
             )
         )
-    if "median_abs_spearman" in data and data.get("rematerialized_factor_ids"):
+    if (
+        isinstance(data, dict)
+        and "median_abs_spearman" in data
+        and data.get("rematerialized_factor_ids")
+    ):
         rematerialized = [str(value) for value in data["rematerialized_factor_ids"]]
         stored = [str(value) for value in data.get("stored_tushare_canonical_factor_ids", [])]
         for left in rematerialized:
@@ -78,6 +102,7 @@ def collect_similarity_evidence(
     paths: list[Path] | tuple[Path, ...],
     *,
     csv_focus_factor: str | None = None,
+    period: str | None = None,
 ) -> dict[tuple[str, str], dict[str, Any]]:
     """Read JSON pair artifacts and optional CSV pair matrices.
 
@@ -101,13 +126,13 @@ def collect_similarity_evidence(
                         if row.get("median_abs_spearman") not in (None, "")
                         else "median_daily_abs_spearman"
                     )
-                    _add_evidence(evidence, left, right, row[metric_column], source)
+                    _add_evidence(evidence, left, right, row[metric_column], source, period=period)
             continue
         data = json.loads(path.read_text())
-        if not isinstance(data, dict):
-            raise ValueError(f"similarity artifact must be a JSON object: {path}")
+        if not isinstance(data, (dict, list)):
+            raise ValueError(f"similarity artifact must be a JSON object or list: {path}")
         for left, right, metric in _json_pairs(data, source):
-            _add_evidence(evidence, left, right, metric, source)
+            _add_evidence(evidence, left, right, metric, source, period=period)
     return evidence
 
 
@@ -117,6 +142,9 @@ def load_quality_summaries(paths: list[Path] | tuple[Path, ...]) -> dict[str, di
     summaries: dict[str, dict[str, Any]] = {}
     for path in paths:
         data = json.loads(path.read_text())
+        for summary in data.get("rows", []) if isinstance(data, dict) else []:
+            if isinstance(summary, dict) and "factor_id" in summary:
+                summaries[str(summary["factor_id"])] = dict(summary)
         for summary in data.get("summaries", []):
             summaries[str(summary["factor_id"])] = summary
         if data.get("summary"):
@@ -163,6 +191,7 @@ def build_preflight(
     candidates = proposal.get("candidates", [])
     factor_ids = [str(row["factor_id"]) for row in candidates]
     threshold = float(proposal.get("similarity_threshold", 0.9))
+    similarity_periods = tuple(str(value) for value in proposal.get("similarity_periods", ()))
     expected = required_pairs(factor_ids)
     missing = [key for key in expected if key not in similarity_evidence]
     pair_results: list[dict[str, Any]] = []
@@ -170,22 +199,59 @@ def build_preflight(
     for key in expected:
         row = similarity_evidence.get(key)
         if row is None:
-            pair_results.append({"factor_id_left": key[0], "factor_id_right": key[1], "status": "MISSING"})
+            pair_results.append(
+                {"factor_id_left": key[0], "factor_id_right": key[1], "status": "MISSING"}
+            )
             continue
-        metric = float(row["metric"])
-        status = "PASS" if metric < threshold else "FAIL"
-        if status == "FAIL":
-            pair_failures.append(list(key))
-        pair_results.append(
-            {
-                "factor_id_left": key[0],
-                "factor_id_right": key[1],
-                "metric": metric,
-                "threshold": threshold,
-                "status": status,
-                "source": row["source"],
-            }
-        )
+        if similarity_periods:
+            period_metrics = row.get("period_metrics", {})
+            missing_periods = [
+                period for period in similarity_periods if period not in period_metrics
+            ]
+            period_results = {}
+            for period in similarity_periods:
+                metric_row = period_metrics.get(period)
+                if metric_row is None:
+                    continue
+                metric = float(metric_row["metric"])
+                status = "PASS" if metric < threshold else "FAIL"
+                period_results[period] = {
+                    "metric": metric,
+                    "threshold": threshold,
+                    "status": status,
+                    "source": metric_row["source"],
+                }
+                if status == "FAIL":
+                    pair_failures.append([key[0], key[1], period])
+            if missing_periods:
+                for period in missing_periods:
+                    missing.append((key[0], key[1], period))
+            pair_results.append(
+                {
+                    "factor_id_left": key[0],
+                    "factor_id_right": key[1],
+                    "period_results": period_results,
+                    "status": "PASS"
+                    if not missing_periods
+                    and all(result["status"] == "PASS" for result in period_results.values())
+                    else "FAIL",
+                }
+            )
+        else:
+            metric = float(row["metric"])
+            status = "PASS" if metric < threshold else "FAIL"
+            if status == "FAIL":
+                pair_failures.append(list(key))
+            pair_results.append(
+                {
+                    "factor_id_left": key[0],
+                    "factor_id_right": key[1],
+                    "metric": metric,
+                    "threshold": threshold,
+                    "status": status,
+                    "source": row["source"],
+                }
+            )
 
     candidate_results: list[dict[str, Any]] = []
     candidate_failures: list[str] = []
@@ -201,8 +267,10 @@ def build_preflight(
         )
         formula_scope = str(candidate.get("formula_scope_gate", "PASS"))
         quality = quality_summaries.get(factor_id)
-        quality_status = "SKIPPED" if not quality_summaries else (
-            _quality_status(quality) if quality is not None else "MISSING"
+        quality_status = (
+            "SKIPPED"
+            if not quality_summaries
+            else (_quality_status(quality) if quality is not None else "MISSING")
         )
         status = (
             "PASS"
@@ -227,7 +295,9 @@ def build_preflight(
             }
         )
 
-    scope_status = proposal.get("market_scope") == ["SH", "SZ"] and "BJ" not in proposal.get("market_scope", [])
+    scope_status = proposal.get("market_scope") == ["SH", "SZ"] and "BJ" not in proposal.get(
+        "market_scope", []
+    )
     failures = []
     if not scope_status:
         failures.append("market_scope")
@@ -250,8 +320,18 @@ def build_preflight(
         "label": proposal.get("label"),
         "candidate_count": len(factor_ids),
         "candidate_ids": factor_ids,
-        "required_pair_count": len(expected),
-        "observed_pair_count": len([key for key in expected if key in similarity_evidence]),
+        "required_pair_count": len(expected) * (len(similarity_periods) or 1),
+        "unique_pair_count": len(expected),
+        "observed_pair_count": (
+            sum(
+                period in similarity_evidence.get(key, {}).get("period_metrics", {})
+                for key in expected
+                for period in similarity_periods
+            )
+            if similarity_periods
+            else len([key for key in expected if key in similarity_evidence])
+        ),
+        "similarity_periods": list(similarity_periods),
         "missing_pairs": [list(key) for key in missing],
         "pair_failures": pair_failures,
         "pair_results": pair_results,
@@ -272,6 +352,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--quality-artifact", type=Path, action="append", default=[])
     parser.add_argument("--similarity-artifact", type=Path, action="append", default=[])
     parser.add_argument("--similarity-csv", type=Path, action="append", default=[])
+    parser.add_argument("--train-similarity-csv", type=Path, action="append", default=[])
+    parser.add_argument("--validation-similarity-csv", type=Path, action="append", default=[])
     parser.add_argument("--csv-focus-factor")
     parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args(argv)
@@ -288,6 +370,22 @@ def main(argv: list[str] | None = None) -> int:
         )
         for key, row in csv_evidence.items():
             _add_evidence(evidence, key[0], key[1], row["metric"], row["source"])
+    for period, paths in (
+        ("train", args.train_similarity_csv),
+        ("validation", args.validation_similarity_csv),
+    ):
+        if paths:
+            period_evidence = collect_similarity_evidence(paths, period=period)
+            for key, row in period_evidence.items():
+                for name, metric_row in row.get("period_metrics", {}).items():
+                    _add_evidence(
+                        evidence,
+                        key[0],
+                        key[1],
+                        metric_row["metric"],
+                        metric_row["source"],
+                        period=name,
+                    )
     result = build_preflight(proposal, quality, evidence)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=True, indent=2) + "\n")
