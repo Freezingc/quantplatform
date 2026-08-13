@@ -1,0 +1,64 @@
+{
+  "annual": {
+    "2020": {
+      "directional_day_share": 0.6831275720164609,
+      "icir": 0.3791055846422233,
+      "mean_rank_ic": 0.024194755657828533,
+      "signed_mean_rank_ic": 0.024194755657828533,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "directional_day_share": 0.6049382716049383,
+      "icir": 0.2857463496711723,
+      "mean_rank_ic": 0.01741124325071876,
+      "signed_mean_rank_ic": 0.01741124325071876,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "directional_day_share": 0.6487603305785123,
+      "icir": 0.4521998460376843,
+      "mean_rank_ic": 0.028153870176022167,
+      "signed_mean_rank_ic": 0.028153870176022167,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "directional_day_share": 0.6363636363636364,
+      "icir": 0.41029826784586054,
+      "mean_rank_ic": 0.027224765535398668,
+      "signed_mean_rank_ic": 0.027224765535398668,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "directional_day_share": 0.6528925619834711,
+      "icir": 0.4563682093734514,
+      "mean_rank_ic": 0.0363031753602185,
+      "signed_mean_rank_ic": 0.0363031753602185,
+      "valid_day_count": 242
+    }
+  },
+  "artifact": "rolling_correlation/quality_summary.json",
+  "factor_id": "yeslab_167",
+  "factor_name": "Alpha99",
+  "frozen_direction": 1,
+  "strict_annual_icir_pass_years": 0,
+  "train_2020_2024": {
+    "directional_day_share": 0.6452145214521452,
+    "icir": 0.3972311902342684,
+    "mean_rank_ic": 0.02664790100174398,
+    "signed_mean_rank_ic": 0.02664790100174398,
+    "valid_day_count": 1212
+  },
+  "train_monthly_directional_share_pass_months": 44,
+  "train_monthly_signed_mean_pass_months": 32,
+  "validation_2025": {
+    "directional_day_share": 0.7983539094650206,
+    "icir": 0.7520198613971444,
+    "mean_rank_ic": 0.04154729373061164,
+    "signed_mean_rank_ic": 0.04154729373061164,
+    "valid_day_count": 243
+  },
+  "validation_monthly_directional_share_pass_months": 11,
+  "validation_monthly_signed_mean_pass_months": 11,
+  "variant": "rolling_correlation",
+  "window": 5
+}
