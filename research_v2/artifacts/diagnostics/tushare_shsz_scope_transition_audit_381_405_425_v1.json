@@ -1,0 +1,134 @@
+{
+  "database_writes": false,
+  "end": "2025-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_381",
+    "yeslab_405",
+    "yeslab_425"
+  ],
+  "factor_semantics": [
+    {
+      "calculator_class": "GP_Factor_012_Calculator",
+      "calculator_module": "GP_Factor_012_Calculator",
+      "factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "lookback_days": 5,
+      "replay_lookback_days": 5,
+      "required_market_fields": [
+        "amount",
+        "pct_chg"
+      ],
+      "required_non_market_fields": [],
+      "rolling_windows": [
+        5
+      ],
+      "scope_contract": "SH_SZ_ONLY",
+      "shift_periods": [],
+      "store_factor": "factor_data8",
+      "uses_cross_sectional_standardization": true,
+      "uses_forward_lookahead": false
+    },
+    {
+      "calculator_class": "GP_Factor_036_Calculator",
+      "calculator_module": "GP_Factor_036_Calculator",
+      "factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "lookback_days": 5,
+      "replay_lookback_days": 5,
+      "required_market_fields": [
+        "pct_chg"
+      ],
+      "required_non_market_fields": [],
+      "rolling_windows": [
+        5
+      ],
+      "scope_contract": "SH_SZ_ONLY",
+      "shift_periods": [],
+      "store_factor": "factor_data9",
+      "uses_cross_sectional_standardization": true,
+      "uses_forward_lookahead": false
+    },
+    {
+      "calculator_class": "GP_Factor_056_Calculator",
+      "calculator_module": "GP_Factor_056_Calculator",
+      "factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "lookback_days": 30,
+      "replay_lookback_days": 30,
+      "required_market_fields": [
+        "close",
+        "pct_chg"
+      ],
+      "required_non_market_fields": [],
+      "rolling_windows": [
+        10,
+        30
+      ],
+      "scope_contract": "SH_SZ_ONLY",
+      "shift_periods": [],
+      "store_factor": "factor_data9",
+      "uses_cross_sectional_standardization": true,
+      "uses_forward_lookahead": false
+    }
+  ],
+  "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW",
+  "formula_static_audit": "PASS",
+  "locked_test_read": false,
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "reason_codes": [
+    "CROSS_SECTIONAL_FORMULA_REQUIRES_EXPLICIT_SH_SZ_SCOPE",
+    "STORED_SOURCE_SCOPE_CONTAINS_BJ",
+    "NEW_VERSION_MUST_RETAIN_SH_SZ_SCOPE_AND_PIT_CONTRACT"
+  ],
+  "related_artifacts": [
+    "tushare_shsz_rematerialized_quality_16_v1.json",
+    "tushare_shsz_candidate_extension_similarity_v1.json"
+  ],
+  "review_status": "READY_FOR_MANUAL_SCOPE_APPROVAL",
+  "scope": "TUSHARE_SHSZ_FORMULA_SCOPE_TRANSITION_AUDIT_V1",
+  "scope_evidence": {
+    "stored_sources": {
+      "yeslab_381": {
+        "bj_code_count": 551,
+        "other_code_count": 0,
+        "scope_status": "FAIL",
+        "sh_code_count": 2391,
+        "sz_code_count": 3010,
+        "unique_code_count": 5952
+      },
+      "yeslab_405": {
+        "bj_code_count": 552,
+        "other_code_count": 0,
+        "scope_status": "FAIL",
+        "sh_code_count": 2391,
+        "sz_code_count": 3010,
+        "unique_code_count": 5953
+      },
+      "yeslab_425": {
+        "bj_code_count": 552,
+        "other_code_count": 0,
+        "scope_status": "FAIL",
+        "sh_code_count": 2391,
+        "sz_code_count": 3011,
+        "unique_code_count": 5954
+      }
+    },
+    "v2_universe": {
+      "bj_code_count": 0,
+      "other_code_count": 0,
+      "scope_status": "PASS",
+      "sh_code_count": 2180,
+      "sz_code_count": 2732,
+      "unique_code_count": 4912
+    }
+  },
+  "start": "2025-01-01",
+  "stored_source_scope_mismatch": true,
+  "v2_scope_audit": "PASS"
+}
