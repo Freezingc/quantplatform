@@ -156,5 +156,33 @@
     "decision": "NO_ANNUAL_ADMISSION_REVIEW",
     "reason": "All three repaired factors materially improve finite coverage but fail the fixed 2020 ICIR gate. They do not advance to annual stability, publication, factor-set inclusion, or model inputs."
   },
-  "action": "The derived snapshot fixes the confirmed PIT coverage defect for all eight conditional financial definitions. Their 2020 fixed-gate re-tests still fail predictive quality, so keep all eight out of publication and model inputs; no annual stability review or model training is authorized."
+  "annual_retest_2020_2024": {
+    "scope": "FINANCIAL_PIT_ANNUAL_QUALITY_2020_2024_V1",
+    "retested_factor_count": 8,
+    "strict_stability_gate": "at least 4 of 5 annual gates pass",
+    "strict_annual_pass_years": {
+      "yeslab_219": 0,
+      "yeslab_220": 0,
+      "yeslab_221": 0,
+      "yeslab_223": 0,
+      "yeslab_226": 0,
+      "yeslab_227": 0,
+      "yeslab_229": 0,
+      "yeslab_231": 0
+    },
+    "aggregate_icir": {
+      "yeslab_219": 0.1433249038,
+      "yeslab_220": 0.0876578783,
+      "yeslab_221": 0.0616912848,
+      "yeslab_223": 0.0711601992,
+      "yeslab_226": 0.1440884663,
+      "yeslab_227": -0.0562834256,
+      "yeslab_229": 0.0697352152,
+      "yeslab_231": 0.1044343623
+    },
+    "stable_candidate_count": 0,
+    "decision": "ALL_EIGHT_FAIL_4_OF_5_ANNUAL_GATE",
+    "artifact": "financial_pit_annual_quality_2020_2024_v1/summary.csv"
+  },
+  "action": "The derived snapshot fixes the confirmed PIT coverage defect for all eight conditional financial definitions. The 2020-2024 annual audit gives every candidate 0/5 strict annual passes, so keep all eight out of publication and model inputs; no model training is authorized."
 }

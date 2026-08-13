@@ -1,0 +1,21 @@
+{
+  "scope": "FINANCIAL_PIT_ANNUAL_QUALITY_2020_2024_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "raw 5-trading-day forward adjusted return",
+  "years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "candidate_count": 8,
+  "annual_gate": "signed mean RankIC > 0.02, abs ICIR >= 0.50, directional share >= 0.55, finite ratio >= 0.70",
+  "strict_stability_gate": "at least 4 of 5 annual gates pass",
+  "database_writes": false,
+  "locked_test_read": false,
+  "stable_candidate_count": 0
+}

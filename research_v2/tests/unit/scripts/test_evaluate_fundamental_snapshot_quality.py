@@ -135,3 +135,29 @@ def test_quarter_derivative_uses_prior_quarter_cumulative_value() -> None:
         {"report_period": date(2024, 6, 30), "raw_value": 0.5},
         {"report_period": date(2024, 9, 30), "raw_value": 2.0 / 15.0},
     ]
+
+
+def test_publish_parser_rejects_nonpositive_chunk_size() -> None:
+    with pytest.raises(SystemExit):
+        materialization.parse_args(["--publish-chunk-rows", "0"])
+
+
+def test_publish_chunks_are_bounded_and_partitioned_by_metric_month() -> None:
+    frame = pd.DataFrame(
+        {
+            "signal_date": [date(2021, 1, 4), date(2021, 1, 5), date(2021, 2, 1), date(2021, 1, 6)],
+            "ts_code": ["000001.SZ", "000002.SZ", "000001.SZ", "000003.SZ"],
+            "metric_id": ["roa", "roa", "roa", "roe"],
+            "value": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+
+    chunks = materialization._iter_publish_chunks(frame, chunk_rows=1)
+
+    assert [len(chunk) for chunk in chunks] == [1, 1, 1, 1]
+    assert [(chunk.iloc[0]["metric_id"], chunk.iloc[0]["signal_date"].month) for chunk in chunks] == [
+        ("roa", 1),
+        ("roa", 1),
+        ("roa", 2),
+        ("roe", 1),
+    ]

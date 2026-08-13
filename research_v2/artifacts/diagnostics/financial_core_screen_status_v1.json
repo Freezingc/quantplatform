@@ -17,7 +17,7 @@
   "annual_stability_reject_ids": ["yeslab_222", "yeslab_224"],
   "admission_candidate_ids": [],
   "status": "FINANCIAL_CORE_NO_ADMISSION_CANDIDATE",
-  "decision": "No raw financial factor in this core group may enter model inputs. The eight PIT-conditional candidates have now been repaired and re-tested; all fail the fixed 2020 predictive gate, so none advances to annual stability or publication.",
+  "decision": "No raw financial factor in this core group may enter model inputs. The eight PIT-conditional candidates have now been repaired and evaluated across 2020-2024; all fail the fixed annual predictive gate and none reaches 4/5 years, so none advances to publication or model inputs.",
   "evidence_artifacts": [
     "financial_aliases_train_2020_quality_v1.json",
     "financial_aliases_train_2021_quality_v1.json",
@@ -29,7 +29,8 @@
     "financial_ocf_growth_train_2020_quality_v1.json",
     "financial_op_yoy_amplitude_train_2020_quality_v1.json",
     "financial_road_roed_train_2020_quality_v1.json",
-    "financial_pit_retest_2020_summary_v1.json"
+    "financial_pit_retest_2020_summary_v1.json",
+    "financial_pit_annual_quality_2020_2024_v1/summary.csv"
   ],
   "database_writes": false,
   "model_training_started": false,

@@ -28,6 +28,7 @@ from research_v2.pit.calendar import TradingCalendar
 TARGET_DATABASE = "dfs://QuantResearchV2Test"
 OBJECT_NAME = "fundamental_pit_snapshot"
 LOCKED_TEST_START = date(2026, 1, 1)
+DEFAULT_PUBLISH_CHUNK_ROWS = 25_000
 DIRECT_METRICS = ("roa", "roe", "roic")
 DERIVED_METRICS = {
     "road": ("roa", "difference"),
@@ -46,6 +47,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--end", type=date.fromisoformat, default=date(2020, 12, 31))
     parser.add_argument("--metric", action="append", default=[])
     parser.add_argument("--publish", action="store_true")
+    parser.add_argument("--publish-chunk-rows", type=int, default=DEFAULT_PUBLISH_CHUNK_ROWS)
     args = parser.parse_args(argv)
     args.metric = tuple(dict.fromkeys(args.metric or SUPPORTED_METRICS))
     unsupported = sorted(set(args.metric).difference(SUPPORTED_METRICS))
@@ -53,6 +55,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         parser.error(f"unsupported metrics: {unsupported}")
     if args.start > args.end or args.end >= LOCKED_TEST_START:
         parser.error("snapshot range must be before 2026 and start <= end")
+    if args.publish_chunk_rows < 1:
+        parser.error("publish-chunk-rows must be positive")
     return args
 
 
@@ -640,10 +644,14 @@ def _quality_summary(frame: pd.DataFrame, universe: pd.DataFrame) -> dict[str, o
     }
 
 
-def _publish(session: V2WriteSession, frame: pd.DataFrame) -> None:
-    _reject_existing_business_keys(session, frame)
-    stage = f"fundamental_pit_{uuid.uuid4().hex[:16]}"
-    session.upload_frame(stage, frame)
+def _publish(
+    session: V2WriteSession,
+    frame: pd.DataFrame,
+    *,
+    chunk_rows: int = DEFAULT_PUBLISH_CHUNK_ROWS,
+) -> None:
+    if chunk_rows < 1:
+        raise ValueError("chunk_rows must be positive")
     schema = session.query(
         f"schema(loadTable('{session.target_database}','{OBJECT_NAME}')).colDefs"
     )
@@ -651,34 +659,72 @@ def _publish(session: V2WriteSession, frame: pd.DataFrame) -> None:
         raise RuntimeError("fundamental PIT target schema query did not return a DataFrame")
     types = dict(zip(schema["name"].astype(str), schema["typeString"].astype(str), strict=True))
     casts = {"DATE": "date", "INT": "int", "DOUBLE": "double", "UUID": "uuid", "TIMESTAMP": "timestamp"}
-    selected = ", ".join(
-        f"{casts[types[column]]}({column}) as {column}" if types.get(column) in casts else column
-        for column in frame.columns
-    )
-    session.execute(
-        f"{stage}_typed = select {selected} from {stage}\n"
-        f"tableInsert{{loadTable('{session.target_database}','{OBJECT_NAME}')}}({stage}_typed)\n"
-        f"undef(`{stage}, VAR)\nundef(`{stage}_typed, VAR)"
-    )
+    for chunk in _iter_publish_chunks(frame, chunk_rows=chunk_rows):
+        if _chunk_already_published(session, chunk):
+            continue
+        stage = f"fundamental_pit_{uuid.uuid4().hex[:16]}"
+        session.upload_frame(stage, chunk)
+        selected = ", ".join(
+            f"{casts[types[column]]}({column}) as {column}"
+            if types.get(column) in casts
+            else column
+            for column in chunk.columns
+        )
+        session.execute(
+            f"{stage}_typed = select {selected} from {stage}\n"
+            f"tableInsert{{loadTable('{session.target_database}','{OBJECT_NAME}')}}({stage}_typed)\n"
+            f"undef(`{stage}, VAR)\nundef(`{stage}_typed, VAR)"
+        )
 
 
-def _reject_existing_business_keys(session: V2WriteSession, frame: pd.DataFrame) -> None:
-    """Fail closed instead of appending a duplicate snapshot range."""
-    metrics = tuple(sorted(set(frame["metric_id"].astype(str))))
-    start = pd.Timestamp(frame["signal_date"].min()).strftime("%Y.%m.%d")
-    end = pd.Timestamp(frame["signal_date"].max()).strftime("%Y.%m.%d")
-    metric_symbols = "`" + "`".join(metrics)
+def _iter_publish_chunks(frame: pd.DataFrame, *, chunk_rows: int) -> list[pd.DataFrame]:
+    """Split by metric/month first, then cap each DolphinDB insert size."""
+    working = frame.copy(deep=False)
+    working["_logical_month"] = pd.to_datetime(
+        working["signal_date"], errors="raise"
+    ).dt.strftime("%Y-%m")
+    chunks: list[pd.DataFrame] = []
+    for _, group in working.groupby(["metric_id", "_logical_month"], sort=True):
+        group = group.drop(columns="_logical_month")
+        for start in range(0, len(group), chunk_rows):
+            chunks.append(group.iloc[start : start + chunk_rows].copy())
+    return chunks
+
+
+def _chunk_already_published(session: V2WriteSession, chunk: pd.DataFrame) -> bool:
+    """Skip only an exact business-key/data-version match; reject conflicts."""
+    start = pd.Timestamp(chunk["signal_date"].min()).strftime("%Y.%m.%d")
+    end = pd.Timestamp(chunk["signal_date"].max()).strftime("%Y.%m.%d")
+    metric = str(chunk["metric_id"].iloc[0])
     existing = session.query(
-        "select count(*) as row_count from "
+        "select signal_date,ts_code,metric_id,data_version from "
         f"loadTable('{session.target_database}','{OBJECT_NAME}') "
-        f"where signal_date between date('{start}') and date('{end}') "
-        f"and metric_id in {metric_symbols}"
+        f"where metric_id=`{metric} and signal_date between date('{start}') and date('{end}')"
     )
-    if not isinstance(existing, pd.DataFrame) or len(existing) != 1:
-        raise RuntimeError("fundamental PIT duplicate preflight did not return one row")
-    if int(existing["row_count"].iloc[0]) > 0:
-        raise RuntimeError("fundamental PIT target already contains the requested metric/date range")
-
+    if not isinstance(existing, pd.DataFrame):
+        raise RuntimeError("fundamental PIT chunk preflight did not return a DataFrame")
+    if existing.empty:
+        return False
+    keys = ["signal_date", "ts_code", "metric_id"]
+    left = chunk.loc[:, keys + ["data_version"]].copy()
+    right = existing.loc[:, keys + ["data_version"]].copy()
+    for frame in (left, right):
+        frame["signal_date"] = pd.to_datetime(frame["signal_date"], errors="raise").dt.date
+        frame["ts_code"] = frame["ts_code"].astype(str)
+        frame["metric_id"] = frame["metric_id"].astype(str)
+        frame["data_version"] = frame["data_version"].astype(str)
+    matched = left.merge(right, on=keys, how="left", suffixes=("_incoming", "_existing"), validate="one_to_one")
+    if matched["data_version_existing"].notna().sum() == 0:
+        return False
+    if matched["data_version_existing"].isna().any():
+        raise RuntimeError(
+            f"fundamental PIT chunk is partially present: metric={metric}, range={start}/{end}"
+        )
+    if (matched["data_version_incoming"] == matched["data_version_existing"]).all():
+        return True
+    raise RuntimeError(
+        f"fundamental PIT chunk conflicts with existing rows: metric={metric}, range={start}/{end}"
+    )
 
 def main(argv: Sequence[str] | None = None) -> dict[str, object]:
     args = parse_args(argv)
@@ -720,7 +766,7 @@ def main(argv: Sequence[str] | None = None) -> dict[str, object]:
         **_quality_summary(frame, universe),
     }
     if args.publish:
-        _publish(target, frame)
+        _publish(target, frame, chunk_rows=args.publish_chunk_rows)
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
     return summary
 
