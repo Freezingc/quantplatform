@@ -256,3 +256,25 @@ def test_repository_repair_candidate_migration_declares_candidate_table() -> Non
         "record_hash",
     ):
         assert f"`{column_name}" in candidate_migration.script
+
+
+def test_repository_fundamental_snapshot_migration_declares_new_derived_table() -> None:
+    migration_directory = Path(__file__).resolve().parents[3] / "migrations"
+    migrations = discover_migrations(migration_directory)
+
+    snapshot_migration = next(migration for migration in migrations if migration.version == 11)
+
+    assert "`fundamental_pit_snapshot" in snapshot_migration.script
+    for column_name in (
+        "signal_date",
+        "ts_code",
+        "metric_id",
+        "report_period",
+        "ann_date",
+        "available_date",
+        "source_revision_id",
+        "stale_days",
+        "run_id",
+        "data_version",
+    ):
+        assert f"`{column_name}" in snapshot_migration.script
