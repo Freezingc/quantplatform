@@ -33,6 +33,17 @@
   "scope_audit_status": "PASS",
   "formula_precision_diagnostic_status": "MONITOR",
   "formula_precision_diagnostic_classification": "NUMERIC_PRECISION_SENSITIVE",
+  "regime_monitoring": {
+    "artifact": "formal_monitored_factor_regime_audit_v1.json",
+    "thresholds": {"minimum_signed_mean_rank_ic": 0.02, "minimum_signed_icir": 0.5},
+    "factor_status": {
+      "yeslab_380": {"train_failed_regimes": ["trend:nonpositive"], "validation_failed_regimes": ["trend:nonpositive", "volatility:high"], "action": "MONITOR_NONPOSITIVE_TREND_AND_HIGH_VOLATILITY"},
+      "yeslab_431": {"train_failed_regimes": ["trend:nonpositive", "volatility:low"], "validation_failed_regimes": [], "action": "MONITOR_TRAIN_NONPOSITIVE_TREND_AND_LOW_VOLATILITY"},
+      "yeslab_437": {"train_failed_regimes": ["trend:nonpositive", "volatility:low"], "validation_failed_regimes": [], "action": "MONITOR_TRAIN_NONPOSITIVE_TREND_AND_LOW_VOLATILITY"},
+      "yeslab_94": {"train_failed_regimes": ["trend:nonpositive", "volatility:high"], "validation_failed_regimes": ["volatility:high"], "action": "MONITOR_HIGH_VOLATILITY_AND_NONPOSITIVE_TREND"}
+    },
+    "interpretation": "Regime failures are monitoring triggers, not automatic factor rejection or formula changes. Re-evaluate monthly and block any future factor admission expansion if the same regime remains below either threshold in the next validation window."
+  },
   "rows": [
     {
       "factor_id": "yeslab_155",

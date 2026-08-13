@@ -926,6 +926,17 @@
   "database_writes": false,
   "model_training_started": false,
   "publication_status": "NOT_PUBLISHED",
+  "formal_regime_monitoring": {
+    "artifact": "formal_monitored_factor_regime_audit_v1.json",
+    "thresholds": {"minimum_signed_mean_rank_ic": 0.02, "minimum_signed_icir": 0.5},
+    "factor_status": {
+      "yeslab_380": {"train_failed_regimes": ["trend:nonpositive"], "validation_failed_regimes": ["trend:nonpositive", "volatility:high"]},
+      "yeslab_431": {"train_failed_regimes": ["trend:nonpositive", "volatility:low"], "validation_failed_regimes": []},
+      "yeslab_437": {"train_failed_regimes": ["trend:nonpositive", "volatility:low"], "validation_failed_regimes": []},
+      "yeslab_94": {"train_failed_regimes": ["trend:nonpositive", "volatility:high"], "validation_failed_regimes": ["volatility:high"]}
+    },
+    "action": "Use these states as monitoring triggers; do not reject or change formulas automatically."
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",

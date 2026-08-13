@@ -1,0 +1,313 @@
+{
+  "scope": "FORMAL_MONITORED_FACTOR_REGIME_AUDIT_V1",
+  "factor_ids": [
+    "yeslab_380",
+    "yeslab_431",
+    "yeslab_437",
+    "yeslab_94"
+  ],
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1 raw five-trading-day forward return",
+  "thresholds": {
+    "minimum_signed_mean_rank_ic": 0.02,
+    "minimum_signed_icir": 0.5
+  },
+  "results": {
+    "yeslab_380": {
+      "train_2020_2024": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 491,
+              "signed_mean_rank_ic": 0.06401699513632575,
+              "signed_icir": 0.4669313858909106,
+              "directional_day_share": 0.6863543788187373
+            },
+            "positive": {
+              "valid_day_count": 721,
+              "signed_mean_rank_ic": 0.09374249611975542,
+              "signed_icir": 0.6843716333731372,
+              "directional_day_share": 0.7309292649098474
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 612,
+              "signed_mean_rank_ic": 0.0866470161435998,
+              "signed_icir": 0.5929674785691216,
+              "directional_day_share": 0.7156862745098039
+            },
+            "low": {
+              "valid_day_count": 600,
+              "signed_mean_rank_ic": 0.0766545173906609,
+              "signed_icir": 0.5962284910707181,
+              "directional_day_share": 0.71
+            }
+          }
+        },
+        "failed_regimes": [
+          "trend:nonpositive"
+        ]
+      },
+      "validation_2025": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 66,
+              "signed_mean_rank_ic": 0.014024889732583635,
+              "signed_icir": 0.10410726600309725,
+              "directional_day_share": 0.5151515151515151
+            },
+            "positive": {
+              "valid_day_count": 177,
+              "signed_mean_rank_ic": 0.11046696990091186,
+              "signed_icir": 0.7198494983343661,
+              "directional_day_share": 0.7570621468926554
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 85,
+              "signed_mean_rank_ic": 0.02157005423092851,
+              "signed_icir": 0.14256666996395032,
+              "directional_day_share": 0.5058823529411764
+            },
+            "low": {
+              "valid_day_count": 158,
+              "signed_mean_rank_ic": 0.11800532775432279,
+              "signed_icir": 0.8097020700186385,
+              "directional_day_share": 0.7911392405063291
+            }
+          }
+        },
+        "failed_regimes": [
+          "trend:nonpositive",
+          "volatility:high"
+        ]
+      }
+    },
+    "yeslab_431": {
+      "train_2020_2024": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 491,
+              "signed_mean_rank_ic": 0.05504909977489852,
+              "signed_icir": 0.39207506777060114,
+              "directional_day_share": 0.6741344195519349
+            },
+            "positive": {
+              "valid_day_count": 721,
+              "signed_mean_rank_ic": 0.07937551168238656,
+              "signed_icir": 0.705071424192406,
+              "directional_day_share": 0.7406380027739251
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 612,
+              "signed_mean_rank_ic": 0.07785840781085192,
+              "signed_icir": 0.6137448837614257,
+              "directional_day_share": 0.7418300653594772
+            },
+            "low": {
+              "valid_day_count": 600,
+              "signed_mean_rank_ic": 0.061015843887057525,
+              "signed_icir": 0.4967064608865032,
+              "directional_day_share": 0.685
+            }
+          }
+        },
+        "failed_regimes": [
+          "trend:nonpositive",
+          "volatility:low"
+        ]
+      },
+      "validation_2025": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 66,
+              "signed_mean_rank_ic": 0.06556780386957102,
+              "signed_icir": 0.6504563689835282,
+              "directional_day_share": 0.803030303030303
+            },
+            "positive": {
+              "valid_day_count": 177,
+              "signed_mean_rank_ic": 0.09267519168866745,
+              "signed_icir": 0.7825023523559455,
+              "directional_day_share": 0.751412429378531
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 85,
+              "signed_mean_rank_ic": 0.058188000213439915,
+              "signed_icir": 0.54795785680189,
+              "directional_day_share": 0.6823529411764706
+            },
+            "low": {
+              "valid_day_count": 158,
+              "signed_mean_rank_ic": 0.09990508839331287,
+              "signed_icir": 0.8595220510694992,
+              "directional_day_share": 0.810126582278481
+            }
+          }
+        },
+        "failed_regimes": []
+      }
+    },
+    "yeslab_437": {
+      "train_2020_2024": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 491,
+              "signed_mean_rank_ic": 0.053067586561410765,
+              "signed_icir": 0.35641935726964497,
+              "directional_day_share": 0.6761710794297352
+            },
+            "positive": {
+              "valid_day_count": 721,
+              "signed_mean_rank_ic": 0.07623432620007943,
+              "signed_icir": 0.6513596695593802,
+              "directional_day_share": 0.7420249653259362
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 612,
+              "signed_mean_rank_ic": 0.08171675077205373,
+              "signed_icir": 0.6042590678721054,
+              "directional_day_share": 0.7352941176470589
+            },
+            "low": {
+              "valid_day_count": 600,
+              "signed_mean_rank_ic": 0.05168413786568846,
+              "signed_icir": 0.41182465381427324,
+              "directional_day_share": 0.695
+            }
+          }
+        },
+        "failed_regimes": [
+          "trend:nonpositive",
+          "volatility:low"
+        ]
+      },
+      "validation_2025": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 66,
+              "signed_mean_rank_ic": 0.09853757262131406,
+              "signed_icir": 0.9927812297790393,
+              "directional_day_share": 0.8333333333333334
+            },
+            "positive": {
+              "valid_day_count": 177,
+              "signed_mean_rank_ic": 0.08079044461053643,
+              "signed_icir": 0.6780435085840661,
+              "directional_day_share": 0.7401129943502824
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 85,
+              "signed_mean_rank_ic": 0.07682748241100246,
+              "signed_icir": 0.6687820745275238,
+              "directional_day_share": 0.7058823529411765
+            },
+            "low": {
+              "valid_day_count": 158,
+              "signed_mean_rank_ic": 0.0903357752160536,
+              "signed_icir": 0.7933481386991196,
+              "directional_day_share": 0.7974683544303798
+            }
+          }
+        },
+        "failed_regimes": []
+      }
+    },
+    "yeslab_94": {
+      "train_2020_2024": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 491,
+              "signed_mean_rank_ic": 0.02142266346780433,
+              "signed_icir": 0.3037301727051095,
+              "directional_day_share": 0.639511201629328
+            },
+            "positive": {
+              "valid_day_count": 721,
+              "signed_mean_rank_ic": 0.05032033927993955,
+              "signed_icir": 0.6510961251222979,
+              "directional_day_share": 0.7558945908460472
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 612,
+              "signed_mean_rank_ic": 0.042370489385487445,
+              "signed_icir": 0.48197684955656933,
+              "directional_day_share": 0.7222222222222222
+            },
+            "low": {
+              "valid_day_count": 600,
+              "signed_mean_rank_ic": 0.034781254799350035,
+              "signed_icir": 0.5684114122675006,
+              "directional_day_share": 0.695
+            }
+          }
+        },
+        "failed_regimes": [
+          "trend:nonpositive",
+          "volatility:high"
+        ]
+      },
+      "validation_2025": {
+        "regime": {
+          "trend": {
+            "nonpositive": {
+              "valid_day_count": 66,
+              "signed_mean_rank_ic": 0.05394116816431424,
+              "signed_icir": 0.6709686190489645,
+              "directional_day_share": 0.7727272727272727
+            },
+            "positive": {
+              "valid_day_count": 177,
+              "signed_mean_rank_ic": 0.055401740755903824,
+              "signed_icir": 0.7065573886049002,
+              "directional_day_share": 0.7570621468926554
+            }
+          },
+          "volatility": {
+            "high": {
+              "valid_day_count": 85,
+              "signed_mean_rank_ic": 0.03519659202150301,
+              "signed_icir": 0.3793024450315825,
+              "directional_day_share": 0.611764705882353
+            },
+            "low": {
+              "valid_day_count": 158,
+              "signed_mean_rank_ic": 0.06566148665070862,
+              "signed_icir": 0.9644511887359226,
+              "directional_day_share": 0.8417721518987342
+            }
+          }
+        },
+        "failed_regimes": [
+          "volatility:high"
+        ]
+      }
+    }
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "publication_status": "NOT_PUBLISHED",
+  "formal_factor_set_unchanged": true,
+  "model_training_started": false
+}
