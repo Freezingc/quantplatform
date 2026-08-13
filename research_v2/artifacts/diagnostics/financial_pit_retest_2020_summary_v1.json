@@ -30,7 +30,7 @@
     "admission_candidate_count": 0,
     "publication_status": "NOT_PUBLISHED",
     "model_training_started": false,
-    "conclusion": "PIT repair materially improves coverage for direct financial metrics, but all eight candidates fail the fixed 2020 predictive gate and remain outside annual stability review, formal factor publication, and model inputs."
+    "conclusion": "PIT repair materially improves coverage for direct financial metrics, but all eight candidates fail the fixed 2020 predictive gate and remain outside annual stability review, formal factor publication, and model inputs. The subsequent 2020-2024 annual audit confirms zero candidates reach the 4/5-year stability gate."
   },
   "artifacts": ["fundamental_pit_snapshot_quality_2020_v1/summary.csv", "fundamental_pit_derived_quality_2020_v1/summary.csv", "fundamental_pit_ta_np_quality_2020_v1/summary.csv"]
 }
