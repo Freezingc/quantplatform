@@ -968,6 +968,20 @@
     "database_writes": false,
     "locked_test_read": false
   },
+  "alpha484_rematerialized_2020_2024": {
+    "artifact": "tushare_shsz_alpha484_rematerialized_quality_2020_2024_v1.json",
+    "factor_id": "yeslab_484",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "period": "2020-01-02/2024-12-31",
+    "frozen_direction": -1,
+    "annual_double_gate_pass_years": 5,
+    "same_direction_years": 5,
+    "status": "MULTI_YEAR_STABILITY_PASS_PENDING_SIMILARITY_AND_FORMULA_SCOPE",
+    "action": "Keep Alpha484 isolated. Complete full five-year cross-sectional similarity and formula-scope/adjusted-price reconciliation before admission, publication, factor-value writes, model input changes, or training.",
+    "database_writes": false,
+    "locked_test_read": false
+  },
   "adjusted_price_provenance_audit": {
     "artifact": "yeslab_adjusted_price_provenance_audit_v1.json",
     "classification": "SOURCE_INTERNAL_HFQ_CONSISTENT_CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP",

@@ -1,0 +1,92 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA484_REMATERIALIZED_QUALITY_2020_2024_V1",
+  "market_scope": ["SH", "SZ"],
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "market_source": "Tushare.daily + Tushare.adj_factor",
+  "period": "2020-01-02/2024-12-31",
+  "factor_id": "yeslab_484",
+  "factor_name": "羊群效应_CSAD波动率21",
+  "frozen_direction": -1,
+  "thresholds": {
+    "signed_mean_rank_ic_strictly_above": 0.02,
+    "signed_icir_at_least": 0.5,
+    "directional_day_share_at_least": 0.55,
+    "minimum_annual_pass_years": 4,
+    "annual_review_years": 5
+  },
+  "annual_results": {
+    "2020": {
+      "code_count": 3587,
+      "market_start": "2019-06-09",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0636168194,
+      "icir": -0.5746951744,
+      "signed_mean_rank_ic": 0.0636168194,
+      "signed_icir": 0.5746951744,
+      "directional_day_share": 0.7201646091,
+      "annual_double_gate_pass": true
+    },
+    "2021": {
+      "code_count": 3898,
+      "market_start": "2020-06-29",
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0581154679,
+      "icir": -0.5575463655,
+      "signed_mean_rank_ic": 0.0581154679,
+      "signed_icir": 0.5575463655,
+      "directional_day_share": 0.7119341564,
+      "annual_double_gate_pass": true
+    },
+    "2022": {
+      "code_count": 4342,
+      "market_start": "2021-06-08",
+      "valid_day_count": 242,
+      "mean_rank_ic": -0.0813541007,
+      "icir": -0.7374592031,
+      "signed_mean_rank_ic": 0.0813541007,
+      "signed_icir": 0.7374592031,
+      "directional_day_share": 0.7809917355,
+      "annual_double_gate_pass": true
+    },
+    "2023": {
+      "code_count": 4714,
+      "market_start": "2022-06-08",
+      "valid_day_count": 242,
+      "mean_rank_ic": -0.0678257517,
+      "icir": -0.5484591805,
+      "signed_mean_rank_ic": 0.0678257517,
+      "signed_icir": 0.5484591805,
+      "directional_day_share": 0.6942148760,
+      "annual_double_gate_pass": true
+    },
+    "2024": {
+      "code_count": 4882,
+      "market_start": "2023-06-07",
+      "valid_day_count": 242,
+      "mean_rank_ic": -0.0822372864,
+      "icir": -0.5406585809,
+      "signed_mean_rank_ic": 0.0822372864,
+      "signed_icir": 0.5406585809,
+      "directional_day_share": 0.7066115702,
+      "annual_double_gate_pass": true
+    }
+  },
+  "stability_summary": {
+    "same_direction_years": 5,
+    "annual_double_gate_pass_years": 5,
+    "status": "MULTI_YEAR_STABILITY_PASS_PENDING_SIMILARITY_AND_FORMULA_SCOPE"
+  },
+  "decision": "KEEP_YESLAB_484_ISOLATED_RESEARCH_CANDIDATE",
+  "action": "The five-year Tushare SH/SZ annual stability gate passes. Complete full five-year cross-sectional similarity and formula-scope/adjusted-price reconciliation before any admission, publication, factor-value write, model input change, or training.",
+  "database_writes": false,
+  "locked_test_read": false,
+  "model_training_started": false,
+  "local_intermediate_artifacts": [
+    "tushare_shsz_alpha484_rematerialized_2020_v1/quality_summary.json",
+    "tushare_shsz_alpha484_rematerialized_2021_v1/quality_summary.json",
+    "tushare_shsz_alpha484_rematerialized_2022_v1/quality_summary.json",
+    "tushare_shsz_alpha484_rematerialized_2023_v1/quality_summary.json",
+    "tushare_shsz_csad_corwin_rematerialized_quality_2024_v1.json"
+  ]
+}
