@@ -1,0 +1,9 @@
+[
+  {
+    "factor_id_left":"yeslab_114",
+    "factor_id_right":"yeslab_98",
+    "median_abs_spearman":0.2231426102,
+    "max_abs_spearman":0.6507264984,
+    "valid_day_count":243
+  }
+]
