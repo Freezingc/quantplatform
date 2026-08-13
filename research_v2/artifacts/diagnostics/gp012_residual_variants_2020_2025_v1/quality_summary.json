@@ -1,0 +1,107 @@
+{
+  "database_writes": false,
+  "end": "2025-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_381",
+    "yeslab_405"
+  ],
+  "frozen_direction": -1,
+  "label": "forward_open_5d:v1 raw five-trading-day forward return",
+  "label_rows": 4932879,
+  "locked_test_read": false,
+  "market_rows": 7144781,
+  "market_scope": "SH/SZ",
+  "market_source": "local Tushare.daily cache",
+  "pair_similarity": {
+    "daily_count": 1451,
+    "raw_vs_gp036_median_abs_spearman": 0.8606260110215873,
+    "raw_vs_gp036_validation_median_abs_spearman": 0.881618328784309,
+    "residual_vs_gp036_median_abs_spearman": 0.5887383734680945,
+    "residual_vs_gp036_validation_median_abs_spearman": 0.6229205422856979
+  },
+  "scope": "GP012_RESIDUAL_VARIANT_EVALUATION_V1",
+  "start": "2020-01-01",
+  "variants": [
+    {
+      "directional_day_share": 0.7505168849069607,
+      "icir": -0.6565686566911283,
+      "mean_rank_ic": -0.07879123528814702,
+      "signed_mean_rank_ic": 0.07879123528814702,
+      "train_2020_2024": {
+        "directional_day_share": 0.7367549668874173,
+        "icir": -0.615982579279441,
+        "mean_rank_ic": -0.07548351133972386,
+        "signed_mean_rank_ic": 0.07548351133972386,
+        "valid_day_count": 1208
+      },
+      "train_monthly_directional_share_pass_months": 50,
+      "train_monthly_signed_mean_pass_months": 51,
+      "valid_day_count": 1451,
+      "validation_2025": {
+        "directional_day_share": 0.8189300411522634,
+        "icir": -0.9053413538585113,
+        "mean_rank_ic": -0.09523457080129587,
+        "signed_mean_rank_ic": 0.09523457080129587,
+        "valid_day_count": 243
+      },
+      "validation_monthly_directional_share_pass_months": 11,
+      "validation_monthly_signed_mean_pass_months": 11,
+      "variant": "gp012_raw"
+    },
+    {
+      "directional_day_share": 0.4410751206064783,
+      "icir": 0.14574830494014815,
+      "mean_rank_ic": 0.013030977815682,
+      "signed_mean_rank_ic": -0.013030977815682,
+      "train_2020_2024": {
+        "directional_day_share": 0.4594370860927152,
+        "icir": 0.10956558366059442,
+        "mean_rank_ic": 0.009968143713951426,
+        "signed_mean_rank_ic": -0.009968143713951426,
+        "valid_day_count": 1208
+      },
+      "train_monthly_directional_share_pass_months": 23,
+      "train_monthly_signed_mean_pass_months": 11,
+      "valid_day_count": 1451,
+      "validation_2025": {
+        "directional_day_share": 0.3497942386831276,
+        "icir": 0.3550654541986047,
+        "mean_rank_ic": 0.028256918535396126,
+        "signed_mean_rank_ic": -0.028256918535396126,
+        "valid_day_count": 243
+      },
+      "validation_monthly_directional_share_pass_months": 3,
+      "validation_monthly_signed_mean_pass_months": 2,
+      "variant": "gp012_residual_ols"
+    },
+    {
+      "directional_day_share": 0.6285320468642316,
+      "icir": -0.3183116603255,
+      "mean_rank_ic": -0.037320417660334594,
+      "signed_mean_rank_ic": 0.037320417660334594,
+      "train_2020_2024": {
+        "directional_day_share": 0.6299668874172185,
+        "icir": -0.310195824236696,
+        "mean_rank_ic": -0.036857815718218306,
+        "signed_mean_rank_ic": 0.036857815718218306,
+        "valid_day_count": 1208
+      },
+      "train_monthly_directional_share_pass_months": 43,
+      "train_monthly_signed_mean_pass_months": 42,
+      "valid_day_count": 1451,
+      "validation_2025": {
+        "directional_day_share": 0.6213991769547325,
+        "icir": -0.36257376448486694,
+        "mean_rank_ic": -0.039620101389044364,
+        "signed_mean_rank_ic": 0.039620101389044364,
+        "valid_day_count": 243
+      },
+      "validation_monthly_directional_share_pass_months": 7,
+      "validation_monthly_signed_mean_pass_months": 8,
+      "variant": "gp012_residual_rank"
+    }
+  ]
+}
