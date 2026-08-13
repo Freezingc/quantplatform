@@ -1,0 +1,542 @@
+{
+  "database_writes": false,
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_165",
+    "yeslab_168"
+  ],
+  "factor_names": {
+    "yeslab_165": "Alpha97",
+    "yeslab_168": "Alpha100"
+  },
+  "factors": {
+    "yeslab_165": {
+      "log_volume_std": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.6666666666666666,
+            "icir": -0.34885383932935327,
+            "mean_rank_ic": -0.030063438097034677,
+            "signed_mean_rank_ic": 0.030063438097034677,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.5802469135802469,
+            "icir": -0.13842613103982152,
+            "mean_rank_ic": -0.009627705786819575,
+            "signed_mean_rank_ic": 0.009627705786819575,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.6776859504132231,
+            "icir": -0.502370108345523,
+            "mean_rank_ic": -0.03383052910575805,
+            "signed_mean_rank_ic": 0.03383052910575805,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.6859504132231405,
+            "icir": -0.5123494471752724,
+            "mean_rank_ic": -0.030240746351943782,
+            "signed_mean_rank_ic": 0.030240746351943782,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.731404958677686,
+            "icir": -0.5527763967313157,
+            "mean_rank_ic": -0.04697738605515536,
+            "signed_mean_rank_ic": 0.04697738605515536,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_165/log_volume_std/quality_summary.json",
+        "factor_id": "yeslab_165",
+        "factor_name": "Alpha97",
+        "strict_annual_icir_pass_years": 3,
+        "train_2020_2024": {
+          "directional_day_share": 0.6683168316831684,
+          "icir": -0.40165019508298705,
+          "mean_rank_ic": -0.030130960437201343,
+          "signed_mean_rank_ic": 0.030130960437201343,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 45,
+        "train_monthly_signed_mean_pass_months": 35,
+        "validation_2025": {
+          "directional_day_share": 0.8436213991769548,
+          "icir": -1.0400106024634042,
+          "mean_rank_ic": -0.061199101990992294,
+          "signed_mean_rank_ic": 0.061199101990992294,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 11,
+        "validation_monthly_signed_mean_pass_months": 11,
+        "variant": "log_volume_std",
+        "window": 10
+      },
+      "rank_volume_std": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.7695473251028807,
+            "icir": -0.5465421358780534,
+            "mean_rank_ic": -0.05685472988240904,
+            "signed_mean_rank_ic": 0.05685472988240904,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.6255144032921811,
+            "icir": -0.26384822664390045,
+            "mean_rank_ic": -0.032568846210129614,
+            "signed_mean_rank_ic": 0.032568846210129614,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.6074380165289256,
+            "icir": -0.271103884336148,
+            "mean_rank_ic": -0.036378213597754956,
+            "signed_mean_rank_ic": 0.036378213597754956,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.6115702479338843,
+            "icir": -0.30114851447682967,
+            "mean_rank_ic": -0.03867585358458095,
+            "signed_mean_rank_ic": 0.03867585358458095,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.5991735537190083,
+            "icir": -0.21006098328392317,
+            "mean_rank_ic": -0.026133508430317795,
+            "signed_mean_rank_ic": 0.026133508430317795,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_165/rank_volume_std/quality_summary.json",
+        "factor_id": "yeslab_165",
+        "factor_name": "Alpha97",
+        "strict_annual_icir_pass_years": 1,
+        "train_2020_2024": {
+          "directional_day_share": 0.6427392739273927,
+          "icir": -0.3086991811427766,
+          "mean_rank_ic": -0.038133104198637864,
+          "signed_mean_rank_ic": 0.038133104198637864,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 42,
+        "train_monthly_signed_mean_pass_months": 41,
+        "validation_2025": {
+          "directional_day_share": 0.7818930041152263,
+          "icir": -0.7270408575800574,
+          "mean_rank_ic": -0.06666710841939594,
+          "signed_mean_rank_ic": 0.06666710841939594,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 12,
+        "validation_monthly_signed_mean_pass_months": 11,
+        "variant": "rank_volume_std",
+        "window": 10
+      },
+      "raw_volume_std": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.7695473251028807,
+            "icir": -0.5465421358780534,
+            "mean_rank_ic": -0.05685472988240904,
+            "signed_mean_rank_ic": 0.05685472988240904,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.6255144032921811,
+            "icir": -0.26384822664390045,
+            "mean_rank_ic": -0.032568846210129614,
+            "signed_mean_rank_ic": 0.032568846210129614,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.6074380165289256,
+            "icir": -0.271103884336148,
+            "mean_rank_ic": -0.036378213597754956,
+            "signed_mean_rank_ic": 0.036378213597754956,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.6115702479338843,
+            "icir": -0.30114851447682967,
+            "mean_rank_ic": -0.03867585358458095,
+            "signed_mean_rank_ic": 0.03867585358458095,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.5991735537190083,
+            "icir": -0.21006098328392317,
+            "mean_rank_ic": -0.026133508430317795,
+            "signed_mean_rank_ic": 0.026133508430317795,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_165/raw_volume_std/quality_summary.json",
+        "factor_id": "yeslab_165",
+        "factor_name": "Alpha97",
+        "strict_annual_icir_pass_years": 1,
+        "train_2020_2024": {
+          "directional_day_share": 0.6427392739273927,
+          "icir": -0.3086991811427766,
+          "mean_rank_ic": -0.038133104198637864,
+          "signed_mean_rank_ic": 0.038133104198637864,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 42,
+        "train_monthly_signed_mean_pass_months": 41,
+        "validation_2025": {
+          "directional_day_share": 0.7818930041152263,
+          "icir": -0.7270408575800574,
+          "mean_rank_ic": -0.06666710841939594,
+          "signed_mean_rank_ic": 0.06666710841939594,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 12,
+        "validation_monthly_signed_mean_pass_months": 11,
+        "variant": "raw_volume_std",
+        "window": 10
+      },
+      "volume_cv": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.6872427983539094,
+            "icir": -0.5076049789949485,
+            "mean_rank_ic": -0.036758756478399233,
+            "signed_mean_rank_ic": 0.036758756478399233,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.5596707818930041,
+            "icir": -0.10052748528177106,
+            "mean_rank_ic": -0.006824340465710392,
+            "signed_mean_rank_ic": 0.006824340465710392,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.6818181818181818,
+            "icir": -0.4706270723113801,
+            "mean_rank_ic": -0.02932035909157592,
+            "signed_mean_rank_ic": 0.02932035909157592,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.6446280991735537,
+            "icir": -0.4503150050500828,
+            "mean_rank_ic": -0.024571173071518813,
+            "signed_mean_rank_ic": 0.024571173071518813,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.7272727272727273,
+            "icir": -0.49026357733066084,
+            "mean_rank_ic": -0.03995086614641546,
+            "signed_mean_rank_ic": 0.03995086614641546,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_165/volume_cv/quality_summary.json",
+        "factor_id": "yeslab_165",
+        "factor_name": "Alpha97",
+        "strict_annual_icir_pass_years": 1,
+        "train_2020_2024": {
+          "directional_day_share": 0.6600660066006601,
+          "icir": -0.396923521767047,
+          "mean_rank_ic": -0.027475703752739358,
+          "signed_mean_rank_ic": 0.027475703752739358,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 42,
+        "train_monthly_signed_mean_pass_months": 34,
+        "validation_2025": {
+          "directional_day_share": 0.8518518518518519,
+          "icir": -0.9632404536102926,
+          "mean_rank_ic": -0.05299956244453699,
+          "signed_mean_rank_ic": 0.05299956244453699,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 12,
+        "validation_monthly_signed_mean_pass_months": 11,
+        "variant": "volume_cv",
+        "window": 10
+      }
+    },
+    "yeslab_168": {
+      "log_volume_std": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.6666666666666666,
+            "icir": -0.4483131000832345,
+            "mean_rank_ic": -0.04267004764683391,
+            "signed_mean_rank_ic": 0.04267004764683391,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.5843621399176955,
+            "icir": -0.14111229254782842,
+            "mean_rank_ic": -0.012893238363535533,
+            "signed_mean_rank_ic": 0.012893238363535533,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.6570247933884298,
+            "icir": -0.44310098420834976,
+            "mean_rank_ic": -0.03733209974352737,
+            "signed_mean_rank_ic": 0.03733209974352737,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.6322314049586777,
+            "icir": -0.39031074598609217,
+            "mean_rank_ic": -0.02699251511794951,
+            "signed_mean_rank_ic": 0.02699251511794951,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.7024793388429752,
+            "icir": -0.548352430284412,
+            "mean_rank_ic": -0.05725080630798975,
+            "signed_mean_rank_ic": 0.05725080630798975,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_168/log_volume_std/quality_summary.json",
+        "factor_id": "yeslab_168",
+        "factor_name": "Alpha100",
+        "strict_annual_icir_pass_years": 1,
+        "train_2020_2024": {
+          "directional_day_share": 0.6485148514851485,
+          "icir": -0.39026663846772913,
+          "mean_rank_ic": -0.03541512411182401,
+          "signed_mean_rank_ic": 0.03541512411182401,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 40,
+        "train_monthly_signed_mean_pass_months": 38,
+        "validation_2025": {
+          "directional_day_share": 0.7818930041152263,
+          "icir": -0.7690284442305427,
+          "mean_rank_ic": -0.05573077078123958,
+          "signed_mean_rank_ic": 0.05573077078123958,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 10,
+        "validation_monthly_signed_mean_pass_months": 9,
+        "variant": "log_volume_std",
+        "window": 20
+      },
+      "rank_volume_std": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.720164609053498,
+            "icir": -0.5084621533144131,
+            "mean_rank_ic": -0.05433617478424114,
+            "signed_mean_rank_ic": 0.05433617478424114,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.6090534979423868,
+            "icir": -0.26619341142398406,
+            "mean_rank_ic": -0.0336333723497766,
+            "signed_mean_rank_ic": 0.0336333723497766,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.5826446280991735,
+            "icir": -0.2225422394551245,
+            "mean_rank_ic": -0.03138817154565818,
+            "signed_mean_rank_ic": 0.03138817154565818,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.5661157024793388,
+            "icir": -0.2360110592874282,
+            "mean_rank_ic": -0.030900138755146994,
+            "signed_mean_rank_ic": 0.030900138755146994,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.5785123966942148,
+            "icir": -0.15549345777827106,
+            "mean_rank_ic": -0.019509703899461463,
+            "signed_mean_rank_ic": 0.019509703899461463,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_168/rank_volume_std/quality_summary.json",
+        "factor_id": "yeslab_168",
+        "factor_name": "Alpha100",
+        "strict_annual_icir_pass_years": 1,
+        "train_2020_2024": {
+          "directional_day_share": 0.6113861386138614,
+          "icir": -0.2676901675094704,
+          "mean_rank_ic": -0.03397006550332578,
+          "signed_mean_rank_ic": 0.03397006550332578,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 40,
+        "train_monthly_signed_mean_pass_months": 37,
+        "validation_2025": {
+          "directional_day_share": 0.7325102880658436,
+          "icir": -0.5930235332254749,
+          "mean_rank_ic": -0.053967693347385375,
+          "signed_mean_rank_ic": 0.053967693347385375,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 11,
+        "validation_monthly_signed_mean_pass_months": 9,
+        "variant": "rank_volume_std",
+        "window": 20
+      },
+      "raw_volume_std": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.720164609053498,
+            "icir": -0.5084621533144131,
+            "mean_rank_ic": -0.05433617478424114,
+            "signed_mean_rank_ic": 0.05433617478424114,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.6090534979423868,
+            "icir": -0.26619341142398406,
+            "mean_rank_ic": -0.0336333723497766,
+            "signed_mean_rank_ic": 0.0336333723497766,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.5826446280991735,
+            "icir": -0.2225422394551245,
+            "mean_rank_ic": -0.03138817154565818,
+            "signed_mean_rank_ic": 0.03138817154565818,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.5661157024793388,
+            "icir": -0.2360110592874282,
+            "mean_rank_ic": -0.030900138755146994,
+            "signed_mean_rank_ic": 0.030900138755146994,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.5785123966942148,
+            "icir": -0.15549345777827106,
+            "mean_rank_ic": -0.019509703899461463,
+            "signed_mean_rank_ic": 0.019509703899461463,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_168/raw_volume_std/quality_summary.json",
+        "factor_id": "yeslab_168",
+        "factor_name": "Alpha100",
+        "strict_annual_icir_pass_years": 1,
+        "train_2020_2024": {
+          "directional_day_share": 0.6113861386138614,
+          "icir": -0.2676901675094704,
+          "mean_rank_ic": -0.03397006550332578,
+          "signed_mean_rank_ic": 0.03397006550332578,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 40,
+        "train_monthly_signed_mean_pass_months": 37,
+        "validation_2025": {
+          "directional_day_share": 0.7325102880658436,
+          "icir": -0.5930235332254749,
+          "mean_rank_ic": -0.053967693347385375,
+          "signed_mean_rank_ic": 0.053967693347385375,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 11,
+        "validation_monthly_signed_mean_pass_months": 9,
+        "variant": "raw_volume_std",
+        "window": 20
+      },
+      "volume_cv": {
+        "annual": {
+          "2020": {
+            "directional_day_share": 0.6995884773662552,
+            "icir": -0.513674660742263,
+            "mean_rank_ic": -0.04732695683746512,
+            "signed_mean_rank_ic": 0.04732695683746512,
+            "valid_day_count": 243
+          },
+          "2021": {
+            "directional_day_share": 0.5432098765432098,
+            "icir": -0.07564828467707001,
+            "mean_rank_ic": -0.006802120478788703,
+            "signed_mean_rank_ic": 0.006802120478788703,
+            "valid_day_count": 243
+          },
+          "2022": {
+            "directional_day_share": 0.6570247933884298,
+            "icir": -0.3719315792788065,
+            "mean_rank_ic": -0.02919361781829581,
+            "signed_mean_rank_ic": 0.02919361781829581,
+            "valid_day_count": 242
+          },
+          "2023": {
+            "directional_day_share": 0.6157024793388429,
+            "icir": -0.3198488141812109,
+            "mean_rank_ic": -0.018908767658907397,
+            "signed_mean_rank_ic": 0.018908767658907397,
+            "valid_day_count": 242
+          },
+          "2024": {
+            "directional_day_share": 0.6652892561983471,
+            "icir": -0.49508779540545766,
+            "mean_rank_ic": -0.04870035007466915,
+            "signed_mean_rank_ic": 0.04870035007466915,
+            "valid_day_count": 242
+          }
+        },
+        "artifact": "yeslab_168/volume_cv/quality_summary.json",
+        "factor_id": "yeslab_168",
+        "factor_name": "Alpha100",
+        "strict_annual_icir_pass_years": 1,
+        "train_2020_2024": {
+          "directional_day_share": 0.6361386138613861,
+          "icir": -0.3503274221094068,
+          "mean_rank_ic": -0.0301812110490122,
+          "signed_mean_rank_ic": 0.0301812110490122,
+          "valid_day_count": 1212
+        },
+        "train_monthly_directional_share_pass_months": 42,
+        "train_monthly_signed_mean_pass_months": 35,
+        "validation_2025": {
+          "directional_day_share": 0.7366255144032922,
+          "icir": -0.7063281663065205,
+          "mean_rank_ic": -0.04397759270326188,
+          "signed_mean_rank_ic": 0.04397759270326188,
+          "valid_day_count": 243
+        },
+        "validation_monthly_directional_share_pass_months": 9,
+        "validation_monthly_signed_mean_pass_months": 8,
+        "variant": "volume_cv",
+        "window": 20
+      }
+    }
+  },
+  "frozen_direction": -1,
+  "label": "forward_open_5d:v1 raw five-trading-day forward return",
+  "label_rows": 4932879,
+  "locked_test_read": false,
+  "market_rows": 26451909,
+  "market_scope": "SH/SZ",
+  "market_source": "local Tushare.daily cache",
+  "scope": "ALPHA165_168_VOLUME_VARIANTS_CANONICAL_TUSHARE_QUALITY_V1",
+  "variants": [
+    "raw_volume_std",
+    "log_volume_std",
+    "volume_cv",
+    "rank_volume_std"
+  ],
+  "windows": {
+    "yeslab_165": 10,
+    "yeslab_168": 20
+  }
+}
