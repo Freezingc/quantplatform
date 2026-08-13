@@ -1,5 +1,5 @@
 {
-  "scope": "TUSHARE_SHSZ_ALPHA114_ADMISSION_PROPOSAL_V1",
+  "scope": "TUSHARE_SHSZ_ALPHA425_ADMISSION_PROPOSAL_V1",
   "proposal_type": "SINGLE_CANDIDATE_READ_ONLY_PREFLIGHT",
   "market_scope": ["SH", "SZ"],
   "excluded_exchanges": ["BJ"],
@@ -23,11 +23,12 @@
     {"factor_id": "yeslab_376", "factor_name": "GP_007", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
     {"factor_id": "yeslab_396", "factor_name": "GP_027", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
     {"factor_id": "yeslab_442", "factor_name": "GP_073", "version_scope": "existing_shsz_rematerialized", "predictive_gate": "PASS", "annual_stability_gate": "PASS", "similarity_gate": "PASS", "formula_scope_gate": "PASS"},
-    {"factor_id": "yeslab_114", "factor_name": "惊恐波动", "version_scope": "existing_tushare_canonical", "predictive_gate": "PASS", "annual_stability_gate": "MONITOR", "similarity_gate": "PASS", "formula_scope_gate": "PASS", "monthly_monitoring": {"validation_signed_mean_pass_months": "9/12", "validation_directional_share_pass_months": "8/12", "watch_months": ["2025-01", "2025-02", "2025-04", "2025-12"]}}
+    {"factor_id": "yeslab_425", "factor_name": "GP_056", "version_scope": "hypothetical_new_shsz_tushare_rematerialized_v1", "source_transition": "BJ-inclusive historical YesLab values are excluded", "predictive_gate": "PASS", "annual_stability_gate": "MONITOR", "similarity_gate": "PASS", "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW", "monthly_monitoring": {"validation_signed_mean_pass_months": "11/12", "validation_directional_share_pass_months": "10/12", "watch_months": ["2025-02", "2025-09"]}}
   ],
+  "candidate_pair_note": {"yeslab_405_yeslab_425": {"train_median_abs_spearman": 0.5951888835, "validation_median_abs_spearman": 0.6078935458, "status": "PAIR_UNIQUE"}},
   "required_before_any_admission": [
-    "Explicit user admission decision for yeslab_114",
-    "Retain monthly monitoring after any admission",
-    "Do not mix historical values with a different source version"
+    "Explicit user admission decision for yeslab_425",
+    "Creation of an isolated SH/SZ Tushare-canonical factor version",
+    "A new non-hypothetical admission preflight referencing that version"
   ]
 }

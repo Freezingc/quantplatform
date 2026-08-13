@@ -16,7 +16,7 @@
     "yeslab_376",
     "yeslab_396",
     "yeslab_442",
-    "yeslab_114"
+    "yeslab_425"
   ],
   "required_pair_count": 90,
   "unique_pair_count": 45,
@@ -28,177 +28,6 @@
   "missing_pairs": [],
   "pair_failures": [],
   "pair_results": [
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_155",
-      "period_results": {
-        "train": {
-          "metric": 0.27743921576553954,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.31518212998281003,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_376",
-      "period_results": {
-        "train": {
-          "metric": 0.8102454571355137,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.8088238522821072,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_380",
-      "period_results": {
-        "train": {
-          "metric": 0.585523498552558,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.5546304493971114,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_396",
-      "period_results": {
-        "train": {
-          "metric": 0.6857563044522574,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.7024462250005321,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_431",
-      "period_results": {
-        "train": {
-          "metric": 0.4960389306040289,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.45377236062512255,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_437",
-      "period_results": {
-        "train": {
-          "metric": 0.4397668595706976,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.4195516676308683,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_442",
-      "period_results": {
-        "train": {
-          "metric": 0.6383262687740969,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.6480573568918704,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_94",
-      "period_results": {
-        "train": {
-          "metric": 0.26626008108288973,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.37428793485340867,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
-    {
-      "factor_id_left": "yeslab_114",
-      "factor_id_right": "yeslab_98",
-      "period_results": {
-        "train": {
-          "metric": 0.2517708734709435,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
-        },
-        "validation": {
-          "metric": 0.37682342679594144,
-          "threshold": 0.9,
-          "status": "PASS",
-          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
-        }
-      },
-      "status": "PASS"
-    },
     {
       "factor_id_left": "yeslab_155",
       "factor_id_right": "yeslab_376",
@@ -249,6 +78,25 @@
         },
         "validation": {
           "metric": 0.3353837442833681,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_155",
+      "factor_id_right": "yeslab_425",
+      "period_results": {
+        "train": {
+          "metric": 0.25353164905223224,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.3060988440524705,
           "threshold": 0.9,
           "status": "PASS",
           "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
@@ -391,6 +239,25 @@
     },
     {
       "factor_id_left": "yeslab_376",
+      "factor_id_right": "yeslab_425",
+      "period_results": {
+        "train": {
+          "metric": 0.6945446503302207,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.7258978755089063,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_376",
       "factor_id_right": "yeslab_431",
       "period_results": {
         "train": {
@@ -505,6 +372,25 @@
     },
     {
       "factor_id_left": "yeslab_380",
+      "factor_id_right": "yeslab_425",
+      "period_results": {
+        "train": {
+          "metric": 0.5321531579659542,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.5513099915439013,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_380",
       "factor_id_right": "yeslab_431",
       "period_results": {
         "train": {
@@ -600,6 +486,25 @@
     },
     {
       "factor_id_left": "yeslab_396",
+      "factor_id_right": "yeslab_425",
+      "period_results": {
+        "train": {
+          "metric": 0.631307346187852,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.6832922522518193,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_396",
       "factor_id_right": "yeslab_431",
       "period_results": {
         "train": {
@@ -686,6 +591,101 @@
         },
         "validation": {
           "metric": 0.27061207415319544,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_425",
+      "factor_id_right": "yeslab_431",
+      "period_results": {
+        "train": {
+          "metric": 0.46534346277623506,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.4600032361667591,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_425",
+      "factor_id_right": "yeslab_437",
+      "period_results": {
+        "train": {
+          "metric": 0.5293140297941765,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.5163700911196664,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_425",
+      "factor_id_right": "yeslab_442",
+      "period_results": {
+        "train": {
+          "metric": 0.5752499866202512,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.6089852850478743,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_425",
+      "factor_id_right": "yeslab_94",
+      "period_results": {
+        "train": {
+          "metric": 0.18567004594067557,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.18651083818208633,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "factor_id_left": "yeslab_425",
+      "factor_id_right": "yeslab_98",
+      "period_results": {
+        "train": {
+          "metric": 0.1637764729680534,
+          "threshold": 0.9,
+          "status": "PASS",
+          "source": "research_v2/artifacts/diagnostics/train_similarity_pairs_2020_2024_combined45_v2.csv"
+        },
+        "validation": {
+          "metric": 0.18114505290869307,
           "threshold": 0.9,
           "status": "PASS",
           "source": "research_v2/artifacts/diagnostics/validation_similarity_pairs_2025_final24_v1.csv"
@@ -958,12 +958,12 @@
       "status": "PASS"
     },
     {
-      "factor_id": "yeslab_114",
+      "factor_id": "yeslab_425",
       "predictive_gate": "PASS",
       "annual_stability_gate": "MONITOR",
-      "formula_scope_gate": "PASS",
+      "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW",
       "quality_status": "PASS",
-      "status": "PASS"
+      "status": "FAIL"
     }
   ],
   "monitoring_factor_ids": [
@@ -971,10 +971,12 @@
     "yeslab_431",
     "yeslab_437",
     "yeslab_94",
-    "yeslab_114"
+    "yeslab_425"
   ],
-  "failed_checks": [],
-  "preflight_status": "PASS_WITH_MONITORING",
+  "failed_checks": [
+    "candidate:yeslab_425"
+  ],
+  "preflight_status": "FAIL",
   "publication_status": "NOT_PUBLISHED",
   "model_training_started": false,
   "database_writes": false,
