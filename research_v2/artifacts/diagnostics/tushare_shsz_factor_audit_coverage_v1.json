@@ -956,6 +956,18 @@
       "tushare_shsz_scope_transition_audit_381_405_425_v1.json"
     ]
   },
+  "csad_corwin_rematerialized_2024": {
+    "artifact": "tushare_shsz_csad_corwin_rematerialized_quality_2024_v1.json",
+    "factor_ids": ["yeslab_484", "yeslab_485", "yeslab_487"],
+    "market_scope": "SH/SZ",
+    "period": "2024-01-02/2024-12-31",
+    "yeslab_484": {"signed_mean_rank_ic": 0.0822372864, "signed_icir": 0.5406585809, "directional_day_share": 0.7066115702, "status": "ONE_YEAR_DOUBLE_GATE_PASS_CURRENT_TUSHARE_SCOPE"},
+    "yeslab_485": {"signed_mean_rank_ic": 0.0564288138, "signed_icir": 0.3360587998, "status": "ONE_YEAR_ICIR_FAIL"},
+    "yeslab_487": {"signed_mean_rank_ic": 0.0733638382, "signed_icir": 0.2991185587, "status": "ONE_YEAR_ICIR_FAIL"},
+    "action": "Keep Alpha484 isolated and advance only to multi-year stability/similarity review. Do not publish or train; do not advance Alpha485/487 without an approved repair.",
+    "database_writes": false,
+    "locked_test_read": false
+  },
   "adjusted_price_provenance_audit": {
     "artifact": "yeslab_adjusted_price_provenance_audit_v1.json",
     "classification": "SOURCE_INTERNAL_HFQ_CONSISTENT_CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP",
