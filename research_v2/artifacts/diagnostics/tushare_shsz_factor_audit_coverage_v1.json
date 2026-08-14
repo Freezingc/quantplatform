@@ -1114,6 +1114,49 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha95_relative_amount_volatility_v1": {
+    "source_factor_id": "yeslab_163",
+    "source_formula": "STD(amount, 20)",
+    "candidate_formula": "STD(amount, N) / MA(amount, N), N in {10, 20, 40}",
+    "scope": "ALPHA95_RELATIVE_AMOUNT_VOLATILITY_CANONICAL_V1",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "market_source": "Tushare.daily",
+    "label": "raw five-trading-day adjusted-open forward return",
+    "train_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "training_selection_rule": "signed mean RankIC > 0.02, signed ICIR >= 0.50, directional share >= 0.55, annual double gate >= 4/5, and max median absolute daily Spearman < 0.90 against formal nine and Alpha95 variants",
+    "candidates": {
+      "yeslab_163_relative_amount_volatility_10_v1": {
+        "train": {"valid_day_count": 1212, "signed_mean_rank_ic": 0.0341490716, "signed_icir": 0.4774993040, "directional_day_share": 0.6914191419, "annual_double_gate_pass_years": "3/5", "max_similarity": 0.5995620999},
+        "validation": {"valid_day_count": 243, "signed_mean_rank_ic": 0.0587429338, "signed_icir": 1.0275316468, "directional_day_share": 0.8559670782, "max_similarity_to_formal_nine": 0.5150312396},
+        "status": "REJECT_TRAINING_ICIR_AND_ANNUAL_STABILITY"
+      },
+      "yeslab_163_relative_amount_volatility_20_v1": {
+        "train": {"valid_day_count": 1212, "signed_mean_rank_ic": 0.0368713864, "signed_icir": 0.4178716212, "directional_day_share": 0.6633663366, "annual_double_gate_pass_years": "2/5", "max_similarity": 0.6085251205},
+        "validation": {"valid_day_count": 243, "signed_mean_rank_ic": 0.0480388423, "signed_icir": 0.6986513890, "directional_day_share": 0.7695473251, "max_similarity_to_formal_nine": 0.3912536538},
+        "status": "REJECT_TRAINING_ICIR_AND_ANNUAL_STABILITY"
+      },
+      "yeslab_163_relative_amount_volatility_40_v1": {
+        "train": {"valid_day_count": 1212, "signed_mean_rank_ic": 0.0370807444, "signed_icir": 0.3506736634, "directional_day_share": 0.6155115512, "annual_double_gate_pass_years": "2/5", "max_similarity": 0.6085251205},
+        "validation": {"valid_day_count": 243, "signed_mean_rank_ic": 0.0338114717, "signed_icir": 0.3343235043, "directional_day_share": 0.6419753086, "max_similarity_to_formal_nine": 0.2664085190},
+        "status": "REJECT_TRAINING_AND_VALIDATION_ICIR"
+      }
+    },
+    "decision": "REJECT_ALL_SCALE_NORMALIZED_ALPHA95_VARIANTS",
+    "reason": "All three variants are non-redundant but fail the training ICIR threshold and annual stability rule; therefore the 2025 results are confirmation evidence only and do not select a version.",
+    "action": "Do not create a factor version, modify the formal nine, publish values, add model inputs, or train on these variants. Do not repeat the same scale-normalization-only route without materially new information.",
+    "artifacts": [
+      "tushare_alpha95_relative_amount_volatility_v1/daily_rank_ic.csv",
+      "tushare_alpha95_relative_amount_volatility_v1/quality_summary.json",
+      "tushare_alpha95_relative_amount_volatility_v1/similarity_summary.json",
+      "tushare_alpha95_relative_amount_volatility_v1/admission_review.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
@@ -1136,6 +1179,8 @@
     "tushare_canonical_formal9_unique7_train_2020_2024_v1/quality_summary.json",
     "tushare_canonical_formal9_unique7_train_2020_2024_v1/similarity_summary.json",
     "tushare_canonical_formal9_unique7_validation_2025_v1/quality_summary.json",
-    "tushare_canonical_formal9_unique7_validation_2025_v1/similarity_summary.json"
+    "tushare_canonical_formal9_unique7_validation_2025_v1/similarity_summary.json",
+    "tushare_alpha95_relative_amount_volatility_v1/quality_summary.json",
+    "tushare_alpha95_relative_amount_volatility_v1/admission_review.json"
   ]
 }

@@ -1,0 +1,70 @@
+{
+  "candidate_ids": [
+    "yeslab_163_relative_amount_volatility_10_v1",
+    "yeslab_163_relative_amount_volatility_20_v1",
+    "yeslab_163_relative_amount_volatility_40_v1"
+  ],
+  "database_writes": false,
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "formal_factor_set_changed": false,
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "locked_test_read": false,
+  "market_scope": "SH/SZ",
+  "model_training_started": false,
+  "scope": "ALPHA95_RELATIVE_AMOUNT_VOLATILITY_CANONICAL_V1",
+  "selected_id": null,
+  "selection_rows": {
+    "yeslab_163_relative_amount_volatility_10_v1": {
+      "annual_double_gate_pass_years": 3.0,
+      "directional_day_share": 0.6914191419141914,
+      "max_similarity": 0.5995620999319302,
+      "signed_icir": 0.4774993040089205,
+      "signed_mean_rank_ic": 0.034149071589831985
+    },
+    "yeslab_163_relative_amount_volatility_20_v1": {
+      "annual_double_gate_pass_years": 2.0,
+      "directional_day_share": 0.6633663366336634,
+      "max_similarity": 0.6085251204965623,
+      "signed_icir": 0.41787162117001553,
+      "signed_mean_rank_ic": 0.03687138637912884
+    },
+    "yeslab_163_relative_amount_volatility_40_v1": {
+      "annual_double_gate_pass_years": 2.0,
+      "directional_day_share": 0.6155115511551155,
+      "max_similarity": 0.6085251204965623,
+      "signed_icir": 0.35067366338680844,
+      "signed_mean_rank_ic": 0.03708074444028038
+    }
+  },
+  "status": "REJECT_TRAINING_GATE",
+  "training": {
+    "selection_rows": {
+      "yeslab_163_relative_amount_volatility_10_v1": {
+        "annual_double_gate_pass_years": 3.0,
+        "directional_day_share": 0.6914191419141914,
+        "max_similarity": 0.5995620999319302,
+        "signed_icir": 0.4774993040089205,
+        "signed_mean_rank_ic": 0.034149071589831985
+      },
+      "yeslab_163_relative_amount_volatility_20_v1": {
+        "annual_double_gate_pass_years": 2.0,
+        "directional_day_share": 0.6633663366336634,
+        "max_similarity": 0.6085251204965623,
+        "signed_icir": 0.41787162117001553,
+        "signed_mean_rank_ic": 0.03687138637912884
+      },
+      "yeslab_163_relative_amount_volatility_40_v1": {
+        "annual_double_gate_pass_years": 2.0,
+        "directional_day_share": 0.6155115511551155,
+        "max_similarity": 0.6085251204965623,
+        "signed_icir": 0.35067366338680844,
+        "signed_mean_rank_ic": 0.03708074444028038
+      }
+    }
+  },
+  "training_window": "2020-01-02/2024-12-31",
+  "validation": {},
+  "validation_window": "2025-01-02/2025-12-31"
+}
