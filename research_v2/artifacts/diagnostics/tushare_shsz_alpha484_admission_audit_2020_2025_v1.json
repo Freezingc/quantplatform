@@ -66,10 +66,18 @@
       "CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP",
       "FORMULA_REPLAY_FINITE_OVERLAP_MISMATCH"
     ],
+    "partial_gap_fallback_attempted": true,
+    "residual_source_market_uncovered_rows_2025_january": 145,
+    "residual_source_market_uncovered_code_count_2025_january": 27,
+    "residual_source_market_uncovered_date_count_2025_january": 18,
+    "residual_gap_semantics": "TUSHARE_DAILY_OMITS_HISTORICAL_SUSPENSION_DAYS",
+    "internal_yeslab_replay_status": "FORMULA_REPLAY_PASS",
+    "cross_source_close_hfq_mismatch_rows_2025_january": 4,
+    "max_cross_source_close_hfq_abs_difference_2025_january": 0.000996,
     "source_internal_hfq_identity": "PASS_WITHIN_1E-5",
     "cross_source_adj_factor_mismatch_rows_2025_january": 22,
     "max_cross_source_adj_factor_abs_difference_2025_january": 0.0004,
-    "action": "Reconcile Tushare adj_factor version and historical source coverage before admission; do not round inputs or overwrite YesLab values."
+    "action": "Reconcile Tushare adj_factor version and historical suspension-day coverage before admission; do not round inputs, forward-fill without evidence, or overwrite YesLab values."
   },
   "decision": "KEEP_YESLAB_484_ISOLATED_RESEARCH_CANDIDATE",
   "admission_status": "BLOCKED_FORMULA_SCOPE_RECONCILIATION",
@@ -84,6 +92,7 @@
     "tushare_shsz_alpha484_similarity_train_2020_2024_v1/similarity_summary.json",
     "tushare_shsz_alpha484_similarity_validation_2025_v1/similarity_summary.json",
     "yeslab_adjusted_price_provenance_2025-01_v1.json",
-    "formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json"
+    "formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json",
+    "formula_replay_alpha484_tushare_coverage_reconciliation_2025-01_v1.json"
   ]
 }
