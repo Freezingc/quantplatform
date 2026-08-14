@@ -244,12 +244,22 @@ def _candidate_id(window: int) -> str:
     return f"yeslab_163_relative_amount_volatility_{window}_v1"
 
 
-def _panel_to_replay_values(panel: pd.DataFrame) -> pd.DataFrame:
-    values = panel.stack(dropna=True).rename("replay_value").reset_index()
+def _panel_to_replay_values(
+    panel: pd.DataFrame,
+    *,
+    start: date | pd.Timestamp,
+    end: date | pd.Timestamp,
+) -> pd.DataFrame:
+    values = panel.stack(future_stack=True).dropna().rename("replay_value").reset_index()
     values.columns = ["trade_date", "ts_code", "replay_value"]
-    values["trade_date"] = pd.to_datetime(values["trade_date"], errors="raise")
+    values["trade_date"] = pd.to_datetime(values["trade_date"], errors="raise").dt.normalize()
     values["ts_code"] = values["ts_code"].astype(str)
-    return values
+    window_start = pd.Timestamp(start).normalize()
+    window_end = pd.Timestamp(end).normalize()
+    return values.loc[
+        values["trade_date"].between(window_start, window_end),
+        ["trade_date", "ts_code", "replay_value"],
+    ].reset_index(drop=True)
 
 
 def _evaluate_window(
@@ -293,7 +303,11 @@ def _evaluate_window(
     candidate_daily: dict[str, pd.DataFrame] = {}
     for window in CANDIDATE_WINDOWS:
         candidate_id = _candidate_id(window)
-        values = _panel_to_replay_values(compute_relative_amount_volatility(market, window))
+        values = _panel_to_replay_values(
+            compute_relative_amount_volatility(market, window),
+            start=start,
+            end=end,
+        )
         replay_frames[candidate_id] = values
         candidate_daily[candidate_id] = compute_daily_rank_ic(values, inputs)
     return candidate_daily, compute_pair_daily_spearman(replay_frames)

@@ -165,3 +165,20 @@ def test_max_similarity_to_references_includes_other_alpha95_variants() -> None:
     )
 
     assert result == {"factor_id": "other_variant", "value": 0.80, "valid_day_count": 100}
+
+
+def test_panel_to_replay_values_excludes_warmup_dates() -> None:
+    panel = pd.DataFrame(
+        {"000001.SZ": [1.0, 2.0, 3.0]},
+        index=pd.to_datetime(["2019-12-31", "2020-01-02", "2020-01-03"]),
+    )
+
+    result = evaluation._panel_to_replay_values(
+        panel,
+        start=pd.Timestamp("2020-01-02"),
+        end=pd.Timestamp("2020-01-03"),
+    )
+
+    assert result["trade_date"].min() == pd.Timestamp("2020-01-02")
+    assert result["trade_date"].max() == pd.Timestamp("2020-01-03")
+    assert len(result) == 2
