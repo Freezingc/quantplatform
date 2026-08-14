@@ -233,7 +233,7 @@ git commit -m "evaluate alpha95 relative amount volatility"
 - Create: `research_v2/artifacts/diagnostics/tushare_alpha95_relative_amount_volatility_v1/admission_review.json`
 - Modify: `research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json`
 
-- [ ] **Step 1: Execute the bounded canonical run**
+- [x] **Step 1: Execute the bounded canonical run**
 
 ```bash
 source /data/share/miniconda3/etc/profile.d/conda.sh
@@ -247,7 +247,7 @@ PYTHONPATH=research_v2/scripts:research_v2/src python -u research_v2/scripts/eva
 
 Expected: an exit code of zero, three candidate summaries, a training-only selection, and a 2025 validation status.
 
-- [ ] **Step 2: Verify completeness before recording the decision**
+- [x] **Step 2: Verify completeness before recording the decision**
 
 ```python
 import json
@@ -265,13 +265,13 @@ assert len(review["candidate_ids"]) == 3
 
 Expected: all assertions pass.
 
-- [ ] **Step 3: Update the quality ledger without admission or publication**
+- [x] **Step 3: Update the quality ledger without admission or publication**
 
 Add `alpha95_relative_amount_volatility_v1` to `tushare_shsz_factor_audit_coverage_v1.json` with each candidate's training and validation metrics, selected-or-rejected status, artifact paths, and all safety flags. Do not modify `formal_admission_factor_ids`.
 
 - [ ] **Step 4: Run final checks, commit, and synchronize**
 
-Run: `python -m json.tool research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json >/dev/null && git diff --check && pytest -q`
+Run: `python -m json.tool research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json >/dev/null && git diff --check && python -m pytest -q`
 
 Expected: valid JSON, no whitespace errors, and a passing suite.
 
