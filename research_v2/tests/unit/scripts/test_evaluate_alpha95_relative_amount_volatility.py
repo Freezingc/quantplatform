@@ -46,3 +46,45 @@ def test_relative_amount_volatility_does_not_use_future_amount() -> None:
     after = evaluation.compute_relative_amount_volatility(changed, 3)
 
     assert before.iloc[2].equals(after.iloc[2])
+
+
+def test_select_training_candidate_requires_every_gate() -> None:
+    rows = {
+        "v10": {
+            "signed_mean_rank_ic": 0.04,
+            "signed_icir": 0.60,
+            "directional_day_share": 0.70,
+            "annual_double_gate_pass_years": 4,
+            "max_similarity": 0.40,
+        },
+        "v20": {
+            "signed_mean_rank_ic": 0.06,
+            "signed_icir": 0.70,
+            "directional_day_share": 0.70,
+            "annual_double_gate_pass_years": 3,
+            "max_similarity": 0.30,
+        },
+    }
+
+    assert evaluation.select_training_candidate(rows) == "v10"
+
+
+def test_select_training_candidate_breaks_icir_tie_by_lower_similarity() -> None:
+    rows = {
+        "v10": {
+            "signed_mean_rank_ic": 0.04,
+            "signed_icir": 0.60,
+            "directional_day_share": 0.70,
+            "annual_double_gate_pass_years": 4,
+            "max_similarity": 0.30,
+        },
+        "v20": {
+            "signed_mean_rank_ic": 0.05,
+            "signed_icir": 0.60,
+            "directional_day_share": 0.70,
+            "annual_double_gate_pass_years": 4,
+            "max_similarity": 0.20,
+        },
+    }
+
+    assert evaluation.select_training_candidate(rows) == "v20"

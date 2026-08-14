@@ -97,7 +97,7 @@ git commit -m "add alpha95 relative amount volatility formula"
 - Modify: `research_v2/scripts/evaluate_alpha95_relative_amount_volatility.py`
 - Modify: `research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py`
 
-- [ ] **Step 1: Write failing training-selection tests**
+- [x] **Step 1: Write failing training-selection tests**
 
 ```python
 def test_select_training_candidate_requires_every_gate() -> None:
@@ -116,13 +116,13 @@ def test_select_training_candidate_breaks_icir_tie_by_lower_similarity() -> None
     assert evaluation.select_training_candidate(rows) == "v20"
 ```
 
-- [ ] **Step 2: Run the selection test and verify failure**
+- [x] **Step 2: Run the selection test and verify failure**
 
 Run: `PYTHONPATH=research_v2/scripts:research_v2/src pytest -q research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py -k select_training_candidate`
 
 Expected: FAIL because `select_training_candidate` is undefined.
 
-- [ ] **Step 3: Implement explicit gates and selection**
+- [x] **Step 3: Implement explicit gates and selection**
 
 ```python
 from collections.abc import Mapping
@@ -145,13 +145,13 @@ def select_training_candidate(rows: Mapping[str, Mapping[str, float]]) -> str | 
     return max(eligible, key=lambda item: (item[1]["signed_icir"], -item[1]["max_similarity"], item[0]))[0]
 ```
 
-- [ ] **Step 4: Run the focused test file**
+- [x] **Step 4: Run the focused test file**
 
 Run: `PYTHONPATH=research_v2/scripts:research_v2/src pytest -q research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add research_v2/scripts/evaluate_alpha95_relative_amount_volatility.py research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py
