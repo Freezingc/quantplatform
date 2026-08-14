@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import sys
 from datetime import date
+from pathlib import Path
 
 import audit_formula_replay_tushare as audit
 import pandas as pd
 import pytest
 from audit_formula_replay_consistency import REPLAY_DEFINITIONS
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "数据库"))
+from factor_calculators.HerdingCSADCalculatorBase import HerdingCSADCalculatorBase
 
 
 def test_parser_accepts_bounded_tushare_replay() -> None:
@@ -676,6 +681,45 @@ def test_missing_required_market_codes_handles_non_contiguous_source_index() -> 
     missing = audit.missing_required_market_codes(required, market)
 
     assert missing == ("000002.SZ",)
+
+
+def test_csad_market_start_matches_overridden_calculator_preheat(monkeypatch) -> None:
+    monkeypatch.setattr(
+        audit,
+        "_calculator_class",
+        lambda definition: HerdingCSADCalculatorBase,
+    )
+    monkeypatch.setattr(
+        HerdingCSADCalculatorBase,
+        "preprocess_time_range",
+        lambda self, start_time, end_time: "2024.07.05",
+    )
+
+    market_start = audit._calculator_market_start(
+        object(), REPLAY_DEFINITIONS["yeslab_484"], date(2025, 1, 2), date(2025, 1, 31)
+    )
+
+    assert market_start == date(2024, 7, 5)
+
+
+def test_query_stock_market_codes_uses_stock_factor_daily() -> None:
+    class FakeClient:
+        def __init__(self) -> None:
+            self.query = ""
+
+        def run(self, query: str) -> pd.DataFrame:
+            self.query = query
+            return pd.DataFrame({"ts_code": ["000001.SZ", "600000.SH"]})
+
+    client = FakeClient()
+
+    codes = audit._query_stock_market_codes(
+        client, date(2024, 7, 5), date(2025, 1, 31)
+    )
+
+    assert codes == ("000001.SZ", "600000.SH")
+    assert "stock_factor_daily" in client.query
+    assert "2024.07.05" in client.query
 
 
 def test_missing_code_range_fetch_uses_daily_basic_when_required(tmp_path) -> None:

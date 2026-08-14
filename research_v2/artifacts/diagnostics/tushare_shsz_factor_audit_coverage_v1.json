@@ -994,10 +994,11 @@
     "formula_scope_status": "BLOCKED",
     "admission_status": "BLOCKED_FORMULA_SCOPE_RECONCILIATION",
     "formal_factor_set_changed": false,
-    "action": "Keep Alpha484 isolated. Partial-gap refetch recovered no additional rows; reconcile Tushare adj_factor version and historical suspension-day coverage before admission, publication, factor-value writes, model input changes, or training.",
+    "action": "Keep Alpha484 isolated. Partial-gap refetch recovered no additional rows; exact historical replay also crosses from a broader YesLab/BJ scope into canonical SH/SZ. Rematerialize under Tushare SH/SZ and reconcile residual source coverage/adjustment provenance before admission, publication, factor-value writes, model input changes, or training.",
     "database_writes": false,
     "locked_test_read": false,
-    "coverage_reconciliation_artifact": "formula_replay_alpha484_tushare_coverage_reconciliation_2025-01_v1.json"
+    "coverage_reconciliation_artifact": "formula_replay_alpha484_tushare_coverage_reconciliation_2025-01_v1.json",
+    "historical_scope_replay_status": "BLOCKED_CANONICAL_SCOPE_MIGRATION"
   },
   "adjusted_price_provenance_audit": {
     "artifact": "yeslab_adjusted_price_provenance_audit_v1.json",

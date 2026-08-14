@@ -356,11 +356,41 @@ def _query_v2_universe_codes(client: object, start: date, end: date) -> tuple[st
     return tuple(sorted(result["ts_code"].astype(str).dropna().unique()))
 
 
+def _query_stock_market_codes(
+    client: object, start: date, end: date
+) -> tuple[str, ...]:
+    """Return the historical market universe used by cross-sectional calculators."""
+
+    result = client.run(
+        "select distinct ts_code from loadTable('dfs://YesLab','stock_factor_daily') "
+        f"where trade_date between date('{start:%Y.%m.%d}') "
+        f"and date('{end:%Y.%m.%d}')"
+    )
+    if not isinstance(result, pd.DataFrame) or "ts_code" not in result.columns:
+        raise RuntimeError("stock market universe query did not return ts_code")
+    return tuple(sorted(result["ts_code"].astype(str).dropna().unique()))
+
+
 def _calculator_market_start(
     client: object, definition: replay.ReplayDefinition, start: date, end: date
 ) -> date:
     calculator_class = _calculator_class(definition)
     calculator = calculator_class(client, definition.effective_replay_lookback_days)
+    from factor_calculators.HerdingCSADCalculatorBase import (  # type: ignore
+        HerdingCSADCalculatorBase,
+    )
+
+    if isinstance(calculator, HerdingCSADCalculatorBase):
+        original_lookback = calculator.lookback_days
+        calculator.lookback_days = original_lookback + 1
+        try:
+            processed = calculator.preprocess_time_range(
+                start.strftime("%Y.%m.%d"), end.strftime("%Y.%m.%d")
+            )
+        finally:
+            calculator.lookback_days = original_lookback
+        return date.fromisoformat(processed.replace(".", "-"))
+
     processed = calculator.preprocess_time_range(
         start.strftime("%Y.%m.%d"), end.strftime("%Y.%m.%d")
     )
@@ -791,12 +821,24 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
     effective_include_daily_basic = args.include_daily_basic or (
         "turnover_rate" in required_fields
     )
+    market_start = min(
+        _calculator_market_start(client, definition, args.start, args.end)
+        for definition in definitions
+    )
     code_limit = None if args.full_market else args.max_ts_codes
     code_sets = [
         _query_codes(client, definition, args.start, args.end, code_limit)
         for definition in definitions
     ]
     codes = tuple(sorted(set().union(*map(set, code_sets))))
+    market_universe_source = "factor_observation_codes"
+    if (
+        args.full_market
+        and requires_full_cross_section(args.factor_id)
+        and not args.restrict_to_v2_universe
+    ):
+        codes = _query_stock_market_codes(client, market_start, args.end)
+        market_universe_source = "YesLab.stock_factor_daily"
     if args.restrict_to_v2_universe:
         universe_codes = set(_query_v2_universe_codes(client, args.start, args.end))
         codes = tuple(code for code in codes if code in universe_codes)
@@ -821,10 +863,6 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
     required_keys = required_keys.loc[
         required_keys["ts_code"].astype(str).isin(set(codes))
     ].drop_duplicates()
-    market_start = min(
-        _calculator_market_start(client, definition, args.start, args.end)
-        for definition in definitions
-    )
     open_dates = (
         _query_open_dates(client, market_start, args.end)
         if args.full_market or effective_include_daily_basic
@@ -917,6 +955,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         "bj_alias_map": str(args.bj_alias_map) if args.bj_alias_map else None,
         "bj_alias_count": len(aliases),
         "code_count": len(codes),
+        "market_universe_source": market_universe_source,
         "market_code_count": len(market_codes),
         "market_missing_code_count": len(missing_market_codes),
         "stock_batch_size": batch_size,
