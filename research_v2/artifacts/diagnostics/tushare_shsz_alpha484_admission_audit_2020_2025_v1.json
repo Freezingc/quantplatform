@@ -1,0 +1,89 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA484_ADMISSION_AUDIT_2020_2025_V1",
+  "market_scope": ["SH", "SZ"],
+  "excluded_exchanges": ["BJ"],
+  "market_source": "Tushare.daily + Tushare.adj_factor",
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "candidate": {
+    "factor_id": "yeslab_484",
+    "factor_name": "羊群效应_CSAD波动率21",
+    "frozen_direction": -1
+  },
+  "thresholds": {
+    "signed_mean_rank_ic_strictly_above": 0.02,
+    "signed_icir_at_least": 0.5,
+    "directional_day_share_at_least": 0.55,
+    "annual_double_gate_minimum_pass_years": 4,
+    "similarity_median_abs_spearman_below": 0.9,
+    "similarity_minimum_valid_days_train": 1000,
+    "similarity_minimum_valid_days_validation": 200
+  },
+  "training_quality": {
+    "window": "2020-01-02/2024-12-31",
+    "valid_day_count": 1212,
+    "annual_double_gate_pass_years": 5,
+    "same_direction_years": 5,
+    "signed_mean_rank_ic": 0.0700806812,
+    "signed_icir": 0.5807262407,
+    "directional_day_share": 0.7244224422,
+    "status": "PASS"
+  },
+  "validation_quality": {
+    "window": "2025-01-02/2025-12-31",
+    "valid_day_count": 243,
+    "signed_mean_rank_ic": 0.0686328816,
+    "signed_icir": 0.5019978705,
+    "directional_day_share": 0.6707818930,
+    "status": "PASS"
+  },
+  "similarity": {
+    "reference_factor_count": 9,
+    "train": {
+      "window": "2020-01-02/2024-12-31",
+      "required_candidate_reference_pairs": 9,
+      "observed_candidate_reference_pairs": 9,
+      "minimum_valid_days": 1212,
+      "maximum_median_abs_spearman": 0.6943931416,
+      "nearest_reference_factor": "yeslab_376",
+      "threshold": 0.9,
+      "status": "PASS"
+    },
+    "validation": {
+      "window": "2025-01-02/2025-12-31",
+      "required_candidate_reference_pairs": 9,
+      "observed_candidate_reference_pairs": 9,
+      "minimum_valid_days": 243,
+      "maximum_median_abs_spearman": 0.7254081033,
+      "nearest_reference_factor": "yeslab_376",
+      "threshold": 0.9,
+      "status": "PASS"
+    }
+  },
+  "formula_scope": {
+    "status": "BLOCKED",
+    "reason_codes": [
+      "TUSHARE_SOURCE_MARKET_COVERAGE_GAP",
+      "CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP",
+      "FORMULA_REPLAY_FINITE_OVERLAP_MISMATCH"
+    ],
+    "source_internal_hfq_identity": "PASS_WITHIN_1E-5",
+    "cross_source_adj_factor_mismatch_rows_2025_january": 22,
+    "max_cross_source_adj_factor_abs_difference_2025_january": 0.0004,
+    "action": "Reconcile Tushare adj_factor version and historical source coverage before admission; do not round inputs or overwrite YesLab values."
+  },
+  "decision": "KEEP_YESLAB_484_ISOLATED_RESEARCH_CANDIDATE",
+  "admission_status": "BLOCKED_FORMULA_SCOPE_RECONCILIATION",
+  "formal_factor_set_changed": false,
+  "publication_status": "NOT_PUBLISHED",
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "source_artifacts": [
+    "tushare_shsz_alpha484_rematerialized_quality_2020_2024_v1.json",
+    "tushare_shsz_alpha484_validation_2025_v1/quality_summary.json",
+    "tushare_shsz_alpha484_similarity_train_2020_2024_v1/similarity_summary.json",
+    "tushare_shsz_alpha484_similarity_validation_2025_v1/similarity_summary.json",
+    "yeslab_adjusted_price_provenance_2025-01_v1.json",
+    "formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json"
+  ]
+}
