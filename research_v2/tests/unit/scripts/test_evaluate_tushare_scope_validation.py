@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import evaluate_tushare_scope_validation as evaluation
 import pandas as pd
+import pytest
 
 
 def test_restrict_scope_inputs_keeps_only_sh_sz_members_with_valid_labels() -> None:
@@ -172,3 +173,99 @@ def test_adjusted_field_contract_is_required_for_price_based_replay() -> None:
     )
 
     assert include_adjusted is True
+
+
+def test_load_validation_inputs_reads_current_ranges_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, object, object]] = []
+
+    def fake_read_current_universe_range(
+        session: object, *, start: object, end: object
+    ) -> pd.DataFrame:
+        del session
+        calls.append(("universe", start, end))
+        return pd.DataFrame(
+            {
+                "batch_id": [1, 1],
+                "signal_date": pd.to_datetime(["2020-02-03", "2020-02-03"]),
+                "ts_code": ["000001.SZ", "600000.SH"],
+                "is_member": [True, True],
+            }
+        )
+
+    def fake_read_current_label_range(
+        session: object, *, start: object, end: object
+    ) -> pd.DataFrame:
+        del session
+        calls.append(("label", start, end))
+        return pd.DataFrame(
+            {
+                "batch_id": [1, 1],
+                "signal_date": pd.to_datetime(["2020-02-03", "2020-02-03"]),
+                "ts_code": ["000001.SZ", "600000.SH"],
+                "raw_return": [0.1, 0.2],
+                "label_valid": [True, True],
+            }
+        )
+
+    monkeypatch.setattr(
+        evaluation,
+        "_read_current_universe_range",
+        fake_read_current_universe_range,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        evaluation,
+        "_read_current_label_range",
+        fake_read_current_label_range,
+        raising=False,
+    )
+    result = evaluation._load_validation_inputs(
+        object(),
+        pd.Timestamp("2020-02-01").date(),
+        pd.Timestamp("2020-02-29").date(),
+    )
+
+    assert calls == [
+        ("universe", pd.Timestamp("2020-02-01").date(), pd.Timestamp("2020-02-29").date()),
+        ("label", pd.Timestamp("2020-02-01").date(), pd.Timestamp("2020-02-29").date()),
+    ]
+    assert result["raw_return"].tolist() == [0.1, 0.2]
+
+
+def test_read_current_label_range_casts_boolean_to_int_in_dolphindb_query() -> None:
+    class RecordingSession:
+        target_database = "dfs://QuantResearchV2Test"
+
+        def __init__(self) -> None:
+            self.queries: list[str] = []
+
+        def query(self, script: str) -> pd.DataFrame:
+            self.queries.append(script)
+            return pd.DataFrame(
+                {
+                    "batch_id": [7],
+                    "signal_date": pd.to_datetime(["2020-02-03"]),
+                    "ts_code": ["000001.SZ"],
+                    "raw_return": [0.01],
+                    "label_valid": [1],
+                }
+            )
+
+    session = RecordingSession()
+
+    result = evaluation._read_current_label_range(
+        session,
+        start=pd.Timestamp("2020-01-02").date(),
+        end=pd.Timestamp("2020-12-31").date(),
+    )
+
+    assert "latest_manifest" in session.queries[0]
+    assert "label_daily_latest" in session.queries[0]
+    assert "batch_id,status from" in session.queries[0]
+    assert "context by logical_partition csort published_at desc" in session.queries[0]
+    assert "where status=`PUBLISHED" in session.queries[0]
+    assert "logical_partition between '2020-01':'2020-12'" in session.queries[0]
+    assert "int(label_valid) as label_valid" in session.queries[0]
+    assert result["label_valid"].tolist() == [True]

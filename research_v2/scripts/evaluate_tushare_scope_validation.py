@@ -34,7 +34,6 @@ from audit_tushare_pit_industry import (
     coverage_for_keys,
 )
 
-from research_v2.compact.publisher import read_latest_partition
 from research_v2.db.session import V2WriteSession
 
 LOCKED_TEST_START = date(2026, 1, 1)
@@ -194,30 +193,83 @@ def compute_pair_daily_spearman(
     )
 
 
+def _read_current_compact_range(
+    session: V2WriteSession,
+    *,
+    object_name: str,
+    selected_columns: str,
+    start: date,
+    end: date,
+) -> pd.DataFrame:
+    """Read every current monthly batch in a date range with one DDB response."""
+    if object_name not in {"universe_daily_latest", "label_daily_latest"}:
+        raise ValueError(f"unsupported compact range object: {object_name}")
+    if start > end:
+        raise ValueError("range start must not be after end")
+    result = session.query(
+        "selectedBatches = select top 1 batch_id,status from "
+        f"loadTable('{session.target_database}', 'latest_manifest') "
+        f"where object_name=`{object_name} and "
+        f"logical_partition between '{start:%Y-%m}':'{end:%Y-%m}' "
+        "context by logical_partition csort published_at desc\n"
+        "publishedBatches = select batch_id from selectedBatches where status=`PUBLISHED\n"
+        f"select {selected_columns} from loadTable('{session.target_database}', '{object_name}') "
+        "where batch_id in publishedBatches.batch_id and "
+        f"signal_date between date('{start:%Y.%m.%d}') and date('{end:%Y.%m.%d}')"
+    )
+    if not isinstance(result, pd.DataFrame):
+        raise RuntimeError(f"compact range query did not return a frame: {object_name}")
+    return result.copy(deep=True)
+
+
+def _read_current_universe_range(
+    session: V2WriteSession, *, start: date, end: date
+) -> pd.DataFrame:
+    frame = _read_current_compact_range(
+        session,
+        object_name="universe_daily_latest",
+        selected_columns="batch_id,signal_date,ts_code,is_member",
+        start=start,
+        end=end,
+    )
+    required = {"batch_id", "signal_date", "ts_code", "is_member"}
+    if not required.issubset(frame.columns):
+        raise RuntimeError("universe range query returned an invalid frame")
+    return frame.loc[:, ["batch_id", "signal_date", "ts_code", "is_member"]].copy()
+
+
+def _read_current_label_range(
+    session: V2WriteSession, *, start: date, end: date
+) -> pd.DataFrame:
+    frame = _read_current_compact_range(
+        session,
+        object_name="label_daily_latest",
+        selected_columns="batch_id,signal_date,ts_code,raw_return,int(label_valid) as label_valid",
+        start=start,
+        end=end,
+    )
+    required = {"batch_id", "signal_date", "ts_code", "raw_return", "label_valid"}
+    if not required.issubset(frame.columns):
+        raise RuntimeError("label range query returned an invalid frame")
+    frame = frame.loc[
+        :, ["batch_id", "signal_date", "ts_code", "raw_return", "label_valid"]
+    ].copy()
+    encoded = pd.to_numeric(frame["label_valid"], errors="coerce")
+    if encoded.isna().any() or not encoded.isin((0, 1)).all():
+        raise ValueError("label range has non-boolean validity values")
+    frame["label_valid"] = encoded.astype(bool)
+    return frame
+
+
 def _load_validation_inputs(client: object, start: date, end: date) -> pd.DataFrame:
     session = V2WriteSession(client, target_database="dfs://QuantResearchV2Test")
-    periods = tuple(str(period) for period in pd.period_range(start, end, freq="M"))
-    universes: list[pd.DataFrame] = []
-    labels: list[pd.DataFrame] = []
-    for period in periods:
-        universes.append(
-            read_latest_partition(
-                session,
-                object_name="universe_daily_latest",
-                logical_partition=period,
-                columns=("batch_id", "signal_date", "ts_code", "is_member"),
-            )
-        )
-        labels.append(
-            read_latest_partition(
-                session,
-                object_name="label_daily_latest",
-                logical_partition=period,
-                columns=("batch_id", "signal_date", "ts_code", "raw_return", "label_valid"),
-            )
-        )
+    universe = _read_current_universe_range(session, start=start, end=end)
+    label = _read_current_label_range(session, start=start, end=end)
+    label_keys = ["batch_id", "signal_date", "ts_code"]
+    if label.duplicated(label_keys).any():
+        raise ValueError("label range has duplicate business keys")
     return restrict_scope_inputs(
-        pd.concat(universes, ignore_index=True), pd.concat(labels, ignore_index=True)
+        universe, label
     )
 
 
