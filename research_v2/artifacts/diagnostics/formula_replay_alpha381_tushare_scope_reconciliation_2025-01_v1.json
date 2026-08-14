@@ -1,0 +1,31 @@
+{
+  "scope": "FORMULA_REPLAY_ALPHA381_TUSHARE_SCOPE_RECONCILIATION_2025_01_V1",
+  "factor_id": "yeslab_381",
+  "factor_name": "GP_012",
+  "window": "2025-01-02/2025-01-31",
+  "market_scope": "SH/SZ",
+  "market_source": "Tushare.daily",
+  "database_writes": false,
+  "locked_test_read": false,
+  "calculator_market_start": "2024-11-25",
+  "historical_source_scope": {
+    "factor_code_count": 5390,
+    "factor_bj_code_count": 263,
+    "factor_shsz_code_count": 5127,
+    "stock_factor_daily_shsz_code_count": 5133
+  },
+  "canonical_replay": {
+    "market_code_count": 5133,
+    "market_date_count": 45,
+    "market_missing_code_count": 0,
+    "source_market_uncovered_rows": 0,
+    "overlap_finite_rows": 91886,
+    "mismatch_rows": 91884,
+    "mismatch_date_count": 18,
+    "max_abs_diff": 5922070.249834418,
+    "max_rel_diff": 2081.4972080000975,
+    "decision_status": "FORMULA_REPLAY_BLOCKED_HISTORICAL_SCOPE_MIGRATION",
+    "reason_codes": ["HISTORICAL_SOURCE_INCLUDES_BJ", "FINITE_OVERLAP_MISMATCH"]
+  },
+  "conclusion": "The Tushare SH/SZ replay has complete market coverage, but the historical GP_012 values were generated on a broader source cross-section including BJ. Exact equality is not a valid canonical-scope gate; use the isolated SH/SZ rematerialization and keep the formal factor set unchanged until explicit admission."
+}
