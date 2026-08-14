@@ -124,6 +124,7 @@ def test_select_model_eligible_returns_only_sorted_current_shsz_rows() -> None:
         evidence_commit="b" * 40,
     )
 
+    latest.validate_quality_latest_frame(frame, expected_catalog_count=9)
     eligible = latest.select_model_eligible(frame)
 
     assert eligible["factor_id"].tolist() == sorted(formal_ids)

@@ -275,11 +275,15 @@ def _with_metrics(
             "model_eligible": model_eligible,
             "monitoring_required": monitoring_required,
             "reason_code": reason_code,
-            "frozen_direction": _value(metrics, "direction"),
-            "train_valid_days": _value(metrics, "valid_day_count"),
-            "train_signed_rank_ic": _value(metrics, "signed_mean_rank_ic"),
-            "train_icir": _value(metrics, "signed_icir"),
-            "train_directional_share": _value(metrics, "directional_day_share"),
+            "frozen_direction": _value(metrics, "frozen_direction", "direction"),
+            "train_valid_days": _value(metrics, "train_valid_days", "valid_day_count"),
+            "train_signed_rank_ic": _value(
+                metrics, "train_signed_rank_ic", "signed_mean_rank_ic"
+            ),
+            "train_icir": _value(metrics, "train_icir", "signed_icir"),
+            "train_directional_share": _value(
+                metrics, "train_directional_share", "directional_day_share"
+            ),
             "annual_gate_years": _value(
                 metrics, "annual_gate_years", "annual_double_gate_pass_years"
             ),
