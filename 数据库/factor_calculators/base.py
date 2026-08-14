@@ -69,6 +69,58 @@ class FactorCalculator:
         self.required_balance_sheet_factors = []  # 所需的资产负债表因子名称
         self.required_cashflow_factors = []  # 所需的现金流量表因子名称
         self.required_income_factors = []  # 所需的利润表因子名称
+        # Optional date-aware industry source used by canonical rematerialization.
+        # None preserves the historical static stock_info_table behavior.
+        self.industry_provider = None
+
+    def get_industry_labels(self, dates, codes):
+        """Return an industry-label matrix indexed by date and security code."""
+
+        date_values = tuple(pd.Timestamp(value).normalize() for value in dates)
+        code_values = tuple(dict.fromkeys(map(str, codes)))
+        provider = self.industry_provider
+        if provider is not None:
+            labels = provider.get_industry_labels(date_values, code_values)
+            if not isinstance(labels, pd.DataFrame):
+                raise TypeError("industry provider must return a DataFrame")
+            return labels.reindex(index=date_values, columns=code_values)
+
+        info = self.fetcher.get_stock_industry_info()
+        info = info.dropna(subset=["ts_code", "l1_name"]).copy()
+        info["ts_code"] = info["ts_code"].astype(str)
+        info = info.drop_duplicates(subset=["ts_code"], keep="last")
+        mapping = info.set_index("ts_code")["l1_name"]
+        values = mapping.reindex(code_values).to_numpy(dtype=object)
+        return pd.DataFrame(
+            [values.copy() for _ in date_values],
+            index=date_values,
+            columns=code_values,
+            dtype=object,
+        )
+
+    @staticmethod
+    def industry_zscore_and_skew(stock_ret, labels):
+        """Compute date-aware industry z-scores and daily industry skew."""
+
+        if not stock_ret.index.equals(labels.index) or not stock_ret.columns.equals(labels.columns):
+            raise ValueError("industry returns and labels must have identical axes")
+        zscore = pd.DataFrame(np.nan, index=stock_ret.index, columns=stock_ret.columns)
+        skew = pd.DataFrame(np.nan, index=stock_ret.index, columns=stock_ret.columns)
+        for trade_date in stock_ret.index:
+            values = stock_ret.loc[trade_date]
+            groups = labels.loc[trade_date]
+            valid = values.notna() & groups.notna()
+            if not valid.any():
+                continue
+            grouped = values.loc[valid].groupby(groups.loc[valid], sort=False)
+            means = grouped.transform("mean")
+            stds = grouped.transform("std")
+            daily_zscore = (values.loc[valid] - means) / stds
+            daily_skew = grouped.transform("skew")
+            valid_codes = values.index[valid]
+            zscore.loc[trade_date, valid_codes] = daily_zscore.to_numpy(dtype=float)
+            skew.loc[trade_date, valid_codes] = daily_skew.to_numpy(dtype=float)
+        return zscore, skew
     
     # 因为存在lookback_days，所以需要预处理时间范围，提前start_time以便获得足够的历史数据
     def preprocess_time_range(self, start_time, end_time):
@@ -183,5 +235,3 @@ class FactorCalculator:
         这个方法接收的是已经预处理过的时间范围
         """
         raise NotImplementedError("子类必须实现_calculate方法")
-    
-    

@@ -1,0 +1,88 @@
+{
+  "as_of_dates": [
+    "2020-01-02",
+    "2021-12-09",
+    "2021-12-10",
+    "2022-01-04",
+    "2024-01-02",
+    "2025-01-02"
+  ],
+  "classification_count": 28,
+  "database_writes": false,
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "industry_source": "Tushare.index_classify(SW2014,L1)+index_member",
+  "locked_test_read": false,
+  "market_scope": "SH/SZ",
+  "membership_row_count": 7551,
+  "scope": "TUSHARE_SW2014_L1_PIT_INDUSTRY_AUDIT_V1",
+  "snapshots": {
+    "2020-01-02": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 3675,
+      "pit_shsz_coverage_count": 3675,
+      "pit_shsz_coverage_ratio": 0.6821978837943197,
+      "pit_unmapped_universe_count": 1712,
+      "static_label_exact_name_count": 229,
+      "static_label_exact_name_share": 0.06612763499855616,
+      "static_label_overlap_count": 3463,
+      "universe_shsz_count": 5387
+    },
+    "2021-12-09": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 4195,
+      "pit_shsz_coverage_count": 4195,
+      "pit_shsz_coverage_ratio": 0.7787265639502506,
+      "pit_unmapped_universe_count": 1192,
+      "static_label_exact_name_count": 264,
+      "static_label_exact_name_share": 0.0658354114713217,
+      "static_label_overlap_count": 4010,
+      "universe_shsz_count": 5387
+    },
+    "2021-12-10": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 3663,
+      "pit_shsz_coverage_count": 3663,
+      "pit_shsz_coverage_ratio": 0.6799702988676444,
+      "pit_unmapped_universe_count": 1724,
+      "static_label_exact_name_count": 254,
+      "static_label_exact_name_share": 0.07230287503558212,
+      "static_label_overlap_count": 3513,
+      "universe_shsz_count": 5387
+    },
+    "2022-01-04": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 4009,
+      "pit_shsz_coverage_count": 4009,
+      "pit_shsz_coverage_ratio": 0.744198997586783,
+      "pit_unmapped_universe_count": 1378,
+      "static_label_exact_name_count": 288,
+      "static_label_exact_name_share": 0.07513696843203757,
+      "static_label_overlap_count": 3833,
+      "universe_shsz_count": 5387
+    },
+    "2024-01-02": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 4845,
+      "pit_shsz_coverage_count": 4845,
+      "pit_shsz_coverage_ratio": 0.8993874141451643,
+      "pit_unmapped_universe_count": 542,
+      "static_label_exact_name_count": 377,
+      "static_label_exact_name_share": 0.0793851337123605,
+      "static_label_overlap_count": 4749,
+      "universe_shsz_count": 5387
+    },
+    "2025-01-02": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 4871,
+      "pit_shsz_coverage_count": 4871,
+      "pit_shsz_coverage_ratio": 0.9042138481529608,
+      "pit_unmapped_universe_count": 516,
+      "static_label_exact_name_count": 389,
+      "static_label_exact_name_share": 0.0806384742951907,
+      "static_label_overlap_count": 4824,
+      "universe_shsz_count": 5387
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "annual": {
+    "2020": {
+      "double_gate_pass": true,
+      "icir": 0.6975560196901573,
+      "mean_rank_ic": 0.05564952007669777,
+      "signed_directional_day_share": 0.7695473251028807,
+      "signed_mean_rank_ic": 0.05564952007669777,
+      "valid_day_count": 243
+    },
+    "2021": {
+      "double_gate_pass": true,
+      "icir": 0.6954679292952859,
+      "mean_rank_ic": 0.05799264342000872,
+      "signed_directional_day_share": 0.7654320987654321,
+      "signed_mean_rank_ic": 0.05799264342000872,
+      "valid_day_count": 243
+    },
+    "2022": {
+      "double_gate_pass": true,
+      "icir": 0.8290221087134017,
+      "mean_rank_ic": 0.060107745071977824,
+      "signed_directional_day_share": 0.8264462809917356,
+      "signed_mean_rank_ic": 0.060107745071977824,
+      "valid_day_count": 242
+    },
+    "2023": {
+      "double_gate_pass": true,
+      "icir": 0.8517719740078212,
+      "mean_rank_ic": 0.0640588275993499,
+      "signed_directional_day_share": 0.7479338842975206,
+      "signed_mean_rank_ic": 0.0640588275993499,
+      "valid_day_count": 242
+    },
+    "2024": {
+      "double_gate_pass": true,
+      "icir": 1.0055465845403366,
+      "mean_rank_ic": 0.07052393658803542,
+      "signed_directional_day_share": 0.8512396694214877,
+      "signed_mean_rank_ic": 0.07052393658803542,
+      "valid_day_count": 242
+    }
+  },
+  "database_writes": false,
+  "direction": 1,
+  "directional_share_pass_years": 5,
+  "double_gate_pass_years": 5,
+  "factor_id": "yeslab_471",
+  "locked_test_read": false,
+  "period": "2020-01-02/2024-12-31",
+  "same_direction_years": 5,
+  "scope": "TUSHARE_VERSIONED_PIT_INDUSTRY_ALPHA471_ANNUAL_QUALITY_V1",
+  "signed_mean_pass_years": 5,
+  "strict_annual_icir_pass_years": 5
+}

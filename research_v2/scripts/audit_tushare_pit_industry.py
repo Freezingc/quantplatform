@@ -94,7 +94,10 @@ def build_pit_snapshot(
         active = active.loc[active["con_code"].isin(code_set)]
 
     conflict_counts = active.groupby("con_code")["index_code"].nunique()
-    conflict_codes = int((conflict_counts > 1).sum())
+    conflict_code_values = tuple(
+        sorted(conflict_counts.loc[conflict_counts > 1].index.astype(str))
+    )
+    conflict_codes = len(conflict_code_values)
     active = active.sort_values(
         ["con_code", "in_date", "index_code"], kind="stable"
     ).drop_duplicates("con_code", keep="last")
@@ -103,8 +106,255 @@ def build_pit_snapshot(
     ].rename(columns={"con_code": "ts_code", "index_code": "industry_code"})
     snapshot = snapshot.sort_values("ts_code").reset_index(drop=True)
     snapshot.attrs["overlap_conflict_code_count"] = conflict_codes
+    snapshot.attrs["overlap_conflict_codes"] = conflict_code_values
     snapshot.attrs["as_of"] = pd.Timestamp(as_of).date().isoformat()
     return snapshot
+
+
+class PITIndustryProvider:
+    """Serve date-aware industry labels from Tushare membership intervals."""
+
+    def __init__(
+        self,
+        members: pd.DataFrame,
+        classifications: pd.DataFrame,
+        *,
+        strict: bool = True,
+    ) -> None:
+        self.members = normalize_members(members)
+        self.classifications = normalize_classifications(classifications)
+        self.strict = bool(strict)
+        self._snapshot_cache: dict[tuple[date, tuple[str, ...]], pd.DataFrame] = {}
+
+    @classmethod
+    def from_cache(
+        cls,
+        cache_dir: Path,
+        *,
+        source: str = "SW2021",
+        strict: bool = True,
+    ) -> PITIndustryProvider:
+        source_key = str(source).strip().lower()
+        if not source_key:
+            raise ValueError("industry source must be non-empty")
+        classification_path = cache_dir / (
+            f"pit_industry_{source_key}_l1_classification.json"
+        )
+        if not classification_path.is_file():
+            raise FileNotFoundError(
+                f"missing PIT industry classification cache: {classification_path}"
+            )
+        classifications = pd.read_json(classification_path, orient="table")
+        normalized = normalize_classifications(classifications)
+        member_frames: list[pd.DataFrame] = []
+        missing: list[str] = []
+        for index_code in normalized["index_code"]:
+            member_path = cache_dir / (
+                f"pit_industry_{source_key}_members_{str(index_code).replace('.', '_')}.json"
+            )
+            if source_key == "sw2021" and not member_path.is_file():
+                member_path = cache_dir / (
+                    f"pit_industry_members_{str(index_code).replace('.', '_')}.json"
+                )
+            if not member_path.is_file():
+                missing.append(str(member_path))
+                continue
+            member_frames.append(pd.read_json(member_path, orient="table"))
+        if missing:
+            raise FileNotFoundError(f"missing PIT industry membership caches: {missing[:3]}")
+        members = (
+            pd.concat(member_frames, ignore_index=True)
+            if member_frames
+            else pd.DataFrame(columns=list(MEMBER_COLUMNS))
+        )
+        return cls(members, classifications, strict=strict)
+
+    def snapshot(self, as_of: date, codes: Sequence[str]) -> pd.DataFrame:
+        as_of_value = parse_date(pd.Timestamp(as_of).date().isoformat())
+        code_values = tuple(dict.fromkeys(map(str, codes)))
+        cache_key = (as_of_value, tuple(sorted(code_values)))
+        if cache_key not in self._snapshot_cache:
+            snapshot = build_pit_snapshot(
+                self.members,
+                self.classifications,
+                as_of=as_of_value,
+                codes=code_values,
+            )
+            conflict_count = int(snapshot.attrs.get("overlap_conflict_code_count", 0))
+            if self.strict and conflict_count:
+                raise ValueError(
+                    f"PIT industry membership overlap on {as_of_value}: "
+                    f"{conflict_count} code(s)"
+                )
+            self._snapshot_cache[cache_key] = snapshot
+        return self._snapshot_cache[cache_key].copy(deep=True)
+
+    def get_industry_labels(
+        self, dates: Sequence[date | pd.Timestamp], codes: Sequence[str]
+    ) -> pd.DataFrame:
+        date_values = tuple(pd.Timestamp(value).normalize() for value in dates)
+        if len(set(date_values)) != len(date_values):
+            raise ValueError("industry label dates must be unique")
+        code_values = tuple(dict.fromkeys(map(str, codes)))
+        labels = pd.DataFrame(index=date_values, columns=code_values, dtype=object)
+        for timestamp in date_values:
+            snapshot = self.snapshot(timestamp.date(), code_values)
+            if snapshot.empty:
+                continue
+            mapping = snapshot.set_index("ts_code")["industry_name"]
+            common = [code for code in code_values if code in mapping.index]
+            if common:
+                labels.loc[timestamp, common] = mapping.loc[common].to_numpy(dtype=object)
+        labels.index.name = "trade_date"
+        return labels
+
+    def coverage_report(
+        self, dates: Sequence[date | pd.Timestamp], codes: Sequence[str]
+    ) -> dict[str, object]:
+        labels = self.get_industry_labels(dates, codes)
+        mapped = labels.notna()
+        code_values = tuple(dict.fromkeys(map(str, codes)))
+        conflict_codes: set[str] = set()
+        for timestamp in labels.index:
+            snapshot = self.snapshot(timestamp.date(), code_values)
+            conflict_codes.update(
+                map(str, snapshot.attrs.get("overlap_conflict_codes", ()))
+            )
+        unmapped_codes = sorted(
+            code for code in code_values if not bool(mapped.loc[:, code].any())
+        )
+        requested_rows = int(mapped.size)
+        mapped_rows = int(mapped.to_numpy(dtype=bool).sum())
+        return {
+            "requested_rows": requested_rows,
+            "mapped_rows": mapped_rows,
+            "coverage_ratio": mapped_rows / requested_rows if requested_rows else 0.0,
+            "conflict_code_count": len(conflict_codes),
+            "unmapped_codes": unmapped_codes,
+        }
+
+
+class VersionedPITIndustryProvider:
+    """Switch historical industry source at an explicit classification cutover."""
+
+    def __init__(
+        self,
+        before: PITIndustryProvider,
+        after: PITIndustryProvider,
+        *,
+        cutover: date,
+    ) -> None:
+        self.before = before
+        self.after = after
+        self.cutover = parse_date(cutover.isoformat())
+
+    @classmethod
+    def from_cache(
+        cls,
+        cache_dir: Path,
+        *,
+        cutover: date,
+        strict: bool = True,
+    ) -> VersionedPITIndustryProvider:
+        return cls(
+            PITIndustryProvider.from_cache(cache_dir, source="SW2014", strict=strict),
+            PITIndustryProvider.from_cache(cache_dir, source="SW2021", strict=strict),
+            cutover=cutover,
+        )
+
+    def _provider_for(self, value: pd.Timestamp) -> PITIndustryProvider:
+        return self.before if value.date() < self.cutover else self.after
+
+    def get_industry_labels(
+        self, dates: Sequence[date | pd.Timestamp], codes: Sequence[str]
+    ) -> pd.DataFrame:
+        date_values = tuple(pd.Timestamp(value).normalize() for value in dates)
+        if len(set(date_values)) != len(date_values):
+            raise ValueError("industry label dates must be unique")
+        code_values = tuple(dict.fromkeys(map(str, codes)))
+        labels = pd.DataFrame(index=date_values, columns=code_values, dtype=object)
+        groups: dict[PITIndustryProvider, list[pd.Timestamp]] = {}
+        for timestamp in date_values:
+            groups.setdefault(self._provider_for(timestamp), []).append(timestamp)
+        for provider, provider_dates in groups.items():
+            labels.loc[provider_dates, code_values] = provider.get_industry_labels(
+                provider_dates, code_values
+            ).to_numpy(dtype=object)
+        labels.index.name = "trade_date"
+        return labels
+
+    def coverage_report(
+        self, dates: Sequence[date | pd.Timestamp], codes: Sequence[str]
+    ) -> dict[str, object]:
+        labels = self.get_industry_labels(dates, codes)
+        mapped = labels.notna()
+        code_values = tuple(dict.fromkeys(map(str, codes)))
+        conflict_count = 0
+        for provider, provider_dates in (
+            (self.before, [value for value in labels.index if value.date() < self.cutover]),
+            (self.after, [value for value in labels.index if value.date() >= self.cutover]),
+        ):
+            if provider_dates:
+                conflict_count += int(
+                    provider.coverage_report(provider_dates, code_values)[
+                        "conflict_code_count"
+                    ]
+                )
+        requested_rows = int(mapped.size)
+        mapped_rows = int(mapped.to_numpy(dtype=bool).sum())
+        return {
+            "requested_rows": requested_rows,
+            "mapped_rows": mapped_rows,
+            "coverage_ratio": mapped_rows / requested_rows if requested_rows else 0.0,
+            "conflict_code_count": conflict_count,
+            "unmapped_codes": sorted(
+                code for code in code_values if not bool(mapped.loc[:, code].any())
+            ),
+        }
+
+
+def coverage_for_keys(provider: object, keys: pd.DataFrame) -> dict[str, object]:
+    """Measure PIT coverage on observed date/security keys only."""
+
+    date_column = "signal_date" if "signal_date" in keys.columns else "trade_date"
+    required = {date_column, "ts_code"}
+    if missing := sorted(required.difference(keys.columns)):
+        raise ValueError(f"PIT coverage keys are missing columns: {missing}")
+    working = keys.loc[:, [date_column, "ts_code"]].copy()
+    working = working.rename(columns={date_column: "trade_date"})
+    working["trade_date"] = pd.to_datetime(
+        working["trade_date"], errors="raise"
+    ).dt.normalize()
+    working["ts_code"] = working["ts_code"].astype(str)
+    working = working.drop_duplicates(["trade_date", "ts_code"])
+    dates = tuple(working["trade_date"].drop_duplicates())
+    codes = tuple(working["ts_code"].drop_duplicates())
+    labels = provider.get_industry_labels(dates, codes)
+    label_frame = (
+        labels.rename_axis("trade_date", axis=0)
+        .rename_axis("ts_code", axis=1)
+        .reset_index()
+        .melt(
+            id_vars=["trade_date"],
+            var_name="ts_code",
+            value_name="industry_name",
+        )
+    )
+    merged = working.merge(label_frame, on=["trade_date", "ts_code"], how="left")
+    mapped = merged["industry_name"].notna()
+    conflict_report = provider.coverage_report(dates, codes)
+    unmapped = merged.loc[~mapped, ["trade_date", "ts_code"]]
+    requested_rows = int(len(merged))
+    mapped_rows = int(mapped.sum())
+    return {
+        "requested_rows": requested_rows,
+        "mapped_rows": mapped_rows,
+        "coverage_ratio": mapped_rows / requested_rows if requested_rows else 0.0,
+        "unmapped_key_count": int(len(unmapped)),
+        "unmapped_code_count": int(unmapped["ts_code"].nunique()),
+        "unmapped_codes": sorted(unmapped["ts_code"].unique()),
+        "conflict_code_count": int(conflict_report["conflict_code_count"]),
+    }
 
 
 def summarize_snapshot(
@@ -174,18 +424,25 @@ def _read_or_fetch(
     return result
 
 
-def fetch_sw2021_l1_members(
-    pro: object, *, cache_dir: Path | None = None
+def fetch_pit_members(
+    pro: object,
+    *,
+    source: str = "SW2021",
+    cache_dir: Path | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    source_key = str(source).strip().upper()
+    if source_key not in {"SW2014", "SW2021"}:
+        raise ValueError("industry source must be SW2014 or SW2021")
+    source_file_key = source_key.lower()
     classification_path = (
-        cache_dir / "pit_industry_sw2021_l1_classification.json"
+        cache_dir / f"pit_industry_{source_file_key}_l1_classification.json"
         if cache_dir is not None
         else None
     )
     classifications = _read_or_fetch(
         classification_path,
         lambda: pro.index_classify(
-            src="SW2021",
+            src=source_key,
             level="L1",
             fields="index_code,industry_name,level,parent_code,src",
         ),
@@ -194,10 +451,21 @@ def fetch_sw2021_l1_members(
     member_frames: list[pd.DataFrame] = []
     for index_code in normalized_classifications["index_code"]:
         member_path = (
-            cache_dir / f"pit_industry_members_{index_code.replace('.', '_')}.json"
+            cache_dir
+            / f"pit_industry_{source_file_key}_members_{index_code.replace('.', '_')}.json"
             if cache_dir is not None
             else None
         )
+        if (
+            source_file_key == "sw2021"
+            and cache_dir is not None
+            and not member_path.is_file()
+        ):
+            legacy_member_path = cache_dir / (
+                f"pit_industry_members_{index_code.replace('.', '_')}.json"
+            )
+            if legacy_member_path.is_file():
+                member_path = legacy_member_path
         member_frames.append(
             _read_or_fetch(
                 member_path,
@@ -215,6 +483,14 @@ def fetch_sw2021_l1_members(
     return normalized_classifications, normalize_members(members)
 
 
+def fetch_sw2021_l1_members(
+    pro: object, *, cache_dir: Path | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Backward-compatible SW2021 cache loader."""
+
+    return fetch_pit_members(pro, source="SW2021", cache_dir=cache_dir)
+
+
 def run_audit(
     *,
     pro: object,
@@ -222,8 +498,11 @@ def run_audit(
     static_labels: pd.DataFrame,
     as_of_dates: Sequence[date],
     cache_dir: Path | None = None,
+    source: str = "SW2021",
 ) -> dict[str, object]:
-    classifications, members = fetch_sw2021_l1_members(pro, cache_dir=cache_dir)
+    classifications, members = fetch_pit_members(
+        pro, source=source, cache_dir=cache_dir
+    )
     universe_codes = universe["ts_code"].astype(str).dropna().unique()
     snapshots: dict[str, object] = {}
     for as_of in as_of_dates:
@@ -234,8 +513,8 @@ def run_audit(
             snapshot, universe, static_labels
         )
     return {
-        "scope": "TUSHARE_SW2021_L1_PIT_INDUSTRY_AUDIT_V1",
-        "industry_source": "Tushare.index_classify(SW2021,L1)+index_member",
+        "scope": f"TUSHARE_{str(source).upper()}_L1_PIT_INDUSTRY_AUDIT_V1",
+        "industry_source": f"Tushare.index_classify({str(source).upper()},L1)+index_member",
         "market_scope": "SH/SZ",
         "excluded_exchanges": ["BJ"],
         "classification_count": int(len(classifications)),
@@ -253,6 +532,7 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--universe-start", type=parse_date, required=True)
     parser.add_argument("--universe-end", type=parse_date, required=True)
     parser.add_argument("--cache-dir", type=Path)
+    parser.add_argument("--source", choices=("SW2014", "SW2021"), default="SW2021")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.universe_start > args.universe_end:
@@ -290,6 +570,7 @@ def main(argv: Sequence[str] | None = None) -> dict[str, object]:
         static_labels=static_labels,
         as_of_dates=args.as_of,
         cache_dir=args.cache_dir,
+        source=args.source,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(

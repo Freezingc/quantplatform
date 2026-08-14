@@ -138,6 +138,32 @@ def test_parser_can_skip_expensive_pair_similarity() -> None:
     assert args.skip_similarity is True
 
 
+def test_parser_accepts_pit_industry_cache() -> None:
+    args = evaluation.parse_args(
+        [
+            "--factor-id",
+            "yeslab_357",
+            "--pit-industry-cache",
+            "/tmp/pit-industry-cache",
+            "--pit-industry-cutover",
+            "2021-12-10",
+            "--start",
+            "2025-01-01",
+            "--end",
+            "2025-12-31",
+            "--output",
+            "/tmp/pit-quality",
+        ]
+    )
+
+    assert str(args.pit_industry_cache) == "/tmp/pit-industry-cache"
+    assert str(args.pit_industry_cutover) == "2021-12-10"
+
+
+def test_daily_basic_contract_includes_total_mv() -> None:
+    assert evaluation.requires_daily_basic(("pct_chg", "total_mv")) is True
+
+
 def test_adjusted_field_contract_is_required_for_price_based_replay() -> None:
     required_fields = ("close_hfq", "high_hfq", "low_hfq")
     include_adjusted = bool(

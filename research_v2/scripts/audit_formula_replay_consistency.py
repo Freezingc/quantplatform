@@ -756,15 +756,21 @@ def _query_source(
 
 
 def _replay_factor(
-    client: object, definition: ReplayDefinition, start: date, end: date
+    client: object,
+    definition: ReplayDefinition,
+    start: date,
+    end: date,
+    *,
+    industry_provider: object | None = None,
 ) -> pd.DataFrame:
     if str(CALCULATOR_ROOT) not in sys.path:
         sys.path.insert(0, str(CALCULATOR_ROOT))
     module = importlib.import_module(f"factor_calculators.{definition.calculator_module}")
     calculator_class = getattr(module, definition.calculator_class)
-    wide = calculator_class(client, definition.effective_replay_lookback_days).calculate(
-        start.strftime("%Y.%m.%d"), end.strftime("%Y.%m.%d")
-    )
+    calculator = calculator_class(client, definition.effective_replay_lookback_days)
+    if industry_provider is not None:
+        calculator.industry_provider = industry_provider
+    wide = calculator.calculate(start.strftime("%Y.%m.%d"), end.strftime("%Y.%m.%d"))
     return (
         wide.rename_axis("trade_date")
         .reset_index()

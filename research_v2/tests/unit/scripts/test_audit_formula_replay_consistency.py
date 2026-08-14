@@ -357,3 +357,35 @@ def test_data_fetcher_maps_current_industry_column_to_calculator_contract() -> N
     assert 'loadTable(db, "stock_info_table")' in session.script
     assert "industry as l1_name" in session.script
     assert "industry as l1_code" in session.script
+
+
+def test_replay_factor_injects_optional_industry_provider(monkeypatch) -> None:
+    from factor_calculators.IndustryStandAbsCalculator import IndustryStandAbsCalculator
+
+    provider = object()
+    observed: dict[str, object] = {}
+
+    def fake_calculate(self, start_time: str, end_time: str) -> pd.DataFrame:
+        observed["provider"] = self.industry_provider
+        return pd.DataFrame(
+            {"000001.SZ": [1.0]}, index=pd.to_datetime(["2025-01-02"])
+        )
+
+    monkeypatch.setattr(IndustryStandAbsCalculator, "calculate", fake_calculate)
+
+    result = audit._replay_factor(
+        object(),
+        audit.REPLAY_DEFINITIONS["yeslab_357"],
+        date(2025, 1, 2),
+        date(2025, 1, 2),
+        industry_provider=provider,
+    )
+
+    assert observed["provider"] is provider
+    assert result.to_dict("records") == [
+        {
+            "trade_date": pd.Timestamp("2025-01-02"),
+            "ts_code": "000001.SZ",
+            "replay_value": 1.0,
+        }
+    ]

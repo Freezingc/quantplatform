@@ -13,6 +13,9 @@ class AttentionSpilloverCalculator(FactorCalculator):
         if self._industry_map is not None:
             return self._industry_map
 
+        if self.industry_provider is not None:
+            return None
+
         query = '''
             db = database("dfs://YesLab")
             t = loadTable(db, "stock_info_table")
@@ -60,7 +63,17 @@ class AttentionSpilloverCalculator(FactorCalculator):
         attention = abnormal_sq.rolling(window=21, min_periods=21).mean()
 
         industry_map = self._get_industry_map()
-        industry_for_cols = pd.Series(ret.columns, index=ret.columns).map(industry_map)
+        industry_labels = None
+        if self.industry_provider is not None:
+            industry_labels = self.get_industry_labels(ret.index, ret.columns)
+        else:
+            industry_labels = pd.DataFrame(
+                [pd.Series(ret.columns, index=ret.columns).map(industry_map).to_numpy()]
+                * len(ret.index),
+                index=ret.index,
+                columns=ret.columns,
+                dtype=object,
+            )
 
         out = pd.DataFrame(np.nan, index=ret.index, columns=ret.columns, dtype=float)
         col_pos = {c: i for i, c in enumerate(ret.columns)}
@@ -74,7 +87,7 @@ class AttentionSpilloverCalculator(FactorCalculator):
             row_df = pd.DataFrame({
                 "attention": att_row,
                 "mv": mv_row,
-                "industry": industry_for_cols,
+                "industry": industry_labels.loc[dt],
             })
             row_df = row_df.dropna(subset=["attention", "mv", "industry"])
             if row_df.empty:
