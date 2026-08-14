@@ -1055,6 +1055,65 @@
     "database_writes": false,
     "locked_test_read": false
   },
+  "canonical_unique_candidate_replay": {
+    "artifacts": [
+      "tushare_canonical_formal9_unique7_train_2020_2024_v1/quality_summary.json",
+      "tushare_canonical_formal9_unique7_train_2020_2024_v1/similarity_summary.json",
+      "tushare_canonical_formal9_unique7_validation_2025_v1/quality_summary.json",
+      "tushare_canonical_formal9_unique7_validation_2025_v1/similarity_summary.json"
+    ],
+    "scope": "TUSHARE_CANONICAL_FORMAL9_UNIQUE5_REPLAY_V1",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "label": "raw five-trading-day adjusted-open forward return",
+    "train_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "similarity_rule": "median absolute daily Spearman below 0.90 against every formal factor in both windows",
+    "candidate_status": {
+      "yeslab_163": {
+        "train": {"signed_mean_rank_ic": 0.0665525046, "signed_icir": 0.5443542158, "annual_double_gate_pass_years": "3/5"},
+        "validation": {"signed_mean_rank_ic": 0.0698058422, "signed_icir": 0.5656327269},
+        "max_similarity_to_formal_nine": {"train": {"factor_id": "yeslab_431", "value": 0.8497738790, "valid_days": 1212}, "validation": {"factor_id": "yeslab_431", "value": 0.8270333709, "valid_days": 243}},
+        "status": "DEFER_ANNUAL_STABILITY_3_OF_5",
+        "action": "Keep isolated from formal and model inputs; do not advance before a targeted annual-stability repair or an explicit policy change."
+      },
+      "yeslab_363": {
+        "train": {"signed_mean_rank_ic": 0.0392719846, "signed_icir": 0.5552166279, "annual_double_gate_pass_years": "4/5"},
+        "validation": {"signed_mean_rank_ic": 0.0561397947, "signed_icir": 0.8639004891},
+        "max_similarity_to_formal_nine": {"train": {"factor_id": "yeslab_396", "value": 0.3209363572, "valid_days": 1212}, "validation": {"factor_id": "yeslab_396", "value": 0.3451944072, "valid_days": 243}},
+        "industry_source": "Tushare SW2014 before 2021-12-10; SW2021 from 2021-12-10",
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
+        "action": "A new isolated canonical version is required; never mix it with historical static-industry values. Keep the formal nine and model inputs unchanged pending an explicit admission decision."
+      },
+      "yeslab_385": {
+        "train": {"signed_mean_rank_ic": 0.0746169397, "signed_icir": 0.5754615475, "annual_double_gate_pass_years": "4/5"},
+        "validation": {"signed_mean_rank_ic": 0.0835416867, "signed_icir": 0.6880413135},
+        "max_similarity_to_formal_nine": {"train": {"factor_id": "yeslab_396", "value": 0.7026532171, "valid_days": 1212}, "validation": {"factor_id": "yeslab_396", "value": 0.7306015697, "valid_days": 243}},
+        "extension_cluster_status": "REDUNDANT_TO_HIGHER_PRIORITY_yeslab_405",
+        "status": "DEFER_EXTENSION_REDUNDANCY",
+        "action": "Do not advance this candidate while the stronger Alpha405 scope-transition candidate remains unresolved."
+      },
+      "yeslab_95": {
+        "train": {"signed_mean_rank_ic": 0.0577982937, "signed_icir": 0.5218859072, "annual_double_gate_pass_years": "2/5"},
+        "validation": {"signed_mean_rank_ic": 0.0669413093, "signed_icir": 0.5690134139},
+        "max_similarity_to_formal_nine": {"train": {"factor_id": "yeslab_376", "value": 0.4635637062, "valid_days": 1212}, "validation": {"factor_id": "yeslab_376", "value": 0.5511104963, "valid_days": 243}},
+        "status": "REJECT_ANNUAL_STABILITY_2_OF_5",
+        "action": "Retain only as diagnostic evidence; no admission, publication, or model input use."
+      },
+      "yeslab_96": {
+        "train": {"signed_mean_rank_ic": 0.0609139094, "signed_icir": 0.5742737688, "annual_double_gate_pass_years": "4/5"},
+        "validation": {"signed_mean_rank_ic": 0.0739783624, "signed_icir": 0.6420883584},
+        "max_similarity_to_formal_nine": {"train": {"factor_id": "yeslab_94", "value": 0.5555605298, "valid_days": 1212}, "validation": {"factor_id": "yeslab_94", "value": 0.6120636432, "valid_days": 243}},
+        "paired_factor_monitor": {"factor_id": "yeslab_95", "train_median_abs_spearman": 0.8204550197, "validation_median_abs_spearman": 0.8443079299},
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
+        "action": "Only an isolated canonical version may be considered. Keep the formal nine and model inputs unchanged pending explicit admission."
+      }
+    },
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
@@ -1073,6 +1132,10 @@
     "tushare_sw2021_l1_pit_industry_audit_2020_2025_v1.json",
     "tushare_sw2014_l1_pit_industry_audit_2020_2025_v1.json",
     "tushare_versioned_pit_industry_active_key_coverage_2020_2025_v1.json",
-    "tushare_versioned_pit_industry_quality_2020_2025_v1.json"
+    "tushare_versioned_pit_industry_quality_2020_2025_v1.json",
+    "tushare_canonical_formal9_unique7_train_2020_2024_v1/quality_summary.json",
+    "tushare_canonical_formal9_unique7_train_2020_2024_v1/similarity_summary.json",
+    "tushare_canonical_formal9_unique7_validation_2025_v1/quality_summary.json",
+    "tushare_canonical_formal9_unique7_validation_2025_v1/similarity_summary.json"
   ]
 }
