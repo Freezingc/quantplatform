@@ -1,0 +1,41 @@
+{
+  "scope": "FORMULA_REPLAY_ALPHA94_ALPHA98_TUSHARE_SCOPE_RECONCILIATION_2025_01_V1",
+  "window": "2025-01-02/2025-01-31",
+  "market_scope": "SH/SZ",
+  "market_source": "Tushare.daily",
+  "database_writes": false,
+  "locked_test_read": false,
+  "historical_stock_factor_daily_shsz_code_count": 5133,
+  "factors": {
+    "yeslab_94": {
+      "factor_name": "日间反转-波动翻转",
+      "calculator_market_start": "2024-11-04",
+      "factor_source_code_count": 5363,
+      "factor_source_bj_code_count": 262,
+      "factor_source_shsz_code_count": 5101,
+      "market_code_count": 5133,
+      "source_market_uncovered_rows": 0,
+      "overlap_finite_rows": 91385,
+      "mismatch_rows": 1757,
+      "mismatch_date_count": 18,
+      "max_abs_diff": 5.466800000000001,
+      "decision_status": "FORMULA_REPLAY_BLOCKED_HISTORICAL_SCOPE_MIGRATION"
+    },
+    "yeslab_98": {
+      "factor_name": "日内反转-波动翻转",
+      "calculator_market_start": "2024-11-04",
+      "factor_source_code_count": 5363,
+      "factor_source_bj_code_count": 262,
+      "factor_source_shsz_code_count": 5101,
+      "market_code_count": 5133,
+      "source_market_uncovered_rows": 0,
+      "overlap_finite_rows": 91385,
+      "mismatch_rows": 2083,
+      "mismatch_date_count": 18,
+      "max_abs_diff": 0.04544620532503875,
+      "decision_status": "FORMULA_REPLAY_BLOCKED_HISTORICAL_SCOPE_MIGRATION"
+    }
+  },
+  "reason_codes": ["HISTORICAL_SOURCE_INCLUDES_BJ", "FINITE_OVERLAP_MISMATCH"],
+  "conclusion": "Both calculators have complete Tushare SH/SZ market coverage. Their remaining old-value mismatches are consistent with the historical source using a broader cross-section; canonical SH/SZ rematerialized quality artifacts remain the authoritative predictive evidence. Do not mix old YesLab values into canonical model inputs."
+}
