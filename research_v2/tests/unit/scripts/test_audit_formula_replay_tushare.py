@@ -639,6 +639,45 @@ def test_source_market_coverage_catches_missing_date_for_known_code() -> None:
     assert result["source_market_uncovered_date_count"] == 1
 
 
+def test_missing_required_market_codes_includes_partial_code_gaps() -> None:
+    required = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2025-01-02", "2025-01-03"]),
+            "ts_code": ["000001.SZ", "000001.SZ"],
+        }
+    )
+    market = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2025-01-02"]),
+            "ts_code": ["000001.SZ"],
+        }
+    )
+
+    missing = audit.missing_required_market_codes(required, market)
+
+    assert missing == ("000001.SZ",)
+
+
+def test_missing_required_market_codes_handles_non_contiguous_source_index() -> None:
+    required = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2025-01-02", "2025-01-03"]),
+            "ts_code": ["000001.SZ", "000002.SZ"],
+        },
+        index=[10, 20],
+    )
+    market = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2025-01-02"]),
+            "ts_code": ["000001.SZ"],
+        }
+    )
+
+    missing = audit.missing_required_market_codes(required, market)
+
+    assert missing == ("000002.SZ",)
+
+
 def test_missing_code_range_fetch_uses_daily_basic_when_required(tmp_path) -> None:
     class FakePro:
         def daily(self, **kwargs) -> pd.DataFrame:

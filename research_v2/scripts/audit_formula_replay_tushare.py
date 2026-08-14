@@ -456,6 +456,37 @@ def source_market_coverage(
     }
 
 
+def missing_required_market_codes(
+    required_keys: pd.DataFrame,
+    market: pd.DataFrame,
+) -> tuple[str, ...]:
+    """Return codes with at least one required source key absent from market.
+
+    A code may be present in a daily snapshot while still missing on some
+    dates.  Full cross-sectional calculators need a complete code history for
+    every finite source observation, so code-level fallback must cover this
+    partial-gap case as well as completely absent codes.
+    """
+
+    required_columns = {"trade_date", "ts_code"}
+    for label, frame in (("required_keys", required_keys), ("market", market)):
+        if missing := sorted(required_columns.difference(frame.columns)):
+            raise ValueError(f"{label} is missing columns: {missing}")
+    left = required_keys.loc[:, ["trade_date", "ts_code"]].copy()
+    right = market.loc[:, ["trade_date", "ts_code"]].copy()
+    for frame in (left, right):
+        frame["trade_date"] = pd.to_datetime(frame["trade_date"], errors="raise").dt.normalize()
+        frame["ts_code"] = frame["ts_code"].astype(str)
+    left = left.drop_duplicates()
+    right = right.drop_duplicates()
+    covered = left.merge(
+        right.assign(_market_present=True),
+        on=["trade_date", "ts_code"],
+        how="left",
+    )["_market_present"].eq(True).to_numpy(dtype=bool)
+    return tuple(sorted(left.loc[~covered, "ts_code"].unique()))
+
+
 def fetch_missing_code_ranges(
     pro: object,
     codes: Sequence[str],
@@ -560,6 +591,7 @@ def _fetch_tushare_market(
     include_daily_basic: bool = False,
     include_adjusted_fields: bool = False,
     aliases: Mapping[str, str] | None = None,
+    required_keys: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     import tushare as ts  # type: ignore[import-untyped]
 
@@ -584,7 +616,8 @@ def _fetch_tushare_market(
                 result["ts_code"] = historical_code
                 if include_adjusted_fields:
                     adjustment_cache = resolved_cache / (
-                        f"adj_factor_code_{request_code.replace('.', '_')}_{start:%Y%m%d}_{end:%Y%m%d}.json"
+                        "adj_factor_code_"
+                        f"{request_code.replace('.', '_')}_{start:%Y%m%d}_{end:%Y%m%d}.json"
                     )
                     if adjustment_cache.is_file():
                         adjustment = pd.read_json(adjustment_cache, orient="table")
@@ -671,6 +704,11 @@ def _fetch_tushare_market(
     normalized = apply_tushare_aliases(normalized, aliases or {})
     if open_dates is not None:
         missing_codes = sorted(set(map(str, codes)).difference(normalized["ts_code"].astype(str)))
+        if required_keys is not None:
+            missing_codes = sorted(
+                set(missing_codes)
+                | set(missing_required_market_codes(required_keys, normalized))
+            )
         if missing_codes:
             fallback = fetch_missing_code_ranges(
                 pro,
@@ -768,6 +806,21 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         raise RuntimeError("factor universe query returned no securities")
     if not args.full_market:
         codes = codes[: args.max_ts_codes]
+    source_frames = {
+        definition.factor_id: replay._query_source(
+            client, definition, args.start, args.end
+        )
+        for definition in definitions
+    }
+    required_key_parts = []
+    for frame in source_frames.values():
+        values = pd.to_numeric(frame["value"], errors="coerce")
+        finite = np.isfinite(values.to_numpy(dtype=float))
+        required_key_parts.append(frame.loc[finite, ["trade_date", "ts_code"]])
+    required_keys = pd.concat(required_key_parts, ignore_index=True)
+    required_keys = required_keys.loc[
+        required_keys["ts_code"].astype(str).isin(set(codes))
+    ].drop_duplicates()
     market_start = min(
         _calculator_market_start(client, definition, args.start, args.end)
         for definition in definitions
@@ -790,6 +843,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
             & set(required_fields)
         ),
         aliases=aliases,
+        required_keys=required_keys,
     )
     market = apply_tushare_aliases(market, aliases)
     market_codes = tuple(sorted(set(market["ts_code"].astype(str)).intersection(codes)))
@@ -820,7 +874,7 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
     for factor_id in args.factor_id:
         definition = replay.REPLAY_DEFINITIONS[factor_id]
         comparison = aggregate_comparisons(comparisons_by_factor[factor_id])
-        source_full = replay._query_source(client, definition, args.start, args.end)
+        source_full = source_frames[factor_id]
         source_full = source_full.loc[
             source_full["ts_code"].astype(str).isin(set(codes))
         ].copy()

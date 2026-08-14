@@ -1,0 +1,41 @@
+{
+  "scope": "ALPHA484_TUSHARE_MARKET_COVERAGE_RECONCILIATION_2025_01_V1",
+  "factor_id": "yeslab_484",
+  "market_scope": "SH/SZ",
+  "window": "2025-01-02/2025-01-31",
+  "universe": "V2 SH/SZ universe",
+  "code_count": 4220,
+  "market_source": "Tushare.daily + Tushare.adj_factor",
+  "database_writes": false,
+  "locked_test_read": false,
+  "partial_gap_fallback": {
+    "attempted": true,
+    "method": "per-code daily and adj_factor range refetch for every source-required date/code key absent from the normalized market frame",
+    "additional_rows_recovered": 0,
+    "interpretation": "The missing keys are not cache omissions; the Tushare daily endpoint has no rows for those historical suspension dates."
+  },
+  "residual_gap": {
+    "source_market_uncovered_rows": 145,
+    "uncovered_code_count": 27,
+    "uncovered_date_count": 18,
+    "date_window": "2025-01-02/2025-01-27",
+    "status": "UNRESOLVED_HISTORICAL_SUSPENSION_SEMANTICS"
+  },
+  "cross_source_close_provenance": {
+    "overlap_rows": 75815,
+    "raw_close_mismatch_rows": 0,
+    "adj_factor_mismatch_rows": 4,
+    "max_adj_factor_abs_difference": 0.0003,
+    "derived_close_hfq_mismatch_rows": 4,
+    "max_derived_close_hfq_abs_difference": 0.000996,
+    "status": "SMALL_CROSS_SOURCE_ADJUSTMENT_VERSION_GAP"
+  },
+  "formula_replay": {
+    "yeslab_internal_replay_status": "FORMULA_REPLAY_PASS",
+    "tushare_replay_status": "FORMULA_REPLAY_BLOCKED",
+    "tushare_mismatch_rows": 58200,
+    "tushare_mismatch_date_count": 18,
+    "tushare_max_abs_diff": 0.010029706029252725
+  },
+  "conclusion": "The calculator is internally consistent with the historical YesLab market table. Cross-source replay remains blocked because Tushare daily coverage omits required historical suspension dates and a small adj_factor version gap remains. Do not admit Alpha484, publish it, write factor values, or add it to model inputs until source semantics are explicitly reconciled."
+}
