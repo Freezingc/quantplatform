@@ -284,22 +284,32 @@ def fetch_full_tushare_shsz_market(
     cache_dir: Path,
 ) -> pd.DataFrame:
     """Fetch all daily Tushare SH/SZ rows and adjusted fields for open dates."""
-    if not token.strip():
-        raise ValueError("QRV2_TUSHARE_TOKEN is required for canonical market replay")
     expected_dates = tuple(sorted(set(open_dates)))
     if not expected_dates:
         raise ValueError("at least one open date is required")
-    import tushare as ts  # type: ignore[import-untyped]
 
     cache_dir.mkdir(parents=True, exist_ok=True)
-    pro = ts.pro_api(token)
+    pro: object | None = None
+
+    def api() -> object:
+        nonlocal pro
+        if pro is None:
+            if not token.strip():
+                raise ValueError(
+                    "QRV2_TUSHARE_TOKEN is required when canonical market cache is incomplete"
+                )
+            import tushare as ts  # type: ignore[import-untyped]
+
+            pro = ts.pro_api(token)
+        return pro
+
     frames: list[pd.DataFrame] = []
     for trade_date in expected_dates:
         daily_path = cache_dir / f"daily_{trade_date:%Y%m%d}.json"
         if daily_path.is_file():
             daily = pd.read_json(daily_path, orient="table")
         else:
-            daily = pro.daily(trade_date=trade_date.strftime("%Y%m%d"))
+            daily = api().daily(trade_date=trade_date.strftime("%Y%m%d"))
             if isinstance(daily, pd.DataFrame) and not daily.empty:
                 daily_path.write_text(
                     daily.to_json(orient="table", date_format="iso"), encoding="utf-8"
@@ -310,7 +320,7 @@ def fetch_full_tushare_shsz_market(
         if adjustment_path.is_file():
             adjustment = pd.read_json(adjustment_path, orient="table")
         else:
-            adjustment = pro.adj_factor(trade_date=trade_date.strftime("%Y%m%d"))
+            adjustment = api().adj_factor(trade_date=trade_date.strftime("%Y%m%d"))
             if isinstance(adjustment, pd.DataFrame) and not adjustment.empty:
                 adjustment_path.write_text(
                     adjustment.to_json(orient="table", date_format="iso"), encoding="utf-8"
