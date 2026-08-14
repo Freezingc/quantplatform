@@ -1,0 +1,64 @@
+{
+  "as_of_dates": [
+    "2020-01-02",
+    "2022-01-04",
+    "2024-01-02",
+    "2025-01-02"
+  ],
+  "classification_count": 31,
+  "database_writes": false,
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "industry_source": "Tushare.index_classify(SW2021,L1)+index_member",
+  "locked_test_read": false,
+  "market_scope": "SH/SZ",
+  "membership_row_count": 7733,
+  "scope": "TUSHARE_SW2021_L1_PIT_INDUSTRY_AUDIT_V1",
+  "snapshots": {
+    "2020-01-02": {
+      "overlap_conflict_code_count": 118,
+      "pit_shsz_count": 3664,
+      "pit_shsz_coverage_count": 3664,
+      "pit_shsz_coverage_ratio": 0.6801559309448673,
+      "pit_unmapped_universe_count": 1723,
+      "static_label_exact_name_count": 87,
+      "static_label_exact_name_share": 0.025202780996523753,
+      "static_label_overlap_count": 3452,
+      "universe_shsz_count": 5387
+    },
+    "2022-01-04": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 4218,
+      "pit_shsz_coverage_count": 4218,
+      "pit_shsz_coverage_ratio": 0.7829961017263783,
+      "pit_unmapped_universe_count": 1169,
+      "static_label_exact_name_count": 111,
+      "static_label_exact_name_share": 0.027522935779816515,
+      "static_label_overlap_count": 4033,
+      "universe_shsz_count": 5387
+    },
+    "2024-01-02": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 5092,
+      "pit_shsz_coverage_count": 5092,
+      "pit_shsz_coverage_ratio": 0.9452385372192315,
+      "pit_unmapped_universe_count": 295,
+      "static_label_exact_name_count": 120,
+      "static_label_exact_name_share": 0.024043277900220397,
+      "static_label_overlap_count": 4991,
+      "universe_shsz_count": 5387
+    },
+    "2025-01-02": {
+      "overlap_conflict_code_count": 0,
+      "pit_shsz_count": 5120,
+      "pit_shsz_coverage_count": 5120,
+      "pit_shsz_coverage_ratio": 0.9504362353814739,
+      "pit_unmapped_universe_count": 267,
+      "static_label_exact_name_count": 122,
+      "static_label_exact_name_share": 0.024058371129954643,
+      "static_label_overlap_count": 5071,
+      "universe_shsz_count": 5387
+    }
+  }
+}

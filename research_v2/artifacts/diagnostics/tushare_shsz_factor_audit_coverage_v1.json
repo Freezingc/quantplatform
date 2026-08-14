@@ -1027,10 +1027,30 @@
     },
     "action": "Use these states as monitoring triggers; do not reject or change formulas automatically."
   },
+  "pit_industry_mapping_audit": {
+    "artifact": "tushare_sw2021_l1_pit_industry_audit_2020_2025_v1.json",
+    "industry_source": "Tushare.index_classify(SW2021,L1)+index_member",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "historical_union_shsz_count": 5387,
+    "snapshots": {
+      "2020-01-02": {"coverage": 0.6801559309, "pit_count": 3664, "overlap_conflict_code_count": 118},
+      "2022-01-04": {"coverage": 0.7829961017, "pit_count": 4218, "overlap_conflict_code_count": 0},
+      "2024-01-02": {"coverage": 0.9452385372, "pit_count": 5092, "overlap_conflict_code_count": 0},
+      "2025-01-02": {"coverage": 0.9504362354, "pit_count": 5120, "overlap_conflict_code_count": 0}
+    },
+    "static_label_exact_name_share": {"2020-01-02": 0.0252027810, "2022-01-04": 0.0275229358, "2024-01-02": 0.0240432779, "2025-01-02": 0.0240583711},
+    "status": "PIT_SOURCE_AVAILABLE_HISTORICAL_COVERAGE_CONFLICTS_BLOCK_ADMISSION",
+    "denominator_note": "Coverage uses the historical SH/SZ code union from stock_factor_daily, not a per-date active trading universe; it is an availability diagnostic rather than a factor admission metric.",
+    "action": "Use the Tushare membership intervals as the candidate date-aware industry source, but do not integrate the static stock_info_table.industry mapping or admit Alpha471/yeslab_357/yeslab_362/yeslab_363 yet. Resolve the 2020 overlap conflicts, measure per-date active-universe coverage, and implement a date-aware provider before formula replay or admission review.",
+    "database_writes": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
-    "remaining_library": "The remaining catalog factors have not been granted admission evidence by this audit and must remain isolated from model inputs."
+    "remaining_library": "The remaining catalog factors have not been granted admission evidence by this audit and must remain isolated from model inputs.",
+    "pit_industry_mapping": "Tushare provides a usable historical membership source, but current coverage/conflict results and the static-label mismatch mean industry-dependent factors remain blocked pending date-aware integration."
   },
   "source_artifacts": [
     "tushare_shsz_factor_quality_scoreboard_v4.json",
@@ -1040,6 +1060,7 @@
     "tushare_shsz_registered_gp_scope_precision_review_v1.json",
     "tushare_shsz_remaining_gp_scope_review_v1.json",
     "tushare_shsz_pending_gp_scope_completion_v1.json",
-    "tushare_shsz_alpha5_formula_replay_2025-01_v1.json"
+    "tushare_shsz_alpha5_formula_replay_2025-01_v1.json",
+    "tushare_sw2021_l1_pit_industry_audit_2020_2025_v1.json"
   ]
 }
