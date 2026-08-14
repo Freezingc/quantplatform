@@ -164,7 +164,7 @@ git commit -m "add alpha95 training candidate selection"
 - Modify: `research_v2/scripts/evaluate_alpha95_relative_amount_volatility.py`
 - Modify: `research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py`
 
-- [ ] **Step 1: Write failing locked-test and review-contract tests**
+- [x] **Step 1: Write failing locked-test and review-contract tests**
 
 ```python
 def test_parse_args_rejects_locked_test_dates() -> None:
@@ -183,13 +183,13 @@ def test_build_review_rejects_validation_without_changing_formal_set() -> None:
     assert review["locked_test_read"] is False
 ```
 
-- [ ] **Step 2: Run the contract test and verify failure**
+- [x] **Step 2: Run the contract test and verify failure**
 
 Run: `PYTHONPATH=research_v2/scripts:research_v2/src pytest -q research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py -k 'parse_args or build_review'`
 
 Expected: FAIL because parser and review builder are absent.
 
-- [ ] **Step 3: Implement the evaluator using existing replay helpers**
+- [x] **Step 3: Implement the evaluator using existing replay helpers**
 
 Create `parse_args`, `run_evaluation`, and `build_review`. Use these fixed constants:
 
@@ -207,7 +207,7 @@ LOCKED_TEST_START = date(2026, 1, 1)
 
 Load V2 universe/label data read-only, fetch Tushare daily amount through the cache-aware market helper, replay `FORMAL_FACTOR_IDS` with `TushareMarketSession` and `replay._replay_factor`, and compute all pairwise daily Spearman values with `compute_pair_daily_spearman`. Write `daily_rank_ic.csv`, `quality_summary.json`, `similarity_summary.json`, and `admission_review.json`. Every output records `database_writes: false`, `formal_factor_set_changed: false`, `model_training_started: false`, and `locked_test_read: false`.
 
-- [ ] **Step 4: Run unit tests and lint**
+- [x] **Step 4: Run unit tests and lint**
 
 Run: `PYTHONPATH=research_v2/scripts:research_v2/src pytest -q research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py`
 
@@ -217,7 +217,7 @@ Run: `ruff check research_v2/scripts/evaluate_alpha95_relative_amount_volatility
 
 Expected: `All checks passed!`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add research_v2/scripts/evaluate_alpha95_relative_amount_volatility.py research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py

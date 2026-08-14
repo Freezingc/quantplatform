@@ -3,6 +3,7 @@ from __future__ import annotations
 import evaluate_alpha95_relative_amount_volatility as evaluation
 import numpy as np
 import pandas as pd
+import pytest
 
 
 def make_market(values: list[float]) -> pd.DataFrame:
@@ -88,3 +89,79 @@ def test_select_training_candidate_breaks_icir_tie_by_lower_similarity() -> None
     }
 
     assert evaluation.select_training_candidate(rows) == "v20"
+
+
+def test_parse_args_rejects_locked_test_dates() -> None:
+    with pytest.raises(SystemExit):
+        evaluation.parse_args(["--end", "2026-01-01", "--output", "/tmp/result"])
+
+
+def test_build_review_rejects_validation_without_changing_formal_set() -> None:
+    review = evaluation.build_review(
+        selected_id="yeslab_163_relative_amount_volatility_20_v1",
+        training={"selected": True},
+        validation={
+            "signed_mean_rank_ic": 0.01,
+            "signed_icir": 0.60,
+            "directional_day_share": 0.70,
+            "max_similarity": 0.20,
+        },
+    )
+
+    assert review["status"] == "REJECT_VALIDATION_GATE"
+    assert review["formal_factor_set_changed"] is False
+    assert review["locked_test_read"] is False
+    assert review["model_training_started"] is False
+
+
+def test_summarize_training_candidate_freezes_direction_and_counts_annual_gates() -> None:
+    daily = pd.DataFrame(
+        {
+            "signal_date": pd.to_datetime(
+                ["2020-01-02", "2020-01-03", "2021-01-04", "2021-01-05"]
+            ),
+            "rank_ic": [-0.10, -0.20, -0.10, -0.20],
+            "sample_count": [100, 100, 100, 100],
+        }
+    )
+
+    summary = evaluation.summarize_training_candidate(daily)
+
+    assert summary["direction"] == -1
+    assert summary["annual_double_gate_pass_years"] == 2
+    assert summary["signed_mean_rank_ic"] == pytest.approx(0.15)
+    assert summary["signed_icir"] > 0.50
+
+
+def test_max_formal_similarity_selects_only_formal_edges() -> None:
+    pairs = pd.DataFrame(
+        {
+            "factor_id_left": ["candidate", "candidate", "candidate"],
+            "factor_id_right": ["yeslab_380", "yeslab_431", "other_candidate"],
+            "median_abs_spearman": [0.30, 0.70, 0.95],
+            "valid_day_count": [100, 100, 100],
+        }
+    )
+
+    result = evaluation.max_formal_similarity(pairs, "candidate")
+
+    assert result == {"factor_id": "yeslab_431", "value": 0.70, "valid_day_count": 100}
+
+
+def test_max_similarity_to_references_includes_other_alpha95_variants() -> None:
+    pairs = pd.DataFrame(
+        {
+            "factor_id_left": ["candidate", "candidate"],
+            "factor_id_right": ["yeslab_431", "other_variant"],
+            "median_abs_spearman": [0.70, 0.80],
+            "valid_day_count": [100, 100],
+        }
+    )
+
+    result = evaluation.max_similarity_to_references(
+        pairs,
+        "candidate",
+        {"yeslab_431", "other_variant"},
+    )
+
+    assert result == {"factor_id": "other_variant", "value": 0.80, "valid_day_count": 100}
