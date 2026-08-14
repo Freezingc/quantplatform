@@ -96,6 +96,10 @@ review. It must yield:
 - Alpha484's new candidate represented separately and model ineligible until
   an explicit admission decision.
 
+The initial complete refresh therefore has 491 rows: 487 catalog identities,
+three isolated Alpha95 rejection identities, and one isolated Alpha484
+candidate identity.
+
 The old snapshot table and local/Git artifacts retain detailed audit history;
 this latest table retains only values needed for filtering and ranking.
 
@@ -192,8 +196,9 @@ Before a database write:
 
 After an explicit publish:
 
-1. query the new table and verify 487 catalog rows plus the isolated Alpha484
-   candidate with no duplicate `factor_id` values;
+1. query the new table and verify 491 rows (487 catalog rows, three isolated
+   Alpha95 rejection candidates, and the isolated Alpha484 candidate) with no
+   duplicate `factor_id` values;
 2. verify the formal-nine eligible count is nine and Alpha95/Alpha484 remain
    model ineligible; and
 3. read back the exact typed metrics and compare them with their source
