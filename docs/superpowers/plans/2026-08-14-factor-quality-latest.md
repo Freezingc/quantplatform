@@ -16,7 +16,7 @@
 - Create: `research_v2/migrations/012_factor_quality_latest.dos`
 - Modify: `research_v2/tests/unit/db/test_migrations.py`
 
-- [ ] **Step 1: Write the failing migration contract test**
+- [x] **Step 1: Write the failing migration contract test**
 
 ```python
 def test_repository_quality_latest_migration_declares_compact_columns() -> None:
@@ -35,7 +35,7 @@ def test_repository_quality_latest_migration_declares_compact_columns() -> None:
         assert f"`{forbidden}" not in migration.script
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -47,7 +47,7 @@ PYTHONPATH=research_v2/src python -m pytest -q research_v2/tests/unit/db/test_mi
 
 Expected: FAIL with `StopIteration` because migration 012 is absent.
 
-- [ ] **Step 3: Add migration 012 exactly as follows**
+- [x] **Step 3: Add migration 012 exactly as follows**
 
 ```dos
 // targetDatabase is injected by the V2 migration runner.
@@ -62,7 +62,7 @@ if (!existsTable(targetDatabase, `factor_quality_latest)) {
 }
 ```
 
-- [ ] **Step 4: Verify GREEN and commit**
+- [x] **Step 4: Verify GREEN and commit**
 
 Run:
 
@@ -80,7 +80,7 @@ Expected: the migration test passes before committing.
 - Create: `research_v2/src/research_v2/quality/latest.py`
 - Create: `research_v2/tests/unit/quality/test_latest.py`
 
-- [ ] **Step 1: Write failing row-builder tests**
+- [x] **Step 1: Write failing row-builder tests**
 
 ```python
 def test_build_quality_latest_frame_has_catalog_and_isolated_candidates() -> None:
@@ -111,7 +111,7 @@ def test_validate_quality_latest_frame_rejects_lineage_fields() -> None:
         )
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -121,7 +121,7 @@ PYTHONPATH=research_v2/src python -m pytest -q research_v2/tests/unit/quality/te
 
 Expected: import error because `research_v2.quality.latest` is absent.
 
-- [ ] **Step 3: Implement typed construction**
+- [x] **Step 3: Implement typed construction**
 
 Define `QUALITY_LATEST_COLUMNS`, `FORBIDDEN_LINEAGE_COLUMNS`,
 `build_quality_latest_frame`, `validate_quality_latest_frame`, and
@@ -143,7 +143,7 @@ every `APPROVED`, `APPROVED_MONITOR`, `REJECT`, or pending candidate row.
 `select_model_eligible` validates the scope and returns factor-ID-sorted rows;
 it must not create a `FactorSet`.
 
-- [ ] **Step 4: Verify GREEN and commit**
+- [x] **Step 4: Verify GREEN and commit**
 
 Run:
 
@@ -162,7 +162,7 @@ Expected: unit tests pass and Ruff is clean.
 - Create: `research_v2/scripts/refresh_factor_quality_latest.py`
 - Create: `research_v2/tests/unit/scripts/test_refresh_factor_quality_latest.py`
 
-- [ ] **Step 1: Write failing dry-run and publish tests**
+- [x] **Step 1: Write failing dry-run and publish tests**
 
 ```python
 def test_refresh_dry_run_does_not_upload_or_execute() -> None:
@@ -182,7 +182,7 @@ def test_refresh_publish_replaces_only_compact_target() -> None:
     assert "tableInsert" in script
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -192,7 +192,7 @@ PYTHONPATH=research_v2/scripts:research_v2/src python -m pytest -q research_v2/t
 
 Expected: import error because the refresh script is absent.
 
-- [ ] **Step 3: Implement refresh and reader behavior**
+- [x] **Step 3: Implement refresh and reader behavior**
 
 Implement:
 
@@ -221,7 +221,7 @@ execute call. `--model-eligible` queries and prints only typed eligible rows;
 it never mutates the database. On a publish path, post-write checks must reject
 anything other than 491 rows, 491 unique IDs, and nine eligible rows.
 
-- [ ] **Step 4: Verify GREEN and commit**
+- [x] **Step 4: Verify GREEN and commit**
 
 Run:
 
