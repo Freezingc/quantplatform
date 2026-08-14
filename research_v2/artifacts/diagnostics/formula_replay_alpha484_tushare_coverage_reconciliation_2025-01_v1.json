@@ -19,7 +19,32 @@
     "uncovered_code_count": 27,
     "uncovered_date_count": 18,
     "date_window": "2025-01-02/2025-01-27",
-    "status": "UNRESOLVED_HISTORICAL_SUSPENSION_SEMANTICS"
+    "status": "UNRESOLVED_HISTORICAL_SPARSE_MARKET_SEMANTICS"
+  },
+  "scope_reconciliation": {
+    "calculator_market_start_before_fix": "2024-06-08",
+    "calculator_market_start_after_fix": "2024-07-05",
+    "scope_start_fix_changed_mismatch": false,
+    "historical_stock_factor_daily_all_exchange_code_count": 5431,
+    "historical_stock_factor_daily_bj_code_count": 263,
+    "historical_stock_factor_daily_shsz_code_count": 5168,
+    "v2_shsz_code_count": 4220,
+    "tushare_available_historical_shsz_code_count": 5145,
+    "v2_scope_replay": {
+      "mismatch_rows": 58200,
+      "source_market_uncovered_rows": 145,
+      "source_market_uncovered_code_count": 27,
+      "source_market_uncovered_date_count": 18,
+      "status": "BLOCKED_SCOPE_MISMATCH_AND_SOURCE_GAPS"
+    },
+    "historical_shsz_scope_replay": {
+      "mismatch_rows": 28013,
+      "source_market_uncovered_rows": 216,
+      "source_market_uncovered_code_count": 38,
+      "source_market_uncovered_date_count": 18,
+      "status": "BLOCKED_CANONICAL_SCOPE_MIGRATION"
+    },
+    "interpretation": "The stored YesLab CSAD values were produced on a broader historical stock_factor_daily cross-section, including BJ securities. A Tushare canonical SH/SZ replay is a scope migration and cannot be judged by exact equality to those historical values."
   },
   "cross_source_close_provenance": {
     "overlap_rows": 75815,
@@ -35,7 +60,9 @@
     "tushare_replay_status": "FORMULA_REPLAY_BLOCKED",
     "tushare_mismatch_rows": 58200,
     "tushare_mismatch_date_count": 18,
-    "tushare_max_abs_diff": 0.010029706029252725
+    "tushare_max_abs_diff": 0.010029706029252725,
+    "scope_aligned_historical_shsz_mismatch_rows": 28013,
+    "scope_aligned_historical_shsz_max_abs_diff": 0.01322330569215835
   },
-  "conclusion": "The calculator is internally consistent with the historical YesLab market table. Cross-source replay remains blocked because Tushare daily coverage omits required historical suspension dates and a small adj_factor version gap remains. Do not admit Alpha484, publish it, write factor values, or add it to model inputs until source semantics are explicitly reconciled."
+  "conclusion": "The calculator is internally consistent with the historical YesLab market table. Cross-source replay remains blocked for exact historical equality because the stored source used a broader cross-section (including BJ) than the canonical SH/SZ Tushare scope, while Tushare also has 38 historical source-code coverage gaps and a localized adj_factor version gap. Treat Alpha484 as a new canonical-scope rematerialization candidate; do not admit, publish, write factor values, or add it to model inputs until the canonical-scope formula artifact is explicitly accepted."
 }

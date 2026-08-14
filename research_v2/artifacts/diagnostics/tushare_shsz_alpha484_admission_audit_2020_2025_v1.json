@@ -64,20 +64,29 @@
     "reason_codes": [
       "TUSHARE_SOURCE_MARKET_COVERAGE_GAP",
       "CROSS_SOURCE_ADJ_FACTOR_VERSION_GAP",
-      "FORMULA_REPLAY_FINITE_OVERLAP_MISMATCH"
+      "FORMULA_REPLAY_FINITE_OVERLAP_MISMATCH",
+      "HISTORICAL_CROSS_SECTION_SCOPE_MISMATCH",
+      "HISTORICAL_SOURCE_INCLUDES_BJ"
     ],
     "partial_gap_fallback_attempted": true,
     "residual_source_market_uncovered_rows_2025_january": 145,
     "residual_source_market_uncovered_code_count_2025_january": 27,
     "residual_source_market_uncovered_date_count_2025_january": 18,
-    "residual_gap_semantics": "TUSHARE_DAILY_OMITS_HISTORICAL_SUSPENSION_DAYS",
+    "residual_gap_semantics": "SPARSE_STOCK_FACTOR_DAILY_MARKET_KEYS_WITHOUT_SAME_DAY_TUSHARE_ROWS",
     "internal_yeslab_replay_status": "FORMULA_REPLAY_PASS",
+    "calculator_market_start_after_scope_fix": "2024-07-05",
+    "historical_stock_factor_daily_shsz_code_count": 5168,
+    "historical_stock_factor_daily_all_exchange_code_count": 5431,
+    "historical_stock_factor_daily_bj_code_count": 263,
+    "canonical_tushare_historical_shsz_code_count": 5145,
+    "historical_shsz_scope_replay_mismatch_rows_2025_january": 28013,
+    "historical_shsz_scope_replay_source_market_uncovered_rows_2025_january": 216,
     "cross_source_close_hfq_mismatch_rows_2025_january": 4,
     "max_cross_source_close_hfq_abs_difference_2025_january": 0.000996,
     "source_internal_hfq_identity": "PASS_WITHIN_1E-5",
     "cross_source_adj_factor_mismatch_rows_2025_january": 22,
     "max_cross_source_adj_factor_abs_difference_2025_january": 0.0004,
-    "action": "Reconcile Tushare adj_factor version and historical suspension-day coverage before admission; do not round inputs, forward-fill without evidence, or overwrite YesLab values."
+    "action": "Treat exact historical replay as a scope-migration audit, not a canonical equality gate. Rematerialize and independently validate Alpha484 on the canonical Tushare SH/SZ scope; reconcile remaining source coverage and adjustment provenance before admission. Do not round inputs, forward-fill without evidence, or overwrite YesLab values."
   },
   "decision": "KEEP_YESLAB_484_ISOLATED_RESEARCH_CANDIDATE",
   "admission_status": "BLOCKED_FORMULA_SCOPE_RECONCILIATION",
@@ -93,6 +102,7 @@
     "tushare_shsz_alpha484_similarity_validation_2025_v1/similarity_summary.json",
     "yeslab_adjusted_price_provenance_2025-01_v1.json",
     "formula_replay_oos3_tushare_shsz_csad482_484_2025-01_v1.json",
-    "formula_replay_alpha484_tushare_coverage_reconciliation_2025-01_v1.json"
+    "formula_replay_alpha484_tushare_coverage_reconciliation_2025-01_v1.json",
+    "formula_replay_alpha484_tushare_scope_reconciliation_2025-01_v1.json"
   ]
 }

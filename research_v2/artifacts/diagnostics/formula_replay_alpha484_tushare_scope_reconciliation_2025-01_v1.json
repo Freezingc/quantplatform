@@ -1,0 +1,39 @@
+{
+  "scope": "FORMULA_REPLAY_ALPHA484_TUSHARE_SCOPE_RECONCILIATION_2025_01_V1",
+  "factor_id": "yeslab_484",
+  "window": "2025-01-02/2025-01-31",
+  "database_writes": false,
+  "locked_test_read": false,
+  "calculator_market_start": "2024-07-05",
+  "canonical_scope": {
+    "market_scope": "SH/SZ",
+    "market_universe_source": "YesLab.stock_factor_daily",
+    "historical_stock_factor_daily_code_count": 5168,
+    "tushare_available_code_count": 5145,
+    "market_date_count": 139,
+    "source_market_uncovered_rows": 216,
+    "source_market_uncovered_code_count": 38,
+    "source_market_uncovered_date_count": 18,
+    "mismatch_rows": 28013,
+    "max_abs_diff": 0.01322330569215835,
+    "decision_status": "FORMULA_REPLAY_BLOCKED_CANONICAL_SCOPE_MIGRATION"
+  },
+  "v2_diagnostic_scope": {
+    "market_scope": "SH/SZ V2 universe",
+    "market_universe_source": "factor_observation_codes_intersect_v2",
+    "code_count": 4220,
+    "source_market_uncovered_rows": 145,
+    "source_market_uncovered_code_count": 27,
+    "source_market_uncovered_date_count": 18,
+    "mismatch_rows": 58200,
+    "max_abs_diff": 0.010029706029252725,
+    "decision_status": "FORMULA_REPLAY_BLOCKED_SCOPE_MISMATCH_AND_SOURCE_GAPS",
+    "interpretation": "This restricted replay is diagnostic only because historical CSAD values were not generated on the V2 cross-section."
+  },
+  "historical_source_scope": {
+    "stock_factor_daily_all_exchange_code_count": 5431,
+    "stock_factor_daily_bj_code_count": 263,
+    "interpretation": "The original calculator reads the broad stock_factor_daily table and has no BJ exclusion. Exact equality to a canonical SH/SZ Tushare rematerialization is therefore not an admission requirement."
+  },
+  "conclusion": "The replay tool now uses the calculator's actual CSAD preheat start and the historical market code universe by default. Remaining mismatch is attributable to a deliberate historical-to-canonical scope migration plus localized source coverage/adjustment differences; Alpha484 remains isolated pending canonical-scope formula evidence."
+}
