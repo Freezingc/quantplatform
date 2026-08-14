@@ -16,7 +16,7 @@
 - Create: `research_v2/scripts/evaluate_alpha95_relative_amount_volatility.py`
 - Create: `research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py`
 
-- [ ] **Step 1: Write failing formula and leakage tests**
+- [x] **Step 1: Write failing formula and leakage tests**
 
 ```python
 import numpy as np
@@ -56,13 +56,13 @@ def test_relative_amount_volatility_does_not_use_future_amount() -> None:
     )
 ```
 
-- [ ] **Step 2: Run the test and verify failure**
+- [x] **Step 2: Run the test and verify failure**
 
 Run: `PYTHONPATH=research_v2/scripts:research_v2/src pytest -q research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py`
 
 Expected: FAIL because the evaluator module is absent.
 
-- [ ] **Step 3: Implement the isolated formula helper**
+- [x] **Step 3: Implement the isolated formula helper**
 
 ```python
 CANDIDATE_WINDOWS = (10, 20, 40)
@@ -78,13 +78,13 @@ def compute_relative_amount_volatility(market: pd.DataFrame, window: int) -> pd.
     return deviation.div(baseline.replace(0.0, np.nan)).replace([np.inf, -np.inf], np.nan)
 ```
 
-- [ ] **Step 4: Run the test and verify pass**
+- [x] **Step 4: Run the test and verify pass**
 
 Run: `PYTHONPATH=research_v2/scripts:research_v2/src pytest -q research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add research_v2/scripts/evaluate_alpha95_relative_amount_volatility.py research_v2/tests/unit/scripts/test_evaluate_alpha95_relative_amount_volatility.py
