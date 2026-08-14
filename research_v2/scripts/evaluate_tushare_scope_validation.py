@@ -26,6 +26,12 @@ from audit_formula_replay_tushare import (
     _fetch_tushare_market,
     _query_open_dates,
     required_market_fields,
+    requires_daily_basic,
+)
+from audit_tushare_pit_industry import (
+    PITIndustryProvider,
+    VersionedPITIndustryProvider,
+    coverage_for_keys,
 )
 
 from research_v2.compact.publisher import read_latest_partition
@@ -256,6 +262,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         default=Path("research_v2/artifacts/tushare_cache"),
     )
     parser.add_argument(
+        "--pit-industry-cache",
+        type=Path,
+        help="cached Tushare SW2021 L1 membership files for date-aware industry replay",
+    )
+    parser.add_argument(
+        "--pit-industry-cutover",
+        type=date.fromisoformat,
+        help="use SW2014 before this date and SW2021 from this date onward",
+    )
+    parser.add_argument(
         "--skip-similarity",
         action="store_true",
         help="write RankIC quality only; defer the expensive all-pairs similarity calculation",
@@ -275,6 +291,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         parser.error("at least one factor id is required")
     if args.start > args.end or args.end >= LOCKED_TEST_START:
         parser.error("evaluation range must be before 2026 and start <= end")
+    if args.pit_industry_cutover is not None and args.pit_industry_cache is None:
+        parser.error("--pit-industry-cutover requires --pit-industry-cache")
+    if args.pit_industry_cutover is not None and args.pit_industry_cutover >= LOCKED_TEST_START:
+        parser.error("industry cutover must be before 2026")
     return args
 
 
@@ -289,7 +309,7 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
     )
     open_dates = _query_open_dates(client, market_start, args.end)
     required_fields = required_market_fields(definitions)
-    include_daily_basic = "turnover_rate" in required_fields
+    include_daily_basic = requires_daily_basic(required_fields)
     include_adjusted_fields = bool(
         {"open_hfq", "high_hfq", "low_hfq", "close_hfq", "pre_close_hfq"}
         & set(required_fields)
@@ -308,9 +328,28 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
     daily_parts: list[pd.DataFrame] = []
     summaries: list[dict[str, object]] = []
     replay_frames: dict[str, pd.DataFrame] = {}
+    if args.pit_industry_cache is None:
+        industry_provider = None
+    elif args.pit_industry_cutover is None:
+        industry_provider = PITIndustryProvider.from_cache(args.pit_industry_cache)
+    else:
+        industry_provider = VersionedPITIndustryProvider.from_cache(
+            args.pit_industry_cache,
+            cutover=args.pit_industry_cutover,
+        )
+    industry_coverage = None
+    if industry_provider is not None:
+        industry_coverage = coverage_for_keys(
+            industry_provider,
+            inputs.loc[:, ["signal_date", "ts_code"]],
+        )
     for definition in definitions:
         replay_values = replay._replay_factor(
-            TushareMarketSession(client, market, codes), definition, args.start, args.end
+            TushareMarketSession(client, market, codes),
+            definition,
+            args.start,
+            args.end,
+            industry_provider=industry_provider,
         )
         replay_frames[definition.factor_id] = replay_values
         daily = compute_daily_rank_ic(replay_values, inputs)
@@ -361,6 +400,16 @@ def run_evaluation(args: argparse.Namespace) -> dict[str, object]:
                 "code_count": len(codes),
                 "market_start": market_start.isoformat(),
                 "market_source": "Tushare.daily",
+                "industry_source": (
+                    "Tushare SW2014/SW2021 versioned PIT membership"
+                    if args.pit_industry_cutover is not None
+                    else (
+                        "Tushare SW2021 L1 PIT membership"
+                        if industry_provider is not None
+                        else "YesLab.stock_info_table static labels"
+                    )
+                ),
+                "industry_coverage": industry_coverage,
                 "similarity_skipped": bool(args.skip_similarity),
                 "excluded_exchanges": ["BJ"],
                 "database_writes": False,
