@@ -269,7 +269,7 @@ Expected: all assertions pass.
 
 Add `alpha95_relative_amount_volatility_v1` to `tushare_shsz_factor_audit_coverage_v1.json` with each candidate's training and validation metrics, selected-or-rejected status, artifact paths, and all safety flags. Do not modify `formal_admission_factor_ids`.
 
-- [ ] **Step 4: Run final checks, commit, and synchronize**
+- [x] **Step 4: Run final checks, commit, and synchronize**
 
 Run: `python -m json.tool research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json >/dev/null && git diff --check && python -m pytest -q`
 
