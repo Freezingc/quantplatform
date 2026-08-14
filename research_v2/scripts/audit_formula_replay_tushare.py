@@ -135,6 +135,10 @@ FULL_CROSS_SECTION_FACTOR_IDS = frozenset(
         "yeslab_485",
         "yeslab_486",
         "yeslab_487",
+        # Attention spillover uses same-day market means and industry/size
+        # buckets, so partial stock batches change both peer membership and
+        # the resulting factor values.
+        "yeslab_471",
     }
 )
 
@@ -414,6 +418,12 @@ def required_market_fields(
         calculator = _calculator_class(definition)(None, definition.effective_replay_lookback_days)
         fields.update(str(field) for field in getattr(calculator, "required_factors", ()))
     return tuple(sorted(fields))
+
+
+def requires_daily_basic(required_fields: Sequence[str]) -> bool:
+    """Whether the selected calculators need fields supplied by daily_basic."""
+
+    return bool({"turnover_rate", "total_mv"}.intersection(required_fields))
 
 
 def requires_full_cross_section(factor_ids: Sequence[str]) -> bool:
@@ -818,8 +828,8 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
     definitions = [replay.REPLAY_DEFINITIONS[factor_id] for factor_id in args.factor_id]
     aliases = load_alias_map(args.bj_alias_map) if args.bj_alias_map else {}
     required_fields = required_market_fields(definitions)
-    effective_include_daily_basic = args.include_daily_basic or (
-        "turnover_rate" in required_fields
+    effective_include_daily_basic = args.include_daily_basic or requires_daily_basic(
+        required_fields
     )
     market_start = min(
         _calculator_market_start(client, definition, args.start, args.end)

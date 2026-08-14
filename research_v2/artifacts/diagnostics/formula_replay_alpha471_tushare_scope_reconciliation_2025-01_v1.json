@@ -1,0 +1,37 @@
+{
+  "scope": "FORMULA_REPLAY_ALPHA471_TUSHARE_SCOPE_RECONCILIATION_2025_01_V1",
+  "factor_id": "yeslab_471",
+  "factor_name": "AttentionSpillover",
+  "window": "2025-01-02/2025-01-31",
+  "market_scope": "SH/SZ",
+  "market_source": "Tushare.daily + Tushare.daily_basic",
+  "database_writes": false,
+  "locked_test_read": false,
+  "calculator_market_start": "2024-11-03",
+  "required_market_fields": ["pct_chg", "total_mv"],
+  "canonical_replay": {
+    "market_code_count": 5133,
+    "market_date_count": 60,
+    "market_missing_code_count": 0,
+    "source_market_uncovered_rows": 0,
+    "overlap_finite_rows": 90256,
+    "mismatch_rows": 90252,
+    "mismatch_date_count": 18,
+    "max_abs_diff": 101.98876739257811,
+    "max_rel_diff": 1368.1367641594034,
+    "decision_status": "FORMULA_REPLAY_BLOCKED_HISTORICAL_SCOPE_AND_INDUSTRY_MAPPING",
+    "reason_codes": [
+      "HISTORICAL_SOURCE_INCLUDES_BJ",
+      "STATIC_INDUSTRY_MAPPING_NOT_PIT",
+      "FINITE_OVERLAP_MISMATCH"
+    ]
+  },
+  "configuration_repairs": {
+    "full_cross_section_required": true,
+    "daily_basic_required_for_total_mv": true,
+    "previous_replay_finite_overlap_rows": 74558,
+    "previous_replay_mismatch_rows": 74556,
+    "interpretation": "The previous replay omitted total_mv, so the calculator silently dropped most rows. The corrected replay supplies total_mv and exposes the actual scope/industry mismatch."
+  },
+  "conclusion": "Do not compare the historical AttentionSpillover values byte-for-byte with a canonical SH/SZ replay until point-in-time industry membership and the intended historical cross-section are reconstructed. Keep the factor isolated from publication and model inputs."
+}
