@@ -199,6 +199,15 @@ def test_parser_accepts_isolated_cross_sectional_blocked_factors() -> None:
     assert args.stock_batch_size == 5000
 
 
+def test_attention_spillover_requires_full_cross_section() -> None:
+    assert audit.requires_full_cross_section(("yeslab_471",))
+
+
+def test_total_market_value_requires_daily_basic() -> None:
+    assert audit.requires_daily_basic(("total_mv",))
+    assert audit.requires_daily_basic(("pct_chg",)) is False
+
+
 def test_parser_accepts_industry_normalized_factor_for_full_market_replay() -> None:
     args = audit.parse_args(
         [
