@@ -278,3 +278,34 @@ def test_repository_fundamental_snapshot_migration_declares_new_derived_table() 
         "data_version",
     ):
         assert f"`{column_name}" in snapshot_migration.script
+
+
+def test_repository_quality_latest_migration_declares_compact_columns() -> None:
+    migration_directory = Path(__file__).resolve().parents[3] / "migrations"
+    migrations = discover_migrations(migration_directory)
+
+    quality_latest_migration = next(
+        migration for migration in migrations if migration.version == 12
+    )
+
+    assert "`factor_quality_latest" in quality_latest_migration.script
+    for column_name in (
+        "factor_id",
+        "source_factor_id",
+        "effective_date",
+        "decision",
+        "model_eligible",
+        "train_signed_rank_ic",
+        "validation_icir",
+        "evidence_path",
+        "evidence_commit",
+    ):
+        assert f"`{column_name}" in quality_latest_migration.script
+    for column_name in (
+        "run_id",
+        "data_version",
+        "created_at",
+        "source_watermark_id",
+        "record_hash",
+    ):
+        assert f"`{column_name}" not in quality_latest_migration.script

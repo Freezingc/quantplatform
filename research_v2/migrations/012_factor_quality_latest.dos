@@ -1,0 +1,10 @@
+// targetDatabase is injected by the V2 migration runner.
+db = database(targetDatabase)
+
+if (!existsTable(targetDatabase, `factor_quality_latest)) {
+    factorQualityLatest = table(1:0,
+        `factor_id`source_factor_id`effective_date`decision`model_eligible`monitoring_required`reason_code`market_scope`label_id`train_start`train_end`validation_start`validation_end`frozen_direction`train_valid_days`train_signed_rank_ic`train_icir`train_directional_share`annual_gate_years`train_max_similarity`validation_valid_days`validation_signed_rank_ic`validation_icir`validation_directional_share`validation_max_similarity`evidence_path`evidence_commit,
+        [SYMBOL, SYMBOL, DATE, SYMBOL, BOOL, BOOL, STRING, SYMBOL, SYMBOL, DATE, DATE, DATE, DATE, INT, INT, DOUBLE, DOUBLE, DOUBLE, INT, DOUBLE, INT, DOUBLE, DOUBLE, DOUBLE, DOUBLE, STRING, STRING])
+    db.createPartitionedTable(table=factorQualityLatest, tableName=`factor_quality_latest,
+        partitionColumns=`effective_date, sortColumns=`factor_id`effective_date)
+}
