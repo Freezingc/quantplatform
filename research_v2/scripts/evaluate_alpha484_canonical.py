@@ -6,6 +6,8 @@ import argparse
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
+
 CANDIDATE_ID = "yeslab_484_tushare_shsz_v1"
 SOURCE_FACTOR_ID = "yeslab_484"
 TRAIN_START = date(2020, 1, 2)
@@ -28,3 +30,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     if args.start > args.end or args.end >= LOCKED_TEST_START:
         parser.error("evaluation range must end before the 2026 locked test")
     return args
+
+
+def validate_full_market_dates(
+    market: pd.DataFrame, expected_dates: tuple[date, ...]
+) -> None:
+    """Require one complete canonical SH/SZ market result per open date."""
+    if "trade_date" not in market.columns:
+        raise ValueError("full SH/SZ market is missing trade_date")
+    observed = set(pd.to_datetime(market["trade_date"], errors="raise").dt.date)
+    missing = sorted(set(expected_dates).difference(observed))
+    if missing:
+        rendered = ", ".join(value.isoformat() for value in missing)
+        raise ValueError(f"full SH/SZ market is missing open dates: {rendered}")

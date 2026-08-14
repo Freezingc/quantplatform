@@ -261,6 +261,76 @@ def normalize_tushare_market(
     return frame.loc[:, columns].sort_values(["trade_date", "ts_code"]).reset_index(drop=True)
 
 
+def normalize_full_tushare_market(raw_market: pd.DataFrame) -> pd.DataFrame:
+    """Normalize a date-wise Tushare daily response without a source-code universe."""
+    if "ts_code" not in raw_market.columns:
+        raise ValueError("Tushare daily result is missing ts_code")
+    codes = tuple(
+        sorted(
+            code
+            for code in raw_market["ts_code"].astype(str).dropna().unique()
+            if code.endswith((".SH", ".SZ"))
+        )
+    )
+    if not codes:
+        raise ValueError("Tushare daily result has no SH/SZ market rows")
+    return normalize_tushare_market(raw_market, codes=codes)
+
+
+def fetch_full_tushare_shsz_market(
+    open_dates: Sequence[date],
+    *,
+    token: str,
+    cache_dir: Path,
+) -> pd.DataFrame:
+    """Fetch all daily Tushare SH/SZ rows and adjusted fields for open dates."""
+    if not token.strip():
+        raise ValueError("QRV2_TUSHARE_TOKEN is required for canonical market replay")
+    expected_dates = tuple(sorted(set(open_dates)))
+    if not expected_dates:
+        raise ValueError("at least one open date is required")
+    import tushare as ts  # type: ignore[import-untyped]
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    pro = ts.pro_api(token)
+    frames: list[pd.DataFrame] = []
+    for trade_date in expected_dates:
+        daily_path = cache_dir / f"daily_{trade_date:%Y%m%d}.json"
+        if daily_path.is_file():
+            daily = pd.read_json(daily_path, orient="table")
+        else:
+            daily = pro.daily(trade_date=trade_date.strftime("%Y%m%d"))
+            if isinstance(daily, pd.DataFrame) and not daily.empty:
+                daily_path.write_text(
+                    daily.to_json(orient="table", date_format="iso"), encoding="utf-8"
+                )
+        if not isinstance(daily, pd.DataFrame) or daily.empty:
+            raise RuntimeError(f"Tushare daily returned no rows for {trade_date:%Y-%m-%d}")
+        adjustment_path = cache_dir / f"adj_factor_{trade_date:%Y%m%d}.json"
+        if adjustment_path.is_file():
+            adjustment = pd.read_json(adjustment_path, orient="table")
+        else:
+            adjustment = pro.adj_factor(trade_date=trade_date.strftime("%Y%m%d"))
+            if isinstance(adjustment, pd.DataFrame) and not adjustment.empty:
+                adjustment_path.write_text(
+                    adjustment.to_json(orient="table", date_format="iso"), encoding="utf-8"
+                )
+        if not isinstance(adjustment, pd.DataFrame) or adjustment.empty:
+            raise RuntimeError(
+                f"Tushare adjustment factor returned no rows for {trade_date:%Y-%m-%d}"
+            )
+        frames.append(merge_tushare_adjustment_factor(daily, adjustment))
+    normalized = normalize_full_tushare_market(pd.concat(frames, ignore_index=True))
+    observed_dates = set(pd.to_datetime(normalized["trade_date"], errors="raise").dt.date)
+    missing_dates = sorted(set(expected_dates).difference(observed_dates))
+    if missing_dates:
+        rendered = ", ".join(value.isoformat() for value in missing_dates)
+        raise ValueError(f"full SH/SZ market is missing open dates: {rendered}")
+    if "close_hfq" not in normalized.columns:
+        raise ValueError("full SH/SZ market is missing adjusted close")
+    return normalized
+
+
 def merge_tushare_adjustment_factor(
     daily: pd.DataFrame, adjustment: pd.DataFrame
 ) -> pd.DataFrame:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 from datetime import date
 from pathlib import Path
+from types import SimpleNamespace
 
 import audit_formula_replay_tushare as audit
 import pandas as pd
@@ -73,6 +74,69 @@ def test_normalize_tushare_market_preserves_total_market_value() -> None:
     result = audit.normalize_tushare_market(raw, codes=("000001.SZ",))
 
     assert list(result["total_mv"]) == [123_456.78]
+
+
+def test_normalize_full_tushare_market_excludes_bj() -> None:
+    raw = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "600000.SH", "430001.BJ"],
+            "trade_date": ["20250102", "20250102", "20250102"],
+            "open": [10.0, 20.0, 30.0],
+            "high": [11.0, 21.0, 31.0],
+            "low": [9.0, 19.0, 29.0],
+            "close": [10.5, 20.5, 30.5],
+            "pre_close": [10.0, 20.0, 30.0],
+            "vol": [1.0, 1.0, 1.0],
+            "amount": [1.0, 1.0, 1.0],
+            "pct_chg": [5.0, 2.5, 1.6],
+        }
+    )
+
+    result = audit.normalize_full_tushare_market(raw)
+
+    assert set(result["ts_code"]) == {"000001.SZ", "600000.SH"}
+
+
+def test_fetch_full_tushare_shsz_market_uses_daily_scope_and_adjustment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    class FakePro:
+        def daily(self, *, trade_date: str) -> pd.DataFrame:
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ", "600000.SH", "430001.BJ"],
+                    "trade_date": [trade_date, trade_date, trade_date],
+                    "open": [10.0, 20.0, 30.0],
+                    "high": [11.0, 21.0, 31.0],
+                    "low": [9.0, 19.0, 29.0],
+                    "close": [10.0, 20.0, 30.0],
+                    "pre_close": [9.0, 19.0, 29.0],
+                    "vol": [1.0, 1.0, 1.0],
+                    "amount": [1.0, 1.0, 1.0],
+                    "pct_chg": [1.0, 1.0, 1.0],
+                }
+            )
+
+        def adj_factor(self, *, trade_date: str) -> pd.DataFrame:
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ", "600000.SH", "430001.BJ"],
+                    "trade_date": [trade_date, trade_date, trade_date],
+                    "adj_factor": [2.0, 3.0, 4.0],
+                }
+            )
+
+    monkeypatch.setitem(sys.modules, "tushare", SimpleNamespace(pro_api=lambda _: FakePro()))
+
+    result = audit.fetch_full_tushare_shsz_market(
+        (date(2025, 1, 2),), token="token", cache_dir=tmp_path
+    )
+
+    assert set(result["ts_code"]) == {"000001.SZ", "600000.SH"}
+    assert dict(zip(result["ts_code"], result["close_hfq"], strict=True)) == {
+        "000001.SZ": 20.0,
+        "600000.SH": 60.0,
+    }
 
 
 def test_parser_accepts_alpha31_full_cross_section_replay() -> None:
