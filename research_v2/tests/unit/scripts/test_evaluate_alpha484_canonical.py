@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date
+from pathlib import Path
 
 import evaluate_alpha484_canonical as evaluation
 import pandas as pd
@@ -78,3 +80,49 @@ def test_build_review_never_makes_candidate_a_model_input() -> None:
     assert review["model_eligible"] is False
     assert review["formal_factor_set_changed"] is False
     assert review["locked_test_read"] is False
+
+
+def test_run_evaluation_writes_non_publishing_review(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    formal_ids = tuple(f"yeslab_{value}" for value in range(1, 10))
+
+    def fake_window(
+        client: object, *, start: date, end: date, cache_dir: Path
+    ) -> tuple[pd.DataFrame, dict[str, object], pd.DataFrame]:
+        del client, end, cache_dir
+        years = range(2020, 2025) if start.year == 2020 else (2025,)
+        dates = [
+            timestamp
+            for year in years
+            for timestamp in (pd.Timestamp(f"{year}-01-02"), pd.Timestamp(f"{year}-01-03"))
+        ]
+        daily = pd.DataFrame(
+            {
+                "signal_date": dates,
+                "rank_ic": [-0.10, -0.20] * len(tuple(years)),
+                "sample_count": [100] * len(dates),
+            }
+        )
+        pairs = pd.DataFrame(
+            {
+                "factor_id_left": [evaluation.CANDIDATE_ID] * len(formal_ids),
+                "factor_id_right": formal_ids,
+                "median_abs_spearman": [0.20] * len(formal_ids),
+                "max_abs_spearman": [0.30] * len(formal_ids),
+                "valid_day_count": [1212 if start.year == 2020 else 243] * len(formal_ids),
+            }
+        )
+        return daily, {"status": "PASS"}, pairs
+
+    monkeypatch.setattr(evaluation, "FORMAL_FACTOR_IDS", formal_ids)
+    monkeypatch.setattr(evaluation, "_evaluate_window", fake_window)
+    args = evaluation.parse_args(["--output", str(tmp_path)])
+
+    review = evaluation.run_evaluation(args, client=object())
+
+    assert review["status"] == "READY_FOR_EXPLICIT_ADMISSION_REVIEW"
+    assert review["model_eligible"] is False
+    written = json.loads((tmp_path / "admission_review.json").read_text())
+    assert written["formal_factor_set_changed"] is False
+    assert len(json.loads((tmp_path / "similarity_summary.json").read_text())) == 18
