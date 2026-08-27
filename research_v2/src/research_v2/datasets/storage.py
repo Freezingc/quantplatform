@@ -121,6 +121,19 @@ class DatasetArtifactStore:
         """Return an artifact location for diagnostics; callers still must call ``verify``."""
         return self._root / dataset_id
 
+    def load_metadata(self, dataset_id: str) -> Mapping[str, object]:
+        """Return metadata only after verifying the complete immutable artifact snapshot."""
+        try:
+            manifest, _ = self._load_verified_snapshot(dataset_id)
+        except (OSError, KeyError, TypeError, json.JSONDecodeError, ValueError) as error:
+            raise ValueError(
+                f"dataset artifact integrity verification failed: {dataset_id}"
+            ) from error
+        metadata = manifest.get("metadata")
+        if not isinstance(metadata, Mapping):
+            raise ValueError(f"dataset artifact metadata is invalid: {dataset_id}")
+        return dict(metadata)
+
     def _load_verified_snapshot(
         self,
         dataset_id: str,
