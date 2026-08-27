@@ -6,7 +6,13 @@ import pandas as pd
 import pytest
 
 from research_v2.baselines.base import BaselineDataset, PredictionFrame
-from research_v2.baselines.orchestration import BaselineFold, run_baseline_fold
+from research_v2.baselines.lgbm_ranker import LGBMRankerCandidate
+from research_v2.baselines.linear import LinearBaselineCandidate
+from research_v2.baselines.orchestration import (
+    BaselineFold,
+    build_default_baseline_candidates,
+    run_baseline_fold,
+)
 
 
 def _dataset(role: str, dataset_id: str, year: int, reverse: bool = False) -> BaselineDataset:
@@ -193,3 +199,20 @@ def test_fold_refuses_test_access_without_a_selection_recorder() -> None:
             candidates=_candidates([]),
             minimum_cross_section=3,
         )
+
+
+def test_default_candidates_propagate_the_minimum_cross_section_to_b2_and_b3() -> None:
+    fold = BaselineFold(
+        fold_id="F01",
+        train=_dataset("TRAIN", "train-v1", 2020),
+        validation=_dataset("VALIDATION", "validation-v1", 2024),
+        factor_order=("f1",),
+        frozen_directions={"f1": 1},
+    )
+
+    candidates = build_default_baseline_candidates(fold, minimum_cross_section=17)
+
+    assert isinstance(candidates["B2"], LinearBaselineCandidate)
+    assert candidates["B2"].minimum_cross_section == 17
+    assert isinstance(candidates["B3"], LGBMRankerCandidate)
+    assert candidates["B3"].minimum_cross_section == 17

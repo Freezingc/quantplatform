@@ -197,7 +197,10 @@ def build_default_baseline_candidates(
             factor_order=fold.factor_order,
             minimum_cross_section=minimum_cross_section,
         ),
-        "B3": LGBMRankerCandidate(factor_order=fold.factor_order),
+        "B3": LGBMRankerCandidate(
+            factor_order=fold.factor_order,
+            minimum_cross_section=minimum_cross_section,
+        ),
     }
 
 

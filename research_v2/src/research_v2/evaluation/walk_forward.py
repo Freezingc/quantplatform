@@ -93,7 +93,11 @@ def run_walk_forward_baselines(
         evaluation = result.test_evaluation
         oos_folds[fold_id] = OosFold(
             candidate_predictions=evaluation.predictions.frame,
-            labels=evaluation.labels,
+            labels=_labels_with_lineage(
+                evaluation.labels,
+                fold_id,
+                test_dataset_id=str(evaluation.predictions.frame["dataset_id"].iloc[0]),
+            ),
             baseline_predictions=evaluation.predictions.frame,
         )
         fold_results[fold_id] = result
@@ -138,7 +142,14 @@ def _assemble_oos_frames(
                 name=f"{fold_id} candidate predictions",
                 fold_id=fold_id,
                 expected_year=expected_year,
-                required_columns={"signal_date", "ts_code", "score"},
+                required_columns={
+                    "signal_date",
+                    "ts_code",
+                    "score",
+                    "fold_id",
+                    "model_id",
+                    "dataset_id",
+                },
             )
         )
         label_frames.append(
@@ -152,6 +163,8 @@ def _assemble_oos_frames(
                     "ts_code",
                     "raw_return_5d",
                     "label_valid",
+                    "fold_id",
+                    "dataset_id",
                 },
             )
         )
@@ -161,7 +174,14 @@ def _assemble_oos_frames(
                 name=f"{fold_id} baseline predictions",
                 fold_id=fold_id,
                 expected_year=expected_year,
-                required_columns={"signal_date", "ts_code", "score"},
+                required_columns={
+                    "signal_date",
+                    "ts_code",
+                    "score",
+                    "fold_id",
+                    "model_id",
+                    "dataset_id",
+                },
             )
         )
     candidates = pd.concat(candidate_frames, ignore_index=True)
@@ -174,6 +194,27 @@ def _assemble_oos_frames(
     ):
         if frame.duplicated(["signal_date", "ts_code"]).any():
             raise ValueError(f"{name} contain duplicate keys across ordinary test folds")
+    for fold_id in ORDINARY_TEST_FOLDS:
+        candidate = candidate_frames[ORDINARY_TEST_FOLDS.index(fold_id)]
+        labels_frame = label_frames[ORDINARY_TEST_FOLDS.index(fold_id)]
+        baseline = baseline_frames[ORDINARY_TEST_FOLDS.index(fold_id)]
+        _require_matching_keys(
+            candidate,
+            labels_frame,
+            f"{fold_id} candidate predictions and labels",
+        )
+        _require_matching_keys(
+            candidate,
+            baseline,
+            f"{fold_id} candidate and baseline predictions",
+        )
+        dataset_ids = {
+            str(candidate["dataset_id"].iloc[0]),
+            str(labels_frame["dataset_id"].iloc[0]),
+            str(baseline["dataset_id"].iloc[0]),
+        }
+        if len(dataset_ids) != 1:
+            raise ValueError(f"{fold_id} OOS frames do not share one dataset_id")
     return candidates, labels, baselines
 
 
@@ -187,6 +228,8 @@ def _validate_oos_frame(
 ) -> pd.DataFrame:
     if missing := sorted(required_columns.difference(frame.columns)):
         raise ValueError(f"{name} are missing columns: {missing}")
+    if frame.empty:
+        raise ValueError(f"{name} cannot be empty")
     normalized = frame.copy(deep=True)
     normalized["signal_date"] = pd.to_datetime(
         normalized["signal_date"], errors="raise"
@@ -210,6 +253,26 @@ def _validate_oos_frame(
         if values.isna().any() or values.astype(str).ne(fold_id).any():
             raise ValueError(f"{name} fold_id does not match {fold_id}")
     return normalized.reset_index(drop=True)
+
+
+def _require_matching_keys(left: pd.DataFrame, right: pd.DataFrame, name: str) -> None:
+    keys = ["signal_date", "ts_code"]
+    left_keys = left.loc[:, keys].sort_values(keys, kind="mergesort").reset_index(drop=True)
+    right_keys = right.loc[:, keys].sort_values(keys, kind="mergesort").reset_index(drop=True)
+    if not left_keys.equals(right_keys):
+        raise ValueError(f"{name} do not contain identical business keys")
+
+
+def _labels_with_lineage(
+    labels: pd.DataFrame,
+    fold_id: str,
+    *,
+    test_dataset_id: str,
+) -> pd.DataFrame:
+    normalized = labels.copy(deep=True)
+    normalized["fold_id"] = fold_id
+    normalized["dataset_id"] = test_dataset_id
+    return normalized
 
 
 __all__ = [

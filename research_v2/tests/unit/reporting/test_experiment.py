@@ -26,11 +26,25 @@ def _oos_fold(year: int, fold_index: int) -> tuple[pd.DataFrame, pd.DataFrame]:
         "signal_date": [signal_date] * 30,
         "ts_code": [f"S{index:03d}" for index in range(30)],
     }
+    dataset_id = f"dataset-{year}"
+    fold_id = f"F{fold_index:02d}"
     labels = pd.DataFrame(
-        {**keys, "raw_return_5d": [float(index) for index in range(30)], "label_valid": True}
+        {
+            **keys,
+            "raw_return_5d": [float(index) for index in range(30)],
+            "label_valid": True,
+            "fold_id": fold_id,
+            "dataset_id": dataset_id,
+        }
     )
     predictions = pd.DataFrame(
-        {**keys, "score": [float(index + fold_index) for index in range(30)]}
+        {
+            **keys,
+            "score": [float(index + fold_index) for index in range(30)],
+            "model_id": "candidate",
+            "fold_id": fold_id,
+            "dataset_id": dataset_id,
+        }
     )
     return predictions, labels
 
