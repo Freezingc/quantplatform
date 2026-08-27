@@ -927,9 +927,45 @@
   "label": "raw 5-trading-day forward adjusted return",
   "training_period": "2020-01-02/2024-12-31",
   "validation_period": "2025-01-02/2025-12-31",
-  "database_writes": false,
+  "database_writes": true,
   "model_training_started": false,
-  "publication_status": "NOT_PUBLISHED",
+  "publication_status": "FACTOR_QUALITY_LATEST_PUBLISHED",
+  "factor_quality_latest_publication": {
+    "artifact": "factor_quality_latest_refresh_v1.json",
+    "effective_date": "2026-08-27",
+    "target_table": "factor_quality_latest",
+    "row_count": 491,
+    "unique_factor_count": 491,
+    "eligible_count": 9,
+    "alpha95_reject_count": 3,
+    "alpha484_factor_id": "yeslab_484_tushare_shsz_v1",
+    "alpha484_decision": "PENDING_EXPLICIT_ADMISSION",
+    "alpha484_model_eligible": false,
+    "formal_admission_factor_set_changed": false,
+    "model_training_started": false,
+    "locked_test_read": false,
+    "migration_012_applied": true,
+    "migration_013_applied": false
+  },
+  "alpha484_tushare_shsz_canonical_v1": {
+    "artifact": "tushare_alpha484_canonical_v1/admission_review.json",
+    "factor_id": "yeslab_484_tushare_shsz_v1",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "training_signed_mean_rank_ic": 0.0699213542,
+    "training_signed_icir": 0.5807482426,
+    "validation_signed_mean_rank_ic": 0.0691633972,
+    "validation_signed_icir": 0.5085038572,
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "model_training_started": false,
+    "database_writes": false,
+    "locked_test_read": false
+  },
   "alpha381_admission_preflight": {
     "factor_id": "yeslab_381",
     "factor_name": "GP_012",
@@ -1181,6 +1217,8 @@
     "tushare_canonical_formal9_unique7_validation_2025_v1/quality_summary.json",
     "tushare_canonical_formal9_unique7_validation_2025_v1/similarity_summary.json",
     "tushare_alpha95_relative_amount_volatility_v1/quality_summary.json",
-    "tushare_alpha95_relative_amount_volatility_v1/admission_review.json"
+    "tushare_alpha95_relative_amount_volatility_v1/admission_review.json",
+    "tushare_alpha484_canonical_v1/admission_review.json",
+    "factor_quality_latest_refresh_v1.json"
   ]
 }

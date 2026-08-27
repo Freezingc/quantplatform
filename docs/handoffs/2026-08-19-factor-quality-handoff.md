@@ -14,11 +14,11 @@
 
 当前工作已经完成了因子库的广覆盖诊断、正式九因子的质量记账、若干候选因子的修复实验，以及精简版质量表的代码实现。模型训练尚未开始，2026 锁定测试没有被本轮因子质量工作读取。
 
-当前已完成 `yeslab_484_tushare_shsz_v1` 的严格、独立 Tushare SH/SZ 复核：它通过所有固定质量门槛，状态为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW`。这只是候选的人工准入评审资格，未改变正式九因子、未写入数据库、未启动模型训练，也未读取 2026 锁定测试。
+当前已完成 `yeslab_484_tushare_shsz_v1` 的严格、独立 Tushare SH/SZ 复核：它通过所有固定质量门槛，状态为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW`。这只是候选的人工准入评审资格，未改变正式九因子、未启动模型训练，也未读取 2026 锁定测试。
 
-下一关键路径是新表 `factor_quality_latest`：先执行 491 行 / 9 个正式可用因子的 dry-run，再应用迁移 012、显式发布并回读校验。发布的是当前质量结论，不会自动把 Alpha484 加入正式因子集。
+新表 `factor_quality_latest` 已按最新结论发布并回读校验：491 行、491 个唯一因子 ID、9 个正式可用因子。发布的是当前质量结论，不会自动把 Alpha484 加入正式因子集；下一关键路径是对候选逐个进行人工准入评审。
 
-迁移到新服务器时，不能只克隆 GitHub 仓库。当前本地分支还有 228 个提交未推送，Tushare 缓存和一部分诊断产物也被 Git 忽略，必须单独复制或先完成推送。
+迁移到新服务器时，不能只克隆 GitHub 仓库。Tushare 缓存和一部分诊断产物被 Git 忽略，必须单独复制；迁移前使用 `git rev-list --left-right --count origin/codex/publish-quant-platform...HEAD` 核对实际推送差异。
 
 ## 2. 不可变研究口径
 
@@ -264,28 +264,24 @@ python -u research_v2/scripts/evaluate_alpha484_canonical.py \
 
 该过程严格使用 Tushare SH/SZ、`forward_open_5d:v1`、训练 2020-2024、验证 2025，未读取 2026。正式九因子相似度因旧 V2 latest 表缺少其中 3 个值序列，改由相同完整 Tushare SH/SZ 市场面板和原始计算器公式回放；这保证九个比较基准的横截面口径一致。
 
-### 5.3 数据库迁移和质量表发布未完成
+### 5.3 数据库迁移和质量表发布已完成
 
-2026-08-19 只读核验结果：
+2026-08-27 已完成迁移、发布和独立回读：
 
 | 项目 | 当前状态 |
 |---|---|
 | DolphinDB 当前地址 | `10.176.55.211:8848` |
 | DolphinDB 目标库 | `dfs://QuantResearchV2Test` 可连接 |
-| `schema_migration` | 已应用 001–011 |
-| 迁移 012 | 未应用 |
-| `factor_quality_latest` | 不存在 |
+| `schema_migration` | 已应用 001–012，012 checksum 与本地一致 |
+| 迁移 012 | 已应用，仅创建新 `factor_quality_latest` 表 |
+| 迁移 013 | 未应用；它属于无关的 OOS 列变更，明确隔离于本次质量表发布 |
+| `factor_quality_latest` | 已发布 491 行，491 个唯一 ID，9 个 eligible |
 | `factor_quality_snapshot` | 存在，2,612 行，仅作旧审计归档 |
 | compact latest 表 | `factor_observation_clean_latest`、`label_daily_latest`、`universe_daily_latest`、`latest_manifest` 均存在 |
 
-Alpha484 新候选现已产出完整 `admission_review.json`，接下来应执行：
+先执行了本地 491 行 / 9 eligible dry-run，再将只包含 001–012 的迁移集合交给 `MigrationRunner`。001–011 被同 checksum 跳过，只有 012 执行。首次发布已写入正确数据，但 DolphinDB 拒绝 `count(distinct factor_id)` 的嵌套聚合语法；发布器已改为回读 `factor_id/model_eligible` 后在 Python 侧验证，回归测试覆盖该方言行为。最终发布状态为 `published`。
 
-1. 迁移 dry-run；
-2. 491 行质量表 dry-run；
-3. 应用迁移 012；
-4. 显式发布；
-5. 回读验证 491 行、491 个唯一 ID、9 个 eligible；
-6. 记录 `factor_quality_latest_refresh_v1.json` 并更新质量台账。
+发布证据：`research_v2/artifacts/diagnostics/factor_quality_latest_refresh_v1.json`。其中记录决策分布 `5 APPROVED + 4 APPROVED_MONITOR + 1 PENDING_EXPLICIT_ADMISSION + 3 REJECT + 478 UNSCREENED`，并确认 Alpha95 三个候选与 Alpha484 独立候选均 `model_eligible=false`。
 
 ### 5.4 模型训练未开始
 
@@ -299,15 +295,15 @@ Residual MLP、Set Attention、Temporal GRU/TCN 以及 LightGBM/XGBoost 等模�
 
 远端：`https://github.com/Freezingc/quantplatform.git`
 
-2026-08-19 已实时刷新远端引用：
+远端与本地提交数会随推送变化，迁移前执行以下命令核对：
 
-| 引用 | 提交 |
-|---|---|
-| 本地 `codex/publish-quant-platform` | `55cf3672e6d34d1e37726d1d33e41fe2c5ded516` |
-| GitHub `codex/publish-quant-platform` | `77aa9a1bdc607823a3f5cb4d139fbe9df489826b` |
-| GitHub `main` | `47a86f4a6ed96469fe371c3ed0b2ad3a1255ebf6` |
+```bash
+git fetch origin
+git rev-list --left-right --count origin/codex/publish-quant-platform...HEAD
+git status --short
+```
 
-远端分支是本地历史的祖先；本地比远端超前 228 个提交，没有双向冲突。本文档创建后还会多一个未提交文件，迁移前应评审、提交并推送，或使用 bundle/rsync 完整复制。
+本轮新增的质量表发布审计被 artifacts 忽略，必须以 `git add -f` 显式纳入提交。
 
 ### 6.2 Git 不包含的数据
 
@@ -519,36 +515,28 @@ python -u research_v2/scripts/evaluate_alpha484_canonical.py \
 - `REJECT_CANONICAL_GATE`：至少一个固定门槛失败；
 - 明确的失败/不完整状态：任务异常，不得生成伪最终结论。
 
-### P3：发布 `factor_quality_latest`（当前执行点）
+### P3：发布 `factor_quality_latest`（已完成）
 
-Alpha484 结果完整后，先 dry-run：
+已完成 012 应用、dry-run、显式发布和回读：
+
+```text
+row_count = 491
+unique_factor_count = 491
+eligible_count = 9
+alpha95 = 3 REJECT / model_eligible=false
+alpha484 = PENDING_EXPLICIT_ADMISSION / model_eligible=false
+migration_013_applied = false
+```
+
+如需只读检查当前正式可用因子，运行：
 
 ```bash
 PYTHONPATH=research_v2/scripts:research_v2/src \
 python research_v2/scripts/refresh_factor_quality_latest.py \
-  --effective-date 2026-08-27 \
-  --evidence-commit "$(git rev-parse HEAD)" \
-  --alpha484-review \
-    research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1/admission_review.json
+  --model-eligible
 ```
 
-期望：`row_count=491`、`eligible_count=9`、无数据库写入。
-
-应用迁移前先 dry-run MigrationRunner；确认 001–011 checksum 匹配且只计划 012。然后应用迁移并重复上述命令加 `--publish`。
-
-发布后必须回读验证：
-
-```text
-count(*) = 491
-count(distinct factor_id) = 491
-sum(model_eligible) = 9
-Alpha95 三个候选 = REJECT 且 model_eligible=false
-Alpha484 独立候选 = 1 行且 model_eligible=false
-```
-
-最后生成 `factor_quality_latest_refresh_v1.json`，更新质量台账，但不得改变正式九因子、启动模型训练或读取 2026。
-
-### P4：候选人工准入评审
+### P4：候选人工准入评审（当前执行点）
 
 质量表完成后，再分别审查 `yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。每个候选必须独立决策，不能因为需要凑满 15 个因子而批量放宽门槛。
 
@@ -589,4 +577,4 @@ Alpha484 独立候选 = 1 行且 model_eligible=false
 
 ## 11. 当前接手点
 
-接手者的第一项工作是执行 migration 012 dry-run 与 491 行质量表 dry-run。只有二者均满足不变量后，才可显式发布并回读验证；发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
+接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json`，然后按独立、明确的人工决策审查 `yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。

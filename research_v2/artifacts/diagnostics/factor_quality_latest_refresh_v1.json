@@ -1,0 +1,61 @@
+{
+  "scope": "FACTOR_QUALITY_LATEST_REFRESH_V1",
+  "effective_date": "2026-08-27",
+  "target_database": "dfs://QuantResearchV2Test",
+  "target_table": "factor_quality_latest",
+  "evidence_commit": "eebed312866e723d950d51aba54d80bfa8576591",
+  "migration": {
+    "version": 12,
+    "checksum_matches_local": true,
+    "executed_versions": [12],
+    "skipped_versions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "migration_013_applied": false
+  },
+  "publish": {
+    "status": "published",
+    "dry_run_row_count": 491,
+    "dry_run_eligible_count": 9,
+    "readback_row_count": 491,
+    "readback_unique_factor_count": 491,
+    "readback_eligible_count": 9,
+    "decision_counts": {
+      "APPROVED": 5,
+      "APPROVED_MONITOR": 4,
+      "PENDING_EXPLICIT_ADMISSION": 1,
+      "REJECT": 3,
+      "UNSCREENED": 478
+    },
+    "evidence_row_count": 13,
+    "unscreened_without_evidence_count": 478
+  },
+  "eligible_factor_ids": [
+    "yeslab_155",
+    "yeslab_376",
+    "yeslab_380",
+    "yeslab_396",
+    "yeslab_431",
+    "yeslab_437",
+    "yeslab_442",
+    "yeslab_94",
+    "yeslab_98"
+  ],
+  "monitoring_factor_ids": [
+    "yeslab_380",
+    "yeslab_431",
+    "yeslab_437",
+    "yeslab_94"
+  ],
+  "isolated_candidates": {
+    "alpha95_reject_count": 3,
+    "alpha95_model_eligible": false,
+    "alpha484_factor_id": "yeslab_484_tushare_shsz_v1",
+    "alpha484_decision": "PENDING_EXPLICIT_ADMISSION",
+    "alpha484_model_eligible": false
+  },
+  "safety": {
+    "formal_admission_factor_ids_changed": false,
+    "model_training_started": false,
+    "locked_test_read": false,
+    "existing_table_schemas_modified": false
+  }
+}
