@@ -24,8 +24,13 @@ class RecordingSession:
 
     def query(self, script: str) -> pd.DataFrame:
         self.queries.append(script)
+        if "count(distinct" in script:
+            raise RuntimeError("Cannot nest aggregate function")
         return pd.DataFrame(
-            [{"row_count": 491, "unique_factor_count": 491, "eligible_count": 9}]
+            {
+                "factor_id": [f"yeslab_{index}" for index in range(1, 492)],
+                "model_eligible": [index <= 9 for index in range(1, 492)],
+            }
         )
 
 
@@ -47,7 +52,9 @@ def test_refresh_dry_run_does_not_upload_or_execute(
     assert session.queries == []
 
 
-def test_refresh_publish_replaces_only_compact_target(valid_frame: pd.DataFrame) -> None:
+def test_refresh_publish_verifies_invariants_from_raw_rows(
+    valid_frame: pd.DataFrame,
+) -> None:
     session = RecordingSession()
 
     assert refresh.refresh_latest(session, valid_frame, publish=True) == "published"

@@ -297,19 +297,19 @@ def refresh_latest(
 
 def _verify_published(session: QualityLatestSession) -> None:
     result = session.query(
-        "select count(*) as row_count, count(distinct factor_id) as unique_factor_count, "
-        "sum(int(model_eligible)) as eligible_count from loadTable("
+        "select factor_id, model_eligible from loadTable("
         f"'{session.target_database}', '{_TARGET_OBJECT}')"
     )
-    required = {"row_count", "unique_factor_count", "eligible_count"}
-    if not isinstance(result, pd.DataFrame) or len(result) != 1 or not required.issubset(
-        result.columns
-    ):
+    required = {"factor_id", "model_eligible"}
+    if not isinstance(result, pd.DataFrame) or not required.issubset(result.columns):
         raise RuntimeError("quality latest post-write check returned an invalid frame")
-    row = result.iloc[0]
-    observed = tuple(
-        int(row[column])
-        for column in ("row_count", "unique_factor_count", "eligible_count")
+    rows = result.loc[:, ["factor_id", "model_eligible"]]
+    if rows.isna().any().any():
+        raise RuntimeError("quality latest post-write check returned null keys or flags")
+    observed = (
+        int(len(rows)),
+        int(rows["factor_id"].astype(str).nunique()),
+        int(rows["model_eligible"].astype(bool).sum()),
     )
     if observed != (491, 491, 9):
         raise RuntimeError(
