@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from research_v2.evaluation.gates import GateEvidence, ScoreHealthEvidence
+from research_v2.monitoring.shadow import ShadowDeploymentApprovalStore
 from research_v2.registry.model_registry import ModelRegistry, ModelStatus
 
 MODEL_ID = "sha256:" + "a" * 64
@@ -63,45 +64,41 @@ def test_registry_rejects_failed_gate_evidence_and_allows_retirement() -> None:
     assert retired.status is ModelStatus.RETIRED
 
 
-def test_registry_allows_only_the_documented_lifecycle_path() -> None:
+def test_registry_reserves_locked_test_lifecycle_for_its_dedicated_workflow(
+    tmp_path: object, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("QRV2_SHADOW_APPROVAL_HMAC_KEY", "test-shadow-approval-key")
+    monkeypatch.setenv("QRV2_SHADOW_DEPLOYER_ID", "shadow-controller")
     registry = ModelRegistry()
     registry.register_draft(MODEL_ID, actor="trainer")
     registry.promote_walk_forward(MODEL_ID, actor="reviewer", evidence=_evidence())
-    shadow = registry.transition(
-        MODEL_ID,
-        ModelStatus.SHADOW,
-        actor="shadow-controller",
-        evidence_hashes=("b" * 64,),
-        reason="shadow evidence accepted",
+    approvals = ShadowDeploymentApprovalStore(
+        tmp_path / "approvals",  # type: ignore[operator]
+        signing_key=b"test-shadow-approval-key",
     )
-    approved = registry.transition(
-        MODEL_ID,
-        ModelStatus.LOCKED_TEST_APPROVED,
-        actor="locked-controller",
-        evidence_hashes=("c" * 64,),
-        reason="locked test approved",
+    approval = approvals.issue(
+        model_id=MODEL_ID,
+        actor="risk-approver",
+        walk_forward_evidence_hash=registry.history(MODEL_ID)[-1].evidence_hashes[0],
+        artifact_bundle_hash="b" * 64,
+        inference_contract_hash="c" * 64,
+        v2test_drill_hash="d" * 64,
+        rollback_plan_hash="e" * 64,
     )
-    passed = registry.transition(
+    shadow = registry.enter_shadow(
         MODEL_ID,
-        ModelStatus.LOCKED_TEST_PASSED,
-        actor="locked-controller",
-        evidence_hashes=("d" * 64,),
-        reason="locked test passed",
+        approval=approval,
+        approval_root=tmp_path / "approvals",  # type: ignore[operator]
     )
-    production = registry.transition(
-        MODEL_ID,
-        ModelStatus.PRODUCTION,
-        actor="release-controller",
-        evidence_hashes=("e" * 64,),
-        reason="production approval",
-    )
-
-    assert [shadow.status, approved.status, passed.status, production.status] == [
-        ModelStatus.SHADOW,
-        ModelStatus.LOCKED_TEST_APPROVED,
-        ModelStatus.LOCKED_TEST_PASSED,
-        ModelStatus.PRODUCTION,
-    ]
+    assert shadow.status is ModelStatus.SHADOW
+    with pytest.raises(ValueError, match="dedicated workflow"):
+        registry.transition(
+            MODEL_ID,
+            ModelStatus.LOCKED_TEST_APPROVED,
+            actor="attacker",
+            evidence_hashes=("c" * 64,),
+            reason="bypass locked-test evidence verification",
+        )
     with pytest.raises(ValueError, match="cannot transition"):
         registry.transition(
             MODEL_ID,

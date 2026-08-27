@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import re
 from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime
@@ -20,10 +21,15 @@ from research_v2.evaluation.gates import (
     ScoreHealthEvidence,
     evaluate_oos_gates,
 )
+from research_v2.monitoring.shadow import (
+    ShadowDeploymentApproval,
+    ShadowDeploymentApprovalVerifier,
+)
 
 _MODEL_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
 _EVIDENCE_HASH = re.compile(r"^[0-9a-f]{64}$")
 _REQUIRED_GATES = ("G1", "G2", "G3", "G4", "G5", "G6")
+_SHADOW_DEPLOYER_ENV = "QRV2_SHADOW_DEPLOYER_ID"
 
 
 class ModelStatus(StrEnum):
@@ -120,9 +126,48 @@ class ModelRegistry:
             raise ValueError(f"cannot transition {record.status} to {status}")
         if status is ModelStatus.WALK_FORWARD_PASSED:
             raise ValueError("WALK_FORWARD_PASSED requires raw G1-G6 evidence")
+        if status is ModelStatus.SHADOW:
+            raise ValueError("SHADOW requires a verified deployment approval")
+        if status in {
+            ModelStatus.LOCKED_TEST_APPROVED,
+            ModelStatus.LOCKED_TEST_PASSED,
+            ModelStatus.LOCKED_TEST_FAILED,
+            ModelStatus.PRODUCTION,
+        }:
+            raise ValueError("locked-test and production states require their dedicated workflow")
         if status is not ModelStatus.RETIRED and not evidence_hashes:
             raise ValueError("lifecycle transition requires evidence hashes")
         return self._transition(record, status, actor, reason, evidence_hashes)
+
+    def enter_shadow(
+        self,
+        model_id: str,
+        *,
+        approval: ShadowDeploymentApproval,
+        approval_root: Path,
+    ) -> ModelRecord:
+        """Enter SHADOW only after an evaluator-owned deployment approval verifies all evidence."""
+        record = self._get(model_id)
+        if record.status is not ModelStatus.WALK_FORWARD_PASSED:
+            raise ValueError("only WALK_FORWARD_PASSED models can enter SHADOW")
+        verified = ShadowDeploymentApprovalVerifier.from_environment(approval_root).verify(approval)
+        if verified.model_id != model_id:
+            raise ValueError("shadow deployment approval does not match the registered model")
+        walk_forward_hashes = self._history[model_id][-1].evidence_hashes
+        if verified.walk_forward_evidence_hash not in walk_forward_hashes:
+            raise ValueError("shadow deployment approval does not match walk-forward evidence")
+        actor = os.environ.get(_SHADOW_DEPLOYER_ENV, "")
+        if not actor.strip():
+            raise ValueError(f"shadow deployment requires {_SHADOW_DEPLOYER_ENV}")
+        if actor == verified.actor:
+            raise ValueError("shadow deployment operator must be separate from the approver")
+        return self._transition(
+            record,
+            ModelStatus.SHADOW,
+            actor,
+            reason="verified shadow deployment approval",
+            evidence_hashes=(approval.approval_id,),
+        )
 
     def history(self, model_id: str) -> tuple[TransitionEvent, ...]:
         self._get(model_id)
