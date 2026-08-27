@@ -966,6 +966,31 @@
     "database_writes": false,
     "locked_test_read": false
   },
+  "alpha405_tushare_shsz_canonical_candidate": {
+    "artifact": "tushare_alpha405_canonical_candidate_review_v1.json",
+    "factor_id": "yeslab_405_tushare_shsz_v1",
+    "source_factor_id": "yeslab_405",
+    "factor_name": "GP_036",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "training_signed_mean_rank_ic": 0.06709418997542849,
+    "training_signed_icir": 0.6236357196112597,
+    "validation_signed_mean_rank_ic": 0.09016995899362608,
+    "validation_signed_icir": 1.039100064055685,
+    "annual_gate_years": "4/5",
+    "training_similarity_max": 0.6870716425,
+    "validation_similarity_max": 0.7177261845,
+    "formula_scope_status": "PENDING_EXPLICIT_SCOPE_APPROVAL",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "alpha381_admission_preflight": {
     "factor_id": "yeslab_381",
     "factor_name": "GP_012",
@@ -1219,6 +1244,11 @@
     "tushare_alpha95_relative_amount_volatility_v1/quality_summary.json",
     "tushare_alpha95_relative_amount_volatility_v1/admission_review.json",
     "tushare_alpha484_canonical_v1/admission_review.json",
+    "tushare_alpha405_canonical_candidate_review_v1.json",
+    "tushare_alpha405_canonical_train_similarity_v1/quality_summary.json",
+    "tushare_alpha405_canonical_train_similarity_v1/similarity_summary.json",
+    "tushare_alpha405_canonical_validation_v1/quality_summary.json",
+    "tushare_alpha405_canonical_validation_v1/similarity_summary.json",
     "factor_quality_latest_refresh_v1.json"
   ]
 }

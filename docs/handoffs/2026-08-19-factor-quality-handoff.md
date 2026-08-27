@@ -155,12 +155,29 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 最终审计文件为 `research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1/admission_review.json`。它的状态是 `READY_FOR_EXPLICIT_ADMISSION_REVIEW`，但 `model_eligible=false`、`database_writes=false`、`locked_test_read=false`。
 
+#### Alpha405 隔离规范候选
+
+2026-08-27 补齐了 `yeslab_405_tushare_shsz_v1` 的独立 Tushare SH/SZ 复评。训练和验证均使用同一 SH/SZ Tushare 面板，结果如下：
+
+| 检查项 | 训练 2020-2024 | 验证 2025 | 结论 |
+|---|---:|---:|---|
+| 冻结方向 | `-1` | 复用训练方向 | 未在验证集重选 |
+| signed RankIC | `0.06709` | `0.09017` | 均 `> 0.02` |
+| signed ICIR | `0.62364` | `1.03910` | 均 `>= 0.50` |
+| 方向日占比 | `73.10%` | `86.42%` | 均 `>= 55%` |
+| 年度严格门槛 | `4/5` | - | 通过最低 `4/5`，2020 年仅 ICIR 不足 |
+| 覆盖率 | 中位数 `0.99912`，P05 `0.99742`，月度最低 `0.99563` | 中位数 `0.99898`，P05 `0.99798`，月度最低 `0.99714` | 通过 |
+| 正式九因子最大相似度中位数 | `0.68707`（`yeslab_396`） | `0.71773`（`yeslab_396`） | 均 `< 0.90` |
+
+评审包为 `research_v2/artifacts/diagnostics/tushare_alpha405_canonical_candidate_review_v1.json`。它的状态是 `READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL`：历史 YesLab GP_036 含 `552` 个 BJ 代码，不能与新 SH/SZ 候选值混用；因此该候选仍 `model_eligible=false`，没有写入因子值，也没有改变正式九因子。只有明确批准创建隔离版本后，才可进入实际准入流程。
+
 #### 其他值得保留的候选状态
 
 | 候选 | 当前结论 | 后续动作 |
 |---|---|---|
 | `yeslab_114` | 可进入人工准入评审，需月度监控 | 不自动加入正式集合 |
 | `yeslab_206_median_abs_v2` | 可进入人工准入评审，需低波动/非正趋势监控 | 不自动加入正式集合 |
+| `yeslab_405_tushare_shsz_v1` | 预测、覆盖和正式九因子相似度通过，等待范围审批 | 必须明确批准隔离 SH/SZ 版本；不能使用历史 YesLab 值 |
 | `yeslab_425` | Tushare SH/SZ 研究候选可评审 | 必须使用独立规范版本，不能使用历史 YesLab 值 |
 | `yeslab_381` | 预测和相似度通过，但范围迁移待审 | 保持隔离 |
 | `yeslab_385` | 与 `yeslab_405` 相似度 0.90134，冗余失败 | 拒绝 |
@@ -538,7 +555,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，再分别审查 `yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。每个候选必须独立决策，不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。405 首先需要明确批准其隔离 SH/SZ 规范版本；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 
@@ -577,4 +594,4 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ## 11. 当前接手点
 
-接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json`，然后按独立、明确的人工决策审查 `yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
+接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json` 和 `tushare_alpha405_canonical_candidate_review_v1.json`，然后按独立、明确的人工决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
