@@ -1,0 +1,6 @@
+minimum_cross_section: 30
+selection_metric: validation_mean_rank_ic
+tie_break:
+  - train_signed_mean_rank_ic_desc
+  - train_coverage_desc
+  - factor_id_asc

@@ -1,0 +1,8 @@
+inner_fold_count: 3
+target: daily_demeaned_raw_return_5d
+alpha: [0.01, 0.1, 1.0, 10.0, 100.0]
+l1_ratio: [0.0, 0.1, 0.5, 0.9, 1.0]
+tie_break:
+  - alpha_desc
+  - l1_ratio_asc
+sample_weight: equal_per_signal_date

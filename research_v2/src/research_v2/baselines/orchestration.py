@@ -12,7 +12,7 @@ import pandas as pd
 from research_v2.baselines.base import Baseline, BaselineDataset, FittedBaseline, PredictionFrame
 from research_v2.baselines.equal_weight import EqualWeightBaseline
 from research_v2.baselines.lgbm_ranker import LGBMRankerCandidate
-from research_v2.baselines.linear import RidgeBaselineCandidate
+from research_v2.baselines.linear import LinearBaselineCandidate
 from research_v2.baselines.single_factor import SingleFactorBaseline
 from research_v2.evaluation.rank_ic import RankICSummary, compute_daily_rank_ic, summarize_rank_ic
 
@@ -191,7 +191,10 @@ def build_default_baseline_candidates(
             factor_order=fold.factor_order,
             frozen_directions=directions,
         ),
-        "B2": RidgeBaselineCandidate(factor_order=fold.factor_order),
+        "B2": LinearBaselineCandidate(
+            factor_order=fold.factor_order,
+            minimum_cross_section=minimum_cross_section,
+        ),
         "B3": LGBMRankerCandidate(factor_order=fold.factor_order),
     }
 

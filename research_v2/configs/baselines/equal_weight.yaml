@@ -1,0 +1,3 @@
+minimum_factor_coverage: 0.60
+ranking: daily_cross_sectional_percentile
+missing_score_policy: null
