@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge  # type: ignore[import-untyped]
 
+from research_v2.baselines.base import BaselineDataset, FittedBaseline, PredictionFrame
+
 FitRole = Literal["TRAIN", "VALIDATION", "TEST", "LOCKED"]
 
 
@@ -74,6 +76,50 @@ class LinearRidgeBaseline:
         )
 
 
+@dataclass(frozen=True)
+class FittedRidgeBaseline:
+    """Adapter that exposes the train-fitted Ridge model through the baseline protocol."""
+
+    model: LinearRidgeBaseline
+    model_id: str = "B2"
+
+    def predict(self, data: BaselineDataset) -> PredictionFrame:
+        scores = self.model.predict(data.features)
+        return PredictionFrame.from_scores(
+            data.features,
+            scores,
+            model_id=self.model_id,
+            fold_id=data.fold_id,
+            dataset_id=data.dataset_id,
+        )
+
+
+@dataclass(frozen=True)
+class RidgeBaselineCandidate:
+    """B2 candidate using one explicit Ridge hyperparameter."""
+
+    factor_order: tuple[str, ...]
+    alpha: float = 1.0
+    model_id: str = "B2"
+
+    def fit(
+        self,
+        train: BaselineDataset,
+        validation: BaselineDataset,
+    ) -> FittedBaseline:
+        _validate_candidate_views(train, validation, self.factor_order)
+        if not np.isfinite(self.alpha) or self.alpha < 0:
+            raise ValueError("Ridge alpha must be finite and non-negative")
+        model = LinearRidgeBaseline.fit(
+            train.features,
+            train.labels,
+            factor_order=self.factor_order,
+            role="TRAIN",
+            alpha=self.alpha,
+        )
+        return FittedRidgeBaseline(model=model, model_id=self.model_id)
+
+
 def _validate_feature_schema(features: pd.DataFrame, factor_order: tuple[str, ...]) -> None:
     expected_columns = ("signal_date", "ts_code", *factor_order)
     if tuple(features.columns) != expected_columns:
@@ -86,3 +132,16 @@ def _finite_matrix(frame: pd.DataFrame, factor_order: tuple[str, ...]) -> np.nda
     if not np.isfinite(values).all():
         raise ValueError("baseline feature values must be finite")
     return cast(np.ndarray, values)
+
+
+def _validate_candidate_views(
+    train: BaselineDataset,
+    validation: BaselineDataset,
+    factor_order: tuple[str, ...],
+) -> None:
+    if train.role != "TRAIN" or validation.role != "VALIDATION":
+        raise PermissionError("Ridge candidate accepts only TRAIN and VALIDATION data")
+    if train.fold_id != validation.fold_id:
+        raise ValueError("train and validation datasets must belong to one fold")
+    _validate_feature_schema(train.features, factor_order)
+    _validate_feature_schema(validation.features, factor_order)

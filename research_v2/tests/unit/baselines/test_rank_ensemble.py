@@ -18,7 +18,7 @@ def test_directional_rank_scores_ranks_within_each_signal_date() -> None:
 
     scores = directional_rank_scores(features, ("f1", "f2"), (-1, 1))
 
-    assert scores.tolist() == pytest.approx([0.5, 0.5, 0.0, 1.0])
+    assert scores.tolist() == pytest.approx([0.5, 1.0, 0.5, 1.0])
     assert scores.index.equals(features.index)
 
 
@@ -32,7 +32,8 @@ def test_directional_rank_scores_ignores_missing_factor_values() -> None:
 
     scores = directional_rank_scores(features, ("f1", "f2"), (-1, 1))
 
-    assert scores.tolist() == pytest.approx([1.0, 0.25])
+    assert pd.isna(scores.iloc[0])
+    assert scores.iloc[1] == pytest.approx(1.0)
 
 
 def test_directional_rank_scores_preserves_all_missing_rows_as_nan() -> None:

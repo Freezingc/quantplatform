@@ -9,6 +9,7 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 
+from research_v2.baselines.base import BaselineDataset, FittedBaseline, PredictionFrame
 from research_v2.baselines.linear import FitRole
 
 
@@ -92,6 +93,53 @@ class LGBMRankerBaseline:
         if not np.isfinite(scores).all():
             raise ValueError("LightGBM emitted non-finite scores")
         return pd.Series(scores, index=features.index, name="score")
+
+
+@dataclass(frozen=True)
+class FittedLGBMRankerBaseline:
+    """Adapter that exposes the train-fitted ranker through the baseline protocol."""
+
+    model: LGBMRankerBaseline
+    model_id: str = "B3"
+
+    def predict(self, data: BaselineDataset) -> PredictionFrame:
+        scores = self.model.predict(data.features)
+        return PredictionFrame.from_scores(
+            data.features,
+            scores,
+            model_id=self.model_id,
+            fold_id=data.fold_id,
+            dataset_id=data.dataset_id,
+        )
+
+
+@dataclass(frozen=True)
+class LGBMRankerCandidate:
+    """B3 candidate using the deterministic default LambdaRank configuration."""
+
+    factor_order: tuple[str, ...]
+    num_boost_round: int = 100
+    model_id: str = "B3"
+
+    def fit(
+        self,
+        train: BaselineDataset,
+        validation: BaselineDataset,
+    ) -> FittedBaseline:
+        if train.role != "TRAIN" or validation.role != "VALIDATION":
+            raise PermissionError("LightGBM candidate accepts only TRAIN and VALIDATION data")
+        if train.fold_id != validation.fold_id:
+            raise ValueError("train and validation datasets must belong to one fold")
+        _validate_feature_schema(train.features, self.factor_order)
+        _validate_feature_schema(validation.features, self.factor_order)
+        model = LGBMRankerBaseline.fit(
+            train.features,
+            train.labels,
+            factor_order=self.factor_order,
+            role="TRAIN",
+            num_boost_round=self.num_boost_round,
+        )
+        return FittedLGBMRankerBaseline(model=model, model_id=self.model_id)
 
 
 def _validate_feature_schema(features: pd.DataFrame, factor_order: tuple[str, ...]) -> None:
