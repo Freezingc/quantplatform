@@ -1,0 +1,11 @@
+psi:
+  epsilon: 1.0e-6
+  info_upper_bound: 0.10
+  warn_upper_bound: 0.25
+feature_health:
+  minimum_row_coverage: 0.95
+  universe_size_lower_ratio: 0.80
+  universe_size_upper_ratio: 1.20
+  maximum_missing_rate_increase: 0.10
+drift_review:
+  consecutive_psi_error_days: 3
