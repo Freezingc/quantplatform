@@ -45,6 +45,7 @@ def evaluate_frozen_oos(
     baseline_predictions: pd.DataFrame | None = None,
     role: EvaluationRole,
     minimum_cross_section: int = 30,
+    is_baseline: bool = False,
 ) -> FrozenOosEvaluation:
     """Evaluate one frozen ordinary test dataset; validation and train roles are forbidden."""
     if role != "TEST":
@@ -111,7 +112,7 @@ def evaluate_frozen_oos(
         yearly_mean_rank_ic=yearly,
         baseline_mean_rank_ic=baseline_mean,
         delta_rank_ic=delta,
-        gate_report=evaluate_oos_gates(evidence),
+        gate_report=evaluate_oos_gates(evidence, is_baseline=is_baseline),
         yearly_summary=yearly_summary,
     )
 

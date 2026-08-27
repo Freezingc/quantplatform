@@ -149,3 +149,23 @@ def test_frozen_oos_rejects_locked_year_from_ordinary_test_entrypoint() -> None:
 
     with pytest.raises(PermissionError, match="2026|FINAL"):
         evaluate_frozen_oos(frame, frame, role="TEST")
+
+
+def test_frozen_oos_baseline_report_marks_relative_gate_not_applicable() -> None:
+    prediction_rows: list[dict[str, object]] = []
+    label_rows: list[dict[str, object]] = []
+    for year in range(2020, 2026):
+        signal_date = date(year, 1, 2)
+        for index in range(30):
+            key = {"signal_date": signal_date, "ts_code": f"S{index:03d}"}
+            prediction_rows.append({**key, "score": float(index)})
+            label_rows.append({**key, "raw_return_5d": float(index), "label_valid": True})
+
+    evaluation = evaluate_frozen_oos(
+        pd.DataFrame(prediction_rows),
+        pd.DataFrame(label_rows),
+        role="TEST",
+        is_baseline=True,
+    )
+
+    assert evaluation.gate_report.results["G4"].status.value == "NOT_APPLICABLE"

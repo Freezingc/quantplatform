@@ -80,6 +80,7 @@ class BaselineSelectionRecord:
 class BaselineTestEvaluation:
     baseline_id: str
     predictions: PredictionFrame
+    labels: pd.DataFrame
     daily_rank_ic: pd.DataFrame
     summary: RankICSummary
 
@@ -166,6 +167,7 @@ def run_baseline_fold(
         test_evaluation=BaselineTestEvaluation(
             baseline_id=winner.baseline_id,
             predictions=test_prediction,
+            labels=test.labels,
             daily_rank_ic=daily,
             summary=summary,
         ),
