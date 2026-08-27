@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 from scipy.stats import spearmanr
 
+from research_v2.datasets.manifest import build_dataset_manifest
 from research_v2.evaluation.hac import hac_mean_test
 from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
 
@@ -17,6 +18,12 @@ _EXPECTED_PATH = Path(__file__).parent / "data" / "expected_metrics.json"
 
 def test_golden_dataset_has_fixed_50_by_60_shape_and_order() -> None:
     frame = pd.read_parquet(_DATA_PATH, engine="pyarrow")
+    expected = json.loads(_EXPECTED_PATH.read_text(encoding="utf-8"))
+    manifest = build_dataset_manifest(
+        frame,
+        business_keys=("signal_date", "ts_code"),
+        metadata={"fixture": "dataset_50x60", "version": 1},
+    )
 
     assert frame.shape == (300, 64)
     assert frame.columns[:4].tolist() == [
@@ -28,6 +35,8 @@ def test_golden_dataset_has_fixed_50_by_60_shape_and_order() -> None:
     assert frame.columns[4:].tolist() == [f"factor_{index:02d}" for index in range(60)]
     assert frame["signal_date"].nunique() == 6
     assert frame.groupby("signal_date", sort=True)["ts_code"].nunique().tolist() == [50] * 6
+    assert manifest.dataset_id == expected["manifest_id"]
+    assert manifest.row_count == expected["row_count"]
 
 
 def test_golden_daily_rank_ic_matches_independent_reference_metrics() -> None:
@@ -60,6 +69,46 @@ def test_golden_daily_rank_ic_matches_independent_reference_metrics() -> None:
     assert hac.standard_error == pytest.approx(expected["hac_standard_error"])
     assert hac.t_statistic == pytest.approx(expected["hac_t_statistic"])
     assert hac.p_value == pytest.approx(expected["hac_p_value"])
+
+
+def test_golden_secondary_factors_cover_negative_ties_and_missing_scores() -> None:
+    frame = pd.read_parquet(_DATA_PATH, engine="pyarrow")
+    labels = frame.loc[:, ["signal_date", "ts_code", "raw_return_5d", "label_valid"]]
+
+    negative = compute_daily_rank_ic(
+        frame.loc[:, ["signal_date", "ts_code", "factor_01"]].rename(
+            columns={"factor_01": "score"}
+        ),
+        labels,
+        minimum_cross_section=30,
+        include_invalid=True,
+        require_score_health=True,
+    )
+    tied = compute_daily_rank_ic(
+        frame.loc[:, ["signal_date", "ts_code", "factor_02"]].rename(
+            columns={"factor_02": "score"}
+        ),
+        labels,
+        minimum_cross_section=30,
+        include_invalid=True,
+        require_score_health=True,
+    )
+    missing = compute_daily_rank_ic(
+        frame.loc[:, ["signal_date", "ts_code", "factor_03"]].rename(
+            columns={"factor_03": "score"}
+        ),
+        labels,
+        minimum_cross_section=30,
+        include_invalid=True,
+        require_score_health=True,
+    )
+
+    assert negative["rank_ic"].tolist() == pytest.approx([-1.0] * 6)
+    assert tied["prediction_unique_count"].tolist() == [25] * 6
+    assert tied["rank_ic"].tolist() == pytest.approx([0.9993995796516643] * 6)
+    assert missing["sample_count"].tolist() == [45] * 6
+    assert missing["coverage"].tolist() == pytest.approx([0.9] * 6)
+    assert missing["rank_ic_valid"].tolist() == [True] * 6
 
 
 def test_golden_reference_is_not_pooled_across_all_rows() -> None:

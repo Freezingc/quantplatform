@@ -20,8 +20,10 @@
   "hac_standard_error": 0.13042892339836254,
   "hac_t_statistic": 4.078641264950631,
   "icir": 0.6513869636057531,
+  "manifest_id": "016c49989b214ebc42f4c58b75a32903c67d6d8dd681819f821ee2ac95d4a065",
   "mean_rank_ic": 0.5319727891156463,
   "rank_ic_std": 0.8166770580898801,
+  "row_count": 300,
   "sample_count": [
     50,
     50,

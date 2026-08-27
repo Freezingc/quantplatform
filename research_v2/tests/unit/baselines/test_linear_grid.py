@@ -19,18 +19,19 @@ from research_v2.baselines.linear import (
 def _dataset(role: str, dataset_id: str, start_day: int) -> BaselineDataset:
     features: list[dict[str, object]] = []
     labels: list[dict[str, object]] = []
-    for day_index in range(10):
-        signal_date = date(2020, 1, 1) + timedelta(days=start_day + day_index)
-        for stock_index in range(30):
-            key = {"signal_date": signal_date, "ts_code": f"S{stock_index:03d}"}
-            features.append({**key, "f1": float(stock_index)})
-            labels.append(
-                {
-                    **key,
-                    "raw_return_5d": float(stock_index + day_index),
-                    "label_valid": True,
-                }
-            )
+    for year in range(2014, 2019):
+        for day_index in range(10):
+            signal_date = date(year, 1, 1) + timedelta(days=start_day + day_index)
+            for stock_index in range(30):
+                key = {"signal_date": signal_date, "ts_code": f"S{stock_index:03d}"}
+                features.append({**key, "f1": float(stock_index)})
+                labels.append(
+                    {
+                        **key,
+                        "raw_return_5d": float(stock_index + day_index),
+                        "label_valid": True,
+                    }
+                )
     return BaselineDataset(role, "F01", dataset_id, pd.DataFrame(features), pd.DataFrame(labels))
 
 
