@@ -171,6 +171,12 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 评审包为 `research_v2/artifacts/diagnostics/tushare_alpha405_canonical_candidate_review_v1.json`。它的状态是 `READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL`：历史 YesLab GP_036 含 `552` 个 BJ 代码，不能与新 SH/SZ 候选值混用；因此该候选仍 `model_eligible=false`，没有写入因子值，也没有改变正式九因子。只有明确批准创建隔离版本后，才可进入实际准入流程。
 
+#### Alpha381 隔离规范候选
+
+2026-08-27 以与 Alpha405 相同的 Tushare SH/SZ 面板完成了 `yeslab_381_tushare_shsz_v1` 的独立复评：训练期 signed RankIC / ICIR 为 `0.07540 / 0.61529`，2025 验证期为 `0.09506 / 0.89045`，年度严格门槛 `4/5`，训练和验证覆盖率均通过。它对正式九因子的最大相似度中位数分别为 `0.78453` 与 `0.79331`，均低于 `0.90`，最近正式因子均为 `yeslab_431`。
+
+评审包为 `research_v2/artifacts/diagnostics/tushare_alpha381_canonical_candidate_review_v1.json`，状态为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING`。历史 YesLab GP_012 含 `551` 个 BJ 代码，不能和新 SH/SZ 候选值混用；此外，381 与 `yeslab_405_tushare_shsz_v1` 的训练 / 验证相似度中位数为 `0.84484 / 0.87119`，并有单日峰值超过 `0.92`。因此 381 只能作为单独的隔离候选人工审查；若未来同时考虑 381 与 405，必须先通过额外的组合冗余审批。它仍为 `model_eligible=false`，未写因子值、未改正式九因子、未启动训练。
+
 #### 其他值得保留的候选状态
 
 | 候选 | 当前结论 | 后续动作 |
@@ -179,7 +185,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 | `yeslab_206_median_abs_v2` | 可进入人工准入评审，需低波动/非正趋势监控 | 不自动加入正式集合 |
 | `yeslab_405_tushare_shsz_v1` | 预测、覆盖和正式九因子相似度通过，等待范围审批 | 必须明确批准隔离 SH/SZ 版本；不能使用历史 YesLab 值 |
 | `yeslab_425` | Tushare SH/SZ 研究候选可评审 | 必须使用独立规范版本，不能使用历史 YesLab 值 |
-| `yeslab_381` | 预测和相似度通过，但范围迁移待审 | 保持隔离 |
+| `yeslab_381_tushare_shsz_v1` | 预测、覆盖和正式九因子相似度通过；与 405 组合冗余偏高 | 先明确批准隔离 SH/SZ 版本；若与 405 同时考虑，必须另行组合审批 |
 | `yeslab_385` | 与 `yeslab_405` 相似度 0.90134，冗余失败 | 拒绝 |
 | `yeslab_208` | 总体有信号，但严格年度 ICIR 仅 1/5 | 监控研究候选，不准入 |
 | `yeslab_471` | 历史范围和 PIT 行业映射阻断 | 先重建 PIT 行业成员关系 |
@@ -555,7 +561,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。405 首先需要明确批准其隔离 SH/SZ 规范版本；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。405 和 381 均首先需要明确批准其隔离 SH/SZ 规范版本，且两者的组合还需独立冗余审批；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 
@@ -594,4 +600,4 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ## 11. 当前接手点
 
-接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json` 和 `tushare_alpha405_canonical_candidate_review_v1.json`，然后按独立、明确的人工决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
+接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json`、`tushare_alpha405_canonical_candidate_review_v1.json` 和 `tushare_alpha381_canonical_candidate_review_v1.json`，然后按独立、明确的人工决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。381 与 405 不得因各自通过单因子门槛而自动成对准入。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
