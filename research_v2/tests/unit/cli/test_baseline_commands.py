@@ -38,6 +38,16 @@ def test_baseline_run_rejects_final_and_incomplete_candidates() -> None:
     assert "B2" in incomplete.stdout and "B3" in incomplete.stdout
 
 
+def test_baseline_run_rejects_unknown_fold() -> None:
+    result = CliRunner().invoke(
+        app,
+        ["baseline", "run", "--fold", "F07", "--models", "B0,B1,B2,B3"],
+    )
+
+    assert result.exit_code == 2
+    assert "F01" in result.stdout and "F06" in result.stdout
+
+
 def test_evaluate_and_report_commands_validate_scope_before_backend() -> None:
     evaluate = CliRunner().invoke(
         app,

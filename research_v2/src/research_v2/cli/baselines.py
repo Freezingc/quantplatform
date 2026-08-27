@@ -7,6 +7,7 @@ import json
 import typer
 
 from research_v2.baselines.orchestration import SIMPLE_BASELINE_IDS
+from research_v2.evaluation.walk_forward import ORDINARY_TEST_FOLDS
 
 
 def run_baseline(fold: str, models: str) -> None:
@@ -14,6 +15,9 @@ def run_baseline(fold: str, models: str) -> None:
     model_ids = tuple(item.strip() for item in models.split(",") if item.strip())
     if fold == "FINAL":
         typer.echo("FINAL test is locked and cannot enter the ordinary baseline command")
+        raise typer.Exit(code=2)
+    if fold not in ORDINARY_TEST_FOLDS:
+        typer.echo("baseline run fold must be one of F01,F02,F03,F04,F05,F06")
         raise typer.Exit(code=2)
     if set(model_ids) != set(SIMPLE_BASELINE_IDS) or len(model_ids) != len(SIMPLE_BASELINE_IDS):
         missing = sorted(set(SIMPLE_BASELINE_IDS).difference(model_ids))

@@ -19,7 +19,10 @@ from research_v2.baselines.orchestration import (
     BaselineFoldResult,
     BaselineSelectionRecord,
 )
-from research_v2.evaluation.walk_forward import BaselineWalkForwardResult
+from research_v2.evaluation.walk_forward import (
+    ORDINARY_TEST_FOLDS,
+    BaselineWalkForwardResult,
+)
 
 
 @dataclass(frozen=True)
@@ -55,6 +58,10 @@ def build_experiment_report(
 ) -> ExperimentReport:
     """Build one report without recomputing or averaging the underlying OOS metrics."""
     validate_experiment_id(experiment_id)
+    if set(result.fold_results) != set(ORDINARY_TEST_FOLDS):
+        raise ValueError("experiment report requires exactly F01-F06 fold results")
+    if len(result.selection_records) != len(ORDINARY_TEST_FOLDS):
+        raise ValueError("experiment report requires one selection record per ordinary fold")
     metadata = fold_metadata or {}
     folds: dict[str, object] = {}
     for fold_id, fold_result in sorted(result.fold_results.items()):
