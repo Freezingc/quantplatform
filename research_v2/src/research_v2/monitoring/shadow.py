@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import hmac
 import json
 import math
 import os
 import re
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from enum import StrEnum
@@ -22,6 +24,7 @@ _EVIDENCE_HASH = re.compile(r"^[0-9a-f]{64}$")
 _SHADOW_APPROVAL_KEY_ENV = "QRV2_SHADOW_APPROVAL_HMAC_KEY"
 _SHADOW_RUNTIME_KEY_ENV = "QRV2_SHADOW_RUNTIME_HMAC_KEY"
 _SHADOW_EVIDENCE_KEY_ENV = "QRV2_SHADOW_EVIDENCE_HMAC_KEY"
+_SHADOW_CALENDAR_KEY_ENV = "QRV2_SHADOW_CALENDAR_HMAC_KEY"
 
 
 @dataclass(frozen=True)
@@ -161,6 +164,99 @@ class ShadowQualificationStatus(StrEnum):
     INCOMPLETE = "INCOMPLETE"
     READY_FOR_REVIEW = "READY_FOR_REVIEW"
     REVIEW_REQUIRED = "REVIEW_REQUIRED"
+
+
+@dataclass(frozen=True)
+class ShadowTradingCalendar:
+    """Opaque reference to a signed market trading-calendar snapshot."""
+
+    calendar_id: str
+
+
+@dataclass(frozen=True)
+class _ShadowTradingCalendarRecord:
+    calendar_id: str
+    trading_dates: tuple[date, ...]
+
+
+class ShadowTradingCalendarStore:
+    """Issue immutable signed calendar snapshots owned by the market-calendar service."""
+
+    def __init__(self, root: Path, *, signing_key: bytes) -> None:
+        if not isinstance(signing_key, bytes) or not signing_key:
+            raise ValueError("shadow calendar signing_key must be non-empty bytes")
+        self._root = root
+        self._signing_key = signing_key
+
+    @classmethod
+    def from_environment(cls, root: Path) -> ShadowTradingCalendarStore:
+        secret = os.environ.get(_SHADOW_CALENDAR_KEY_ENV, "")
+        if not secret:
+            raise ValueError(f"shadow calendar requires {_SHADOW_CALENDAR_KEY_ENV}")
+        return cls(root, signing_key=secret.encode("utf-8"))
+
+    def issue(self, trading_dates: Sequence[date]) -> ShadowTradingCalendar:
+        dates = _trading_calendar(trading_dates)
+        payload = {"trading_dates": [value.isoformat() for value in dates]}
+        calendar_id = hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+        document = {
+            "calendar_id": calendar_id,
+            "payload": payload,
+            "signature": _shadow_calendar_signature(self._signing_key, calendar_id, payload),
+        }
+        self._root.mkdir(parents=True, exist_ok=True)
+        path = self._root / f"{calendar_id}.json"
+        try:
+            _write_exclusive(path, _canonical_json(document) + "\n")
+        except FileExistsError as error:
+            raise FileExistsError(f"shadow calendar is immutable: {calendar_id}") from error
+        return ShadowTradingCalendar(calendar_id)
+
+
+class ShadowTradingCalendarVerifier:
+    """Verify the signed calendar identity used by a qualification run."""
+
+    def __init__(self, root: Path, *, verification_key: bytes) -> None:
+        if not isinstance(verification_key, bytes) or not verification_key:
+            raise ValueError("shadow calendar verification_key must be non-empty bytes")
+        self._root = root
+        self._verification_key = verification_key
+
+    @classmethod
+    def from_environment(cls, root: Path) -> ShadowTradingCalendarVerifier:
+        secret = os.environ.get(_SHADOW_CALENDAR_KEY_ENV, "")
+        if not secret:
+            raise ValueError(f"shadow calendar requires {_SHADOW_CALENDAR_KEY_ENV}")
+        return cls(root, verification_key=secret.encode("utf-8"))
+
+    def verify(self, calendar: ShadowTradingCalendar) -> _ShadowTradingCalendarRecord:
+        if not isinstance(calendar, ShadowTradingCalendar):
+            raise ValueError("shadow trading calendar is invalid")
+        path = self._root / f"{calendar.calendar_id}.json"
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError("shadow trading calendar cannot be loaded") from error
+        payload = document.get("payload") if isinstance(document, dict) else None
+        signature = document.get("signature") if isinstance(document, dict) else None
+        if (
+            not isinstance(payload, dict)
+            or document.get("calendar_id") != calendar.calendar_id
+            or not isinstance(signature, str)
+            or hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+            != calendar.calendar_id
+            or not hmac.compare_digest(
+                signature,
+                _shadow_calendar_signature(
+                    self._verification_key, calendar.calendar_id, payload
+                ),
+            )
+        ):
+            raise ValueError("shadow calendar signature verification failed")
+        if set(payload) != {"trading_dates"}:
+            raise ValueError("shadow trading calendar is invalid")
+        dates = _date_list(payload.get("trading_dates"), "trading_dates")
+        return _ShadowTradingCalendarRecord(calendar.calendar_id, dates)
 
 
 @dataclass(frozen=True)
@@ -319,6 +415,7 @@ class ShadowRuntimeDayVerifier:
 @dataclass(frozen=True)
 class ShadowQualification:
     model_id: str
+    trading_calendar_id: str
     valid_day_count: int
     status: ShadowQualificationStatus
     max_consecutive_psi_errors: int
@@ -351,16 +448,20 @@ def evaluate_shadow_qualification(
     model_id: str,
     *,
     runtime_root: Path,
-    trading_dates: Sequence[date],
+    calendar: ShadowTradingCalendar,
+    calendar_root: Path,
 ) -> ShadowQualification:
     """Count only verified, matching SHADOW days; never infer performance from labels or returns."""
     if not _MODEL_ID.fullmatch(model_id):
         raise ValueError("shadow qualification model_id is invalid")
-    calendar = _trading_calendar(trading_dates)
+    calendar_record = ShadowTradingCalendarVerifier.from_environment(calendar_root).verify(calendar)
+    trading_dates = calendar_record.trading_dates
     verifier = ShadowRuntimeDayVerifier.from_environment(runtime_root)
     latest_by_date: dict[date, _ShadowRuntimeDayRecord] = {}
     for record in verifier.records_for_model(model_id):
         latest = latest_by_date.get(record.signal_date)
+        if latest is not None and latest.recorded_at == record.recorded_at:
+            raise ValueError("shadow runtime attempts have ambiguous timestamps")
         if latest is None or (record.recorded_at, record.runtime_day_id) > (
             latest.recorded_at,
             latest.runtime_day_id,
@@ -373,14 +474,16 @@ def evaluate_shadow_qualification(
     valid_days = tuple(
         day
         for day in verified_days
-        if _is_valid_shadow_day(model_id, day, calendar)
+        if _is_valid_shadow_day(model_id, day, trading_dates)
     )
     valid_dates = tuple(day.signal_date for day in valid_days)
     invalid_dates = tuple(day.signal_date for day in verified_days if day not in valid_days)
     maximum = 0
     current = 0
-    for day in verified_days:
-        if day in valid_days and day.has_psi_error:
+    valid_by_date = {day.signal_date: day for day in valid_days}
+    for trading_date in trading_dates:
+        day = valid_by_date.get(trading_date)
+        if day is not None and day.has_psi_error:
             current += 1
             maximum = max(maximum, current)
         else:
@@ -393,6 +496,7 @@ def evaluate_shadow_qualification(
         status = ShadowQualificationStatus.INCOMPLETE
     return ShadowQualification(
         model_id=model_id,
+        trading_calendar_id=calendar_record.calendar_id,
         valid_day_count=len(valid_days),
         status=status,
         max_consecutive_psi_errors=maximum,
@@ -411,13 +515,15 @@ def build_shadow_evidence(
     *,
     runtime_root: Path,
     evidence_root: Path,
-    trading_dates: Sequence[date],
+    calendar: ShadowTradingCalendar,
+    calendar_root: Path,
 ) -> ShadowEvidence:
     """Create evidence for later review without automatically changing any model lifecycle state."""
     qualification = evaluate_shadow_qualification(
         model_id,
         runtime_root=runtime_root,
-        trading_dates=trading_dates,
+        calendar=calendar,
+        calendar_root=calendar_root,
     )
     return ShadowEvidenceStore.from_environment(evidence_root).issue(qualification)
 
@@ -462,6 +568,7 @@ class ShadowEvidenceStore:
             "valid_runtime_day_ids": list(qualification.valid_runtime_day_ids),
             "invalid_runtime_day_ids": list(qualification.invalid_runtime_day_ids),
             "valid_signal_dates": [value.isoformat() for value in qualification.valid_signal_dates],
+            "trading_calendar_id": qualification.trading_calendar_id,
         }
         _validate_shadow_evidence_payload(payload)
         evidence_id = hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
@@ -472,12 +579,20 @@ class ShadowEvidenceStore:
         )
         destination = self._root / ".issued" / f"{evidence.evidence_id}.json"
         destination.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            _write_exclusive(destination, evidence.to_json())
-        except FileExistsError as error:
-            raise FileExistsError(
-                f"shadow evidence is immutable: {evidence.evidence_id}"
-            ) from error
+        with _exclusive_lock(destination.with_suffix(".lock")):
+            try:
+                _write_exclusive(destination, evidence.to_json())
+            except FileExistsError as error:
+                try:
+                    existing = destination.read_text(encoding="utf-8")
+                except OSError:
+                    raise FileExistsError(
+                        f"shadow evidence is immutable: {evidence.evidence_id}"
+                    ) from error
+                if existing != evidence.to_json():
+                    raise FileExistsError(
+                        f"shadow evidence is immutable: {evidence.evidence_id}"
+                    ) from error
         return evidence
 
 
@@ -525,10 +640,20 @@ def write_shadow_evidence(evidence: ShadowEvidence, root: Path) -> Path:
         raise ValueError("shadow evidence model_id is invalid")
     destination = root / model_id.removeprefix("sha256:") / "shadow_evidence.json"
     destination.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        _write_exclusive(destination, evidence.to_json())
-    except FileExistsError as error:
-        raise FileExistsError(f"shadow evidence is immutable: {evidence.evidence_id}") from error
+    with _exclusive_lock(destination.with_suffix(".lock")):
+        try:
+            _write_exclusive(destination, evidence.to_json())
+        except FileExistsError as error:
+            try:
+                existing = destination.read_text(encoding="utf-8")
+            except OSError:
+                raise FileExistsError(
+                    f"shadow evidence is immutable: {evidence.evidence_id}"
+                ) from error
+            if existing != evidence.to_json():
+                raise FileExistsError(
+                    f"shadow evidence is immutable: {evidence.evidence_id}"
+                ) from error
     return destination
 
 
@@ -568,6 +693,17 @@ def _has_psi_error(report: ShadowDailyReport) -> bool:
 
 def _shadow_runtime_day_id(payload: Mapping[str, object]) -> str:
     return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def _shadow_calendar_signature(
+    signing_key: bytes,
+    calendar_id: str,
+    payload: Mapping[str, object],
+) -> str:
+    signed = {"calendar_id": calendar_id, "payload": payload}
+    return hmac.new(
+        signing_key, _canonical_json(signed).encode("utf-8"), hashlib.sha256
+    ).hexdigest()
 
 
 def _shadow_runtime_day_signature(
@@ -689,6 +825,7 @@ def _validate_shadow_evidence_payload(payload: Mapping[str, object]) -> None:
         "qualification_status",
         "schema_version",
         "successful_day_rate",
+        "trading_calendar_id",
         "valid_day_count",
         "valid_report_ids",
         "valid_runtime_day_ids",
@@ -697,8 +834,11 @@ def _validate_shadow_evidence_payload(payload: Mapping[str, object]) -> None:
     if set(payload) != expected:
         raise ValueError("shadow evidence payload is invalid")
     model_id = payload.get("model_id")
+    calendar_id = payload.get("trading_calendar_id")
     if not isinstance(model_id, str) or not _MODEL_ID.fullmatch(model_id):
         raise ValueError("shadow evidence model_id is invalid")
+    if not isinstance(calendar_id, str) or not _EVIDENCE_HASH.fullmatch(calendar_id):
+        raise ValueError("shadow evidence trading calendar is invalid")
     if payload.get("schema_version") != 1 or payload.get("lifecycle_transition") != "NONE":
         raise ValueError("shadow evidence schema or transition is invalid")
     if payload.get("qualification_status") != ShadowQualificationStatus.READY_FOR_REVIEW:
@@ -869,6 +1009,17 @@ def _write_exclusive(path: Path, content: str) -> None:
     except Exception:
         path.unlink(missing_ok=True)
         raise
+
+
+@contextmanager
+def _exclusive_lock(path: Path) -> Iterator[None]:
+    descriptor = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        yield
+    finally:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+        os.close(descriptor)
 
 
 def _canonical_json(value: object) -> str:
