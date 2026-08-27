@@ -309,3 +309,34 @@ def test_repository_quality_latest_migration_declares_compact_columns() -> None:
         "record_hash",
     ):
         assert f"`{column_name}" not in quality_latest_migration.script
+
+
+def test_repository_oos_diagnostics_migration_extends_daily_rank_ic_schema() -> None:
+    migration_directory = Path(__file__).resolve().parents[3] / "migrations"
+    migrations = discover_migrations(migration_directory)
+
+    oos_migration = next(migration for migration in migrations if migration.version == 13)
+
+    assert "model_oos_rank_ic_daily" in oos_migration.script
+    for column_name in (
+        "eligible_count",
+        "valid_label_count",
+        "coverage",
+        "prediction_unique_count",
+        "prediction_std",
+        "rank_ic_valid",
+    ):
+        assert f'"{column_name}"' in oos_migration.script
+    assert oos_migration.script.count("addColumn(") == 6
+    for column_name, column_type in (
+        ("eligible_count", "LONG"),
+        ("valid_label_count", "LONG"),
+        ("coverage", "DOUBLE"),
+        ("prediction_unique_count", "LONG"),
+        ("prediction_std", "DOUBLE"),
+        ("rank_ic_valid", "BOOL"),
+    ):
+        assert f'if (!in("{column_name}", existingColumns))' in oos_migration.script
+        assert f'addColumn(modelOosRankIcDaily, "{column_name}", {column_type})' in (
+            oos_migration.script
+        )

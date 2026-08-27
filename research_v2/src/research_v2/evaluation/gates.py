@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from enum import StrEnum
+from numbers import Integral, Real
 
 
 class GateStatus(StrEnum):
@@ -23,13 +24,15 @@ class ScoreHealthEvidence:
 
     def passes(self) -> bool:
         """Return whether this day satisfies every score-health requirement."""
-        return (
-            math.isfinite(self.coverage)
-            and self.coverage >= 0.90
-            and self.unique_score_count >= 10
-            and math.isfinite(self.score_std)
-            and self.score_std > 1e-6
-        )
+        if not _is_finite_real(self.coverage) or not _is_finite_real(self.score_std):
+            return False
+        if not isinstance(self.unique_score_count, Integral) or isinstance(
+            self.unique_score_count, bool
+        ):
+            return False
+        coverage = float(self.coverage)
+        score_std = float(self.score_std)
+        return 0.90 <= coverage <= 1.0 and self.unique_score_count >= 10 and score_std > 1e-6
 
 
 @dataclass(frozen=True)
@@ -120,10 +123,25 @@ def evaluate_oos_gates(
 
 def _score_health_ratio(evidence: GateEvidence) -> float:
     """Compute G6 only from complete per-day evidence, failing closed otherwise."""
+    if not isinstance(evidence.valid_test_day_count, Integral) or isinstance(
+        evidence.valid_test_day_count, bool
+    ):
+        return float("nan")
     if evidence.valid_test_day_count <= 0:
+        return float("nan")
+    if not isinstance(evidence.score_health, tuple):
         return float("nan")
     if len(evidence.score_health) != evidence.valid_test_day_count:
         return float("nan")
     if not all(isinstance(item, ScoreHealthEvidence) for item in evidence.score_health):
         return float("nan")
     return sum(item.passes() for item in evidence.score_health) / evidence.valid_test_day_count
+
+
+def _is_finite_real(value: object) -> bool:
+    try:
+        return (
+            isinstance(value, Real) and not isinstance(value, bool) and math.isfinite(float(value))
+        )
+    except (TypeError, ValueError, OverflowError):
+        return False

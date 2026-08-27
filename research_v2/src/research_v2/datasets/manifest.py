@@ -24,6 +24,7 @@ class DatasetManifest:
     business_keys: tuple[str, ...]
     column_order: tuple[str, ...]
     metadata: Mapping[str, object]
+    split_content_hashes: tuple[tuple[str, str], ...] = ()
 
 
 def build_dataset_manifest(
@@ -31,6 +32,7 @@ def build_dataset_manifest(
     *,
     business_keys: tuple[str, ...],
     metadata: Mapping[str, object],
+    split_frames: Mapping[str, pd.DataFrame] | None = None,
 ) -> DatasetManifest:
     """Hash dataset contents after validating and ordering by immutable business keys.
 
@@ -55,6 +57,11 @@ def build_dataset_manifest(
     canonical_metadata = _canonicalize(metadata)
     if not isinstance(canonical_metadata, dict):
         raise ValueError("metadata must be a string-keyed mapping")
+    split_content_hashes = _build_split_content_hashes(
+        split_frames,
+        business_keys=business_keys,
+        metadata=metadata,
+    )
     payload = {
         "business_keys": list(business_keys),
         "columns": [
@@ -66,6 +73,8 @@ def build_dataset_manifest(
             for row in ordered.loc[:, list(column_order)].itertuples(index=False, name=None)
         ],
     }
+    if split_content_hashes:
+        payload["split_content_hashes"] = dict(split_content_hashes)
     content_hash = hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
     return DatasetManifest(
         dataset_id=content_hash,
@@ -74,7 +83,69 @@ def build_dataset_manifest(
         business_keys=business_keys,
         column_order=column_order,
         metadata=canonical_metadata,
+        split_content_hashes=split_content_hashes,
     )
+
+
+def build_split_dataset_manifest(
+    splits: Mapping[str, pd.DataFrame],
+    *,
+    business_keys: tuple[str, ...],
+    metadata: Mapping[str, object],
+) -> DatasetManifest:
+    """Build a manifest whose identity includes each row's assigned dataset split."""
+    frames = validate_dataset_splits(splits)
+    combined = pd.concat(frames, ignore_index=True)
+    return build_dataset_manifest(
+        combined,
+        business_keys=business_keys,
+        metadata=metadata,
+        split_frames=splits,
+    )
+
+
+def _build_split_content_hashes(
+    splits: Mapping[str, pd.DataFrame] | None,
+    *,
+    business_keys: tuple[str, ...],
+    metadata: Mapping[str, object],
+) -> tuple[tuple[str, str], ...]:
+    if splits is None:
+        return ()
+    validate_dataset_splits(splits)
+    return tuple(
+        (
+            split_name,
+            build_dataset_manifest(
+                splits[split_name],
+                business_keys=business_keys,
+                metadata=metadata,
+            ).content_hash,
+        )
+        for split_name in sorted(splits)
+    )
+
+
+def validate_dataset_splits(splits: Mapping[str, pd.DataFrame]) -> list[pd.DataFrame]:
+    """Validate and return non-empty, schema-aligned train/validation/test frames."""
+    if not splits:
+        raise ValueError("at least one split is required")
+    frames: list[pd.DataFrame] = []
+    expected_columns: tuple[object, ...] | None = None
+    for split_name in sorted(splits):
+        if split_name not in {"train", "validation", "test"}:
+            raise ValueError(f"unsupported dataset split: {split_name}")
+        frame = splits[split_name]
+        if not isinstance(frame, pd.DataFrame):
+            raise TypeError(f"dataset split must be a pandas DataFrame: {split_name}")
+        if frame.empty:
+            raise ValueError(f"cannot write an empty dataset split: {split_name}")
+        if expected_columns is None:
+            expected_columns = tuple(frame.columns)
+        elif tuple(frame.columns) != expected_columns:
+            raise ValueError("dataset splits must have identical columns in identical order")
+        frames.append(frame)
+    return frames
 
 
 def _canonicalize(value: object) -> object:

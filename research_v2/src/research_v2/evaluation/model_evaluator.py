@@ -49,6 +49,10 @@ def evaluate_frozen_oos(
     """Evaluate one frozen ordinary test dataset; validation and train roles are forbidden."""
     if role != "TEST":
         raise PermissionError("frozen OOS evaluation is permitted only for TEST data")
+    named_frames = [("candidate", predictions), ("labels", labels)]
+    if baseline_predictions is not None:
+        named_frames.append(("baseline", baseline_predictions))
+    _reject_locked_or_future_dates(*named_frames)
     candidate_predictions = predictions
     baseline_predictions_matched = baseline_predictions
     if baseline_predictions is not None:
@@ -61,6 +65,7 @@ def evaluate_frozen_oos(
         labels,
         minimum_cross_section=minimum_cross_section,
         include_invalid=True,
+        require_score_health=True,
     )
     summary = summarize_rank_ic(daily)
     if summary.valid_day_count <= 5:
@@ -81,6 +86,7 @@ def evaluate_frozen_oos(
             labels,
             minimum_cross_section=minimum_cross_section,
             include_invalid=True,
+            require_score_health=True,
         )
         baseline_summary = summarize_rank_ic(baseline_daily)
         if baseline_summary.valid_day_count <= 0 or not math.isfinite(
@@ -131,20 +137,28 @@ def _match_prediction_coverage(
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Restrict candidate and baseline scores to the identical test date/security keys."""
     keys = ["signal_date", "ts_code"]
+    normalized_frames: dict[str, pd.DataFrame] = {}
     for name, frame in (("candidate", candidate_predictions), ("baseline", baseline_predictions)):
         if missing := sorted(set(keys).difference(frame.columns)):
             raise ValueError(f"{name} predictions are missing columns: {missing}")
-        if frame.duplicated(keys).any():
+        normalized = frame.copy()
+        normalized["signal_date"] = pd.to_datetime(
+            normalized["signal_date"], errors="raise"
+        ).dt.date
+        if normalized.duplicated(keys).any():
             raise ValueError(f"{name} predictions contain duplicate business keys")
-    common_keys = candidate_predictions.loc[:, keys].merge(
-        baseline_predictions.loc[:, keys],
+        normalized_frames[name] = normalized
+    candidate = normalized_frames["candidate"]
+    baseline = normalized_frames["baseline"]
+    common_keys = candidate.loc[:, keys].merge(
+        baseline.loc[:, keys],
         on=keys,
         how="inner",
         validate="one_to_one",
     )
     return (
-        candidate_predictions.merge(common_keys, on=keys, how="inner", validate="one_to_one"),
-        baseline_predictions.merge(common_keys, on=keys, how="inner", validate="one_to_one"),
+        candidate.merge(common_keys, on=keys, how="inner", validate="one_to_one"),
+        baseline.merge(common_keys, on=keys, how="inner", validate="one_to_one"),
     )
 
 
@@ -152,7 +166,25 @@ def _valid_label_day_count(labels: pd.DataFrame, minimum_cross_section: int) -> 
     required = {"signal_date", "ts_code", "raw_return_5d", "label_valid"}
     if missing := sorted(required.difference(labels.columns)):
         raise ValueError(f"labels are missing columns: {missing}")
-    raw_returns = pd.to_numeric(labels["raw_return_5d"], errors="coerce")
-    valid = labels["label_valid"].fillna(False).astype(bool) & np.isfinite(raw_returns)
-    counts = labels.loc[valid].groupby("signal_date", sort=False).size()
+    normalized_labels = labels.copy()
+    normalized_labels["signal_date"] = pd.to_datetime(
+        normalized_labels["signal_date"], errors="raise"
+    ).dt.date
+    raw_returns = pd.to_numeric(normalized_labels["raw_return_5d"], errors="coerce")
+    valid = normalized_labels["label_valid"].fillna(False).astype(bool) & np.isfinite(raw_returns)
+    counts = normalized_labels.loc[valid].groupby("signal_date", sort=False).size()
     return int((counts >= minimum_cross_section).sum())
+
+
+def _reject_locked_or_future_dates(
+    *named_frames: tuple[str, pd.DataFrame],
+) -> None:
+    """Keep the ordinary TEST evaluator outside FINAL/2026 and later data."""
+    for name, frame in named_frames:
+        if "signal_date" not in frame.columns:
+            continue
+        dates = pd.to_datetime(frame["signal_date"], errors="raise")
+        if (dates.dt.year >= 2026).any():
+            raise PermissionError(
+                f"ordinary TEST evaluation cannot consume FINAL or future dates: {name}"
+            )

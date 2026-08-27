@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import pandas as pd
 
-from research_v2.datasets.manifest import build_dataset_manifest
+from research_v2.datasets.manifest import (
+    build_dataset_manifest,
+    build_split_dataset_manifest,
+)
 
 
 def test_manifest_is_content_addressed_and_invariant_to_input_row_order() -> None:
@@ -46,3 +49,22 @@ def test_manifest_rejects_duplicate_or_null_business_keys() -> None:
         assert "duplicate" in str(error)
     else:
         raise AssertionError("expected duplicate business-key rejection")
+
+
+def test_split_manifest_identity_includes_split_assignment() -> None:
+    train = pd.DataFrame({"signal_date": ["2025-01-02"], "ts_code": ["a"], "f1": [1.0]})
+    test = pd.DataFrame({"signal_date": ["2025-01-03"], "ts_code": ["b"], "f1": [2.0]})
+
+    first = build_split_dataset_manifest(
+        {"train": train, "test": test},
+        business_keys=("signal_date", "ts_code"),
+        metadata={"fold_id": "F01"},
+    )
+    swapped = build_split_dataset_manifest(
+        {"train": test, "test": train},
+        business_keys=("signal_date", "ts_code"),
+        metadata={"fold_id": "F01"},
+    )
+
+    assert first.dataset_id != swapped.dataset_id
+    assert dict(first.split_content_hashes) != dict(swapped.split_content_hashes)

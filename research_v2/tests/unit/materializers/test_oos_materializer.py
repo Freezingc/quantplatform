@@ -38,6 +38,60 @@ def test_model_oos_daily_batch_binds_fold_identity() -> None:
     assert batch.logical_partition == "2025-01"
     assert batch.frame.loc[0, "fold_id"] == "F06"
     assert batch.business_keys == ("signal_date", "evaluation_id", "model_id")
+    assert pd.isna(batch.frame.loc[0, "eligible_count"])
+    assert pd.isna(batch.frame.loc[0, "coverage"])
+    assert pd.isna(batch.frame.loc[0, "rank_ic_valid"])
+    assert batch.frame.columns.tolist() == [
+        "signal_date",
+        "evaluation_id",
+        "model_id",
+        "fold_id",
+        "role",
+        "rank_ic",
+        "sample_count",
+        "run_id",
+        "data_version",
+        "created_at",
+        "source_watermark_id",
+        "record_hash",
+        "eligible_count",
+        "valid_label_count",
+        "coverage",
+        "prediction_unique_count",
+        "prediction_std",
+        "rank_ic_valid",
+    ]
+
+
+def test_model_oos_daily_batch_persists_score_health_diagnostics() -> None:
+    daily = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 1, 2)],
+            "rank_ic": [0.1],
+            "sample_count": [100],
+            "eligible_count": [110],
+            "valid_label_count": [105],
+            "coverage": [0.95],
+            "prediction_unique_count": [100],
+            "prediction_std": [0.25],
+            "rank_ic_valid": [True],
+        }
+    )
+
+    batch = build_model_oos_daily_batch(
+        daily,
+        _context(),
+        evaluation_id="eval",
+        model_id="model",
+        fold_id="F06",
+        source_watermark_id="source-v1",
+    )
+
+    assert batch.frame.loc[0, "eligible_count"] == 110
+    assert batch.frame.loc[0, "valid_label_count"] == 105
+    assert batch.frame.loc[0, "coverage"] == 0.95
+    assert batch.frame.loc[0, "prediction_unique_count"] == 100
+    assert batch.frame.loc[0, "prediction_std"] == 0.25
 
 
 def test_model_oos_summary_batch_writes_summary_metrics() -> None:
@@ -56,4 +110,3 @@ def test_model_oos_summary_batch_writes_summary_metrics() -> None:
     assert batch.object_name == "model_oos_rank_ic_summary"
     assert batch.frame.loc[0, "icir"] == 0.8809
     assert batch.frame.loc[0, "positive_day_share"] == 0.8065
-

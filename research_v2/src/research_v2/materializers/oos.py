@@ -13,6 +13,31 @@ from research_v2.db.publish import StagedBatch
 from research_v2.evaluation.rank_ic import RankICSummary
 from research_v2.runs.context import RunContext
 
+_DAILY_CORE_COLUMNS = [
+    "signal_date",
+    "evaluation_id",
+    "model_id",
+    "fold_id",
+    "role",
+    "rank_ic",
+    "sample_count",
+]
+_DAILY_DIAGNOSTIC_COLUMNS = [
+    "eligible_count",
+    "valid_label_count",
+    "coverage",
+    "prediction_unique_count",
+    "prediction_std",
+    "rank_ic_valid",
+]
+_LINEAGE_COLUMNS = [
+    "run_id",
+    "data_version",
+    "created_at",
+    "source_watermark_id",
+    "record_hash",
+]
+
 
 def build_model_oos_daily_batch(
     daily_rank_ic: pd.DataFrame,
@@ -31,22 +56,36 @@ def build_model_oos_daily_batch(
         raise ValueError(f"daily OOS RankIC is missing columns: {missing}")
     if daily_rank_ic.empty:
         raise ValueError("daily OOS RankIC cannot be empty")
+    signal_dates = pd.to_datetime(daily_rank_ic["signal_date"], errors="raise").dt.date
+    diagnostics = {
+        "eligible_count": _optional_integer(daily_rank_ic, "eligible_count"),
+        "valid_label_count": _optional_integer(daily_rank_ic, "valid_label_count"),
+        "coverage": _optional_numeric(daily_rank_ic, "coverage"),
+        "prediction_unique_count": _optional_integer(daily_rank_ic, "prediction_unique_count"),
+        "prediction_std": _optional_numeric(daily_rank_ic, "prediction_std"),
+        "rank_ic_valid": _optional_boolean(daily_rank_ic, "rank_ic_valid"),
+    }
     materialized = pd.DataFrame(
         {
-            "signal_date": pd.to_datetime(
-                daily_rank_ic["signal_date"], errors="raise"
-            ).dt.date,
+            "signal_date": signal_dates.reset_index(drop=True),
             "evaluation_id": evaluation_id,
             "model_id": model_id,
             "fold_id": fold_id,
             "role": role,
-            "rank_ic": pd.to_numeric(daily_rank_ic["rank_ic"], errors="raise"),
-            "sample_count": pd.to_numeric(
-                daily_rank_ic["sample_count"], errors="raise"
-            ).astype(int),
+            "rank_ic": _required_numeric(daily_rank_ic, "rank_ic"),
+            "sample_count": pd.to_numeric(daily_rank_ic["sample_count"], errors="raise")
+            .astype(int)
+            .reset_index(drop=True),
         }
     )
+    materialized = pd.concat(
+        [materialized, pd.DataFrame(diagnostics)],
+        axis=1,
+    )
     _append_lineage(materialized, context, source_watermark_id)
+    materialized = materialized.loc[
+        :, _DAILY_CORE_COLUMNS + _LINEAGE_COLUMNS + _DAILY_DIAGNOSTIC_COLUMNS
+    ]
     return StagedBatch.create(
         object_name="model_oos_rank_ic_daily",
         logical_partition=min(materialized["signal_date"]).strftime("%Y-%m"),
@@ -139,3 +178,25 @@ def _record_hash(row: pd.Series) -> str:
     return hashlib.sha256(
         json.dumps(payload, ensure_ascii=False, default=str, sort_keys=True).encode()
     ).hexdigest()
+
+
+def _required_numeric(frame: pd.DataFrame, column: str) -> pd.Series:
+    return pd.to_numeric(frame[column], errors="raise").reset_index(drop=True)
+
+
+def _optional_numeric(frame: pd.DataFrame, column: str) -> pd.Series:
+    if column not in frame.columns:
+        return pd.Series(pd.NA, index=range(len(frame)), dtype="Float64")
+    return pd.to_numeric(frame[column], errors="raise").reset_index(drop=True)
+
+
+def _optional_integer(frame: pd.DataFrame, column: str) -> pd.Series:
+    if column not in frame.columns:
+        return pd.Series(pd.NA, index=range(len(frame)), dtype="Int64")
+    return pd.to_numeric(frame[column], errors="raise").astype("Int64").reset_index(drop=True)
+
+
+def _optional_boolean(frame: pd.DataFrame, column: str) -> pd.Series:
+    if column not in frame.columns:
+        return pd.Series(pd.NA, index=range(len(frame)), dtype="boolean")
+    return frame[column].astype("boolean").reset_index(drop=True)

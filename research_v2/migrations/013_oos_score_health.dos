@@ -1,0 +1,26 @@
+// targetDatabase is injected by the V2 migration runner.
+//
+// Migration 007 already exists in deployed databases, so the new score-health
+// evidence is added in a forward-only migration instead of changing its hash.
+if (existsTable(targetDatabase, `model_oos_rank_ic_daily)) {
+    modelOosRankIcDaily = loadTable(targetDatabase, `model_oos_rank_ic_daily)
+    existingColumns = schema(modelOosRankIcDaily).colDefs.name
+    if (!in("eligible_count", existingColumns)) {
+        addColumn(modelOosRankIcDaily, "eligible_count", LONG)
+    }
+    if (!in("valid_label_count", existingColumns)) {
+        addColumn(modelOosRankIcDaily, "valid_label_count", LONG)
+    }
+    if (!in("coverage", existingColumns)) {
+        addColumn(modelOosRankIcDaily, "coverage", DOUBLE)
+    }
+    if (!in("prediction_unique_count", existingColumns)) {
+        addColumn(modelOosRankIcDaily, "prediction_unique_count", LONG)
+    }
+    if (!in("prediction_std", existingColumns)) {
+        addColumn(modelOosRankIcDaily, "prediction_std", DOUBLE)
+    }
+    if (!in("rank_ic_valid", existingColumns)) {
+        addColumn(modelOosRankIcDaily, "rank_ic_valid", BOOL)
+    }
+}

@@ -6,7 +6,12 @@ from datetime import UTC, date, datetime
 import pandas as pd
 import pytest
 
-from research_v2.datasets.builder import DatasetBuildRequest, FactorInput, LockedTestAccess
+from research_v2.datasets.builder import (
+    DatasetBuildRequest,
+    FactorInput,
+    LockedDatasetError,
+    LockedTestAccess,
+)
 from research_v2.datasets.reader import CompactDatasetReader, CompactDataUnavailable
 from research_v2.factors.admission import FactorAdmissionContract, FactorAdmissionError
 from research_v2.factors.factor_sets import (
@@ -19,14 +24,15 @@ from research_v2.factors.factor_sets import (
 class ReaderSession:
     target_database = "dfs://QuantResearchV2Test"
 
-    def __init__(self, *, publish_month: bool = True) -> None:
+    def __init__(self, *, publish_month: bool = True, year: int = 2025) -> None:
         self.publish_month = publish_month
+        self.year = year
         self.queries: list[str] = []
         self.frames = {
             "universe_daily_latest": pd.DataFrame(
                 {
                     "batch_id": [11, 11],
-                    "signal_date": pd.to_datetime(["2025-01-02", "2025-01-02"]),
+                    "signal_date": pd.to_datetime([f"{year}-01-02", f"{year}-01-02"]),
                     "ts_code": ["a", "b"],
                     "is_member": [True, True],
                 }
@@ -34,22 +40,22 @@ class ReaderSession:
             "label_daily_latest": pd.DataFrame(
                 {
                     "batch_id": [12, 12],
-                    "signal_date": pd.to_datetime(["2025-01-02", "2025-01-02"]),
+                    "signal_date": pd.to_datetime([f"{year}-01-02", f"{year}-01-02"]),
                     "ts_code": ["a", "b"],
                     "raw_return": [0.01, 0.02],
                     "label_valid": [True, True],
-                    "exit_date": pd.to_datetime(["2025-01-10", "2025-01-10"]),
+                    "exit_date": pd.to_datetime([f"{year}-01-10", f"{year}-01-10"]),
                 }
             ),
             "factor_observation_clean_latest": pd.DataFrame(
                 {
                     "batch_id": [13, 13],
-                    "signal_date": pd.to_datetime(["2025-01-02", "2025-01-02"]),
+                    "signal_date": pd.to_datetime([f"{year}-01-02", f"{year}-01-02"]),
                     "ts_code": ["a", "b"],
                     "factor_id": ["f1", "f1"],
                     "factor_version": [1, 1],
                     "value": [1.0, 2.0],
-                    "available_date": pd.to_datetime(["2025-01-02", "2025-01-02"]),
+                    "available_date": pd.to_datetime([f"{year}-01-02", f"{year}-01-02"]),
                 }
             ),
         }
@@ -67,12 +73,10 @@ class ReaderSession:
             partition_match = re.search(r"logical_partition='([^']+)'", script)
             object_name = object_match.group(1) if object_match else ""
             partition = partition_match.group(1) if partition_match else ""
-            if not self.publish_month or partition != "2025-01":
+            if not self.publish_month or partition != f"{self.year}-01":
                 return pd.DataFrame()
             source_object = object_name.removesuffix("_latest")
-            batch_id = {"universe_daily_latest": 11, "label_daily_latest": 12}.get(
-                object_name, 13
-            )
+            batch_id = {"universe_daily_latest": 11, "label_daily_latest": 12}.get(object_name, 13)
             return pd.DataFrame(
                 {
                     "object_name": [object_name],
@@ -118,6 +122,21 @@ def test_reader_fails_closed_when_a_requested_month_has_no_manifest() -> None:
         )
 
 
+def test_reader_blocks_direct_2026_label_reads_without_locked_access() -> None:
+    session = ReaderSession()
+    reader = CompactDatasetReader(session)
+
+    with pytest.raises(LockedDatasetError, match="2026|FINAL"):
+        reader.read_range(
+            object_name="label_daily_latest",
+            start_date=date(2026, 1, 1),
+            end_date=date(2026, 1, 31),
+            columns=("batch_id", "signal_date", "ts_code", "raw_return"),
+        )
+
+    assert session.queries == []
+
+
 def test_reader_builds_pit_dataset_from_latest_tables_and_requires_admission() -> None:
     session = ReaderSession()
     reader = CompactDatasetReader(session)
@@ -144,16 +163,16 @@ def test_reader_builds_pit_dataset_from_latest_tables_and_requires_admission() -
 
 
 def test_reader_preflights_factor_coverage_before_locked_label_access() -> None:
-    session = ReaderSession()
+    session = ReaderSession(year=2026)
     session.frames["factor_observation_clean_latest"].loc[1, "value"] = float("nan")
     reader = CompactDatasetReader(session)
 
     with pytest.raises(FactorAdmissionError, match="finite ratio"):
         reader.build_point_in_time_dataset(
-            start_date=date(2025, 1, 1),
-            end_date=date(2025, 1, 31),
+            start_date=date(2026, 1, 1),
+            end_date=date(2026, 1, 31),
             factor_members=(FactorInput("f1", 1, "f1"),),
-            segment_end=date(2025, 1, 10),
+            segment_end=date(2026, 1, 10),
             request=DatasetBuildRequest(
                 fold_id="FINAL",
                 split_role="TEST",
@@ -163,6 +182,43 @@ def test_reader_preflights_factor_coverage_before_locked_label_access() -> None:
         )
 
     assert not any(
-        "latest_manifest" in query and "label_daily_latest" in query
-        for query in session.queries
+        "latest_manifest" in query and "label_daily_latest" in query for query in session.queries
     )
+
+
+def test_reader_rejects_ordinary_locked_year_before_reading_any_tables() -> None:
+    session = ReaderSession()
+    reader = CompactDatasetReader(session)
+
+    with pytest.raises(LockedDatasetError, match="2026|locked"):
+        reader.build_point_in_time_dataset(
+            start_date=date(2026, 1, 1),
+            end_date=date(2026, 1, 31),
+            factor_members=(FactorInput("f1", 1, "f1"),),
+            segment_end=date(2026, 12, 31),
+            request=DatasetBuildRequest(fold_id="F01", split_role="TEST"),
+            admission_contract=_contract(),
+        )
+
+    assert session.queries == []
+
+
+def test_reader_rejects_mixed_years_for_authorized_final_dataset() -> None:
+    session = ReaderSession()
+    reader = CompactDatasetReader(session)
+
+    with pytest.raises(LockedDatasetError, match="2026|authorized"):
+        reader.build_point_in_time_dataset(
+            start_date=date(2025, 12, 1),
+            end_date=date(2026, 1, 31),
+            factor_members=(FactorInput("f1", 1, "f1"),),
+            segment_end=date(2026, 12, 31),
+            request=DatasetBuildRequest(
+                fold_id="FINAL",
+                split_role="TEST",
+                locked_access=LockedTestAccess(2026, "approved"),
+            ),
+            admission_contract=_contract(),
+        )
+
+    assert session.queries == []

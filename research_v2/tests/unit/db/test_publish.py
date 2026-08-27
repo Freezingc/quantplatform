@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import uuid4
 
 import pandas as pd
@@ -9,7 +10,9 @@ from research_v2.db.publish import (
     StagedBatch,
     V2BatchPublisher,
 )
+from research_v2.materializers.oos import build_model_oos_daily_batch
 from research_v2.quality.engine import CheckResult, CheckStatus, Severity
+from research_v2.runs.context import RunContext
 
 
 class RecordingWriteSession:
@@ -37,6 +40,110 @@ class RecordingWriteSession:
         if "count(*) as row_count" in script:
             return pd.DataFrame({"row_count": [0]})
         return pd.DataFrame(columns=["data_version"])
+
+
+class OosSchemaSession(RecordingWriteSession):
+    def query(self, script: str) -> object:
+        if script.startswith("schema("):
+            return pd.DataFrame(
+                {
+                    "name": [
+                        "signal_date",
+                        "evaluation_id",
+                        "model_id",
+                        "fold_id",
+                        "role",
+                        "rank_ic",
+                        "sample_count",
+                        "run_id",
+                        "data_version",
+                        "created_at",
+                        "source_watermark_id",
+                        "record_hash",
+                        "eligible_count",
+                        "valid_label_count",
+                        "coverage",
+                        "prediction_unique_count",
+                        "prediction_std",
+                        "rank_ic_valid",
+                    ],
+                    "typeString": [
+                        "DATE",
+                        "STRING",
+                        "SYMBOL",
+                        "SYMBOL",
+                        "SYMBOL",
+                        "DOUBLE",
+                        "LONG",
+                        "UUID",
+                        "STRING",
+                        "TIMESTAMP",
+                        "STRING",
+                        "STRING",
+                        "LONG",
+                        "LONG",
+                        "DOUBLE",
+                        "LONG",
+                        "DOUBLE",
+                        "BOOL",
+                    ],
+                }
+            )
+        return super().query(script)
+
+
+def test_oos_materialized_batch_matches_migrated_target_column_order() -> None:
+    daily = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 1, 2)],
+            "rank_ic": [0.1],
+            "sample_count": [100],
+            "eligible_count": [110],
+            "valid_label_count": [105],
+            "coverage": [0.95],
+            "prediction_unique_count": [100],
+            "prediction_std": [0.25],
+            "rank_ic_valid": [True],
+        }
+    )
+    batch = build_model_oos_daily_batch(
+        daily,
+        RunContext(
+            run_id="00000000-0000-0000-0000-000000000001",
+            data_version="v1",
+        ),
+        evaluation_id="eval",
+        model_id="model",
+        fold_id="F06",
+        source_watermark_id="source-v1",
+    )
+    session = OosSchemaSession()
+
+    V2BatchPublisher(session).publish(
+        batch,
+        [CheckResult("keys_unique", Severity.BLOCKER, CheckStatus.PASS)],
+    )
+
+    assert session.uploads[0][1].columns.tolist() == [
+        "signal_date",
+        "evaluation_id",
+        "model_id",
+        "fold_id",
+        "role",
+        "rank_ic",
+        "sample_count",
+        "run_id",
+        "data_version",
+        "created_at",
+        "source_watermark_id",
+        "record_hash",
+        "eligible_count",
+        "valid_label_count",
+        "coverage",
+        "prediction_unique_count",
+        "prediction_std",
+        "rank_ic_valid",
+    ]
 
 
 def test_staged_batch_publishes_after_business_key_validation() -> None:
@@ -358,6 +465,7 @@ def test_database_publisher_scopes_orphan_check_to_the_batch_month() -> None:
         business_keys=("signal_date", "ts_code", "factor_id", "factor_version"),
         partition_date_column="signal_date",
     )
+
     class QueryRecordingSession(RecordingWriteSession):
         def __init__(self) -> None:
             super().__init__()

@@ -15,6 +15,7 @@ from research_v2.factors.admission import (
 )
 
 SplitRole = Literal["TRAIN", "VALIDATION", "TEST"]
+_VALID_SPLIT_ROLES = frozenset({"TRAIN", "VALIDATION", "TEST"})
 
 
 class LockedDatasetError(PermissionError):
@@ -42,6 +43,8 @@ class DatasetBuildRequest:
     locked_access: LockedTestAccess | None = None
 
     def __post_init__(self) -> None:
+        if not isinstance(self.split_role, str) or self.split_role not in _VALID_SPLIT_ROLES:
+            raise ValueError("split_role must be one of TRAIN, VALIDATION, TEST")
         if not self.fold_id:
             raise ValueError("fold_id cannot be empty")
         is_locked_test = self.fold_id == "FINAL" and self.split_role == "TEST"
@@ -85,6 +88,18 @@ def build_point_in_time_dataset(
         and request.locked_access is None
     ):
         raise LockedDatasetError("FINAL test dataset is locked and cannot be built here")
+    if _is_authorized_locked_test(request):
+        _reject_inputs_outside_locked_year(
+            ("universe", universe),
+            ("factors", factors),
+            ("labels", labels),
+        )
+    else:
+        _reject_locked_or_future_inputs(
+            ("universe", universe),
+            ("factors", factors),
+            ("labels", labels),
+        )
     if not factor_members:
         raise ValueError("factor_members cannot be empty")
     feature_names = [member.feature_name for member in factor_members]
@@ -187,6 +202,42 @@ def _normalize_label_return_column(labels: pd.DataFrame) -> pd.DataFrame:
     if has_v2_name:
         return labels.rename(columns={"raw_return": "raw_return_5d"})
     return labels
+
+
+def _is_authorized_locked_test(request: DatasetBuildRequest) -> bool:
+    return (
+        request.fold_id == "FINAL"
+        and request.split_role == "TEST"
+        and request.locked_access is not None
+    )
+
+
+def _reject_locked_or_future_inputs(
+    *named_frames: tuple[str, pd.DataFrame],
+) -> None:
+    """Keep ordinary dataset construction outside FINAL/2026 and later data."""
+    for name, frame in named_frames:
+        if "signal_date" not in frame.columns:
+            continue
+        dates = pd.to_datetime(frame["signal_date"], errors="raise")
+        if (dates.dt.year >= 2026).any():
+            raise LockedDatasetError(
+                f"ordinary dataset construction cannot consume 2026 FINAL or future dates: {name}"
+            )
+
+
+def _reject_inputs_outside_locked_year(
+    *named_frames: tuple[str, pd.DataFrame],
+) -> None:
+    """Keep an authorized FINAL request limited to its declared 2026 segment."""
+    for name, frame in named_frames:
+        if "signal_date" not in frame.columns:
+            continue
+        dates = pd.to_datetime(frame["signal_date"], errors="raise")
+        if (dates.dt.year != 2026).any():
+            raise LockedDatasetError(
+                f"authorized FINAL test construction only accepts 2026 dates: {name}"
+            )
 
 
 def _require_columns(frame: pd.DataFrame, required: set[str], name: str) -> None:

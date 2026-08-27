@@ -8,6 +8,8 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
+from research_v2.evaluation.gates import ScoreHealthEvidence
+
 
 @dataclass(frozen=True)
 class RankICSummary:
@@ -31,16 +33,22 @@ def compute_daily_rank_ic(
     score_column: str = "score",
     label_column: str = "raw_return_5d",
     include_invalid: bool = False,
+    require_score_health: bool | None = None,
 ) -> pd.DataFrame:
     """Compute daily Spearman RankIC and optional score-health diagnostics.
 
     The default keeps the historical API and returns only valid RankIC days.  With
     ``include_invalid=True``, every label date is retained with ``rank_ic_valid``
     and score-health fields so callers can distinguish an unevaluable day from a
-    genuine zero correlation.
+    genuine zero correlation.  ``require_score_health`` applies the production
+    score-health thresholds to RankIC eligibility.  It defaults to
+    ``include_invalid`` because the diagnostic OOS mode is the production
+    acceptance path; callers using small synthetic cross-sections can explicitly
+    disable it.
     """
     if minimum_cross_section < 2:
         raise ValueError("minimum_cross_section must be at least 2")
+    enforce_score_health = include_invalid if require_score_health is None else require_score_health
     required_predictions = {"signal_date", "ts_code", score_column}
     required_labels = {"signal_date", "ts_code", label_column, "label_valid"}
     if missing := sorted(required_predictions.difference(predictions.columns)):
@@ -48,16 +56,14 @@ def compute_daily_rank_ic(
     if missing := sorted(required_labels.difference(labels.columns)):
         raise ValueError(f"labels are missing columns: {missing}")
     keys = ["signal_date", "ts_code"]
-    if predictions.duplicated(keys).any() or labels.duplicated(keys).any():
-        raise ValueError("predictions and labels must have unique signal-date keys")
     prediction_frame = predictions.loc[:, keys + [score_column]].copy()
     label_frame = labels.loc[:, keys + [label_column, "label_valid"]].copy()
     prediction_frame["signal_date"] = pd.to_datetime(
         prediction_frame["signal_date"], errors="raise"
-    ).dt.normalize()
-    label_frame["signal_date"] = pd.to_datetime(
-        label_frame["signal_date"], errors="raise"
-    ).dt.normalize()
+    ).dt.date
+    label_frame["signal_date"] = pd.to_datetime(label_frame["signal_date"], errors="raise").dt.date
+    if prediction_frame.duplicated(keys).any() or label_frame.duplicated(keys).any():
+        raise ValueError("predictions and labels must have unique signal-date keys")
     label_frame["label_valid"] = label_frame["label_valid"].fillna(False).astype(bool)
     joined = label_frame.merge(
         prediction_frame,
@@ -75,18 +81,23 @@ def compute_daily_rank_ic(
         scored = cross_section.loc[finite_score]
         eligible_count = len(cross_section)
         valid_label_count = len(valid_labels)
-        coverage = (
-            len(scored) / valid_label_count if valid_label_count > 0 else 0.0
-        )
+        coverage = len(scored) / valid_label_count if valid_label_count > 0 else 0.0
         unique_score_count = int(scored[score_column].nunique())
         score_std = (
             float(np.std(scored[score_column].to_numpy(dtype=float), ddof=0))
             if not scored.empty
             else float("nan")
         )
+        score_health_valid = ScoreHealthEvidence(
+            coverage=float(coverage),
+            unique_score_count=unique_score_count,
+            score_std=score_std,
+        ).passes()
         rank_ic = float("nan")
         rank_ic_valid = False
-        if len(scored) >= minimum_cross_section:
+        if len(scored) >= minimum_cross_section and (
+            not enforce_score_health or score_health_valid
+        ):
             score_rank = scored[score_column].rank(method="average")
             label_rank = scored[label_column].rank(method="average")
             if score_rank.nunique(dropna=False) >= 2 and label_rank.nunique(dropna=False) >= 2:
@@ -142,9 +153,11 @@ def summarize_rank_ic(daily_rank_ic: pd.DataFrame) -> RankICSummary:
     mean = float(values.mean())
     std = float(values.std(ddof=1)) if len(values) > 1 else float("nan")
     icir = mean / std if math.isfinite(std) and std > 0 else float("nan")
-    sample_counts = pd.to_numeric(
-        daily_rank_ic.loc[valid, "sample_count"], errors="coerce"
-    ) if "sample_count" in daily_rank_ic.columns else pd.Series(dtype=float)
+    sample_counts = (
+        pd.to_numeric(daily_rank_ic.loc[valid, "sample_count"], errors="coerce")
+        if "sample_count" in daily_rank_ic.columns
+        else pd.Series(dtype=float)
+    )
     sample_counts = sample_counts.loc[np.isfinite(sample_counts)]
     return RankICSummary(
         valid_day_count=len(values),

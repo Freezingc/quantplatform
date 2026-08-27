@@ -12,6 +12,8 @@ from research_v2.compact.publisher import CompactPublishSession, read_latest_par
 from research_v2.datasets.builder import (
     DatasetBuildRequest,
     FactorInput,
+    LockedDatasetError,
+    LockedTestAccess,
     build_point_in_time_dataset,
 )
 from research_v2.factors.admission import (
@@ -51,10 +53,23 @@ class CompactDatasetReader:
         end_date: date,
         columns: tuple[str, ...] = (),
         factor_keys: tuple[tuple[str, int], ...] = (),
+        locked_access: LockedTestAccess | None = None,
     ) -> pd.DataFrame:
         """Read every manifest-published month intersecting a closed date range."""
         if start_date > end_date:
             raise ValueError("start_date cannot be after end_date")
+        if object_name == "label_daily_latest":
+            if locked_access is None and end_date >= date(2026, 1, 1):
+                raise LockedDatasetError(
+                    "ordinary compact reads cannot consume 2026 FINAL or future labels"
+                )
+            if locked_access is not None and (
+                start_date.year != locked_access.locked_year
+                or end_date.year != locked_access.locked_year
+            ):
+                raise LockedDatasetError(
+                    "locked label reads must stay within the authorized 2026 segment"
+                )
         try:
             date_column = _DATE_COLUMNS[object_name]
         except KeyError as error:
@@ -107,9 +122,21 @@ class CompactDatasetReader:
         """
         if admission_contract is None:  # defensive runtime guard for untyped callers
             raise ValueError("admission_contract is required for compact dataset builds")
-        factor_keys = tuple(
-            (member.factor_id, member.factor_version) for member in factor_members
+        authorized_locked_test = (
+            request.fold_id == "FINAL"
+            and request.split_role == "TEST"
+            and request.locked_access is not None
         )
+        if authorized_locked_test:
+            if start_date.year != 2026 or end_date.year != 2026:
+                raise LockedDatasetError(
+                    "locked FINAL dataset reads must stay within the authorized 2026 segment"
+                )
+        elif end_date >= date(2026, 1, 1):
+            raise LockedDatasetError(
+                "ordinary compact dataset reads cannot consume 2026 FINAL or future dates"
+            )
+        factor_keys = tuple((member.factor_id, member.factor_version) for member in factor_members)
         universe = self.read_range(
             object_name="universe_daily_latest",
             start_date=start_date,
@@ -155,6 +182,7 @@ class CompactDatasetReader:
                 "label_valid",
                 "exit_date",
             ),
+            locked_access=request.locked_access if authorized_locked_test else None,
         )
         return build_point_in_time_dataset(
             universe,
@@ -204,9 +232,7 @@ def _preflight_factor_admission(
         if (member_rows["available_date"] > member_rows["signal_date"]).any():
             raise ValueError(f"factor is not available by signal date: {member.factor_id}")
         result = result.merge(
-            member_rows.loc[:, keys + ["value"]].rename(
-                columns={"value": member.feature_name}
-            ),
+            member_rows.loc[:, keys + ["value"]].rename(columns={"value": member.feature_name}),
             on=keys,
             how="left",
             validate="one_to_one",

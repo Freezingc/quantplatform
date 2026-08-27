@@ -90,6 +90,23 @@ def test_builder_rejects_locked_final_test_before_reading_inputs() -> None:
         )
 
 
+def test_build_request_rejects_runtime_split_role_before_lock_evaluation() -> None:
+    with pytest.raises(ValueError, match="split_role"):
+        DatasetBuildRequest(fold_id="FINAL", split_role="test")  # type: ignore[arg-type]
+
+
+def test_builder_rejects_locked_year_for_ordinary_dataset_requests() -> None:
+    with pytest.raises(LockedDatasetError, match="2026|locked"):
+        build_point_in_time_dataset(
+            pd.DataFrame({"signal_date": [date(2026, 1, 2)]}),
+            pd.DataFrame(),
+            pd.DataFrame(),
+            factor_members=(FactorInput("f1", 1, "f1"),),
+            segment_end=date(2026, 12, 31),
+            request=DatasetBuildRequest(fold_id="F01", split_role="TEST"),
+        )
+
+
 def test_builder_accepts_locked_final_test_only_with_explicit_access() -> None:
     access = LockedTestAccess(locked_year=2026, authorization_id="user-approved-final-evaluation")
 
@@ -116,9 +133,7 @@ def test_builder_accepts_locked_final_test_only_with_explicit_access() -> None:
         ),
         factor_members=(FactorInput("f1", 1, "f1"),),
         segment_end=date(2026, 12, 31),
-        request=DatasetBuildRequest(
-            fold_id="FINAL", split_role="TEST", locked_access=access
-        ),
+        request=DatasetBuildRequest(fold_id="FINAL", split_role="TEST", locked_access=access),
     )
 
     assert len(built) == 1

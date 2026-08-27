@@ -97,9 +97,7 @@ def test_frozen_oos_evaluator_blocks_a_collapsed_score_day() -> None:
         for index in range(30):
             key = {"signal_date": signal_date, "ts_code": f"S{index:03d}"}
             label_rows.append({**key, "raw_return_5d": float(index), "label_valid": True})
-            prediction_rows.append(
-                {**key, "score": float(index) if day_offset != 0 else 1.0}
-            )
+            prediction_rows.append({**key, "score": float(index) if day_offset != 0 else 1.0})
 
     evaluation = evaluate_frozen_oos(
         pd.DataFrame(prediction_rows),
@@ -109,3 +107,45 @@ def test_frozen_oos_evaluator_blocks_a_collapsed_score_day() -> None:
 
     assert evaluation.summary.valid_day_count == 6
     assert evaluation.gate_report.results["G6"].status.value == "FAIL"
+
+
+def test_frozen_oos_normalizes_intraday_dates_for_matching_and_gate_evidence() -> None:
+    prediction_rows: list[dict[str, object]] = []
+    baseline_rows: list[dict[str, object]] = []
+    label_rows: list[dict[str, object]] = []
+    for day_offset in range(6):
+        day = pd.Timestamp("2020-01-02") + pd.Timedelta(days=day_offset)
+        for index in range(30):
+            key = {"signal_date": day + pd.Timedelta(hours=9), "ts_code": f"S{index:03d}"}
+            label_rows.append({**key, "raw_return_5d": float(index), "label_valid": True})
+            prediction_rows.append(
+                {
+                    "signal_date": day + pd.Timedelta(hours=10),
+                    "ts_code": f"S{index:03d}",
+                    "score": float(index),
+                }
+            )
+            baseline_rows.append(
+                {
+                    "signal_date": day + pd.Timedelta(hours=11),
+                    "ts_code": f"S{index:03d}",
+                    "score": float(-index),
+                }
+            )
+
+    evaluation = evaluate_frozen_oos(
+        pd.DataFrame(prediction_rows),
+        pd.DataFrame(label_rows),
+        baseline_predictions=pd.DataFrame(baseline_rows),
+        role="TEST",
+    )
+
+    assert evaluation.summary.valid_day_count == 6
+    assert evaluation.gate_report.results["G6"].status.value == "PASS"
+
+
+def test_frozen_oos_rejects_locked_year_from_ordinary_test_entrypoint() -> None:
+    frame = pd.DataFrame({"signal_date": [pd.Timestamp("2026-01-02")]})
+
+    with pytest.raises(PermissionError, match="2026|FINAL"):
+        evaluate_frozen_oos(frame, frame, role="TEST")
