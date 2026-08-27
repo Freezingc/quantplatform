@@ -138,8 +138,8 @@ def _validate_payload(payload: Mapping[str, object]) -> None:
     _finite_nonnegative(payload.get("latency_seconds"), "latency_seconds")
     _finite_positive(payload.get("latency_slo_seconds"), "latency_slo_seconds")
     _coverage_mapping(payload.get("feature_coverage"), "feature_coverage")
-    _finite_mapping(payload.get("score_health"), "score_health")
-    _finite_mapping(payload.get("seed_agreement"), "seed_agreement")
+    _score_health(payload.get("score_health"))
+    _seed_agreement(payload.get("seed_agreement"))
     alert_keys = payload.get("drift_alert_keys")
     psi_error_features = payload.get("psi_error_features")
     event_ids = payload.get("event_ids")
@@ -195,13 +195,40 @@ def _coverage_mapping(value: object, key: str) -> None:
             raise ValueError(f"shadow report {key} is invalid")
 
 
-def _finite_mapping(value: object, key: str) -> None:
-    if not isinstance(value, Mapping) or not value:
-        raise ValueError(f"shadow report {key} is invalid")
-    for name, metric in value.items():
-        if not isinstance(name, str) or not name:
-            raise ValueError(f"shadow report {key} is invalid")
-        _finite_nonnegative(metric, key)
+def _score_health(value: object) -> None:
+    if not isinstance(value, Mapping) or set(value) != {
+        "finite_coverage",
+        "score_std",
+        "unique_score_count",
+    }:
+        raise ValueError("shadow report score_health is invalid")
+    coverage = value["finite_coverage"]
+    count = value["unique_score_count"]
+    score_std = value["score_std"]
+    if (
+        isinstance(coverage, bool)
+        or not isinstance(coverage, int | float)
+        or not math.isfinite(float(coverage))
+        or not 0 <= coverage <= 1
+        or isinstance(count, bool)
+        or not isinstance(count, int)
+        or count < 1
+    ):
+        raise ValueError("shadow report score_health is invalid")
+    _finite_positive(score_std, "score_health")
+
+
+def _seed_agreement(value: object) -> None:
+    if not isinstance(value, Mapping) or set(value) != {"minimum_spearman"}:
+        raise ValueError("shadow report seed_agreement is invalid")
+    agreement = value["minimum_spearman"]
+    if (
+        isinstance(agreement, bool)
+        or not isinstance(agreement, int | float)
+        or not math.isfinite(float(agreement))
+        or not -1 <= agreement <= 1
+    ):
+        raise ValueError("shadow report seed_agreement is invalid")
 
 
 def _contains_forbidden_token(value: object) -> bool:
