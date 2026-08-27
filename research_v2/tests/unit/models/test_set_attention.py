@@ -61,3 +61,20 @@ def test_set_attention_accepts_a_six_factor_frozen_set() -> None:
     )
 
     assert model.artifact_signature().raw_factor_count == 6
+
+
+def test_set_attention_signature_binds_dropout_for_artifact_reconstruction() -> None:
+    common = {
+        "raw_factor_count": 6,
+        "hidden_dim": 8,
+        "num_heads": 2,
+        "inducing_points": 2,
+        "num_blocks": 1,
+    }
+    without_dropout = SetAttention(SetAttentionConfig(**common, dropout=0.0))
+    with_dropout = SetAttention(SetAttentionConfig(**common, dropout=0.2))
+
+    assert (
+        without_dropout.artifact_signature().config_hash
+        != with_dropout.artifact_signature().config_hash
+    )

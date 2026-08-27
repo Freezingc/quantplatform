@@ -136,7 +136,7 @@ class ModelArtifactBundleStore:
         *,
         expected_dataset_id: str,
         expected_feature_order: tuple[str, ...],
-        expected_signature: Mapping[str, object],
+        expected_signature: Mapping[str, object] | None,
         expected_preprocessor_hash: str,
     ) -> dict[str, Mapping[str, object]]:
         """Verify integrity, then reject bundles whose data/model contract differs from request."""
@@ -168,7 +168,7 @@ class ModelArtifactBundleStore:
             raise ValueError(
                 "model bundle feature_order does not match the requested feature order"
             )
-        if dict(signature) != dict(expected_signature):
+        if expected_signature is not None and dict(signature) != dict(expected_signature):
             raise ValueError("model bundle signature does not match the requested model contract")
         if preprocessing.get("state_hash") != expected_preprocessor_hash:
             raise ValueError("model bundle preprocessor state does not match the requested state")
@@ -197,11 +197,7 @@ class ModelArtifactBundleStore:
         files: dict[str, bytes] = {}
         for line in checksums.decode("utf-8").splitlines():
             digest, separator, relative = line.partition("  ")
-            if (
-                not separator
-                or not re.fullmatch(r"[0-9a-f]{64}", digest)
-                or relative in files
-            ):
+            if not separator or not re.fullmatch(r"[0-9a-f]{64}", digest) or relative in files:
                 raise ValueError("model bundle checksum manifest is malformed")
             path = (root / relative).resolve()
             if root.resolve() not in path.parents or not path.is_file():

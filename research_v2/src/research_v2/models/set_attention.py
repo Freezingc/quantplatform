@@ -143,6 +143,7 @@ class SetAttention(nn.Module):
             raw_factor_count=self._config.raw_factor_count,
             config_hash=(
                 f"set-{self._config.raw_factor_count}-{self._config.hidden_dim}-"
-                f"{self._config.num_heads}-{self._config.inducing_points}-{self._config.num_blocks}"
+                f"{self._config.num_heads}-{self._config.inducing_points}-"
+                f"{self._config.num_blocks}-{self._config.dropout}"
             ),
         )

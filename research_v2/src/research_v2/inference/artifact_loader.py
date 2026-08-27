@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from dataclasses import dataclass
+from collections.abc import Callable, Mapping
+from dataclasses import asdict, dataclass
 from typing import cast
 
 import torch
 from torch import nn
 
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
+from research_v2.models.set_attention import SetAttention, SetAttentionConfig
+from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
@@ -30,30 +32,31 @@ def load_inference_artifact(
     expected_preprocessor_hash: str,
     device: torch.device,
 ) -> LoadedInferenceArtifact:
-    """Load only known model classes and tensors after full bundle-contract verification."""
+    """Load known model classes only after full bundle and reconstruction-contract checks."""
     metadata = store.load_metadata(
         model_id,
         expected_dataset_id=expected_dataset_id,
         expected_feature_order=expected_feature_order,
-        expected_signature={"raw_factor_count": len(expected_feature_order)},
+        expected_signature=None,
         expected_preprocessor_hash=expected_preprocessor_hash,
     )
     model_card = metadata["model_card"]
     if model_card.get("model_status") != "WALK_FORWARD_PASSED":
         raise ValueError("inference requires a WALK_FORWARD_PASSED model")
-    if model_card.get("family") != "RESIDUAL_MLP":
-        raise ValueError("model family is not allowlisted for inference")
-    config = _residual_config(metadata["config"])
+    factory = _allowlisted_factory(model_card, metadata["config"])
+    prototype = cast(ResidualMLP | TemporalGRU | SetAttention, factory())
+    expected_signature = asdict(prototype.artifact_signature())
+    if dict(metadata["signature"]) != expected_signature:
+        raise ValueError("model bundle signature does not match reconstructed model contract")
     models: list[nn.Module] = []
     for seed in REQUIRED_SEEDS:
-        model = ResidualMLP(config)
+        model = factory()
         payload = torch.load(
             store.bundle_path(model_id) / f"seed-{seed}.pt",
             map_location="cpu",
             weights_only=True,
         )
-        state = _state_dict(payload)
-        model.load_state_dict(state)
+        model.load_state_dict(_state_dict(payload))
         model.to(device)
         model.eval()
         models.append(model)
@@ -64,31 +67,78 @@ def load_inference_artifact(
     )
 
 
+def _allowlisted_factory(
+    model_card: Mapping[str, object],
+    config: Mapping[str, object],
+) -> Callable[[], nn.Module]:
+    family = model_card.get("family")
+    if family == "RESIDUAL_MLP":
+        residual = _residual_config(config)
+        return lambda: ResidualMLP(residual)
+    if family == "TEMPORAL_GRU":
+        temporal_gru = _temporal_gru_config(config)
+        return lambda: TemporalGRU(temporal_gru)
+    if family == "SET_ATTENTION":
+        set_attention = _set_attention_config(config)
+        return lambda: SetAttention(set_attention)
+    raise ValueError("model family is not allowlisted for inference")
+
+
 def _residual_config(config: Mapping[str, object]) -> ResidualMLPConfig:
-    expected = {"raw_factor_count", "hidden_dim", "num_blocks", "dropout"}
-    if set(config) != expected:
-        raise ValueError("residual model config has unsupported or missing fields")
-    raw_factor_count = _int_config(config["raw_factor_count"], "raw_factor_count")
-    hidden_dim = _int_config(config["hidden_dim"], "hidden_dim")
-    num_blocks = _int_config(config["num_blocks"], "num_blocks")
-    dropout = _float_config(config["dropout"], "dropout")
+    _require_fields(config, {"raw_factor_count", "hidden_dim", "num_blocks", "dropout"})
     return ResidualMLPConfig(
-        raw_factor_count=raw_factor_count,
-        hidden_dim=hidden_dim,
-        num_blocks=num_blocks,
-        dropout=dropout,
+        raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
+        hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
+        num_blocks=_int_config(config["num_blocks"], "num_blocks"),
+        dropout=_float_config(config["dropout"], "dropout"),
     )
+
+
+def _temporal_gru_config(config: Mapping[str, object]) -> TemporalGRUConfig:
+    _require_fields(config, {"raw_factor_count", "hidden_dim", "dropout"})
+    return TemporalGRUConfig(
+        raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
+        hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
+        dropout=_float_config(config["dropout"], "dropout"),
+    )
+
+
+def _set_attention_config(config: Mapping[str, object]) -> SetAttentionConfig:
+    _require_fields(
+        config,
+        {
+            "raw_factor_count",
+            "hidden_dim",
+            "num_heads",
+            "inducing_points",
+            "num_blocks",
+            "dropout",
+        },
+    )
+    return SetAttentionConfig(
+        raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
+        hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
+        num_heads=_int_config(config["num_heads"], "num_heads"),
+        inducing_points=_int_config(config["inducing_points"], "inducing_points"),
+        num_blocks=_int_config(config["num_blocks"], "num_blocks"),
+        dropout=_float_config(config["dropout"], "dropout"),
+    )
+
+
+def _require_fields(config: Mapping[str, object], expected: set[str]) -> None:
+    if set(config) != expected:
+        raise ValueError("model config has unsupported or missing fields")
 
 
 def _int_config(value: object, name: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
-        raise ValueError(f"residual config {name} must be an integer")
+        raise ValueError(f"model config {name} must be an integer")
     return value
 
 
 def _float_config(value: object, name: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise ValueError(f"residual config {name} must be numeric")
+        raise ValueError(f"model config {name} must be numeric")
     return float(value)
 
 

@@ -1,0 +1,70 @@
+{
+  "cases": {
+    "M1": {
+      "config": {
+        "dropout": 0.0,
+        "hidden_dim": 4,
+        "num_blocks": 1,
+        "raw_factor_count": 2
+      },
+      "scores": [
+        [
+          -0.041170794516801834,
+          -0.03872276097536087,
+          0.0
+        ]
+      ],
+      "signature": {
+        "config_hash": "72b4f3feeaf56ee9dca09e171e3c0f9942ac7295aad5223cdbdee17a5d8633a5",
+        "model_family": "RESIDUAL_MLP",
+        "raw_factor_count": 2
+      }
+    },
+    "M2_GRU": {
+      "config": {
+        "dropout": 0.0,
+        "hidden_dim": 4,
+        "raw_factor_count": 2
+      },
+      "scores": [
+        [
+          -0.080490343272686,
+          -0.07893053442239761,
+          0.0
+        ]
+      ],
+      "signature": {
+        "config_hash": "gru-2-4-0.0",
+        "model_family": "TEMPORAL_GRU",
+        "raw_factor_count": 2
+      }
+    },
+    "M3": {
+      "config": {
+        "dropout": 0.0,
+        "hidden_dim": 4,
+        "inducing_points": 2,
+        "num_blocks": 1,
+        "num_heads": 2,
+        "raw_factor_count": 2
+      },
+      "scores": [
+        [
+          -0.035398755222558975,
+          -0.035398855805397034,
+          0.0
+        ]
+      ],
+      "signature": {
+        "config_hash": "set-2-4-2-2-1-0.0",
+        "model_family": "SET_ATTENTION",
+        "raw_factor_count": 2
+      }
+    }
+  },
+  "feature_order": [
+    "factor_a",
+    "factor_b"
+  ],
+  "schema_version": 1
+}
