@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -154,3 +155,38 @@ def test_artifact_store_detects_swapped_split_shards(tmp_path: object) -> None:
     manifest_path.write_text(json.dumps(payload), encoding="utf-8")
 
     assert not store.verify(manifest.dataset_id)
+
+
+def test_load_split_returns_a_hash_bound_snapshot_when_a_shard_changes_during_read(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "datasets"  # type: ignore[operator]
+    frame = pd.DataFrame({"signal_date": [date(2025, 1, 2)], "ts_code": ["a"], "f1": [1.0]})
+    manifest = build_dataset_manifest(
+        frame,
+        business_keys=("signal_date", "ts_code"),
+        metadata={"fold_id": "F01"},
+    )
+    store = DatasetArtifactStore(root)
+    artifact = store.write(manifest, {"train": frame}, preprocessing={})
+    shard_path = next((artifact.path / "split=train").rglob("*.parquet")).resolve()
+    changed = frame.copy()
+    changed.loc[0, "f1"] = 99.0
+    original_read_parquet = pd.read_parquet
+    mutated = False
+
+    def read_parquet_then_mutate(source: object, *args: object, **kwargs: object) -> pd.DataFrame:
+        nonlocal mutated
+        loaded = original_read_parquet(source, *args, **kwargs)
+        if not mutated and isinstance(source, Path) and source.resolve() == shard_path:
+            changed.to_parquet(shard_path, engine="pyarrow", compression="zstd", index=False)
+            mutated = True
+        return loaded
+
+    monkeypatch.setattr(pd, "read_parquet", read_parquet_then_mutate)
+
+    loaded = store.load_split(manifest.dataset_id, "train", expected_fold_id="F01")
+
+    assert loaded.loc[0, "f1"] == 1.0
+    assert mutated is False
