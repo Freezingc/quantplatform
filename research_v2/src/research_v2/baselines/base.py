@@ -50,6 +50,7 @@ class BaselineDataset:
             raise ValueError("baseline features cannot be empty")
         if labels.empty:
             raise ValueError("baseline labels cannot be empty")
+        _require_matching_keys(features, labels)
         _reject_locked_dates(self.fold_id, self.role, features, labels)
         object.__setattr__(self, "features", features)
         object.__setattr__(self, "labels", labels)
@@ -133,9 +134,7 @@ def _normalize_keyed_frame(frame: pd.DataFrame, name: str) -> pd.DataFrame:
     if missing:
         raise ValueError(f"{name} are missing business-key columns: {sorted(missing)}")
     normalized = frame.copy(deep=True)
-    normalized["signal_date"] = pd.to_datetime(
-        normalized["signal_date"], errors="raise"
-    ).dt.date
+    normalized["signal_date"] = pd.to_datetime(normalized["signal_date"], errors="raise").dt.date
     if normalized["signal_date"].isna().any():
         raise ValueError(f"{name} signal_date cannot be null")
     if normalized["ts_code"].isna().any() or normalized["ts_code"].astype(str).eq("").any():
@@ -143,6 +142,27 @@ def _normalize_keyed_frame(frame: pd.DataFrame, name: str) -> pd.DataFrame:
     if normalized.duplicated(list(_BUSINESS_KEYS)).any():
         raise ValueError(f"{name} must have unique signal-date/security keys")
     return normalized.reset_index(drop=True)
+
+
+def _require_matching_keys(features: pd.DataFrame, labels: pd.DataFrame) -> None:
+    feature_keys = (
+        features.loc[:, list(_BUSINESS_KEYS)]
+        .sort_values(
+            list(_BUSINESS_KEYS),
+            kind="mergesort",
+        )
+        .reset_index(drop=True)
+    )
+    label_keys = (
+        labels.loc[:, list(_BUSINESS_KEYS)]
+        .sort_values(
+            list(_BUSINESS_KEYS),
+            kind="mergesort",
+        )
+        .reset_index(drop=True)
+    )
+    if not feature_keys.equals(label_keys):
+        raise ValueError("baseline features and labels must have identical business keys")
 
 
 def _reject_locked_dates(
@@ -157,6 +177,5 @@ def _reject_locked_dates(
             if fold_id == "FINAL" and role == "TEST":
                 raise PermissionError("FINAL test baseline data is locked")
             raise PermissionError(
-                "ordinary baseline data cannot consume 2026 or future dates: "
-                f"{name}"
+                f"ordinary baseline data cannot consume 2026 or future dates: {name}"
             )

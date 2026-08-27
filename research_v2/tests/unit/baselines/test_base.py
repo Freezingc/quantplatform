@@ -50,6 +50,20 @@ def test_baseline_dataset_validates_role_and_identity() -> None:
         )
 
 
+def test_baseline_dataset_requires_identical_feature_and_label_keys() -> None:
+    labels = _labels().copy()
+    labels.loc[1, "ts_code"] = "C"
+
+    with pytest.raises(ValueError, match="identical business keys"):
+        BaselineDataset(
+            role="TRAIN",
+            fold_id="F01",
+            dataset_id="train-v1",
+            features=_features(),
+            labels=labels,
+        )
+
+
 def test_prediction_frame_contains_only_keyed_scores_and_lineage() -> None:
     prediction = PredictionFrame.from_scores(
         _features(),
