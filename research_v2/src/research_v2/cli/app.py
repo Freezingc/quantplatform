@@ -10,17 +10,20 @@ from research_v2.cli.baselines import run_baseline
 from research_v2.cli.datasets import inspect_dataset, plan_build, verify_dataset
 from research_v2.cli.evaluate import evaluate_walk_forward
 from research_v2.cli.materialize import emit_plan
+from research_v2.cli.models import plan_model_train
 from research_v2.cli.reports import report_experiment
 
 app = typer.Typer(no_args_is_help=True)
 materialize_app = typer.Typer(no_args_is_help=True)
 dataset_app = typer.Typer(no_args_is_help=True)
 baseline_app = typer.Typer(no_args_is_help=True)
+model_app = typer.Typer(no_args_is_help=True)
 evaluate_app = typer.Typer(no_args_is_help=True)
 report_app = typer.Typer(no_args_is_help=True)
 app.add_typer(materialize_app, name="materialize")
 app.add_typer(dataset_app, name="dataset")
 app.add_typer(baseline_app, name="baseline")
+app.add_typer(model_app, name="model")
 app.add_typer(evaluate_app, name="evaluate")
 app.add_typer(report_app, name="report")
 
@@ -72,12 +75,21 @@ def baseline_run(
     run_baseline(fold, models)
 
 
+@model_app.command("train")
+def model_train(
+    family: str = typer.Option(..., "--family"),
+    fold: str = typer.Option(..., "--fold"),
+) -> None:
+    plan_model_train(family, fold)
+
+
 @evaluate_app.command("walk-forward")
 def evaluate_walk_forward_command(
     experiment_id: str = typer.Option(..., "--experiment-id"),
     folds: str = typer.Option("F01,F02,F03,F04,F05,F06", "--folds"),
+    compare: str = typer.Option("best-simple", "--compare"),
 ) -> None:
-    evaluate_walk_forward(experiment_id, folds)
+    evaluate_walk_forward(experiment_id, folds, compare=compare)
 
 
 @report_app.command("experiment")

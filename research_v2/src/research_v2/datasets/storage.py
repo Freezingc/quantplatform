@@ -8,6 +8,7 @@ import shutil
 import tempfile
 from collections.abc import Mapping
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 
 import pandas as pd
@@ -79,93 +80,136 @@ class DatasetArtifactStore:
         return StoredDatasetArtifact(path=destination, shard_hashes=shard_hashes)
 
     def verify(self, dataset_id: str) -> bool:
-        manifest_path = self._root / dataset_id / "manifest.json"
-        if not manifest_path.is_file():
-            return False
         try:
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            if not isinstance(manifest, dict):
-                return False
-            if manifest.get("dataset_id") != dataset_id:
-                return False
-            hashes = manifest.get("shard_hashes")
-            if not isinstance(hashes, dict):
-                return False
-            business_keys = manifest.get("business_keys")
-            column_order = manifest.get("column_order")
-            metadata = manifest.get("metadata")
-            row_count = manifest.get("row_count")
-            content_hash = manifest.get("content_hash")
-            split_content_hashes = manifest.get("split_content_hashes", {})
-            if (
-                not isinstance(business_keys, list)
-                or not all(isinstance(key, str) for key in business_keys)
-                or not isinstance(column_order, list)
-                or not all(isinstance(column, str) for column in column_order)
-                or not isinstance(metadata, Mapping)
-                or not isinstance(row_count, int)
-                or isinstance(row_count, bool)
-                or row_count < 1
-                or not isinstance(content_hash, str)
-                or not isinstance(split_content_hashes, dict)
-                or not all(
-                    isinstance(name, str) and isinstance(value, str)
-                    for name, value in split_content_hashes.items()
-                )
-            ):
-                return False
-            artifact_root = manifest_path.parent.resolve()
-            shard_frames: list[pd.DataFrame] = []
-            split_shards: dict[str, list[pd.DataFrame]] = {}
-            for relative_path, expected_hash in hashes.items():
-                if not isinstance(relative_path, str) or not isinstance(expected_hash, str):
-                    return False
-                shard_path = (artifact_root / relative_path).resolve()
-                if artifact_root not in shard_path.parents or not shard_path.is_file():
-                    return False
-                if _sha256_file(shard_path) != expected_hash:
-                    return False
-                frame = pd.read_parquet(shard_path, engine="pyarrow")
-                shard_frames.append(frame)
-                parts = Path(relative_path).parts
-                if len(parts) != 3 or not parts[0].startswith("split="):
-                    return False
-                split_name = parts[0][len("split=") :]
-                if split_name not in {"train", "validation", "test"}:
-                    return False
-                split_shards.setdefault(split_name, []).append(frame)
-            if not shard_frames:
-                return False
-            loaded_splits = {
-                split_name: pd.concat(frames, ignore_index=True)
-                for split_name, frames in split_shards.items()
-            }
-            combined = pd.concat(shard_frames, ignore_index=True)
-            if split_content_hashes:
-                if set(split_content_hashes) != set(loaded_splits):
-                    return False
-                recomputed = build_split_dataset_manifest(
-                    loaded_splits,
-                    business_keys=tuple(business_keys),
-                    metadata=metadata,
-                )
-            else:
-                if len(loaded_splits) != 1:
-                    return False
-                recomputed = build_dataset_manifest(
-                    combined,
-                    business_keys=tuple(business_keys),
-                    metadata=metadata,
-                )
-            return (
-                recomputed.dataset_id == dataset_id
-                and recomputed.content_hash == content_hash
-                and recomputed.row_count == row_count
-                and list(recomputed.column_order) == column_order
-                and dict(recomputed.split_content_hashes) == split_content_hashes
-            )
+            self._load_verified_snapshot(dataset_id)
+            return True
         except (OSError, ValueError, TypeError, json.JSONDecodeError, KeyError, IndexError):
             return False
+
+    def load_split(
+        self,
+        dataset_id: str,
+        split_name: str,
+        *,
+        expected_fold_id: str | None = None,
+    ) -> pd.DataFrame:
+        """Load one named split only after full immutable-artifact verification."""
+        if split_name not in {"train", "validation", "test"}:
+            raise ValueError("split_name must be train, validation, or test")
+        if expected_fold_id is not None and (
+            not isinstance(expected_fold_id, str) or not expected_fold_id.strip()
+        ):
+            raise ValueError("expected_fold_id must be a non-empty string when provided")
+        try:
+            manifest, loaded_splits = self._load_verified_snapshot(dataset_id)
+        except (OSError, KeyError, TypeError, json.JSONDecodeError, ValueError) as error:
+            raise ValueError(
+                f"dataset artifact integrity verification failed: {dataset_id}"
+            ) from error
+        if expected_fold_id is not None:
+            metadata = manifest["metadata"]
+            if not isinstance(metadata, Mapping) or metadata.get("fold_id") != expected_fold_id:
+                raise ValueError(
+                    "dataset artifact fold_id does not match expected fold: "
+                    f"{expected_fold_id}"
+                )
+        if split_name not in loaded_splits:
+            raise ValueError(f"dataset artifact has no {split_name} split: {dataset_id}")
+        return loaded_splits[split_name].copy(deep=True)
+
+    def artifact_path(self, dataset_id: str) -> Path:
+        """Return an artifact location for diagnostics; callers still must call ``verify``."""
+        return self._root / dataset_id
+
+    def _load_verified_snapshot(
+        self,
+        dataset_id: str,
+    ) -> tuple[dict[str, object], dict[str, pd.DataFrame]]:
+        """Read every artifact byte once, then validate and return only that snapshot."""
+        manifest_path = self._root / dataset_id / "manifest.json"
+        if not manifest_path.is_file():
+            raise ValueError(f"dataset artifact manifest is missing: {dataset_id}")
+        manifest = json.loads(manifest_path.read_bytes().decode("utf-8"))
+        if not isinstance(manifest, dict) or manifest.get("dataset_id") != dataset_id:
+            raise ValueError("dataset artifact manifest identity is invalid")
+        hashes = manifest.get("shard_hashes")
+        business_keys = manifest.get("business_keys")
+        column_order = manifest.get("column_order")
+        metadata = manifest.get("metadata")
+        row_count = manifest.get("row_count")
+        content_hash = manifest.get("content_hash")
+        split_content_hashes = manifest.get("split_content_hashes", {})
+        if (
+            not isinstance(hashes, dict)
+            or not isinstance(business_keys, list)
+            or not all(isinstance(key, str) for key in business_keys)
+            or not isinstance(column_order, list)
+            or not all(isinstance(column, str) for column in column_order)
+            or not isinstance(metadata, Mapping)
+            or not isinstance(row_count, int)
+            or isinstance(row_count, bool)
+            or row_count < 1
+            or not isinstance(content_hash, str)
+            or not isinstance(split_content_hashes, dict)
+            or not all(
+                isinstance(name, str) and isinstance(value, str)
+                for name, value in split_content_hashes.items()
+            )
+        ):
+            raise ValueError("dataset artifact manifest is malformed")
+        artifact_root = manifest_path.parent.resolve()
+        shard_frames: list[pd.DataFrame] = []
+        split_shards: dict[str, list[pd.DataFrame]] = {}
+        for relative_path, expected_hash in hashes.items():
+            if not isinstance(relative_path, str) or not isinstance(expected_hash, str):
+                raise ValueError("dataset artifact shard manifest is malformed")
+            shard_path = (artifact_root / relative_path).resolve()
+            if artifact_root not in shard_path.parents or not shard_path.is_file():
+                raise ValueError("dataset artifact shard path is invalid")
+            shard_bytes = shard_path.read_bytes()
+            if hashlib.sha256(shard_bytes).hexdigest() != expected_hash:
+                raise ValueError("dataset artifact shard hash does not match manifest")
+            frame = pd.read_parquet(BytesIO(shard_bytes), engine="pyarrow")
+            shard_frames.append(frame)
+            parts = Path(relative_path).parts
+            if len(parts) != 3 or not parts[0].startswith("split="):
+                raise ValueError("dataset artifact shard partition is invalid")
+            split_name = parts[0][len("split=") :]
+            if split_name not in {"train", "validation", "test"}:
+                raise ValueError("dataset artifact split name is invalid")
+            split_shards.setdefault(split_name, []).append(frame)
+        if not shard_frames:
+            raise ValueError("dataset artifact has no shards")
+        loaded_splits = {
+            split_name: pd.concat(frames, ignore_index=True)
+            for split_name, frames in split_shards.items()
+        }
+        combined = pd.concat(shard_frames, ignore_index=True)
+        if split_content_hashes:
+            if set(split_content_hashes) != set(loaded_splits):
+                raise ValueError("dataset artifact split manifest is invalid")
+            recomputed = build_split_dataset_manifest(
+                loaded_splits,
+                business_keys=tuple(business_keys),
+                metadata=metadata,
+            )
+        else:
+            if len(loaded_splits) != 1:
+                raise ValueError("dataset artifact split manifest is invalid")
+            recomputed = build_dataset_manifest(
+                combined,
+                business_keys=tuple(business_keys),
+                metadata=metadata,
+            )
+        if (
+            recomputed.dataset_id != dataset_id
+            or recomputed.content_hash != content_hash
+            or recomputed.row_count != row_count
+            or list(recomputed.column_order) != column_order
+            or dict(recomputed.split_content_hashes) != split_content_hashes
+        ):
+            raise ValueError("dataset artifact content does not match its manifest")
+        return manifest, loaded_splits
 
     def _write_splits(
         self,

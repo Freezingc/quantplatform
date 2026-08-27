@@ -24,6 +24,12 @@ class ModelArtifactBundle:
     path: Path
 
 
+@dataclass(frozen=True)
+class _VerifiedBundleSnapshot:
+    digest: str
+    files: Mapping[str, bytes]
+
+
 class ModelArtifactBundleStore:
     """Write and verify self-contained model artifacts without serializing Python objects."""
 
@@ -92,33 +98,8 @@ class ModelArtifactBundleStore:
 
     def verify(self, model_id: str) -> bool:
         try:
-            self._validate_model_id(model_id)
-            root = self._root / model_id
-            checksum_path = root / "checksums.sha256"
-            if not checksum_path.is_file():
-                return False
-            lines = checksum_path.read_text(encoding="utf-8").splitlines()
-            expected_files = {
-                "config.json",
-                "feature_order.json",
-                "model_card.json",
-                "preprocessing.json",
-                "signature.json",
-                "validation_predictions.parquet",
-                *(f"seed-{seed}.pt" for seed in REQUIRED_SEEDS),
-            }
-            actual_files: set[str] = set()
-            for line in lines:
-                digest, separator, relative = line.partition("  ")
-                if not separator or not re.fullmatch(r"[0-9a-f]{64}", digest):
-                    return False
-                path = (root / relative).resolve()
-                if root.resolve() not in path.parents or not path.is_file():
-                    return False
-                if _sha256_file(path) != digest:
-                    return False
-                actual_files.add(relative)
-            return actual_files == expected_files
+            self._load_verified_snapshot(model_id)
+            return True
         except (OSError, ValueError):
             return False
 
@@ -126,6 +107,28 @@ class ModelArtifactBundleStore:
         """Return one validated bundle root for a loader after it has verified integrity."""
         self._validate_model_id(model_id)
         return self._root / model_id
+
+    def bundle_digest(self, model_id: str) -> str:
+        """Return the snapshot digest a trusted selection record must bind to."""
+        try:
+            return self._load_verified_snapshot(model_id).digest
+        except (OSError, ValueError) as error:
+            raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
+
+    def load_model_card(
+        self,
+        model_id: str,
+        *,
+        expected_bundle_digest: str | None = None,
+    ) -> Mapping[str, object]:
+        """Read a checksum-verified model card from one immutable bundle snapshot."""
+        try:
+            snapshot = self._load_verified_snapshot(model_id)
+        except (OSError, ValueError) as error:
+            raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
+        if expected_bundle_digest is not None and snapshot.digest != expected_bundle_digest:
+            raise ValueError("model bundle digest does not match frozen model selection")
+        return self._read_json_mapping_bytes(snapshot.files["model_card.json"], "model_card.json")
 
     def load_metadata(
         self,
@@ -137,14 +140,27 @@ class ModelArtifactBundleStore:
         expected_preprocessor_hash: str,
     ) -> dict[str, Mapping[str, object]]:
         """Verify integrity, then reject bundles whose data/model contract differs from request."""
-        if not self.verify(model_id):
-            raise ValueError(f"model bundle integrity verification failed: {model_id}")
-        root = self._root / model_id
-        model_card = self._read_json_mapping(root / "model_card.json")
-        config = self._read_json_mapping(root / "config.json")
-        signature = self._read_json_mapping(root / "signature.json")
-        feature_document = self._read_json_mapping(root / "feature_order.json")
-        preprocessing = self._read_json_mapping(root / "preprocessing.json")
+        try:
+            snapshot = self._load_verified_snapshot(model_id)
+        except (OSError, ValueError) as error:
+            raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
+        model_card = self._read_json_mapping_bytes(
+            snapshot.files["model_card.json"],
+            "model_card.json",
+        )
+        config = self._read_json_mapping_bytes(snapshot.files["config.json"], "config.json")
+        signature = self._read_json_mapping_bytes(
+            snapshot.files["signature.json"],
+            "signature.json",
+        )
+        feature_document = self._read_json_mapping_bytes(
+            snapshot.files["feature_order.json"],
+            "feature_order.json",
+        )
+        preprocessing = self._read_json_mapping_bytes(
+            snapshot.files["preprocessing.json"],
+            "preprocessing.json",
+        )
         if model_card.get("dataset_id") != expected_dataset_id:
             raise ValueError("model bundle dataset_id does not match the requested dataset")
         feature_order = feature_document.get("feature_order")
@@ -164,6 +180,43 @@ class ModelArtifactBundleStore:
             "signature": signature,
         }
 
+    def _load_verified_snapshot(self, model_id: str) -> _VerifiedBundleSnapshot:
+        """Read each bundle file once and verify those exact bytes against one checksum file."""
+        self._validate_model_id(model_id)
+        root = self._root / model_id
+        checksums = (root / "checksums.sha256").read_bytes()
+        expected_files = {
+            "config.json",
+            "feature_order.json",
+            "model_card.json",
+            "preprocessing.json",
+            "signature.json",
+            "validation_predictions.parquet",
+            *(f"seed-{seed}.pt" for seed in REQUIRED_SEEDS),
+        }
+        files: dict[str, bytes] = {}
+        for line in checksums.decode("utf-8").splitlines():
+            digest, separator, relative = line.partition("  ")
+            if (
+                not separator
+                or not re.fullmatch(r"[0-9a-f]{64}", digest)
+                or relative in files
+            ):
+                raise ValueError("model bundle checksum manifest is malformed")
+            path = (root / relative).resolve()
+            if root.resolve() not in path.parents or not path.is_file():
+                raise ValueError("model bundle checksum path is invalid")
+            content = path.read_bytes()
+            if hashlib.sha256(content).hexdigest() != digest:
+                raise ValueError("model bundle checksum verification failed")
+            files[relative] = content
+        if set(files) != expected_files:
+            raise ValueError("model bundle checksum manifest is incomplete")
+        return _VerifiedBundleSnapshot(
+            digest=hashlib.sha256(checksums).hexdigest(),
+            files=files,
+        )
+
     @staticmethod
     def _write_json(path: Path, payload: Mapping[str, object]) -> None:
         path.write_text(
@@ -176,6 +229,13 @@ class ModelArtifactBundleStore:
         loaded = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(loaded, dict) or not all(isinstance(key, str) for key in loaded):
             raise ValueError(f"model bundle metadata is not a string-keyed mapping: {path.name}")
+        return loaded
+
+    @staticmethod
+    def _read_json_mapping_bytes(content: bytes, filename: str) -> Mapping[str, object]:
+        loaded = json.loads(content.decode("utf-8"))
+        if not isinstance(loaded, dict) or not all(isinstance(key, str) for key in loaded):
+            raise ValueError(f"model bundle metadata is not a string-keyed mapping: {filename}")
         return loaded
 
     @staticmethod
