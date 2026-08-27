@@ -1,12 +1,12 @@
 # 因子质量改进与服务器迁移交接文档
 
-> 状态日期：2026-08-19（Asia/Shanghai）
+> 状态日期：2026-08-27（Asia/Shanghai）
 >
 > 当前工作区：`/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX`
 >
 > 当前分支：`codex/publish-quant-platform`
 >
-> 代码基线提交：`55cf3672e6d34d1e37726d1d33e41fe2c5ded516`
+> 代码基线提交：以当前分支 HEAD 为准（迁移时执行 `git rev-parse HEAD`）
 >
 > 持续目标：先完成严格、可复现的因子质量筛选，再考虑模型训练
 
@@ -14,10 +14,9 @@
 
 当前工作已经完成了因子库的广覆盖诊断、正式九因子的质量记账、若干候选因子的修复实验，以及精简版质量表的代码实现。模型训练尚未开始，2026 锁定测试没有被本轮因子质量工作读取。
 
-尚未完成的关键路径只有两段：
+当前已完成 `yeslab_484_tushare_shsz_v1` 的严格、独立 Tushare SH/SZ 复核：它通过所有固定质量门槛，状态为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW`。这只是候选的人工准入评审资格，未改变正式九因子、未写入数据库、未启动模型训练，也未读取 2026 锁定测试。
 
-1. `yeslab_484_tushare_shsz_v1` 的严格、独立 Tushare SH/SZ 复核需要改造成可恢复流程后重跑。原单体任务运行约 3 小时 48 分后异常退出，没有留下可用结果。
-2. 新表 `factor_quality_latest` 的迁移 012 尚未应用，491 行当前质量结论尚未发布到 DolphinDB。
+下一关键路径是新表 `factor_quality_latest`：先执行 491 行 / 9 个正式可用因子的 dry-run，再应用迁移 012、显式发布并回读校验。发布的是当前质量结论，不会自动把 Alpha484 加入正式因子集。
 
 迁移到新服务器时，不能只克隆 GitHub 仓库。当前本地分支还有 228 个提交未推送，Tushare 缓存和一部分诊断产物也被 Git 忽略，必须单独复制或先完成推送。
 
@@ -142,7 +141,19 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 `yeslab_484_tushare_shsz_v1`
 
-该候选不会覆盖 `yeslab_484`，并且只有在独立 Tushare SH/SZ 全量复核通过后，才能进入人工准入评审。
+该候选不会覆盖 `yeslab_484`。2026-08-27 已完成独立 Tushare SH/SZ 全量复核，结论如下：
+
+| 检查项 | 训练 2020-2024 | 验证 2025 | 门槛 / 结论 |
+|---|---:|---:|---|
+| 冻结方向 | `-1` | 复用训练方向 | 未在验证集重新选择 |
+| signed RankIC | `0.06992` | `0.06916` | 均 `> 0.02` |
+| signed ICIR | `0.58075` | `0.50850` | 均 `>= 0.50` |
+| 方向日占比 | `72.36%` | `67.08%` | 均 `>= 55%` |
+| 年度门槛 | `5/5` | - | 至少 `4/5`，通过 |
+| 覆盖率 | 日中位数 / P05 / 月度最低均通过 | 同口径通过 | 通过 |
+| 最大相似度中位数 | `0.69098` | `0.72308` | 均 `< 0.90`，最近 `yeslab_376` |
+
+最终审计文件为 `research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1/admission_review.json`。它的状态是 `READY_FOR_EXPLICIT_ADMISSION_REVIEW`，但 `model_eligible=false`、`database_writes=false`、`locked_test_read=false`。
 
 #### 其他值得保留的候选状态
 
@@ -190,7 +201,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 2026-08-19 在 `quantyd` 环境实际执行：
 
 ```text
-pytest: 634 passed, 42 warnings, 17.51s
+pytest: 703 passed, 42 warnings, 15.66s
 ```
 
 全仓库 Ruff 当前不是绿色，`ruff check research_v2/src research_v2/scripts research_v2/tests` 报 186 个问题，主要分布在历史审计脚本和测试中的行长、导入排序及少量 lint 规则。这是当前基线债务，不能在交接时写成“全仓库 Ruff 通过”。
@@ -199,7 +210,7 @@ pytest: 634 passed, 42 warnings, 17.51s
 
 ## 5. 未完成工作
 
-### 5.1 Alpha484 独立规范复核失败现场
+### 5.1 Alpha484 独立规范复核历史现场
 
 失败命令：
 
@@ -221,8 +232,7 @@ python -u research_v2/scripts/evaluate_alpha484_canonical.py \
 - 进程退出前内存约 2.7 GiB，系统仍有约 506 GiB 可用内存；
 - 系统日志没有 OOM/Killed 证据；
 - 原进程 stdout/stderr 没有落日志，无法还原准确异常栈；
-- 当前不存在 `tushare_alpha484_canonical_v1` 结果目录或最终 JSON/CSV；
-- 因此不能把该运行解释为通过或拒绝，也不能把历史 Alpha484 结果冒充新候选结果。
+- 此次历史失败不能解释为通过或拒绝，也不能把历史 Alpha484 结果冒充新候选结果。
 
 已确认的性能根因：
 
@@ -231,19 +241,28 @@ python -u research_v2/scripts/evaluate_alpha484_canonical.py \
 3. 输出目录和结果文件只在训练、验证、相似度全部完成后创建，任何后段失败都会丢失前段数小时计算；
 4. 运行未使用独立日志文件，异常退出后无法恢复 traceback。
 
-### 5.2 可恢复审计尚未实现
+### 5.2 可恢复审计已实现并完成重跑
 
-推荐方案已经提出，但尚未获得用户确认并实施。上一任务状态因等待“确认可恢复方案”而暂停。
+2026-08-27 已完成可恢复执行改造，代码位于：
 
-推荐实现要求：
+- `research_v2/scripts/evaluate_alpha484_canonical.py`：支持 `--phase train|validation|all`、`--checkpoint-dir`、`--resume` 和 `--log-file`；
+- `research_v2/scripts/evaluate_tushare_scope_validation.py`：相似度函数支持保存每日 Spearman 序列，恢复汇总与一次性计算保持同一统计口径；
+- `research_v2/tests/unit/scripts/test_evaluate_alpha484_canonical.py`：覆盖原子检查点、指纹校验、阶段运行、失败日志和恢复路径；
+- `research_v2/tests/unit/scripts/test_evaluate_tushare_scope_validation.py`：覆盖每日 Spearman 保留行为。
 
-- CSAD 重放完成后立即原子保存候选值、daily RankIC、覆盖率和输入指纹；
-- 训练、验证分别保存检查点；
-- 相似度按“月份 × 正式因子”增量读取、计算和释放内存；
-- 每个完成分片写 manifest，可幂等重跑并从最近检查点恢复；
-- 所有 stdout/stderr 写入独立日志；
-- 最终报告只在所有分片齐全、指纹一致、门槛复算通过后生成；
-- 质量口径、公式、阈值、股票范围、标签和时间窗保持不变。
+当前执行语义：
+
+- 训练阶段先保存候选值 `candidate_values.pkl`，再按月写入 `similarity/YYYY-MM.json`；
+- 检查点采用临时文件 + `os.replace`，不会留下半写文件；
+- `manifest.json` 状态为 `running` 或 `complete`，包含候选身份、公式来源、时间窗、标签、市场范围、代码提交和缓存文件指纹；
+- 缓存只允许新增文件，已有文件被删除或修改会拒绝恢复；
+- 验证阶段必须读取训练阶段的冻结方向检查点，不能单独猜方向；
+- 异常写入 JSONL 日志并返回退出码 1；
+- 相似度检查点保存每日序列，跨月恢复时重新计算全周期中位数和最大值，不用月度中位数近似。
+
+实际执行先完成训练阶段、再使用训练阶段冻结方向完成 2025 验证阶段，最后由 `--phase all --resume` 复用候选值和月度相似度检查点生成最终审计。运行中发现跨月相似度汇总遗漏 `valid_day_count` 字段，已用回归测试覆盖并修复；最终 `admission_review.json` 已生成且所有固定门槛通过。
+
+该过程严格使用 Tushare SH/SZ、`forward_open_5d:v1`、训练 2020-2024、验证 2025，未读取 2026。正式九因子相似度因旧 V2 latest 表缺少其中 3 个值序列，改由相同完整 Tushare SH/SZ 市场面板和原始计算器公式回放；这保证九个比较基准的横截面口径一致。
 
 ### 5.3 数据库迁移和质量表发布未完成
 
@@ -259,7 +278,7 @@ python -u research_v2/scripts/evaluate_alpha484_canonical.py \
 | `factor_quality_snapshot` | 存在，2,612 行，仅作旧审计归档 |
 | compact latest 表 | `factor_observation_clean_latest`、`label_daily_latest`、`universe_daily_latest`、`latest_manifest` 均存在 |
 
-只有 Alpha484 新候选产出完整 `admission_review.json` 后，才可执行：
+Alpha484 新候选现已产出完整 `admission_review.json`，接下来应执行：
 
 1. 迁移 dry-run；
 2. 491 行质量表 dry-run；
@@ -443,7 +462,7 @@ conda activate quantyd
 PYTHONPATH=research_v2/scripts:research_v2/src python -m pytest -q
 ```
 
-期望当前基线为 634 个测试通过。警告数量可能随依赖小版本变化；测试失败必须先诊断，不应直接开始长任务。
+期望当前基线为 703 个测试通过。警告数量可能随依赖小版本变化；测试失败必须先诊断，不应直接开始长任务。
 
 不要以全仓库 Ruff 绿色作为当前迁移门槛，因为当前基线有 186 个 lint 问题。应先对将要修改的文件运行 focused Ruff，并把全仓库清理作为独立任务。
 
@@ -455,28 +474,35 @@ PYTHONPATH=research_v2/scripts:research_v2/src python -m pytest -q
 2. 复制全部 artifacts，尤其是 Tushare cache；
 3. 安全恢复 `.env`；
 4. 建立 `quantyd`；
-5. 验证 Git 提交、文件数、DolphinDB 连接和 634 个测试。
+5. 验证 Git 提交、文件数、DolphinDB 连接和 703 个测试。
 
-### P1：实现可恢复 Alpha484 审计
+### P1：可恢复 Alpha484 审计（已完成）
 
-先由用户确认“可恢复方案”，然后按测试驱动方式实现：
+实现、训练阶段、验证阶段、最终汇总和门槛复核均已完成。结论为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW`，不得因为通过候选审计而自动修改正式九因子。
 
-1. 给 `evaluate_alpha484_canonical.py` 增加分阶段运行和 `--resume`；
-2. 保存训练/验证候选值和质量检查点，采用临时文件 + 原子 rename；
-3. 为检查点写输入指纹：候选 ID、公式版本、代码提交、日期范围、市场范围、标签、缓存清单；
-4. 将九因子相似度改为逐月/逐因子增量计算；
-5. 分片完成即写 manifest 并释放正式因子明细；
-6. 记录独立日志文件和退出码；
-7. 增加等价性测试：小样本上新旧相似度结果严格一致；
-8. 增加中断恢复测试：已完成分片不重复计算，指纹改变时拒绝复用。
-
-不得顺手修改因子公式、门槛或正式九因子。
-
-### P2：重跑 Alpha484 严格复核
+### P2：Alpha484 严格复核（已完成）
 
 输出目录仍建议使用：
 
 `research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1/`
+
+历史重跑命令和检查点保留用于复现：
+
+```bash
+source /data/share/miniconda3/etc/profile.d/conda.sh
+conda activate quantyd
+set -a
+source .env
+set +a
+PYTHONPATH=research_v2/scripts:research_v2/src \
+python -u research_v2/scripts/evaluate_alpha484_canonical.py \
+  --phase train \
+  --checkpoint-dir research_v2/artifacts/checkpoints/alpha484_canonical_v1 \
+  --log-file research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1/train.log \
+  --output research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1
+```
+
+训练阶段、验证阶段和最终汇总均已完成。最终审计确认候选通过全部固定门槛，但保持 `model_eligible=false`，等待单独的人工准入决策。
 
 最终必须存在并相互一致：
 
@@ -493,14 +519,14 @@ PYTHONPATH=research_v2/scripts:research_v2/src python -m pytest -q
 - `REJECT_CANONICAL_GATE`：至少一个固定门槛失败；
 - 明确的失败/不完整状态：任务异常，不得生成伪最终结论。
 
-### P3：发布 `factor_quality_latest`
+### P3：发布 `factor_quality_latest`（当前执行点）
 
 Alpha484 结果完整后，先 dry-run：
 
 ```bash
 PYTHONPATH=research_v2/scripts:research_v2/src \
 python research_v2/scripts/refresh_factor_quality_latest.py \
-  --effective-date 2026-08-19 \
+  --effective-date 2026-08-27 \
   --evidence-commit "$(git rev-parse HEAD)" \
   --alpha484-review \
     research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1/admission_review.json
@@ -524,7 +550,7 @@ Alpha484 独立候选 = 1 行且 model_eligible=false
 
 ### P4：候选人工准入评审
 
-Alpha484 和质量表完成后，再分别审查 `yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。每个候选必须独立决策，不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，再分别审查 `yeslab_484_tushare_shsz_v1`、`yeslab_114`、`yeslab_206_median_abs_v2`、`yeslab_425` 等候选。每个候选必须独立决策，不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 
@@ -552,15 +578,15 @@ Alpha484 和质量表完成后，再分别审查 `yeslab_114`、`yeslab_206_medi
 并以当前工作区、Git、数据库和审计产物为权威证据继续工作。
 
 持续目标：持续推进因子质量改进，暂不训练模型。
-确认采用文档中的“可恢复 Alpha484 审计方案”：先实现检查点、
-按月增量相似度和断点恢复，再重跑 yeslab_484_tushare_shsz_v1。
+确认 Alpha484 可恢复审计已完成，审查
+`research_v2/artifacts/diagnostics/tushare_alpha484_canonical_v1/admission_review.json`。
 保持 Tushare SH/SZ、forward_open_5d:v1、2020-2024 训练、
 2025 验证、2026 锁定禁读、正式九因子不自动变更。
 
-Alpha484 完成后，按文档执行 migration 012 dry-run、491 行质量表
-dry-run、显式发布和回读校验。全过程记录证据，不泄露凭据。
+接下来按文档执行 migration 012 dry-run、491 行质量表 dry-run、
+显式发布和回读校验。全过程记录证据，不泄露凭据。
 ```
 
 ## 11. 当前接手点
 
-接手者的第一项代码任务不是重新跑长任务，而是为 Alpha484 编写可恢复执行设计和测试。用户确认推荐方案后再实施。完成 P1 前，`factor_quality_latest` 不应发布，模型训练不应开始，2026 数据不应读取。
+接手者的第一项工作是执行 migration 012 dry-run 与 491 行质量表 dry-run。只有二者均满足不变量后，才可显式发布并回读验证；发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。

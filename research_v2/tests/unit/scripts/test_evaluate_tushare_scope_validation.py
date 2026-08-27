@@ -89,6 +89,25 @@ def test_compute_pair_daily_spearman_reports_median_absolute_similarity() -> Non
     assert result.loc[0, "valid_day_count"] == 1
 
 
+def test_compute_pair_daily_spearman_can_retain_daily_values() -> None:
+    left = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2025-01-02"] * 3),
+            "ts_code": ["000001.SZ", "000002.SZ", "600000.SH"],
+            "replay_value": [1.0, 2.0, 3.0],
+        }
+    )
+    right = left.assign(replay_value=[3.0, 2.0, 1.0])
+
+    result = evaluation.compute_pair_daily_spearman(
+        {"yeslab_left": left, "yeslab_right": right},
+        minimum_cross_section=3,
+        include_daily_values=True,
+    )
+
+    assert result.loc[0, "daily_spearman"] == [-1.0]
+
+
 def test_parser_accepts_stored_factor_comparison() -> None:
     args = evaluation.parse_args(
         [

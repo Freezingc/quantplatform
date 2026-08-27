@@ -5,11 +5,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
+import sys
+import tempfile
 from collections.abc import Mapping
 from datetime import date
 from pathlib import Path
 
 import audit_formula_replay_consistency as replay
+import numpy as np
 import pandas as pd
 from audit_formula_replay_tushare import (
     TushareMarketSession,
@@ -56,6 +60,123 @@ FORMAL_FACTOR_IDS = (
     "yeslab_396",
     "yeslab_442",
 )
+CHECKPOINT_SCHEMA_VERSION = 1
+
+
+def build_input_fingerprint(
+    *,
+    start: date,
+    end: date,
+    cache_manifest: Mapping[str, object],
+    code_commit: str,
+) -> dict[str, object]:
+    """Build the immutable inputs that make a checkpoint reusable."""
+    return {
+        "candidate_id": CANDIDATE_ID,
+        "source_factor_id": SOURCE_FACTOR_ID,
+        "market_scope": "SH/SZ",
+        "label": "forward_open_5d:v1",
+        "start": start.isoformat(),
+        "end": end.isoformat(),
+        "code_commit": str(code_commit),
+        "cache_manifest": dict(cache_manifest),
+    }
+
+
+def _write_checkpoint_state(path: Path, state: Mapping[str, object]) -> None:
+    """Atomically write one JSON checkpoint beside the eventual output."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            json.dump(dict(state), handle, ensure_ascii=False, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def _load_checkpoint_state(path: Path) -> dict[str, object]:
+    """Read one checkpoint and reject malformed JSON rather than guessing."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"checkpoint is not a JSON object: {path}")
+    if payload.get("schema_version") != CHECKPOINT_SCHEMA_VERSION:
+        raise ValueError(f"unsupported checkpoint schema: {path}")
+    return payload
+
+
+def _assert_checkpoint_fingerprint(
+    state: Mapping[str, object], expected: Mapping[str, object]
+) -> None:
+    """Fail closed when a checkpoint was produced from different inputs."""
+    actual = state.get("fingerprint")
+    if not isinstance(actual, Mapping):
+        raise ValueError("checkpoint input fingerprint is missing")
+    actual_core = {key: value for key, value in actual.items() if key != "cache_manifest"}
+    expected_core = {
+        key: value for key, value in expected.items() if key != "cache_manifest"
+    }
+    if actual_core != expected_core:
+        raise ValueError("checkpoint input fingerprint does not match current inputs")
+    actual_files = {
+        str(item["name"]): int(item["size"])
+        for item in actual.get("cache_manifest", {}).get("files", [])
+        if isinstance(item, Mapping) and "name" in item and "size" in item
+    }
+    expected_files = {
+        str(item["name"]): int(item["size"])
+        for item in expected.get("cache_manifest", {}).get("files", [])
+        if isinstance(item, Mapping) and "name" in item and "size" in item
+    }
+    if any(expected_files.get(name) != size for name, size in actual_files.items()):
+        raise ValueError("checkpoint input fingerprint does not match current inputs")
+
+
+def _current_code_commit() -> str:
+    """Return a stable source revision without making it a runtime requirement."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+    return result.stdout.strip() or "unknown"
+
+
+def _cache_manifest(cache_dir: Path) -> dict[str, object]:
+    """Capture cache file names and sizes used as a cheap input manifest."""
+    if not cache_dir.is_dir():
+        return {"files": []}
+    files = sorted(
+        {path.name: path.stat().st_size for path in cache_dir.glob("*.json")}.items()
+    )
+    return {"files": [{"name": name, "size": size} for name, size in files]}
+
+
+def _append_log(path: Path | None, event: str, **details: object) -> None:
+    """Append a small JSON-lines event without exposing credentials."""
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"event": event, **details}
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -67,6 +188,19 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--cache-dir", type=Path, default=Path("research_v2/artifacts/tushare_cache")
     )
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--checkpoint-dir",
+        type=Path,
+        help="directory for resumable per-window and per-month checkpoints",
+    )
+    parser.add_argument(
+        "--phase",
+        choices=("all", "train", "validation"),
+        default="all",
+        help="run only one evaluation phase when staging a long audit",
+    )
+    parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--log-file", type=Path)
     args = parser.parse_args(argv)
     if args.start > args.end or args.end >= LOCKED_TEST_START:
         parser.error("evaluation range must end before the 2026 locked test")
@@ -290,38 +424,302 @@ def _load_formal_values(
     return result
 
 
+def _replay_formal_values(
+    client: object,
+    market: pd.DataFrame,
+    *,
+    start: date,
+    end: date,
+) -> dict[str, pd.DataFrame]:
+    """Replay all formal factors from the same complete Tushare market panel."""
+    market_codes = tuple(sorted(market["ts_code"].astype(str).unique()))
+    session = TushareMarketSession(client, market, market_codes)
+    result: dict[str, pd.DataFrame] = {}
+    for factor_id in FORMAL_FACTOR_IDS:
+        definition = replay.REPLAY_DEFINITIONS[factor_id]
+        values = replay._replay_factor(session, definition, start, end)
+        values = values.loc[
+            values["ts_code"].astype(str).str.endswith((".SH", ".SZ"))
+        ].copy()
+        if values.duplicated(["trade_date", "ts_code"]).any():
+            raise ValueError(f"canonical formal replay duplicates keys for {factor_id}")
+        result[factor_id] = values
+    return result
+
+
+def _write_similarity_checkpoint(path: Path, pairs: pd.DataFrame) -> None:
+    """Persist one monthly similarity result using an atomic rename."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            json.dump(
+                json.loads(pairs.to_json(orient="records")),
+                handle,
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def _read_similarity_checkpoint(path: Path) -> pd.DataFrame:
+    """Read a monthly similarity checkpoint with its fixed schema."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise ValueError(f"similarity checkpoint is not a list: {path}")
+    columns = [
+        "factor_id_left",
+        "factor_id_right",
+        "median_abs_spearman",
+        "max_abs_spearman",
+        "valid_day_count",
+        "daily_spearman",
+    ]
+    return pd.DataFrame(payload, columns=columns)
+
+
+def _write_frame_checkpoint(path: Path, frame: pd.DataFrame) -> None:
+    """Atomically persist a pandas frame without requiring an optional parquet engine."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb", dir=path.parent, prefix=f".{path.name}.", suffix=".tmp", delete=False
+        ) as handle:
+            temporary = Path(handle.name)
+            frame.to_pickle(handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def _read_frame_checkpoint(path: Path) -> pd.DataFrame:
+    """Read a frame checkpoint and fail closed on unexpected payloads."""
+    frame = pd.read_pickle(path)
+    if not isinstance(frame, pd.DataFrame):
+        raise ValueError(f"frame checkpoint is not a DataFrame: {path}")
+    return frame
+
+
+def _collapse_similarity_chunks(chunks: pd.DataFrame) -> pd.DataFrame:
+    """Combine monthly summaries conservatively for the fixed similarity gate."""
+    columns = [
+        "factor_id_left",
+        "factor_id_right",
+        "median_abs_spearman",
+        "max_abs_spearman",
+        "valid_day_count",
+    ]
+    if chunks.empty:
+        return pd.DataFrame(columns=columns)
+    required = set(columns)
+    if missing := sorted(required.difference(chunks.columns)):
+        raise ValueError(f"similarity chunks are missing columns: {missing}")
+    selected_columns = columns + (["daily_spearman"] if "daily_spearman" in chunks else [])
+    working = chunks.loc[:, selected_columns].copy()
+    working["factor_id_left"] = working["factor_id_left"].astype(str)
+    working["factor_id_right"] = working["factor_id_right"].astype(str)
+    for column in ("median_abs_spearman", "max_abs_spearman", "valid_day_count"):
+        working[column] = pd.to_numeric(working[column], errors="coerce")
+    rows: list[dict[str, object]] = []
+    for (left_id, right_id), group in working.groupby(
+        ["factor_id_left", "factor_id_right"], sort=True
+    ):
+        daily_values: list[float] = []
+        if "daily_spearman" in group:
+            for value in group["daily_spearman"]:
+                if isinstance(value, (list, tuple)):
+                    daily_values.extend(
+                        float(item) for item in value if np.isfinite(item)
+                    )
+        if daily_values:
+            absolute = np.abs(np.asarray(daily_values, dtype=float))
+            rows.append(
+                {
+                    "factor_id_left": left_id,
+                    "factor_id_right": right_id,
+                    "median_abs_spearman": float(np.median(absolute)),
+                    "max_abs_spearman": float(np.max(absolute)),
+                    "valid_day_count": int(len(absolute)),
+                }
+            )
+        else:
+            rows.append(
+                {
+                    "factor_id_left": left_id,
+                    "factor_id_right": right_id,
+                    "median_abs_spearman": float(group["median_abs_spearman"].max()),
+                    "max_abs_spearman": float(group["max_abs_spearman"].max()),
+                    "valid_day_count": int(group["valid_day_count"].sum()),
+                }
+            )
+    return pd.DataFrame(rows, columns=columns)
+
+
+def _compute_incremental_similarity(
+    client: object,
+    candidate: pd.DataFrame,
+    *,
+    start: date,
+    end: date,
+    checkpoint_dir: Path,
+    resume: bool,
+    formal_values: Mapping[str, pd.DataFrame] | None = None,
+) -> pd.DataFrame:
+    """Compute candidate/formal similarities one month at a time.
+
+    A completed month is immutable for a given run and is reused only when its
+    checkpoint exists. The caller is responsible for validating the run-level
+    input fingerprint before invoking this helper.
+    """
+    required = {"trade_date", "ts_code", "replay_value"}
+    if missing := sorted(required.difference(candidate.columns)):
+        raise ValueError(f"candidate values are missing columns: {missing}")
+    working = candidate.loc[:, sorted(required)].copy()
+    working["trade_date"] = pd.to_datetime(working["trade_date"], errors="raise").dt.normalize()
+    working["ts_code"] = working["ts_code"].astype(str)
+    month_dir = checkpoint_dir / "similarity"
+    frames: list[pd.DataFrame] = []
+    for period in pd.period_range(start, end, freq="M"):
+        month_start = max(start, period.start_time.date())
+        month_end = min(end, period.end_time.date())
+        if month_start > month_end:
+            continue
+        path = month_dir / f"{period}.json"
+        if resume and path.is_file():
+            frames.append(_read_similarity_checkpoint(path))
+            continue
+        candidate_month = working.loc[
+            working["trade_date"].dt.date.between(month_start, month_end)
+        ].copy()
+        if formal_values is None:
+            month_formal_values = _load_formal_values(
+                client, start=month_start, end=month_end
+            )
+        else:
+            month_formal_values = {
+                factor_id: frame.loc[
+                    pd.to_datetime(frame["trade_date"], errors="raise")
+                    .dt.date.between(month_start, month_end)
+                ].copy()
+                for factor_id, frame in formal_values.items()
+            }
+        pairs = compute_pair_daily_spearman(
+            {CANDIDATE_ID: candidate_month, **month_formal_values},
+            include_daily_values=True,
+        )
+        candidate_pairs = pairs.loc[
+            (pairs["factor_id_left"] == CANDIDATE_ID)
+            | (pairs["factor_id_right"] == CANDIDATE_ID)
+        ].reset_index(drop=True)
+        _write_similarity_checkpoint(path, candidate_pairs)
+        frames.append(candidate_pairs)
+    if not frames:
+        return pd.DataFrame(
+            columns=[
+                "factor_id_left",
+                "factor_id_right",
+                "median_abs_spearman",
+                "max_abs_spearman",
+                "valid_day_count",
+            ]
+        )
+    return pd.concat(frames, ignore_index=True)
+
+
 def _evaluate_window(
-    client: object, *, start: date, end: date, cache_dir: Path
+    client: object,
+    *,
+    start: date,
+    end: date,
+    cache_dir: Path,
+    checkpoint_dir: Path | None = None,
+    resume: bool = False,
 ) -> tuple[pd.DataFrame, dict[str, object], pd.DataFrame]:
     """Evaluate one fixed window using the full canonical Tushare market."""
     inputs = _load_validation_inputs(client, start, end)
+    candidate_path = (
+        checkpoint_dir / "candidate_values.pkl" if checkpoint_dir is not None else None
+    )
     definition = replay.REPLAY_DEFINITIONS[SOURCE_FACTOR_ID]
     market_start = _calculator_market_start(client, definition, start, end)
     open_dates = _query_open_dates(client, market_start, end)
-    market = fetch_full_tushare_shsz_market(
-        open_dates,
-        token=os.getenv("QRV2_TUSHARE_TOKEN", ""),
-        cache_dir=cache_dir,
-    )
-    validate_full_market_dates(market, open_dates)
-    market_codes = tuple(sorted(market["ts_code"].astype(str).unique()))
-    candidate_values = replay._replay_factor(
-        TushareMarketSession(client, market, market_codes), definition, start, end
-    )
-    candidate_values = candidate_values.loc[
-        candidate_values["ts_code"].astype(str).str.endswith((".SH", ".SZ"))
-    ].copy()
-    if candidate_values.duplicated(["trade_date", "ts_code"]).any():
-        raise ValueError("canonical Alpha484 values duplicate market keys")
+    market: pd.DataFrame | None = None
+    market_codes: tuple[str, ...] = ()
+
+    def load_market() -> tuple[pd.DataFrame, tuple[str, ...]]:
+        nonlocal market, market_codes
+        if market is None:
+            market = fetch_full_tushare_shsz_market(
+                open_dates,
+                token=os.getenv("QRV2_TUSHARE_TOKEN", ""),
+                cache_dir=cache_dir,
+                include_daily_basic=True,
+            )
+            validate_full_market_dates(market, open_dates)
+            market_codes = tuple(sorted(market["ts_code"].astype(str).unique()))
+        return market, market_codes
+
+    if resume and candidate_path is not None and candidate_path.is_file():
+        candidate_values = _read_frame_checkpoint(candidate_path)
+    else:
+        market, market_codes = load_market()
+        candidate_values = replay._replay_factor(
+            TushareMarketSession(client, market, market_codes), definition, start, end
+        )
+        candidate_values = candidate_values.loc[
+            candidate_values["ts_code"].astype(str).str.endswith((".SH", ".SZ"))
+        ].copy()
+        if candidate_values.duplicated(["trade_date", "ts_code"]).any():
+            raise ValueError("canonical Alpha484 values duplicate market keys")
+        if candidate_path is not None:
+            _write_frame_checkpoint(candidate_path, candidate_values)
     daily = compute_daily_rank_ic(candidate_values, inputs)
     coverage = summarize_coverage(candidate_values, inputs)
-    formal_values = _load_formal_values(client, start=start, end=end)
-    replay_frames = {CANDIDATE_ID: candidate_values, **formal_values}
-    pairs = compute_pair_daily_spearman(replay_frames)
-    candidate_pairs = pairs.loc[
-        (pairs["factor_id_left"] == CANDIDATE_ID)
-        | (pairs["factor_id_right"] == CANDIDATE_ID)
-    ].reset_index(drop=True)
+    if checkpoint_dir is None:
+        market, market_codes = load_market()
+        formal_values = _replay_formal_values(
+            client, market, start=start, end=end
+        )
+        replay_frames = {CANDIDATE_ID: candidate_values, **formal_values}
+        pairs = compute_pair_daily_spearman(replay_frames)
+        candidate_pairs = pairs.loc[
+            (pairs["factor_id_left"] == CANDIDATE_ID)
+            | (pairs["factor_id_right"] == CANDIDATE_ID)
+        ].reset_index(drop=True)
+    else:
+        market, _ = load_market()
+        formal_values = _replay_formal_values(
+            client, market, start=start, end=end
+        )
+        candidate_pairs = _compute_incremental_similarity(
+            client,
+            candidate_values,
+            start=start,
+            end=end,
+            checkpoint_dir=checkpoint_dir,
+            resume=resume,
+            formal_values=formal_values,
+        )
+        candidate_pairs = _collapse_similarity_chunks(candidate_pairs)
     return daily, coverage, candidate_pairs
 
 
@@ -400,6 +798,28 @@ def _summarize_similarity(
     }
 
 
+def _evaluate_window_kwargs(
+    client: object,
+    *,
+    start: date,
+    end: date,
+    cache_dir: Path,
+    checkpoint_dir: Path | None,
+    resume: bool,
+) -> tuple[pd.DataFrame, dict[str, object], pd.DataFrame]:
+    """Call the window evaluator while keeping legacy test doubles compatible."""
+    if checkpoint_dir is None and not resume:
+        return _evaluate_window(client, start=start, end=end, cache_dir=cache_dir)
+    return _evaluate_window(
+        client,
+        start=start,
+        end=end,
+        cache_dir=cache_dir,
+        checkpoint_dir=checkpoint_dir,
+        resume=resume,
+    )
+
+
 def run_evaluation(
     args: argparse.Namespace, *, client: object | None = None
 ) -> dict[str, object]:
@@ -407,15 +827,191 @@ def run_evaluation(
     own_client = client is None
     client = client or _connect()
     try:
-        train_daily, train_coverage, train_pairs = _evaluate_window(
-            client, start=TRAIN_START, end=TRAIN_END, cache_dir=args.cache_dir
+        checkpoint_root = args.checkpoint_dir
+        phase = getattr(args, "phase", "all")
+
+        def phase_fingerprint(start: date, end: date) -> dict[str, object]:
+            return build_input_fingerprint(
+                start=start,
+                end=end,
+                cache_manifest=_cache_manifest(args.cache_dir),
+                code_commit=_current_code_commit(),
+            )
+
+        def evaluate_window(
+            *, phase: str, start: date, end: date
+        ) -> tuple[pd.DataFrame, dict[str, object], pd.DataFrame]:
+            phase_dir = checkpoint_root / phase if checkpoint_root is not None else None
+            expected = phase_fingerprint(start, end)
+            _append_log(
+                args.log_file,
+                "phase_start",
+                phase=phase,
+                start=start.isoformat(),
+                end=end.isoformat(),
+                resume=bool(args.resume),
+            )
+            if phase_dir is not None and args.resume:
+                manifest_path = phase_dir / "manifest.json"
+                if not manifest_path.is_file():
+                    raise ValueError(
+                        "resume requested but checkpoint manifest is missing: "
+                        f"{manifest_path}"
+                    )
+                _assert_checkpoint_fingerprint(
+                    _load_checkpoint_state(manifest_path), expected
+                )
+            elif phase_dir is not None:
+                _write_checkpoint_state(
+                    phase_dir / "manifest.json",
+                    {
+                        "schema_version": CHECKPOINT_SCHEMA_VERSION,
+                        "fingerprint": expected,
+                        "status": "running",
+                    },
+                )
+            values = _evaluate_window_kwargs(
+                client,
+                start=start,
+                end=end,
+                cache_dir=args.cache_dir,
+                checkpoint_dir=phase_dir,
+                resume=args.resume,
+            )
+            if phase_dir is not None:
+                _write_checkpoint_state(
+                    phase_dir / "manifest.json",
+                    {
+                        "schema_version": CHECKPOINT_SCHEMA_VERSION,
+                        "fingerprint": expected,
+                        "status": "complete",
+                    },
+                )
+            _append_log(
+                args.log_file,
+                "phase_complete",
+                phase=phase,
+                start=start.isoformat(),
+                end=end.isoformat(),
+            )
+            return values
+
+        def write_phase_artifacts(
+            *,
+            phase_name: str,
+            daily: pd.DataFrame,
+            coverage: Mapping[str, object],
+            summary: Mapping[str, object],
+            pairs: pd.DataFrame | None = None,
+        ) -> None:
+            output = args.output
+            output.mkdir(parents=True, exist_ok=True)
+            daily.assign(factor_id=CANDIDATE_ID, phase=phase_name).to_csv(
+                output / "daily_rank_ic.csv", index=False
+            )
+            (output / "coverage_summary.json").write_text(
+                json.dumps(dict(coverage), ensure_ascii=False, indent=2, sort_keys=True)
+                + "\n",
+                encoding="utf-8",
+            )
+            if pairs is not None:
+                pairs.assign(phase=phase_name).to_json(
+                    output / "similarity_summary.json", orient="records", indent=2
+                )
+            (output / "quality_summary.json").write_text(
+                json.dumps(
+                    {
+                        "scope": "TUSHARE_SHSZ_ALPHA484_CANONICAL_V1",
+                        "candidate_id": CANDIDATE_ID,
+                        "source_factor_id": SOURCE_FACTOR_ID,
+                        phase_name: dict(summary),
+                        "phase": phase_name,
+                        "database_writes": False,
+                        "formal_factor_set_changed": False,
+                        "model_eligible": False,
+                        "model_training_started": False,
+                        "locked_test_read": False,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+        if phase == "train":
+            train_daily, train_coverage, _train_pairs = evaluate_window(
+                phase="train", start=TRAIN_START, end=TRAIN_END
+            )
+            training = _summarize_training(train_daily)
+            write_phase_artifacts(
+                phase_name="training_2020_2024",
+                daily=train_daily,
+                coverage={"status": train_coverage.get("status"), "training": train_coverage},
+                summary=training,
+            )
+            if checkpoint_root is not None:
+                _write_checkpoint_state(
+                    checkpoint_root / "train" / "summary.json",
+                    {
+                        "schema_version": CHECKPOINT_SCHEMA_VERSION,
+                        "training": training,
+                        "coverage": train_coverage,
+                    },
+                )
+            return {
+                "candidate_id": CANDIDATE_ID,
+                "phase": "train",
+                "status": "TRAIN_PHASE_COMPLETE",
+                "direction": training["direction"],
+                "database_writes": False,
+                "model_eligible": False,
+                "locked_test_read": False,
+            }
+
+        if phase == "validation":
+            if checkpoint_root is None:
+                raise ValueError("validation phase requires --checkpoint-dir from a train phase")
+            train_summary_path = checkpoint_root / "train" / "summary.json"
+            if not train_summary_path.is_file():
+                raise ValueError(f"validation phase requires train summary: {train_summary_path}")
+            train_state = _load_checkpoint_state(train_summary_path)
+            training_state = train_state.get("training")
+            if not isinstance(training_state, dict) or "direction" not in training_state:
+                raise ValueError("train checkpoint is missing frozen direction")
+            validation_daily, validation_coverage, validation_pairs = evaluate_window(
+                phase="validation", start=VALIDATION_START, end=VALIDATION_END
+            )
+            validation = _summarize_signed(
+                validation_daily, int(training_state["direction"])
+            )
+            write_phase_artifacts(
+                phase_name="validation_2025",
+                daily=validation_daily,
+                coverage={
+                    "status": validation_coverage.get("status"),
+                    "validation": validation_coverage,
+                },
+                summary=validation,
+                pairs=validation_pairs,
+            )
+            return {
+                "candidate_id": CANDIDATE_ID,
+                "phase": "validation",
+                "status": "VALIDATION_PHASE_COMPLETE",
+                "direction": training_state["direction"],
+                "database_writes": False,
+                "model_eligible": False,
+                "locked_test_read": False,
+            }
+
+        train_daily, train_coverage, train_pairs = evaluate_window(
+            phase="train", start=TRAIN_START, end=TRAIN_END
         )
         training = _summarize_training(train_daily)
-        validation_daily, validation_coverage, validation_pairs = _evaluate_window(
-            client,
-            start=VALIDATION_START,
-            end=VALIDATION_END,
-            cache_dir=args.cache_dir,
+        validation_daily, validation_coverage, validation_pairs = evaluate_window(
+            phase="validation", start=VALIDATION_START, end=VALIDATION_END
         )
         validation = _summarize_signed(validation_daily, int(training["direction"]))
         train_similarity = _summarize_similarity(
@@ -443,6 +1039,7 @@ def run_evaluation(
         )
         review.update(
             {
+                "phase": "all",
                 "scope": "TUSHARE_SHSZ_ALPHA484_CANONICAL_V1",
                 "market_scope": "SH/SZ",
                 "excluded_exchanges": ["BJ"],
@@ -496,7 +1093,18 @@ def run_evaluation(
 
 def main(argv: list[str] | None = None) -> int:
     """Run the canonical Alpha484 evaluation and render its review."""
-    print(json.dumps(run_evaluation(parse_args(argv)), ensure_ascii=False, indent=2))
+    args = parse_args(argv)
+    try:
+        print(json.dumps(run_evaluation(args), ensure_ascii=False, indent=2))
+    except Exception as exc:
+        _append_log(
+            args.log_file,
+            "run_failed",
+            error_type=type(exc).__name__,
+            error=str(exc),
+        )
+        print(f"{type(exc).__name__}: {exc}", file=sys.stderr)
+        return 1
     return 0
 
 

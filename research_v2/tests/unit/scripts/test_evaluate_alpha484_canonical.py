@@ -126,3 +126,253 @@ def test_run_evaluation_writes_non_publishing_review(
     written = json.loads((tmp_path / "admission_review.json").read_text())
     assert written["formal_factor_set_changed"] is False
     assert len(json.loads((tmp_path / "similarity_summary.json").read_text())) == 18
+
+
+def test_parse_args_accepts_staged_checkpoint_options(tmp_path: Path) -> None:
+    args = evaluation.parse_args(
+        [
+            "--output",
+            str(tmp_path / "out"),
+            "--checkpoint-dir",
+            str(tmp_path / "checkpoints"),
+            "--phase",
+            "train",
+            "--resume",
+            "--log-file",
+            str(tmp_path / "run.log"),
+        ]
+    )
+
+    assert args.checkpoint_dir == tmp_path / "checkpoints"
+    assert args.phase == "train"
+    assert args.resume is True
+    assert args.log_file == tmp_path / "run.log"
+
+
+def test_checkpoint_fingerprint_rejects_changed_inputs(tmp_path: Path) -> None:
+    fingerprint = evaluation.build_input_fingerprint(
+        start=date(2020, 1, 2),
+        end=date(2024, 12, 31),
+        cache_manifest={"files": ["daily_20200102.json"]},
+        code_commit="abc123",
+    )
+    path = tmp_path / "manifest.json"
+    evaluation._write_checkpoint_state(
+        path,
+        {
+            "schema_version": evaluation.CHECKPOINT_SCHEMA_VERSION,
+            "fingerprint": fingerprint,
+            "status": "candidate_complete",
+        },
+    )
+
+    loaded = evaluation._load_checkpoint_state(path)
+    assert loaded["fingerprint"] == fingerprint
+    with pytest.raises(ValueError, match="fingerprint"):
+        evaluation._assert_checkpoint_fingerprint(
+            loaded,
+            {**fingerprint, "code_commit": "changed"},
+        )
+
+
+def test_checkpoint_fingerprint_allows_cache_growth_but_not_mutation() -> None:
+    state = {
+        "fingerprint": evaluation.build_input_fingerprint(
+            start=date(2020, 1, 2),
+            end=date(2024, 12, 31),
+            cache_manifest={"files": [{"name": "daily_20200102.json", "size": 10}]},
+            code_commit="abc123",
+        )
+    }
+    grown = evaluation.build_input_fingerprint(
+        start=date(2020, 1, 2),
+        end=date(2024, 12, 31),
+        cache_manifest={
+            "files": [
+                {"name": "daily_20200102.json", "size": 10},
+                {"name": "daily_20200103.json", "size": 11},
+            ]
+        },
+        code_commit="abc123",
+    )
+    evaluation._assert_checkpoint_fingerprint(state, grown)
+
+    mutated = {**grown, "cache_manifest": {"files": [{"name": "daily_20200102.json", "size": 12}]}}
+    with pytest.raises(ValueError, match="fingerprint"):
+        evaluation._assert_checkpoint_fingerprint(state, mutated)
+
+
+def test_incremental_similarity_skips_completed_months_on_resume(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    candidate = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(["2025-01-02", "2025-02-03"]),
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "replay_value": [1.0, 2.0],
+        }
+    )
+    formal = {
+        "yeslab_380": pd.DataFrame(
+            {
+                "trade_date": pd.to_datetime(["2025-01-02", "2025-02-03"]),
+                "ts_code": ["000001.SZ", "000001.SZ"],
+                "replay_value": [3.0, 4.0],
+            }
+        )
+    }
+    loads: list[tuple[date, date]] = []
+    calls: list[set[str]] = []
+
+    monkeypatch.setattr(
+        evaluation,
+        "FORMAL_FACTOR_IDS",
+        ("yeslab_380",),
+    )
+
+    def fake_load_formal(
+        client: object, *, start: date, end: date
+    ) -> dict[str, pd.DataFrame]:
+        del client
+        loads.append((start, end))
+        return {
+            factor_id: frame.loc[
+                frame["trade_date"].dt.date.between(start, end)
+            ].copy()
+            for factor_id, frame in formal.items()
+        }
+
+    def fake_similarity(
+        frames: dict[str, pd.DataFrame], *, include_daily_values: bool = False
+    ) -> pd.DataFrame:
+        del include_daily_values
+        calls.append(set(frames))
+        return pd.DataFrame(
+            {
+                "factor_id_left": [evaluation.CANDIDATE_ID],
+                "factor_id_right": ["yeslab_380"],
+                "median_abs_spearman": [0.2],
+                "max_abs_spearman": [0.3],
+                "valid_day_count": [1],
+            }
+        )
+
+    monkeypatch.setattr(evaluation, "_load_formal_values", fake_load_formal)
+    monkeypatch.setattr(evaluation, "compute_pair_daily_spearman", fake_similarity)
+
+    first = evaluation._compute_incremental_similarity(
+        object(),
+        candidate,
+        start=date(2025, 1, 1),
+        end=date(2025, 2, 28),
+        checkpoint_dir=tmp_path,
+        resume=False,
+    )
+    second = evaluation._compute_incremental_similarity(
+        object(),
+        candidate,
+        start=date(2025, 1, 1),
+        end=date(2025, 2, 28),
+        checkpoint_dir=tmp_path,
+        resume=True,
+    )
+
+    assert len(first) == len(second) == 2
+    assert len(loads) == 2
+    assert calls == [{evaluation.CANDIDATE_ID, "yeslab_380"}] * 2
+
+
+def test_collapse_similarity_chunks_preserves_valid_day_count() -> None:
+    chunks = pd.DataFrame(
+        {
+            "factor_id_left": [evaluation.CANDIDATE_ID, evaluation.CANDIDATE_ID],
+            "factor_id_right": ["yeslab_380", "yeslab_380"],
+            "median_abs_spearman": [0.2, 0.4],
+            "max_abs_spearman": [0.3, 0.5],
+            "valid_day_count": [2, 1],
+            "daily_spearman": [[0.2, -0.3], [0.5]],
+        }
+    )
+
+    result = evaluation._collapse_similarity_chunks(chunks)
+
+    assert result.to_dict("records") == [
+        {
+            "factor_id_left": evaluation.CANDIDATE_ID,
+            "factor_id_right": "yeslab_380",
+            "median_abs_spearman": pytest.approx(0.3),
+            "max_abs_spearman": pytest.approx(0.5),
+            "valid_day_count": 3,
+        }
+    ]
+
+
+def test_run_evaluation_phase_train_writes_only_train_artifacts(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def fake_window(
+        client: object,
+        *,
+        start: date,
+        end: date,
+        cache_dir: Path,
+        checkpoint_dir: Path | None = None,
+        resume: bool = False,
+    ) -> tuple[pd.DataFrame, dict[str, object], pd.DataFrame]:
+        del client, end, cache_dir, checkpoint_dir, resume
+        return (
+            pd.DataFrame(
+                {
+                    "signal_date": pd.to_datetime([f"{start.year}-01-02"]),
+                    "rank_ic": [0.1],
+                    "sample_count": [100],
+                }
+            ),
+            {"status": "PASS"},
+            pd.DataFrame(
+                {
+                    "factor_id_left": [evaluation.CANDIDATE_ID],
+                    "factor_id_right": ["yeslab_380"],
+                    "median_abs_spearman": [0.1],
+                    "max_abs_spearman": [0.2],
+                    "valid_day_count": [1000],
+                }
+            ),
+        )
+
+    calls: list[tuple[date, date]] = []
+
+    def tracked_window(*args: object, **kwargs: object):
+        calls.append((kwargs["start"], kwargs["end"]))
+        return fake_window(*args, **kwargs)
+
+    monkeypatch.setattr(evaluation, "_evaluate_window", tracked_window)
+    args = evaluation.parse_args(
+        ["--output", str(tmp_path), "--phase", "train"]
+    )
+
+    review = evaluation.run_evaluation(args, client=object())
+
+    assert review["phase"] == "train"
+    assert calls == [(evaluation.TRAIN_START, evaluation.TRAIN_END)]
+    assert (tmp_path / "daily_rank_ic.csv").is_file()
+    assert not (tmp_path / "similarity_summary.json").is_file()
+
+
+def test_main_records_failure_and_returns_nonzero(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def fail(*args: object, **kwargs: object) -> dict[str, object]:
+        del args, kwargs
+        raise RuntimeError("synthetic failure")
+
+    monkeypatch.setattr(evaluation, "run_evaluation", fail)
+    log_file = tmp_path / "run.log"
+
+    result = evaluation.main(
+        ["--output", str(tmp_path / "out"), "--log-file", str(log_file)]
+    )
+
+    assert result == 1
+    assert "run_failed" in log_file.read_text(encoding="utf-8")
+    assert "synthetic failure" in capsys.readouterr().err

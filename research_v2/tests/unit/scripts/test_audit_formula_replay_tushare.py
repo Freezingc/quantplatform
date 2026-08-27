@@ -139,6 +139,97 @@ def test_fetch_full_tushare_shsz_market_uses_daily_scope_and_adjustment(
     }
 
 
+def test_fetch_full_tushare_shsz_market_can_include_daily_basic(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    class FakePro:
+        def daily(self, *, trade_date: str) -> pd.DataFrame:
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ"],
+                    "trade_date": [trade_date],
+                    "open": [10.0],
+                    "high": [11.0],
+                    "low": [9.0],
+                    "close": [10.0],
+                    "pre_close": [9.0],
+                    "vol": [1.0],
+                    "amount": [1.0],
+                    "pct_chg": [1.0],
+                }
+            )
+
+        def adj_factor(self, *, trade_date: str) -> pd.DataFrame:
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ"],
+                    "trade_date": [trade_date],
+                    "adj_factor": [2.0],
+                }
+            )
+
+        def daily_basic(self, *, trade_date: str, fields: str) -> pd.DataFrame:
+            assert fields == "ts_code,trade_date,turnover_rate,total_mv"
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ"],
+                    "trade_date": [trade_date],
+                    "turnover_rate": [3.0],
+                    "total_mv": [4.0],
+                }
+            )
+
+    monkeypatch.setitem(sys.modules, "tushare", SimpleNamespace(pro_api=lambda _: FakePro()))
+
+    result = audit.fetch_full_tushare_shsz_market(
+        (date(2025, 1, 2),),
+        token="token",
+        cache_dir=tmp_path,
+        include_daily_basic=True,
+    )
+
+    assert result.loc[0, "turnover_rate"] == 3.0
+    assert result.loc[0, "total_mv"] == 4.0
+
+
+def test_fetch_full_tushare_shsz_market_accepts_legacy_basic_cache(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    trade_date = date(2025, 1, 2)
+    daily = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "trade_date": ["20250102"],
+            "open": [10.0],
+            "high": [11.0],
+            "low": [9.0],
+            "close": [10.0],
+            "pre_close": [9.0],
+            "vol": [1.0],
+            "amount": [1.0],
+            "pct_chg": [1.0],
+        }
+    )
+    adjustment = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "trade_date": ["20250102"],
+            "adj_factor": [2.0],
+        }
+    )
+    basic = pd.DataFrame({"ts_code": ["000001.SZ"], "turnover_rate": [3.0]})
+    daily.to_json(tmp_path / "daily_20250102.json", orient="table")
+    adjustment.to_json(tmp_path / "adj_factor_20250102.json", orient="table")
+    basic.to_json(tmp_path / "daily_basic_20250102.json", orient="table")
+    monkeypatch.setitem(sys.modules, "tushare", None)
+
+    result = audit.fetch_full_tushare_shsz_market(
+        (trade_date,), token="", cache_dir=tmp_path, include_daily_basic=True
+    )
+
+    assert result.loc[0, "turnover_rate"] == 3.0
+
+
 def test_fetch_full_tushare_shsz_market_uses_complete_cache_without_token(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

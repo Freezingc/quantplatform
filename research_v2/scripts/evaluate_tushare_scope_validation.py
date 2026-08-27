@@ -139,6 +139,7 @@ def compute_pair_daily_spearman(
     replay_frames: dict[str, pd.DataFrame],
     *,
     minimum_cross_section: int = 30,
+    include_daily_values: bool = False,
 ) -> pd.DataFrame:
     """Summarize absolute daily Spearman similarity for replayed panels."""
     rows: list[dict[str, object]] = []
@@ -172,15 +173,16 @@ def compute_pair_daily_spearman(
                 values.append(float(corr))
         if values:
             absolute = np.abs(np.asarray(values, dtype=float))
-            rows.append(
-                {
+            row = {
                     "factor_id_left": left_id,
                     "factor_id_right": right_id,
                     "median_abs_spearman": float(np.median(absolute)),
                     "max_abs_spearman": float(np.max(absolute)),
                     "valid_day_count": len(values),
                 }
-            )
+            if include_daily_values:
+                row["daily_spearman"] = values
+            rows.append(row)
     return pd.DataFrame(
         rows,
         columns=[
@@ -189,7 +191,7 @@ def compute_pair_daily_spearman(
             "median_abs_spearman",
             "max_abs_spearman",
             "valid_day_count",
-        ],
+        ] + (["daily_spearman"] if include_daily_values else []),
     )
 
 

@@ -282,6 +282,7 @@ def fetch_full_tushare_shsz_market(
     *,
     token: str,
     cache_dir: Path,
+    include_daily_basic: bool = False,
 ) -> pd.DataFrame:
     """Fetch all daily Tushare SH/SZ rows and adjusted fields for open dates."""
     expected_dates = tuple(sorted(set(open_dates)))
@@ -329,7 +330,45 @@ def fetch_full_tushare_shsz_market(
             raise RuntimeError(
                 f"Tushare adjustment factor returned no rows for {trade_date:%Y-%m-%d}"
             )
-        frames.append(merge_tushare_adjustment_factor(daily, adjustment))
+        merged = merge_tushare_adjustment_factor(daily, adjustment)
+        if include_daily_basic:
+            basic_path = cache_dir / f"daily_basic_{trade_date:%Y%m%d}.json"
+            if basic_path.is_file():
+                basic = pd.read_json(basic_path, orient="table")
+            else:
+                basic = api().daily_basic(
+                    trade_date=trade_date.strftime("%Y%m%d"),
+                    fields="ts_code,trade_date,turnover_rate,total_mv",
+                )
+                if isinstance(basic, pd.DataFrame) and not basic.empty:
+                    basic_path.write_text(
+                        basic.to_json(orient="table", date_format="iso"),
+                        encoding="utf-8",
+                    )
+            if isinstance(basic, pd.DataFrame) and not basic.empty:
+                basic = basic.copy()
+                basic["ts_code"] = basic["ts_code"].astype(str)
+                if "trade_date" not in basic.columns:
+                    # Older cache files were written from daily_basic fields
+                    # without the repeated date column; their filename is the
+                    # requested date and remains an unambiguous key.
+                    basic["trade_date"] = pd.Timestamp(trade_date)
+                else:
+                    basic["trade_date"] = pd.to_datetime(
+                        basic["trade_date"], errors="raise"
+                    ).dt.normalize()
+                basic_columns = ["ts_code", "trade_date"] + [
+                    column
+                    for column in ("turnover_rate", "total_mv")
+                    if column in basic.columns
+                ]
+                merged = merged.merge(
+                    basic.loc[:, basic_columns],
+                    on=["ts_code", "trade_date"],
+                    how="left",
+                    validate="one_to_one",
+                )
+        frames.append(merged)
     normalized = normalize_full_tushare_market(pd.concat(frames, ignore_index=True))
     observed_dates = set(pd.to_datetime(normalized["trade_date"], errors="raise").dt.date)
     missing_dates = sorted(set(expected_dates).difference(observed_dates))
