@@ -1022,6 +1022,43 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha114_tushare_shsz_canonical_v2": {
+    "artifact": "tushare_alpha114_canonical_candidate_review_v2.json",
+    "factor_id": "yeslab_114_tushare_shsz_v2",
+    "source_factor_id": "yeslab_114",
+    "factor_name": "惊恐波动",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "training_signed_mean_rank_ic": 0.07567604043142041,
+    "training_signed_icir": 0.5495896863019762,
+    "validation_signed_mean_rank_ic": 0.07623526197950761,
+    "validation_signed_icir": 0.5227216040344088,
+    "annual_gate_years": "4/5",
+    "training_similarity_max": 0.8059308498,
+    "validation_similarity_max": 0.806417401,
+    "monthly_monitoring": {
+      "training_signed_mean_pass_months": "47/60",
+      "training_directional_day_share_pass_months": "46/60",
+      "training_strict_monthly_icir_pass_months": "32/60",
+      "validation_signed_mean_pass_months": "9/12",
+      "validation_directional_day_share_pass_months": "8/12",
+      "validation_strict_monthly_icir_pass_months": "7/12",
+      "validation_watch_months": ["2025-01", "2025-02", "2025-04", "2025-12"]
+    },
+    "regime_status": "VALIDATION_REGIME_SENSITIVE",
+    "panel_contract": "continuous-period SH/SZ Tushare panel, then V2 label/universe join",
+    "historical_split_comparison": "2020 single-year rerun exactly reproduces the prior year-split artifact; prior split-year aggregates are not mixed with this v2 continuous-window result",
+    "formula_scope_status": "PASS_FOR_ISOLATED_TUSHARE_VERSION",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "alpha381_admission_preflight": {
     "factor_id": "yeslab_381",
     "factor_name": "GP_012",
@@ -1287,6 +1324,12 @@
     "tushare_alpha381_canonical_validation_v1/similarity_summary.json",
     "tushare_alpha381_alpha405_pair_train_v1/similarity_summary.json",
     "tushare_alpha381_alpha405_pair_validation_v1/similarity_summary.json",
+    "tushare_alpha114_canonical_candidate_review_v2.json",
+    "tushare_alpha114_canonical_train_similarity_v1/quality_summary.json",
+    "tushare_alpha114_canonical_train_similarity_v1/similarity_summary.json",
+    "tushare_alpha114_canonical_validation_v1/quality_summary.json",
+    "tushare_alpha114_canonical_validation_v1/similarity_summary.json",
+    "tushare_alpha114_canonical_train_2020_yearscope_diagnostic_v1/quality_summary.json",
     "factor_quality_latest_refresh_v1.json"
   ]
 }

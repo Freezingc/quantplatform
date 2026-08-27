@@ -1,0 +1,114 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA114_CANONICAL_CANDIDATE_REVIEW_V2",
+  "candidate_id": "yeslab_114_tushare_shsz_v2",
+  "source_factor_id": "yeslab_114",
+  "factor_name": "惊恐波动",
+  "formula": {
+    "calculator": "TerriStdCalculator",
+    "expression": "STD(((ABS(pct_chg - market_return) / (ABS(pct_chg) + ABS(market_return) + 0.1)) * pct_chg), 20)",
+    "market_return": "pct_change(cross_sectional_mean(close)) * 100",
+    "required_market_fields": ["close", "pct_chg"],
+    "rolling_windows": [20],
+    "cross_sectional": true,
+    "forward_lookahead": false
+  },
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "direction": {
+    "frozen_direction": -1,
+    "source": "research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.csv",
+    "validation_reestimated": false
+  },
+  "panel_contract": {
+    "training_code_scope": "SH/SZ code union observed in the complete 2020-01-02/2024-12-31 V2 label/universe range",
+    "validation_code_scope": "SH/SZ code union observed in the complete 2025-01-02/2025-12-31 V2 label/universe range",
+    "calculation_order": "calculate on the complete Tushare panel, then join active V2 label/universe keys",
+    "historical_split_comparison": "The earlier year-by-year artifacts used a separate code union per year. A 2020 single-year rerun reproduces the earlier artifact exactly; those split-year aggregate values are not mixed with this continuous-window result."
+  },
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.07567604043142041,
+    "signed_mean_rank_ic": 0.07567604043142041,
+    "icir": -0.5495896863019762,
+    "signed_icir": 0.5495896863019762,
+    "directional_day_share": 0.7079207920792079,
+    "annual_gate_years": 4,
+    "annual_gate_rule": "signed mean RankIC > 0.02, signed ICIR >= 0.50, directional share >= 0.55",
+    "annual": {
+      "2020": {"valid_day_count": 243, "signed_mean_rank_ic": 0.0642479966063088, "signed_icir": 0.5045267760941717, "directional_day_share": 0.6707818930041153, "gate": "PASS"},
+      "2021": {"valid_day_count": 243, "signed_mean_rank_ic": 0.07281127795821177, "signed_icir": 0.5698515437366788, "directional_day_share": 0.7283950617283951, "gate": "PASS"},
+      "2022": {"valid_day_count": 242, "signed_mean_rank_ic": 0.08446258696575992, "signed_icir": 0.7177131372461393, "directional_day_share": 0.7727272727272727, "gate": "PASS"},
+      "2023": {"valid_day_count": 242, "signed_mean_rank_ic": 0.07713685760863104, "signed_icir": 0.5787529848055287, "directional_day_share": 0.6776859504132231, "gate": "PASS"},
+      "2024": {"valid_day_count": 242, "signed_mean_rank_ic": 0.07978054420124137, "signed_icir": 0.4549939932707622, "directional_day_share": 0.6900826446280992, "gate": "FAIL_ICIR"}
+    }
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.07623526197950761,
+    "signed_mean_rank_ic": 0.07623526197950761,
+    "icir": -0.5227216040344088,
+    "signed_icir": 0.5227216040344088,
+    "directional_day_share": 0.6954732510288066
+  },
+  "coverage": {
+    "training": {"median": 0.9950536657754353, "p05": 0.9883636363636363, "daily_minimum": 0.9826207855404936, "monthly_minimum": 0.9826207855404936},
+    "validation": {"median": 0.9952916557677217, "p05": 0.9932189242511027, "daily_minimum": 0.991347666491872, "monthly_minimum": 0.991347666491872},
+    "thresholds": {"median": 0.8, "p05": 0.7, "monthly_minimum": 0.7},
+    "status": "PASS"
+  },
+  "monthly_monitoring": {
+    "thresholds": {"signed_mean_rank_ic": 0.02, "directional_day_share": 0.55, "strict_monthly_signed_icir": 0.5},
+    "training": {"month_count": 60, "signed_mean_pass_months": 47, "directional_day_share_pass_months": 46, "strict_monthly_icir_pass_months": 32, "watch_month_count": 15, "leave_one_month_min_signed_icir": 0.5336232809},
+    "validation": {"month_count": 12, "signed_mean_pass_months": 9, "directional_day_share_pass_months": 8, "strict_monthly_icir_pass_months": 7, "watch_months": ["2025-01", "2025-02", "2025-04", "2025-12"], "leave_one_month_min_signed_icir": 0.4464770312},
+    "status": "PASS_WITH_REQUIRED_MONTHLY_MONITORING",
+    "source": "tushare_alpha114_canonical_train_similarity_v1/daily_rank_ic.csv and tushare_alpha114_canonical_validation_v1/daily_rank_ic.csv"
+  },
+  "market_regime_monitoring": {
+    "status": "VALIDATION_REGIME_SENSITIVE",
+    "train_nonpositive_trend_signed_icir": 0.5151686155,
+    "train_positive_trend_signed_icir": 0.5858391544,
+    "train_high_volatility_signed_icir": 0.4947030263,
+    "train_low_volatility_signed_icir": 0.6004354467,
+    "validation_nonpositive_trend_signed_icir": 0.2513531009,
+    "validation_positive_trend_signed_icir": 0.7178259818,
+    "validation_high_volatility_signed_icir": 0.1474457996,
+    "validation_low_volatility_signed_icir": 0.7807670601,
+    "artifact": "tushare_shsz_candidate_market_regime_stability_v1.json"
+  },
+  "similarity_to_formal_nine": {
+    "threshold": 0.9,
+    "training": {"pair_count": 9, "valid_day_count": 1212, "maximum_median_abs_spearman": 0.8059308498, "nearest_reference_factor": "yeslab_376", "status": "PASS", "artifact": "tushare_alpha114_canonical_train_similarity_v1/similarity_summary.json"},
+    "validation": {"pair_count": 9, "valid_day_count": 243, "maximum_median_abs_spearman": 0.806417401, "nearest_reference_factor": "yeslab_376", "status": "PASS", "artifact": "tushare_alpha114_canonical_validation_v1/similarity_summary.json"}
+  },
+  "scope_transition": {
+    "historical_source_scope_status": "REQUIRES_ISOLATED_CANONICAL_VERSION",
+    "canonical_candidate_scope_status": "PASS_SH_SZ_ONLY",
+    "formula_scope_gate": "PASS_FOR_ISOLATED_TUSHARE_VERSION",
+    "reason": "The candidate is calculated from a Tushare SH/SZ panel and never mixes stored historical factor values into the replay."
+  },
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
+  "model_eligible": false,
+  "formal_factor_set_changed": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "evidence": [
+    "tushare_alpha114_canonical_train_similarity_v1/quality_summary.json",
+    "tushare_alpha114_canonical_train_similarity_v1/similarity_summary.json",
+    "tushare_alpha114_canonical_train_similarity_v1/daily_rank_ic.csv",
+    "tushare_alpha114_canonical_validation_v1/quality_summary.json",
+    "tushare_alpha114_canonical_validation_v1/similarity_summary.json",
+    "tushare_alpha114_canonical_validation_v1/daily_rank_ic.csv",
+    "alpha114_tushare_canonical_candidate_review_v1.json",
+    "tushare_alpha114_canonical_train_2020_yearscope_diagnostic_v1/quality_summary.json",
+    "alpha114_tushare_formal9_full_similarity_audit_v1.json",
+    "tushare_shsz_candidate_market_regime_stability_v1.json",
+    "tushare_shsz_candidate_leave_one_month_stress_v1.json"
+  ]
+}
