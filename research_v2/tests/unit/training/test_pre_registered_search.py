@@ -3,12 +3,13 @@ from __future__ import annotations
 import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
+import research_v2.training.search as search
 from research_v2.datasets.manifest import build_dataset_manifest
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.training.search import (
@@ -108,6 +109,8 @@ def test_trial_scheduler_records_exclusive_gpu_leases_and_completion_audit(
         scheduler.complete(first.trial.config_hash, lease_id="wrong")
     scheduler.complete(first.trial.config_hash, lease_id=first.lease_id)
     assert [event.event for event in scheduler.audit()] == ["LEASED", "LEASED", "COMPLETED"]
+    assert all(event.occurred_at.endswith("+00:00") for event in scheduler.audit())
+    scheduler.close()
 
 
 def test_trial_scheduler_atomically_rejects_concurrent_leases_on_one_gpu(
@@ -129,6 +132,7 @@ def test_trial_scheduler_atomically_rejects_concurrent_leases_on_one_gpu(
 
     assert sum(result is not None and not isinstance(result, ValueError) for result in results) == 1
     assert sum(isinstance(result, ValueError) for result in results) == 3
+    scheduler.close()
 
 
 def test_trial_scheduler_shares_gpu_and_trial_claims_across_scheduler_instances(
@@ -143,6 +147,7 @@ def test_trial_scheduler_shares_gpu_and_trial_claims_across_scheduler_instances(
     assert claimed is not None
     with pytest.raises(ValueError, match="gpu-0"):
         second.lease_next(worker_id="worker-b", gpu_id="gpu-0")
+    first.close()
 
 
 def test_trial_scheduler_cannot_reissue_a_trial_completed_by_another_instance(
@@ -157,6 +162,94 @@ def test_trial_scheduler_cannot_reissue_a_trial_completed_by_another_instance(
     assert lease is not None
     first.complete(lease.trial.config_hash, lease_id=lease.lease_id)
     assert second.lease_next(worker_id="worker-b", gpu_id="gpu-1") is None
+
+
+def test_trial_scheduler_reclaims_an_expired_lease_after_a_worker_crash(
+    tmp_path: object,
+) -> None:
+    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64,)})
+    started_at = datetime(2026, 8, 27, 12, tzinfo=UTC)
+    first = TrialScheduler(
+        trials,
+        lease_root=tmp_path / "leases",  # type: ignore[operator]
+        lease_duration=timedelta(minutes=1),
+        clock=lambda: started_at,
+    )
+    recovered = TrialScheduler(
+        trials,
+        lease_root=tmp_path / "leases",  # type: ignore[operator]
+        lease_duration=timedelta(minutes=1),
+        clock=lambda: started_at + timedelta(minutes=2),
+    )
+
+    abandoned = first.lease_next(worker_id="worker-a", gpu_id="gpu-0")
+    replacement = recovered.lease_next(worker_id="worker-b", gpu_id="gpu-1")
+
+    assert abandoned is not None and replacement is not None
+    assert replacement.trial.config_hash == abandoned.trial.config_hash
+    with pytest.raises(ValueError, match="active lease"):
+        first.complete(abandoned.trial.config_hash, lease_id=abandoned.lease_id)
+    recovered.complete(replacement.trial.config_hash, lease_id=replacement.lease_id)
+
+
+def test_trial_scheduler_uses_host_global_gpu_exclusivity_across_experiment_roots(
+    tmp_path: object,
+) -> None:
+    first = TrialScheduler(
+        build_pre_registered_trials("M1", "F01", {"hidden": (64,)}),
+        lease_root=tmp_path / "experiment-a",  # type: ignore[operator]
+    )
+    second = TrialScheduler(
+        build_pre_registered_trials("M2", "F01", {"hidden": (64,)}),
+        lease_root=tmp_path / "experiment-b",  # type: ignore[operator]
+    )
+
+    lease = first.lease_next(worker_id="worker-a", gpu_id="gpu-global-exclusive")
+
+    assert lease is not None
+    with pytest.raises(ValueError, match="gpu-global-exclusive"):
+        second.lease_next(worker_id="worker-b", gpu_id="gpu-global-exclusive")
+    first.complete(lease.trial.config_hash, lease_id=lease.lease_id)
+
+
+def test_trial_scheduler_reads_shared_audit_events_from_all_scheduler_instances(
+    tmp_path: object,
+) -> None:
+    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128)})
+    first = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
+    second = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
+
+    first_lease = first.lease_next(worker_id="worker-a", gpu_id="gpu-0")
+    second_lease = second.lease_next(worker_id="worker-b", gpu_id="gpu-1")
+
+    assert first_lease is not None and second_lease is not None
+    assert {event.config_hash for event in first.audit()} == {
+        first_lease.trial.config_hash,
+        second_lease.trial.config_hash,
+    }
+    first.complete(first_lease.trial.config_hash, lease_id=first_lease.lease_id)
+    second.complete(second_lease.trial.config_hash, lease_id=second_lease.lease_id)
+
+
+def test_trial_scheduler_can_finish_a_completion_interrupted_after_its_marker(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    scheduler = TrialScheduler(
+        build_pre_registered_trials("M1", "F01", {"hidden": (64,)}),
+        lease_root=tmp_path / "leases",  # type: ignore[operator]
+    )
+    lease = scheduler.lease_next(worker_id="worker-a", gpu_id="gpu-0")
+    assert lease is not None
+    original_remove_claim = search._remove_claim
+    monkeypatch.setattr(search, "_remove_claim", lambda *_: (_ for _ in ()).throw(OSError("disk")))
+
+    with pytest.raises(OSError, match="disk"):
+        scheduler.complete(lease.trial.config_hash, lease_id=lease.lease_id)
+
+    monkeypatch.setattr(search, "_remove_claim", original_remove_claim)
+    scheduler.complete(lease.trial.config_hash, lease_id=lease.lease_id)
+    assert scheduler.audit()[-1].event == "COMPLETED"
 
 
 def test_trial_audit_publication_is_exclusive_under_concurrent_writers(tmp_path: object) -> None:

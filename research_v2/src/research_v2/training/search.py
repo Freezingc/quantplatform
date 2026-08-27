@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import hmac
 import itertools
 import json
 import math
 import os
-from collections.abc import Mapping, Sequence
+import tempfile
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import contextmanager, suppress
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from numbers import Integral, Real
 from pathlib import Path
@@ -27,6 +31,12 @@ _VALIDATION_PROVENANCE_KEY_ENV = "QRV2_VALIDATION_PROVENANCE_HMAC_KEY"
 _OUTER_VALIDATION_YEAR_BY_FOLD = dict(
     zip(("F01", "F02", "F03", "F04", "F05", "F06"), range(2019, 2025), strict=True)
 )
+_HOST_GPU_LOCK_ROOT = Path(tempfile.gettempdir()) / "quant-research-v2-gpu-leases"
+_DEFAULT_LEASE_DURATION = timedelta(hours=4)
+
+
+def _utc_now() -> datetime:
+    return datetime.now(UTC)
 
 
 @dataclass(frozen=True)
@@ -186,12 +196,32 @@ class TrialLease:
     lease_id: str
     worker_id: str
     gpu_id: str
+    expires_at: datetime
 
 
 @dataclass(frozen=True)
 class TrialAuditEvent:
     config_hash: str
     event: str
+    worker_id: str
+    gpu_id: str
+    lease_id: str
+    occurred_at: str
+
+
+@dataclass(frozen=True)
+class _LeaseClaim:
+    config_hash: str
+    lease_id: str
+    worker_id: str
+    gpu_id: str
+    expires_at: datetime
+
+
+@dataclass(frozen=True)
+class _CompletionRecord:
+    config_hash: str
+    lease_id: str
     worker_id: str
     gpu_id: str
 
@@ -214,23 +244,35 @@ class OuterValidationScore:
 
 
 class TrialScheduler:
-    """Lease only pre-registered trials and retain an append-only local audit trail."""
+    """Lease pre-registered trials with expiring claims and host-global GPU locks."""
 
-    def __init__(self, trials: Sequence[SearchTrial], *, lease_root: Path) -> None:
+    def __init__(
+        self,
+        trials: Sequence[SearchTrial],
+        *,
+        lease_root: Path,
+        lease_duration: timedelta = _DEFAULT_LEASE_DURATION,
+        clock: Callable[[], datetime] = _utc_now,
+    ) -> None:
         if not trials or len({trial.config_hash for trial in trials}) != len(trials):
             raise ValueError("trial scheduler requires unique declared trials")
         if len(trials) > 30:
             raise ValueError("trial scheduler cannot accept more than 30 trials")
+        if lease_duration <= timedelta(0):
+            raise ValueError("lease_duration must be positive")
         _require_uniform_trial_scope(trials)
         _validate_trial_identities(trials)
         self._trials = tuple(sorted(trials, key=lambda trial: trial.config_hash))
         self._states = {trial.config_hash: TrialState.PENDING for trial in self._trials}
         self._leases: dict[str, TrialLease] = {}
         self._leased_gpu_ids: set[str] = set()
-        self._audit: list[TrialAuditEvent] = []
+        self._gpu_lock_descriptors: dict[str, int] = {}
         self._lock = Lock()
         self._lease_root = lease_root
+        self._lease_duration = lease_duration
+        self._clock = clock
         self._lease_root.mkdir(parents=True, exist_ok=True)
+        self._event_root.mkdir(parents=True, exist_ok=True)
 
     def lease_next(self, *, worker_id: str, gpu_id: str) -> TrialLease | None:
         _require_text(worker_id, "worker_id")
@@ -241,33 +283,57 @@ class TrialScheduler:
             for trial in self._trials:
                 if self._states[trial.config_hash] is not TrialState.PENDING:
                     continue
-                if self._completion_path(trial.config_hash).exists():
-                    self._states[trial.config_hash] = TrialState.COMPLETED
-                    continue
-                lease = TrialLease(
-                    trial=trial,
-                    lease_id=_lease_id(trial.config_hash, worker_id, gpu_id),
-                    worker_id=worker_id,
-                    gpu_id=gpu_id,
-                )
                 trial_claim = self._trial_claim_path(trial.config_hash)
-                try:
-                    _write_exclusive(trial_claim, lease.lease_id)
-                except FileExistsError:
-                    continue
-                gpu_claim = self._gpu_claim_path(gpu_id)
-                try:
-                    _write_exclusive(gpu_claim, lease.lease_id)
-                except FileExistsError as error:
-                    trial_claim.unlink(missing_ok=True)
-                    raise ValueError(
-                        f"GPU already holds an active trial lease: {gpu_id}"
-                    ) from error
-                self._states[trial.config_hash] = TrialState.LEASED
-                self._leases[trial.config_hash] = lease
-                self._leased_gpu_ids.add(gpu_id)
-                self._audit.append(TrialAuditEvent(trial.config_hash, "LEASED", worker_id, gpu_id))
-                return lease
+                with _exclusive_lock(self._claim_lock_path(trial_claim)):
+                    if self._reconcile_completed_trial(trial.config_hash):
+                        continue
+                    existing = _load_lease_claim(trial_claim)
+                    now = _as_utc(self._clock())
+                    if existing is not None:
+                        if existing.expires_at > now:
+                            continue
+                        self._write_audit_event(
+                            TrialAuditEvent(
+                                trial.config_hash,
+                                "EXPIRED",
+                                existing.worker_id,
+                                existing.gpu_id,
+                                existing.lease_id,
+                                _timestamp(now),
+                            )
+                        )
+                        trial_claim.unlink()
+                    lease = TrialLease(
+                        trial=trial,
+                        lease_id=self._next_lease_id(trial, worker_id, gpu_id),
+                        worker_id=worker_id,
+                        gpu_id=gpu_id,
+                        expires_at=now + self._lease_duration,
+                    )
+                    _write_exclusive(trial_claim, _canonical_json(_lease_payload(lease)) + "\n")
+                    descriptor = _acquire_host_gpu_lock(gpu_id)
+                    if descriptor is None:
+                        trial_claim.unlink(missing_ok=True)
+                        raise ValueError(f"GPU already holds an active trial lease: {gpu_id}")
+                    event = TrialAuditEvent(
+                        trial.config_hash,
+                        "LEASED",
+                        worker_id,
+                        gpu_id,
+                        lease.lease_id,
+                        _timestamp(now),
+                    )
+                    try:
+                        self._write_audit_event(event)
+                    except Exception:
+                        _release_host_gpu_lock(descriptor)
+                        trial_claim.unlink(missing_ok=True)
+                        raise
+                    self._states[trial.config_hash] = TrialState.LEASED
+                    self._leases[trial.config_hash] = lease
+                    self._leased_gpu_ids.add(gpu_id)
+                    self._gpu_lock_descriptors[trial.config_hash] = descriptor
+                    return lease
             return None
 
     def complete(self, config_hash: str, *, lease_id: str) -> None:
@@ -275,28 +341,51 @@ class TrialScheduler:
             lease = self._leases.get(config_hash)
             if lease is None or lease.lease_id != lease_id:
                 raise ValueError("trial completion requires its active lease")
-            try:
-                _write_exclusive(self._completion_path(config_hash), lease.lease_id)
-            except FileExistsError as error:
-                raise ValueError("trial has already been completed by another worker") from error
-            _remove_claim(self._trial_claim_path(config_hash), lease.lease_id)
-            _remove_claim(self._gpu_claim_path(lease.gpu_id), lease.lease_id)
-            self._states[config_hash] = TrialState.COMPLETED
-            del self._leases[config_hash]
-            self._leased_gpu_ids.remove(lease.gpu_id)
-            self._audit.append(
-                TrialAuditEvent(config_hash, "COMPLETED", lease.worker_id, lease.gpu_id)
-            )
+            trial_claim = self._trial_claim_path(config_hash)
+            with _exclusive_lock(self._claim_lock_path(trial_claim)):
+                completion = _load_completion_record(self._completion_path(config_hash))
+                if completion is None:
+                    claim = _load_lease_claim(trial_claim)
+                    if claim is None or claim.lease_id != lease.lease_id:
+                        raise ValueError("trial completion requires its active lease")
+                    completion = _CompletionRecord(
+                        config_hash,
+                        lease.lease_id,
+                        lease.worker_id,
+                        lease.gpu_id,
+                    )
+                    _write_exclusive(
+                        self._completion_path(config_hash),
+                        _canonical_json(_completion_payload(completion)) + "\n",
+                    )
+                elif completion.lease_id != lease.lease_id:
+                    raise ValueError("trial has already been completed by another worker")
+                self._write_audit_event(
+                    TrialAuditEvent(
+                        config_hash,
+                        "COMPLETED",
+                        lease.worker_id,
+                        lease.gpu_id,
+                        lease.lease_id,
+                        _timestamp(_as_utc(self._clock())),
+                    )
+                )
+                _remove_claim_if_owned(trial_claim, lease.lease_id)
+                self._release_gpu_lock(config_hash)
+                self._states[config_hash] = TrialState.COMPLETED
+                del self._leases[config_hash]
+                self._leased_gpu_ids.remove(lease.gpu_id)
 
     def audit(self) -> tuple[TrialAuditEvent, ...]:
         with self._lock:
-            return tuple(self._audit)
+            return self._read_audit_events()
 
     def write_audit(self, root: Path) -> Path:
         """Publish one immutable content-addressed audit without any test-period inputs."""
+        events = self.audit()
         with self._lock:
             payload = {
-                "events": [asdict(event) for event in self._audit],
+                "events": [_audit_summary(event) for event in events],
                 "fold_id": self._trials[0].fold_id,
                 "model_family": self._trials[0].model_family,
                 "schema_version": 1,
@@ -317,12 +406,70 @@ class TrialScheduler:
     def _trial_claim_path(self, config_hash: str) -> Path:
         return self._lease_root / f"trial-{config_hash}.lease"
 
-    def _gpu_claim_path(self, gpu_id: str) -> Path:
-        gpu_digest = hashlib.sha256(gpu_id.encode("utf-8")).hexdigest()
-        return self._lease_root / f"gpu-{gpu_digest}.lease"
-
     def _completion_path(self, config_hash: str) -> Path:
         return self._lease_root / f"trial-{config_hash}.completed"
+
+    @property
+    def _event_root(self) -> Path:
+        return self._lease_root / "events"
+
+    @staticmethod
+    def _claim_lock_path(claim_path: Path) -> Path:
+        return claim_path.with_suffix(claim_path.suffix + ".lock")
+
+    def _reconcile_completed_trial(self, config_hash: str) -> bool:
+        completion = _load_completion_record(self._completion_path(config_hash))
+        if completion is None:
+            return False
+        _remove_claim_if_owned(self._trial_claim_path(config_hash), completion.lease_id)
+        self._states[config_hash] = TrialState.COMPLETED
+        return True
+
+    def _write_audit_event(self, event: TrialAuditEvent) -> None:
+        payload = asdict(event)
+        event_id = hashlib.sha256(_canonical_json(payload).encode()).hexdigest()
+        try:
+            _write_exclusive(self._event_root / f"{event_id}.json", _canonical_json(payload) + "\n")
+        except FileExistsError:
+            return
+
+    def _next_lease_id(self, trial: SearchTrial, worker_id: str, gpu_id: str) -> str:
+        expiration_count = sum(
+            event.event == "EXPIRED" and event.config_hash == trial.config_hash
+            for event in self._read_audit_events()
+        )
+        return _lease_id(trial.config_hash, worker_id, gpu_id, expiration_count)
+
+    def _read_audit_events(self) -> tuple[TrialAuditEvent, ...]:
+        events = [_load_audit_event(path) for path in sorted(self._event_root.glob("*.json"))]
+        return tuple(
+            sorted(
+                events,
+                key=lambda event: (
+                    event.occurred_at,
+                    {"LEASED": 0, "EXPIRED": 1, "COMPLETED": 2}[event.event],
+                    event.config_hash,
+                    event.lease_id,
+                ),
+            )
+        )
+
+    def _release_gpu_lock(self, config_hash: str) -> None:
+        descriptor = self._gpu_lock_descriptors.pop(config_hash, None)
+        if descriptor is not None:
+            _release_host_gpu_lock(descriptor)
+
+    def close(self) -> None:
+        """Release local GPU descriptors; persistent trial claims expire if not completed."""
+        with self._lock:
+            for descriptor in tuple(self._gpu_lock_descriptors.values()):
+                _release_host_gpu_lock(descriptor)
+            self._gpu_lock_descriptors.clear()
+            self._leased_gpu_ids.clear()
+
+    def __del__(self) -> None:
+        with suppress(Exception):
+            self.close()
 
 
 def build_pre_registered_trials(
@@ -539,8 +686,164 @@ def _verify_validation_provenance(
         verified.add(provenance)
 
 
-def _lease_id(config_hash: str, worker_id: str, gpu_id: str) -> str:
-    return hashlib.sha256(f"{config_hash}|{worker_id}|{gpu_id}".encode()).hexdigest()
+def _lease_id(config_hash: str, worker_id: str, gpu_id: str, attempt: int) -> str:
+    return hashlib.sha256(f"{config_hash}|{worker_id}|{gpu_id}|{attempt}".encode()).hexdigest()
+
+
+def _audit_summary(event: TrialAuditEvent) -> dict[str, str]:
+    """Keep the published experiment audit reproducible while the event log retains time."""
+    return {
+        "config_hash": event.config_hash,
+        "event": event.event,
+        "gpu_id": event.gpu_id,
+        "lease_id": event.lease_id,
+        "worker_id": event.worker_id,
+    }
+
+
+def _lease_payload(lease: TrialLease) -> dict[str, str]:
+    return {
+        "config_hash": lease.trial.config_hash,
+        "expires_at": _as_utc(lease.expires_at).isoformat(),
+        "gpu_id": lease.gpu_id,
+        "lease_id": lease.lease_id,
+        "worker_id": lease.worker_id,
+    }
+
+
+def _completion_payload(completion: _CompletionRecord) -> dict[str, str]:
+    return {
+        "config_hash": completion.config_hash,
+        "gpu_id": completion.gpu_id,
+        "lease_id": completion.lease_id,
+        "worker_id": completion.worker_id,
+    }
+
+
+def _load_lease_claim(path: Path) -> _LeaseClaim | None:
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError("trial lease claim is malformed") from error
+    if not isinstance(payload, dict) or set(payload) != {
+        "config_hash",
+        "expires_at",
+        "gpu_id",
+        "lease_id",
+        "worker_id",
+    }:
+        raise ValueError("trial lease claim is malformed")
+    config_hash = payload.get("config_hash")
+    lease_id = payload.get("lease_id")
+    worker_id = payload.get("worker_id")
+    gpu_id = payload.get("gpu_id")
+    expires_at = payload.get("expires_at")
+    if (
+        not isinstance(config_hash, str)
+        or not _is_sha256(config_hash)
+        or not isinstance(lease_id, str)
+        or not isinstance(worker_id, str)
+        or not isinstance(gpu_id, str)
+        or not isinstance(expires_at, str)
+    ):
+        raise ValueError("trial lease claim is malformed")
+    _require_text(lease_id, "lease_id")
+    _require_text(worker_id, "worker_id")
+    _require_text(gpu_id, "gpu_id")
+    try:
+        return _LeaseClaim(
+            config_hash,
+            lease_id,
+            worker_id,
+            gpu_id,
+            _as_utc(datetime.fromisoformat(expires_at)),
+        )
+    except ValueError as error:
+        raise ValueError("trial lease claim is malformed") from error
+
+
+def _load_completion_record(path: Path) -> _CompletionRecord | None:
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError("trial completion record is malformed") from error
+    if not isinstance(payload, dict) or set(payload) != {
+        "config_hash",
+        "gpu_id",
+        "lease_id",
+        "worker_id",
+    }:
+        raise ValueError("trial completion record is malformed")
+    config_hash = payload.get("config_hash")
+    lease_id = payload.get("lease_id")
+    worker_id = payload.get("worker_id")
+    gpu_id = payload.get("gpu_id")
+    if (
+        not isinstance(config_hash, str)
+        or not _is_sha256(config_hash)
+        or not isinstance(lease_id, str)
+        or not isinstance(worker_id, str)
+        or not isinstance(gpu_id, str)
+    ):
+        raise ValueError("trial completion record is malformed")
+    _require_text(lease_id, "lease_id")
+    _require_text(worker_id, "worker_id")
+    _require_text(gpu_id, "gpu_id")
+    return _CompletionRecord(config_hash, lease_id, worker_id, gpu_id)
+
+
+def _load_audit_event(path: Path) -> TrialAuditEvent:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError("trial audit event is malformed") from error
+    if not isinstance(payload, dict) or set(payload) != {
+        "config_hash",
+        "event",
+        "gpu_id",
+        "lease_id",
+        "occurred_at",
+        "worker_id",
+    }:
+        raise ValueError("trial audit event is malformed")
+    config_hash = payload.get("config_hash")
+    event = payload.get("event")
+    worker_id = payload.get("worker_id")
+    gpu_id = payload.get("gpu_id")
+    lease_id = payload.get("lease_id")
+    occurred_at = payload.get("occurred_at")
+    if (
+        not isinstance(config_hash, str)
+        or not _is_sha256(config_hash)
+        or event not in {"LEASED", "EXPIRED", "COMPLETED"}
+        or not isinstance(worker_id, str)
+        or not isinstance(gpu_id, str)
+        or not isinstance(lease_id, str)
+        or not isinstance(occurred_at, str)
+    ):
+        raise ValueError("trial audit event is malformed")
+    _require_text(worker_id, "worker_id")
+    _require_text(gpu_id, "gpu_id")
+    _require_text(lease_id, "lease_id")
+    try:
+        _as_utc(datetime.fromisoformat(occurred_at))
+    except ValueError as error:
+        raise ValueError("trial audit event is malformed") from error
+    return TrialAuditEvent(config_hash, event, worker_id, gpu_id, lease_id, occurred_at)
+
+
+def _as_utc(value: datetime) -> datetime:
+    if not isinstance(value, datetime) or value.tzinfo is None:
+        raise ValueError("lease timestamps must be timezone-aware datetimes")
+    return value.astimezone(UTC)
+
+
+def _timestamp(value: datetime) -> str:
+    return _as_utc(value).isoformat()
 
 
 def _provenance_id(payload: Mapping[str, object]) -> str:
@@ -597,12 +900,51 @@ def _write_exclusive(path: Path, content: str) -> None:
 
 
 def _remove_claim(path: Path, lease_id: str) -> None:
+    claim = _load_lease_claim(path)
+    if claim is None:
+        raise ValueError("active lease claim is missing")
+    if claim.lease_id != lease_id:
+        raise ValueError("active lease claim does not match the completing lease")
+    path.unlink()
+
+
+def _remove_claim_if_owned(path: Path, lease_id: str) -> None:
     try:
-        if path.read_text(encoding="utf-8") != lease_id:
-            raise ValueError("active lease claim does not match the completing lease")
-        path.unlink()
-    except FileNotFoundError as error:
-        raise ValueError("active lease claim is missing") from error
+        _remove_claim(path, lease_id)
+    except ValueError as error:
+        if str(error) != "active lease claim is missing":
+            raise
+
+
+@contextmanager
+def _exclusive_lock(path: Path) -> Iterator[None]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        yield
+    finally:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+        os.close(descriptor)
+
+
+def _acquire_host_gpu_lock(gpu_id: str) -> int | None:
+    _HOST_GPU_LOCK_ROOT.mkdir(parents=True, exist_ok=True)
+    digest = hashlib.sha256(gpu_id.encode("utf-8")).hexdigest()
+    descriptor = os.open(_HOST_GPU_LOCK_ROOT / f"{digest}.lock", os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        os.close(descriptor)
+        return None
+    return descriptor
+
+
+def _release_host_gpu_lock(descriptor: int) -> None:
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+    finally:
+        os.close(descriptor)
 
 
 def _require_uniform_trial_scope(trials: Sequence[SearchTrial]) -> None:
