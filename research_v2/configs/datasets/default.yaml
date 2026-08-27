@@ -1,0 +1,5 @@
+winsor_lower_quantile: 0.01
+winsor_upper_quantile: 0.99
+minimum_iqr: 1.0e-8
+transformed_clip: 10.0
+missing_fill_value: 0.0

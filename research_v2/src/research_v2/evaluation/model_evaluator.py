@@ -9,9 +9,19 @@ from typing import Any, Literal, cast
 import numpy as np
 import pandas as pd
 
-from research_v2.evaluation.gates import GateEvidence, GateReport, evaluate_oos_gates
+from research_v2.evaluation.gates import (
+    GateEvidence,
+    GateReport,
+    ScoreHealthEvidence,
+    evaluate_oos_gates,
+)
 from research_v2.evaluation.hac import HACMeanTest, hac_mean_test
-from research_v2.evaluation.rank_ic import RankICSummary, compute_daily_rank_ic, summarize_rank_ic
+from research_v2.evaluation.rank_ic import (
+    RankICSummary,
+    compute_daily_rank_ic,
+    summarize_rank_ic,
+    summarize_rank_ic_by_year,
+)
 
 EvaluationRole = Literal["TEST", "VALIDATION", "TRAIN", "LOCKED"]
 
@@ -25,6 +35,7 @@ class FrozenOosEvaluation:
     baseline_mean_rank_ic: float | None
     delta_rank_ic: float | None
     gate_report: GateReport
+    yearly_summary: pd.DataFrame
 
 
 def evaluate_frozen_oos(
@@ -49,12 +60,19 @@ def evaluate_frozen_oos(
         candidate_predictions,
         labels,
         minimum_cross_section=minimum_cross_section,
+        include_invalid=True,
     )
-    if len(daily) <= 5:
-        raise ValueError("OOS evaluation requires more than five valid daily RankIC observations")
     summary = summarize_rank_ic(daily)
-    hac = hac_mean_test(daily["rank_ic"], max_lags=5)
-    yearly = _yearly_mean_rank_ic(daily)
+    if summary.valid_day_count <= 5:
+        raise ValueError("OOS evaluation requires more than five valid daily RankIC observations")
+    valid_daily = daily.loc[daily["rank_ic_valid"]]
+    hac = hac_mean_test(valid_daily["rank_ic"], max_lags=5)
+    yearly_summary = summarize_rank_ic_by_year(daily)
+    yearly = {
+        int(cast(Any, row.year)): float(cast(Any, row.mean_rank_ic))
+        for row in yearly_summary.itertuples(index=False)
+        if math.isfinite(float(cast(Any, row.mean_rank_ic)))
+    }
     baseline_mean: float | None = None
     delta: float | None = None
     if baseline_predictions_matched is not None:
@@ -62,9 +80,12 @@ def evaluate_frozen_oos(
             baseline_predictions_matched,
             labels,
             minimum_cross_section=minimum_cross_section,
+            include_invalid=True,
         )
         baseline_summary = summarize_rank_ic(baseline_daily)
-        if not math.isfinite(baseline_summary.mean_rank_ic):
+        if baseline_summary.valid_day_count <= 0 or not math.isfinite(
+            baseline_summary.mean_rank_ic
+        ):
             raise ValueError("baseline has no valid OOS RankIC observations")
         baseline_mean = baseline_summary.mean_rank_ic
         delta = summary.mean_rank_ic - baseline_mean
@@ -75,7 +96,7 @@ def evaluate_frozen_oos(
         yearly_mean_rank_ic=yearly,
         candidate_delta_rank_ic=delta,
         valid_test_day_count=valid_label_days,
-        good_score_day_count=len(daily),
+        score_health=_score_health_evidence(daily, minimum_cross_section),
     )
     return FrozenOosEvaluation(
         daily_rank_ic=daily,
@@ -85,14 +106,23 @@ def evaluate_frozen_oos(
         baseline_mean_rank_ic=baseline_mean,
         delta_rank_ic=delta,
         gate_report=evaluate_oos_gates(evidence),
+        yearly_summary=yearly_summary,
     )
 
 
-def _yearly_mean_rank_ic(daily: pd.DataFrame) -> dict[int, float]:
-    dates = pd.to_datetime(daily["signal_date"], errors="raise")
-    values = pd.to_numeric(daily["rank_ic"], errors="coerce")
-    grouped = pd.DataFrame({"year": dates.dt.year, "rank_ic": values}).groupby("year", sort=True)
-    return {int(cast(Any, year)): float(group["rank_ic"].mean()) for year, group in grouped}
+def _score_health_evidence(
+    daily: pd.DataFrame, minimum_cross_section: int
+) -> tuple[ScoreHealthEvidence, ...]:
+    """Convert every sufficiently sized label day into immutable gate evidence."""
+    health_days = daily.loc[daily["valid_label_count"] >= minimum_cross_section]
+    return tuple(
+        ScoreHealthEvidence(
+            coverage=float(cast(Any, row.coverage)),
+            unique_score_count=int(cast(Any, row.prediction_unique_count)),
+            score_std=float(cast(Any, row.prediction_std)),
+        )
+        for row in health_days.itertuples(index=False)
+    )
 
 
 def _match_prediction_coverage(
@@ -123,6 +153,6 @@ def _valid_label_day_count(labels: pd.DataFrame, minimum_cross_section: int) -> 
     if missing := sorted(required.difference(labels.columns)):
         raise ValueError(f"labels are missing columns: {missing}")
     raw_returns = pd.to_numeric(labels["raw_return_5d"], errors="coerce")
-    valid = labels["label_valid"].astype(bool) & np.isfinite(raw_returns)
+    valid = labels["label_valid"].fillna(False).astype(bool) & np.isfinite(raw_returns)
     counts = labels.loc[valid].groupby("signal_date", sort=False).size()
     return int((counts >= minimum_cross_section).sum())

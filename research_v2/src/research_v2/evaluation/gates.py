@@ -14,13 +14,32 @@ class GateStatus(StrEnum):
 
 
 @dataclass(frozen=True)
+class ScoreHealthEvidence:
+    """Per-day score diagnostics used by the OOS collapse gate."""
+
+    coverage: float
+    unique_score_count: int
+    score_std: float
+
+    def passes(self) -> bool:
+        """Return whether this day satisfies every score-health requirement."""
+        return (
+            math.isfinite(self.coverage)
+            and self.coverage >= 0.90
+            and self.unique_score_count >= 10
+            and math.isfinite(self.score_std)
+            and self.score_std > 1e-6
+        )
+
+
+@dataclass(frozen=True)
 class GateEvidence:
     mean_rank_ic: float
     hac_t_statistic: float
     yearly_mean_rank_ic: dict[int, float]
     candidate_delta_rank_ic: float | None
     valid_test_day_count: int
-    good_score_day_count: int
+    score_health: tuple[ScoreHealthEvidence, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -94,10 +113,17 @@ def evaluate_oos_gates(
         observed_value=contribution_share if math.isfinite(contribution_share) else None,
         threshold=0.50,
     )
-    score_day_ratio = (
-        evidence.good_score_day_count / evidence.valid_test_day_count
-        if evidence.valid_test_day_count > 0
-        else float("nan")
-    )
+    score_day_ratio = _score_health_ratio(evidence)
     results["G6"] = _finite_at_least(score_day_ratio, 0.95)
     return GateReport(results=results)
+
+
+def _score_health_ratio(evidence: GateEvidence) -> float:
+    """Compute G6 only from complete per-day evidence, failing closed otherwise."""
+    if evidence.valid_test_day_count <= 0:
+        return float("nan")
+    if len(evidence.score_health) != evidence.valid_test_day_count:
+        return float("nan")
+    if not all(isinstance(item, ScoreHealthEvidence) for item in evidence.score_health):
+        return float("nan")
+    return sum(item.passes() for item in evidence.score_health) / evidence.valid_test_day_count

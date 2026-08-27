@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from research_v2.evaluation.gates import GateEvidence, GateStatus, evaluate_oos_gates
+from research_v2.evaluation.gates import (
+    GateEvidence,
+    GateStatus,
+    ScoreHealthEvidence,
+    evaluate_oos_gates,
+)
 
 
 def _evidence() -> GateEvidence:
@@ -17,7 +22,10 @@ def _evidence() -> GateEvidence:
         },
         candidate_delta_rank_ic=0.005,
         valid_test_day_count=100,
-        good_score_day_count=95,
+        score_health=tuple(
+            [ScoreHealthEvidence(0.90, 10, 1e-6 + 1e-9)] * 95
+            + [ScoreHealthEvidence(0.89, 10, 1e-6 + 1e-9)] * 5
+        ),
     )
 
 
@@ -42,7 +50,7 @@ def test_baseline_marks_relative_gate_not_applicable_and_missing_year_fails_clos
             yearly_mean_rank_ic={2020: 0.1},
             candidate_delta_rank_ic=None,
             valid_test_day_count=10,
-            good_score_day_count=10,
+            score_health=tuple(ScoreHealthEvidence(0.95, 10, 0.1) for _ in range(10)),
         )
     )
 
@@ -50,3 +58,50 @@ def test_baseline_marks_relative_gate_not_applicable_and_missing_year_fails_clos
     assert baseline.all_passed
     assert incomplete.results["G3"].status is GateStatus.FAIL
     assert not incomplete.all_passed
+
+
+def test_score_health_requires_coverage_unique_scores_and_dispersion() -> None:
+    for health in (
+        ScoreHealthEvidence(0.899, 20, 0.1),
+        ScoreHealthEvidence(0.95, 9, 0.1),
+        ScoreHealthEvidence(0.95, 20, 1e-6),
+    ):
+        report = evaluate_oos_gates(
+            GateEvidence(
+                mean_rank_ic=0.03,
+                hac_t_statistic=2.0,
+                yearly_mean_rank_ic={year: 0.01 for year in range(2020, 2026)},
+                candidate_delta_rank_ic=0.005,
+                valid_test_day_count=1,
+                score_health=(health,),
+            )
+        )
+
+        assert report.results["G6"].status is GateStatus.FAIL
+
+
+def test_score_health_missing_or_misaligned_evidence_fails_closed() -> None:
+    evidence = _evidence()
+    missing = evaluate_oos_gates(
+        GateEvidence(
+            mean_rank_ic=evidence.mean_rank_ic,
+            hac_t_statistic=evidence.hac_t_statistic,
+            yearly_mean_rank_ic=evidence.yearly_mean_rank_ic,
+            candidate_delta_rank_ic=evidence.candidate_delta_rank_ic,
+            valid_test_day_count=1,
+            score_health=(),
+        )
+    )
+    misaligned = evaluate_oos_gates(
+        GateEvidence(
+            mean_rank_ic=evidence.mean_rank_ic,
+            hac_t_statistic=evidence.hac_t_statistic,
+            yearly_mean_rank_ic=evidence.yearly_mean_rank_ic,
+            candidate_delta_rank_ic=evidence.candidate_delta_rank_ic,
+            valid_test_day_count=2,
+            score_health=evidence.score_health[:1],
+        )
+    )
+
+    assert missing.results["G6"].status is GateStatus.FAIL
+    assert misaligned.results["G6"].status is GateStatus.FAIL

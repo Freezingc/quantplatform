@@ -1,0 +1,109 @@
+"""Content-addressed manifests for immutable research dataset snapshots."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from datetime import date, datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+
+@dataclass(frozen=True)
+class DatasetManifest:
+    """The immutable identity and provenance of one assembled dataset."""
+
+    dataset_id: str
+    content_hash: str
+    row_count: int
+    business_keys: tuple[str, ...]
+    column_order: tuple[str, ...]
+    metadata: Mapping[str, object]
+
+
+def build_dataset_manifest(
+    frame: pd.DataFrame,
+    *,
+    business_keys: tuple[str, ...],
+    metadata: Mapping[str, object],
+) -> DatasetManifest:
+    """Hash dataset contents after validating and ordering by immutable business keys.
+
+    Column order remains significant because it defines the model input order.  Row order
+    is deliberately not significant: the same keyed observations must have one identity
+    regardless of database or parquet read ordering.
+    """
+    if not business_keys or len(set(business_keys)) != len(business_keys):
+        raise ValueError("business_keys must be non-empty and unique")
+    missing_keys = set(business_keys).difference(frame.columns)
+    if missing_keys:
+        raise ValueError(f"dataset is missing business-key columns: {sorted(missing_keys)}")
+    if frame.loc[:, list(business_keys)].isna().any().any():
+        raise ValueError("business keys cannot contain null values")
+    if frame.duplicated(subset=list(business_keys)).any():
+        raise ValueError("dataset contains duplicate business keys")
+
+    ordered = frame.sort_values(list(business_keys), kind="mergesort", ignore_index=True)
+    column_order = tuple(str(column) for column in ordered.columns)
+    if len(set(column_order)) != len(column_order):
+        raise ValueError("dataset columns must be unique")
+    canonical_metadata = _canonicalize(metadata)
+    if not isinstance(canonical_metadata, dict):
+        raise ValueError("metadata must be a string-keyed mapping")
+    payload = {
+        "business_keys": list(business_keys),
+        "columns": [
+            {"name": column, "dtype": str(ordered[column].dtype)} for column in column_order
+        ],
+        "metadata": canonical_metadata,
+        "rows": [
+            [_canonicalize(value) for value in row]
+            for row in ordered.loc[:, list(column_order)].itertuples(index=False, name=None)
+        ],
+    }
+    content_hash = hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+    return DatasetManifest(
+        dataset_id=content_hash,
+        content_hash=content_hash,
+        row_count=len(ordered),
+        business_keys=business_keys,
+        column_order=column_order,
+        metadata=canonical_metadata,
+    )
+
+
+def _canonicalize(value: object) -> object:
+    if value is None or value is pd.NA or value is pd.NaT:
+        return None
+    if isinstance(value, np.generic):
+        return _canonicalize(value.item())
+    if isinstance(value, (bool, int, str)):
+        return value
+    if isinstance(value, float):
+        if math.isnan(value):
+            return None
+        if math.isinf(value):
+            return {"non_finite": "positive" if value > 0 else "negative"}
+        return value
+    if isinstance(value, (date, datetime, pd.Timestamp)):
+        return value.isoformat()
+    if isinstance(value, pd.Timedelta):
+        return value.isoformat()
+    if isinstance(value, Path):
+        return value.as_posix()
+    if isinstance(value, Mapping):
+        if not all(isinstance(key, str) for key in value):
+            raise ValueError("metadata mapping keys must be strings")
+        return {key: _canonicalize(value[key]) for key in sorted(value)}
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        return [_canonicalize(item) for item in value]
+    raise ValueError(f"unsupported manifest value type: {type(value).__name__}")
+
+
+def _canonical_json(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True)

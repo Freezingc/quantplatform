@@ -15,6 +15,12 @@ class RankICSummary:
     mean_rank_ic: float
     rank_ic_std: float
     icir: float
+    invalid_day_count: int = 0
+    positive_day_share: float = float("nan")
+    mean_sample_count: float = float("nan")
+    sample_count_p05: float = float("nan")
+    sample_count_median: float = float("nan")
+    sample_count_p95: float = float("nan")
 
 
 def compute_daily_rank_ic(
@@ -24,8 +30,17 @@ def compute_daily_rank_ic(
     minimum_cross_section: int = 30,
     score_column: str = "score",
     label_column: str = "raw_return_5d",
+    include_invalid: bool = False,
 ) -> pd.DataFrame:
-    """Compute Spearman RankIC for each valid signal-date cross-section."""
+    """Compute daily Spearman RankIC and optional score-health diagnostics.
+
+    The default keeps the historical API and returns only valid RankIC days.  With
+    ``include_invalid=True``, every label date is retained with ``rank_ic_valid``
+    and score-health fields so callers can distinguish an unevaluable day from a
+    genuine zero correlation.
+    """
+    if minimum_cross_section < 2:
+        raise ValueError("minimum_cross_section must be at least 2")
     required_predictions = {"signal_date", "ts_code", score_column}
     required_labels = {"signal_date", "ts_code", label_column, "label_valid"}
     if missing := sorted(required_predictions.difference(predictions.columns)):
@@ -35,36 +50,78 @@ def compute_daily_rank_ic(
     keys = ["signal_date", "ts_code"]
     if predictions.duplicated(keys).any() or labels.duplicated(keys).any():
         raise ValueError("predictions and labels must have unique signal-date keys")
-    joined = predictions.loc[:, keys + [score_column]].merge(
-        labels.loc[:, keys + [label_column, "label_valid"]],
+    prediction_frame = predictions.loc[:, keys + [score_column]].copy()
+    label_frame = labels.loc[:, keys + [label_column, "label_valid"]].copy()
+    prediction_frame["signal_date"] = pd.to_datetime(
+        prediction_frame["signal_date"], errors="raise"
+    ).dt.normalize()
+    label_frame["signal_date"] = pd.to_datetime(
+        label_frame["signal_date"], errors="raise"
+    ).dt.normalize()
+    label_frame["label_valid"] = label_frame["label_valid"].fillna(False).astype(bool)
+    joined = label_frame.merge(
+        prediction_frame,
         on=keys,
-        how="inner",
+        how="left",
         validate="one_to_one",
     )
     joined[score_column] = pd.to_numeric(joined[score_column], errors="coerce")
     joined[label_column] = pd.to_numeric(joined[label_column], errors="coerce")
-    joined = joined.loc[
-        joined["label_valid"]
-        & np.isfinite(joined[score_column])
-        & np.isfinite(joined[label_column])
-    ]
     rows: list[dict[str, object]] = []
     for signal_date, cross_section in joined.groupby("signal_date", sort=True):
-        if len(cross_section) < minimum_cross_section:
-            continue
-        rank_ic = cross_section[score_column].rank(method="average").corr(
-            cross_section[label_column].rank(method="average"),
-            method="pearson",
+        valid_label = cross_section["label_valid"] & np.isfinite(cross_section[label_column])
+        valid_labels = cross_section.loc[valid_label]
+        finite_score = valid_label & np.isfinite(cross_section[score_column])
+        scored = cross_section.loc[finite_score]
+        eligible_count = len(cross_section)
+        valid_label_count = len(valid_labels)
+        coverage = (
+            len(scored) / valid_label_count if valid_label_count > 0 else 0.0
         )
-        if pd.notna(rank_ic) and math.isfinite(float(rank_ic)):
-            rows.append(
-                {
-                    "signal_date": signal_date,
-                    "rank_ic": float(rank_ic),
-                    "sample_count": len(cross_section),
-                }
-            )
-    result = pd.DataFrame(rows, columns=["signal_date", "rank_ic", "sample_count"])
+        unique_score_count = int(scored[score_column].nunique())
+        score_std = (
+            float(np.std(scored[score_column].to_numpy(dtype=float), ddof=0))
+            if not scored.empty
+            else float("nan")
+        )
+        rank_ic = float("nan")
+        rank_ic_valid = False
+        if len(scored) >= minimum_cross_section:
+            score_rank = scored[score_column].rank(method="average")
+            label_rank = scored[label_column].rank(method="average")
+            if score_rank.nunique(dropna=False) >= 2 and label_rank.nunique(dropna=False) >= 2:
+                candidate_rank_ic = score_rank.corr(label_rank, method="pearson")
+                if pd.notna(candidate_rank_ic) and math.isfinite(float(candidate_rank_ic)):
+                    rank_ic = float(candidate_rank_ic)
+                    rank_ic_valid = True
+        rows.append(
+            {
+                "signal_date": signal_date,
+                "rank_ic": rank_ic,
+                "sample_count": len(scored),
+                "eligible_count": eligible_count,
+                "valid_label_count": valid_label_count,
+                "coverage": float(coverage),
+                "prediction_unique_count": unique_score_count,
+                "prediction_std": score_std,
+                "rank_ic_valid": rank_ic_valid,
+            }
+        )
+    diagnostic_columns = [
+        "signal_date",
+        "rank_ic",
+        "sample_count",
+        "eligible_count",
+        "valid_label_count",
+        "coverage",
+        "prediction_unique_count",
+        "prediction_std",
+        "rank_ic_valid",
+    ]
+    result = pd.DataFrame(rows, columns=diagnostic_columns)
+    if not include_invalid:
+        result = result.loc[result["rank_ic_valid"]].copy()
+        result = result.loc[:, ["signal_date", "rank_ic", "sample_count"]]
     return result.sort_values("signal_date", ignore_index=True)
 
 
@@ -72,10 +129,82 @@ def summarize_rank_ic(daily_rank_ic: pd.DataFrame) -> RankICSummary:
     """Summarize OOS daily RankIC values without pooling cross-sections."""
     if "rank_ic" not in daily_rank_ic.columns:
         raise ValueError("daily RankIC frame is missing rank_ic")
-    values = pd.to_numeric(daily_rank_ic["rank_ic"], errors="coerce").dropna()
+    numeric_rank_ic = pd.to_numeric(daily_rank_ic["rank_ic"], errors="coerce")
+    finite = np.isfinite(numeric_rank_ic)
+    if "rank_ic_valid" in daily_rank_ic.columns:
+        valid = daily_rank_ic["rank_ic_valid"].fillna(False).astype(bool) & finite
+    else:
+        valid = finite
+    values = numeric_rank_ic.loc[valid]
+    invalid_day_count = int(len(daily_rank_ic) - len(values))
     if values.empty:
-        return RankICSummary(0, float("nan"), float("nan"), float("nan"))
+        return RankICSummary(0, float("nan"), float("nan"), float("nan"), invalid_day_count)
     mean = float(values.mean())
     std = float(values.std(ddof=1)) if len(values) > 1 else float("nan")
     icir = mean / std if math.isfinite(std) and std > 0 else float("nan")
-    return RankICSummary(len(values), mean, std, icir)
+    sample_counts = pd.to_numeric(
+        daily_rank_ic.loc[valid, "sample_count"], errors="coerce"
+    ) if "sample_count" in daily_rank_ic.columns else pd.Series(dtype=float)
+    sample_counts = sample_counts.loc[np.isfinite(sample_counts)]
+    return RankICSummary(
+        valid_day_count=len(values),
+        mean_rank_ic=mean,
+        rank_ic_std=std,
+        icir=icir,
+        invalid_day_count=invalid_day_count,
+        positive_day_share=float((values > 0).mean()),
+        mean_sample_count=(
+            float(sample_counts.mean()) if not sample_counts.empty else float("nan")
+        ),
+        sample_count_p05=(
+            float(sample_counts.quantile(0.05)) if not sample_counts.empty else float("nan")
+        ),
+        sample_count_median=(
+            float(sample_counts.quantile(0.50)) if not sample_counts.empty else float("nan")
+        ),
+        sample_count_p95=(
+            float(sample_counts.quantile(0.95)) if not sample_counts.empty else float("nan")
+        ),
+    )
+
+
+def summarize_rank_ic_by_year(daily_rank_ic: pd.DataFrame) -> pd.DataFrame:
+    """Return deterministic RankIC and sample-count summaries by calendar year."""
+    if "signal_date" not in daily_rank_ic.columns:
+        raise ValueError("daily RankIC frame is missing signal_date")
+    columns = [
+        "year",
+        "valid_day_count",
+        "invalid_day_count",
+        "mean_rank_ic",
+        "rank_ic_std",
+        "icir",
+        "positive_day_share",
+        "mean_sample_count",
+        "sample_count_p05",
+        "sample_count_median",
+        "sample_count_p95",
+    ]
+    if daily_rank_ic.empty:
+        return pd.DataFrame(columns=columns)
+    working = daily_rank_ic.copy()
+    working["signal_date"] = pd.to_datetime(working["signal_date"], errors="raise")
+    rows: list[dict[str, object]] = []
+    for year, group in working.groupby(working["signal_date"].dt.year, sort=True):
+        summary = summarize_rank_ic(group)
+        rows.append(
+            {
+                "year": int(year),
+                "valid_day_count": summary.valid_day_count,
+                "invalid_day_count": summary.invalid_day_count,
+                "mean_rank_ic": summary.mean_rank_ic,
+                "rank_ic_std": summary.rank_ic_std,
+                "icir": summary.icir,
+                "positive_day_share": summary.positive_day_share,
+                "mean_sample_count": summary.mean_sample_count,
+                "sample_count_p05": summary.sample_count_p05,
+                "sample_count_median": summary.sample_count_median,
+                "sample_count_p95": summary.sample_count_p95,
+            }
+        )
+    return pd.DataFrame(rows, columns=columns)

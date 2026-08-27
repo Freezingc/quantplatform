@@ -11,7 +11,7 @@
 
 # 排除数据集（如果数据集较大，可以考虑只保留数据集的路径，不提交到 Git）
 data/
-datasets/
+/datasets/
 *.csv
 *.png
 *.txt
