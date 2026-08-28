@@ -148,14 +148,17 @@ def test_summarize_phase_pairs_rejects_missing_edge() -> None:
 Run the command from Task 1 Step 2. Expected: missing materializer and
 summary functions fail the new tests.
 
-- [ ] **Step 3: Implement one-month materialization and complete-matrix validation**
+- [ ] **Step 3: Implement phase materialization and complete-matrix validation**
 
 Use `_load_validation_inputs`, `TushareMarketSession`,
-`_calculator_market_start`, and `replay._replay_factor` for the five source
-calculator candidates. Use `compute_variants(market)["median_abs"]` only for
+`_calculator_market_start`, and `replay._replay_factor` for the source
+calculator candidates. Recompute each fixed train or validation phase once on
+the full SH/SZ Tushare market input, rather than recomputing overlapping
+monthly windows. Use `compute_variants(market)["median_abs"]` only for
 `yeslab_206_median_abs_v2`, and convert its wide panel to the replay-frame
-schema. Restrict every replay frame to the current month’s V2 comparison keys
-after calculation, reject duplicate keys, and call
+schema. Alpha484 may load only the completed fingerprint-verified Tushare
+canonical replay checkpoint. Restrict every replay frame to the phase’s V2
+comparison keys after calculation, reject duplicate keys, and call
 `compute_pair_daily_spearman` with the six fixed candidate IDs.
 
 For each phase, require all 15 unordered pair keys and the phase's exact

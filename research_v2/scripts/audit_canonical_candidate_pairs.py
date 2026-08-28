@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -11,15 +12,13 @@ from itertools import combinations
 from pathlib import Path
 
 import audit_formula_replay_consistency as replay
-import numpy as np
 import pandas as pd
 from audit_formula_replay_tushare import (
     TushareMarketSession,
     _calculator_market_start,
-    _fetch_tushare_market,
+    _connect,
     _query_open_dates,
-    required_market_fields,
-    requires_daily_basic,
+    fetch_full_tushare_shsz_market,
 )
 from evaluate_alpha206_volume_variants import compute_variants
 from evaluate_tushare_scope_validation import (
@@ -34,6 +33,9 @@ VALIDATION_END = date(2025, 12, 31)
 LOCKED_TEST_START = date(2026, 1, 1)
 TRAIN_EXPECTED_DAYS = 1212
 VALIDATION_EXPECTED_DAYS = 243
+DEFAULT_ALPHA484_CHECKPOINT_ROOT = Path(
+    "research_v2/artifacts/checkpoints/alpha484_canonical_v1"
+)
 
 
 @dataclass(frozen=True)
@@ -41,6 +43,7 @@ class CandidateSpec:
     candidate_id: str
     source_factor_id: str
     is_alpha206_median_repair: bool = False
+    is_alpha484_tushare_checkpoint: bool = False
 
 
 CANDIDATES: tuple[CandidateSpec, ...] = (
@@ -48,7 +51,11 @@ CANDIDATES: tuple[CandidateSpec, ...] = (
     CandidateSpec("yeslab_381_tushare_shsz_v1", "yeslab_381"),
     CandidateSpec("yeslab_405_tushare_shsz_v1", "yeslab_405"),
     CandidateSpec("yeslab_425_tushare_shsz_v2", "yeslab_425"),
-    CandidateSpec("yeslab_484_tushare_shsz_v1", "yeslab_484"),
+    CandidateSpec(
+        "yeslab_484_tushare_shsz_v1",
+        "yeslab_484",
+        is_alpha484_tushare_checkpoint=True,
+    ),
     CandidateSpec("yeslab_206_median_abs_v2", "yeslab_206", is_alpha206_median_repair=True),
 )
 
@@ -62,6 +69,7 @@ def _source_definitions() -> tuple[replay.ReplayDefinition, ...]:
         replay.REPLAY_DEFINITIONS[candidate.source_factor_id]
         for candidate in CANDIDATES
         if not candidate.is_alpha206_median_repair
+        and not candidate.is_alpha484_tushare_checkpoint
     )
 
 
@@ -78,11 +86,15 @@ def _validate_window(
 
 
 def _comparison_keys(comparison_keys: pd.DataFrame) -> pd.DataFrame:
-    required = {"signal_date", "ts_code"}
+    date_columns = {"signal_date", "trade_date"}.intersection(comparison_keys.columns)
+    if len(date_columns) != 1:
+        raise ValueError("comparison keys must contain exactly one of signal_date or trade_date")
+    date_column = next(iter(date_columns))
+    required = {date_column, "ts_code"}
     if missing := sorted(required.difference(comparison_keys.columns)):
         raise ValueError(f"comparison keys are missing columns: {missing}")
-    keys = comparison_keys.loc[:, ["signal_date", "ts_code"]].copy()
-    keys["trade_date"] = pd.to_datetime(keys.pop("signal_date"), errors="raise").dt.normalize()
+    keys = comparison_keys.loc[:, [date_column, "ts_code"]].copy()
+    keys["trade_date"] = pd.to_datetime(keys.pop(date_column), errors="raise").dt.normalize()
     keys["ts_code"] = keys["ts_code"].astype(str)
     if keys["trade_date"].dt.date.ge(LOCKED_TEST_START).any():
         raise ValueError("comparison keys reach the 2026 locked test")
@@ -97,6 +109,46 @@ def load_comparison_keys(client: object, start: date, end: date) -> pd.DataFrame
     """Read and normalize the V2 member plus valid-label comparison panel."""
     _validate_window(start, end)
     return _comparison_keys(_load_validation_inputs(client, start, end))
+
+
+def load_alpha484_checkpoint_values(checkpoint_root: Path) -> pd.DataFrame:
+    """Load the completed Tushare Alpha484 replay without historical factor values."""
+    required_fingerprint = {
+        "candidate_id": "yeslab_484_tushare_shsz_v1",
+        "source_factor_id": "yeslab_484",
+        "market_scope": "SH/SZ",
+        "label": "forward_open_5d:v1",
+    }
+    phase_bounds = (
+        ("train", TRAIN_START, TRAIN_END),
+        ("validation", VALIDATION_START, VALIDATION_END),
+    )
+    frames = []
+    for phase, start, end in phase_bounds:
+        directory = checkpoint_root / phase
+        manifest_path = directory / "manifest.json"
+        values_path = directory / "candidate_values.pkl"
+        if not manifest_path.is_file() or not values_path.is_file():
+            raise ValueError(f"Alpha484 Tushare checkpoint is incomplete for {phase}")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        fingerprint = manifest.get("fingerprint") if isinstance(manifest, dict) else None
+        expected = {
+            **required_fingerprint,
+            "start": start.isoformat(),
+            "end": end.isoformat(),
+        }
+        if (
+            not isinstance(fingerprint, Mapping)
+            or manifest.get("schema_version") != 1
+            or manifest.get("status") != "complete"
+            or any(fingerprint.get(key) != value for key, value in expected.items())
+        ):
+            raise ValueError(f"Alpha484 Tushare checkpoint fingerprint mismatch for {phase}")
+        frames.append(_normalize_replay_frame(pd.read_pickle(values_path)))
+    values = pd.concat(frames, ignore_index=True)
+    if not values["ts_code"].str.endswith((".SH", ".SZ")).all():
+        raise ValueError("Alpha484 Tushare checkpoint contains non-SH/SZ values")
+    return values
 
 
 def _normalize_replay_frame(replay_values: pd.DataFrame) -> pd.DataFrame:
@@ -133,10 +185,6 @@ def _restrict_replay_to_month_keys(
         how="left",
         validate="one_to_one",
     )
-    finite = np.isfinite(restricted["replay_value"].to_numpy(dtype=float))
-    if not finite.all():
-        missing = int((~finite).sum())
-        raise ValueError(f"replay values are missing or non-finite for {missing} comparison keys")
     return restricted.loc[:, ["trade_date", "ts_code", "replay_value"]].reset_index(drop=True)
 
 
@@ -160,70 +208,62 @@ def materialize_alpha206_median_repair(
     ].reset_index(drop=True)
 
 
-def load_candidate_month_market(
+def load_candidate_phase_market(
     client: object,
     *,
-    comparison_codes: Sequence[str],
-    month_start: date,
-    month_end: date,
+    phase_start: date,
+    phase_end: date,
     cache_dir: Path,
     token: str | None = None,
 ) -> pd.DataFrame:
-    """Load one pre-2026 Tushare month with calculator-specific warmup."""
-    _validate_window(month_start, month_end)
-    codes = tuple(sorted({str(code) for code in comparison_codes}))
-    if not codes or not all(code.endswith((".SH", ".SZ")) for code in codes):
-        raise ValueError("comparison code union must contain only SH/SZ codes")
+    """Load the canonical full-SH/SZ market once for one evaluation phase."""
+    _validate_window(phase_start, phase_end)
     definitions = _source_definitions()
     alpha206_definition = replay.REPLAY_DEFINITIONS["yeslab_206"]
     market_start = min(
-        _calculator_market_start(client, definition, month_start, month_end)
+        _calculator_market_start(client, definition, phase_start, phase_end)
         for definition in (*definitions, alpha206_definition)
     )
-    open_dates = _query_open_dates(client, market_start, month_end)
-    market_fields = required_market_fields(definitions)
-    return _fetch_tushare_market(
-        codes,
-        market_start,
-        month_end,
+    open_dates = _query_open_dates(client, market_start, phase_end)
+    return fetch_full_tushare_shsz_market(
+        open_dates,
         token=token if token is not None else os.getenv("QRV2_TUSHARE_TOKEN", ""),
-        open_dates=open_dates,
         cache_dir=cache_dir,
-        include_daily_basic=requires_daily_basic(market_fields),
-        include_adjusted_fields=bool(
-            {"open_hfq", "high_hfq", "low_hfq", "close_hfq", "pre_close_hfq"}
-            & set(market_fields)
-        ),
+        include_daily_basic=False,
     )
 
 
-def materialize_candidate_month(
+def materialize_candidate_phase(
     client: object,
     market: pd.DataFrame,
     comparison_keys: pd.DataFrame,
     *,
-    comparison_codes: Sequence[str],
-    month_start: date,
-    month_end: date,
+    phase_start: date,
+    phase_end: date,
+    alpha484_checkpoint_values: pd.DataFrame | None = None,
 ) -> dict[str, pd.DataFrame]:
-    """Replay all six candidates, emitting only the month's V2 comparison keys."""
-    _validate_window(month_start, month_end)
-    codes = tuple(sorted({str(code) for code in comparison_codes}))
-    if not codes or not all(code.endswith((".SH", ".SZ")) for code in codes):
-        raise ValueError("comparison code union must contain only SH/SZ codes")
-    session = TushareMarketSession(client, market, codes)
+    """Replay all candidates once per phase, then restrict to V2 output keys."""
+    _validate_window(phase_start, phase_end)
+    market_codes = tuple(sorted(market["ts_code"].astype(str).unique()))
+    if not market_codes or not all(code.endswith((".SH", ".SZ")) for code in market_codes):
+        raise ValueError("phase market must contain only SH/SZ codes")
+    session = TushareMarketSession(client, market, market_codes)
     frames: dict[str, pd.DataFrame] = {}
     for candidate in CANDIDATES:
         if candidate.is_alpha206_median_repair:
-            replay_values = materialize_alpha206_median_repair(market, month_start, month_end)
+            replay_values = materialize_alpha206_median_repair(market, phase_start, phase_end)
+        elif candidate.is_alpha484_tushare_checkpoint:
+            if alpha484_checkpoint_values is None:
+                raise ValueError("Alpha484 requires a completed Tushare replay checkpoint")
+            replay_values = alpha484_checkpoint_values
         else:
             definition = replay.REPLAY_DEFINITIONS[candidate.source_factor_id]
-            replay_values = replay._replay_factor(session, definition, month_start, month_end)
+            replay_values = replay._replay_factor(session, definition, phase_start, phase_end)
         frames[candidate.candidate_id] = _restrict_replay_to_month_keys(
             replay_values,
             comparison_keys,
-            month_start,
-            month_end,
+            phase_start,
+            phase_end,
         )
     return frames
 
@@ -273,11 +313,150 @@ def summarize_phase_pairs(
     return summary.sort_values(pair_columns, kind="mergesort").reset_index(drop=True)
 
 
+def build_audit_payload(
+    train_replay_frames: Mapping[str, pd.DataFrame],
+    validation_replay_frames: Mapping[str, pd.DataFrame],
+) -> dict[str, object]:
+    """Build comparison-only evidence after both fixed phases are complete."""
+    train_pairs = summarize_phase_pairs(train_replay_frames, TRAIN_EXPECTED_DAYS)
+    validation_pairs = summarize_phase_pairs(
+        validation_replay_frames, VALIDATION_EXPECTED_DAYS
+    )
+    pair_columns = ["factor_id_left", "factor_id_right"]
+    joined = train_pairs.merge(
+        validation_pairs,
+        on=pair_columns,
+        how="inner",
+        validate="one_to_one",
+        suffixes=("_train", "_validation"),
+    )
+    if len(joined) != len(train_pairs) or len(joined) != len(validation_pairs):
+        raise ValueError("complete phase pair matrices do not have matching pair keys")
+    classifications = []
+    for row in joined.sort_values(pair_columns, kind="mergesort").itertuples(index=False):
+        classifications.append(
+            {
+                "factor_id_left": str(row.factor_id_left),
+                "factor_id_right": str(row.factor_id_right),
+                "training_median_abs_spearman": float(row.median_abs_spearman_train),
+                "training_max_abs_spearman": float(row.max_abs_spearman_train),
+                "training_valid_day_count": int(row.valid_day_count_train),
+                "validation_median_abs_spearman": float(row.median_abs_spearman_validation),
+                "validation_max_abs_spearman": float(row.max_abs_spearman_validation),
+                "validation_valid_day_count": int(row.valid_day_count_validation),
+                "status": classify_pair(
+                    float(row.median_abs_spearman_train),
+                    int(row.valid_day_count_train),
+                    float(row.median_abs_spearman_validation),
+                    int(row.valid_day_count_validation),
+                ),
+            }
+        )
+    return {
+        "scope": "TUSHARE_CANONICAL_CANDIDATE_PAIR_SIMILARITY_V1",
+        "decision": "COMPARISON_ONLY_NO_ADMISSION",
+        "candidate_registry": [candidate.candidate_id for candidate in CANDIDATES],
+        "formal_factor_set_changed": False,
+        "model_eligible": False,
+        "database_writes": False,
+        "locked_test_read": False,
+        "candidate_value_sources": {
+            "yeslab_484_tushare_shsz_v1": "completed_tushare_shsz_replay_checkpoint",
+            "all_other_candidates": "local_tushare_market_replay",
+        },
+        "training": {
+            "start": TRAIN_START.isoformat(),
+            "end": TRAIN_END.isoformat(),
+            "expected_valid_day_count": TRAIN_EXPECTED_DAYS,
+        },
+        "validation": {
+            "start": VALIDATION_START.isoformat(),
+            "end": VALIDATION_END.isoformat(),
+            "expected_valid_day_count": VALIDATION_EXPECTED_DAYS,
+        },
+        "train_pairs": train_pairs.to_dict(orient="records"),
+        "validation_pairs": validation_pairs.to_dict(orient="records"),
+        "pair_classifications": classifications,
+    }
+
+
+def _output_paths(output: Path) -> tuple[Path, Path]:
+    """Keep the JSON summary beside the directory containing pair CSV files."""
+    if output.suffix == ".json":
+        return output, output.with_suffix("")
+    return output.with_suffix(".json"), output
+
+
+def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
+    """Run the pre-2026 candidate comparison and write only complete evidence."""
+    _validate_window(args.start, args.end)
+    comparison_keys = load_comparison_keys(client, args.start, args.end)
+    alpha484_checkpoint_values = load_alpha484_checkpoint_values(
+        args.alpha484_checkpoint_root
+    )
+    phase_frames: dict[str, dict[str, pd.DataFrame]] = {}
+    phase_bounds = (
+        ("train", TRAIN_START, TRAIN_END),
+        ("validation", VALIDATION_START, VALIDATION_END),
+    )
+    for phase_name, fixed_start, fixed_end in phase_bounds:
+        phase_start = max(args.start, fixed_start)
+        phase_end = min(args.end, fixed_end)
+        if phase_start > phase_end:
+            phase_frames[phase_name] = {
+                candidate_id: pd.DataFrame(
+                    columns=["trade_date", "ts_code", "replay_value"]
+                )
+                for candidate_id in _candidate_ids()
+            }
+            continue
+        market = load_candidate_phase_market(
+            client,
+            phase_start=phase_start,
+            phase_end=phase_end,
+            cache_dir=args.cache_dir,
+        )
+        phase_frames[phase_name] = materialize_candidate_phase(
+            client,
+            market,
+            comparison_keys,
+            phase_start=phase_start,
+            phase_end=phase_end,
+            alpha484_checkpoint_values=alpha484_checkpoint_values,
+        )
+    payload = build_audit_payload(
+        phase_frames["train"],
+        phase_frames["validation"],
+    )
+    summary_path, pairs_directory = _output_paths(args.output)
+    pairs_directory.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(payload["train_pairs"]).to_csv(
+        pairs_directory / "train_pairs.csv", index=False
+    )
+    pd.DataFrame(payload["validation_pairs"]).to_csv(
+        pairs_directory / "validation_pairs.csv", index=False
+    )
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
+    return payload
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """Parse one read-only comparison range that cannot reach the locked test."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--start", type=date.fromisoformat, default=TRAIN_START)
     parser.add_argument("--end", type=date.fromisoformat, default=VALIDATION_END)
+    parser.add_argument(
+        "--cache-dir", type=Path, default=Path("research_v2/artifacts/tushare_cache")
+    )
+    parser.add_argument(
+        "--alpha484-checkpoint-root",
+        type=Path,
+        default=DEFAULT_ALPHA484_CHECKPOINT_ROOT,
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.start > args.end:
@@ -285,6 +464,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     if args.end >= LOCKED_TEST_START:
         parser.error("comparison range must end before the 2026 locked test")
     return args
+
+
+def main(argv: Sequence[str] | None = None) -> dict[str, object]:
+    """Run the comparison through a read-only DolphinDB connection."""
+    return run_audit(parse_args(argv), client=_connect())
 
 
 def classify_pair(
@@ -302,3 +486,7 @@ def classify_pair(
     if maximum >= 0.80:
         return "ELEVATED_PAIR_REDUNDANCY_MONITOR"
     return "PAIR_UNIQUE"
+
+
+if __name__ == "__main__":
+    main()
