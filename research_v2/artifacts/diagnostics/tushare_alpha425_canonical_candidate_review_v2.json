@@ -1,0 +1,103 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA425_CANONICAL_CANDIDATE_REVIEW_V2",
+  "candidate_id": "yeslab_425_tushare_shsz_v2",
+  "source_factor_id": "yeslab_425",
+  "factor_name": "GP_056",
+  "formula": {
+    "calculator": "GP_Factor_056_Calculator",
+    "expression": "maximum(ts_rank_30(cross_sectional_rank(close)), cross_sectional_rank(ts_std_10(pct_chg)))",
+    "required_market_fields": ["close", "pct_chg"],
+    "rolling_windows": [10, 30],
+    "cross_sectional": true,
+    "forward_lookahead": false
+  },
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "direction": {
+    "frozen_direction": -1,
+    "source": "research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.csv",
+    "validation_reestimated": false
+  },
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.07095455385436544,
+    "signed_mean_rank_ic": 0.07095455385436544,
+    "icir": -0.5576811394164889,
+    "signed_icir": 0.5576811394164889,
+    "directional_day_share": 0.7178217821782178,
+    "annual_gate_years": 4,
+    "annual_gate_rule": "signed mean RankIC > 0.02, signed ICIR >= 0.50, directional share >= 0.55",
+    "annual": {
+      "2020": {"signed_mean_rank_ic": 0.06431747175278833, "signed_icir": 0.5263408983460235, "directional_day_share": 0.6707818930041153, "gate": "PASS"},
+      "2021": {"signed_mean_rank_ic": 0.060901369919518424, "signed_icir": 0.4950997102696903, "directional_day_share": 0.6748971193415638, "gate": "FAIL_ICIR"},
+      "2022": {"signed_mean_rank_ic": 0.07905550077884019, "signed_icir": 0.6859498766872559, "directional_day_share": 0.7603305785123967, "gate": "PASS"},
+      "2023": {"signed_mean_rank_ic": 0.06746858442423824, "signed_icir": 0.5973458342466019, "directional_day_share": 0.731404958677686, "gate": "PASS"},
+      "2024": {"signed_mean_rank_ic": 0.0830988104379148, "signed_icir": 0.5282950904083566, "directional_day_share": 0.7520661157024794, "gate": "PASS"}
+    }
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.09558551046641821,
+    "signed_mean_rank_ic": 0.09558551046641821,
+    "icir": -0.8493809616418155,
+    "signed_icir": 0.8493809616418155,
+    "directional_day_share": 0.7983539094650206
+  },
+  "coverage": {
+    "training": {"median": 0.9978159049819855, "p05": 0.9944768581955234, "daily_minimum": 0.9909565217391304, "monthly_minimum": 0.9909565217391304},
+    "validation": {"median": 0.9977029096477795, "p05": 0.996068255067303, "daily_minimum": 0.9950533715178339, "monthly_minimum": 0.9950533715178339},
+    "thresholds": {"median": 0.8, "p05": 0.7, "monthly_minimum": 0.7},
+    "status": "PASS"
+  },
+  "similarity_to_formal_nine": {
+    "threshold": 0.9,
+    "training": {"pair_count": 9, "valid_day_count": 1212, "maximum_median_abs_spearman": 0.6921005878, "nearest_reference_factor": "yeslab_376", "status": "PASS", "artifact": "tushare_alpha425_canonical_train_similarity_v1/similarity_summary.json"},
+    "validation": {"pair_count": 9, "valid_day_count": 243, "maximum_median_abs_spearman": 0.7232501446, "nearest_reference_factor": "yeslab_376", "status": "PASS", "artifact": "tushare_alpha425_canonical_validation_v1/similarity_summary.json"}
+  },
+  "candidate_pair_monitoring": {
+    "reference_candidate_id": "yeslab_405_tushare_shsz_v1",
+    "threshold": 0.9,
+    "training": {"median_abs_spearman": 0.5973674385, "max_abs_spearman": 0.7593328167, "valid_day_count": 1212},
+    "validation": {"median_abs_spearman": 0.610950812, "max_abs_spearman": 0.7582563831, "valid_day_count": 243},
+    "status": "PAIR_UNIQUE",
+    "action": "The pair is non-redundant under the current threshold, but neither candidate may be admitted, published, or supplied to model training without separate explicit approval."
+  },
+  "stability_monitoring": {
+    "monthly": {"training_watch_month_count": 12, "validation_watch_months": ["2025-02", "2025-09"], "validation_signed_mean_pass_months": "11/12", "validation_directional_day_share_pass_months": "10/12", "artifact": "tushare_shsz_scope_transition_monthly_stability_v1.json"},
+    "leave_one_month": {"training_minimum_signed_icir": 0.5422921698, "validation_minimum_signed_icir": 0.7910186523, "status": "PASS", "artifact": "tushare_shsz_candidate_leave_one_month_stress_v1.json"},
+    "market_regime": {"status": "REGIME_ROBUST_WITH_TRAIN_HIGH_VOL_MONITOR", "training_high_volatility_signed_icir": 0.4900967593, "artifact": "tushare_shsz_candidate_market_regime_stability_v1.json"}
+  },
+  "scope_transition": {
+    "historical_source_unique_codes": 5954,
+    "historical_source_bj_codes": 552,
+    "historical_source_scope_status": "FAIL",
+    "canonical_candidate_scope_status": "PASS_SH_SZ_ONLY",
+    "formula_scope_gate": "PENDING_EXPLICIT_SCOPE_APPROVAL",
+    "reason": "Historical YesLab GP_056 values include BJ securities and cannot be mixed with the SH/SZ Tushare candidate values.",
+    "evidence": "tushare_shsz_scope_transition_audit_381_405_425_v1.json"
+  },
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+  "model_eligible": false,
+  "formal_factor_set_changed": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "evidence": [
+    "tushare_alpha425_canonical_train_similarity_v1/quality_summary.json",
+    "tushare_alpha425_canonical_train_similarity_v1/similarity_summary.json",
+    "tushare_alpha425_canonical_validation_v1/quality_summary.json",
+    "tushare_alpha425_canonical_validation_v1/similarity_summary.json",
+    "tushare_alpha425_alpha405_pair_train_v1/similarity_summary.json",
+    "tushare_alpha425_alpha405_pair_validation_v1/similarity_summary.json",
+    "tushare_shsz_scope_transition_audit_381_405_425_v1.json",
+    "tushare_shsz_scope_transition_monthly_stability_v1.json",
+    "tushare_shsz_candidate_leave_one_month_stress_v1.json",
+    "tushare_shsz_candidate_market_regime_stability_v1.json"
+  ]
+}

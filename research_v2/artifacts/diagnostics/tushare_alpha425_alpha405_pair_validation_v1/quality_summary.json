@@ -1,0 +1,49 @@
+{
+  "code_count": 4911,
+  "database_writes": false,
+  "end": "2025-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_425",
+    "yeslab_405"
+  ],
+  "industry_coverage": null,
+  "industry_source": "YesLab.stock_info_table static labels",
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-10-21",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": false,
+  "start": "2025-01-02",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.7983539094650206,
+      "end": "2025-12-31",
+      "factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "icir": -0.8493809616418155,
+      "mean_rank_ic": -0.09558551046641821,
+      "rank_ic_std": 0.11253549912592305,
+      "signed_mean_rank_ic": 0.09558551046641821,
+      "start": "2025-01-02",
+      "valid_day_count": 243
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.8641975308641975,
+      "end": "2025-12-31",
+      "factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "icir": -1.0391000640556851,
+      "mean_rank_ic": -0.0901699589936261,
+      "rank_ic_std": 0.08677697376101202,
+      "signed_mean_rank_ic": 0.0901699589936261,
+      "start": "2025-01-02",
+      "valid_day_count": 243
+    }
+  ]
+}

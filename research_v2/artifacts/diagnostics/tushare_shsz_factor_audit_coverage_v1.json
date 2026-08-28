@@ -1059,6 +1059,38 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha425_tushare_shsz_canonical_v2": {
+    "artifact": "tushare_alpha425_canonical_candidate_review_v2.json",
+    "factor_id": "yeslab_425_tushare_shsz_v2",
+    "source_factor_id": "yeslab_425",
+    "factor_name": "GP_056",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "training_signed_mean_rank_ic": 0.07095455385436544,
+    "training_signed_icir": 0.5576811394164889,
+    "validation_signed_mean_rank_ic": 0.09558551046641821,
+    "validation_signed_icir": 0.8493809616418155,
+    "annual_gate_years": "4/5",
+    "training_similarity_max": 0.6921005878,
+    "validation_similarity_max": 0.7232501446,
+    "candidate_pair_monitor": {
+      "reference_candidate_id": "yeslab_405_tushare_shsz_v1",
+      "training_median_abs_spearman": 0.5973674385,
+      "validation_median_abs_spearman": 0.610950812,
+      "status": "PAIR_UNIQUE"
+    },
+    "regime_status": "REGIME_ROBUST_WITH_TRAIN_HIGH_VOL_MONITOR",
+    "formula_scope_status": "PENDING_EXPLICIT_SCOPE_APPROVAL",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "alpha381_admission_preflight": {
     "factor_id": "yeslab_381",
     "factor_name": "GP_012",
@@ -1330,6 +1362,13 @@
     "tushare_alpha114_canonical_validation_v1/quality_summary.json",
     "tushare_alpha114_canonical_validation_v1/similarity_summary.json",
     "tushare_alpha114_canonical_train_2020_yearscope_diagnostic_v1/quality_summary.json",
+    "tushare_alpha425_canonical_candidate_review_v2.json",
+    "tushare_alpha425_canonical_train_similarity_v1/quality_summary.json",
+    "tushare_alpha425_canonical_train_similarity_v1/similarity_summary.json",
+    "tushare_alpha425_canonical_validation_v1/quality_summary.json",
+    "tushare_alpha425_canonical_validation_v1/similarity_summary.json",
+    "tushare_alpha425_alpha405_pair_train_v1/similarity_summary.json",
+    "tushare_alpha425_alpha405_pair_validation_v1/similarity_summary.json",
     "factor_quality_latest_refresh_v1.json"
   ]
 }
