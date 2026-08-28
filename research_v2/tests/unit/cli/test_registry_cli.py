@@ -78,3 +78,164 @@ def test_registry_promote_rejects_a_non_content_addressed_model_id(tmp_path: obj
 
     assert result.exit_code == 2
     assert "model_id" in result.stdout
+
+
+def test_registry_pointer_plan_lists_required_checks_without_mutating_a_pointer() -> None:
+    result = CliRunner().invoke(
+        app,
+        [
+            "registry",
+            "pointer",
+            "plan",
+            "--consumer",
+            "paper-sim",
+            "--model-id",
+            "sha256:" + "a" * 64,
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["dry_run"] is True
+    assert payload["checks"] == {
+        "artifact": "BACKEND_UNAVAILABLE",
+        "compatibility_export": "BACKEND_UNAVAILABLE",
+        "latest_prediction": "BACKEND_UNAVAILABLE",
+        "model_status": "BACKEND_UNAVAILABLE",
+        "schema": "BACKEND_UNAVAILABLE",
+    }
+
+
+def test_registry_pointer_production_switch_requires_second_confirmation() -> None:
+    result = CliRunner().invoke(
+        app,
+        [
+            "registry",
+            "pointer",
+            "switch",
+            "--consumer",
+            "paper-sim",
+            "--environment",
+            "production",
+            "--model-id",
+            "sha256:" + "a" * 64,
+            "--expected-current",
+            "sha256:" + "b" * 64,
+            "--expected-version",
+            "1",
+            "--expected-pointer-version",
+            "3",
+            "--reason",
+            "production switch",
+            "--evidence",
+            "a" * 64,
+            "--run-id",
+            "00000000-0000-0000-0000-000000000001",
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert "confirm-production" in result.stdout
+
+
+def test_registry_pointer_switch_dry_run_validates_without_a_backend() -> None:
+    result = CliRunner().invoke(
+        app,
+        [
+            "registry",
+            "pointer",
+            "switch",
+            "--consumer",
+            "paper-sim",
+            "--environment",
+            "shadow",
+            "--model-id",
+            "sha256:" + "a" * 64,
+            "--expected-current",
+            "sha256:" + "b" * 64,
+            "--expected-version",
+            "1",
+            "--expected-pointer-version",
+            "3",
+            "--reason",
+            "shadow switch",
+            "--evidence",
+            "a" * 64,
+            "--run-id",
+            "00000000-0000-0000-0000-000000000001",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert json.loads(result.stdout) == {
+        "consumer": "paper-sim",
+        "dry_run": True,
+        "environment": "shadow",
+        "expected_current": "sha256:" + "b" * 64,
+        "expected_pointer_version": 3,
+        "expected_version": 1,
+        "model_id": "sha256:" + "a" * 64,
+    }
+
+
+def test_registry_pointer_switch_rejects_an_ambiguous_cas_request() -> None:
+    result = CliRunner().invoke(
+        app,
+        [
+            "registry",
+            "pointer",
+            "switch",
+            "--consumer",
+            "paper-sim",
+            "--environment",
+            "shadow",
+            "--model-id",
+            "sha256:" + "a" * 64,
+            "--expected-current",
+            "sha256:" + "b" * 64,
+            "--expected-version",
+            "1",
+            "--reason",
+            "ambiguous switch",
+            "--evidence",
+            "a" * 64,
+            "--run-id",
+            "00000000-0000-0000-0000-000000000001",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert "expected-pointer-version" in result.stdout
+
+
+def test_registry_pointer_switch_dry_run_can_explicitly_expect_no_current_pointer() -> None:
+    result = CliRunner().invoke(
+        app,
+        [
+            "registry",
+            "pointer",
+            "switch",
+            "--consumer",
+            "paper-sim",
+            "--environment",
+            "shadow",
+            "--model-id",
+            "sha256:" + "a" * 64,
+            "--expect-absent",
+            "--reason",
+            "initial switch",
+            "--evidence",
+            "a" * 64,
+            "--run-id",
+            "00000000-0000-0000-0000-000000000001",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["expected_current"] is None
+    assert payload["expected_pointer_version"] is None
+    assert payload["expected_version"] is None

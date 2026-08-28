@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import re
+import uuid
 from pathlib import Path
 
 import typer
@@ -12,6 +14,10 @@ from research_v2.registry.model_registry import (
     load_walk_forward_evidence,
     validate_model_id,
 )
+
+pointer_app = typer.Typer(no_args_is_help=True)
+_CONSUMER_ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
+_EVIDENCE_ID = re.compile(r"^[0-9a-f]{64}$")
 
 
 def promote(model_id: str, target: str, evidence: Path, dry_run: bool) -> None:
@@ -39,3 +45,185 @@ def promote(model_id: str, target: str, evidence: Path, dry_run: bool) -> None:
         return
     typer.echo("registry persistence backend is not configured; refusing to promote")
     raise typer.Exit(code=2)
+
+
+@pointer_app.command("plan")
+def pointer_plan(
+    consumer: str = typer.Option(..., "--consumer"),
+    model_id: str = typer.Option(..., "--model-id"),
+) -> None:
+    """Print the checks a pointer backend must satisfy without changing any pointer."""
+    try:
+        _validate_consumer(consumer)
+        validate_model_id(model_id)
+    except ValueError as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+    typer.echo(
+        json.dumps(
+            {
+                "checks": {
+                    "artifact": "BACKEND_UNAVAILABLE",
+                    "compatibility_export": "BACKEND_UNAVAILABLE",
+                    "latest_prediction": "BACKEND_UNAVAILABLE",
+                    "model_status": "BACKEND_UNAVAILABLE",
+                    "schema": "BACKEND_UNAVAILABLE",
+                },
+                "consumer": consumer,
+                "dry_run": True,
+                "model_id": model_id,
+            },
+            sort_keys=True,
+        )
+    )
+
+
+@pointer_app.command("switch")
+def pointer_switch(
+    consumer: str = typer.Option(..., "--consumer"),
+    environment: str = typer.Option(..., "--environment"),
+    model_id: str = typer.Option(..., "--model-id"),
+    expected_current: str | None = typer.Option(None, "--expected-current"),
+    expected_version: int | None = typer.Option(None, "--expected-version"),
+    expected_pointer_version: int | None = typer.Option(None, "--expected-pointer-version"),
+    expect_absent: bool = typer.Option(False, "--expect-absent"),
+    reason: str = typer.Option(..., "--reason"),
+    evidence: str = typer.Option(..., "--evidence"),
+    run_id: str = typer.Option(..., "--run-id"),
+    confirm_production: bool = typer.Option(False, "--confirm-production"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+) -> None:
+    """Validate a switch request, then refuse mutation until a pointer backend is configured."""
+    _validate_pointer_request(
+        consumer=consumer,
+        environment=environment,
+        model_id=model_id,
+        expected_current=expected_current,
+        expected_version=expected_version,
+        expected_pointer_version=expected_pointer_version,
+        expect_absent=expect_absent,
+        reason=reason,
+        evidence=evidence,
+        run_id=run_id,
+        confirm_production=confirm_production,
+    )
+    if dry_run:
+        typer.echo(
+            json.dumps(
+                {
+                    "consumer": consumer,
+                    "dry_run": True,
+                    "environment": environment,
+                    "expected_current": expected_current,
+                    "expected_pointer_version": expected_pointer_version,
+                    "expected_version": expected_version,
+                    "model_id": model_id,
+                },
+                sort_keys=True,
+            )
+        )
+        return
+    typer.echo("registry pointer backend is not configured; refusing to switch")
+    raise typer.Exit(code=2)
+
+
+@pointer_app.command("rollback")
+def pointer_rollback(
+    consumer: str = typer.Option(..., "--consumer"),
+    environment: str = typer.Option(..., "--environment"),
+    event_id: str = typer.Option(..., "--event-id"),
+    expected_current: str = typer.Option(..., "--expected-current"),
+    expected_version: int = typer.Option(..., "--expected-version"),
+    expected_pointer_version: int = typer.Option(..., "--expected-pointer-version"),
+    reason: str = typer.Option(..., "--reason"),
+    evidence: str = typer.Option(..., "--evidence"),
+    run_id: str = typer.Option(..., "--run-id"),
+    confirm_production: bool = typer.Option(False, "--confirm-production"),
+) -> None:
+    """Validate a rollback request, then refuse mutation until a pointer backend is configured."""
+    try:
+        _validate_uuid(event_id, "event_id")
+    except ValueError as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+    _validate_pointer_request(
+        consumer=consumer,
+        environment=environment,
+        model_id=expected_current,
+        expected_current=expected_current,
+        expected_version=expected_version,
+        expected_pointer_version=expected_pointer_version,
+        expect_absent=False,
+        reason=reason,
+        evidence=evidence,
+        run_id=run_id,
+        confirm_production=confirm_production,
+    )
+    typer.echo("registry pointer backend is not configured; refusing to rollback")
+    raise typer.Exit(code=2)
+
+
+def _validate_pointer_request(
+    *,
+    consumer: str,
+    environment: str,
+    model_id: str,
+    expected_current: str | None,
+    expected_version: int | None,
+    expected_pointer_version: int | None,
+    expect_absent: bool,
+    reason: str,
+    evidence: str,
+    run_id: str,
+    confirm_production: bool,
+) -> None:
+    try:
+        _validate_consumer(consumer)
+        if environment not in {"shadow", "production"}:
+            raise ValueError("pointer environment must be shadow or production")
+        validate_model_id(model_id)
+        if expect_absent:
+            if any(value is not None for value in (expected_current, expected_version)):
+                raise ValueError(
+                    "--expect-absent cannot be combined with expected current pointer fields"
+                )
+            if expected_pointer_version is not None:
+                raise ValueError("--expect-absent cannot include --expected-pointer-version")
+        else:
+            if expected_current is None:
+                raise ValueError("pointer changes require --expected-current or --expect-absent")
+            validate_model_id(expected_current)
+            if isinstance(expected_version, bool) or not isinstance(expected_version, int):
+                raise ValueError("pointer changes require --expected-version")
+            if expected_version < 1:
+                raise ValueError("pointer expected_version must be positive")
+            if isinstance(expected_pointer_version, bool) or not isinstance(
+                expected_pointer_version, int
+            ):
+                raise ValueError("pointer changes require --expected-pointer-version")
+            if expected_pointer_version < 1:
+                raise ValueError("pointer expected_pointer_version must be positive")
+        if not isinstance(reason, str) or not reason.strip():
+            raise ValueError("pointer reason cannot be empty")
+        if not isinstance(evidence, str) or not _EVIDENCE_ID.fullmatch(evidence):
+            raise ValueError("pointer evidence must be a SHA-256 digest")
+        _validate_uuid(run_id, "run_id")
+        if environment == "production" and not confirm_production:
+            raise ValueError("production pointer changes require --confirm-production")
+    except ValueError as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+
+
+def _validate_consumer(value: str) -> None:
+    if not isinstance(value, str) or not _CONSUMER_ID.fullmatch(value):
+        raise ValueError("pointer consumer is invalid")
+
+
+def _validate_uuid(value: str, name: str) -> None:
+    try:
+        valid = str(uuid.UUID(value)) == value
+    except (AttributeError, ValueError):
+        valid = False
+    if not valid:
+        raise ValueError(f"pointer {name} is invalid")

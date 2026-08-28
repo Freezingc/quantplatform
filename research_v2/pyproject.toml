@@ -51,6 +51,7 @@ research_v2 = ["export/*.yaml"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra"
+markers = ["integration: requires QRV2_INTEGRATION=1"]
 
 [tool.ruff]
 target-version = "py311"
