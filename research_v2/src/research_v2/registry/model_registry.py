@@ -173,6 +173,10 @@ class ModelRegistry:
         self._get(model_id)
         return tuple(self._history[model_id])
 
+    def get(self, model_id: str) -> ModelRecord:
+        """Return the immutable registered state for downstream deployment guards."""
+        return self._get(model_id)
+
     def _transition(
         self,
         record: ModelRecord,

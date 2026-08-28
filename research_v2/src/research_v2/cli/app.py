@@ -13,7 +13,7 @@ from research_v2.cli.evaluate import evaluate_walk_forward
 from research_v2.cli.export import compatibility, verify
 from research_v2.cli.materialize import emit_plan
 from research_v2.cli.models import plan_model_train
-from research_v2.cli.registry import promote
+from research_v2.cli.registry import pointer_app, promote
 from research_v2.cli.reports import report_experiment
 
 app = typer.Typer(no_args_is_help=True)
@@ -30,6 +30,7 @@ app.add_typer(dataset_app, name="dataset")
 app.add_typer(baseline_app, name="baseline")
 app.add_typer(model_app, name="model")
 app.add_typer(registry_app, name="registry")
+registry_app.add_typer(pointer_app, name="pointer")
 app.add_typer(evaluate_app, name="evaluate")
 app.add_typer(report_app, name="report")
 app.add_typer(export_app, name="export")
