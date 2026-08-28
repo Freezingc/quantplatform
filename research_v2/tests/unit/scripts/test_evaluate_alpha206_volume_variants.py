@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -25,3 +27,19 @@ def test_compute_variants_has_expected_warmup() -> None:
 def test_parser_rejects_locked_test() -> None:
     with pytest.raises(SystemExit):
         evaluation.parse_args(["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"])
+
+
+def test_summarize_variant_serializes_validation_only_window() -> None:
+    daily = pd.DataFrame(
+        {
+            "signal_date": pd.date_range("2025-01-02", periods=3, freq="B"),
+            "rank_ic": [-0.03, -0.05, -0.07],
+            "sample_count": [100, 100, 100],
+        }
+    )
+
+    summary = evaluation.summarize_variant(daily, "median_abs")
+
+    assert summary["annual"] == {}
+    assert summary["strict_annual_icir_pass_years"] == 0
+    json.dumps(summary, allow_nan=False)

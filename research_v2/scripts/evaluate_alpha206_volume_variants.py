@@ -93,7 +93,11 @@ def summarize_variant(daily: pd.DataFrame, variant: str) -> dict[str, object]:
     daily = daily.sort_values("signal_date", kind="mergesort")
     train = daily.loc[pd.to_datetime(daily["signal_date"]).dt.year <= 2024]
     validation = daily.loc[pd.to_datetime(daily["signal_date"]).dt.year == 2025]
-    annual = {str(year): summarize_daily(train.loc[pd.to_datetime(train["signal_date"]).dt.year == year]) for year in range(2020, 2025)}
+    annual = {
+        str(year): summarize_daily(yearly)
+        for year in range(2020, 2025)
+        if not (yearly := train.loc[pd.to_datetime(train["signal_date"]).dt.year == year]).empty
+    }
     train_month = summarize_monthly(train)
     validation_month = summarize_monthly(validation)
     return {
@@ -102,8 +106,8 @@ def summarize_variant(daily: pd.DataFrame, variant: str) -> dict[str, object]:
         "variant": variant,
         "window": WINDOW,
         "frozen_direction": FROZEN_DIRECTION,
-        "train_2020_2024": summarize_daily(train),
-        "validation_2025": summarize_daily(validation),
+        "train_2020_2024": summarize_daily(train) if not train.empty else None,
+        "validation_2025": summarize_daily(validation) if not validation.empty else None,
         "annual": annual,
         "strict_annual_icir_pass_years": int(sum(abs(row["icir"]) >= 0.5 for row in annual.values())),
         "train_monthly_signed_mean_pass_months": int((train_month["signed_mean_rank_ic"] >= 0.02).sum()),
