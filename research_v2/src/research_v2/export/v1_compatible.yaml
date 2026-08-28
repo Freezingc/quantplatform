@@ -1,0 +1,28 @@
+schema_version: 1
+csv:
+  index:
+    name: ts_code
+    source: ts_code
+    transform: identity
+  signal_date_header:
+    source: signal_date
+    transform: date_format
+    format: "%Y%m%d"
+  value:
+    name: score
+    source: score
+    transform: fixed_decimal
+    float_precision: 10
+pkl:
+  columns:
+    instrument:
+      source: ts_code
+      transform: identity
+    datetime:
+      source: signal_date
+      transform: date_format
+      format: "%Y-%m-%d"
+    score:
+      source: score
+      transform: identity
+  protocol: 4

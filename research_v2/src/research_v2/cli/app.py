@@ -10,6 +10,7 @@ import typer
 from research_v2.cli.baselines import run_baseline
 from research_v2.cli.datasets import inspect_dataset, plan_build, verify_dataset
 from research_v2.cli.evaluate import evaluate_walk_forward
+from research_v2.cli.export import compatibility, verify
 from research_v2.cli.materialize import emit_plan
 from research_v2.cli.models import plan_model_train
 from research_v2.cli.registry import promote
@@ -23,6 +24,7 @@ model_app = typer.Typer(no_args_is_help=True)
 registry_app = typer.Typer(no_args_is_help=True)
 evaluate_app = typer.Typer(no_args_is_help=True)
 report_app = typer.Typer(no_args_is_help=True)
+export_app = typer.Typer(no_args_is_help=True)
 app.add_typer(materialize_app, name="materialize")
 app.add_typer(dataset_app, name="dataset")
 app.add_typer(baseline_app, name="baseline")
@@ -30,6 +32,7 @@ app.add_typer(model_app, name="model")
 app.add_typer(registry_app, name="registry")
 app.add_typer(evaluate_app, name="evaluate")
 app.add_typer(report_app, name="report")
+app.add_typer(export_app, name="export")
 
 
 def _materialize_command(operation: str) -> Callable[..., None]:
@@ -112,6 +115,22 @@ def report_experiment_command(
     format: str = typer.Option("html", "--format"),
 ) -> None:
     report_experiment(experiment_id, format)
+
+
+@export_app.command("compatibility")
+def export_compatibility_command(
+    signal_date: str = typer.Option(..., "--signal-date"),
+    model_id: str = typer.Option(..., "--model-id"),
+    format: str = typer.Option("csv,pkl", "--format"),
+) -> None:
+    compatibility(signal_date, model_id, format)
+
+
+@export_app.command("verify")
+def export_verify_command(
+    manifest: Path = typer.Option(..., "--manifest"),  # noqa: B008
+) -> None:
+    verify(manifest)
 
 
 if __name__ == "__main__":
