@@ -1,0 +1,88 @@
+{
+  "scope": "ALPHA206_MEDIAN_ABS_CANONICAL_CANDIDATE_REVIEW_V2",
+  "candidate_id": "yeslab_206_median_abs_v2",
+  "source_factor_id": "yeslab_206",
+  "factor_name": "60-day volume median-deviation repair",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day forward return",
+  "direction": -1,
+  "candidate_formula": "ABS(vol - rolling_median(vol,60)) / rolling_median(vol,60)",
+  "source_formula": "ABS(vol - rolling_mean(vol,60)) / rolling_mean(vol,60)",
+  "formula_identity": {
+    "status": "ISOLATED_REPAIR_NOT_HISTORICAL_REPLAY",
+    "ruling": "The candidate uses a 60-day rolling median instead of the source factor's 60-day rolling mean. Historical yeslab_206 replay and its failed validation are evidence only for the original mean-based formula and must not be mixed with this repaired candidate."
+  },
+  "canonical_evaluation": {
+    "market_source": "local Tushare.daily cache",
+    "panel_source": "latest V2 SH/SZ universe and forward_open_5d labels",
+    "period": "2020-01-02/2025-12-31",
+    "train_2020_2024": {
+      "valid_day_count": 1212,
+      "mean_rank_ic": -0.040849524186372416,
+      "signed_mean_rank_ic": 0.040849524186372416,
+      "icir": -0.5605326518505653,
+      "signed_icir": 0.5605326518505653,
+      "directional_day_share": 0.7417491749174917,
+      "strict_annual_abs_icir_pass_years": "4/5"
+    },
+    "validation_2025": {
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.050460436665182073,
+      "signed_mean_rank_ic": 0.050460436665182073,
+      "icir": -0.7332265079181725,
+      "signed_icir": 0.7332265079181725,
+      "directional_day_share": 0.7777777777777778,
+      "signed_mean_pass_months": "10/12"
+    }
+  },
+  "reproducibility": {
+    "script": "research_v2/scripts/evaluate_alpha206_volume_variants.py",
+    "window": "2025-01-02/2025-12-31",
+    "result": "EXACT_DAILY_RANK_IC_MATCH",
+    "valid_day_count": 243,
+    "signed_mean_rank_ic": 0.050460436665182073,
+    "signed_icir": 0.7332265079181725,
+    "directional_day_share": 0.7777777777777778,
+    "note": "The validation-only execution path now emits strict JSON with absent train fields encoded as null and absent training years omitted; this does not change a complete 2020-2025 result."
+  },
+  "formal_nine_similarity": {
+    "threshold": 0.9,
+    "train_2020_2024": {
+      "maximum_median_abs_spearman": 0.27228839564033813,
+      "reference_factor_id": "yeslab_396",
+      "valid_days_per_pair": "9/9 at 1212",
+      "status": "UNIQUE"
+    },
+    "validation_2025": {
+      "maximum_median_abs_spearman": 0.27626512647459145,
+      "reference_factor_id": "yeslab_396",
+      "valid_days_per_pair": "9/9 at 243",
+      "status": "UNIQUE"
+    }
+  },
+  "robustness": {
+    "leave_one_month": "PASS",
+    "month_block_bootstrap": "PASS",
+    "required_monitoring": {
+      "train_low_volatility_signed_icir": 0.47132741803888545,
+      "validation_nonpositive_trend_signed_icir": 0.41301501065227886,
+      "status": "REGIME_SENSITIVE_MONITOR"
+    }
+  },
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
+  "decision_rationale": "The isolated median repair clears the defined train, validation, annual, similarity, leave-one-month, and bootstrap checks. It is not eligible for automatic admission because two defined regime cells fall below the ICIR monitoring threshold.",
+  "formal_factor_set_changed": false,
+  "model_eligible": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "evidence": [
+    "alpha206_volume_variants_2020_2025_v1/quality_summary.json",
+    "alpha206_median_abs_formal9_similarity_2020_2024_v1.json",
+    "alpha206_median_abs_formal9_similarity_2025_v1.json",
+    "alpha206_median_abs_robustness_v1.json",
+    "alpha206_208_validation_2025_v1.json",
+    "alpha206_208_formula_replay_multiwindow_v1.json"
+  ]
+}

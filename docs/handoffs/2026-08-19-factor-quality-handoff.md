@@ -191,12 +191,18 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 425 与 `yeslab_405_tushare_shsz_v1` 的训练 / 验证相似度中位数为 `0.59737 / 0.61095`，候选对不冗余；但两者仍不能自动组合准入。历史 YesLab GP_056 含 `552` 个 BJ 代码，必须先明确批准新的隔离 SH/SZ 版本；若日后准入，425 还需保留训练高波动状态监控（signed ICIR `0.49010`）。评审包为 `research_v2/artifacts/diagnostics/tushare_alpha425_canonical_candidate_review_v2.json`，状态为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING`，并继续保持 `model_eligible=false`、不写因子值、不改正式九因子、不启动训练。
 
+#### Alpha206 中位数修复候选
+
+2026-08-28 重跑确认 `yeslab_206_median_abs_v2` 的 2025 评估结果可逐日复现：signed RankIC / ICIR 为 `0.05046 / 0.73323`，共 `243` 个交易日。此前 `yeslab_206` 的 `0.39748` 验证 ICIR 属于历史的 60 日**均值**偏离公式；修复候选使用 60 日**中位数**偏离，两者不能交叉引用。新候选训练期 signed RankIC / ICIR 为 `0.04085 / 0.56053`、年度严格门槛 `4/5`，相对正式九因子最大相似度中位数为训练 `0.27229`、验证 `0.27627`。
+
+评审包为 `research_v2/artifacts/diagnostics/alpha206_median_abs_candidate_review_v2.json`。它只可作为隔离的 Tushare 规范修复候选参与人工准入审查，仍要求监控训练低波动（signed ICIR `0.47133`）和 2025 非正趋势（`0.41302`）状态；不得自动发布、写入因子值、变更正式九因子、加入模型输入或启动训练。
+
 #### 其他值得保留的候选状态
 
 | 候选 | 当前结论 | 后续动作 |
 |---|---|---|
 | `yeslab_114_tushare_shsz_v2` | 预测和相似度通过，但月度/市场状态敏感 | 需明确批准隔离版本，并保留月度与 regime 监控 |
-| `yeslab_206_median_abs_v2` | 可进入人工准入评审，需低波动/非正趋势监控 | 不自动加入正式集合 |
+| `yeslab_206_median_abs_v2` | 中位数修复公式已逐日复现，需低波动/非正趋势监控 | 仅隔离版本人工审查，不自动加入正式集合 |
 | `yeslab_405_tushare_shsz_v1` | 预测、覆盖和正式九因子相似度通过，等待范围审批 | 必须明确批准隔离 SH/SZ 版本；不能使用历史 YesLab 值 |
 | `yeslab_425_tushare_shsz_v2` | 预测、覆盖、正式九因子和 405 候选对相似度通过 | 需明确批准隔离 SH/SZ 版本，并保留训练高波动监控 |
 | `yeslab_381_tushare_shsz_v1` | 预测、覆盖和正式九因子相似度通过；与 405 组合冗余偏高 | 先明确批准隔离 SH/SZ 版本；若与 405 同时考虑，必须另行组合审批 |
