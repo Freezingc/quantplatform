@@ -197,6 +197,8 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 评审包为 `research_v2/artifacts/diagnostics/alpha206_median_abs_candidate_review_v2.json`。它只可作为隔离的 Tushare 规范修复候选参与人工准入审查，仍要求监控训练低波动（signed ICIR `0.47133`）和 2025 非正趋势（`0.41302`）状态；不得自动发布、写入因子值、变更正式九因子、加入模型输入或启动训练。
 
+六个当前候选的唯一统一索引为 `research_v2/artifacts/diagnostics/tushare_shsz_candidate_admission_review_matrix_v2.json`。该矩阵不再提供跨公式、跨范围的优先级排名；它只列出每个隔离版本的当前证据、必需监控和组合限制。所有候选仍需逐个明确审批，任何两个候选同时进入正式集合前都必须单独评估组合冗余。
+
 #### 其他值得保留的候选状态
 
 | 候选 | 当前结论 | 后续动作 |
@@ -620,4 +622,4 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ## 11. 当前接手点
 
-接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json`、`tushare_alpha405_canonical_candidate_review_v1.json`、`tushare_alpha381_canonical_candidate_review_v1.json`、`tushare_alpha114_canonical_candidate_review_v2.json` 和 `tushare_alpha425_canonical_candidate_review_v2.json`，然后按独立、明确的人工决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2` 等候选。381 与 405 不得因各自通过单因子门槛而自动成对准入；425 与 405 的相似度通过不构成组合准入，425 的训练高波动监控和 114 的监控条件也不得省略。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
+接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json` 和 `tushare_shsz_candidate_admission_review_matrix_v2.json`，然后按独立、明确的人工决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2` 等候选。381 与 405 不得因各自通过单因子门槛而自动成对准入；425 与 405 的相似度通过不构成组合准入，425 的训练高波动监控和 114 的监控条件也不得省略。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。

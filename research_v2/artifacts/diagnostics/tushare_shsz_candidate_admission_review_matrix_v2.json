@@ -1,0 +1,161 @@
+{
+  "scope": "TUSHARE_SHSZ_CANONICAL_CANDIDATE_ADMISSION_REVIEW_MATRIX_V2",
+  "supersedes": "tushare_shsz_candidate_admission_review_matrix_v1.json",
+  "purpose": "Read-only consolidation of the current canonical evidence for explicit, individual factor-admission decisions.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": ["BJ"],
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+  "formal_factor_set": {
+    "count": 9,
+    "unchanged": true,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
+  "governance": {
+    "candidate_count": 6,
+    "ranking": "NONE",
+    "rule": "Each candidate is an isolated, explicit human-admission decision. Passing this matrix never publishes a factor, writes factor values, changes the formal set, enables model input, or authorizes a joint candidate portfolio.",
+    "required_before_any_admission": [
+      "explicit individual human approval",
+      "create or identify the exact isolated factor-version contract",
+      "retain every listed monitoring rule",
+      "run a separate combination review before admitting more than one candidate"
+    ]
+  },
+  "candidates": [
+    {
+      "candidate_id": "yeslab_405_tushare_shsz_v1",
+      "source_factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "frozen_direction": -1,
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "quality": {
+        "training_2020_2024": {"signed_mean_rank_ic": 0.06709418997542849, "signed_icir": 0.6236357196112597, "directional_day_share": 0.731023102310231, "valid_day_count": 1212, "annual_gate_pass_years": "4/5"},
+        "validation_2025": {"signed_mean_rank_ic": 0.09016995899362608, "signed_icir": 1.039100064055685, "directional_day_share": 0.8641975308641975, "valid_day_count": 243}
+      },
+      "coverage": "PASS",
+      "formal_nine_similarity": {"training_max_median_abs_spearman": 0.6870716425, "validation_max_median_abs_spearman": 0.7177261845, "threshold": 0.9, "status": "PASS"},
+      "version_and_scope_requirement": "Historical GP_036 includes 552 BJ codes. Use only the isolated SH/SZ Tushare version after explicit scope approval.",
+      "required_monitoring": [],
+      "review_artifact": "tushare_alpha405_canonical_candidate_review_v1.json",
+      "model_eligible": false
+    },
+    {
+      "candidate_id": "yeslab_425_tushare_shsz_v2",
+      "source_factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "frozen_direction": -1,
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+      "quality": {
+        "training_2020_2024": {"signed_mean_rank_ic": 0.07095455385436544, "signed_icir": 0.5576811394164889, "directional_day_share": 0.7178217821782178, "valid_day_count": 1212, "annual_gate_pass_years": "4/5"},
+        "validation_2025": {"signed_mean_rank_ic": 0.09558551046641821, "signed_icir": 0.8493809616418155, "directional_day_share": 0.7983539094650206, "valid_day_count": 243}
+      },
+      "coverage": "PASS",
+      "formal_nine_similarity": {"training_max_median_abs_spearman": 0.6921005878, "validation_max_median_abs_spearman": 0.7232501446, "threshold": 0.9, "status": "PASS"},
+      "version_and_scope_requirement": "Historical GP_056 includes 552 BJ codes. Use only the isolated SH/SZ Tushare version after explicit scope approval.",
+      "required_monitoring": ["training high-volatility signed ICIR 0.4900967593"],
+      "review_artifact": "tushare_alpha425_canonical_candidate_review_v2.json",
+      "model_eligible": false
+    },
+    {
+      "candidate_id": "yeslab_381_tushare_shsz_v1",
+      "source_factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "frozen_direction": -1,
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "quality": {
+        "training_2020_2024": {"signed_mean_rank_ic": 0.07540307485475853, "signed_icir": 0.6152942604075041, "directional_day_share": 0.7293729372937293, "valid_day_count": 1212, "annual_gate_pass_years": "4/5"},
+        "validation_2025": {"signed_mean_rank_ic": 0.09506094436867395, "signed_icir": 0.8904495364967474, "directional_day_share": 0.823045267489712, "valid_day_count": 243}
+      },
+      "coverage": "PASS",
+      "formal_nine_similarity": {"training_max_median_abs_spearman": 0.784528149, "validation_max_median_abs_spearman": 0.7933086773, "threshold": 0.9, "status": "PASS"},
+      "version_and_scope_requirement": "Historical GP_012 includes 551 BJ codes. Use only the isolated SH/SZ Tushare version after explicit scope approval.",
+      "required_monitoring": ["monthly watch: 12 training months and 2025-12", "separate combination review with yeslab_405_tushare_shsz_v1"],
+      "review_artifact": "tushare_alpha381_canonical_candidate_review_v1.json",
+      "model_eligible": false
+    },
+    {
+      "candidate_id": "yeslab_114_tushare_shsz_v2",
+      "source_factor_id": "yeslab_114",
+      "factor_name": "Terri volatility",
+      "frozen_direction": -1,
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
+      "quality": {
+        "training_2020_2024": {"signed_mean_rank_ic": 0.07567604043142041, "signed_icir": 0.5495896863019762, "directional_day_share": 0.7079207920792079, "valid_day_count": 1212, "annual_gate_pass_years": "4/5"},
+        "validation_2025": {"signed_mean_rank_ic": 0.07623526197950761, "signed_icir": 0.5227216040344088, "directional_day_share": 0.6954732510288066, "valid_day_count": 243}
+      },
+      "coverage": "PASS",
+      "formal_nine_similarity": {"training_max_median_abs_spearman": 0.8059308498, "validation_max_median_abs_spearman": 0.806417401, "threshold": 0.9, "status": "PASS"},
+      "version_and_scope_requirement": "The isolated SH/SZ Tushare version has a passing formula-scope gate and must not mix historical stored values.",
+      "required_monitoring": ["monthly validation watch: 2025-01, 2025-02, 2025-04, 2025-12", "validation nonpositive-trend signed ICIR 0.2513531009", "validation high-volatility signed ICIR 0.1474457996"],
+      "review_artifact": "tushare_alpha114_canonical_candidate_review_v2.json",
+      "model_eligible": false
+    },
+    {
+      "candidate_id": "yeslab_484_tushare_shsz_v1",
+      "source_factor_id": "yeslab_484",
+      "factor_name": "CSAD volatility 21",
+      "frozen_direction": -1,
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+      "quality": {
+        "training_2020_2024": {"signed_mean_rank_ic": 0.06992135424164657, "signed_icir": 0.5807482425908108, "directional_day_share": 0.7235973597359736, "valid_day_count": 1212, "annual_gate_pass_years": "5/5"},
+        "validation_2025": {"signed_mean_rank_ic": 0.069163397181663, "signed_icir": 0.5085038571789994, "directional_day_share": 0.6707818930041153, "valid_day_count": 243}
+      },
+      "coverage": {"status": "PASS", "training_monthly_min_ratio": 0.9998933048813017, "validation_monthly_min_ratio": 0.999965804951443},
+      "formal_nine_similarity": {"training_max_median_abs_spearman": 0.69098209385, "validation_max_median_abs_spearman": 0.7230821615, "threshold": 0.9, "status": "PASS"},
+      "version_and_scope_requirement": "Use only the isolated canonical SH/SZ version. Historical replay provenance remains separate and cannot be used to substitute the candidate's canonical evidence.",
+      "required_monitoring": [],
+      "review_artifact": "tushare_alpha484_canonical_v1/admission_review.json",
+      "model_eligible": false
+    },
+    {
+      "candidate_id": "yeslab_206_median_abs_v2",
+      "source_factor_id": "yeslab_206",
+      "factor_name": "60-day volume median-deviation repair",
+      "frozen_direction": -1,
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
+      "quality": {
+        "training_2020_2024": {"signed_mean_rank_ic": 0.040849524186372416, "signed_icir": 0.5605326518505653, "directional_day_share": 0.7417491749174917, "valid_day_count": 1212, "annual_gate_pass_years": "4/5"},
+        "validation_2025": {"signed_mean_rank_ic": 0.050460436665182073, "signed_icir": 0.7332265079181725, "directional_day_share": 0.7777777777777778, "valid_day_count": 243}
+      },
+      "coverage": "Sufficient cross-sectional samples on 1212 train and 243 validation RankIC days",
+      "formal_nine_similarity": {"training_max_median_abs_spearman": 0.27228839564033813, "validation_max_median_abs_spearman": 0.27626512647459145, "threshold": 0.9, "status": "PASS"},
+      "version_and_scope_requirement": "The candidate is a rolling-median repair, not a replay of the historical rolling-mean source formula. Do not use original yeslab_206 validation results for this version.",
+      "required_monitoring": ["training low-volatility signed ICIR 0.4713274180", "validation nonpositive-trend signed ICIR 0.4130150107"],
+      "review_artifact": "alpha206_median_abs_candidate_review_v2.json",
+      "model_eligible": false
+    }
+  ],
+  "combination_constraints": [
+    {
+      "candidate_pair": ["yeslab_381_tushare_shsz_v1", "yeslab_405_tushare_shsz_v1"],
+      "training_median_abs_spearman": 0.8448396214,
+      "validation_median_abs_spearman": 0.8711937908,
+      "status": "ELEVATED_PAIR_REDUNDANCY_MONITOR",
+      "rule": "Do not admit this pair without a separate explicit combination redundancy review."
+    },
+    {
+      "candidate_pair": ["yeslab_425_tushare_shsz_v2", "yeslab_405_tushare_shsz_v1"],
+      "training_median_abs_spearman": 0.5973674385,
+      "validation_median_abs_spearman": 0.610950812,
+      "status": "PAIR_UNIQUE",
+      "rule": "Pair uniqueness is evidence only; each candidate still requires its own scope approval and an explicit combination decision."
+    },
+    {
+      "candidate_pair": "any other pair",
+      "status": "NOT_EVALUATED_FOR_JOINT_ADMISSION",
+      "rule": "Individual similarity to the formal nine never authorizes a multi-candidate portfolio."
+    }
+  ],
+  "decision": "NO_AUTOMATIC_ADMISSION",
+  "database_writes": false,
+  "locked_test_read": false,
+  "evidence": [
+    "tushare_alpha405_canonical_candidate_review_v1.json",
+    "tushare_alpha425_canonical_candidate_review_v2.json",
+    "tushare_alpha381_canonical_candidate_review_v1.json",
+    "tushare_alpha114_canonical_candidate_review_v2.json",
+    "tushare_alpha484_canonical_v1/admission_review.json",
+    "alpha206_median_abs_candidate_review_v2.json"
+  ]
+}
