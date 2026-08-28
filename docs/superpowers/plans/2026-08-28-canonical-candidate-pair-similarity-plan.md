@@ -177,6 +177,8 @@ git commit -m "feat(quality): materialize canonical candidate pair audit"
 ### Task 3: Execute the read-only audit and link its evidence
 
 **Files:**
+- Modify: `research_v2/scripts/audit_canonical_candidate_pairs.py`
+- Modify: `research_v2/tests/unit/scripts/test_audit_canonical_candidate_pairs.py`
 - Create: `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1.json`
 - Create: `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/train_pairs.csv`
 - Create: `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/validation_pairs.csv`
@@ -185,6 +187,12 @@ git commit -m "feat(quality): materialize canonical candidate pair audit"
 - Modify: `docs/handoffs/2026-08-19-factor-quality-handoff.md`
 
 - [ ] **Step 1: Run the full pre-2026 audit**
+
+Before the live run, add the tested command entry point that iterates
+calendar months, separates training and validation replay frames, validates
+their complete pair matrices, and writes the JSON plus pair CSV outputs only
+after both phases succeed.  The entry point must retain the existing
+locked-test guard and must not write to DolphinDB.
 
 ```bash
 set -a
