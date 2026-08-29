@@ -385,7 +385,7 @@ def _normalize_factor_id(value: object) -> str:
     if isinstance(value, Integral):
         return f"yeslab_{int(value)}"
     if isinstance(value, Real) and float(value).is_integer():
-        return f"yeslab_{int(value)}"
+        return f"yeslab_{int(float(value))}"
     normalized = str(value).strip()
     if not normalized:
         raise ValueError("factor ID cannot be empty")
