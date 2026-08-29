@@ -1,0 +1,10 @@
+name,typeString
+ts_code,SYMBOL
+trade_date,DATE
+open,DOUBLE
+high,DOUBLE
+low,DOUBLE
+close,DOUBLE
+vol,DOUBLE
+amount,DOUBLE
+adj_factor,DOUBLE

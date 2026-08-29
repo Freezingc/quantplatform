@@ -10,7 +10,7 @@
 *.pid
 
 # 排除数据集（如果数据集较大，可以考虑只保留数据集的路径，不提交到 Git）
-data/
+/data/
 /datasets/
 *.csv
 *.png
@@ -49,3 +49,7 @@ research_v2/artifacts/
 
 # Local Codex skills are installed tooling, not part of this quant project.
 skills/
+
+# Deliberately committed V1/V2 parallel-acceptance fixtures (plan F, task F10.4).
+!research_v2/tests/integration/data/
+!research_v2/tests/integration/data/**

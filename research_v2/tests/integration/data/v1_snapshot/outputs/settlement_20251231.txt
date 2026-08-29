@@ -1,0 +1,3 @@
+YesLab settlement snapshot 2025-12-31
+positions=1234
+checksum=9f86d081884c7d65

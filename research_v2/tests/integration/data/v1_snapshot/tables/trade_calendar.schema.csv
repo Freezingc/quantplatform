@@ -1,0 +1,5 @@
+name,typeString
+exchange,SYMBOL
+cal_date,DATE
+is_open,INT
+pretrade_date,DATE
