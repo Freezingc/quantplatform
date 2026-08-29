@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+import evaluate_gp012_residual_variants as evaluation
 import numpy as np
 import pandas as pd
 import pytest
-
-import evaluate_gp012_residual_variants as evaluation
 
 
 def test_cross_sectional_residual_removes_linear_exposure() -> None:

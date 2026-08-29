@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
-import pandas as pd
-
 import audit_bj_code_migration as audit
+import pandas as pd
 
 
 def _frame(codes: list[str], values: list[float]) -> pd.DataFrame:

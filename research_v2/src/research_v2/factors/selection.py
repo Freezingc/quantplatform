@@ -161,7 +161,13 @@ def select_tushare_canonical_stable_factors(
             canonical_replay_window_count=pd.Series(dtype=int),
         )
     gate = train_gated.loc[
-        :, ["factor_id", "factor_version", "canonical_replay_status", "canonical_replay_window_count"]
+        :,
+        [
+            "factor_id",
+            "factor_version",
+            "canonical_replay_status",
+            "canonical_replay_window_count",
+        ],
     ].drop_duplicates(["factor_id", "factor_version"])
     stable = stable.merge(
         gate,

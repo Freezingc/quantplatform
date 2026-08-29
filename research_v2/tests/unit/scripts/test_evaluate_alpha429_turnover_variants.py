@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+import evaluate_alpha429_turnover_variants as evaluation
 import numpy as np
 import pandas as pd
 import pytest
-
-import evaluate_alpha429_turnover_variants as evaluation
 
 
 def test_compute_variants_preserves_formula_windows() -> None:
@@ -27,7 +26,9 @@ def test_compute_variants_preserves_formula_windows() -> None:
 
 def test_parser_rejects_locked_test() -> None:
     with pytest.raises(SystemExit):
-        evaluation.parse_args(["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"])
+        evaluation.parse_args(
+            ["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"]
+        )
 
 
 def test_daily_basic_filename_date_is_supported(tmp_path) -> None:
@@ -48,5 +49,10 @@ def test_daily_basic_filename_date_is_supported(tmp_path) -> None:
     basic = pd.DataFrame({"ts_code": ["000001.SZ"], "turnover_rate": [1.0]})
     daily.to_json(tmp_path / "daily_20250102.json", orient="table")
     basic.to_json(tmp_path / "daily_basic_20250102.json", orient="table")
-    result = evaluation.load_cached_market(tmp_path, pd.Timestamp("2025-01-02").date(), pd.Timestamp("2025-01-02").date(), ["000001.SZ"])
+    result = evaluation.load_cached_market(
+        tmp_path,
+        pd.Timestamp("2025-01-02").date(),
+        pd.Timestamp("2025-01-02").date(),
+        ["000001.SZ"],
+    )
     assert result.loc[0, "turnover_rate"] == 1.0

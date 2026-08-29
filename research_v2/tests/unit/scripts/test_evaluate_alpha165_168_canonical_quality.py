@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+import evaluate_alpha165_168_canonical_quality as evaluation
 import numpy as np
 import pandas as pd
 import pytest
-
-import evaluate_alpha165_168_canonical_quality as evaluation
 
 
 def test_compute_volume_std_uses_window_and_sample_std() -> None:
@@ -29,4 +28,6 @@ def test_empty_monthly_summary_has_expected_columns() -> None:
 
 def test_parser_rejects_locked_test() -> None:
     with pytest.raises(SystemExit):
-        evaluation.parse_args(["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"])
+        evaluation.parse_args(
+            ["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"]
+        )

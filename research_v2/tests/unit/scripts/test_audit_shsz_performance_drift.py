@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import json
 
-import pandas as pd
-
 import audit_shsz_performance_drift as audit
+import pandas as pd
 
 
 def test_performance_drift_passes_direction_and_ratio_gates() -> None:
@@ -48,7 +47,10 @@ def test_performance_drift_blocks_direction_flip_and_icir_collapse() -> None:
 
     assert result["status"] == "FAIL"
     assert result["direction_flip_factor_ids"] == ["yeslab_bad_direction"]
-    assert result["validation_predictive_fail_factor_ids"] == ["yeslab_bad_direction", "yeslab_bad_icir"]
+    assert result["validation_predictive_fail_factor_ids"] == [
+        "yeslab_bad_direction",
+        "yeslab_bad_icir",
+    ]
     assert result["drift_fail_factor_ids"] == ["yeslab_bad_direction", "yeslab_bad_icir"]
 
 

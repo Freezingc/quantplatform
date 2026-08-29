@@ -109,7 +109,13 @@ def test_snapshot_uses_later_effective_event_after_earlier_report_expires() -> N
         }
     )
     calendar = TradingCalendar.from_dates(
-        [date(2024, 9, 27), date(2024, 9, 30), date(2025, 3, 28), date(2025, 3, 31), date(2025, 4, 1)]
+        [
+            date(2024, 9, 27),
+            date(2024, 9, 30),
+            date(2025, 3, 28),
+            date(2025, 3, 31),
+            date(2025, 4, 1),
+        ]
     )
 
     result = build_fundamental_snapshot(events, universe, calendar, max_staleness_calendar_days=180)

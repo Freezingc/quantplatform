@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
+import evaluate_alpha208_volume_variants as evaluation
 import pandas as pd
 import pytest
-
-import evaluate_alpha208_volume_variants as evaluation
 
 
 def test_compute_variants_keeps_price_term_and_returns_all_scales() -> None:
@@ -34,7 +32,9 @@ def test_empty_monthly_summary_has_stable_columns() -> None:
 
 def test_parser_rejects_locked_test() -> None:
     with pytest.raises(SystemExit):
-        evaluation.parse_args(["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"])
+        evaluation.parse_args(
+            ["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"]
+        )
 
 
 def test_warmup_covers_the_longest_price_window() -> None:

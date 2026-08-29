@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import json
 
+import evaluate_alpha206_volume_variants as evaluation
 import numpy as np
 import pandas as pd
 import pytest
-
-import evaluate_alpha206_volume_variants as evaluation
 
 
 def test_compute_variants_has_expected_warmup() -> None:
@@ -26,7 +25,9 @@ def test_compute_variants_has_expected_warmup() -> None:
 
 def test_parser_rejects_locked_test() -> None:
     with pytest.raises(SystemExit):
-        evaluation.parse_args(["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"])
+        evaluation.parse_args(
+            ["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"]
+        )
 
 
 def test_summarize_variant_serializes_validation_only_window() -> None:

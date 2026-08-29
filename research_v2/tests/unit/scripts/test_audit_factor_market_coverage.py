@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pandas as pd
-
 from audit_factor_market_coverage import compare_factor_market_coverage
 
 

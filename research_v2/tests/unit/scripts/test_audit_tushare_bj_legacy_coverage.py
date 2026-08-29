@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
-import pandas as pd
-
 import audit_tushare_bj_legacy_coverage as audit
+import pandas as pd
 
 
 class FakePro:

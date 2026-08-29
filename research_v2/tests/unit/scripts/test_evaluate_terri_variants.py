@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+import evaluate_terri_variants as evaluation
 import numpy as np
 import pandas as pd
 import pytest
-
-import evaluate_terri_variants as evaluation
 
 
 def test_market_benchmarks_are_cross_sectional_and_deterministic() -> None:

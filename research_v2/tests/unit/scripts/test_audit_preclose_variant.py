@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import date
-
 import audit_preclose_variant as audit
 import pandas as pd
 import pytest

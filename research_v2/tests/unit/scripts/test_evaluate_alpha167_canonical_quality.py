@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
+import evaluate_alpha167_canonical_quality as evaluation
 import pandas as pd
 import pytest
-
-import evaluate_alpha167_canonical_quality as evaluation
 
 
 def test_compute_alpha99_matches_manual_rank_covariance() -> None:
@@ -34,4 +32,6 @@ def test_empty_monthly_summary_has_expected_columns() -> None:
 
 def test_parser_rejects_locked_test() -> None:
     with pytest.raises(SystemExit):
-        evaluation.parse_args(["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"])
+        evaluation.parse_args(
+            ["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x"]
+        )

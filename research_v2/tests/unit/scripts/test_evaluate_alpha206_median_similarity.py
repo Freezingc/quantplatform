@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import evaluate_alpha206_median_similarity as evaluation
 import pandas as pd
 import pytest
-
-import evaluate_alpha206_median_similarity as evaluation
 
 
 def test_parser_rejects_locked_test() -> None:
     with pytest.raises(SystemExit):
-        evaluation.parse_args(["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x.json"])
+        evaluation.parse_args(
+            ["--start", "2026-01-01", "--end", "2026-01-02", "--output", "/tmp/x.json"]
+        )
 
 
 def test_candidate_id_is_versioned() -> None:

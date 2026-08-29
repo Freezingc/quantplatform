@@ -1,10 +1,8 @@
 from __future__ import annotations
 
+import audit_shsz_validation_similarity as audit
 import pandas as pd
 import pytest
-
-import audit_shsz_validation_similarity as audit
-
 
 FACTOR_IDS = ("yeslab_376", "yeslab_380", "yeslab_396")
 

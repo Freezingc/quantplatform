@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from datetime import date
 
-import pandas as pd
-import pytest
-
 import evaluate_fundamental_snapshot_quality as evaluation
 import materialize_fundamental_pit_snapshot as materialization
+import pandas as pd
+import pytest
 
 
 def test_parser_rejects_locked_2026_range() -> None:
@@ -155,7 +154,9 @@ def test_publish_chunks_are_bounded_and_partitioned_by_metric_month() -> None:
     chunks = materialization._iter_publish_chunks(frame, chunk_rows=1)
 
     assert [len(chunk) for chunk in chunks] == [1, 1, 1, 1]
-    assert [(chunk.iloc[0]["metric_id"], chunk.iloc[0]["signal_date"].month) for chunk in chunks] == [
+    assert [
+        (chunk.iloc[0]["metric_id"], chunk.iloc[0]["signal_date"].month) for chunk in chunks
+    ] == [
         ("roa", 1),
         ("roa", 1),
         ("roa", 2),

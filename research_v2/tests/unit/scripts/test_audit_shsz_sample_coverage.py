@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import pandas as pd
-
 import audit_shsz_sample_coverage as audit
+import pandas as pd
 
 
 def _frame(rows):
