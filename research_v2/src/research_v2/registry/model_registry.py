@@ -30,6 +30,7 @@ _MODEL_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
 _EVIDENCE_HASH = re.compile(r"^[0-9a-f]{64}$")
 _REQUIRED_GATES = ("G1", "G2", "G3", "G4", "G5", "G6")
 _SHADOW_DEPLOYER_ENV = "QRV2_SHADOW_DEPLOYER_ID"
+_WORKFLOW_PROOF_ISSUER = object()
 
 
 class ModelStatus(StrEnum):
@@ -61,6 +62,8 @@ _ALLOWED_TRANSITIONS: dict[ModelStatus, frozenset[ModelStatus]] = {
 class ModelRecord:
     model_id: str
     status: ModelStatus
+    lineage_id: str = ""
+    parent_model_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -74,6 +77,67 @@ class TransitionEvent:
     transitioned_at: datetime
 
 
+class _RegistryWorkflowProof:
+    """Unforgeable in-process proof emitted only after a signed workflow record verifies."""
+
+    _issuer: object
+    operation: str
+    model_id: str
+    actor: str
+    evidence_hash: str
+    passed: bool | None
+
+    def __init__(self) -> None:
+        raise TypeError("registry workflow proofs are authority-issued")
+
+    @classmethod
+    def _issue(
+        cls,
+        *,
+        operation: str,
+        model_id: str,
+        actor: str,
+        evidence_hash: str,
+        passed: bool | None = None,
+    ) -> _RegistryWorkflowProof:
+        validate_model_id(model_id)
+        _validate_text(actor, "actor")
+        _validate_evidence_hashes((evidence_hash,))
+        if operation not in {"APPROVE_LOCKED_TEST", "COMPLETE_LOCKED_TEST", "APPROVE_PRODUCTION"}:
+            raise ValueError("registry workflow proof operation is invalid")
+        if operation == "COMPLETE_LOCKED_TEST":
+            if not isinstance(passed, bool):
+                raise ValueError("registry workflow proof passed flag is invalid")
+        elif passed is not None:
+            raise ValueError("registry workflow proof passed flag is invalid")
+        proof = object.__new__(cls)
+        proof._issuer = _WORKFLOW_PROOF_ISSUER
+        proof.operation = operation
+        proof.model_id = model_id
+        proof.actor = actor
+        proof.evidence_hash = evidence_hash
+        proof.passed = passed
+        return proof
+
+
+def _issue_registry_workflow_proof(
+    *,
+    operation: str,
+    model_id: str,
+    actor: str,
+    evidence_hash: str,
+    passed: bool | None = None,
+) -> _RegistryWorkflowProof:
+    """Internal authority hook for evidence-backed lifecycle transitions."""
+    return _RegistryWorkflowProof._issue(
+        operation=operation,
+        model_id=model_id,
+        actor=actor,
+        evidence_hash=evidence_hash,
+        passed=passed,
+    )
+
+
 class ModelRegistry:
     """In-memory domain registry; persistence adapters must retain every transition event."""
 
@@ -81,12 +145,34 @@ class ModelRegistry:
         self._records: dict[str, ModelRecord] = {}
         self._history: dict[str, list[TransitionEvent]] = {}
 
-    def register_draft(self, model_id: str, *, actor: str) -> ModelRecord:
+    def register_draft(
+        self,
+        model_id: str,
+        *,
+        actor: str,
+        lineage_id: str | None = None,
+        parent_model_id: str | None = None,
+    ) -> ModelRecord:
         validate_model_id(model_id)
         _validate_text(actor, "actor")
         if model_id in self._records:
             raise ValueError(f"model is already registered: {model_id}")
-        record = ModelRecord(model_id=model_id, status=ModelStatus.DRAFT)
+        if parent_model_id is None:
+            if lineage_id is not None and lineage_id != model_id:
+                raise ValueError("root model lineage_id must equal its immutable model_id")
+            resolved_lineage_id = model_id
+        else:
+            validate_model_id(parent_model_id)
+            parent = self._get(parent_model_id)
+            if lineage_id is not None and lineage_id != parent.lineage_id:
+                raise ValueError("derived model lineage_id must match its registered parent")
+            resolved_lineage_id = parent.lineage_id
+        record = ModelRecord(
+            model_id=model_id,
+            status=ModelStatus.DRAFT,
+            lineage_id=resolved_lineage_id,
+            parent_model_id=parent_model_id,
+        )
         self._records[model_id] = record
         self._append(record, None, actor, "draft registered", ())
         return record
@@ -169,6 +255,47 @@ class ModelRegistry:
             evidence_hashes=(approval.approval_id,),
         )
 
+    def _approve_locked_test(self, proof: _RegistryWorkflowProof) -> ModelRecord:
+        """Enter LOCKED_TEST_APPROVED only through the one-shot authority."""
+        record = self._verified_workflow_proof(proof, "APPROVE_LOCKED_TEST")
+        if record.status is not ModelStatus.SHADOW:
+            raise ValueError("only SHADOW models can enter LOCKED_TEST_APPROVED")
+        return self._transition(
+            record,
+            ModelStatus.LOCKED_TEST_APPROVED,
+            proof.actor,
+            reason="verified two-person locked-test approval",
+            evidence_hashes=(proof.evidence_hash,),
+        )
+
+    def _complete_locked_test(self, proof: _RegistryWorkflowProof) -> ModelRecord:
+        """Record the terminal locked-test decision made by the dedicated evaluator."""
+        record = self._verified_workflow_proof(proof, "COMPLETE_LOCKED_TEST")
+        if record.status is not ModelStatus.LOCKED_TEST_APPROVED:
+            raise ValueError("only LOCKED_TEST_APPROVED models can complete a locked test")
+        assert isinstance(proof.passed, bool)
+        status = ModelStatus.LOCKED_TEST_PASSED if proof.passed else ModelStatus.LOCKED_TEST_FAILED
+        return self._transition(
+            record,
+            status,
+            proof.actor,
+            reason="locked-test aggregate evaluation completed",
+            evidence_hashes=(proof.evidence_hash,),
+        )
+
+    def _approve_production(self, proof: _RegistryWorkflowProof) -> ModelRecord:
+        """Enter PRODUCTION only after the independent deployment approval verifies a pass."""
+        record = self._verified_workflow_proof(proof, "APPROVE_PRODUCTION")
+        if record.status is not ModelStatus.LOCKED_TEST_PASSED:
+            raise ValueError("only LOCKED_TEST_PASSED models can enter PRODUCTION")
+        return self._transition(
+            record,
+            ModelStatus.PRODUCTION,
+            proof.actor,
+            reason="verified independent production approval",
+            evidence_hashes=(proof.evidence_hash,),
+        )
+
     def history(self, model_id: str) -> tuple[TransitionEvent, ...]:
         self._get(model_id)
         return tuple(self._history[model_id])
@@ -176,6 +303,19 @@ class ModelRegistry:
     def get(self, model_id: str) -> ModelRecord:
         """Return the immutable registered state for downstream deployment guards."""
         return self._get(model_id)
+
+    def _verified_workflow_proof(
+        self,
+        proof: _RegistryWorkflowProof,
+        operation: str,
+    ) -> ModelRecord:
+        if (
+            not isinstance(proof, _RegistryWorkflowProof)
+            or getattr(proof, "_issuer", None) is not _WORKFLOW_PROOF_ISSUER
+            or proof.operation != operation
+        ):
+            raise ValueError("registry transition requires a verified workflow proof")
+        return self._get(proof.model_id)
 
     def _transition(
         self,

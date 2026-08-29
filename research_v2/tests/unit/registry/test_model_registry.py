@@ -7,6 +7,7 @@ from research_v2.monitoring.shadow import ShadowDeploymentApprovalStore
 from research_v2.registry.model_registry import ModelRegistry, ModelStatus
 
 MODEL_ID = "sha256:" + "a" * 64
+CHILD_MODEL_ID = "sha256:" + "b" * 64
 
 
 def _evidence(*, valid_score_days: int = 6) -> GateEvidence:
@@ -64,6 +65,23 @@ def test_registry_rejects_failed_gate_evidence_and_allows_retirement() -> None:
     assert retired.status is ModelStatus.RETIRED
 
 
+def test_derived_models_inherit_the_immutable_registered_parent_lineage() -> None:
+    registry = ModelRegistry()
+    root = registry.register_draft(MODEL_ID, actor="trainer")
+    child = registry.register_draft(CHILD_MODEL_ID, actor="trainer", parent_model_id=MODEL_ID)
+
+    assert root.lineage_id == MODEL_ID
+    assert child.lineage_id == MODEL_ID
+    assert child.parent_model_id == MODEL_ID
+    with pytest.raises(ValueError, match="parent"):
+        registry.register_draft(
+            "sha256:" + "c" * 64,
+            actor="trainer",
+            parent_model_id=MODEL_ID,
+            lineage_id="fake-lineage",
+        )
+
+
 def test_registry_reserves_locked_test_lifecycle_for_its_dedicated_workflow(
     tmp_path: object, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -99,6 +117,8 @@ def test_registry_reserves_locked_test_lifecycle_for_its_dedicated_workflow(
             evidence_hashes=("c" * 64,),
             reason="bypass locked-test evidence verification",
         )
+    with pytest.raises(ValueError, match="verified workflow proof"):
+        registry._approve_locked_test(object())  # type: ignore[arg-type]
     with pytest.raises(ValueError, match="cannot transition"):
         registry.transition(
             MODEL_ID,

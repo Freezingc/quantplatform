@@ -13,6 +13,11 @@ from research_v2.labels.forward_return import (
 from research_v2.pit.calendar import TradingCalendar
 
 
+@pytest.fixture(autouse=True)
+def _locked_access_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("QRV2_LOCKED_TEST_ACCESS_HMAC_KEY", "label-test-access-key")
+
+
 def test_primary_label_is_t_plus_1_to_t_plus_6_adjusted_open_return() -> None:
     calendar = TradingCalendar.from_dates(
         [
@@ -121,9 +126,10 @@ def test_authorized_locked_access_builds_labels_only_for_its_locked_year() -> No
         members,
         market,
         calendar,
-        locked_access=forward_return.LockedLabelAccess(
+        locked_access=forward_return.LockedLabelAccess.issue(
             locked_year=2026,
             authorization_id="user-approved-final-evaluation",
+            signing_key=b"label-test-access-key",
         ),
     )
 

@@ -70,6 +70,8 @@ class CompactDatasetReader:
                 raise LockedDatasetError(
                     "locked label reads must stay within the authorized 2026 segment"
                 )
+            if locked_access is not None:
+                locked_access.verify()
         try:
             date_column = _DATE_COLUMNS[object_name]
         except KeyError as error:

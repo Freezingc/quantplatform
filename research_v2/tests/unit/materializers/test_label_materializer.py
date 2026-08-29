@@ -96,7 +96,10 @@ def test_label_materializer_binds_membership_watermark_to_label_lineage() -> Non
     assert batch.frame.loc[0, "source_watermark_id"] != "market-v1"
 
 
-def test_label_materializer_requires_explicit_access_for_locked_year() -> None:
+def test_label_materializer_requires_explicit_access_for_locked_year(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("QRV2_LOCKED_TEST_ACCESS_HMAC_KEY", "materializer-test-access-key")
     market = SourceBatch(
         frame=pd.DataFrame(
             {
@@ -130,7 +133,11 @@ def test_label_materializer_requires_explicit_access_for_locked_year() -> None:
         market,
         calendar,
         RunContext(run_id="00000000-0000-0000-0000-000000000001", data_version="v1"),
-        locked_access=LockedLabelAccess(2026, "user-approved-final-evaluation"),
+        locked_access=LockedLabelAccess.issue(
+            locked_year=2026,
+            authorization_id="user-approved-final-evaluation",
+            signing_key=b"materializer-test-access-key",
+        ),
     )
 
     assert batch.frame.loc[0, "label_valid"]

@@ -18,6 +18,10 @@ from research_v2.monitoring.shadow import (
     ShadowEvidenceVerifier,
     ShadowQualificationStatus,
 )
+from research_v2.registry.locked_test import (
+    ProductionDeploymentApproval,
+    ProductionDeploymentApprovalVerifier,
+)
 from research_v2.registry.model_registry import ModelRegistry, ModelStatus, validate_model_id
 
 _CONSUMER_ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
@@ -49,6 +53,8 @@ class PointerSwitchEvidence:
     shadow_approval_root: Path | None = None
     shadow_evidence: ShadowEvidence | None = None
     shadow_evidence_root: Path | None = None
+    production_approval: ProductionDeploymentApproval | None = None
+    production_approval_root: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -66,6 +72,7 @@ class PointerEvent:
     run_id: str
     shadow_approval_id: str | None
     shadow_evidence_id: str | None
+    production_approval_id: str | None
     reverts_event_id: str | None
 
 
@@ -80,6 +87,7 @@ class _Eligibility:
     evidence_ids: tuple[str, ...]
     shadow_approval_id: str | None
     shadow_evidence_id: str | None
+    production_approval_id: str | None
 
 
 class PointerEligibilityGuard:
@@ -109,7 +117,22 @@ class PointerEligibilityGuard:
         if environment == "production":
             if record.status is not ModelStatus.PRODUCTION:
                 raise ValueError("production pointer requires a PRODUCTION model")
-            raise ValueError("production pointer requires a dedicated production approval workflow")
+            production_approval = evidence.production_approval
+            production_approval_root = evidence.production_approval_root
+            if production_approval is None or not isinstance(production_approval_root, Path):
+                raise ValueError("production pointer requires a verified production approval")
+            verified = ProductionDeploymentApprovalVerifier.from_environment(
+                production_approval_root
+            ).verify(
+                production_approval
+            )
+            if verified.model_id != model_id:
+                raise ValueError("production approval model does not match pointer target")
+            if verified.artifact_bundle_hash != artifact_digest:
+                raise ValueError("production approval artifact does not match pointer target")
+            evidence_ids = (*evidence.evidence_ids, verified.approval_id)
+            _validate_evidence_ids(evidence_ids)
+            return _Eligibility(evidence_ids, None, None, verified.approval_id)
         if environment != "shadow":
             raise ValueError("active pointer environment is invalid")
         if record.status not in {ModelStatus.WALK_FORWARD_PASSED, ModelStatus.SHADOW}:
@@ -140,7 +163,7 @@ class PointerEligibilityGuard:
             shadow_evidence_id = self._verify_shadow_readiness(model_id, evidence)
             evidence_ids = (*evidence_ids, shadow_evidence_id)
         _validate_evidence_ids(evidence_ids)
-        return _Eligibility(evidence_ids, approval.approval_id, shadow_evidence_id)
+        return _Eligibility(evidence_ids, approval.approval_id, shadow_evidence_id, None)
 
     def _verified_bundle_digest(self, model_id: str) -> str:
         try:
@@ -339,6 +362,7 @@ class ActiveModelPointerStore:
             run_id=run_id,
             shadow_approval_id=eligibility.shadow_approval_id,
             shadow_evidence_id=eligibility.shadow_evidence_id,
+            production_approval_id=eligibility.production_approval_id,
             reverts_event_id=reverts_event_id,
         )
 
@@ -389,6 +413,7 @@ def _validate_evidence(evidence: PointerSwitchEvidence) -> None:
     paired = (
         (evidence.shadow_approval, evidence.shadow_approval_root),
         (evidence.shadow_evidence, evidence.shadow_evidence_root),
+        (evidence.production_approval, evidence.production_approval_root),
     )
     for signed, root in paired:
         if (signed is None) != (root is None):

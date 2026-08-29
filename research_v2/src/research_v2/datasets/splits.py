@@ -94,6 +94,7 @@ class SplitResolver:
         self, fold_id: str, access: LockedTestAccess
     ) -> ResolvedSegment:
         """Resolve FINAL/TEST dates only after an explicit locked-test capability."""
+        access.verify()
         if fold_id != "FINAL":
             raise LockedPeriodError("locked access is only valid for FINAL test")
         fold = self._folds[fold_id]

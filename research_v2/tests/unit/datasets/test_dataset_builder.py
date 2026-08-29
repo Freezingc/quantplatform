@@ -20,6 +20,19 @@ from research_v2.factors.factor_sets import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _locked_access_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("QRV2_LOCKED_TEST_ACCESS_HMAC_KEY", "dataset-test-access-key")
+
+
+def _locked_access() -> LockedTestAccess:
+    return LockedTestAccess.issue(
+        locked_year=2026,
+        authorization_id="user-approved-final-evaluation",
+        signing_key=b"dataset-test-access-key",
+    )
+
+
 def test_builder_anchors_universe_and_enforces_pit_availability() -> None:
     universe = pd.DataFrame(
         {
@@ -108,7 +121,7 @@ def test_builder_rejects_locked_year_for_ordinary_dataset_requests() -> None:
 
 
 def test_builder_accepts_locked_final_test_only_with_explicit_access() -> None:
-    access = LockedTestAccess(locked_year=2026, authorization_id="user-approved-final-evaluation")
+    access = _locked_access()
 
     built = build_point_in_time_dataset(
         pd.DataFrame({"signal_date": [date(2026, 1, 2)], "ts_code": ["a"]}),
@@ -137,6 +150,13 @@ def test_builder_accepts_locked_final_test_only_with_explicit_access() -> None:
     )
 
     assert len(built) == 1
+
+
+def test_builder_rejects_a_fabricated_unsigned_locked_access() -> None:
+    forged = LockedTestAccess(locked_year=2026, authorization_id="fabricated")
+
+    with pytest.raises(LockedDatasetError, match="signature"):
+        DatasetBuildRequest(fold_id="FINAL", split_role="TEST", locked_access=forged)
 
 
 def test_builder_accepts_v2_label_daily_raw_return_column() -> None:

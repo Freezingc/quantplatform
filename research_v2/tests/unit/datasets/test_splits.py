@@ -9,6 +9,19 @@ from research_v2.datasets.splits import LockedPeriodError, SplitResolver, annual
 from research_v2.pit.calendar import TradingCalendar
 
 
+@pytest.fixture(autouse=True)
+def _locked_access_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("QRV2_LOCKED_TEST_ACCESS_HMAC_KEY", "split-test-access-key")
+
+
+def _locked_access() -> LockedTestAccess:
+    return LockedTestAccess.issue(
+        locked_year=2026,
+        authorization_id="approved",
+        signing_key=b"split-test-access-key",
+    )
+
+
 def _calendar() -> TradingCalendar:
     return TradingCalendar.from_dates(
         [date(year, 1, day) for year in range(2014, 2027) for day in range(2, 10)]
@@ -46,7 +59,7 @@ def test_locked_final_test_requires_explicit_access_capability() -> None:
     resolver = SplitResolver(_calendar())
 
     segment = resolver.resolve_locked_test(
-        "FINAL", LockedTestAccess(locked_year=2026, authorization_id="approved")
+        "FINAL", _locked_access()
     )
 
     assert segment.locked

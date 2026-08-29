@@ -21,6 +21,19 @@ from research_v2.factors.factor_sets import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _locked_access_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("QRV2_LOCKED_TEST_ACCESS_HMAC_KEY", "reader-test-access-key")
+
+
+def _locked_access() -> LockedTestAccess:
+    return LockedTestAccess.issue(
+        locked_year=2026,
+        authorization_id="approved",
+        signing_key=b"reader-test-access-key",
+    )
+
+
 class ReaderSession:
     target_database = "dfs://QuantResearchV2Test"
 
@@ -176,7 +189,7 @@ def test_reader_preflights_factor_coverage_before_locked_label_access() -> None:
             request=DatasetBuildRequest(
                 fold_id="FINAL",
                 split_role="TEST",
-                locked_access=LockedTestAccess(2026, "approved"),
+                locked_access=_locked_access(),
             ),
             admission_contract=_contract(),
         )
@@ -216,7 +229,7 @@ def test_reader_rejects_mixed_years_for_authorized_final_dataset() -> None:
             request=DatasetBuildRequest(
                 fold_id="FINAL",
                 split_role="TEST",
-                locked_access=LockedTestAccess(2026, "approved"),
+                locked_access=_locked_access(),
             ),
             admission_contract=_contract(),
         )

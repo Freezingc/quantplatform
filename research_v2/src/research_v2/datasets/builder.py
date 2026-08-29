@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
+import os
 from dataclasses import dataclass
 from datetime import date
 from typing import Literal
@@ -16,6 +20,7 @@ from research_v2.factors.admission import (
 
 SplitRole = Literal["TRAIN", "VALIDATION", "TEST"]
 _VALID_SPLIT_ROLES = frozenset({"TRAIN", "VALIDATION", "TEST"})
+_LOCKED_ACCESS_KEY_ENV = "QRV2_LOCKED_TEST_ACCESS_HMAC_KEY"
 
 
 class LockedDatasetError(PermissionError):
@@ -28,12 +33,46 @@ class LockedTestAccess:
 
     locked_year: int
     authorization_id: str
+    signature: str = ""
 
     def __post_init__(self) -> None:
         if self.locked_year != 2026:
             raise LockedDatasetError("locked test access must target 2026")
         if not self.authorization_id.strip():
             raise LockedDatasetError("locked test access requires an authorization_id")
+
+    @classmethod
+    def issue(
+        cls,
+        *,
+        locked_year: int,
+        authorization_id: str,
+        signing_key: bytes,
+    ) -> LockedTestAccess:
+        """Create an authority-signed access record that data boundaries can verify."""
+        unsigned = cls(locked_year=locked_year, authorization_id=authorization_id)
+        if not isinstance(signing_key, bytes) or not signing_key:
+            raise LockedDatasetError("locked test access signing_key must be non-empty bytes")
+        return cls(
+            locked_year=locked_year,
+            authorization_id=authorization_id,
+            signature=_locked_access_signature(signing_key, unsigned.payload()),
+        )
+
+    def payload(self) -> dict[str, object]:
+        return {
+            "authorization_id": self.authorization_id,
+            "locked_year": self.locked_year,
+        }
+
+    def verify(self) -> None:
+        """Fail closed unless the access was signed by the locked-test authority key."""
+        secret = os.environ.get(_LOCKED_ACCESS_KEY_ENV, "")
+        if not secret:
+            raise LockedDatasetError(f"locked test access requires {_LOCKED_ACCESS_KEY_ENV}")
+        expected = _locked_access_signature(secret.encode("utf-8"), self.payload())
+        if not self.signature or not hmac.compare_digest(self.signature, expected):
+            raise LockedDatasetError("locked test access signature verification failed")
 
 
 @dataclass(frozen=True)
@@ -52,6 +91,8 @@ class DatasetBuildRequest:
             raise LockedDatasetError("FINAL test dataset is locked and cannot be built here")
         if not is_locked_test and self.locked_access is not None:
             raise LockedDatasetError("locked test access is only valid for FINAL TEST")
+        if self.locked_access is not None:
+            self.locked_access.verify()
 
 
 @dataclass(frozen=True)
@@ -89,6 +130,8 @@ def build_point_in_time_dataset(
     ):
         raise LockedDatasetError("FINAL test dataset is locked and cannot be built here")
     if _is_authorized_locked_test(request):
+        assert request.locked_access is not None
+        request.locked_access.verify()
         _reject_inputs_outside_locked_year(
             ("universe", universe),
             ("factors", factors),
@@ -210,6 +253,11 @@ def _is_authorized_locked_test(request: DatasetBuildRequest) -> bool:
         and request.split_role == "TEST"
         and request.locked_access is not None
     )
+
+
+def _locked_access_signature(signing_key: bytes, payload: dict[str, object]) -> str:
+    encoded = json.dumps(payload, ensure_ascii=True, separators=(",", ":"), sort_keys=True)
+    return hmac.new(signing_key, encoded.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def _reject_locked_or_future_inputs(

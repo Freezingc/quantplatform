@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
 from typing import Any, cast
 
 import pandas as pd
 
+from research_v2.datasets.builder import LockedTestAccess
 from research_v2.pit.calendar import TradingCalendar, TradingCalendarBoundaryError
 
 
@@ -15,18 +15,7 @@ class LockedLabelError(ValueError):
     """Raised when ordinary materialization attempts to build locked labels."""
 
 
-@dataclass(frozen=True)
-class LockedLabelAccess:
-    """Explicit audit capability for the one isolated locked-label workflow."""
-
-    locked_year: int
-    authorization_id: str
-
-    def __post_init__(self) -> None:
-        if self.locked_year < _LOCKED_YEAR:
-            raise LockedLabelError("locked access cannot target a non-locked year")
-        if not self.authorization_id.strip():
-            raise LockedLabelError("locked access requires a non-empty authorization_id")
+LockedLabelAccess = LockedTestAccess
 
 
 _LOCKED_YEAR = 2026
@@ -72,6 +61,11 @@ def build_forward_open_labels(
         raise ValueError("market contains duplicate trade_date/ts_code keys")
     if locked_access is not None and locked_access.locked_year != locked_year:
         raise LockedLabelError("locked access year must match the configured lock year")
+    if locked_access is not None:
+        try:
+            locked_access.verify()
+        except PermissionError as error:
+            raise LockedLabelError("locked access signature verification failed") from error
     prices = {
         (pd.Timestamp(row["trade_date"]).date(), str(row["ts_code"])): row["adjusted_open"]
         for row in cast(list[dict[str, Any]], market.to_dict(orient="records"))

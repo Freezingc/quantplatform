@@ -390,7 +390,7 @@ def test_production_pointer_rejects_unverified_caller_supplied_evidence(
     digests = {_A: "1" * 64, _B: "2" * 64, _C: "3" * 64}
     store = _store(registry, digests)
 
-    with pytest.raises(ValueError, match="dedicated production approval"):
+    with pytest.raises(ValueError, match="verified production approval"):
         store.compare_and_swap(
             consumer_id="paper-sim",
             environment="production",
