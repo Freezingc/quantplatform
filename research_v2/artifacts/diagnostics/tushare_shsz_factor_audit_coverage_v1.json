@@ -5471,7 +5471,7 @@
           }
         },
         "extension_cluster_status": "REDUNDANT_TO_HIGHER_PRIORITY_yeslab_405",
-        "status": "DEFER_EXTENSION_REDUNDANCY",
+        "status": "REJECT_REDUNDANT_WITH_CANDIDATE_405",
         "action": "Do not advance this candidate while the stronger Alpha405 scope-transition candidate remains unresolved."
       },
       "yeslab_95": {
