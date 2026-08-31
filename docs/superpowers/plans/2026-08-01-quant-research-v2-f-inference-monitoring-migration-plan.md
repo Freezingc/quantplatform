@@ -201,12 +201,15 @@ git commit -m "feat(v2): publish healthy daily predictions atomically"
 - Create: `research_v2/src/research_v2/inference/daily_pipeline.py`
 - Create: `research_v2/src/research_v2/reporting/daily.py`
 - Create: `research_v2/src/research_v2/cli/inference.py`
+- Modify: `research_v2/src/research_v2/db/publish.py`
 - Modify: `research_v2/src/research_v2/cli/app.py`
 - Test: `research_v2/tests/unit/inference/test_daily_pipeline.py`
+- Test: `research_v2/tests/unit/reporting/test_daily.py`
+- Test: `research_v2/tests/property/inference/test_daily_idempotency.py`
 - Test: `research_v2/tests/integration/inference/test_daily_shadow_pipeline.py`
 - Test: `research_v2/tests/integration/inference/test_publish_failure_recovery.py`
 
-- [ ] **F4.1 固化 DAG 与状态**
+- [x] **F4.1 固化 DAG 与状态**
 
 ```text
 calendar check
@@ -224,11 +227,11 @@ calendar check
 
 状态 `PENDING/RUNNING/SUCCESS/FAILED/NOOP_NON_TRADING_DAY`；前置失败使步骤状态为 `SKIPPED_DEPENDENCY_FAILED`，pipeline 总状态仍为 `FAILED`。
 
-- [ ] **F4.2 定义调度与时效目标**
+- [x] **F4.2 定义调度与时效目标**
 
 默认交易日 19:30 Asia/Shanghai 启动，20:00 前完成 prediction publish。调度器只触发 CLI；业务正确性仍由 calendar/watermark guard 决定。源未齐可在 19:35、19:45、20:00 重试三次，之后失败并告警，绝不发布前一日数据冒充当日。
 
-- [ ] **F4.3 定义 CLI**
+- [x] **F4.3 定义 CLI**
 
 ```text
 qr-v2 inference daily --signal-date YYYY-MM-DD --model-id sha256:... --mode shadow
@@ -238,15 +241,15 @@ qr-v2 inference retry --run-id UUID --from-step watermark
 
 retry 复用原配置/model id，重新捕获水位并生成新 run id；已成功发布的同内容步骤幂等跳过。`--mode production` 只接受 active pointer 指向且状态 PRODUCTION 的模型。
 
-- [ ] **F4.4 实现每日 HTML/JSON 报告**
+- [x] **F4.4 实现每日 HTML/JSON 报告**
 
 包含各步骤耗时/状态、水位、universe/feature coverage、score 分布、seed agreement、prediction 行数、artifact/data hashes、告警和发布版本；不包含标签、收益、RankIC 或持仓建议。
 
-- [ ] **F4.5 集成测试**
+- [x] **F4.5 集成测试**
 
 在 V2Test 模拟正常日、休市、源迟到后恢复、源永不齐、factor DQ blocker、GPU 失败、publish 中断、相同日重跑。断言只有完整成功日可见，失败日无陈旧替代。
 
-- [ ] **F4.6 运行测试并提交**
+- [x] **F4.6 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/inference/test_daily_pipeline.py -q`
 
@@ -546,4 +549,4 @@ git commit -m "docs(v2): complete inference and recovery runbooks"
 - [ ] locked test 通过前模型不进入 PRODUCTION；失败 lineage 不得重复利用 2026 作为样本外。
 - [ ] 日常、迟到、回滚、灾备 runbooks 经桌面演练验证。
 
-注：F10 已完成；以上总体验收项待 F4 的每日 CLI、运行报告、属性测试和 inference 集成测试补齐后再逐项勾选。
+注：F4 与 F10 的代码、测试和操作文档已完成；以上总体验收项仍需真实 SHADOW 运行期证据（含至少 60 个有效日）及最终治理验收后逐项勾选。
