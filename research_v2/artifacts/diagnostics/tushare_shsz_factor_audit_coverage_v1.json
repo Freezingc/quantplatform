@@ -3888,7 +3888,7 @@
     ],
     "annual_review_status": {
       "yeslab_393": "PASS_REDUNDANT_TO_FORMAL_376",
-      "yeslab_395": "PASS_FORMULA_REPLAY_BLOCKED"
+      "yeslab_395": "REJECT_FORMULA_REPLAY_BLOCKED_DESPITE_ANNUAL_PASS"
     },
     "action": "Reject Alpha380–Alpha395 as new admissions; record Alpha380 as an existing formal-admission review, Alpha393 as redundant to Alpha376, and Alpha395 as formula-replay blocked.",
     "artifacts": [
