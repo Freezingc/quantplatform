@@ -212,6 +212,14 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 评审包为 `research_v2/artifacts/diagnostics/tushare_alpha443_canonical_candidate_review_v1.json`；训练/验证原始 RankIC 与相似度文件位于同名 `tushare_shsz_alpha443_formal9_*` 目录。该候选只进入人工范围审批，不因质量通过而自动准入。
 
+#### Alpha432 冗余复核结论
+
+2026-08-31 使用同一评估器完成 `yeslab_432_tushare_shsz_v1` 的 Tushare SH/SZ 全训练期与验证期重放。训练期 signed RankIC / ICIR 为 `0.07150 / 0.59249`，2025 验证期为 `0.08582 / 0.79153`，冻结方向为 `-1`，严格年度 ICIR 门槛通过 `4/5`；训练和验证覆盖率中位数分别为 `0.99912` 和 `0.99898`，均通过覆盖门槛。
+
+但它与正式 `yeslab_431` 的全日绝对 Spearman 中位数为训练 `0.95381`、验证 `0.96155`，均超过 `0.90` 冗余阈值；9/9 条正式九因子边均完整覆盖 `1212/243` 个交易日。因此 Alpha432 的预测质量虽通过，结构准入必须拒绝为正式因子的重复输入，不能以“质量通过”绕过冗余门槛。历史 YesLab `GP_063` 源池包含 `552` 个 BJ 代码，历史值也不能和隔离的 SH/SZ Tushare 值混用。
+
+评审包为 `research_v2/artifacts/diagnostics/tushare_alpha432_canonical_candidate_review_v1.json`；训练/验证原始 RankIC 与相似度文件位于同名 `tushare_shsz_alpha432_formal9_*` 目录。当前结论为 `REJECT_REDUNDANT_WITH_FORMAL_YESLAB_431`，仍保持 `model_eligible=false`，不发布、不写数据库、不改变正式九因子、不加入模型输入、不启动训练。
+
 #### 六候选统一两两相似度审计
 
 2026-08-28 已完成 `yeslab_114_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_484_tushare_shsz_v1`、`yeslab_206_median_abs_v2` 的统一比较。公式计算使用完整 SH/SZ Tushare 市场面板，输出再限制到共同的 V2 `is_member` 且 `label_valid` 业务键；标签查询显式锁定 `forward_open_5d`/版本 `1`。Alpha484 使用带代码、manifest、内容哈希和日期集合指纹的已完成 Tushare 重放检查点，完整指纹记录在 `research_v2/artifacts/checkpoints/alpha484_canonical_v1/integrity.json`；加载器同时绑定代码内的规范阶段覆盖/日期摘要和文件哈希，替换 `integrity.json` 也不能让稀疏检查点通过；Alpha206 使用 60 日滚动中位数修复。
@@ -613,7 +621,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核；Alpha432 已完成同口径复核但因与正式 `yeslab_431` 冗余而拒绝新增准入。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 
