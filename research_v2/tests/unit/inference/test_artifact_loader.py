@@ -206,6 +206,23 @@ def test_non_frozen_factor_set_is_rejected(tmp_path: Path) -> None:
         )
 
 
+def test_unknown_model_code_version_is_rejected(tmp_path: Path) -> None:
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path,
+        model_card_overrides={"model_code_version": "untrusted-implementation"},
+    )
+
+    with pytest.raises(ValueError, match="model_code_version"):
+        load_inference_artifact(
+            store,
+            model_id,
+            expected_dataset_id="dataset-1",
+            expected_feature_order=feature_order,
+            expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"),
+        )
+
+
 def test_tampered_bundle_is_rejected_before_model_construction(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

@@ -31,6 +31,11 @@ _INFERENCE_CONTRACT_FIELDS = frozenset(
         "model_code_version",
     }
 )
+_MODEL_CODE_VERSIONS = {
+    "RESIDUAL_MLP": "residual-mlp-1",
+    "TEMPORAL_GRU": "temporal-gru-1",
+    "SET_ATTENTION": "set-attention-1",
+}
 
 
 @dataclass(frozen=True)
@@ -152,6 +157,14 @@ def _allowlisted_factory(
     config: Mapping[str, object],
 ) -> Callable[[], nn.Module]:
     family = model_card.get("family")
+    model_code_version = model_card.get("model_code_version")
+    expected_code_version = (
+        _MODEL_CODE_VERSIONS.get(family) if isinstance(family, str) else None
+    )
+    if model_code_version is not None and (
+        not isinstance(model_code_version, str) or expected_code_version != model_code_version
+    ):
+        raise ValueError("model_code_version is not allowlisted for model family")
     if family == "RESIDUAL_MLP":
         residual = _residual_config(config)
         return lambda: ResidualMLP(residual)
