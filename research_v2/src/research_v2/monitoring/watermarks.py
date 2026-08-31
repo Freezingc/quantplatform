@@ -29,6 +29,8 @@ class InferenceWatermark:
 class WatermarkReport:
     status: WatermarkStatus
     blockers: tuple[str, ...]
+    start_fingerprint: str | None = None
+    end_fingerprint: str | None = None
 
 
 def check_inference_watermarks(
@@ -60,14 +62,19 @@ def check_inference_watermarks(
             blockers.append(f"STALE:{dependency}")
         if watermark.has_blocker:
             blockers.append(f"DQ_BLOCKER:{dependency}")
-    if end_watermarks is not None and _scoped_fingerprint(
-        required_dependencies,
-        watermarks,
-    ) != _scoped_fingerprint(required_dependencies, end_watermarks):
+    start_fingerprint = _scoped_fingerprint(required_dependencies, watermarks)
+    end_fingerprint = (
+        _scoped_fingerprint(required_dependencies, end_watermarks)
+        if end_watermarks is not None
+        else None
+    )
+    if end_fingerprint is not None and start_fingerprint != end_fingerprint:
         blockers.append("SOURCE_CHANGED_DURING_RUN")
     return WatermarkReport(
         status=WatermarkStatus.BLOCKED if blockers else WatermarkStatus.READY,
         blockers=tuple(blockers),
+        start_fingerprint=start_fingerprint,
+        end_fingerprint=end_fingerprint,
     )
 
 

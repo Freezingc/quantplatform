@@ -90,6 +90,8 @@ def test_watermark_gate_rejects_sources_changed_during_run() -> None:
 
     assert report.status is WatermarkStatus.BLOCKED
     assert report.blockers == ("SOURCE_CHANGED_DURING_RUN",)
+    assert report.start_fingerprint == watermark_fingerprint(records)
+    assert report.end_fingerprint == watermark_fingerprint(changed)
     assert watermark_fingerprint(records) != watermark_fingerprint(changed)
 
 
