@@ -2869,14 +2869,14 @@
         "annual_signed_mean_pass_years": 5,
         "annual_directional_share_pass_years": 5,
         "strict_annual_abs_icir_pass_years": 1,
-        "status": "ANNUAL_STABILITY_PASS_WITH_MONITORING"
+        "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5"
       },
       "yeslab_167": {
         "same_direction_years": 5,
         "annual_signed_mean_pass_years": 5,
         "annual_directional_share_pass_years": 5,
         "strict_annual_abs_icir_pass_years": 3,
-        "status": "ANNUAL_STABILITY_PASS_WITH_MONITORING"
+        "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_3_OF_5"
       }
     },
     "action": "Advance Alpha165 and Alpha167 to formula replay and similarity review; no publication or model training.",
@@ -3058,7 +3058,7 @@
       "annual_signed_mean_pass_years": 4,
       "annual_directional_share_pass_years": 5,
       "strict_annual_abs_icir_pass_years": 1,
-      "status": "ANNUAL_STABILITY_PASS_WITH_MONITORING"
+      "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5"
     },
     "action": "Advance Alpha168 to formula replay and similarity review; no publication or model training.",
     "artifact": "alpha_168_train_2020_2024_annual_v1.json",
@@ -3420,13 +3420,13 @@
         "mean_rank_ic": -0.0524260461,
         "icir": -0.6549780687,
         "minimum_monthly_finite_ratio": 0.9695257779,
-        "status": "ANNUAL_STABILITY_PASS_WITH_MONITORING"
+        "status": "MONITORED_RESEARCH_CANDIDATE_ANNUAL_STABILITY_PASS"
       },
       "yeslab_208": {
         "mean_rank_ic": -0.0547766655,
         "icir": -0.5064197496,
         "minimum_monthly_finite_ratio": 0.9695257779,
-        "status": "ANNUAL_STABILITY_PASS_WITH_MONITORING"
+        "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5"
       },
       "yeslab_204": {
         "mean_rank_ic": -0.0301288261,
