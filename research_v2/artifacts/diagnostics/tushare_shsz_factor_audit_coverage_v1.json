@@ -4404,7 +4404,7 @@
     "factor_id": "yeslab_208",
     "period": "2020-01-02/2024-12-31",
     "market_source": "Tushare.daily",
-    "status": "PASS_WITH_MONITORING",
+    "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5",
     "aggregate": {
       "mean_rank_ic": -0.0389157216,
       "icir": -0.2967055793,
@@ -4417,7 +4417,7 @@
       "directional_day_share_pass_years": 5,
       "strict_annual_abs_icir_pass_years": 1
     },
-    "action": "Retain Alpha208 as a monitored research candidate only; do not alter the formal nine-factor set, publish, or train a model without an explicit admission decision.",
+    "action": "Retain Alpha208 as a monitored research candidate only; strict annual ICIR passes 1/5 and no repair variant improves the unchanged annual gate. Do not alter the formal nine-factor set, publish, or train a model without an explicit admission decision.",
     "artifact": "alpha208_tushare_rematerialized_train_2020_2024_v1.json",
     "volume_variant_repair_review": {
       "artifact": "alpha208_volume_variants_2020_2025_v1/quality_summary.json",
