@@ -4102,7 +4102,7 @@
       "yeslab_471"
     ],
     "annual_review_status": {
-      "yeslab_471": "PASS_FORMULA_REPLAY_BLOCKED_TRAIN_UNIQUE"
+      "yeslab_471": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY"
     },
     "action": "Reject Alpha460–Alpha475 as new admissions. Alpha464 and Alpha468 have predictive signal but a zero-coverage month. Alpha471 passes annual structure and is train-unique, but full SH/SZ Tushare formula replay has 74,556 finite-value mismatches despite complete market coverage; retain it outside publication and model inputs pending source-formula reconciliation.",
     "artifacts": [
