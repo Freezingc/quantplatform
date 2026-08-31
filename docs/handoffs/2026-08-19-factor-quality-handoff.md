@@ -703,4 +703,4 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ## 11. 当前接手点
 
-接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json`、`tushare_shsz_candidate_admission_review_matrix_v2.json` 和 `tushare_canonical_candidate_pair_similarity_v1.json`。六候选统一两两审计已经完成，当前需按独立、明确的人工决策审查六候选及单独完成的 `yeslab_443_tushare_shsz_v1` 范围审批。`114-484` 不得在组合中同时使用，`381-405` 需保留冗余监控；443 的 9 条正式九因子边已通过，但不自动加入六候选 pair 注册表。任何单因子通过或 pair `PAIR_UNIQUE` 都不构成自动准入。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
+接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json`、`tushare_shsz_candidate_admission_review_matrix_v2.json`、`tushare_canonical_candidate_pair_similarity_v1.json`、`candidate_combination_evidence_gap_index_v1.json` 和 `canonical_candidate_version_contract_index_v1.json`。六候选统一两两审计已经完成；扩展候选 363/357/96 的完整组合边也已完成，训练/验证各 21 条边。当前需按独立、明确的人工决策审查六候选、443、363、357、96 及对应版本契约。`114-484` 不得在组合中同时使用；`381-405` 与 `357-363` 需保留冗余/监控审查；任何单因子通过或 pair `PAIR_UNIQUE` 都不构成自动准入。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
