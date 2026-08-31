@@ -1829,6 +1829,17 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "candidate_combination_evidence_gap_index": {
+    "artifact": "candidate_combination_evidence_gap_index_v1.json",
+    "scope": "CANDIDATE_COMBINATION_EVIDENCE_GAP_INDEX_V1",
+    "status": "COMBINATION_EVIDENCE_GAP",
+    "action": "Use this index to identify candidate-candidate combination evidence still required before joint admission. Do not admit multiple candidates together based only on single-factor formal-nine similarity passes.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",

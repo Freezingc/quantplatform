@@ -1,0 +1,49 @@
+{
+  "scope": "CANDIDATE_COMBINATION_EVIDENCE_GAP_INDEX_V1",
+  "purpose": "Identify candidate-candidate combination evidence that is still required before any explicit joint admission decision. This index is read-only and does not approve admission, publish values, write factor values, change the formal nine, or authorize model inputs.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "completed_combination_audit": {
+    "artifact": "tushare_canonical_candidate_pair_similarity_v1.json",
+    "candidate_ids": [
+      "yeslab_114_tushare_shsz_v2",
+      "yeslab_381_tushare_shsz_v1",
+      "yeslab_405_tushare_shsz_v1",
+      "yeslab_425_tushare_shsz_v2",
+      "yeslab_484_tushare_shsz_v1",
+      "yeslab_206_median_abs_v2"
+    ],
+    "edges": "15 training and 15 validation complete edges"
+  },
+  "candidates_with_formal_nine_edges_only": [
+    {
+      "candidate_id": "yeslab_363_tushare_shsz_v1",
+      "formal_nine_edges": "9/9 train and 9/9 validation",
+      "gap": "No pair similarity against the six-candidate matrix yet."
+    },
+    {
+      "candidate_id": "yeslab_357_tushare_shsz_v1",
+      "formal_nine_edges": "9/9 train and 9/9 validation",
+      "gap": "No pair similarity against the six-candidate matrix yet."
+    },
+    {
+      "candidate_id": "yeslab_96_canonical_replay_v1",
+      "formal_nine_edges": "recorded in canonical_unique_candidate_replay",
+      "gap": "No pair similarity against the six-candidate matrix yet."
+    }
+  ],
+  "required_before_joint_admission": [
+    "run a separate combination review for any pair that includes yeslab_363_tushare_shsz_v1, yeslab_357_tushare_shsz_v1, or yeslab_96_canonical_replay_v1",
+    "retain the existing 0.90 redundancy threshold and 0.80 monitor threshold",
+    "do not admit multiple candidates together based only on single-factor formal-nine similarity passes"
+  ],
+  "status": "COMBINATION_EVIDENCE_GAP",
+  "decision": "NO_AUTOMATIC_ADMISSION",
+  "formal_factor_set_changed": false,
+  "model_eligible": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false
+}
