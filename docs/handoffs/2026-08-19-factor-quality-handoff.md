@@ -236,6 +236,14 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 评审包为 `research_v2/artifacts/diagnostics/tushare_alpha387_alpha388_redundancy_rejection_review_v1.json`。两个因子均不发布、不写数据库、不改变正式九因子、不加入模型输入、不启动训练。
 
+#### Alpha391 完整九边边界冗余复核
+
+2026-08-31 对 `yeslab_391_tushare_shsz_v1`（GP_022）完成了训练期和 2025 验证期与正式九因子的完整 9 条相似度边复核。训练/验证 signed RankIC / ICIR 为 `0.07970/0.57624` 与 `0.08280/0.54981`，严格年度门槛为 `4/5`，公式重放四窗口通过。
+
+与正式 `yeslab_380` 的完整边中位绝对 Spearman 在训练期为 `0.90411`，超过不变的 `0.90` 冗余门槛；验证期为 `0.88781`，低于门槛且作为边界监控记录。9 条边分别覆盖训练/验证 `1212/243` 个交易日。按既有单阶段冗余先例，训练期完整边越线足以拒绝新增输入；本次没有因验证期回落到门槛以下而放宽拒绝，也没有把验证期结果解释为通过。
+
+评审包为 `research_v2/artifacts/diagnostics/tushare_alpha391_canonical_candidate_review_v1.json`，状态为 `REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_TRAIN_BOUNDARY_VALIDATION_MONITOR`。该因子不发布、不写数据库、不改变正式九因子、不加入模型输入、不启动训练。
+
 #### 六候选统一两两相似度审计
 
 2026-08-28 已完成 `yeslab_114_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_484_tushare_shsz_v1`、`yeslab_206_median_abs_v2` 的统一比较。公式计算使用完整 SH/SZ Tushare 市场面板，输出再限制到共同的 V2 `is_member` 且 `label_valid` 业务键；标签查询显式锁定 `forward_open_5d`/版本 `1`。Alpha484 使用带代码、manifest、内容哈希和日期集合指纹的已完成 Tushare 重放检查点，完整指纹记录在 `research_v2/artifacts/checkpoints/alpha484_canonical_v1/integrity.json`；加载器同时绑定代码内的规范阶段覆盖/日期摘要和文件哈希，替换 `integrity.json` 也不能让稀疏检查点通过；Alpha206 使用 60 日滚动中位数修复。
@@ -266,6 +274,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 | `yeslab_377_tushare_shsz_v1` | 预测质量和覆盖通过，但与正式 `yeslab_380` 冗余（训练/验证 `0.97005/0.97555`） | 早停拒绝新增输入；其余正式边未声称完成审计 |
 | `yeslab_387_tushare_shsz_v1` | 预测质量和覆盖通过，但与正式 `yeslab_380` 冗余（训练/验证 `0.97775/0.97503`） | 早停拒绝新增输入；其余正式边未声称完成审计 |
 | `yeslab_388_tushare_shsz_v1` | 预测质量和覆盖通过，但与正式 `yeslab_380` 冗余（训练/验证 `0.97999/0.97741`） | 早停拒绝新增输入；其余正式边未声称完成审计 |
+| `yeslab_391_tushare_shsz_v1` | 完整九边复核通过；训练期对正式 `yeslab_380` 为 `0.90411`，验证期为 `0.88781` | 训练期冗余拒绝新增输入；验证期仅作为边界监控 |
 | `yeslab_385` | 与 `yeslab_405` 相似度 0.90134，冗余失败 | 拒绝 |
 | `yeslab_208` | 总体有信号，但严格年度 ICIR 仅 1/5 | 监控研究候选，不准入 |
 | `yeslab_471` | 历史范围和 PIT 行业映射阻断 | 先重建 PIT 行业成员关系 |
@@ -641,7 +650,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核；Alpha432 已完成同口径复核但因与正式 `yeslab_431` 冗余而拒绝新增准入；Alpha377、Alpha387、Alpha388 均以至少一条完整决定性边早停判定冗余，未声称其余边已审计。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核；Alpha432 已完成同口径复核但因与正式 `yeslab_431` 冗余而拒绝新增准入；Alpha377、Alpha387、Alpha388 均以至少一条完整决定性边早停判定冗余，未声称其余边已审计；Alpha391 已完成完整 9 条训练/验证边复核，训练期对正式 `yeslab_380` 越线，验证期作为边界监控。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 

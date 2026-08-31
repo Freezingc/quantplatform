@@ -1431,6 +1431,41 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha391_tushare_shsz_canonical_v1": {
+    "artifact": "tushare_alpha391_canonical_candidate_review_v1.json",
+    "factor_id": "yeslab_391_tushare_shsz_v1",
+    "source_factor_id": "yeslab_391",
+    "factor_name": "GP_022",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": [
+      "BJ"
+    ],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "training_signed_mean_rank_ic": 0.0797041916,
+    "training_signed_icir": 0.5762403017,
+    "validation_signed_mean_rank_ic": 0.0828033911,
+    "validation_signed_icir": 0.5498114207,
+    "annual_gate_years": "4/5",
+    "formula_replay_status": "FORMULA_REPLAY_PASS",
+    "similarity_to_formal_nine": {
+      "threshold": 0.9,
+      "full_nine_edges_train": true,
+      "full_nine_edges_validation": true,
+      "training_maximum_median_abs_spearman": 0.9041104249,
+      "validation_maximum_median_abs_spearman": 0.8878095314,
+      "nearest_factor_id": "yeslab_380",
+      "status": "FAIL_REDUNDANT_TRAIN_WITH_VALIDATION_BOUNDARY_MONITOR"
+    },
+    "status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_TRAIN_BOUNDARY_VALIDATION_MONITOR",
+    "action": "Keep the formal nine unchanged. Alpha391 has complete nine-edge similarity evidence in both phases. Its training edge to yeslab_380 breaches the unchanged 0.90 full-day median threshold; validation is below threshold and is recorded only as boundary monitoring. Reject Alpha391 as an additional factor under the unchanged threshold; do not publish, write factor values, change formal nine, add model inputs, or train.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
