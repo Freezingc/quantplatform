@@ -1,0 +1,60 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA208_CANONICAL_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_208_canonical_replay_v1",
+  "source_factor_id": "yeslab_208",
+  "factor_name": "Alpha208",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "frozen_direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.0389157216,
+    "icir": -0.2967055793,
+    "signed_mean_rank_ic": 0.0389157216,
+    "signed_icir": 0.2967055793,
+    "same_direction_years": 5,
+    "signed_mean_rank_ic_pass_years": 5,
+    "directional_day_share_pass_years": 5,
+    "strict_annual_abs_icir_pass_years": 1,
+    "quality_artifact": "alpha208_tushare_rematerialized_train_2020_2024_v1.json"
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.0692085503,
+    "icir": -0.7102321782,
+    "signed_mean_rank_ic": 0.0692085503,
+    "signed_icir": 0.7102321782,
+    "quality_artifact": "alpha208_tushare_rematerialized_validation_2025_v1.json"
+  },
+  "similarity_to_formal_nine": {
+    "threshold": 0.9,
+    "training_nearest_factor_id": "yeslab_431",
+    "training_maximum_median_abs_spearman": 0.677862934,
+    "training_valid_days": 1212,
+    "status": "PASS_NEAREST_EDGE_BELOW_THRESHOLD"
+  },
+  "decision": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5",
+  "required_monitoring": [
+    "strict annual ICIR only 1/5",
+    "volume variant repairs do not improve annual stability gate"
+  ],
+  "historical_note": "Alpha208 passes formula replay and 2025 validation, but fails the unchanged strict five-year annual gate; keep it outside publication and model inputs.",
+  "publication_status": "NOT_PUBLISHED",
+  "evidence_commit": "abe7a51647721ac0166b3b140c891dddb9e08090",
+  "model_eligible": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false
+}
