@@ -49,11 +49,12 @@
   "completed_extension_combination_audit": {
     "train_artifact": "supplemental_candidate_pair_similarity_train_v1.json",
     "validation_artifact": "supplemental_candidate_pair_similarity_validation_v1.json",
-    "edges": "21 training and 21 validation complete edges",
+    "edges": "30 training and 30 validation complete edges",
     "extension_candidates": [
       "yeslab_363_tushare_shsz_v1",
       "yeslab_357_tushare_shsz_v1",
-      "yeslab_96_canonical_replay_v1"
+      "yeslab_96_canonical_replay_v1",
+      "yeslab_443_tushare_shsz_v1"
     ],
     "training_maximum_median_abs_spearman": 0.845182017932504,
     "validation_maximum_median_abs_spearman": 0.8787846822219363,

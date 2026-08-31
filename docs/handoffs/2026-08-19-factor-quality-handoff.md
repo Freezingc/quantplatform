@@ -264,7 +264,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 人工准入前的“隔离版本契约”由 `research_v2/artifacts/diagnostics/canonical_candidate_version_contract_index_v1.json` 统一索引，覆盖 10 个待审或监控候选：六候选矩阵中的 405/425/381/114/484/206，以及 443/363/357/96。该契约只说明每个候选的规范版本来源、市场/标签窗口、监控要求和证据文件，不批准准入、不写数据库、不改变正式九因子。
 
-组合准入证据缺口已由 `research_v2/artifacts/diagnostics/candidate_combination_evidence_gap_index_v1.json` 记录并完成补充：六候选矩阵原有 15 条训练/验证边；2026-08-31 又补充了 363/357/96 的完整扩展组合边，包括对六候选的 18 条边和扩展候选彼此之间的 3 条边（`supplemental_candidate_pair_similarity_train_v1.json` / `supplemental_candidate_pair_similarity_validation_v1.json`）。训练/验证最大中位绝对 Spearman 分别为 `0.84518/0.87878`，均来自 `357-363`：高于 `0.80` 监控阈值但低于 `0.90` 冗余阈值。357/363 不得在未单独组合审查前同时准入；其余扩展组合边低于监控阈值。组合准入仍需单独人工审批，且保持 `0.90` 冗余和 `0.80` 监控阈值不变。
+组合准入证据缺口已由 `research_v2/artifacts/diagnostics/candidate_combination_evidence_gap_index_v1.json` 记录并完成补充：六候选矩阵原有 15 条训练/验证边；2026-08-31 又补充了 363/357/96/443 的完整扩展组合边，包括对六候选的 24 条边和扩展候选彼此之间的 6 条边（`supplemental_candidate_pair_similarity_train_v1.json` / `supplemental_candidate_pair_similarity_validation_v1.json`）。训练/验证最大中位绝对 Spearman 分别为 `0.84518/0.87878`，均来自 `357-363`：高于 `0.80` 监控阈值但低于 `0.90` 冗余阈值。357/363 不得在未单独组合审查前同时准入；其余扩展组合边低于监控阈值。组合准入仍需单独人工审批，且保持 `0.90` 冗余和 `0.80` 监控阈值不变。
 
 #### 其他值得保留的候选状态
 

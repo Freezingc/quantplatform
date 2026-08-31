@@ -3,7 +3,8 @@
   "extension_candidates": [
     "yeslab_363_tushare_shsz_v1",
     "yeslab_357_tushare_shsz_v1",
-    "yeslab_96_canonical_replay_v1"
+    "yeslab_96_canonical_replay_v1",
+    "yeslab_443_tushare_shsz_v1"
   ],
   "base_candidates": [
     "yeslab_114_tushare_shsz_v2",
@@ -38,6 +39,13 @@
     },
     {
       "factor_id_left": "yeslab_114_tushare_shsz_v2",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.3643966084802812,
+      "max_abs_spearman": 0.5799933933116996,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_114_tushare_shsz_v2",
       "factor_id_right": "yeslab_96_canonical_replay_v1",
       "median_abs_spearman": 0.4944033144952934,
       "max_abs_spearman": 0.7677610296946118,
@@ -55,6 +63,13 @@
       "factor_id_right": "yeslab_363_tushare_shsz_v1",
       "median_abs_spearman": 0.1411300363088955,
       "max_abs_spearman": 0.4167980598781494,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_206_median_abs_v2",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.20668302502670322,
+      "max_abs_spearman": 0.5174609119577219,
       "valid_day_count": 1212
     },
     {
@@ -94,6 +109,13 @@
     },
     {
       "factor_id_left": "yeslab_357_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.27325418253063083,
+      "max_abs_spearman": 0.4246241874029591,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_357_tushare_shsz_v1",
       "factor_id_right": "yeslab_484_tushare_shsz_v1",
       "median_abs_spearman": 0.283628081944734,
       "max_abs_spearman": 0.42516932490538667,
@@ -129,6 +151,13 @@
     },
     {
       "factor_id_left": "yeslab_363_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.21364430096881137,
+      "max_abs_spearman": 0.42734226195906183,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_363_tushare_shsz_v1",
       "factor_id_right": "yeslab_484_tushare_shsz_v1",
       "median_abs_spearman": 0.2182359649311898,
       "max_abs_spearman": 0.40062532460742656,
@@ -143,9 +172,23 @@
     },
     {
       "factor_id_left": "yeslab_381_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.8112354523262499,
+      "max_abs_spearman": 0.9385576292433454,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_381_tushare_shsz_v1",
       "factor_id_right": "yeslab_96_canonical_replay_v1",
       "median_abs_spearman": 0.2823804015582606,
       "max_abs_spearman": 0.5199287505041073,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_405_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.6694305537999145,
+      "max_abs_spearman": 0.8450431869756666,
       "valid_day_count": 1212
     },
     {
@@ -157,9 +200,30 @@
     },
     {
       "factor_id_left": "yeslab_425_tushare_shsz_v2",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.4363794163707342,
+      "max_abs_spearman": 0.6213710289861946,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_425_tushare_shsz_v2",
       "factor_id_right": "yeslab_96_canonical_replay_v1",
       "median_abs_spearman": 0.3359414413021856,
       "max_abs_spearman": 0.649433261990925,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_443_tushare_shsz_v1",
+      "factor_id_right": "yeslab_484_tushare_shsz_v1",
+      "median_abs_spearman": 0.2843084213931928,
+      "max_abs_spearman": 0.4705506978641596,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_443_tushare_shsz_v1",
+      "factor_id_right": "yeslab_96_canonical_replay_v1",
+      "median_abs_spearman": 0.1836923951994934,
+      "max_abs_spearman": 0.4518279412433123,
       "valid_day_count": 1212
     },
     {

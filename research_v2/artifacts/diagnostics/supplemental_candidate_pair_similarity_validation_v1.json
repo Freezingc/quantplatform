@@ -3,7 +3,8 @@
   "extension_candidates": [
     "yeslab_363_tushare_shsz_v1",
     "yeslab_357_tushare_shsz_v1",
-    "yeslab_96_canonical_replay_v1"
+    "yeslab_96_canonical_replay_v1",
+    "yeslab_443_tushare_shsz_v1"
   ],
   "base_candidates": [
     "yeslab_114_tushare_shsz_v2",
@@ -38,6 +39,13 @@
     },
     {
       "factor_id_left": "yeslab_114_tushare_shsz_v2",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.35210771723155804,
+      "max_abs_spearman": 0.516311086143886,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_114_tushare_shsz_v2",
       "factor_id_right": "yeslab_96_canonical_replay_v1",
       "median_abs_spearman": 0.6371392859629963,
       "max_abs_spearman": 0.7618227079717504,
@@ -55,6 +63,13 @@
       "factor_id_right": "yeslab_363_tushare_shsz_v1",
       "median_abs_spearman": 0.1523247802918929,
       "max_abs_spearman": 0.3402160690153277,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_206_median_abs_v2",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.24685976336757048,
+      "max_abs_spearman": 0.5069361845170005,
       "valid_day_count": 243
     },
     {
@@ -94,6 +109,13 @@
     },
     {
       "factor_id_left": "yeslab_357_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.3162345860914013,
+      "max_abs_spearman": 0.4138804478953157,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_357_tushare_shsz_v1",
       "factor_id_right": "yeslab_484_tushare_shsz_v1",
       "median_abs_spearman": 0.3099399085395644,
       "max_abs_spearman": 0.40503913957176596,
@@ -129,6 +151,13 @@
     },
     {
       "factor_id_left": "yeslab_363_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.23930600651763084,
+      "max_abs_spearman": 0.393959041526311,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_363_tushare_shsz_v1",
       "factor_id_right": "yeslab_484_tushare_shsz_v1",
       "median_abs_spearman": 0.24069382621917074,
       "max_abs_spearman": 0.36635821768560234,
@@ -143,9 +172,23 @@
     },
     {
       "factor_id_left": "yeslab_381_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.8372108238068372,
+      "max_abs_spearman": 0.9453562459082635,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_381_tushare_shsz_v1",
       "factor_id_right": "yeslab_96_canonical_replay_v1",
       "median_abs_spearman": 0.34730205846214035,
       "max_abs_spearman": 0.5294093196786473,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_405_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.7294249333695259,
+      "max_abs_spearman": 0.8345155795683646,
       "valid_day_count": 243
     },
     {
@@ -157,9 +200,30 @@
     },
     {
       "factor_id_left": "yeslab_425_tushare_shsz_v2",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.4983556938645314,
+      "max_abs_spearman": 0.630928044272713,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_425_tushare_shsz_v2",
       "factor_id_right": "yeslab_96_canonical_replay_v1",
       "median_abs_spearman": 0.4588314969801597,
       "max_abs_spearman": 0.6193881321618542,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_443_tushare_shsz_v1",
+      "factor_id_right": "yeslab_484_tushare_shsz_v1",
+      "median_abs_spearman": 0.3019556810391877,
+      "max_abs_spearman": 0.4654652909050614,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_443_tushare_shsz_v1",
+      "factor_id_right": "yeslab_96_canonical_replay_v1",
+      "median_abs_spearman": 0.28191171412623983,
+      "max_abs_spearman": 0.504195758639852,
       "valid_day_count": 243
     },
     {
