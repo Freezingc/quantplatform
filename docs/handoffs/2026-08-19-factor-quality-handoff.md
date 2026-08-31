@@ -285,6 +285,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 | `yeslab_208` | 2025 验证通过、相似度未越线，但严格年度 ICIR 仅 `1/5`；成交量修复变体全部不改善年度门槛 | 保留监控研究候选，不准入；不因验证通过放宽年度稳定性 |
 | `yeslab_471` | 版本化 PIT 行业映射已接入，但 2025-01 重放仍有 `90,469` 行不匹配 | 历史源公式阻断；继续隔离，不进入训练/发布 |
 | `yeslab_357` / `yeslab_362` | 版本化 PIT 行业映射已接入，但 2025-01 重放分别有 `88,196/88,047` 行不匹配；362 另有年度拒绝 | 历史源公式阻断；继续隔离，不进入训练/发布 |
+| `yeslab_357_tushare_shsz_v1` | 完整九边相似度通过（训练/验证最大 `0.40066/0.42540`）；年度门槛 `5/5`；使用版本化 PIT 行业；历史源重放仍阻断 | 隔离候选待人工准入；不得混用历史值，并保留源公式对账监控 |
 
 ### 4.4 精简质量表代码
 
@@ -657,7 +658,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核；Alpha432 已完成同口径复核但因与正式 `yeslab_431` 冗余而拒绝新增准入；Alpha377、Alpha387、Alpha388 均以至少一条完整决定性边早停判定冗余，未声称其余边已审计；Alpha391 已完成完整 9 条训练/验证边复核，训练期对正式 `yeslab_380` 越线，验证期作为边界监控；Alpha433 按严格年度门槛 `3/5` 拒绝；Alpha395 虽然年度门槛 `4/5`，但公式重放阻断仍拒绝新增准入；Alpha400 按严格年度门槛 `3/5` 拒绝；Alpha363 已完成完整九边相似度和年度复核，保留为待人工准入的隔离候选。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核；Alpha432 已完成同口径复核但因与正式 `yeslab_431` 冗余而拒绝新增准入；Alpha377、Alpha387、Alpha388 均以至少一条完整决定性边早停判定冗余，未声称其余边已审计；Alpha391 已完成完整 9 条训练/验证边复核，训练期对正式 `yeslab_380` 越线，验证期作为边界监控；Alpha433 按严格年度门槛 `3/5` 拒绝；Alpha395 虽然年度门槛 `4/5`，但公式重放阻断仍拒绝新增准入；Alpha400 按严格年度门槛 `3/5` 拒绝；Alpha363 已完成完整九边相似度和年度复核，保留为待人工准入的隔离候选；Alpha357 也已完成完整九边相似度和年度复核，历史源公式阻断作为监控保留。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 

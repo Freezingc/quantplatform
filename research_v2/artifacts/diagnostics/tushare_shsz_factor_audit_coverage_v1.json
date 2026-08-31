@@ -1714,6 +1714,41 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha357_tushare_shsz_canonical_v1": {
+    "artifact": "tushare_alpha357_canonical_candidate_review_v1.json",
+    "factor_id": "yeslab_357_tushare_shsz_v1",
+    "source_factor_id": "yeslab_357",
+    "factor_name": "行业内收益标准化绝对值",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": [
+      "BJ"
+    ],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "training_signed_mean_rank_ic": 0.0505227708,
+    "training_signed_icir": 0.9550041797,
+    "validation_signed_mean_rank_ic": 0.0601913506,
+    "validation_signed_icir": 1.1563131402,
+    "annual_gate_years": "5/5",
+    "industry_source": "Tushare SW2014 before 2021-12-10; SW2021 from 2021-12-10",
+    "similarity_to_formal_nine": {
+      "threshold": 0.9,
+      "full_nine_edges_train": true,
+      "full_nine_edges_validation": true,
+      "training_maximum_median_abs_spearman": 0.4006568217,
+      "validation_maximum_median_abs_spearman": 0.4254024576,
+      "status": "PASS_FULL_NINE_EDGES"
+    },
+    "formula_scope_status": "FORMULA_REPLAY_BLOCKED_HISTORICAL_SOURCE",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+    "action": "Keep the formal nine unchanged. Alpha357 passes full five-year canonical training, 2025 validation, and nine-edge similarity under versioned PIT industry, but remains an isolated candidate pending explicit admission. Do not mix canonical PIT values with historical YesLab values, and retain reconciliation monitoring for the blocked historical replay.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
