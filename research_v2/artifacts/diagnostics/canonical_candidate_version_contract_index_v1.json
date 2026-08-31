@@ -102,7 +102,7 @@
       "source_factor_id": "yeslab_363",
       "factor_name": "行业标准化绝对值除行业偏度绝对值",
       "canonical_basis": "Versioned PIT industry rematerialization",
-      "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Do not mix with historical static industry values.",
+      "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Do not mix with historical static industry values. Retain elevated pair monitoring against the other candidate (train/validation median abs Spearman 0.84518/0.87878); no joint admission without separate review.",
       "evidence": [
         "tushare_alpha363_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha363_formal9_train_2020_2024_v1/similarity_summary.json",
@@ -114,7 +114,7 @@
       "source_factor_id": "yeslab_357",
       "factor_name": "行业内收益标准化绝对值",
       "canonical_basis": "Versioned PIT industry rematerialization",
-      "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Historical source replay remains blocked; retain reconciliation monitoring.",
+      "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Historical source replay remains blocked; retain reconciliation monitoring. Retain elevated pair monitoring against the other candidate (train/validation median abs Spearman 0.84518/0.87878); no joint admission without separate review.",
       "evidence": [
         "tushare_alpha357_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha357_formal9_train_2020_2024_v1/similarity_summary.json",
