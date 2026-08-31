@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import date
 from pathlib import Path
@@ -9,6 +10,49 @@ from pathlib import Path
 import audit_canonical_candidate_pairs as audit
 import pandas as pd
 import pytest
+
+
+def _write_checkpoint_integrity(root: Path) -> None:
+    phases: dict[str, object] = {}
+    for phase in ("train", "validation"):
+        directory = root / phase
+        values_path = directory / "candidate_values.pkl"
+        manifest_path = directory / "manifest.json"
+        values = pd.read_pickle(values_path)
+        manifest = json.loads(manifest_path.read_text())
+        producer_code_commit = manifest["fingerprint"]["code_commit"]
+        dates = sorted(pd.to_datetime(values["trade_date"]).dt.date.astype(str).unique())
+        numeric = pd.to_numeric(values["replay_value"], errors="coerce")
+        finite = numeric.replace([float("inf"), float("-inf")], pd.NA).notna()
+        phases[phase] = {
+            "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            "producer_code_commit": producer_code_commit,
+            "fingerprint_sha256": audit._json_digest(manifest["fingerprint"]),
+            "cache_manifest_sha256": audit._json_digest(
+                manifest["fingerprint"]["cache_manifest"]
+            ),
+            "values_sha256": hashlib.sha256(values_path.read_bytes()).hexdigest(),
+            "row_count": len(values),
+            "date_count": values["trade_date"].nunique(),
+            "code_count": values["ts_code"].nunique(),
+            "finite_value_count": int(finite.sum()),
+            "min_trade_date": dates[0],
+            "max_trade_date": dates[-1],
+            "trade_dates_sha256": hashlib.sha256("\n".join(dates).encode()).hexdigest(),
+        }
+    (root / "integrity.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "candidate_id": "yeslab_484_tushare_shsz_v1",
+                "source_factor_id": "yeslab_484",
+                "market_scope": "SH/SZ",
+                "label": "forward_open_5d:v1",
+                "phases": phases,
+            }
+        ),
+        encoding="utf-8",
+    )
 
 
 def test_registry_has_exactly_six_versioned_candidates() -> None:
@@ -78,7 +122,11 @@ def test_alpha206_median_repair_uses_rolling_median() -> None:
 
 def test_summarize_phase_pairs_rejects_missing_edge() -> None:
     with pytest.raises(ValueError, match="incomplete candidate pair matrix"):
-        audit.summarize_phase_pairs({"yeslab_114_tushare_shsz_v2": pd.DataFrame()}, 1)
+        audit.summarize_phase_pairs(
+            {"yeslab_114_tushare_shsz_v2": pd.DataFrame()},
+            1,
+            expected_dates=[pd.Timestamp("2025-01-02")],
+        )
 
 
 def test_summarize_phase_pairs_returns_each_unordered_candidate_pair_once() -> None:
@@ -93,12 +141,39 @@ def test_summarize_phase_pairs_returns_each_unordered_candidate_pair_once() -> N
         for candidate in audit.CANDIDATES
     }
 
-    result = audit.summarize_phase_pairs(replay_frames, expected_days=1)
+    result = audit.summarize_phase_pairs(
+        replay_frames,
+        expected_days=1,
+        expected_dates=[pd.Timestamp("2025-01-02")],
+    )
 
     assert len(result) == 15
     assert not result.duplicated(["factor_id_left", "factor_id_right"]).any()
     assert set(result["valid_day_count"]) == {1}
     assert set(result["status"]) == {"COMPLETE"}
+
+
+def test_summarize_phase_pairs_rejects_a_substituted_date() -> None:
+    expected_date = pd.Timestamp("2025-01-02")
+    actual_date = pd.Timestamp("2025-01-03")
+    codes = [f"{index:06d}.SZ" for index in range(30)]
+    replay_frames = {
+        candidate.candidate_id: pd.DataFrame(
+            {
+                "trade_date": [actual_date] * len(codes),
+                "ts_code": codes,
+                "replay_value": range(len(codes)),
+            }
+        )
+        for candidate in audit.CANDIDATES
+    }
+
+    with pytest.raises(ValueError, match="expected date set mismatch"):
+        audit.summarize_phase_pairs(
+            replay_frames,
+            expected_days=1,
+            expected_dates=[expected_date],
+        )
 
 
 def test_load_comparison_keys_normalizes_the_v2_member_label_panel(
@@ -191,11 +266,14 @@ def test_load_alpha484_checkpoint_requires_complete_matching_tushare_replay(
                         "label": "forward_open_5d:v1",
                         "start": start.isoformat(),
                         "end": end.isoformat(),
+                        "code_commit": "fixture",
+                        "cache_manifest": {"files": [{"name": "fixture", "size": 1}]},
                     },
                 }
             )
         )
 
+    _write_checkpoint_integrity(root)
     result = audit.load_alpha484_checkpoint_values(root)
 
     assert result["ts_code"].tolist() == ["000001.SZ", "000001.SZ"]
@@ -203,6 +281,63 @@ def test_load_alpha484_checkpoint_requires_complete_matching_tushare_replay(
         pd.Timestamp(audit.TRAIN_START),
         pd.Timestamp(audit.VALIDATION_START),
     ]
+
+
+def test_load_alpha484_checkpoint_rejects_tampered_values(tmp_path: Path) -> None:
+    root = tmp_path / "alpha484"
+    for phase, start, end in (
+        ("train", audit.TRAIN_START, audit.TRAIN_END),
+        ("validation", audit.VALIDATION_START, audit.VALIDATION_END),
+    ):
+        directory = root / phase
+        directory.mkdir(parents=True)
+        values = pd.DataFrame(
+            {
+                "trade_date": [pd.Timestamp(start), pd.Timestamp(end)],
+                "ts_code": ["000001.SZ", "000001.SZ"],
+                "replay_value": [0.1, 0.2],
+            }
+        )
+        values_path = directory / "candidate_values.pkl"
+        values.to_pickle(values_path)
+        (directory / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "status": "complete",
+                    "fingerprint": {
+                        "candidate_id": "yeslab_484_tushare_shsz_v1",
+                        "source_factor_id": "yeslab_484",
+                        "market_scope": "SH/SZ",
+                        "label": "forward_open_5d:v1",
+                        "start": start.isoformat(),
+                        "end": end.isoformat(),
+                        "code_commit": "bf551ff",
+                        "cache_manifest": {"files": [{"name": "fixture", "size": 1}]},
+                    },
+                }
+            )
+        )
+
+    _write_checkpoint_integrity(root)
+    (root / "train" / "candidate_values.pkl").write_bytes(
+        (root / "train" / "candidate_values.pkl").read_bytes() + b"tampered"
+    )
+    with pytest.raises(ValueError, match="integrity"):
+        audit.load_alpha484_checkpoint_values(root)
+
+
+def test_normalize_replay_frame_rejects_bj_values() -> None:
+    with pytest.raises(ValueError, match="SH/SZ"):
+        audit._normalize_replay_frame(
+            pd.DataFrame(
+                {
+                    "trade_date": [pd.Timestamp("2025-01-02")],
+                    "ts_code": ["830001.BJ"],
+                    "replay_value": [0.1],
+                }
+            )
+        )
 
 
 def test_build_audit_payload_classifies_only_complete_train_and_validation_pairs(
@@ -227,6 +362,8 @@ def test_build_audit_payload_classifies_only_complete_train_and_validation_pairs
     payload = audit.build_audit_payload(
         frames_for("2024-12-31", range(30)),
         frames_for("2025-01-02", range(29, -1, -1)),
+        train_expected_dates=[pd.Timestamp("2024-12-31")],
+        validation_expected_dates=[pd.Timestamp("2025-01-02")],
     )
 
     assert payload["decision"] == "COMPARISON_ONLY_NO_ADMISSION"
@@ -267,7 +404,11 @@ def test_run_audit_writes_only_complete_comparison_evidence(
         lambda _root: keys.assign(replay_value=range(len(keys))),
     )
     monkeypatch.setattr(
-        audit, "load_candidate_phase_market", lambda *_args, **_kwargs: pd.DataFrame()
+        audit,
+        "load_candidate_phase_market",
+        lambda *_args, **_kwargs: pd.DataFrame(
+            {"trade_date": pd.to_datetime(["2024-12-31", "2025-01-02"])}
+        ),
     )
 
     def fake_materialize(
@@ -322,7 +463,8 @@ def test_run_audit_materializes_each_phase_once(
         _client: object, *, phase_start: date, phase_end: date, **_kwargs: object
     ) -> pd.DataFrame:
         calls.append((phase_start, phase_end))
-        return pd.DataFrame()
+        expected = "2024-12-31" if phase_start.year == 2020 else "2025-01-02"
+        return pd.DataFrame({"trade_date": pd.to_datetime([expected])})
 
     def fake_materialize_phase(
         _client: object,

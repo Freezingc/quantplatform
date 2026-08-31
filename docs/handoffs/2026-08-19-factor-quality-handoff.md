@@ -70,6 +70,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 - `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1.json`
 - `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/train_pairs.csv`
 - `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/validation_pairs.csv`
+- `research_v2/artifacts/checkpoints/alpha484_canonical_v1/integrity.json`
 - `docs/superpowers/specs/2026-08-14-factor-quality-latest-alpha484-canonical-design.md`
 - `docs/superpowers/plans/2026-08-14-factor-quality-latest.md`
 - `docs/superpowers/plans/2026-08-14-alpha484-canonical-admission.md`
@@ -204,7 +205,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 #### 六候选统一两两相似度审计
 
-2026-08-28 已完成 `yeslab_114_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_484_tushare_shsz_v1`、`yeslab_206_median_abs_v2` 的统一比较。公式计算使用完整 SH/SZ Tushare 市场面板，输出再限制到共同的 V2 `is_member` 且 `label_valid` 业务键；Alpha484 使用带指纹的已完成 Tushare 重放检查点，Alpha206 使用 60 日滚动中位数修复。
+2026-08-28 已完成 `yeslab_114_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_484_tushare_shsz_v1`、`yeslab_206_median_abs_v2` 的统一比较。公式计算使用完整 SH/SZ Tushare 市场面板，输出再限制到共同的 V2 `is_member` 且 `label_valid` 业务键；标签查询显式锁定 `forward_open_5d`/版本 `1`。Alpha484 使用带代码、manifest、内容哈希和日期集合指纹的已完成 Tushare 重放检查点，完整指纹记录在 `research_v2/artifacts/checkpoints/alpha484_canonical_v1/integrity.json`；Alpha206 使用 60 日滚动中位数修复。
 
 结果摘要如下：
 

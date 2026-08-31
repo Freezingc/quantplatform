@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from collections.abc import Mapping, Sequence
@@ -12,6 +13,7 @@ from itertools import combinations
 from pathlib import Path
 
 import audit_formula_replay_consistency as replay
+import numpy as np
 import pandas as pd
 from audit_formula_replay_tushare import (
     TushareMarketSession,
@@ -38,6 +40,8 @@ PAIR_REDUNDANCY_THRESHOLD = 0.90
 DEFAULT_ALPHA484_CHECKPOINT_ROOT = Path(
     "research_v2/artifacts/checkpoints/alpha484_canonical_v1"
 )
+CHECKPOINT_INTEGRITY_FILENAME = "integrity.json"
+CHECKPOINT_INTEGRITY_SCHEMA_VERSION = 1
 
 
 @dataclass(frozen=True)
@@ -113,8 +117,59 @@ def load_comparison_keys(client: object, start: date, end: date) -> pd.DataFrame
     return _comparison_keys(_load_validation_inputs(client, start, end))
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _json_digest(value: object) -> str:
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _date_set_digest(values: pd.Series) -> str:
+    dates = sorted(pd.to_datetime(values, errors="raise").dt.date.astype(str).unique())
+    return hashlib.sha256("\n".join(dates).encode("utf-8")).hexdigest()
+
+
+def _load_checkpoint_integrity(checkpoint_root: Path) -> Mapping[str, object]:
+    path = checkpoint_root / CHECKPOINT_INTEGRITY_FILENAME
+    if not path.is_file():
+        raise ValueError(f"Alpha484 checkpoint integrity file is missing: {path}")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if (
+        not isinstance(payload, Mapping)
+        or payload.get("schema_version") != CHECKPOINT_INTEGRITY_SCHEMA_VERSION
+    ):
+        raise ValueError(f"Alpha484 checkpoint integrity schema is invalid: {path}")
+    phases = payload.get("phases")
+    if not isinstance(phases, Mapping):
+        raise ValueError(f"Alpha484 checkpoint integrity phases are missing: {path}")
+    expected_identity = {
+        "candidate_id": "yeslab_484_tushare_shsz_v1",
+        "source_factor_id": "yeslab_484",
+        "market_scope": "SH/SZ",
+        "label": "forward_open_5d:v1",
+    }
+    if any(payload.get(key) != value for key, value in expected_identity.items()):
+        raise ValueError(f"Alpha484 checkpoint integrity identity mismatch: {path}")
+    return payload
+
+
 def load_alpha484_checkpoint_values(checkpoint_root: Path) -> pd.DataFrame:
-    """Load the completed Tushare Alpha484 replay without historical factor values."""
+    """Load the completed Tushare Alpha484 replay with bound file integrity."""
+    integrity = _load_checkpoint_integrity(checkpoint_root)
+    integrity_phases = integrity["phases"]
+    if not isinstance(integrity_phases, Mapping):
+        raise ValueError("Alpha484 checkpoint integrity phases are invalid")
     required_fingerprint = {
         "candidate_id": "yeslab_484_tushare_shsz_v1",
         "source_factor_id": "yeslab_484",
@@ -146,7 +201,53 @@ def load_alpha484_checkpoint_values(checkpoint_root: Path) -> pd.DataFrame:
             or any(fingerprint.get(key) != value for key, value in expected.items())
         ):
             raise ValueError(f"Alpha484 Tushare checkpoint fingerprint mismatch for {phase}")
-        frames.append(_normalize_replay_frame(pd.read_pickle(values_path)))
+        code_commit = fingerprint.get("code_commit")
+        cache_manifest = fingerprint.get("cache_manifest")
+        if not isinstance(code_commit, str) or not code_commit.strip():
+            raise ValueError(f"Alpha484 checkpoint provenance is missing for {phase}")
+        if (
+            not isinstance(cache_manifest, Mapping)
+            or not isinstance(cache_manifest.get("files"), list)
+            or not cache_manifest["files"]
+            or any(
+                not isinstance(item, Mapping)
+                or not str(item.get("name", "")).strip()
+                or not isinstance(item.get("size"), int)
+                or item["size"] < 0
+                for item in cache_manifest["files"]
+            )
+        ):
+            raise ValueError(f"Alpha484 checkpoint cache provenance is missing for {phase}")
+        phase_integrity = integrity_phases.get(phase)
+        if not isinstance(phase_integrity, Mapping):
+            raise ValueError(f"Alpha484 checkpoint integrity is missing for {phase}")
+        if phase_integrity.get("manifest_sha256") != _sha256_file(manifest_path):
+            raise ValueError(f"Alpha484 checkpoint manifest integrity mismatch for {phase}")
+        if phase_integrity.get("producer_code_commit") != code_commit:
+            raise ValueError(f"Alpha484 checkpoint producer mismatch for {phase}")
+        if phase_integrity.get("fingerprint_sha256") != _json_digest(fingerprint):
+            raise ValueError(f"Alpha484 checkpoint fingerprint integrity mismatch for {phase}")
+        if phase_integrity.get("cache_manifest_sha256") != _json_digest(cache_manifest):
+            raise ValueError(f"Alpha484 checkpoint cache integrity mismatch for {phase}")
+        if phase_integrity.get("values_sha256") != _sha256_file(values_path):
+            raise ValueError(f"Alpha484 checkpoint values integrity mismatch for {phase}")
+        values = _normalize_replay_frame(pd.read_pickle(values_path))
+        if values.empty:
+            raise ValueError(f"Alpha484 checkpoint values are empty for {phase}")
+        finite = pd.to_numeric(values["replay_value"], errors="coerce")
+        finite_count = int(finite.replace([float("inf"), float("-inf")], pd.NA).notna().sum())
+        observed = {
+            "row_count": len(values),
+            "date_count": values["trade_date"].nunique(),
+            "code_count": values["ts_code"].nunique(),
+            "finite_value_count": finite_count,
+            "min_trade_date": values["trade_date"].min().date().isoformat(),
+            "max_trade_date": values["trade_date"].max().date().isoformat(),
+            "trade_dates_sha256": _date_set_digest(values["trade_date"]),
+        }
+        if any(phase_integrity.get(key) != value for key, value in observed.items()):
+            raise ValueError(f"Alpha484 checkpoint value coverage integrity mismatch for {phase}")
+        frames.append(values)
     values = pd.concat(frames, ignore_index=True)
     if not values["ts_code"].str.endswith((".SH", ".SZ")).all():
         raise ValueError("Alpha484 Tushare checkpoint contains non-SH/SZ values")
@@ -160,6 +261,8 @@ def _normalize_replay_frame(replay_values: pd.DataFrame) -> pd.DataFrame:
     frame = replay_values.loc[:, ["trade_date", "ts_code", "replay_value"]].copy()
     frame["trade_date"] = pd.to_datetime(frame["trade_date"], errors="raise").dt.normalize()
     frame["ts_code"] = frame["ts_code"].astype(str)
+    if not frame["ts_code"].str.endswith((".SH", ".SZ")).all():
+        raise ValueError("replay values must contain only SH/SZ codes")
     frame["replay_value"] = pd.to_numeric(frame["replay_value"], errors="coerce")
     if frame["trade_date"].dt.date.ge(LOCKED_TEST_START).any():
         raise ValueError("replay values reach the 2026 locked test")
@@ -270,8 +373,39 @@ def materialize_candidate_phase(
     return frames
 
 
+def _pair_valid_dates(
+    left: pd.DataFrame, right: pd.DataFrame, *, minimum_cross_section: int = 30
+) -> set[date]:
+    merged = left.merge(
+        right,
+        on=["trade_date", "ts_code"],
+        how="inner",
+        validate="one_to_one",
+        suffixes=("_left", "_right"),
+    )
+    valid_dates: set[date] = set()
+    for trade_date, group in merged.groupby("trade_date", sort=True):
+        left_values = pd.to_numeric(group["replay_value_left"], errors="coerce")
+        right_values = pd.to_numeric(group["replay_value_right"], errors="coerce")
+        finite = np.isfinite(left_values.to_numpy(float)) & np.isfinite(
+            right_values.to_numpy(float)
+        )
+        finite_group = group.loc[finite].copy()
+        if len(finite_group) < minimum_cross_section:
+            continue
+        left_rank = left_values.loc[finite].rank(method="average")
+        right_rank = right_values.loc[finite].rank(method="average")
+        correlation = left_rank.corr(right_rank)
+        if pd.notna(correlation):
+            valid_dates.add(pd.Timestamp(trade_date).date())
+    return valid_dates
+
+
 def summarize_phase_pairs(
-    replay_frames: Mapping[str, pd.DataFrame], expected_days: int
+    replay_frames: Mapping[str, pd.DataFrame],
+    expected_days: int,
+    *,
+    expected_dates: Sequence[date | pd.Timestamp],
 ) -> pd.DataFrame:
     """Compute and fail closed on the complete fixed candidate-pair matrix."""
     if expected_days < 1:
@@ -290,6 +424,23 @@ def summarize_phase_pairs(
         candidate_id: _normalize_replay_frame(replay_frames[candidate_id])
         for candidate_id in candidate_ids
     }
+    normalized_expected_dates = {pd.Timestamp(value).date() for value in expected_dates}
+    if len(normalized_expected_dates) != expected_days:
+        raise ValueError(
+            "incomplete candidate pair matrix: expected date set size does not match "
+            f"expected_days={expected_days}"
+        )
+    if any(value >= LOCKED_TEST_START for value in normalized_expected_dates):
+        raise ValueError("expected comparison dates reach the 2026 locked test")
+    for left_id, right_id in combinations(sorted(candidate_ids), 2):
+        observed_dates = _pair_valid_dates(frames[left_id], frames[right_id])
+        if observed_dates != normalized_expected_dates:
+            raise ValueError(
+                "incomplete candidate pair matrix: expected date set mismatch for "
+                f"{left_id}/{right_id}; missing="
+                f"{sorted(normalized_expected_dates.difference(observed_dates))}, "
+                f"unexpected={sorted(observed_dates.difference(normalized_expected_dates))}"
+            )
     summary = compute_pair_daily_spearman(frames)
     pair_columns = ["factor_id_left", "factor_id_right"]
     expected_pairs = set(combinations(sorted(candidate_ids), 2))
@@ -318,11 +469,20 @@ def summarize_phase_pairs(
 def build_audit_payload(
     train_replay_frames: Mapping[str, pd.DataFrame],
     validation_replay_frames: Mapping[str, pd.DataFrame],
+    *,
+    train_expected_dates: Sequence[date | pd.Timestamp],
+    validation_expected_dates: Sequence[date | pd.Timestamp],
 ) -> dict[str, object]:
     """Build comparison-only evidence after both fixed phases are complete."""
-    train_pairs = summarize_phase_pairs(train_replay_frames, TRAIN_EXPECTED_DAYS)
+    train_pairs = summarize_phase_pairs(
+        train_replay_frames,
+        TRAIN_EXPECTED_DAYS,
+        expected_dates=train_expected_dates,
+    )
     validation_pairs = summarize_phase_pairs(
-        validation_replay_frames, VALIDATION_EXPECTED_DAYS
+        validation_replay_frames,
+        VALIDATION_EXPECTED_DAYS,
+        expected_dates=validation_expected_dates,
     )
     pair_columns = ["factor_id_left", "factor_id_right"]
     joined = train_pairs.merge(
@@ -407,6 +567,7 @@ def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
         args.alpha484_checkpoint_root
     )
     phase_frames: dict[str, dict[str, pd.DataFrame]] = {}
+    phase_expected_dates: dict[str, tuple[date, ...]] = {}
     phase_bounds = (
         ("train", TRAIN_START, TRAIN_END),
         ("validation", VALIDATION_START, VALIDATION_END),
@@ -428,6 +589,10 @@ def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
             phase_end=phase_end,
             cache_dir=args.cache_dir,
         )
+        market_dates = pd.to_datetime(market["trade_date"], errors="raise").dt.date
+        phase_expected_dates[phase_name] = tuple(
+            sorted(set(market_dates[market_dates.between(phase_start, phase_end)]))
+        )
         phase_frames[phase_name] = materialize_candidate_phase(
             client,
             market,
@@ -439,6 +604,8 @@ def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
     payload = build_audit_payload(
         phase_frames["train"],
         phase_frames["validation"],
+        train_expected_dates=phase_expected_dates.get("train"),
+        validation_expected_dates=phase_expected_dates.get("validation"),
     )
     summary_path, pairs_directory = _output_paths(args.output)
     pairs_directory.mkdir(parents=True, exist_ok=True)

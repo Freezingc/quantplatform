@@ -19,6 +19,8 @@ read sessions, pytest.
 ## Global Constraints
 
 - Read only V2 and Tushare sources; perform no DolphinDB writes.
+- Filter and validate labels as `label_id=forward_open_5d`,
+  `label_version=1` before building comparison keys.
 - Reject every date range that reaches `2026-01-01`.
 - Use only `.SH` and `.SZ` V2 member plus valid-label business keys.
 - Recompute candidate values; never use historical YesLab values as candidate
@@ -157,13 +159,15 @@ the full SH/SZ Tushare market input, rather than recomputing overlapping
 monthly windows. Use `compute_variants(market)["median_abs"]` only for
 `yeslab_206_median_abs_v2`, and convert its wide panel to the replay-frame
 schema. Alpha484 may load only the completed fingerprint-verified Tushare
-canonical replay checkpoint. Restrict every replay frame to the phase’s V2
-comparison keys after calculation, reject duplicate keys, and call
+canonical replay checkpoint with its adjacent content/date integrity file.
+Restrict every replay frame to the phase’s V2 comparison keys after
+calculation, reject duplicate keys, and call
 `compute_pair_daily_spearman` with the six fixed candidate IDs.
 
-For each phase, require all 15 unordered pair keys and the phase's exact
-expected day count before classifying. Store median and maximum absolute
-Spearman, valid-day count, and status for every edge.
+For each phase, require all 15 unordered pair keys, the exact expected trading
+date set, and the phase's exact expected day count before classifying. Store
+median and maximum absolute Spearman, valid-day count, and status for every
+edge.
 
 - [x] **Step 4: Run the focused test file and verify it passes**
 
@@ -185,6 +189,7 @@ git commit -m "feat(quality): materialize canonical candidate pair audit"
 - Create: `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1.json`
 - Create: `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/train_pairs.csv`
 - Create: `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/validation_pairs.csv`
+- Require: `research_v2/artifacts/checkpoints/alpha484_canonical_v1/integrity.json`
 - Modify: `research_v2/artifacts/diagnostics/tushare_shsz_candidate_admission_review_matrix_v2.json`
 - Modify: `research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json`
 - Modify: `docs/handoffs/2026-08-19-factor-quality-handoff.md`

@@ -267,6 +267,8 @@ def test_read_current_label_range_casts_boolean_to_int_in_dolphindb_query() -> N
                     "batch_id": [7],
                     "signal_date": pd.to_datetime(["2020-02-03"]),
                     "ts_code": ["000001.SZ"],
+                    "label_id": ["forward_open_5d"],
+                    "label_version": [1],
                     "raw_return": [0.01],
                     "label_valid": [1],
                 }
@@ -286,5 +288,32 @@ def test_read_current_label_range_casts_boolean_to_int_in_dolphindb_query() -> N
     assert "context by logical_partition csort published_at desc" in session.queries[0]
     assert "where status=`PUBLISHED" in session.queries[0]
     assert "logical_partition between '2020-01':'2020-12'" in session.queries[0]
+    assert "label_id=`forward_open_5d" in session.queries[0]
+    assert "label_version=1" in session.queries[0]
     assert "int(label_valid) as label_valid" in session.queries[0]
     assert result["label_valid"].tolist() == [True]
+
+
+def test_read_current_label_range_rejects_an_alternate_label_version() -> None:
+    class RecordingSession:
+        target_database = "dfs://QuantResearchV2Test"
+
+        def query(self, _script: str) -> pd.DataFrame:
+            return pd.DataFrame(
+                {
+                    "batch_id": [7],
+                    "signal_date": pd.to_datetime(["2020-02-03"]),
+                    "ts_code": ["000001.SZ"],
+                    "label_id": ["close_5d"],
+                    "label_version": [2],
+                    "raw_return": [0.01],
+                    "label_valid": [1],
+                }
+            )
+
+    with pytest.raises(ValueError, match="forward_open_5d"):
+        evaluation._read_current_label_range(
+            RecordingSession(),
+            start=pd.Timestamp("2020-01-02").date(),
+            end=pd.Timestamp("2020-12-31").date(),
+        )

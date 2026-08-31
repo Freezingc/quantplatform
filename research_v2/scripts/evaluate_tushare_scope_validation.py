@@ -37,6 +37,8 @@ from audit_tushare_pit_industry import (
 from research_v2.db.session import V2WriteSession
 
 LOCKED_TEST_START = date(2026, 1, 1)
+PRIMARY_LABEL_ID = "forward_open_5d"
+PRIMARY_LABEL_VERSION = 1
 DEFAULT_FACTOR_IDS = ("yeslab_94", "yeslab_98")
 DEFAULT_DIRECTION_ARTIFACT = Path(
     "research_v2/artifacts/diagnostics/train45_oos_representative_quality_v3.csv"
@@ -208,6 +210,11 @@ def _read_current_compact_range(
         raise ValueError(f"unsupported compact range object: {object_name}")
     if start > end:
         raise ValueError("range start must not be after end")
+    label_filter = (
+        f"label_id=`{PRIMARY_LABEL_ID} and label_version={PRIMARY_LABEL_VERSION} and "
+        if object_name == "label_daily_latest"
+        else ""
+    )
     result = session.query(
         "selectedBatches = select top 1 batch_id,status from "
         f"loadTable('{session.target_database}', 'latest_manifest') "
@@ -217,6 +224,7 @@ def _read_current_compact_range(
         "publishedBatches = select batch_id from selectedBatches where status=`PUBLISHED\n"
         f"select {selected_columns} from loadTable('{session.target_database}', '{object_name}') "
         "where batch_id in publishedBatches.batch_id and "
+        f"{label_filter}"
         f"signal_date between date('{start:%Y.%m.%d}') and date('{end:%Y.%m.%d}')"
     )
     if not isinstance(result, pd.DataFrame):
@@ -246,13 +254,33 @@ def _read_current_label_range(
     frame = _read_current_compact_range(
         session,
         object_name="label_daily_latest",
-        selected_columns="batch_id,signal_date,ts_code,raw_return,int(label_valid) as label_valid",
+        selected_columns=(
+            "batch_id,signal_date,ts_code,label_id,int(label_version) as label_version,"
+            "raw_return,int(label_valid) as label_valid"
+        ),
         start=start,
         end=end,
     )
-    required = {"batch_id", "signal_date", "ts_code", "raw_return", "label_valid"}
+    required = {
+        "batch_id",
+        "signal_date",
+        "ts_code",
+        "label_id",
+        "label_version",
+        "raw_return",
+        "label_valid",
+    }
     if not required.issubset(frame.columns):
         raise RuntimeError("label range query returned an invalid frame")
+    if frame.empty:
+        raise ValueError(f"label range has no {PRIMARY_LABEL_ID} rows")
+    if not frame["label_id"].astype(str).eq(PRIMARY_LABEL_ID).all():
+        raise ValueError(f"label range is not restricted to {PRIMARY_LABEL_ID}")
+    versions = pd.to_numeric(frame["label_version"], errors="coerce")
+    if versions.isna().any() or not versions.eq(PRIMARY_LABEL_VERSION).all():
+        raise ValueError(
+            f"label range is not restricted to label_version={PRIMARY_LABEL_VERSION}"
+        )
     frame = frame.loc[
         :, ["batch_id", "signal_date", "ts_code", "raw_return", "label_valid"]
     ].copy()

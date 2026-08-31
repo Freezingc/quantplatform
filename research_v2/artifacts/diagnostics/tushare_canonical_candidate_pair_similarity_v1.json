@@ -1,16 +1,4 @@
 {
-  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
-  "comparison_scope": {
-    "output_keys": "V2 is_member=true and label_valid=true",
-    "formula_input_market": "Tushare daily SH/SZ full panel",
-    "excluded_exchanges": [
-      "BJ"
-    ]
-  },
-  "thresholds": {
-    "pair_monitor_median_abs_spearman": 0.8,
-    "pair_redundancy_median_abs_spearman": 0.9
-  },
   "candidate_registry": [
     "yeslab_114_tushare_shsz_v2",
     "yeslab_381_tushare_shsz_v1",
@@ -23,9 +11,17 @@
     "all_other_candidates": "local_tushare_market_replay",
     "yeslab_484_tushare_shsz_v1": "completed_tushare_shsz_replay_checkpoint"
   },
+  "comparison_scope": {
+    "excluded_exchanges": [
+      "BJ"
+    ],
+    "formula_input_market": "Tushare daily SH/SZ full panel",
+    "output_keys": "V2 is_member=true and label_valid=true"
+  },
   "database_writes": false,
   "decision": "COMPARISON_ONLY_NO_ADMISSION",
   "formal_factor_set_changed": false,
+  "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
   "locked_test_read": false,
   "model_eligible": false,
   "pair_classifications": [
@@ -196,6 +192,10 @@
     }
   ],
   "scope": "TUSHARE_CANONICAL_CANDIDATE_PAIR_SIMILARITY_V1",
+  "thresholds": {
+    "pair_monitor_median_abs_spearman": 0.8,
+    "pair_redundancy_median_abs_spearman": 0.9
+  },
   "train_pairs": [
     {
       "factor_id_left": "yeslab_114_tushare_shsz_v2",

@@ -41,6 +41,8 @@ mean-based formula.
 
 - Training window: `2020-01-02` through `2024-12-31`.
 - Validation window: `2025-01-02` through `2025-12-31`.
+- Labels are restricted to `label_id=forward_open_5d` and
+  `label_version=1` before the V2 member/label-valid key join.
 - All input keys must be V2 `is_member` and `label_valid`, with `.SH` and
   `.SZ` codes only. BJ is excluded.
 - Market inputs are local Tushare `daily`, `daily_basic`, and adjusted fields
@@ -68,8 +70,9 @@ read-only command. It will:
    `audit_formula_replay_consistency._replay_factor`; materialize Alpha206's
    median repair through the existing `compute_variants` helper. Alpha484
    uses only the completed, fingerprint-verified Tushare canonical replay
-   checkpoint because recomputing its 120-day all-stock correlation matrix in
-   each repeated window would change no values while multiplying its cost.
+   checkpoint and its adjacent `integrity.json` content/date manifest because
+   recomputing its 120-day all-stock correlation matrix in each repeated
+   window would change no values while multiplying its cost.
 5. Calculate all 15 candidate-pair similarity edges for training and
    validation, fail closed on an incomplete edge, and write a compact JSON
    summary plus pair CSV files.
@@ -79,14 +82,16 @@ The evaluator reuses `compute_pair_daily_spearman` from
 Rolling-window non-finite candidate values remain keyed to the V2 panel and
 are excluded only at pairwise correlation time.  Each pair must still retain
 at least 30 common finite values on every one of the required 1212/243 dates;
-missing business keys, candidates, pair edges, or required dates fail closed.
+the exact expected date set is checked against the phase-wide Tushare market
+calendar. Missing business keys, candidates, pair edges, required dates, or
+checkpoint content integrity fail closed.
 
 ## Output Contract
 
 The output JSON records the comparison-only status, candidate registry, fixed
 scope, train and validation pair summaries, per-edge valid-day counts, the
-`0.90` redundancy threshold, and explicit no-admission/no-database/no-2026
-flags. A pair is:
+`0.80` monitor and `0.90` redundancy thresholds, and explicit
+no-admission/no-database/no-2026 flags. A pair is:
 
 - `PAIR_UNIQUE` when both phase medians are below `0.90` and all required
   dates are present.
@@ -101,11 +106,12 @@ can become model eligible from this audit.
 ## Failure Handling
 
 The command fails before writing a final summary when a candidate definition,
-Tushare market field, V2 business key, required pair edge, or required date is
-missing.  A rolling-window NaN alone is not a missing key: it is handled by
-the pairwise common-finite rule above.  Phase-local intermediate state remains
-outside database tables and is not an admission artifact until both train and
-validation summaries are complete.
+fixed label identity, Tushare market field, V2 business key, required pair
+edge, exact required date, or Alpha484 checkpoint integrity record is
+missing or mismatched. A rolling-window NaN alone is not a missing key: it is
+handled by the pairwise common-finite rule above. Phase-local intermediate
+state remains outside database tables and is not an admission artifact until
+both train and validation summaries are complete.
 
 ## Verification
 
