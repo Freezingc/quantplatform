@@ -1957,8 +1957,12 @@
         "status": "PREDICTIVE_FAIL"
       }
     },
-    "action": "Reject Alpha95 and Alpha96 before annual stability testing; no new admission.",
-    "artifact": "alpha_095_096_train_2020_quality_v1.json"
+    "action": "Historical 2020 batch evidence only. Alpha95 is currently rejected by annual stability (2/5); Alpha96 is superseded by alpha096_tushare_canonical_replay_v1 and remains pending explicit admission with annual monitoring.",
+    "artifact": "alpha_095_096_train_2020_quality_v1.json",
+    "superseded_by_single_factor_reviews": {
+      "yeslab_95": "canonical_unique_candidate_replay/candidate_status/yeslab_95",
+      "yeslab_96": "alpha096_tushare_canonical_replay_v1"
+    }
   },
   "alpha_097_098_followup": {
     "factor_ids": [
