@@ -277,19 +277,19 @@ git commit -m "feat(v2): orchestrate fail-closed daily inference"
 
 从 FINAL train 2020–2024 保存每因子 winsorized transformed decile bins、missing rate、median/IQR；从 2025 validation 保存 ensemble score deciles/coverage。reference artifact 与 model id 一起 hash/冻结。
 
-- [ ] **F5.2 实现 PSI 与分布健康**
+- [x] **F5.2 实现 PSI 与分布健康**
 
 每日和滚动 20 日计算 feature/score PSI，bin 零频加 epsilon=`1e-6` 并归一化。阈值：`PSI <0.10 INFO`、`0.10–0.25 WARN`、`>0.25 ERROR`。另监控 missing rate 相对 reference 增加、极值比例、universe size、score std/unique、seed agreement。
 
-- [ ] **F5.3 区分阻断与调查告警**
+- [x] **F5.3 区分阻断与调查告警**
 
 业务键/PIT/finite/水位/coverage blocker 会阻断 publish；单纯 PSI ERROR 不自动阻断当日 SHADOW/PRODUCTION prediction，但连续 3 个有效日 ERROR 触发人工 review，禁止新的模型晋级/active pointer 切换，现有 active model 保持不变。
 
-- [ ] **F5.4 实现 notifier interface 与去重**
+- [x] **F5.4 实现 notifier interface 与去重**
 
 `AuditNotifier` 默认写 pipeline/DQ audit；外部 notifier 只接受脱敏 structured payload。相同 `alert_key+signal_date+severity` 只发送一次；恢复时发送 RESOLVED。网络通知失败不改变 prediction 发布结果，但记独立 ERROR。
 
-- [ ] **F5.5 运行测试并提交**
+- [x] **F5.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/monitoring/test_data_health.py tests/unit/monitoring/test_drift.py -q`
 
