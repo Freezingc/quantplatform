@@ -8,9 +8,11 @@ import yaml
 
 from research_v2.monitoring.drift import (
     DailyDriftStatus,
+    DistributionDriftReport,
     DriftReviewApprovalStore,
     DriftReviewStatus,
     DriftSeverity,
+    evaluate_distribution_drift,
     evaluate_drift_review,
     population_stability_index,
 )
@@ -157,3 +159,47 @@ def test_monitoring_policy_rejects_boolean_or_fractional_consecutive_day_thresho
         MonitoringPolicy(consecutive_psi_error_days=True)
     with pytest.raises(ValueError, match="consecutive"):
         MonitoringPolicy(consecutive_psi_error_days=1.5)  # type: ignore[arg-type]
+
+
+def test_distribution_drift_reports_daily_and_latest_twenty_day_psi() -> None:
+    reference_days = {
+        date(2026, 7, day): (0.1, 1.1)
+        for day in range(2, 22)
+    }
+    values_by_date = {date(2026, 7, 1): (1.1,) * 1_000, **reference_days}
+
+    report = evaluate_distribution_drift(
+        reference_bin_edges=(0.0, 1.0, 2.0),
+        reference_bin_masses=(0.5, 0.5),
+        daily_values=(0.1, 1.1),
+        rolling_values_by_date=values_by_date,
+    )
+
+    assert isinstance(report, DistributionDriftReport)
+    assert report.daily_psi.severity is DriftSeverity.INFO
+    assert report.rolling_20d_psi is not None
+    assert report.rolling_20d_psi.severity is DriftSeverity.INFO
+
+
+def test_distribution_drift_does_not_emit_incomplete_rolling_window() -> None:
+    report = evaluate_distribution_drift(
+        reference_bin_edges=(0.0, 1.0, 2.0),
+        reference_bin_masses=(0.5, 0.5),
+        daily_values=(0.1, 1.1),
+        rolling_values_by_date={
+            date(2026, 7, day): (0.1, 1.1)
+            for day in range(1, 20)
+        },
+    )
+
+    assert report.rolling_20d_psi is None
+
+
+def test_distribution_drift_rejects_invalid_rolling_dates() -> None:
+    with pytest.raises(ValueError, match="trading dates"):
+        evaluate_distribution_drift(
+            reference_bin_edges=(0.0, 1.0, 2.0),
+            reference_bin_masses=(0.5, 0.5),
+            daily_values=(0.1, 1.1),
+            rolling_values_by_date={"2026-07-01": (0.1, 1.1)},  # type: ignore[dict-item]
+        )

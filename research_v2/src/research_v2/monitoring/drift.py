@@ -34,6 +34,14 @@ class PsiResult:
 
 
 @dataclass(frozen=True)
+class DistributionDriftReport:
+    """Daily and complete rolling-window PSI for one monitored distribution."""
+
+    daily_psi: PsiResult
+    rolling_20d_psi: PsiResult | None
+
+
+@dataclass(frozen=True)
 class DailyDriftStatus:
     signal_date: date
     has_psi_error: bool
@@ -154,6 +162,45 @@ def population_stability_index(
     return PsiResult(value=float(value), severity=severity)
 
 
+def evaluate_distribution_drift(
+    *,
+    reference_bin_edges: Sequence[float],
+    reference_bin_masses: Sequence[float],
+    daily_values: Sequence[float],
+    rolling_values_by_date: Mapping[date, Sequence[float]] | None = None,
+    policy: MonitoringPolicy = DEFAULT_MONITORING_POLICY,
+) -> DistributionDriftReport:
+    """Calculate daily and, once available, latest-20-trading-day distribution PSI."""
+    edges = _validate_distribution_edges(reference_bin_edges, reference_bin_masses)
+    reference = _validate_reference_masses(reference_bin_masses)
+    daily = population_stability_index(
+        reference,
+        _distribution_masses(daily_values, edges),
+        policy=policy,
+    )
+    rolling: PsiResult | None = None
+    if rolling_values_by_date is not None:
+        if any(not isinstance(signal_date, date) for signal_date in rolling_values_by_date):
+            raise ValueError("rolling distribution requires trading dates")
+        for values in rolling_values_by_date.values():
+            if isinstance(values, (str, bytes, bytearray)):
+                raise ValueError("rolling distribution values must be numeric sequences")
+        ordered_dates = sorted(rolling_values_by_date)
+        if len(ordered_dates) >= 20:
+            recent_dates = ordered_dates[-20:]
+            recent_values = [
+                value
+                for signal_date in recent_dates
+                for value in rolling_values_by_date[signal_date]
+            ]
+            rolling = population_stability_index(
+                reference,
+                _distribution_masses(recent_values, edges),
+                policy=policy,
+            )
+    return DistributionDriftReport(daily_psi=daily, rolling_20d_psi=rolling)
+
+
 def evaluate_drift_review(
     days: Sequence[DailyDriftStatus],
     *,
@@ -219,6 +266,56 @@ def _normalize(values: Sequence[float], epsilon: float) -> tuple[float, ...]:
     smoothed = [float(value) + epsilon for value in values]
     total = sum(smoothed)
     return tuple(value / total for value in smoothed)
+
+
+def _validate_distribution_edges(
+    edges: Sequence[float],
+    reference_masses: Sequence[float],
+) -> tuple[float, ...]:
+    if len(edges) != len(reference_masses) + 1 or len(edges) < 2:
+        raise ValueError("distribution bin edges must be one longer than reference bins")
+    normalized = tuple(float(value) for value in edges)
+    if any(not math.isfinite(value) for value in normalized) or any(
+        right <= left for left, right in zip(normalized, normalized[1:], strict=False)
+    ):
+        raise ValueError("distribution bin edges must be finite and increasing")
+    return normalized
+
+
+def _validate_reference_masses(values: Sequence[float]) -> tuple[float, ...]:
+    normalized = tuple(float(value) for value in values)
+    if not normalized or any(not math.isfinite(value) or value < 0 for value in normalized):
+        raise ValueError("reference distribution bins must be finite and non-negative")
+    if sum(normalized) <= 0:
+        raise ValueError("reference distribution bins must contain mass")
+    return normalized
+
+
+def _distribution_masses(
+    values: Sequence[float],
+    edges: Sequence[float],
+) -> tuple[float, ...]:
+    if isinstance(values, (str, bytes, bytearray)):
+        raise ValueError("distribution values must be a numeric sequence")
+    try:
+        numeric = tuple(float(value) for value in values)
+    except (TypeError, ValueError) as error:
+        raise ValueError("distribution values must be numeric") from error
+    finite = tuple(value for value in numeric if math.isfinite(value))
+    bounded = tuple(max(edges[0], min(value, edges[-1])) for value in finite)
+    counts = [0] * (len(edges) - 1)
+    for value in bounded:
+        index = next(
+            (position for position, (left, right) in enumerate(
+                zip(edges, edges[1:], strict=False)
+            ) if left <= value < right),
+            len(counts) - 1,
+        )
+        counts[index] += 1
+    total = sum(counts)
+    if total == 0:
+        return tuple(0.0 for _ in counts)
+    return tuple(count / total for count in counts)
 
 
 def _approval_id(payload: Mapping[str, object]) -> str:
