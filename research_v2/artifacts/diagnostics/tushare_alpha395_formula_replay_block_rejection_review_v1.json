@@ -1,0 +1,98 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA395_FORMULA_REPLAY_BLOCK_REJECTION_REVIEW_V1",
+  "candidate_id": "yeslab_395_tushare_shsz_v1",
+  "source_factor_id": "yeslab_395",
+  "factor_name": "GP_026",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.07534436278773021,
+    "icir": -0.546769085593266,
+    "signed_mean_rank_ic": 0.07534436278773021,
+    "signed_icir": 0.546769085593266,
+    "directional_day_share": 0.7021452145214522,
+    "annual_gate_pass_years": "4/5",
+    "annual_details": [
+      {
+        "year": 2020,
+        "valid_day_count": 243,
+        "signed_mean_rank_ic": 0.0721275416418192,
+        "signed_icir": 0.533828399334918,
+        "directional_day_share": 0.6831275720164609,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2021,
+        "valid_day_count": 243,
+        "signed_mean_rank_ic": 0.05651394792476093,
+        "signed_icir": 0.42236253654244177,
+        "directional_day_share": 0.6872427983539094,
+        "strict_gate_pass": false
+      },
+      {
+        "year": 2022,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.07764717887436766,
+        "signed_icir": 0.6140578656471164,
+        "directional_day_share": 0.6818181818181818,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2023,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.07326486474938272,
+        "signed_icir": 0.5449918876770324,
+        "directional_day_share": 0.6983471074380165,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2024,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.09725938502934886,
+        "signed_icir": 0.6254008083184419,
+        "directional_day_share": 0.7603305785123967,
+        "strict_gate_pass": true
+      }
+    ],
+    "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
+    "daily_rank_ic_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/daily_rank_ic.csv"
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.08624759784787252,
+    "icir": -0.6687866945365821,
+    "signed_mean_rank_ic": 0.08624759784787252,
+    "signed_icir": 0.6687866945365821,
+    "directional_day_share": 0.7654320987654321,
+    "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json",
+    "daily_rank_ic_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/daily_rank_ic.csv"
+  },
+  "formula_scope": {
+    "status": "FORMULA_REPLAY_BLOCKED",
+    "prior_artifacts": [
+      "alpha_393_395_train_2020_2024_annual_v1.json"
+    ],
+    "reason": "Historical GP_026 replay was blocked by source cross-sectional scope mismatch; the canonical SH/SZ Tushare rematerialization cannot inherit historical stored values without source-formula reconciliation."
+  },
+  "decision": "REJECT_FORMULA_REPLAY_BLOCKED_DESPITE_ANNUAL_PASS",
+  "publication_status": "NOT_PUBLISHED",
+  "evidence_commit": "9ce15f33e802b8b93b99ae90b5748e74da3ee47b",
+  "model_eligible": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false
+}
