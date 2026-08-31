@@ -5419,8 +5419,8 @@
             "valid_days": 243
           }
         },
-        "status": "DEFER_ANNUAL_STABILITY_3_OF_5",
-        "action": "Keep isolated from formal and model inputs; do not advance before a targeted annual-stability repair or an explicit policy change."
+        "status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+        "action": "Reject Alpha95 original factor by the unchanged strict annual stability gate (3/5). Keep isolated from formal and model inputs; a targeted annual-stability repair or explicit policy change would be required to revisit."
       },
       "yeslab_363": {
         "train": {
