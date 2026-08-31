@@ -1555,6 +1555,41 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "formal_nine_current_status_index": {
+    "artifact": "formal_nine_current_status_index_v1.json",
+    "scope": "FORMAL_NINE_CURRENT_STATUS_INDEX_V1",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": [
+      "BJ"
+    ],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "formal_factor_ids": [
+      "yeslab_380",
+      "yeslab_431",
+      "yeslab_437",
+      "yeslab_155",
+      "yeslab_98",
+      "yeslab_94",
+      "yeslab_376",
+      "yeslab_396",
+      "yeslab_442"
+    ],
+    "monitoring_factor_ids": [
+      "yeslab_380",
+      "yeslab_431",
+      "yeslab_437",
+      "yeslab_94"
+    ],
+    "status": "FORMAL_NINE_ELIGIBLE_MONITOR_ONLY",
+    "action": "Keep the formal nine unchanged. This is a read-only index of the current scoreboard and does not admit any candidate.",
+    "formal_factor_set_changed": false,
+    "model_eligible": true,
+    "model_eligible_note": "Only the formal nine are current model-eligible scoreboard factors; candidate factors listed elsewhere remain model_eligible=false.",
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
