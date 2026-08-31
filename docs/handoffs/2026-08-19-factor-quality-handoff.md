@@ -260,6 +260,8 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 六个当前候选的唯一统一索引为 `research_v2/artifacts/diagnostics/tushare_shsz_candidate_admission_review_matrix_v2.json`。该矩阵不再提供跨公式、跨范围的优先级排名；它只列出每个隔离版本的当前证据、必需监控和组合限制。所有候选仍需逐个明确审批，任何两个候选同时进入正式集合前都必须单独评估组合冗余。
 
+六候选矩阵不覆盖后来单独完成的单因子复核。当前单因子状态由 `research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json` 中的 `current_single_candidate_registry` 索引：包括 `yeslab_443`、`yeslab_432`、`yeslab_377`、`yeslab_387`、`yeslab_388`、`yeslab_391`、`yeslab_433`、`yeslab_395`、`yeslab_400`、`yeslab_363`、`yeslab_357`、`yeslab_96` 和 `yeslab_208`。该索引仅汇总证据与状态，不构成自动准入；任何候选仍需单独人工审批，组合准入仍需单独组合冗余评估。
+
 #### 其他值得保留的候选状态
 
 | 候选 | 当前结论 | 后续动作 |
