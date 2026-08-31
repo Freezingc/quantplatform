@@ -3,6 +3,8 @@ from __future__ import annotations
 import uuid
 from datetime import date
 
+import pytest
+
 from research_v2.inference.daily_pipeline import DailyInferencePipeline, DailyPipelineStatus
 from research_v2.monitoring.watermarks import WatermarkReport, WatermarkStatus
 
@@ -282,6 +284,32 @@ def test_pipeline_blocks_publish_when_end_watermark_changes() -> None:
     assert calls == ["build_batch", "load_artifact", "predict", "score_health"]
 
 
+def test_pipeline_blocks_publish_when_end_report_has_blockers() -> None:
+    calls: list[str] = []
+    build_batch, load_artifact, predict, score_health, publish = _callbacks(calls)
+
+    result = DailyInferencePipeline().run(
+        date(2025, 1, 2),
+        watermark_report=WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        watermark_end_report_factory=lambda: WatermarkReport(
+            WatermarkStatus.READY,
+            ("DQ_BLOCKER:market",),
+            "snapshot-a",
+        ),
+        run_id="run-end-blocker",
+    )
+
+    assert result.status is DailyPipelineStatus.FAILED
+    assert result.failed_step == "watermark_end"
+    assert result.error_message == "DQ_BLOCKER:market"
+    assert calls == ["build_batch", "load_artifact", "predict", "score_health"]
+
+
 def test_pipeline_requires_fingerprints_when_end_watermark_is_enabled() -> None:
     build_batch, load_artifact, predict, score_health, publish = _callbacks([])
 
@@ -300,3 +328,112 @@ def test_pipeline_requires_fingerprints_when_end_watermark_is_enabled() -> None:
     assert result.status is DailyPipelineStatus.FAILED
     assert result.failed_step == "watermark_end"
     assert result.error_message == "MISSING_START_FINGERPRINT"
+
+
+def test_pipeline_fails_closed_when_fingerprinted_start_has_no_end_factory() -> None:
+    calls: list[str] = []
+    build_batch, load_artifact, predict, score_health, publish = _callbacks(calls)
+
+    result = DailyInferencePipeline().run(
+        date(2025, 1, 2),
+        watermark_report=WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        run_id="run-missing-end-factory",
+    )
+
+    assert result.status is DailyPipelineStatus.FAILED
+    assert result.failed_step == "watermark"
+    assert result.error_message == "MISSING_END_WATERMARK_FACTORY"
+    assert calls == []
+
+
+def test_pipeline_blocks_publish_when_end_watermark_factory_raises() -> None:
+    calls: list[str] = []
+    build_batch, load_artifact, predict, score_health, publish = _callbacks(calls)
+
+    def fail_end_snapshot() -> WatermarkReport:
+        raise RuntimeError("snapshot read failed")
+
+    result = DailyInferencePipeline().run(
+        date(2025, 1, 2),
+        watermark_report=WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        watermark_end_report_factory=fail_end_snapshot,
+        run_id="run-end-factory-error",
+    )
+
+    assert result.status is DailyPipelineStatus.FAILED
+    assert result.failed_step == "watermark_end"
+    assert result.error_message == "RuntimeError: snapshot read failed"
+    assert calls == ["build_batch", "load_artifact", "predict", "score_health"]
+
+
+@pytest.mark.parametrize(
+    ("end_report", "expected_error"),
+    (
+        (WatermarkReport(WatermarkStatus.BLOCKED, (), "snapshot-a"), "END_WATERMARK_NOT_READY"),
+        (object(), "INVALID_END_WATERMARK_REPORT"),
+        (WatermarkReport(WatermarkStatus.READY, (), None), "MISSING_END_FINGERPRINT"),
+    ),
+)
+def test_pipeline_rejects_invalid_end_watermark_reports(
+    end_report: object,
+    expected_error: str,
+) -> None:
+    calls: list[str] = []
+    build_batch, load_artifact, predict, score_health, publish = _callbacks(calls)
+
+    result = DailyInferencePipeline().run(
+        date(2025, 1, 2),
+        watermark_report=WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        watermark_end_report_factory=lambda: end_report,  # type: ignore[return-value]
+        run_id="run-invalid-end-report",
+    )
+
+    assert result.status is DailyPipelineStatus.FAILED
+    assert result.failed_step == "watermark_end"
+    assert result.error_message == expected_error
+    assert calls == ["build_batch", "load_artifact", "predict", "score_health"]
+
+
+def test_watermark_retries_only_capture_end_snapshot_after_ready_start() -> None:
+    pipeline = DailyInferencePipeline()
+    start_reports = iter(
+        [
+            WatermarkReport(WatermarkStatus.BLOCKED, ("STALE:market",)),
+            WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+        ]
+    )
+    end_calls: list[str] = []
+    calls: list[str] = []
+    build_batch, load_artifact, predict, score_health, publish = _callbacks(calls)
+
+    result = pipeline.run_with_watermark_retries(
+        date(2025, 1, 2),
+        watermark_report_factory=lambda: next(start_reports),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        watermark_end_report_factory=lambda: end_calls.append("end")
+        or WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+    )
+
+    assert result.final_result.status is DailyPipelineStatus.SUCCESS
+    assert len(result.attempts) == 2
+    assert end_calls == ["end"]
+    assert calls == ["build_batch", "load_artifact", "predict", "score_health", "publish"]

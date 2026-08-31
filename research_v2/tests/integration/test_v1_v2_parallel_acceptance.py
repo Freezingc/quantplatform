@@ -357,6 +357,12 @@ def test_full_v2test_daily_flow_leaves_v1_unchanged_and_writes_only_inside_v2_tr
         predict=predict,
         score_health=score_health,
         publish=publish,
+        watermark_end_report_factory=lambda: check_inference_watermarks(
+            _SIGNAL_DATE,
+            is_trading_day=is_trading_day,
+            required_dependencies=frozenset(watermarks),
+            watermarks=watermarks,
+        ),
     )
     assert result.status is DailyPipelineStatus.SUCCESS
     assert result.failed_step is None and result.error_message is None

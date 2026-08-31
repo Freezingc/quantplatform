@@ -133,7 +133,7 @@ def test_label_materializer_requires_explicit_access_for_locked_year(
         market,
         calendar,
         RunContext(run_id="00000000-0000-0000-0000-000000000001", data_version="v1"),
-        locked_access=LockedLabelAccess.issue(
+        locked_access=LockedLabelAccess._issue_authorized(
             locked_year=2026,
             authorization_id="user-approved-final-evaluation",
             signing_key=b"materializer-test-access-key",

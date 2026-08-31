@@ -1064,10 +1064,11 @@ class LockedTestAuthority:
             model_id=model_id,
             capability_id=capability_id,
         )
-        return LockedTestAccess.issue(
+        return LockedTestAccess._issue_authorized(
             locked_year=2026,
             authorization_id=capability.capability_id,
             signing_key=self._access_signing_key,
+            consume_callback=lambda: self._consume_access(capability),
         )
 
     def is_lineage_exposed(self, lineage_id: str) -> bool:
@@ -1386,6 +1387,9 @@ class LockedTestAuthority:
     def _consumed_path(self, capability_id: str) -> Path:
         return self._root / "consumed" / f"{capability_id}.json"
 
+    def _access_consumed_path(self, capability_id: str) -> Path:
+        return self._root / "access-consumed" / f"{capability_id}.json"
+
     def _pending_path(self, capability_id: str) -> Path:
         return self._root / "pending" / f"{capability_id}.json"
 
@@ -1398,6 +1402,21 @@ class LockedTestAuthority:
 
     def _audit_path(self, audit_id: str) -> Path:
         return self._root / "audit" / f"{audit_id}.json"
+
+    def _consume_access(self, capability: LockedTestCapability) -> None:
+        """Persist the first label-boundary use of the consumed authority access."""
+        if self._completed_path(capability.capability_id).exists():
+            raise FileExistsError("locked-test evaluation is already complete")
+        payload = {
+            "access_id": capability.capability_id,
+            "capability_id": capability.capability_id,
+            "consumed_at": _timestamp(self._now()),
+            "model_id": capability.model_id,
+        }
+        _write_exclusive(
+            self._access_consumed_path(capability.capability_id),
+            _canonical_json(payload) + "\n",
+        )
 
 
 class LockedTestEvaluator:

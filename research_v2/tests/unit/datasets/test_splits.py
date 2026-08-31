@@ -15,7 +15,7 @@ def _locked_access_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def _locked_access() -> LockedTestAccess:
-    return LockedTestAccess.issue(
+    return LockedTestAccess._issue_authorized(
         locked_year=2026,
         authorization_id="approved",
         signing_key=b"split-test-access-key",

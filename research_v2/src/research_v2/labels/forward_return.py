@@ -7,7 +7,7 @@ from typing import Any, cast
 
 import pandas as pd
 
-from research_v2.datasets.builder import LockedTestAccess
+from research_v2.datasets.builder import LockedDatasetError, LockedTestAccess
 from research_v2.pit.calendar import TradingCalendar, TradingCalendarBoundaryError
 
 
@@ -63,9 +63,9 @@ def build_forward_open_labels(
         raise LockedLabelError("locked access year must match the configured lock year")
     if locked_access is not None:
         try:
-            locked_access.verify()
-        except PermissionError as error:
-            raise LockedLabelError("locked access signature verification failed") from error
+            locked_access.consume_once()
+        except LockedDatasetError as error:
+            raise LockedLabelError(str(error)) from error
     prices = {
         (pd.Timestamp(row["trade_date"]).date(), str(row["ts_code"])): row["adjusted_open"]
         for row in cast(list[dict[str, Any]], market.to_dict(orient="records"))

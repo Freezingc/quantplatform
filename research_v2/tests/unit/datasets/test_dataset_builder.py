@@ -26,7 +26,7 @@ def _locked_access_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def _locked_access() -> LockedTestAccess:
-    return LockedTestAccess.issue(
+    return LockedTestAccess._issue_authorized(
         locked_year=2026,
         authorization_id="user-approved-final-evaluation",
         signing_key=b"dataset-test-access-key",

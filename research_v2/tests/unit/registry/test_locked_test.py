@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from research_v2.datasets.builder import LockedDatasetError
 from research_v2.evaluation.gates import GateEvidence, ScoreHealthEvidence
 from research_v2.monitoring.shadow import (
     ShadowDeploymentApprovalStore,
@@ -334,6 +335,15 @@ def test_two_person_unlock_consumes_once_and_exposes_lineage_before_label_access
     access = authority.consume(capability, issued, consumer="locked-test-evaluator")
     assert access.locked_year == 2026
     assert authority.is_lineage_exposed(preregistration.lineage_id)
+    access.consume_once()
+    assert (
+        tmp_path
+        / "locked-test-authority"
+        / "access-consumed"
+        / f"{capability.capability_id}.json"
+    ).is_file()
+    with pytest.raises(LockedDatasetError, match="already consumed"):
+        access.consume_once()
     with pytest.raises(ValueError, match="consumed"):
         authority.consume(capability, issued, consumer="locked-test-evaluator")
     assert authority.audit_events()[-1].outcome == "DENIED"

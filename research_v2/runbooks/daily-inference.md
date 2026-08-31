@@ -35,6 +35,8 @@ score_health -> end-watermark snapshot -> publish. Any failure returns `FAILED` 
 before any step runs. The end-watermark snapshot is captured after score health and
 must be `READY` with the same dependency fingerprint as the start snapshot; otherwise
 publish is skipped and the run fails with `failed_step: watermark_end`.
+When the start report contains a fingerprint, the caller must provide the end snapshot
+factory; omitting it fails at `watermark` before any downstream callback runs.
 
 Watermark blocker reasons: `MISSING:<dep>`, `UNPUBLISHED:<dep>`, `MISSING_VERSION:<dep>`,
 `STALE:<dep>`, `DQ_BLOCKER:<dep>`, `IDENTITY_MISMATCH:<dep>`. Inference dependencies must

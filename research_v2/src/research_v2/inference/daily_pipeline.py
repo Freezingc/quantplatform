@@ -52,7 +52,7 @@ class DailyPipelineRetryResult:
 
 
 class DailyInferencePipeline:
-    """Run one immutable daily DAG; no callback runs if source watermarks are not ready."""
+    """Run one immutable daily DAG with fail-closed source-watermark checks."""
 
     _STEP_ORDER = (
         "watermark",
@@ -170,6 +170,26 @@ class DailyInferencePipeline:
                 DailyPipelineStatus.FAILED,
                 "watermark",
                 "; ".join(watermark_report.blockers),
+                run_id,
+                blocked_records,
+            )
+        if watermark_report.start_fingerprint is not None and (
+            watermark_end_report_factory is None
+        ):
+            blocked_records = (
+                self._step_record(
+                    "watermark",
+                    DailyPipelineStepStatus.FAILED,
+                    0.0,
+                    "MISSING_END_WATERMARK_FACTORY",
+                ),
+                *self._skipped_records(step_order[1:]),
+            )
+            return DailyPipelineResult(
+                signal_date,
+                DailyPipelineStatus.FAILED,
+                "watermark",
+                "MISSING_END_WATERMARK_FACTORY",
                 run_id,
                 blocked_records,
             )
@@ -308,6 +328,8 @@ class DailyInferencePipeline:
     ) -> str | None:
         if not isinstance(end_report, WatermarkReport):
             return "INVALID_END_WATERMARK_REPORT"
+        if end_report.blockers:
+            return "; ".join(end_report.blockers)
         if end_report.status is not WatermarkStatus.READY:
             return "; ".join(end_report.blockers) or "END_WATERMARK_NOT_READY"
         if start_report.start_fingerprint is None:

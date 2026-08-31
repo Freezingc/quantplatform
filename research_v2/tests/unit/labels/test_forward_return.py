@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 import research_v2.labels.forward_return as forward_return
+from research_v2.datasets.builder import LockedDatasetError
 from research_v2.labels.forward_return import (
     LockedLabelError,
     build_forward_open_labels,
@@ -101,6 +102,15 @@ def test_ordinary_label_build_rejects_2026_locked_signals() -> None:
         build_forward_open_labels(members, market, calendar)
 
 
+def test_direct_locked_access_issue_is_rejected() -> None:
+    with pytest.raises(LockedDatasetError, match="authority"):
+        forward_return.LockedLabelAccess.issue(
+            locked_year=2026,
+            authorization_id="user-approved-final-evaluation",
+            signing_key=b"label-test-access-key",
+        )
+
+
 def test_authorized_locked_access_builds_labels_only_for_its_locked_year() -> None:
     calendar = TradingCalendar.from_dates(
         [
@@ -122,19 +132,31 @@ def test_authorized_locked_access_builds_labels_only_for_its_locked_year() -> No
         }
     )
 
+    access_consumptions: list[str] = []
+    access = forward_return.LockedLabelAccess._issue_authorized(
+        locked_year=2026,
+        authorization_id="user-approved-final-evaluation",
+        signing_key=b"label-test-access-key",
+        consume_callback=lambda: access_consumptions.append("consumed"),
+    )
     labels = build_forward_open_labels(
         members,
         market,
         calendar,
-        locked_access=forward_return.LockedLabelAccess.issue(
-            locked_year=2026,
-            authorization_id="user-approved-final-evaluation",
-            signing_key=b"label-test-access-key",
-        ),
+        locked_access=access,
     )
 
     assert labels.loc[0, "label_valid"]
     assert labels.loc[0, "raw_return_5d"] == pytest.approx(0.1)
+    assert access_consumptions == ["consumed"]
+
+    with pytest.raises(LockedLabelError, match="already consumed"):
+        build_forward_open_labels(
+            members,
+            market,
+            calendar,
+            locked_access=access,
+        )
 
 
 def test_empty_members_return_an_empty_label_frame_with_the_output_schema() -> None:

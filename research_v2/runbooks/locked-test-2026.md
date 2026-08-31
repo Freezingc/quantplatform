@@ -39,7 +39,9 @@ reconciled, and DQ-passed. Calendar-day substitutions are not permitted.
    the preregistration hash, model, lineage, and watermark.
 3. The isolated evaluator records a durable recovery marker, then consumes the capability before
    opening any labeled FINAL/TEST input. Consumption records `LOCKED_EXPOSED` for the lineage
-   before the evaluation adapter runs.
+   before the evaluation adapter runs. The authority-issued label access is itself one-shot:
+   the first label source boundary atomically writes `access-consumed/<capability-id>.json`;
+   repeated use or a directly issued access is rejected.
 4. The evaluator may construct only the frozen FINAL/TEST artifact and return final aggregate
    RankIC, HAC t-statistic, baseline delta, valid-day count, and score-health pass ratio. Do not
    emit interim, daily, per-security, label, prediction, or PnL data.
@@ -65,6 +67,6 @@ reconciled, and DQ-passed. Calendar-day substitutions are not permitted.
 
 ## Evidence Locations
 
-The configured authority root retains `requests/`, `capabilities/`, `consumed/`, `exposure/`,
-and `audit/`. The evaluator root retains `results/`. The production approval root retains
+The configured authority root retains `requests/`, `capabilities/`, `consumed/`,
+`access-consumed/`, `exposure/`, and `audit/`. The evaluator root retains `results/`. The production approval root retains
 `.issued/`. Retain all three roots with the model artifact bundle and the preregistration root.

@@ -6,8 +6,10 @@ import hashlib
 import hmac
 import json
 import os
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import date
+from threading import Lock
 from typing import Literal
 
 import pandas as pd
@@ -27,6 +29,12 @@ class LockedDatasetError(PermissionError):
     """Raised before any input access when code tries to build the locked FINAL test."""
 
 
+class _LockedAccessUseState:
+    def __init__(self) -> None:
+        self.lock = Lock()
+        self.consumed = False
+
+
 @dataclass(frozen=True)
 class LockedTestAccess:
     """Explicit capability required to consume the one locked FINAL test."""
@@ -34,6 +42,8 @@ class LockedTestAccess:
     locked_year: int
     authorization_id: str
     signature: str = ""
+    _use_state: _LockedAccessUseState | None = field(default=None, repr=False, compare=False)
+    _consume_callback: Callable[[], None] | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if self.locked_year != 2026:
@@ -49,7 +59,19 @@ class LockedTestAccess:
         authorization_id: str,
         signing_key: bytes,
     ) -> LockedTestAccess:
-        """Create an authority-signed access record that data boundaries can verify."""
+        """Reject direct issuance; only the locked-test authority may bind an access token."""
+        raise LockedDatasetError("locked test access can only be issued by authority")
+
+    @classmethod
+    def _issue_authorized(
+        cls,
+        *,
+        locked_year: int,
+        authorization_id: str,
+        signing_key: bytes,
+        consume_callback: Callable[[], None] | None = None,
+    ) -> LockedTestAccess:
+        """Create an authority-bound access token with a one-shot in-process state."""
         unsigned = cls(locked_year=locked_year, authorization_id=authorization_id)
         if not isinstance(signing_key, bytes) or not signing_key:
             raise LockedDatasetError("locked test access signing_key must be non-empty bytes")
@@ -57,6 +79,8 @@ class LockedTestAccess:
             locked_year=locked_year,
             authorization_id=authorization_id,
             signature=_locked_access_signature(signing_key, unsigned.payload()),
+            _use_state=_LockedAccessUseState(),
+            _consume_callback=consume_callback,
         )
 
     def payload(self) -> dict[str, object]:
@@ -73,6 +97,26 @@ class LockedTestAccess:
         expected = _locked_access_signature(secret.encode("utf-8"), self.payload())
         if not self.signature or not hmac.compare_digest(self.signature, expected):
             raise LockedDatasetError("locked test access signature verification failed")
+        if self._use_state is None:
+            raise LockedDatasetError("locked test access was not issued by authority")
+
+    def consume_once(self) -> None:
+        """Atomically consume this authority-bound token at the first locked data boundary."""
+        self.verify()
+        assert self._use_state is not None
+        with self._use_state.lock:
+            if self._use_state.consumed:
+                raise LockedDatasetError("locked test access is already consumed")
+            if self._consume_callback is not None:
+                try:
+                    self._consume_callback()
+                except FileExistsError as error:
+                    raise LockedDatasetError("locked test access is already consumed") from error
+                except OSError as error:
+                    raise LockedDatasetError(
+                        "locked test access consumption record is unavailable"
+                    ) from error
+            self._use_state.consumed = True
 
 
 @dataclass(frozen=True)

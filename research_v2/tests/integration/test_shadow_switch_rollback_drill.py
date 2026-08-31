@@ -372,6 +372,7 @@ def _run_daily(
         predict=predict,
         score_health=score_health,
         publish=publish,
+        watermark_end_report_factory=lambda: _watermark_report(signal_date, watermarks),
     )
     return result, calls, health_reports
 
