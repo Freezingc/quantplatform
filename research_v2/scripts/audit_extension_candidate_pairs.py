@@ -1,4 +1,4 @@
-"""Read-only supplemental candidate-pair comparison against the fixed six candidates."""
+"""Read-only supplemental candidate-pair comparison for extension candidates."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import json
 import os
 from collections.abc import Mapping, Sequence
 from datetime import date
-from itertools import product
+from itertools import combinations, product
 from pathlib import Path
 
 import audit_formula_replay_consistency as replay
@@ -60,7 +60,9 @@ def _validate_window(start: date, end: date) -> None:
 
 
 def _required_pairs() -> tuple[tuple[str, str], ...]:
-    return tuple(sorted(product(sorted(EXTENSION_CANDIDATES), [c.candidate_id for c in CANDIDATES])))
+    extension_base = product(sorted(EXTENSION_CANDIDATES), [c.candidate_id for c in CANDIDATES])
+    extension_internal = combinations(sorted(EXTENSION_CANDIDATES), 2)
+    return tuple(sorted((*extension_base, *extension_internal)))
 
 
 def _restrict_replay_to_keys(

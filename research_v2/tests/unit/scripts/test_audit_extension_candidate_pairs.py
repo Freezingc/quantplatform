@@ -5,13 +5,16 @@ import pytest
 import audit_extension_candidate_pairs as ext
 
 
-def test_required_pairs_cover_extensions_times_base() -> None:
+def test_required_pairs_cover_extensions_and_base() -> None:
     pairs = ext._required_pairs()
-    assert len(pairs) == len(ext.EXTENSION_CANDIDATES) * len(ext.CANDIDATES)
+    expected_count = len(ext.EXTENSION_CANDIDATES) * len(ext.CANDIDATES)
+    expected_count += len(ext.EXTENSION_CANDIDATES) * (len(ext.EXTENSION_CANDIDATES) - 1) // 2
+    assert len(pairs) == expected_count
     assert len(set(pairs)) == len(pairs)
-    for extension, base in pairs:
-        assert extension in ext.EXTENSION_CANDIDATES
-        assert base in {candidate.candidate_id for candidate in ext.CANDIDATES}
+    base_ids = {candidate.candidate_id for candidate in ext.CANDIDATES}
+    for left, right in pairs:
+        assert left in ext.EXTENSION_CANDIDATES
+        assert right in base_ids or right in ext.EXTENSION_CANDIDATES
 
 
 def test_summarize_extension_pairs_requires_expected_dates() -> None:
