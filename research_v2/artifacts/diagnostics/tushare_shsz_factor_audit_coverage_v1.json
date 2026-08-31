@@ -4016,7 +4016,7 @@
       "yeslab_429"
     ],
     "annual_review_status": {
-      "yeslab_429": "PASS_WITH_MONITORING_FORMULA_REPLAY_PASS_TRAIN_UNIQUE"
+      "yeslab_429": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_2_OF_5"
     },
     "action": "Reject Alpha428–Alpha443 as new admissions. Alpha429 is a formula-replay-passing, train-unique research candidate, but strict annual ICIR passes only 2/5 years; keep it out of publication and model inputs pending validation. Alpha431, Alpha437, and Alpha442 are existing formal-admission reviews only.",
     "artifacts": [
@@ -4453,7 +4453,7 @@
     "excluded_exchanges": [
       "BJ"
     ],
-    "status": "PASS_WITH_MONITORING_STRICT_ANNUAL_ICIR_FAIL",
+    "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_3_OF_5",
     "formula": "-cross-sectional_rank(rolling_cov(rank(close), rank(vol), 5))",
     "frozen_direction": 1,
     "train": {
@@ -4496,7 +4496,7 @@
       "repair_contract": "Covariance-to-correlation substitution only; no window, rank, direction, universe, or label changes.",
       "decision": "NO_VARIANT_ADMITTED_STOP_THIS_REPAIR_DIRECTION"
     },
-    "action": "Retain Alpha167 as an isolated monitored research candidate only. Its canonical Tushare validation signal is strong, but the unchanged strict annual ICIR gate passes only 3/5 training years. The pre-registered covariance-to-correlation repair fails 0/5 annual ICIR and is stopped; do not add Alpha167 or the variant to the complete-quality set, formal nine, publication, or model inputs. Do not read 2026 locked-test data.",
+    "action": "Alpha167 has canonical Tushare evidence but fails the unchanged strict annual ICIR gate (3/5); keep it as a monitored research candidate, not admission-ready.",
     "artifact": "alpha167_canonical_quality_2020_2025_v1/quality_summary.json"
   },
   "alpha165_168_canonical_tushare_followup": {
