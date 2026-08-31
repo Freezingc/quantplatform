@@ -80,7 +80,7 @@
   },
   "alpha385_tushare_canonical_followup": {
     "factor_id": "yeslab_385",
-    "status": "PREDICTIVE_PASS_REDUNDANT_TO_YESLAB_405",
+    "status": "REJECT_REDUNDANT_WITH_CANDIDATE_405",
     "train": {
       "mean_rank_ic": -0.0751045984,
       "icir": -0.5776156547,
@@ -97,7 +97,7 @@
       "threshold": 0.9,
       "status": "FAIL_REDUNDANT"
     },
-    "action": "Do not add GP_016 to the complete-quality set, formal nine, publication, or model inputs. A 2020 Tushare canonical full-day redundancy breach against Alpha405 blocks it.",
+    "action": "Reject GP_016 as a new candidate: predictive evidence passes but full-day redundancy against Alpha405 breaches the 0.90 threshold. Do not add to the complete-quality set, formal nine, publication, or model inputs.",
     "artifacts": [
       "alpha385_tushare_canonical_redundancy_rejection_v1.json",
       "alpha385_tushare_train_2020_2024_monthly_rank_ic_v1.csv",
