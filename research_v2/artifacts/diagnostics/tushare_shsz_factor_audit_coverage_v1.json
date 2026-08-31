@@ -6097,5 +6097,17 @@
     "tushare_canonical_candidate_pair_similarity_v1/validation_pairs.csv",
     "../checkpoints/alpha484_canonical_v1/integrity.json",
     "factor_quality_latest_refresh_v1.json"
-  ]
+  ],
+  "explicit_admission_review_checklist": {
+    "artifact": "explicit_admission_review_checklist_v1.json",
+    "scope": "EXPLICIT_ADMISSION_REVIEW_CHECKLIST_V1",
+    "candidate_count": 10,
+    "status": "READ_ONLY_HUMAN_REVIEW_INDEX",
+    "action": "Use this checklist for explicit human admission decisions. It does not approve admission, publish values, write factor values, change the formal nine, or authorize model inputs.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  }
 }

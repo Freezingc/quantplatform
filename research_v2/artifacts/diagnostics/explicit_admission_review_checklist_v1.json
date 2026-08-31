@@ -1,0 +1,213 @@
+{
+  "scope": "EXPLICIT_ADMISSION_REVIEW_CHECKLIST_V1",
+  "purpose": "Checklist for human admission decisions. It consolidates version contracts, single-factor evidence, combination evidence, and required monitoring. It does not approve admission.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "training_window": "2020-01-02/2024-12-31",
+  "validation_window": "2025-01-02/2025-12-31",
+  "locked_test_read": false,
+  "database_writes": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "decision_rules": [
+    "Approve only an explicitly identified isolated canonical version; never mix historical YesLab values.",
+    "Retain every listed monitoring requirement after admission.",
+    "Any joint admission requires the corresponding pair/combination review; 114-484 cannot be jointly admitted, 381-405 and 357-363 require elevated monitoring.",
+    "Do not admit to reach a target factor count; factor quality gates are unchanged."
+  ],
+  "checklists": [
+    {
+      "candidate_id": "yeslab_405_tushare_shsz_v1",
+      "source_factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_036 contains BJ securities.",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_381_tushare_shsz_v1; separate combination approval required if both are considered.",
+      "evidence": [
+        "tushare_alpha405_canonical_candidate_review_v1.json",
+        "tushare_alpha405_canonical_train_similarity_v1/similarity_summary.json",
+        "tushare_alpha405_canonical_validation_v1/similarity_summary.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_425_tushare_shsz_v2",
+      "source_factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_056 contains BJ securities. Retain training high-volatility monitoring.",
+      "pair_or_combination_note": null,
+      "evidence": [
+        "tushare_alpha425_canonical_candidate_review_v2.json",
+        "tushare_alpha425_canonical_train_similarity_v1/similarity_summary.json",
+        "tushare_alpha425_canonical_validation_v1/similarity_summary.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_381_tushare_shsz_v1",
+      "source_factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_012 contains BJ securities. Retain elevated pair monitoring against yeslab_405_tushare_shsz_v1.",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1; separate combination approval required if both are considered.",
+      "evidence": [
+        "tushare_alpha381_canonical_candidate_review_v1.json",
+        "tushare_alpha381_canonical_train_similarity_v1/similarity_summary.json",
+        "tushare_alpha381_canonical_validation_v1/similarity_summary.json",
+        "tushare_shsz_alpha381_admission_preflight_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_114_tushare_shsz_v2",
+      "source_factor_id": "yeslab_114",
+      "factor_name": "Terri volatility",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Use only the isolated canonical version; retain monthly and regime monitoring.",
+      "pair_or_combination_note": "Cannot be jointly admitted with yeslab_484_tushare_shsz_v1; retain monthly and regime monitoring.",
+      "evidence": [
+        "tushare_alpha114_canonical_candidate_review_v2.json",
+        "alpha114_tushare_formal9_full_similarity_audit_v1.json",
+        "tushare_shsz_alpha114_admission_preflight_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_484_tushare_shsz_v1",
+      "source_factor_id": "yeslab_484",
+      "factor_name": "CSAD/herding related candidate",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+      "canonical_basis": "Tushare SH/SZ checkpointed replay",
+      "required_scope": "Use only the isolated canonical checkpoint. Historical yeslab_484 metrics are not candidate evidence.",
+      "pair_or_combination_note": "Cannot be jointly admitted with yeslab_114_tushare_shsz_v2; historical 484 metrics are not candidate evidence.",
+      "evidence": [
+        "tushare_alpha484_canonical_v1/admission_review.json",
+        "../checkpoints/alpha484_canonical_v1/integrity.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_206_median_abs_v2",
+      "source_factor_id": "yeslab_206",
+      "factor_name": "60日成交量中位数偏离（修复版）",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
+      "canonical_basis": "Isolated median-formula repair, Tushare SH/SZ",
+      "required_scope": "Original yeslab_206 uses a rolling mean and failed validation; only the median repair candidate is under review. Retain low-volatility and nonpositive-trend monitoring.",
+      "pair_or_combination_note": "Retain low-volatility and nonpositive-trend monitoring; only the isolated median repair candidate is under review.",
+      "evidence": [
+        "alpha206_median_abs_candidate_review_v2.json",
+        "alpha206_median_abs_formal9_similarity_2020_2024_v1.json",
+        "alpha206_median_abs_formal9_similarity_2025_v1.json",
+        "alpha206_median_abs_robustness_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_443_tushare_shsz_v1",
+      "source_factor_id": "yeslab_443",
+      "factor_name": "GP_074",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities.",
+      "pair_or_combination_note": "Historical GP_074 contains BJ securities; isolated SH/SZ Tushare version only.",
+      "evidence": [
+        "tushare_alpha443_canonical_candidate_review_v1.json",
+        "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha443_formal9_validation_2025_v1/similarity_summary.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_363_tushare_shsz_v1",
+      "source_factor_id": "yeslab_363",
+      "factor_name": "行业标准化绝对值除行业偏度绝对值",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
+      "canonical_basis": "Versioned PIT industry rematerialization",
+      "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Do not mix with historical static industry values. Retain elevated pair monitoring against the other candidate (train/validation median abs Spearman 0.84518/0.87878); no joint admission without separate review.",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_357_tushare_shsz_v1; do not jointly admit without separate review.",
+      "evidence": [
+        "tushare_alpha363_canonical_candidate_review_v1.json",
+        "tushare_shsz_alpha363_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha363_formal9_validation_2025_v1/similarity_summary.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_357_tushare_shsz_v1",
+      "source_factor_id": "yeslab_357",
+      "factor_name": "行业内收益标准化绝对值",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "canonical_basis": "Versioned PIT industry rematerialization",
+      "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Historical source replay remains blocked; retain reconciliation monitoring. Retain elevated pair monitoring against the other candidate (train/validation median abs Spearman 0.84518/0.87878); no joint admission without separate review.",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_363_tushare_shsz_v1; do not jointly admit without separate review.",
+      "evidence": [
+        "tushare_alpha357_canonical_candidate_review_v1.json",
+        "tushare_shsz_alpha357_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha357_formal9_validation_2025_v1/similarity_summary.json",
+        "formula_replay_alpha357_tushare_pit_2025-01_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_96_canonical_replay_v1",
+      "source_factor_id": "yeslab_96",
+      "factor_name": "修正日间反转",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
+      "canonical_basis": "Complete canonical replay",
+      "required_scope": "Retain 2020 annual monitoring; historical 2020-only rejection is superseded only for current-status indexing.",
+      "pair_or_combination_note": "Retain 2020 annual monitoring; the complete replay supersedes the old 2020-only rejection only for current status.",
+      "evidence": [
+        "tushare_alpha96_canonical_candidate_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ]
+    }
+  ]
+}
