@@ -43,11 +43,13 @@ EXTENSION_CANDIDATES: tuple[str, ...] = (
     "yeslab_363_tushare_shsz_v1",
     "yeslab_357_tushare_shsz_v1",
     "yeslab_96_canonical_replay_v1",
+    "yeslab_443_tushare_shsz_v1",
 )
 EXTENSION_SOURCE_FACTOR_IDS: Mapping[str, str] = {
     "yeslab_363_tushare_shsz_v1": "yeslab_363",
     "yeslab_357_tushare_shsz_v1": "yeslab_357",
     "yeslab_96_canonical_replay_v1": "yeslab_96",
+    "yeslab_443_tushare_shsz_v1": "yeslab_443",
 }
 LOCKED_TEST_START = date(2026, 1, 1)
 

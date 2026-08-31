@@ -9,7 +9,7 @@ def test_required_pairs_cover_extensions_and_base() -> None:
     pairs = ext._required_pairs()
     expected_count = len(ext.EXTENSION_CANDIDATES) * len(ext.CANDIDATES)
     expected_count += len(ext.EXTENSION_CANDIDATES) * (len(ext.EXTENSION_CANDIDATES) - 1) // 2
-    assert len(pairs) == expected_count
+    assert len(pairs) == expected_count == 30
     assert len(set(pairs)) == len(pairs)
     base_ids = {candidate.candidate_id for candidate in ext.CANDIDATES}
     for left, right in pairs:
