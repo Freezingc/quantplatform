@@ -1,0 +1,64 @@
+{
+  "bj_alias_count": 0,
+  "bj_alias_map": null,
+  "code_count": 5133,
+  "cross_sectional_replay_mode": "single_complete_batch",
+  "database_writes": false,
+  "end": "2025-01-31",
+  "exclude_bj": true,
+  "factor_ids": [
+    "yeslab_362"
+  ],
+  "include_daily_basic": false,
+  "industry_source": "Tushare SW2014/SW2021 versioned PIT membership",
+  "locked_test_read": false,
+  "market_code_count": 5133,
+  "market_date_count": 45,
+  "market_finite_rows": 1839312,
+  "market_hash": "54f0ac244048897f4c877e2734073825e5891c971f8e6bc505b70b5a053f90d2",
+  "market_missing_code_count": 0,
+  "market_rows": 229914,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-11-25",
+  "market_universe_source": "YesLab.stock_factor_daily",
+  "max_ts_codes": null,
+  "pit_industry_cutover": "2021-12-10",
+  "required_market_fields": [
+    "close"
+  ],
+  "restrict_to_v2_universe": false,
+  "rows": [
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_362",
+      "factor_name": "行业标准化绝对值除行业偏度5日均",
+      "lookback_days": 5,
+      "max_abs_diff": 2392.3514714788657,
+      "max_rel_diff": 6990.834097073581,
+      "max_ts_codes": null,
+      "mismatch_date_count": 18,
+      "mismatch_end": "2025-01-27",
+      "mismatch_rows": 88047,
+      "mismatch_start": "2025-01-02",
+      "overlap_finite_rows": 91790,
+      "overlap_rows": 92394,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH"
+      ],
+      "replay_finite_rows": 91790,
+      "replay_lookback_days": 5,
+      "replay_rows": 92394,
+      "source_finite_rows": 92006,
+      "source_finite_rows_full": 92006,
+      "source_market_uncovered_code_count": 0,
+      "source_market_uncovered_date_count": 0,
+      "source_market_uncovered_rows": 0,
+      "source_rows": 92394
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2025-01-02",
+  "stock_batch_size": 5133,
+  "universe_mode": "full_market"
+}

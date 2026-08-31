@@ -1680,6 +1680,40 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "industry_pit_replay_followup": {
+    "factor_ids": [
+      "yeslab_357",
+      "yeslab_362"
+    ],
+    "window": "2025-01-02/2025-01-31",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": [
+      "BJ"
+    ],
+    "industry_source": "Tushare SW2014 before 2021-12-10; SW2021 from 2021-12-10",
+    "pit_industry_cutover": "2021-12-10",
+    "formula_replay": {
+      "yeslab_357": {
+        "artifact": "formula_replay_alpha357_tushare_pit_2025-01_v1.json",
+        "decision_status": "FORMULA_REPLAY_BLOCKED",
+        "mismatch_rows": 88196,
+        "overlap_finite_rows": 91952
+      },
+      "yeslab_362": {
+        "artifact": "formula_replay_alpha362_tushare_pit_2025-01_v1.json",
+        "decision_status": "FORMULA_REPLAY_BLOCKED",
+        "mismatch_rows": 88047,
+        "overlap_finite_rows": 91790
+      }
+    },
+    "status": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY",
+    "action": "Keep both industry factors isolated. Versioned PIT industry is now available and was used, but historical stored formulas still do not replay. Alpha362 also remains rejected by strict annual ICIR; do not admit, publish, write factor values, change formal nine, add model inputs, or train.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
