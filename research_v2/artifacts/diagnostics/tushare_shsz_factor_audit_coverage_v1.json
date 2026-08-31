@@ -4786,7 +4786,7 @@
       }
     },
     "validation_2025": {
-      "yeslab_206": "VALIDATION_2025_FAIL_LOW_ICIR",
+      "yeslab_206": "VALIDATION_2025_REPAIR_CANDIDATE_PASS",
       "yeslab_208": "VALIDATION_2025_PASS_PENDING_ADMISSION_DECISION",
       "yeslab_429": "VALIDATION_2025_FAIL_LOW_ICIR"
     },
@@ -4827,7 +4827,8 @@
       "alpha208_tushare_rematerialized_train_2020_2024_v1.json",
       "alpha208_tushare_rematerialized_validation_2025_v1.json",
       "alpha429_validation_2025_v1.json"
-    ]
+    ],
+    "validation_2025_note": "yeslab_206 original formula fails validation; yeslab_206_median_abs_v2 repair candidate passes 2025 validation and is tracked in alpha206_median_abs_candidate_review."
   },
   "calculator_inventory": {
     "calculator_root": "数据库/factor_calculators",
