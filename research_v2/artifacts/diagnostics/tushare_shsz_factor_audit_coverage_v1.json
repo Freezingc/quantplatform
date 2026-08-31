@@ -150,7 +150,7 @@
     },
     "admission_preflight": {
       "artifact": "tushare_shsz_alpha114_admission_preflight_v1.json",
-      "status": "PASS_WITH_MONITORING",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
       "required_pair_count": 90,
       "observed_pair_count": 90,
       "missing_pairs": 0,
