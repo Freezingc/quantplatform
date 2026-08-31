@@ -1,0 +1,110 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA433_ANNUAL_STABILITY_REJECTION_REVIEW_V1",
+  "candidate_id": "yeslab_433_tushare_shsz_v1",
+  "source_factor_id": "yeslab_433",
+  "factor_name": "GP_064",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.06806534281728288,
+    "icir": -0.5355660789146719,
+    "signed_mean_rank_ic": 0.06806534281728288,
+    "signed_icir": 0.5355660789146719,
+    "directional_day_share": 0.6922442244224423,
+    "annual_gate_pass_years": "3/5",
+    "annual_details": [
+      {
+        "year": 2020,
+        "valid_day_count": 243,
+        "signed_mean_rank_ic": 0.027511282266756608,
+        "signed_icir": 0.2224868958501914,
+        "directional_day_share": 0.5679012345679012,
+        "strict_gate_pass": false
+      },
+      {
+        "year": 2021,
+        "valid_day_count": 243,
+        "signed_mean_rank_ic": 0.06488406434878095,
+        "signed_icir": 0.5028903864640473,
+        "directional_day_share": 0.6831275720164609,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2022,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.07223695627704907,
+        "signed_icir": 0.7862529343313204,
+        "directional_day_share": 0.7520661157024794,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2023,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.10151032023657028,
+        "signed_icir": 0.8174910330725008,
+        "directional_day_share": 0.7396694214876033,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2024,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.07436481549865835,
+        "signed_icir": 0.4970523210008756,
+        "directional_day_share": 0.71900826446281,
+        "strict_gate_pass": false
+      }
+    ],
+    "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
+    "daily_rank_ic_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/daily_rank_ic.csv"
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.07739174611634608,
+    "icir": -0.6140078926136774,
+    "signed_mean_rank_ic": 0.07739174611634608,
+    "signed_icir": 0.6140078926136774,
+    "directional_day_share": 0.720164609053498,
+    "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json",
+    "daily_rank_ic_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/daily_rank_ic.csv"
+  },
+  "similarity_monitoring": {
+    "threshold": 0.9,
+    "full_formal_nine_audit_completed": false,
+    "known_edges": {
+      "training_yeslab_380": {
+        "median_abs_spearman": 0.8589612001,
+        "max_abs_spearman": 0.9143792967,
+        "valid_day_count": 1212,
+        "status": "BELOW_MEDIAN_THRESHOLD"
+      },
+      "validation_yeslab_380": {
+        "median_abs_spearman": 0.8610517106,
+        "max_abs_spearman": 0.901921918,
+        "valid_day_count": 243,
+        "status": "BELOW_MEDIAN_THRESHOLD"
+      }
+    },
+    "note": "No known complete formal-nine edge has a full-day median above the 0.90 threshold; similarity was not the decisive gate for this rejection."
+  },
+  "decision": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+  "publication_status": "NOT_PUBLISHED",
+  "evidence_commit": "ad731da2286e1df948bc112f88e71c96089eebe5",
+  "model_eligible": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false
+}
