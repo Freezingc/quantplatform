@@ -146,10 +146,6 @@ def admit_feature_frame(
 
 
 def _is_sha256(value: str) -> bool:
-    if len(value) != 64:
-        return False
-    try:
-        int(value, 16)
-    except ValueError:
-        return False
-    return True
+    return isinstance(value, str) and len(value) == 64 and all(
+        character in "0123456789abcdef" for character in value
+    )
