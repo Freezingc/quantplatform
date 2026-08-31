@@ -129,7 +129,7 @@
       "canonical_basis": "Complete canonical replay",
       "required_scope": "Retain 2020 annual monitoring; historical 2020-only rejection is superseded only for current-status indexing.",
       "evidence": [
-        "canonical_unique_candidate_replay"
+        "tushare_alpha96_canonical_candidate_review_v1.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING"
     }

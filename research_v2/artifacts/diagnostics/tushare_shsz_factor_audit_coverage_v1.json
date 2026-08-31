@@ -1803,7 +1803,7 @@
       },
       "yeslab_96_canonical_replay_v1": {
         "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
-        "artifact": "canonical_unique_candidate_replay"
+        "artifact": "tushare_alpha96_canonical_candidate_review_v1.json"
       },
       "yeslab_208_canonical_replay_v1": {
         "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5",

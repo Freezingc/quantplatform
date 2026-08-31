@@ -1,0 +1,63 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA96_CANONICAL_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_96_canonical_replay_v1",
+  "source_factor_id": "yeslab_96",
+  "factor_name": "修正日间反转",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "frozen_direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "signed_mean_rank_ic": 0.0609139094,
+    "signed_icir": 0.5742737688,
+    "annual_gate_pass_years": "4/5",
+    "quality_artifact": "tushare_canonical_formal9_unique7_train_2020_2024_v1/quality_summary.json",
+    "similarity_artifact": "tushare_canonical_formal9_unique7_train_2020_2024_v1/similarity_summary.json"
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "signed_mean_rank_ic": 0.0739783624,
+    "signed_icir": 0.6420883584,
+    "quality_artifact": "tushare_canonical_formal9_unique7_validation_2025_v1/quality_summary.json",
+    "similarity_artifact": "tushare_canonical_formal9_unique7_validation_2025_v1/similarity_summary.json"
+  },
+  "similarity_to_formal_nine": {
+    "threshold": 0.9,
+    "training_maximum_median_abs_spearman": 0.5555605298,
+    "training_nearest_factor_id": "yeslab_94",
+    "training_valid_days": 1212,
+    "validation_maximum_median_abs_spearman": 0.6120636432,
+    "validation_nearest_factor_id": "yeslab_94",
+    "validation_valid_days": 243,
+    "status": "PASS_MAX_EDGE_BELOW_THRESHOLD"
+  },
+  "paired_factor_monitor": {
+    "factor_id": "yeslab_95",
+    "train_median_abs_spearman": 0.8204550197,
+    "validation_median_abs_spearman": 0.8443079299
+  },
+  "historical_note": "Earlier 2020-only rejection remains historical evidence; the complete canonical replay supersedes it for current-status indexing, but 2020 annual monitoring must be retained.",
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
+  "required_monitoring": [
+    "2020 strict annual gate fail monitoring",
+    "elevated pair monitoring against yeslab_95"
+  ],
+  "publication_status": "NOT_PUBLISHED",
+  "evidence_commit": "a4701d79570268ebbb1018fd077e3d3475cc1984",
+  "model_eligible": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false
+}
