@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
 from typing import Any, Final
 
@@ -51,8 +52,11 @@ def _board(exchange: object, market: object) -> str:
     return _BOARD_MAP.get((str(exchange), str(market)), "OTHER")
 
 
+_ST_DESIGNATION = re.compile(r"^(\*ST|S\*ST|SST|ST)(?![A-Z0-9])")
+
+
 def _is_st_name(name: str | None) -> bool:
-    return name is not None and "ST" in name.upper()
+    return name is not None and _ST_DESIGNATION.match(name.strip().upper()) is not None
 
 
 def _validate_columns(frame: pd.DataFrame, required: frozenset[str], label: str) -> None:

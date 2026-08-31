@@ -96,3 +96,39 @@ def test_security_master_scd_rejects_conflicting_name_records() -> None:
 
     with pytest.raises(SecurityMasterConflict, match="conflicting active names"):
         build_security_master_scd(_security_master(), names)
+
+
+def test_security_master_scd_does_not_flag_names_that_merely_contain_st_substring() -> None:
+    names = pd.DataFrame(
+        [
+            {
+                "ts_code": "000001.SZ",
+                "name": "FIRST Capital",
+                "start_date": date(2020, 1, 2),
+                "end_date": pd.NaT,
+            }
+        ]
+    )
+
+    scd = build_security_master_scd(_security_master(), names)
+    alpha = scd.loc[scd["ts_code"] == "000001.SZ"]
+
+    assert alpha["security_name"].tolist() == ["FIRST Capital"]
+    assert alpha["is_st"].tolist() == [False]
+
+
+def test_security_master_scd_flags_canonical_st_designation_prefixes() -> None:
+    for st_name in ("ST长生", "*ST Alpha", "SST前锋", "S*ST达新"):
+        names = pd.DataFrame(
+            [
+                {
+                    "ts_code": "000001.SZ",
+                    "name": st_name,
+                    "start_date": date(2020, 1, 2),
+                    "end_date": pd.NaT,
+                }
+            ]
+        )
+        scd = build_security_master_scd(_security_master(), names)
+        alpha = scd.loc[scd["ts_code"] == "000001.SZ"]
+        assert alpha["is_st"].tolist() == [True], st_name

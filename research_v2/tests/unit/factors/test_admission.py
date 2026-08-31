@@ -106,3 +106,23 @@ def test_admission_rejects_low_finite_ratio_and_duplicate_keys() -> None:
     duplicate.loc[:, "alpha"] = 0.1
     with pytest.raises(FactorAdmissionError, match="duplicate"):
         admit_feature_frame(contract, duplicate, role="TRAIN")
+
+
+@pytest.mark.parametrize(
+    "bad_hash",
+    [
+        "a" * 30 + "_" + "a" * 33,  # PEP-515 underscore parses via int(x, 16)
+        "+" + "a" * 63,  # sign prefix
+        " " + "a" * 63,  # whitespace stripped by int()
+        "0x" + "a" * 62,  # hex-literal prefix
+        "A" * 64,  # non-canonical: hexdigest() is lowercase
+    ],
+)
+def test_contract_rejects_malformed_sha256_hashes(bad_hash: str) -> None:
+    with pytest.raises(FactorAdmissionError, match="SHA-256"):
+        FactorAdmissionContract.from_factor_set(
+            _frozen_set(),
+            feature_names_by_factor_id={"yeslab_1": "alpha"},
+            rules_hash=bad_hash,
+            preprocessor_hash="b" * 64,
+        )
