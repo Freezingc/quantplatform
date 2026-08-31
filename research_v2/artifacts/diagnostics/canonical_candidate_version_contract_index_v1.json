@@ -144,6 +144,17 @@
         "extension_candidate_monthly_stability_validation_v1.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING"
+    },
+    "yeslab_471_tushare_pit_blocked_v1": {
+      "source_factor_id": "yeslab_471",
+      "factor_name": "AttentionSpillover",
+      "canonical_basis": "Versioned PIT industry replay attempted; historical source formula blocked",
+      "required_scope": "Do not admit or mix with formal factors. Historical source replay remains blocked despite versioned PIT industry; source-formula reconciliation is required before any new canonical review.",
+      "evidence": [
+        "formula_replay_alpha471_tushare_pit_2025-01_v1.json",
+        "tushare_shsz_factor_audit_coverage_v1.json"
+      ],
+      "status": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY"
     }
   },
   "decision": "NO_AUTOMATIC_ADMISSION"

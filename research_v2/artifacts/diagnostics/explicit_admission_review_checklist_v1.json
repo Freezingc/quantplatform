@@ -212,6 +212,23 @@
         "Has any required pair/combination review been completed for joint admission?"
       ],
       "required_monitoring": "Retain monthly stability monitoring (extension_candidate_monthly_stability_validation_v1.json) and pair/combination monitors."
+    },
+    {
+      "candidate_id": "yeslab_471_tushare_pit_blocked_v1",
+      "source_factor_id": "yeslab_471",
+      "factor_name": "AttentionSpillover",
+      "status": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY",
+      "canonical_basis": "Versioned PIT industry replay attempted; historical source formula blocked",
+      "required_scope": "Do not admit or mix with formal factors. Historical source replay remains blocked despite versioned PIT industry; source-formula reconciliation is required before any new canonical review.",
+      "pair_or_combination_note": "Not eligible for combination review until source-formula reconciliation exists.",
+      "evidence": [
+        "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
+      ],
+      "human_questions": [
+        "Has source-formula reconciliation been completed?",
+        "Is a new canonical review required after reconciliation?",
+        "Is the blocked status still valid?"
+      ]
     }
   ]
 }

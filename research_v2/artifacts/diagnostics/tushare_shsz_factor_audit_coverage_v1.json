@@ -5994,6 +5994,10 @@
       "yeslab_208_canonical_replay_v1": {
         "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5",
         "artifact": "tushare_alpha208_canonical_candidate_review_v1.json"
+      },
+      "yeslab_471_tushare_pit_blocked_v1": {
+        "status": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY",
+        "artifact": "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
       }
     },
     "status": "NO_AUTOMATIC_ADMISSION",
