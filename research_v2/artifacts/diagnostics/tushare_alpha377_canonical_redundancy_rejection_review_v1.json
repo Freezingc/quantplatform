@@ -1,0 +1,162 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA377_REDUNDANCY_REJECTION_REVIEW_V1",
+  "candidate_id": "yeslab_377_tushare_shsz_v1",
+  "source_factor_id": "yeslab_377",
+  "factor_name": "GP_008",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.08152538119548468,
+    "icir": -0.5457494772974213,
+    "signed_mean_rank_ic": 0.08152538119548468,
+    "signed_icir": 0.5457494772974213,
+    "directional_day_share": 0.7211221122112211,
+    "annual_gate_pass_years": "3/5",
+    "annual_details": [
+      {
+        "year": 2020,
+        "valid_day_count": 243,
+        "signed_mean_rank_ic": 0.06622542621304944,
+        "signed_icir": 0.4323216741241493,
+        "directional_day_share": 0.6625514403292181,
+        "strict_gate_pass": false
+      },
+      {
+        "year": 2021,
+        "valid_day_count": 243,
+        "signed_mean_rank_ic": 0.07008288874987792,
+        "signed_icir": 0.5446538573827859,
+        "directional_day_share": 0.7119341563786008,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2022,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.08868621328203187,
+        "signed_icir": 0.6941002778724111,
+        "directional_day_share": 0.7603305785123967,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2023,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.09106549242037427,
+        "signed_icir": 0.6296709841238742,
+        "directional_day_share": 0.7272727272727273,
+        "strict_gate_pass": true
+      },
+      {
+        "year": 2024,
+        "valid_day_count": 242,
+        "signed_mean_rank_ic": 0.09167739129319745,
+        "signed_icir": 0.496561858460313,
+        "directional_day_share": 0.743801652892562,
+        "strict_gate_pass": false
+      }
+    ],
+    "coverage": {
+      "status": true,
+      "valid_day_count": 1212,
+      "coverage_median": 1.0,
+      "coverage_p05": 1.0,
+      "coverage_minimum": 1.0
+    },
+    "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
+    "daily_rank_ic_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/daily_rank_ic.csv"
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.0834694367216609,
+    "icir": -0.5100170938228247,
+    "signed_mean_rank_ic": 0.0834694367216609,
+    "signed_icir": 0.5100170938228247,
+    "directional_day_share": 0.6831275720164609,
+    "coverage": {
+      "status": true,
+      "valid_day_count": 243,
+      "coverage_median": 1.0,
+      "coverage_p05": 1.0,
+      "coverage_minimum": 1.0
+    },
+    "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json",
+    "daily_rank_ic_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/daily_rank_ic.csv"
+  },
+  "similarity_to_formal_nine": {
+    "threshold": 0.9,
+    "early_stop": true,
+    "early_stop_rule": "A single complete formal-factor edge above the redundancy threshold is sufficient to reject an additional candidate; remaining formal edges are intentionally not claimed as audited.",
+    "training": {
+      "reference_factor_id": "yeslab_380",
+      "pair": {
+        "factor_id_left": "yeslab_377",
+        "factor_id_right": "yeslab_380",
+        "median_abs_spearman": 0.9700533463,
+        "max_abs_spearman": 0.9824218274,
+        "valid_day_count": 1212
+      },
+      "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_similarity_cluster_train_v1/similarity_summary.json",
+      "status": "FAIL_REDUNDANT_EARLY_STOP"
+    },
+    "validation": {
+      "reference_factor_id": "yeslab_380",
+      "pair": {
+        "factor_id_left": "yeslab_377",
+        "factor_id_right": "yeslab_380",
+        "median_abs_spearman": 0.9755522695,
+        "max_abs_spearman": 0.9801441016,
+        "valid_day_count": 243
+      },
+      "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/similarity_summary.json",
+      "status": "FAIL_REDUNDANT_EARLY_STOP"
+    },
+    "status": "FAIL_REDUNDANT_WITH_YESLAB_380"
+  },
+  "formula_scope": {
+    "status": "PENDING_SCOPE_TRANSITION_REVIEW",
+    "historical_source_scope": {
+      "factor_name": "GP_008",
+      "source_unique_codes": 5952,
+      "source_bj_codes": 551,
+      "classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH"
+    },
+    "historical_replay": {
+      "windows": [
+        "2020-01",
+        "2022-01",
+        "2024-01",
+        "2025-01"
+      ],
+      "pass_window_count": 0,
+      "mismatch_rows_by_window": [
+        46286,
+        64648,
+        90687,
+        75797
+      ],
+      "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_scope_precision_review_v1.json"
+    },
+    "reason": "Historical YesLab GP_008 contains BJ securities and cannot be mixed with an isolated SH/SZ Tushare value. Independently, the candidate is redundant with formal yeslab_380 and must not be admitted as an additional model input."
+  },
+  "coverage_status": "PASS",
+  "decision": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380",
+  "publication_status": "NOT_PUBLISHED",
+  "evidence_commit": "ad2213012044499e0f997fc5611ab4957260fc99",
+  "model_eligible": false,
+  "database_writes": false,
+  "model_training_started": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false
+}
