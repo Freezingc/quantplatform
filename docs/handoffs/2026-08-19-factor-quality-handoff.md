@@ -1,6 +1,6 @@
 # 因子质量改进与服务器迁移交接文档
 
-> 状态日期：2026-08-27（Asia/Shanghai）
+> 状态日期：2026-08-31（Asia/Shanghai）
 >
 > 当前工作区：`/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX`
 >
@@ -15,6 +15,8 @@
 当前工作已经完成了因子库的广覆盖诊断、正式九因子的质量记账、若干候选因子的修复实验，以及精简版质量表的代码实现。模型训练尚未开始，2026 锁定测试没有被本轮因子质量工作读取。
 
 当前已完成 `yeslab_484_tushare_shsz_v1` 的严格、独立 Tushare SH/SZ 复核：它通过所有固定质量门槛，状态为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW`。这只是候选的人工准入评审资格，未改变正式九因子、未启动模型训练，也未读取 2026 锁定测试。
+
+六个隔离候选的统一两两相似度审计也已完成：训练期和 2025 验证期各 15 条边，所有边分别覆盖 1212/243 个交易日。`yeslab_114_tushare_shsz_v2` 与 `yeslab_484_tushare_shsz_v1` 的验证期绝对 Spearman 中位数为 `0.90787`，标记为 `REDUNDANT`；`yeslab_381_tushare_shsz_v1` 与 `yeslab_405_tushare_shsz_v1` 为 `0.86451/0.88821`，标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`。该审计仅是组合比较证据，不改变任何候选状态或正式九因子。
 
 新表 `factor_quality_latest` 已按最新结论发布并回读校验：491 行、491 个唯一因子 ID、9 个正式可用因子。发布的是当前质量结论，不会自动把 Alpha484 加入正式因子集；下一关键路径是对候选逐个进行人工准入评审。
 
@@ -65,6 +67,9 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 - `research_v2/artifacts/diagnostics/tushare_alpha95_relative_amount_volatility_v1/quality_summary.json`
 - `research_v2/artifacts/diagnostics/tushare_shsz_alpha484_admission_audit_2020_2025_v1.json`
 - `research_v2/artifacts/diagnostics/tushare_shsz_alpha484_rematerialized_quality_2020_2024_v1.json`
+- `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1.json`
+- `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/train_pairs.csv`
+- `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/validation_pairs.csv`
 - `docs/superpowers/specs/2026-08-14-factor-quality-latest-alpha484-canonical-design.md`
 - `docs/superpowers/plans/2026-08-14-factor-quality-latest.md`
 - `docs/superpowers/plans/2026-08-14-alpha484-canonical-admission.md`
@@ -196,6 +201,20 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 2026-08-28 重跑确认 `yeslab_206_median_abs_v2` 的 2025 评估结果可逐日复现：signed RankIC / ICIR 为 `0.05046 / 0.73323`，共 `243` 个交易日。此前 `yeslab_206` 的 `0.39748` 验证 ICIR 属于历史的 60 日**均值**偏离公式；修复候选使用 60 日**中位数**偏离，两者不能交叉引用。新候选训练期 signed RankIC / ICIR 为 `0.04085 / 0.56053`、年度严格门槛 `4/5`，相对正式九因子最大相似度中位数为训练 `0.27229`、验证 `0.27627`。
 
 评审包为 `research_v2/artifacts/diagnostics/alpha206_median_abs_candidate_review_v2.json`。它只可作为隔离的 Tushare 规范修复候选参与人工准入审查，仍要求监控训练低波动（signed ICIR `0.47133`）和 2025 非正趋势（`0.41302`）状态；不得自动发布、写入因子值、变更正式九因子、加入模型输入或启动训练。
+
+#### 六候选统一两两相似度审计
+
+2026-08-28 已完成 `yeslab_114_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_484_tushare_shsz_v1`、`yeslab_206_median_abs_v2` 的统一比较。公式计算使用完整 SH/SZ Tushare 市场面板，输出再限制到共同的 V2 `is_member` 且 `label_valid` 业务键；Alpha484 使用带指纹的已完成 Tushare 重放检查点，Alpha206 使用 60 日滚动中位数修复。
+
+结果摘要如下：
+
+| 比较对 | 训练绝对 Spearman 中位数 | 验证绝对 Spearman 中位数 | 状态 |
+|---|---:|---:|---|
+| `114` - `484` | `0.85086` | `0.90787` | `REDUNDANT` |
+| `381` - `405` | `0.86451` | `0.88821` | `ELEVATED_PAIR_REDUNDANCY_MONITOR` |
+| 其余 13 对 | `0.21092–0.59732` | `0.20460–0.64956` | `PAIR_UNIQUE` |
+
+每条边训练/验证有效日数均为 `1212/243`，阈值为监控 `0.80`、冗余 `0.90`。完整逐边结果在 `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1.json` 及其两个 CSV 中。该结果是 comparison-only 证据：六个候选仍全部 `model_eligible=false`，不授权组合准入、不写数据库、不读取 2026 锁定测试。
 
 六个当前候选的唯一统一索引为 `research_v2/artifacts/diagnostics/tushare_shsz_candidate_admission_review_matrix_v2.json`。该矩阵不再提供跨公式、跨范围的优先级排名；它只列出每个隔离版本的当前证据、必需监控和组合限制。所有候选仍需逐个明确审批，任何两个候选同时进入正式集合前都必须单独评估组合冗余。
 
@@ -583,7 +602,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2` 等候选。405、425 和 381 均首先需要明确批准其隔离 SH/SZ 规范版本；381 与 405 的组合还需独立冗余审批，425 需保留训练高波动监控，114 必须保留月度和 regime 监控；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 
@@ -622,4 +641,4 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ## 11. 当前接手点
 
-接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json` 和 `tushare_shsz_candidate_admission_review_matrix_v2.json`，然后按独立、明确的人工决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2` 等候选。381 与 405 不得因各自通过单因子门槛而自动成对准入；425 与 405 的相似度通过不构成组合准入，425 的训练高波动监控和 114 的监控条件也不得省略。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。
+接手者的第一项工作是阅读 `factor_quality_latest_refresh_v1.json`、`tushare_shsz_candidate_admission_review_matrix_v2.json` 和 `tushare_canonical_candidate_pair_similarity_v1.json`。统一两两审计已经完成，当前只需按独立、明确的人工决策审查六个候选。`114-484` 不得在组合中同时使用，`381-405` 需保留冗余监控；任何单因子通过或 pair `PAIR_UNIQUE` 都不构成自动准入。质量表发布后仍不得自动改变正式九因子、启动模型训练或读取 2026 数据。

@@ -33,6 +33,8 @@ VALIDATION_END = date(2025, 12, 31)
 LOCKED_TEST_START = date(2026, 1, 1)
 TRAIN_EXPECTED_DAYS = 1212
 VALIDATION_EXPECTED_DAYS = 243
+PAIR_MONITOR_THRESHOLD = 0.80
+PAIR_REDUNDANCY_THRESHOLD = 0.90
 DEFAULT_ALPHA484_CHECKPOINT_ROOT = Path(
     "research_v2/artifacts/checkpoints/alpha484_canonical_v1"
 )
@@ -354,6 +356,16 @@ def build_audit_payload(
         )
     return {
         "scope": "TUSHARE_CANONICAL_CANDIDATE_PAIR_SIMILARITY_V1",
+        "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
+        "comparison_scope": {
+            "output_keys": "V2 is_member=true and label_valid=true",
+            "formula_input_market": "Tushare daily SH/SZ full panel",
+            "excluded_exchanges": ["BJ"],
+        },
+        "thresholds": {
+            "pair_monitor_median_abs_spearman": PAIR_MONITOR_THRESHOLD,
+            "pair_redundancy_median_abs_spearman": PAIR_REDUNDANCY_THRESHOLD,
+        },
         "decision": "COMPARISON_ONLY_NO_ADMISSION",
         "candidate_registry": [candidate.candidate_id for candidate in CANDIDATES],
         "formal_factor_set_changed": False,
@@ -481,9 +493,9 @@ def classify_pair(
     if days_train != TRAIN_EXPECTED_DAYS or days_validation != VALIDATION_EXPECTED_DAYS:
         return "INCOMPLETE"
     maximum = max(median_train, median_validation)
-    if maximum >= 0.90:
+    if maximum >= PAIR_REDUNDANCY_THRESHOLD:
         return "REDUNDANT"
-    if maximum >= 0.80:
+    if maximum >= PAIR_MONITOR_THRESHOLD:
         return "ELEVATED_PAIR_REDUNDANCY_MONITOR"
     return "PAIR_UNIQUE"
 

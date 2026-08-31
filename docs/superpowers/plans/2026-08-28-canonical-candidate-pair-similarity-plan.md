@@ -5,11 +5,11 @@
 **Goal:** Calculate the 15 train and 15 validation candidate-to-candidate
 similarity edges on one read-only canonical SH/SZ comparison panel.
 
-**Architecture:** A single evaluator builds monthly Tushare replay frames for
-the fixed six-candidate registry, restricts output to V2 member/valid-label
-keys, and aggregates daily absolute Spearman correlations per phase. The
-result is a comparison-only artifact: no factor values are published and no
-candidate status is changed.
+**Architecture:** A single evaluator builds one phase-wide Tushare replay
+panel for the fixed six-candidate registry, restricts output to V2
+member/valid-label keys, and aggregates daily absolute Spearman correlations
+per phase. The result is a comparison-only artifact: no factor values are
+published and no candidate status is changed.
 
 **Tech Stack:** Python 3.11, pandas, numpy, local Tushare cache, DolphinDB
 read sessions, pytest.
@@ -44,7 +44,7 @@ read sessions, pytest.
 - Produces `classify_pair(median_train, days_train, median_validation,
   days_validation) -> str`.
 
-- [ ] **Step 1: Write failing registry and boundary tests**
+- [x] **Step 1: Write failing registry and boundary tests**
 
 ```python
 def test_registry_has_exactly_six_versioned_candidates() -> None:
@@ -67,7 +67,7 @@ def test_classify_pair_requires_complete_phase_days() -> None:
     assert audit.classify_pair(0.20, 1212, 0.20, 242) == "INCOMPLETE"
 ```
 
-- [ ] **Step 2: Run the new tests and verify they fail because the module is missing**
+- [x] **Step 2: Run the new tests and verify they fail because the module is missing**
 
 Run:
 
@@ -77,7 +77,7 @@ PYTHONPATH=research_v2/scripts:research_v2/src /data/zhangyudong/.conda/envs/qua
 
 Expected: `ModuleNotFoundError` for `audit_canonical_candidate_pairs`.
 
-- [ ] **Step 3: Implement the minimal registry, parser, and classifier**
+- [x] **Step 3: Implement the minimal registry, parser, and classifier**
 
 ```python
 @dataclass(frozen=True)
@@ -101,12 +101,12 @@ def classify_pair(train: float, train_days: int, validation: float, validation_d
 The parser must require `--output`, default to the train and validation
 windows in the spec, and reject 2026.
 
-- [ ] **Step 4: Run the focused test file and verify it passes**
+- [x] **Step 4: Run the focused test file and verify it passes**
 
 Run the command from Step 2. Expected: all registry, parser, and classifier
 tests pass.
 
-- [ ] **Step 5: Commit the pure comparison contract**
+- [x] **Step 5: Commit the pure comparison contract**
 
 ```bash
 git add research_v2/scripts/audit_canonical_candidate_pairs.py research_v2/tests/unit/scripts/test_audit_canonical_candidate_pairs.py
@@ -125,7 +125,7 @@ git commit -m "feat(quality): define canonical candidate pair contract"
 - Produces `summarize_phase_pairs(replay_frames, expected_days) -> DataFrame`
   with one row per unordered candidate pair and no duplicate pair keys.
 
-- [ ] **Step 1: Write failing Alpha206 and complete-edge tests**
+- [x] **Step 1: Write failing Alpha206 and complete-edge tests**
 
 ```python
 def test_alpha206_median_repair_uses_rolling_median() -> None:
@@ -143,12 +143,12 @@ def test_summarize_phase_pairs_rejects_missing_edge() -> None:
         audit.summarize_phase_pairs({"yeslab_114_tushare_shsz_v2": pd.DataFrame()}, 1)
 ```
 
-- [ ] **Step 2: Run the focused tests and verify failures**
+- [x] **Step 2: Run the focused tests and verify failures**
 
 Run the command from Task 1 Step 2. Expected: missing materializer and
 summary functions fail the new tests.
 
-- [ ] **Step 3: Implement phase materialization and complete-matrix validation**
+- [x] **Step 3: Implement phase materialization and complete-matrix validation**
 
 Use `_load_validation_inputs`, `TushareMarketSession`,
 `_calculator_market_start`, and `replay._replay_factor` for the source
@@ -165,12 +165,12 @@ For each phase, require all 15 unordered pair keys and the phase's exact
 expected day count before classifying. Store median and maximum absolute
 Spearman, valid-day count, and status for every edge.
 
-- [ ] **Step 4: Run the focused test file and verify it passes**
+- [x] **Step 4: Run the focused test file and verify it passes**
 
 Run the command from Task 1 Step 2. Expected: all pure materialization and
 matrix-completeness tests pass.
 
-- [ ] **Step 5: Commit the comparison materializer**
+- [x] **Step 5: Commit the comparison materializer**
 
 ```bash
 git add research_v2/scripts/audit_canonical_candidate_pairs.py research_v2/tests/unit/scripts/test_audit_canonical_candidate_pairs.py
@@ -189,13 +189,13 @@ git commit -m "feat(quality): materialize canonical candidate pair audit"
 - Modify: `research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json`
 - Modify: `docs/handoffs/2026-08-19-factor-quality-handoff.md`
 
-- [ ] **Step 1: Run the full pre-2026 audit**
+- [x] **Step 1: Run the full pre-2026 audit**
 
-Before the live run, add the tested command entry point that iterates
-calendar months, separates training and validation replay frames, validates
-their complete pair matrices, and writes the JSON plus pair CSV outputs only
-after both phases succeed.  The entry point must retain the existing
-locked-test guard and must not write to DolphinDB.
+Before the live run, add the tested command entry point that materializes one
+full SH/SZ Tushare panel per phase, separates training and validation replay
+frames, validates their complete pair matrices, and writes the JSON plus pair
+CSV outputs only after both phases succeed. The entry point must retain the
+existing locked-test guard and must not write to DolphinDB.
 
 ```bash
 set -a
@@ -207,7 +207,7 @@ PYTHONPATH=research_v2/scripts:research_v2/src /data/zhangyudong/.conda/envs/qua
 Expected: 15 train and 15 validation pair rows, 1212 and 243 valid days per
 edge, and `database_writes=false`, `locked_test_read=false`.
 
-- [ ] **Step 2: Validate the output contract**
+- [x] **Step 2: Validate the output contract**
 
 ```bash
 jq -e '(.train_pairs | length == 15) and (.validation_pairs | length == 15) and (.database_writes == false) and (.locked_test_read == false) and (.decision == "COMPARISON_ONLY_NO_ADMISSION")' research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1.json
@@ -215,14 +215,14 @@ jq -e '(.train_pairs | length == 15) and (.validation_pairs | length == 15) and 
 
 Expected: `true`.
 
-- [ ] **Step 3: Link only the comparison evidence**
+- [x] **Step 3: Link only the comparison evidence**
 
 Add per-edge results to the matrix's `combination_constraints` or a new
 `comparison_only_pair_evidence` field. Preserve each candidate's existing
 `model_eligible=false` and do not alter individual review statuses. Add the
 artifact path to the quality coverage ledger and handoff.
 
-- [ ] **Step 4: Run full regression and final artifact checks**
+- [x] **Step 4: Run full regression and final artifact checks**
 
 ```bash
 PYTHONPATH=research_v2/scripts:research_v2/src /data/zhangyudong/.conda/envs/quantyd/bin/python -m pytest -q

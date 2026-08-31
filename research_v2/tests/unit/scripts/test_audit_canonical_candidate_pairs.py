@@ -232,6 +232,16 @@ def test_build_audit_payload_classifies_only_complete_train_and_validation_pairs
     assert payload["decision"] == "COMPARISON_ONLY_NO_ADMISSION"
     assert payload["database_writes"] is False
     assert payload["locked_test_read"] is False
+    assert payload["label"] == "forward_open_5d:v1 raw five-trading-day adjusted-open return"
+    assert payload["comparison_scope"] == {
+        "output_keys": "V2 is_member=true and label_valid=true",
+        "formula_input_market": "Tushare daily SH/SZ full panel",
+        "excluded_exchanges": ["BJ"],
+    }
+    assert payload["thresholds"] == {
+        "pair_monitor_median_abs_spearman": 0.8,
+        "pair_redundancy_median_abs_spearman": 0.9,
+    }
     assert len(payload["train_pairs"]) == 15
     assert len(payload["validation_pairs"]) == 15
     assert {row["status"] for row in payload["pair_classifications"]} == {"REDUNDANT"}
