@@ -4246,29 +4246,31 @@
     },
     "alpha405_admission_preflight": {
       "artifact": "tushare_shsz_alpha405_admission_preflight_v1.json",
-      "status": "FAIL_SCOPE_TRANSITION_PENDING",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "required_pair_count": 90,
       "observed_pair_count": 90,
       "missing_pairs": 0,
       "pair_failures": 0,
       "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW",
       "quality_status": "PASS",
-      "scope_replay_artifact": "formula_replay_alpha405_tushare_scope_reconciliation_2025-01_v1.json"
+      "scope_replay_artifact": "formula_replay_alpha405_tushare_scope_reconciliation_2025-01_v1.json",
+      "action": "Preflight evidence is complete; formula scope transition remains explicit human approval for the isolated SH/SZ Tushare-canonical version."
     },
     "alpha381_admission_preflight": {
       "artifact": "tushare_shsz_alpha381_admission_preflight_v1.json",
-      "status": "FAIL_SCOPE_TRANSITION_PENDING",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "required_pair_count": 90,
       "observed_pair_count": 90,
       "missing_pairs": 0,
       "pair_failures": 0,
       "formula_scope_gate": "PENDING_SCOPE_TRANSITION_REVIEW",
       "quality_status": "PASS",
-      "scope_replay_artifact": "formula_replay_alpha381_tushare_scope_reconciliation_2025-01_v1.json"
+      "scope_replay_artifact": "formula_replay_alpha381_tushare_scope_reconciliation_2025-01_v1.json",
+      "action": "Preflight evidence is complete; formula scope transition remains explicit human approval for the isolated SH/SZ Tushare-canonical version."
     },
     "alpha425_admission_preflight": {
       "artifact": "tushare_shsz_alpha425_admission_preflight_v1.json",
-      "status": "FAIL_SCOPE_TRANSITION_PENDING",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "required_pair_count": 90,
       "observed_pair_count": 90,
       "missing_pairs": 0,
@@ -4279,7 +4281,8 @@
         "train_median_abs_spearman": 0.5951888835,
         "validation_median_abs_spearman": 0.6078935458,
         "status": "PAIR_UNIQUE"
-      }
+      },
+      "action": "Preflight evidence is complete; formula scope transition remains explicit human approval for the isolated SH/SZ Tushare-canonical version."
     },
     "action": "These candidates have independently positive Tushare SH/SZ train/validation evidence and a BJ-inclusive historical source scope mismatch. Alpha381, Alpha405, and Alpha425 preflights confirm their predictive and similarity gates but block admission on formula scope until isolated SH/SZ Tushare-canonical versions are explicitly approved. Keep the formal nine unchanged; do not publish or train.",
     "artifact": "tushare_shsz_scope_transition_candidate_matrix_v1.json"
