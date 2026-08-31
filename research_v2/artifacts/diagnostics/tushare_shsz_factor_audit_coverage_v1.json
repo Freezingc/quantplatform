@@ -4369,7 +4369,7 @@
     "factor_id": "yeslab_425",
     "period": "2020-01-02/2025-12-31",
     "market_source": "Tushare.daily and Tushare.daily_basic",
-    "status": "RESEARCH_CANDIDATE_READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
     "train": {
       "mean_rank_ic": -0.0709545539,
       "icir": -0.5576811394,
@@ -4397,7 +4397,7 @@
       "mismatch_rows": 63435,
       "artifact": "formula_replay_alpha425_tushare_scope_reconciliation_2025-01_v1.json"
     },
-    "action": "Do not alter the formal nine, publish, or train a model without an explicit admission decision. If admitted, use only a new isolated SH/SZ Tushare-canonical factor version, never the historical YesLab values.",
+    "action": "Canonical rematerialization evidence is complete; historical source scope remains blocked. Any explicitly admitted Alpha425 version requires isolated SH/SZ Tushare values and high-volatility monitoring.",
     "artifact": "alpha425_tushare_rematerialized_candidate_review_v1.json"
   },
   "alpha208_tushare_train_rematerialization_followup": {

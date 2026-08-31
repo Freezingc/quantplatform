@@ -6,15 +6,34 @@
     "frozen_direction": -1
   },
   "market_scope": "SH/SZ",
-  "excluded_exchanges": ["BJ"],
+  "excluded_exchanges": [
+    "BJ"
+  ],
   "label": "forward_open_5d:v1 raw five-trading-day adjusted-open return",
   "market_source": "Tushare.daily and Tushare.daily_basic",
   "database_writes": false,
   "locked_test_read": false,
   "tushare_rematerialized_quality": {
-    "train_2020_2024": {"valid_day_count": 1212, "mean_rank_ic": -0.0709545539, "icir": -0.5576811394, "signed_mean_rank_ic": 0.0709545539, "directional_day_share": 0.7178217822},
-    "validation_2025": {"valid_day_count": 243, "mean_rank_ic": -0.0955855105, "icir": -0.8493809616, "signed_mean_rank_ic": 0.0955855105, "directional_day_share": 0.7983539095},
-    "annual_2020_2024": {"same_direction_years": 5, "signed_mean_rank_ic_pass_years": 5, "directional_day_share_pass_years": 5, "strict_annual_abs_icir_pass_years": 4}
+    "train_2020_2024": {
+      "valid_day_count": 1212,
+      "mean_rank_ic": -0.0709545539,
+      "icir": -0.5576811394,
+      "signed_mean_rank_ic": 0.0709545539,
+      "directional_day_share": 0.7178217822
+    },
+    "validation_2025": {
+      "valid_day_count": 243,
+      "mean_rank_ic": -0.0955855105,
+      "icir": -0.8493809616,
+      "signed_mean_rank_ic": 0.0955855105,
+      "directional_day_share": 0.7983539095
+    },
+    "annual_2020_2024": {
+      "same_direction_years": 5,
+      "signed_mean_rank_ic_pass_years": 5,
+      "directional_day_share_pass_years": 5,
+      "strict_annual_abs_icir_pass_years": 4
+    }
   },
   "similarity_to_formal_nine": {
     "train_max_median_abs_spearman": 0.5752499866,
@@ -31,8 +50,8 @@
     "cause": "The historical source pool contains 552 BJ securities in the 2025-01 observation, while the canonical research universe excludes BJ.",
     "consequence": "Stored YesLab values cannot be mixed with the SH/SZ Tushare-rematerialized factor values."
   },
-  "decision": "RESEARCH_CANDIDATE_READY_FOR_EXPLICIT_ADMISSION_REVIEW",
-  "action": "Keep the current formal nine unchanged. If explicitly admitted later, materialize and train only on an isolated SH/SZ Tushare-canonical factor version, not the historical YesLab stored values.",
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+  "action": "Keep the current formal nine unchanged. If explicitly admitted, use only the isolated SH/SZ Tushare-canonical version and retain high-volatility monitoring.",
   "evidence": [
     "tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json",
     "tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json",
