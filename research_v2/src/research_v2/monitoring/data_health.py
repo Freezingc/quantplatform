@@ -14,7 +14,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from research_v2.monitoring.drift import DriftSeverity, PsiResult, population_stability_index
+from research_v2.monitoring.drift import (
+    DriftSeverity,
+    PsiResult,
+    evaluate_distribution_drift,
+)
 from research_v2.monitoring.policy import DEFAULT_MONITORING_POLICY, MonitoringPolicy
 
 
@@ -390,6 +394,8 @@ class FeatureHealth:
     finite_coverage: float
     missing_rate: float
     psi: PsiResult
+    extreme_rate: float = 0.0
+    rolling_psi: PsiResult | None = None
 
 
 @dataclass(frozen=True)
@@ -409,6 +415,7 @@ def evaluate_feature_data_health(
     expected_universe_size: int,
     recent_universe_size_median: float,
     policy: MonitoringPolicy = DEFAULT_MONITORING_POLICY,
+    rolling_frame: pd.DataFrame | None = None,
 ) -> DataHealthReport:
     """Evaluate PIT business keys and feature distributions without choosing publish policy."""
     if not isinstance(signal_date, date):
@@ -428,6 +435,20 @@ def evaluate_feature_data_health(
     normalized["available_date"] = pd.to_datetime(
         normalized["available_date"], errors="raise"
     ).dt.date
+    rolling_normalized: pd.DataFrame | None = None
+    if rolling_frame is not None:
+        if not isinstance(rolling_frame, pd.DataFrame):
+            raise ValueError("rolling_frame must be a pandas DataFrame")
+        if "signal_date" not in rolling_frame.columns:
+            raise ValueError("rolling_frame is missing columns: ['signal_date']")
+        rolling_normalized = rolling_frame.copy(deep=True)
+        rolling_normalized["signal_date"] = pd.to_datetime(
+            rolling_normalized["signal_date"], errors="raise"
+        ).dt.date
+        if rolling_normalized["signal_date"].isna().any() or (
+            rolling_normalized["signal_date"] > signal_date
+        ).any():
+            raise ValueError("rolling_frame contains invalid or future signal dates")
     scoped = normalized.loc[normalized["signal_date"] == signal_date].copy()
     blockers: list[str] = []
     alerts: list[str] = []
@@ -458,18 +479,31 @@ def evaluate_feature_data_health(
         finite_values = values.loc[finite].to_numpy(dtype=float)
         finite_coverage = float(finite.sum() / expected_universe_size)
         missing_rate = 1.0 - finite_coverage
-        bounded_values = np.clip(finite_values, reference.bin_edges[0], reference.bin_edges[-1])
-        bin_masses = tuple(
-            float(value)
-            for value in np.histogram(bounded_values, bins=np.asarray(reference.bin_edges))[0]
-        )
-        psi = population_stability_index(
-            reference.reference_bin_masses,
-            bin_masses,
+        distribution = evaluate_distribution_drift(
+            reference_bin_edges=reference.bin_edges,
+            reference_bin_masses=reference.reference_bin_masses,
+            daily_values=values.tolist(),
+            rolling_values_by_date=_rolling_feature_values(
+                rolling_normalized,
+                reference.feature_name,
+            ),
             policy=policy,
         )
+        extreme_rate = _extreme_rate(
+            finite_values,
+            lower=reference.bin_edges[0],
+            upper=reference.bin_edges[-1],
+            denominator=len(values),
+        )
         features.append(
-            FeatureHealth(reference.feature_name, finite_coverage, missing_rate, psi)
+            FeatureHealth(
+                reference.feature_name,
+                finite_coverage,
+                missing_rate,
+                distribution.daily_psi,
+                extreme_rate,
+                distribution.rolling_20d_psi,
+            )
         )
         if finite_coverage < reference.minimum_finite_coverage:
             alerts.append(f"LOW_FACTOR_COVERAGE:{reference.feature_name}")
@@ -478,7 +512,7 @@ def evaluate_feature_data_health(
             > policy.maximum_missing_rate_increase
         ):
             alerts.append(f"MISSING_RATE_INCREASE:{reference.feature_name}")
-        if psi.severity is DriftSeverity.ERROR:
+        if distribution.daily_psi.severity is DriftSeverity.ERROR:
             alerts.append(f"PSI_ERROR:{reference.feature_name}")
     return DataHealthReport(
         row_coverage=row_coverage,
@@ -487,3 +521,30 @@ def evaluate_feature_data_health(
         investigation_alerts=tuple(alerts),
         features=tuple(features),
     )
+
+
+def _rolling_feature_values(
+    frame: pd.DataFrame | None,
+    feature_name: str,
+) -> dict[date, tuple[float, ...]] | None:
+    if frame is None or feature_name not in frame.columns:
+        return None
+    result: dict[date, tuple[float, ...]] = {}
+    for signal_date, group in frame.groupby("signal_date", sort=True):
+        if not isinstance(signal_date, date):
+            raise ValueError("rolling_frame signal dates must be dates")
+        values = pd.to_numeric(group[feature_name], errors="coerce")
+        result[signal_date] = tuple(float(value) for value in values.to_numpy(dtype=float))
+    return result
+
+
+def _extreme_rate(
+    values: np.ndarray,
+    *,
+    lower: float,
+    upper: float,
+    denominator: int,
+) -> float:
+    if denominator < 1:
+        return float("nan")
+    return float(((values < lower) | (values > upper)).sum() / denominator)

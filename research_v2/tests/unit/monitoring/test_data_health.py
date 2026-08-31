@@ -145,6 +145,30 @@ def test_feature_data_health_uses_loaded_policy_thresholds() -> None:
     assert not report.blocking_reasons
 
 
+def test_feature_data_health_reports_extreme_rate_and_optional_rolling_psi() -> None:
+    signal_date = date(2026, 8, 27)
+    current = _frame(signal_date)
+    current.loc[:1, "quality"] = 2.0
+    rolling = pd.concat(
+        [_frame(date(2026, 8, day)) for day in range(1, 21)],
+        ignore_index=True,
+    )
+
+    report = evaluate_feature_data_health(
+        current,
+        signal_date=signal_date,
+        references=(_reference(),),
+        expected_universe_size=20,
+        recent_universe_size_median=20,
+        rolling_frame=rolling,
+    )
+
+    feature = report.features[0]
+    assert feature.extreme_rate == 0.10
+    assert feature.rolling_psi is not None
+    assert feature.rolling_psi.severity is DriftSeverity.INFO
+
+
 def _reference_artifact() -> MonitoringReferenceArtifact:
     return MonitoringReferenceArtifact(
         model_id="model-1",

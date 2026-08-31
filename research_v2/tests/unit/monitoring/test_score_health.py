@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
+from research_v2.monitoring.data_health import ScoreDistributionReference
 from research_v2.monitoring.score_health import evaluate_score_health
 from research_v2.training.ensemble import REQUIRED_SEEDS
 
@@ -158,7 +159,9 @@ def test_score_health_rejects_invalid_required_seed_coverage() -> None:
 
 
 def test_score_health_blocks_extreme_missingness_pattern_collapse() -> None:
-    predictions = _prediction_frame(200)
+    predictions = _prediction_frame(200).assign(
+        ensemble_score=[index / 200 for index in range(200)]
+    )
     patterns = ["baseline"] * 198 + ["collapsed"] * 2
 
     report = evaluate_score_health(
@@ -188,3 +191,88 @@ def test_score_health_skips_extreme_pattern_check_when_each_tail_has_one_row() -
     )
 
     assert "EXTREME_MISSINGNESS_PATTERN_COLLAPSE" not in report.blocking_reasons
+
+
+def test_score_health_reports_reference_psi_rolling_psi_and_extreme_rate() -> None:
+    predictions = _prediction_frame(200).assign(
+        ensemble_score=[index / 200 for index in range(200)]
+    )
+    predictions.loc[:1, "ensemble_score"] = 2.0
+    reference = ScoreDistributionReference(
+        bin_edges=tuple(index / 10 for index in range(11)),
+        bin_masses=(0.1,) * 10,
+        finite_coverage=0.99,
+    )
+    rolling = pd.concat(
+        [
+            _prediction_frame(200).assign(
+                signal_date=f"2024-12-{day:02d}",
+                ensemble_score=[index / 200 for index in range(200)],
+            )
+            for day in range(1, 21)
+        ],
+        ignore_index=True,
+    )
+
+    report = evaluate_score_health(
+        predictions,
+        expected_key_count=200,
+        score_reference=reference,
+        rolling_predictions=rolling,
+    )
+
+    assert report.daily_psi is not None
+    assert report.daily_psi.severity is not None
+    assert report.rolling_20d_psi is not None
+    assert report.rolling_20d_psi.severity is not None
+    assert report.extreme_rate == pytest.approx(0.01)
+
+
+def test_score_health_requires_a_reference_for_rolling_predictions() -> None:
+    with pytest.raises(ValueError, match="score_reference"):
+        evaluate_score_health(
+            _prediction_frame(10),
+            expected_key_count=10,
+            rolling_predictions=_prediction_frame(10),
+        )
+
+
+def test_score_health_handles_rolling_predictions_with_duplicate_dataframe_index() -> None:
+    reference = ScoreDistributionReference(
+        bin_edges=tuple(index / 10 for index in range(11)),
+        bin_masses=(0.1,) * 10,
+        finite_coverage=0.99,
+    )
+    rolling = pd.concat(
+        [
+            _prediction_frame(10).assign(signal_date=f"2024-12-{day:02d}")
+            for day in range(1, 21)
+        ],
+        ignore_index=True,
+    )
+    rolling.index = [0] * len(rolling)
+
+    report = evaluate_score_health(
+        _prediction_frame(10),
+        expected_key_count=10,
+        score_reference=reference,
+        rolling_predictions=rolling,
+    )
+
+    assert report.rolling_20d_psi is not None
+
+
+def test_score_health_rejects_rolling_predictions_after_current_signal_date() -> None:
+    reference = ScoreDistributionReference(
+        bin_edges=tuple(index / 10 for index in range(11)),
+        bin_masses=(0.1,) * 10,
+        finite_coverage=0.99,
+    )
+
+    with pytest.raises(ValueError, match="future"):
+        evaluate_score_health(
+            _prediction_frame(10),
+            expected_key_count=10,
+            score_reference=reference,
+            rolling_predictions=_prediction_frame(10).assign(signal_date="2025-01-03"),
+        )

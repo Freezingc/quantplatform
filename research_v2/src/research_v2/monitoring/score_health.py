@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
+from datetime import date
 from itertools import combinations
 from types import MappingProxyType
 
 import numpy as np
 import pandas as pd
 
+from research_v2.monitoring.data_health import ScoreDistributionReference
+from research_v2.monitoring.drift import PsiResult, evaluate_distribution_drift
+from research_v2.monitoring.policy import DEFAULT_MONITORING_POLICY, MonitoringPolicy
 from research_v2.training.ensemble import REQUIRED_SEEDS
 
 
@@ -23,6 +27,9 @@ class ScoreHealthReport:
         default_factory=lambda: MappingProxyType({})
     )
     error_signals: tuple[str, ...] = ()
+    daily_psi: PsiResult | None = None
+    rolling_20d_psi: PsiResult | None = None
+    extreme_rate: float | None = None
 
 
 def evaluate_score_health(
@@ -31,6 +38,9 @@ def evaluate_score_health(
     expected_key_count: int,
     seed_percentile_ranks: Mapping[int, pd.DataFrame] | None = None,
     missingness_patterns: Sequence[object] | pd.Series | str | None = None,
+    score_reference: ScoreDistributionReference | None = None,
+    rolling_predictions: pd.DataFrame | None = None,
+    policy: MonitoringPolicy = DEFAULT_MONITORING_POLICY,
 ) -> ScoreHealthReport:
     """Reject unhealthy score cross-sections and report label-free diagnostics.
 
@@ -45,6 +55,8 @@ def evaluate_score_health(
     """
     if expected_key_count < 1:
         raise ValueError("expected_key_count must be positive")
+    if rolling_predictions is not None and score_reference is None:
+        raise ValueError("rolling_predictions requires score_reference")
     required = {"signal_date", "ts_code", "ensemble_score"}
     if missing := sorted(required.difference(predictions.columns)):
         raise ValueError(f"predictions are missing columns: {missing}")
@@ -89,6 +101,30 @@ def evaluate_score_health(
             missingness_patterns,
             reasons,
         )
+    daily_psi: PsiResult | None = None
+    rolling_20d_psi: PsiResult | None = None
+    extreme_rate: float | None = None
+    if score_reference is not None:
+        if not isinstance(score_reference, ScoreDistributionReference):
+            raise ValueError("score_reference must be a ScoreDistributionReference")
+        distribution = evaluate_distribution_drift(
+            reference_bin_edges=score_reference.bin_edges,
+            reference_bin_masses=score_reference.bin_masses,
+            daily_values=numeric_scores.tolist(),
+            rolling_values_by_date=_rolling_score_values(
+                rolling_predictions,
+                latest_signal_date=_latest_signal_date(predictions),
+            ),
+            policy=policy,
+        )
+        daily_psi = distribution.daily_psi
+        rolling_20d_psi = distribution.rolling_20d_psi
+        finite_array = numeric_scores.to_numpy(dtype=float)[finite.to_numpy()]
+        extreme_rate = _extreme_rate(
+            finite_array,
+            lower=score_reference.bin_edges[0],
+            upper=score_reference.bin_edges[-1],
+        )
     return ScoreHealthReport(
         finite_coverage=finite_coverage,
         unique_score_count=unique_count,
@@ -96,6 +132,9 @@ def evaluate_score_health(
         blocking_reasons=tuple(reasons),
         pairwise_spearman=pairwise_spearman,
         error_signals=tuple(error_signals),
+        daily_psi=daily_psi,
+        rolling_20d_psi=rolling_20d_psi,
+        extreme_rate=extreme_rate,
     )
 
 
@@ -197,3 +236,49 @@ def _append_extreme_pattern_reason(
     tails = (order[:extreme_count], order[-extreme_count:])
     if any(pd.unique(finite_patterns[tail]).size == 1 for tail in tails):
         reasons.append("EXTREME_MISSINGNESS_PATTERN_COLLAPSE")
+
+
+def _rolling_score_values(
+    frame: pd.DataFrame | None,
+    *,
+    latest_signal_date: date,
+) -> dict[date, tuple[float, ...]] | None:
+    if frame is None:
+        return None
+    required = {"signal_date", "ensemble_score"}
+    if missing := sorted(required.difference(frame.columns)):
+        raise ValueError(f"rolling predictions are missing columns: {missing}")
+    normalized = frame.loc[:, ["signal_date", "ensemble_score"]].copy().reset_index(drop=True)
+    normalized_dates = pd.to_datetime(normalized["signal_date"], errors="raise").dt.date
+    if normalized_dates.isna().any():
+        raise ValueError("rolling predictions contain invalid signal dates")
+    if (normalized_dates > latest_signal_date).any():
+        raise ValueError("rolling predictions contain future signal dates")
+    normalized["signal_date"] = normalized_dates
+    normalized["ensemble_score"] = pd.to_numeric(
+        normalized["ensemble_score"], errors="coerce"
+    )
+    result: dict[date, tuple[float, ...]] = {}
+    for signal_date, group in normalized.groupby("signal_date", sort=True):
+        if not isinstance(signal_date, date):
+            raise ValueError("rolling prediction signal dates must be dates")
+        result[signal_date] = tuple(
+            float(value) for value in group["ensemble_score"].to_numpy(dtype=float)
+        )
+    return result
+
+
+def _latest_signal_date(predictions: pd.DataFrame) -> date:
+    dates = pd.to_datetime(predictions["signal_date"], errors="raise").dt.date
+    if dates.isna().any():
+        raise ValueError("predictions contain invalid signal dates")
+    latest = dates.max()
+    if not isinstance(latest, date):
+        raise ValueError("predictions require a signal date")
+    return latest
+
+
+def _extreme_rate(values: np.ndarray, *, lower: float, upper: float) -> float:
+    if values.size == 0:
+        return float("nan")
+    return float(((values < lower) | (values > upper)).sum() / values.size)
