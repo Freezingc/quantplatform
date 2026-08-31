@@ -59,6 +59,8 @@ def build_label_free_inference_frame(
         ].copy()
         if rows.duplicated(keys).any():
             raise ValueError(f"factor has duplicate business keys: {member.factor_id}")
+        if rows["available_date"].isna().any():
+            raise ValueError(f"factor has null available_date: {member.factor_id}")
         if (rows["available_date"] > signal_date).any():
             raise ValueError(f"factor is not available by signal date: {member.factor_id}")
         result = result.merge(

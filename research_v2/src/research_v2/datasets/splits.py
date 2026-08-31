@@ -70,8 +70,8 @@ class SplitResolver:
     """Resolve only normal-access segments on a supplied immutable trading calendar."""
 
     def __init__(self, calendar: TradingCalendar, *, purge_trading_days: int = 6) -> None:
-        if purge_trading_days < 0:
-            raise ValueError("purge_trading_days cannot be negative")
+        if purge_trading_days < 1:
+            raise ValueError("purge_trading_days must be at least one trading day")
         self._calendar = calendar
         self._purge_trading_days = purge_trading_days
         self._folds = {fold.fold_id: fold for fold in annual_folds()}

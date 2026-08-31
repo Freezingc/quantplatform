@@ -314,7 +314,7 @@ def _distribution_masses(
         counts[index] += 1
     total = sum(counts)
     if total == 0:
-        return tuple(0.0 for _ in counts)
+        raise ValueError("distribution values must contain at least one finite observation")
     return tuple(count / total for count in counts)
 
 

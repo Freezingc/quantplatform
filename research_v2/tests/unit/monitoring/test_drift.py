@@ -203,3 +203,23 @@ def test_distribution_drift_rejects_invalid_rolling_dates() -> None:
             daily_values=(0.1, 1.1),
             rolling_values_by_date={"2026-07-01": (0.1, 1.1)},  # type: ignore[dict-item]
         )
+
+
+def test_distribution_drift_rejects_samples_without_finite_observations() -> None:
+    for daily_values in ((), (float("nan"),) * 50):
+        with pytest.raises(ValueError, match="finite observation"):
+            evaluate_distribution_drift(
+                reference_bin_edges=(0.0, 1.0, 2.0),
+                reference_bin_masses=(0.5, 0.5),
+                daily_values=daily_values,
+            )
+
+
+def test_distribution_drift_rejects_a_rolling_window_without_finite_observations() -> None:
+    with pytest.raises(ValueError, match="finite observation"):
+        evaluate_distribution_drift(
+            reference_bin_edges=(0.0, 1.0, 2.0),
+            reference_bin_masses=(0.5, 0.5),
+            daily_values=(0.4, 1.4),
+            rolling_values_by_date={date(2026, 7, day): () for day in range(1, 21)},
+        )

@@ -50,6 +50,11 @@ def test_resolver_purges_last_six_signal_dates_from_train_and_validation() -> No
     assert validation.signal_dates[-1] == date(2019, 1, 3)
 
 
+def test_zero_purge_is_rejected_instead_of_silently_emptying_segments() -> None:
+    with pytest.raises(ValueError, match="purge_trading_days"):
+        SplitResolver(_calendar(), purge_trading_days=0)
+
+
 def test_final_test_is_locked_from_normal_resolver() -> None:
     with pytest.raises(LockedPeriodError, match="FINAL"):
         SplitResolver(_calendar()).resolve("FINAL", "test")

@@ -52,6 +52,30 @@ def test_inference_builder_anchors_universe_and_never_creates_labels() -> None:
         )
 
 
+def test_label_free_builder_rejects_null_availability() -> None:
+    signal_date = date(2025, 1, 2)
+    universe = pd.DataFrame(
+        {"signal_date": [signal_date, signal_date], "ts_code": ["a", "b"]}
+    )
+    factors = pd.DataFrame(
+        {
+            "signal_date": [signal_date, signal_date],
+            "ts_code": ["a", "b"],
+            "factor_id": ["f1", "f1"],
+            "factor_version": [1, 1],
+            "value": [1.0, 2.0],
+            "available_date": [pd.NaT, signal_date],
+        }
+    )
+    with pytest.raises(ValueError, match="available_date"):
+        build_label_free_inference_frame(
+            universe,
+            factors,
+            factor_members=(FactorInput("f1", 1, "f1"),),
+            signal_date=signal_date,
+        )
+
+
 def test_label_free_builder_transforms_into_model_feature_batch() -> None:
     signal_date = date(2025, 1, 2)
     preprocessor = FoldPreprocessor(("f1",))
