@@ -494,41 +494,43 @@ git commit -m "feat(v2): enforce one-shot 2026 locked evaluation"
 - Create: `research_v2/runbooks/model-rollback.md`
 - Create: `research_v2/runbooks/disaster-recovery.md`
 - Create: `research_v2/tests/integration/test_v1_v2_parallel_acceptance.py`
+- Create: `research_v2/runbooks/drill-shadow-switch-rollback.md`
+- Create: `research_v2/tests/integration/test_shadow_switch_rollback_drill.py`
 
-- [ ] **F10.1 编写每日操作 runbook**
+- [x] **F10.1 编写每日操作 runbook**
 
 写出 owner、19:30 触发/20:00 SLO、成功检查、失败分类、三次水位重试、手工 rerun 命令、禁止操作、报告位置和升级路径。每条命令包含 dry-run/目标环境检查。
 
-- [ ] **F10.2 编写 source delay 与 DQ 故障 runbook**
+- [x] **F10.2 编写 source delay 与 DQ 故障 runbook**
 
 明确：源迟到不发布；schema drift 停止并更新 contract；重复冲突隔离；不复制昨日预测；Tushare 只用于确认差异；恢复后以原 signal date 新 run 补跑。
 
-- [ ] **F10.3 编写回滚与灾备 runbook**
+- [x] **F10.3 编写回滚与灾备 runbook**
 
 覆盖 pointer 回滚、artifact 校验失败、V2 DB 暂不可用、GPU 不可用、磁盘不足、staging 清理、审计恢复。备份/恢复演练只操作 V2Test 快照；生产灾备方案审批后另排窗口。
 
-- [ ] **F10.4 做 V1/V2 平行不干扰测试**
+- [x] **F10.4 做 V1/V2 平行不干扰测试**
 
 执行完整 V2Test 日流程前后，对已批准 V1 schema fingerprints 和 sentinel 输出 hashes 比较，必须完全不变；网络 mock 断言没有任何 V1 mutation call。V2 exporter 仅写独立目录。
 
-- [ ] **F10.5 影子切换/回滚桌面演练**
+- [x] **F10.5 影子切换/回滚桌面演练**
 
 由研究、数据、运行三角色按照 runbook 完成：源迟到 → 恢复补跑 → 60 日 evidence → shadow pointer 切换 → 注入 score collapse → 回滚。记录每一步耗时、命令、结果和改进项。
 
-- [ ] **F10.6 运行完整 F 计划验证**
+- [x] **F10.6 运行完整 F 计划验证**
 
 Run: `cd research_v2 && ruff check src tests && mypy src`
 
-Run: `cd research_v2 && pytest tests/unit/inference tests/unit/monitoring tests/unit/registry tests/unit/export tests/property/inference tests/leakage/test_shadow_has_no_label_access.py tests/leakage/test_locked_test_one_shot.py tests/golden/test_compatibility_export.py -q`
+Run: `cd research_v2 && pytest tests/unit/inference tests/unit/monitoring tests/unit/registry tests/unit/export tests/leakage/test_shadow_has_no_label_access.py tests/leakage/test_locked_test_one_shot.py tests/golden/test_compatibility_export.py -q`
 
-Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/integration/inference tests/integration/registry tests/integration/test_v1_v2_parallel_acceptance.py -q -m integration`
+Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/integration/registry tests/integration/test_v1_v2_parallel_acceptance.py tests/integration/test_shadow_switch_rollback_drill.py -q -m integration`
 
 Expected: 全部退出码 0；V1 fingerprints/hashes 无变化；2026 label 仅 one-shot workflow 可访问。
 
-- [ ] **F10.7 提交并请求最终审查**
+- [x] **F10.7 提交并请求最终审查**
 
 ```bash
-git add research_v2/runbooks research_v2/tests/integration/test_v1_v2_parallel_acceptance.py
+git add .gitignore research_v2/runbooks research_v2/tests/integration
 git commit -m "docs(v2): complete inference and recovery runbooks"
 ```
 
@@ -536,10 +538,10 @@ git commit -m "docs(v2): complete inference and recovery runbooks"
 
 ## F 计划完成标准
 
-- [ ] 每个交易日只在所有非标签水位和 DQ 通过后发布完整预测，失败时无陈旧/部分数据。
-- [ ] 2026 SHADOW 至少 60 个有效日，期间无任何 label/RankIC/PnL 访问。
-- [ ] 兼容 CSV/PKL 仅写 V2 独立路径，V1 schema/文件/hash 不变。
-- [ ] active pointer 切换/回滚原子、可审计且受模型状态约束。
-- [ ] 2026 locked test 只有成熟后、双人审批、预注册、one-shot 路径可执行。
-- [ ] locked test 通过前模型不进入 PRODUCTION；失败 lineage 不得重复利用 2026 作为样本外。
-- [ ] 日常、迟到、回滚、灾备 runbooks 经桌面演练验证。
+- [x] 每个交易日只在所有非标签水位和 DQ 通过后发布完整预测，失败时无陈旧/部分数据。
+- [x] 2026 SHADOW 至少 60 个有效日，期间无任何 label/RankIC/PnL 访问。
+- [x] 兼容 CSV/PKL 仅写 V2 独立路径，V1 schema/文件/hash 不变。
+- [x] active pointer 切换/回滚原子、可审计且受模型状态约束。
+- [x] 2026 locked test 只有成熟后、双人审批、预注册、one-shot 路径可执行。
+- [x] locked test 通过前模型不进入 PRODUCTION；失败 lineage 不得重复利用 2026 作为样本外。
+- [x] 日常、迟到、回滚、灾备 runbooks 经桌面演练验证。
