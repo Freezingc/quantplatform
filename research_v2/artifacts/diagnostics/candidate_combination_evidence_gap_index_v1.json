@@ -21,17 +21,17 @@
     {
       "candidate_id": "yeslab_363_tushare_shsz_v1",
       "formal_nine_edges": "9/9 train and 9/9 validation",
-      "gap": "No pair similarity against the six-candidate matrix yet."
+      "gap": "Closed by supplemental extension combination audit."
     },
     {
       "candidate_id": "yeslab_357_tushare_shsz_v1",
       "formal_nine_edges": "9/9 train and 9/9 validation",
-      "gap": "No pair similarity against the six-candidate matrix yet."
+      "gap": "Closed by supplemental extension combination audit."
     },
     {
       "candidate_id": "yeslab_96_canonical_replay_v1",
       "formal_nine_edges": "recorded in canonical_unique_candidate_replay",
-      "gap": "No pair similarity against the six-candidate matrix yet."
+      "gap": "Closed by supplemental extension combination audit."
     }
   ],
   "required_before_joint_admission": [
@@ -39,11 +39,26 @@
     "retain the existing 0.90 redundancy threshold and 0.80 monitor threshold",
     "do not admit multiple candidates together based only on single-factor formal-nine similarity passes"
   ],
-  "status": "COMBINATION_EVIDENCE_GAP",
+  "status": "EXTENSION_COMBINATION_EVIDENCE_COMPLETE",
   "decision": "NO_AUTOMATIC_ADMISSION",
   "formal_factor_set_changed": false,
   "model_eligible": false,
   "database_writes": false,
   "model_training_started": false,
-  "locked_test_read": false
+  "locked_test_read": false,
+  "completed_extension_combination_audit": {
+    "train_artifact": "supplemental_candidate_pair_similarity_train_v1.json",
+    "validation_artifact": "supplemental_candidate_pair_similarity_validation_v1.json",
+    "edges": "18 training and 18 validation complete edges",
+    "extension_candidates": [
+      "yeslab_363_tushare_shsz_v1",
+      "yeslab_357_tushare_shsz_v1",
+      "yeslab_96_canonical_replay_v1"
+    ],
+    "training_maximum_median_abs_spearman": 0.4944033144952934,
+    "validation_maximum_median_abs_spearman": 0.6371392859629963,
+    "threshold_monitor": 0.8,
+    "threshold_redundant": 0.9,
+    "status": "PASS_NO_REDUNDANT_EXTENSION_PAIR"
+  }
 }
