@@ -82,23 +82,23 @@ research_v2/tests/integration/test_v1_v2_parallel_acceptance.py
 - Create: `research_v2/src/research_v2/inference/artifact_loader.py`
 - Test: `research_v2/tests/unit/inference/test_artifact_loader.py`
 
-- [ ] **F1.1 写失败测试：任一 hash/签名不符即拒绝**
+- [x] **F1.1 写失败测试：任一 hash/签名不符即拒绝**
 
 逐项篡改 config、feature order、preprocessor、任一 seed state dict、signature、dataset id、code/model version，loader 必须在构建模型前失败。缺一个 seed 也失败，不能改为双 seed ensemble。
 
-- [ ] **F1.2 实现 allowlisted state_dict loader**
+- [x] **F1.2 实现 allowlisted state_dict loader**
 
 根据 `model_family + model_code_version` 从本地 registry 映射已知类；只用 `torch.load(..., weights_only=True, map_location="cpu")` 加载 tensor state dict，不执行 pickle 任意对象/动态 import 路径。先在 CPU 校验 key/shape/dtype，再移动到明确 device。
 
-- [ ] **F1.3 校验生产契约**
+- [x] **F1.3 校验生产契约**
 
 要求模型状态至少 `WALK_FORWARD_PASSED`；factor set `FROZEN`；feature order/缺失 indicator 与 preprocessor 完全匹配；universe/label/split 版本与 model card 一致；推理不要求 label table 水位。
 
-- [ ] **F1.4 写加载审计**
+- [x] **F1.4 写加载审计**
 
 记录 model id、artifact hashes、device、代码版本、加载时间和调用 run id；不记录 state tensor 内容或 secret。
 
-- [ ] **F1.5 运行测试并提交**
+- [x] **F1.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/inference/test_artifact_loader.py -q`
 
@@ -167,7 +167,7 @@ git commit -m "feat(v2): build watermark-locked inference batches"
 
 每 seed 在 T 日有效股票内转 percentile rank，最终 score 三 seed 等权；输入股票 permutation 后按 key 恢复结果一致。任一 seed 输出 NaN/inf、代码缺失/新增、shape 错误，整日失败。
 
-- [ ] **F3.2 实现 score health blocking checks**
+- [x] **F3.2 实现 score health blocking checks**
 
 发布要求 finite score coverage ≥95%、至少 10 个 unique scores、score std >1e-6、所有 universe key 最多一行；top/bottom 1% 不得全部由同一 missingness pattern 组成。另报告 seed pair Spearman，任一 pair <0.20 记 ERROR 但不单独阻断。
 
@@ -273,7 +273,7 @@ git commit -m "feat(v2): orchestrate fail-closed daily inference"
 - Test: `research_v2/tests/unit/monitoring/test_data_health.py`
 - Test: `research_v2/tests/unit/monitoring/test_drift.py`
 
-- [ ] **F5.1 固化 reference distributions**
+- [x] **F5.1 固化 reference distributions**
 
 从 FINAL train 2020–2024 保存每因子 winsorized transformed decile bins、missing rate、median/IQR；从 2025 validation 保存 ensemble score deciles/coverage。reference artifact 与 model id 一起 hash/冻结。
 
