@@ -1624,6 +1624,37 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha096_tushare_canonical_replay_v1": {
+    "factor_id": "yeslab_96",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "training_signed_mean_rank_ic": 0.0609139094,
+    "training_signed_icir": 0.5742737688,
+    "validation_signed_mean_rank_ic": 0.0739783624,
+    "validation_signed_icir": 0.6420883584,
+    "annual_gate_years": "4/5",
+    "similarity_to_formal_nine": {
+      "threshold": 0.9,
+      "training_maximum_median_abs_spearman": 0.5555605298,
+      "validation_maximum_median_abs_spearman": 0.6120636432,
+      "nearest_factor_id": "yeslab_94",
+      "status": "PASS_MAX_EDGE_BELOW_THRESHOLD"
+    },
+    "paired_factor_monitor": {
+      "factor_id": "yeslab_95",
+      "train_median_abs_spearman": 0.8204550197,
+      "validation_median_abs_spearman": 0.8443079299,
+      "status": "ELEVATED_PAIR_MONITOR_BELOW_REDUNDANCY"
+    },
+    "supersedes": "alpha096_tushare_followup",
+    "action": "Keep the formal nine unchanged. The complete canonical replay supersedes the earlier 2020-only rejection for current-status purposes, but Alpha96 remains an isolated candidate pending explicit human admission and must retain annual monitoring because 2020 failed the strict annual gate.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
