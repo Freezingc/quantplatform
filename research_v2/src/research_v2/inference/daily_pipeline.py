@@ -73,6 +73,7 @@ class DailyInferencePipeline:
         predict: Callable[[object, object], object],
         score_health: Callable[[object], bool],
         publish: Callable[[object], None],
+        watermark_end_report_factory: Callable[[], WatermarkReport] | None = None,
         run_id: str | None = None,
     ) -> DailyPipelineResult:
         return self._run_once(
@@ -83,6 +84,7 @@ class DailyInferencePipeline:
             predict=predict,
             score_health=score_health,
             publish=publish,
+            watermark_end_report_factory=watermark_end_report_factory,
             run_id=run_id or str(uuid4()),
         )
 
@@ -96,6 +98,7 @@ class DailyInferencePipeline:
         predict: Callable[[object, object], object],
         score_health: Callable[[object], bool],
         publish: Callable[[object], None],
+        watermark_end_report_factory: Callable[[], WatermarkReport] | None = None,
     ) -> DailyPipelineRetryResult:
         attempts: list[DailyPipelineResult] = []
         final_result: DailyPipelineResult | None = None
@@ -109,6 +112,7 @@ class DailyInferencePipeline:
                 predict=predict,
                 score_health=score_health,
                 publish=publish,
+                watermark_end_report_factory=watermark_end_report_factory,
                 run_id=str(uuid4()),
             )
             attempts.append(attempt)
@@ -134,12 +138,14 @@ class DailyInferencePipeline:
         predict: Callable[[object, object], object],
         score_health: Callable[[object], bool],
         publish: Callable[[object], None],
+        watermark_end_report_factory: Callable[[], WatermarkReport] | None,
         run_id: str,
     ) -> DailyPipelineResult:
+        step_order = self._step_order(watermark_end_report_factory is not None)
         if watermark_report.status is WatermarkStatus.NOOP_NON_TRADING_DAY:
             noop_records = (
                 self._step_record("watermark", DailyPipelineStepStatus.NOOP_NON_TRADING_DAY, 0.0),
-                *self._noop_records(self._STEP_ORDER[1:]),
+                *self._noop_records(step_order[1:]),
             )
             return DailyPipelineResult(
                 signal_date,
@@ -157,7 +163,7 @@ class DailyInferencePipeline:
                     0.0,
                     "; ".join(watermark_report.blockers),
                 ),
-                *self._skipped_records(self._STEP_ORDER[1:]),
+                *self._skipped_records(step_order[1:]),
             )
             return DailyPipelineResult(
                 signal_date,
@@ -175,7 +181,7 @@ class DailyInferencePipeline:
         build_result = self._run_callback_step("build_batch", build_batch)
         step_records.append(build_result.record)
         if build_result.record.status is DailyPipelineStepStatus.FAILED:
-            step_records.extend(self._skipped_records(self._STEP_ORDER[2:]))
+            step_records.extend(self._skipped_records(step_order[2:]))
             return self._failed_result(
                 signal_date,
                 "build_batch",
@@ -187,7 +193,7 @@ class DailyInferencePipeline:
         load_result = self._run_callback_step("load_artifact", load_artifact)
         step_records.append(load_result.record)
         if load_result.record.status is DailyPipelineStepStatus.FAILED:
-            step_records.extend(self._skipped_records(self._STEP_ORDER[3:]))
+            step_records.extend(self._skipped_records(step_order[3:]))
             return self._failed_result(
                 signal_date,
                 "load_artifact",
@@ -204,7 +210,7 @@ class DailyInferencePipeline:
         )
         step_records.append(predict_result.record)
         if predict_result.record.status is DailyPipelineStepStatus.FAILED:
-            step_records.extend(self._skipped_records(self._STEP_ORDER[4:]))
+            step_records.extend(self._skipped_records(step_order[4:]))
             return self._failed_result(
                 signal_date,
                 "predict",
@@ -216,13 +222,7 @@ class DailyInferencePipeline:
         score_result = self._run_callback_step("score_health", score_health, predict_result.value)
         step_records.append(score_result.record)
         if score_result.record.status is DailyPipelineStepStatus.FAILED:
-            step_records.append(
-                self._step_record(
-                    "publish",
-                    DailyPipelineStepStatus.SKIPPED_DEPENDENCY_FAILED,
-                    0.0,
-                )
-            )
+            step_records.extend(self._skipped_records(step_order[5:]))
             return self._failed_result(
                 signal_date,
                 "score_health",
@@ -237,9 +237,7 @@ class DailyInferencePipeline:
                 score_result.record.duration_seconds,
                 "score health gate rejected prediction",
             )
-            step_records.append(
-                self._step_record("publish", DailyPipelineStepStatus.SKIPPED_DEPENDENCY_FAILED, 0.0)
-            )
+            step_records.extend(self._skipped_records(step_order[5:]))
             return self._failed_result(
                 signal_date,
                 "score_health",
@@ -247,6 +245,35 @@ class DailyInferencePipeline:
                 run_id,
                 step_records,
             )
+
+        if watermark_end_report_factory is not None:
+            end_result = self._run_callback_step(
+                "watermark_end", watermark_end_report_factory
+            )
+            step_records.append(end_result.record)
+            end_error = self._end_watermark_error(watermark_report, end_result.value)
+            if end_result.record.status is DailyPipelineStepStatus.FAILED:
+                return self._failed_result(
+                    signal_date,
+                    "watermark_end",
+                    end_result.record.error_message,
+                    run_id,
+                    [*step_records, *self._skipped_records(step_order[6:])],
+                )
+            if end_error is not None:
+                step_records[-1] = self._step_record(
+                    "watermark_end",
+                    DailyPipelineStepStatus.FAILED,
+                    end_result.record.duration_seconds,
+                    end_error,
+                )
+                return self._failed_result(
+                    signal_date,
+                    "watermark_end",
+                    end_error,
+                    run_id,
+                    [*step_records, *self._skipped_records(step_order[6:])],
+                )
 
         publish_result = self._run_callback_step("publish", publish, predict_result.value)
         step_records.append(publish_result.record)
@@ -267,6 +294,29 @@ class DailyInferencePipeline:
             run_id,
             tuple(step_records),
         )
+
+    @classmethod
+    def _step_order(cls, end_watermark_enabled: bool) -> tuple[str, ...]:
+        if end_watermark_enabled:
+            return (*cls._STEP_ORDER[:5], "watermark_end", cls._STEP_ORDER[5])
+        return cls._STEP_ORDER
+
+    @staticmethod
+    def _end_watermark_error(
+        start_report: WatermarkReport,
+        end_report: object | None,
+    ) -> str | None:
+        if not isinstance(end_report, WatermarkReport):
+            return "INVALID_END_WATERMARK_REPORT"
+        if end_report.status is not WatermarkStatus.READY:
+            return "; ".join(end_report.blockers) or "END_WATERMARK_NOT_READY"
+        if start_report.start_fingerprint is None:
+            return "MISSING_START_FINGERPRINT"
+        if end_report.start_fingerprint is None:
+            return "MISSING_END_FINGERPRINT"
+        if start_report.start_fingerprint != end_report.start_fingerprint:
+            return "SOURCE_CHANGED_DURING_RUN"
+        return None
 
     @dataclass(frozen=True)
     class _StepOutcome:

@@ -210,3 +210,93 @@ def test_pipeline_marks_a_score_gate_rejection_as_a_failed_step() -> None:
         "SKIPPED_DEPENDENCY_FAILED",
     ]
     assert calls == ["build_batch", "load_artifact", "predict", "score_health"]
+
+
+def test_pipeline_checks_end_watermark_before_publish() -> None:
+    calls: list[str] = []
+    build_batch, load_artifact, predict, score_health, publish = _callbacks(calls)
+
+    result = DailyInferencePipeline().run(
+        date(2025, 1, 2),
+        watermark_report=WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        watermark_end_report_factory=lambda: WatermarkReport(
+            WatermarkStatus.READY, (), "snapshot-a"
+        ),
+        run_id="run-end-watermark",
+    )
+
+    assert result.status is DailyPipelineStatus.SUCCESS
+    assert [record.step for record in result.step_records] == [
+        "watermark",
+        "build_batch",
+        "load_artifact",
+        "predict",
+        "score_health",
+        "watermark_end",
+        "publish",
+    ]
+    assert calls == [
+        "build_batch",
+        "load_artifact",
+        "predict",
+        "score_health",
+        "publish",
+    ]
+
+
+def test_pipeline_blocks_publish_when_end_watermark_changes() -> None:
+    calls: list[str] = []
+    build_batch, load_artifact, predict, score_health, publish = _callbacks(calls)
+
+    result = DailyInferencePipeline().run(
+        date(2025, 1, 2),
+        watermark_report=WatermarkReport(WatermarkStatus.READY, (), "snapshot-a"),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        watermark_end_report_factory=lambda: WatermarkReport(
+            WatermarkStatus.READY, (), "snapshot-b"
+        ),
+        run_id="run-changed-watermark",
+    )
+
+    assert result.status is DailyPipelineStatus.FAILED
+    assert result.failed_step == "watermark_end"
+    assert result.error_message == "SOURCE_CHANGED_DURING_RUN"
+    assert [record.status for record in result.step_records] == [
+        "SUCCESS",
+        "SUCCESS",
+        "SUCCESS",
+        "SUCCESS",
+        "SUCCESS",
+        "FAILED",
+        "SKIPPED_DEPENDENCY_FAILED",
+    ]
+    assert calls == ["build_batch", "load_artifact", "predict", "score_health"]
+
+
+def test_pipeline_requires_fingerprints_when_end_watermark_is_enabled() -> None:
+    build_batch, load_artifact, predict, score_health, publish = _callbacks([])
+
+    result = DailyInferencePipeline().run(
+        date(2025, 1, 2),
+        watermark_report=WatermarkReport(WatermarkStatus.READY, ()),
+        build_batch=build_batch,
+        load_artifact=load_artifact,
+        predict=predict,
+        score_health=score_health,
+        publish=publish,
+        watermark_end_report_factory=lambda: WatermarkReport(WatermarkStatus.READY, ()),
+        run_id="run-missing-watermark-fingerprint",
+    )
+
+    assert result.status is DailyPipelineStatus.FAILED
+    assert result.failed_step == "watermark_end"
+    assert result.error_message == "MISSING_START_FINGERPRINT"

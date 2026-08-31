@@ -30,8 +30,11 @@ The `research-owner` is the final escalation for a missed SLO.
 ## DAG and Statuses
 
 Execution order: watermark gate -> build_batch -> load_artifact -> predict ->
-score_health -> publish. Any failure returns `FAILED` with `failed_step` set; the
-pipeline never skips ahead. A `BLOCKED` watermark gate aborts before any step runs.
+score_health -> end-watermark snapshot -> publish. Any failure returns `FAILED` with
+`failed_step` set; the pipeline never skips ahead. A `BLOCKED` watermark gate aborts
+before any step runs. The end-watermark snapshot is captured after score health and
+must be `READY` with the same dependency fingerprint as the start snapshot; otherwise
+publish is skipped and the run fails with `failed_step: watermark_end`.
 
 Watermark blocker reasons: `MISSING:<dep>`, `UNPUBLISHED:<dep>`, `MISSING_VERSION:<dep>`,
 `STALE:<dep>`, `DQ_BLOCKER:<dep>`, `IDENTITY_MISMATCH:<dep>`. Inference dependencies must
@@ -79,6 +82,7 @@ never include a label dependency; the gate rejects them.
 | `load_artifact` | Active model artifact missing or unreadable | Verify the artifact stores (dataset artifacts live under `QRV2_ARTIFACT_ROOT`); `model-rollback.md` if corrupt |
 | `predict` | Inference compute failed (e.g., GPU unavailable) | Restore compute, then Manual Rerun; `model-rollback.md` GPU section |
 | `score_health` | Score health gate rejected the prediction | Do not publish or bypass; investigate drift/score health with `risk-approver` |
+| `watermark_end` | A dependency changed or failed its end-of-run snapshot check | Do not publish; investigate source mutation, then rerun with a fresh start snapshot |
 | `publish` | Two-phase publish failed | Nothing became visible; fix DB/staging, then Manual Rerun |
 
 A `score_health` rejection is a protection, not a nuisance: the prediction was not
