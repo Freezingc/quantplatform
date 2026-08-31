@@ -21,6 +21,7 @@ InferenceContract: TypeAlias = Mapping[str, object]
 _INFERENCE_CONTRACT_FIELDS = frozenset(
     {
         "factor_set_id",
+        "factor_set_status",
         "universe_id",
         "universe_version",
         "label_id",

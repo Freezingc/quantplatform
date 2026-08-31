@@ -20,6 +20,7 @@ from research_v2.training.model_bundle import ModelArtifactBundleStore
 
 _INFERENCE_CONTRACT = {
     "factor_set_id": "factor-set-1",
+    "factor_set_status": "FROZEN",
     "universe_id": "cn_liquid_a",
     "universe_version": 1,
     "label_id": "forward_open_5d",
@@ -185,6 +186,23 @@ def test_missing_requested_contract_field_is_rejected_before_model_construction(
             expected_preprocessor_hash="pre-1",
             device=torch.device("cpu"),
             expected_inference_contract=_INFERENCE_CONTRACT,
+        )
+
+
+def test_non_frozen_factor_set_is_rejected(tmp_path: Path) -> None:
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path,
+        model_card_overrides={"factor_set_status": "CANDIDATE"},
+    )
+
+    with pytest.raises(ValueError, match="FROZEN"):
+        load_inference_artifact(
+            store,
+            model_id,
+            expected_dataset_id="dataset-1",
+            expected_feature_order=feature_order,
+            expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"),
         )
 
 
