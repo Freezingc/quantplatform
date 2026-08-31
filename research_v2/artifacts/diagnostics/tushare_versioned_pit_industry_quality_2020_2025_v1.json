@@ -1062,7 +1062,7 @@
         "signed_mean_pass_years": 5,
         "strict_annual_icir_pass_years": 5
       },
-      "status": "RESEARCH_CANDIDATE_PENDING_EXPLICIT_ADMISSION",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "train": {
         "direction": -1,
         "directional_day_share": 0.8523102310231023,
@@ -1218,7 +1218,7 @@
         "signed_mean_pass_years": 5,
         "strict_annual_icir_pass_years": 4
       },
-      "status": "RESEARCH_CANDIDATE_PENDING_EXPLICIT_ADMISSION",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
       "train": {
         "direction": -1,
         "directional_day_share": 0.7153465346534653,
@@ -1296,7 +1296,7 @@
         "signed_mean_pass_years": 5,
         "strict_annual_icir_pass_years": 5
       },
-      "status": "RESEARCH_CANDIDATE_PENDING_EXPLICIT_ADMISSION",
+      "status": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY",
       "train": {
         "direction": 1,
         "directional_day_share": 0.7920792079207921,
