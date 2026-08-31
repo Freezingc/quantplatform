@@ -1177,6 +1177,33 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha387_alpha388_tushare_shsz_canonical_v1": {
+    "artifact": "tushare_alpha387_alpha388_redundancy_rejection_review_v1.json",
+    "factor_ids": ["yeslab_387_tushare_shsz_v1", "yeslab_388_tushare_shsz_v1"],
+    "source_factor_ids": ["yeslab_387", "yeslab_388"],
+    "factor_names": ["GP_018", "GP_019"],
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": ["BJ"],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "quality": {
+      "yeslab_387": {"training_signed_mean_rank_ic": 0.0812054657, "training_signed_icir": 0.5770389423, "validation_signed_mean_rank_ic": 0.0839816905, "validation_signed_icir": 0.5329222031, "annual_gate_years": "4/5"},
+      "yeslab_388": {"training_signed_mean_rank_ic": 0.0819783607, "training_signed_icir": 0.5703899204, "validation_signed_mean_rank_ic": 0.0830278866, "validation_signed_icir": 0.5003157603, "annual_gate_years": "4/5"}
+    },
+    "training_coverage_median": {"yeslab_387": 0.9998722534, "yeslab_388": 0.9978159050},
+    "validation_coverage_median": {"yeslab_387": 0.9997403946, "yeslab_388": 0.9977029096},
+    "training_similarity_max": {"yeslab_387": 0.9777511364, "yeslab_388": 0.9799907357},
+    "validation_similarity_max": {"yeslab_387": 0.9750296158, "yeslab_388": 0.9774063345},
+    "formula_scope_status": "PENDING_SCOPE_TRANSITION_REVIEW",
+    "status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380",
+    "action": "Keep the formal nine unchanged. Both candidates are rejected after one complete formal-factor edge exceeds the 0.90 redundancy threshold in both phases; remaining formal edges were intentionally not recomputed. Historical GP_018/GP_019 include BJ securities, so do not mix historical YesLab values with any future isolated SH/SZ rematerialization.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "alpha381_admission_preflight": {
     "factor_id": "yeslab_381",
     "factor_name": "GP_012",
@@ -1466,6 +1493,7 @@
     "tushare_shsz_similarity_cluster_train_v1/similarity_summary.json",
     "tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json",
     "tushare_shsz_rematerialized_validation_16_quality_v2/similarity_summary.json",
+    "tushare_alpha387_alpha388_redundancy_rejection_review_v1.json",
     "tushare_shsz_candidate_admission_review_matrix_v2.json",
     "tushare_canonical_candidate_pair_similarity_v1.json",
     "tushare_canonical_candidate_pair_similarity_v1/train_pairs.csv",

@@ -1,0 +1,290 @@
+{
+  "scope": "TUSHARE_SHSZ_ALPHA387_ALPHA388_REDUNDANCY_REJECTION_REVIEW_V1",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "early_stop": true,
+  "candidates": {
+    "yeslab_387": {
+      "candidate_id": "yeslab_387_tushare_shsz_v1",
+      "source_factor_id": "yeslab_387",
+      "factor_name": "GP_018",
+      "frozen_direction": -1,
+      "training_2020_2024": {
+        "start": "2020-01-02",
+        "end": "2024-12-31",
+        "valid_day_count": 1212,
+        "mean_rank_ic": -0.08120546570359419,
+        "icir": -0.5770389423017801,
+        "signed_mean_rank_ic": 0.08120546570359419,
+        "signed_icir": 0.5770389423017801,
+        "directional_day_share": 0.7079207920792079,
+        "annual_gate_pass_years": "4/5",
+        "annual_details": [
+          {
+            "year": 2020,
+            "valid_day_count": 243,
+            "signed_mean_rank_ic": 0.05366132369015989,
+            "signed_icir": 0.3573831335411221,
+            "directional_day_share": 0.588477366255144,
+            "strict_gate_pass": false
+          },
+          {
+            "year": 2021,
+            "valid_day_count": 243,
+            "signed_mean_rank_ic": 0.07535536034180017,
+            "signed_icir": 0.5469942970819627,
+            "directional_day_share": 0.6995884773662552,
+            "strict_gate_pass": true
+          },
+          {
+            "year": 2022,
+            "valid_day_count": 242,
+            "signed_mean_rank_ic": 0.09091617592753813,
+            "signed_icir": 0.7904943430087561,
+            "directional_day_share": 0.7727272727272727,
+            "strict_gate_pass": true
+          },
+          {
+            "year": 2023,
+            "valid_day_count": 242,
+            "signed_mean_rank_ic": 0.09772192444476377,
+            "signed_icir": 0.6939066991262227,
+            "directional_day_share": 0.7272727272727273,
+            "strict_gate_pass": true
+          },
+          {
+            "year": 2024,
+            "valid_day_count": 242,
+            "signed_mean_rank_ic": 0.08851053687145781,
+            "signed_icir": 0.5769303459319978,
+            "directional_day_share": 0.7520661157024794,
+            "strict_gate_pass": true
+          }
+        ],
+        "coverage": {
+          "status": true,
+          "valid_day_count": 1212,
+          "coverage_median": 0.9998722534491569,
+          "coverage_p05": 0.9990683140798743,
+          "coverage_minimum": 0.9978110178766874
+        },
+        "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json"
+      },
+      "validation_2025": {
+        "start": "2025-01-02",
+        "end": "2025-12-31",
+        "valid_day_count": 243,
+        "mean_rank_ic": -0.08398169047077214,
+        "icir": -0.5329222031474068,
+        "signed_mean_rank_ic": 0.08398169047077214,
+        "signed_icir": 0.5329222031474068,
+        "directional_day_share": 0.6790123456790124,
+        "coverage": {
+          "status": true,
+          "valid_day_count": 243,
+          "coverage_median": 0.9997403946002077,
+          "coverage_p05": 0.9992335202455601,
+          "coverage_minimum": 0.9981785063752276
+        },
+        "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json"
+      },
+      "redundancy_edge": {
+        "reference_factor_id": "yeslab_380",
+        "threshold": 0.9,
+        "training": {
+          "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_similarity_cluster_train_v1/similarity_summary.json",
+          "pair": {
+            "factor_id_left": "yeslab_380",
+            "factor_id_right": "yeslab_387",
+            "median_abs_spearman": 0.9777511364,
+            "max_abs_spearman": 0.9896931932,
+            "valid_day_count": 1212
+          },
+          "status": "FAIL_REDUNDANT_EARLY_STOP"
+        },
+        "validation": {
+          "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/similarity_summary.json",
+          "pair": {
+            "factor_id_left": "yeslab_380",
+            "factor_id_right": "yeslab_387",
+            "median_abs_spearman": 0.9750296158,
+            "max_abs_spearman": 0.9869023119,
+            "valid_day_count": 243
+          },
+          "status": "FAIL_REDUNDANT_EARLY_STOP"
+        },
+        "rule": "A single complete formal-factor edge above 0.90 is sufficient to reject an additional candidate; remaining formal edges are intentionally not claimed as audited."
+      },
+      "formula_scope": {
+        "status": "PENDING_SCOPE_TRANSITION_REVIEW",
+        "historical_source_scope": {
+          "factor_name": "GP_018",
+          "source_bj_codes": 551,
+          "classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH"
+        },
+        "historical_replay": {
+          "windows": [
+            "2020-01",
+            "2022-01",
+            "2024-01",
+            "2025-01"
+          ],
+          "pass_window_count": 0,
+          "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_scope_precision_review_v1.json"
+        }
+      },
+      "decision": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380",
+      "model_eligible": false,
+      "database_writes": false,
+      "locked_test_read": false,
+      "formal_factor_set_changed": false,
+      "publication_status": "NOT_PUBLISHED"
+    },
+    "yeslab_388": {
+      "candidate_id": "yeslab_388_tushare_shsz_v1",
+      "source_factor_id": "yeslab_388",
+      "factor_name": "GP_019",
+      "frozen_direction": -1,
+      "training_2020_2024": {
+        "start": "2020-01-02",
+        "end": "2024-12-31",
+        "valid_day_count": 1212,
+        "mean_rank_ic": -0.08197836071318364,
+        "icir": -0.5703899204089798,
+        "signed_mean_rank_ic": 0.08197836071318364,
+        "signed_icir": 0.5703899204089798,
+        "directional_day_share": 0.7103960396039604,
+        "annual_gate_pass_years": "4/5",
+        "annual_details": [
+          {
+            "year": 2020,
+            "valid_day_count": 243,
+            "signed_mean_rank_ic": 0.05428983934484017,
+            "signed_icir": 0.35583715078066075,
+            "directional_day_share": 0.5925925925925926,
+            "strict_gate_pass": false
+          },
+          {
+            "year": 2021,
+            "valid_day_count": 243,
+            "signed_mean_rank_ic": 0.07531822729481115,
+            "signed_icir": 0.5340353879053875,
+            "directional_day_share": 0.691358024691358,
+            "strict_gate_pass": true
+          },
+          {
+            "year": 2022,
+            "valid_day_count": 242,
+            "signed_mean_rank_ic": 0.09167174093448781,
+            "signed_icir": 0.7820136390395774,
+            "directional_day_share": 0.7768595041322314,
+            "strict_gate_pass": true
+          },
+          {
+            "year": 2023,
+            "valid_day_count": 242,
+            "signed_mean_rank_ic": 0.09797163943525004,
+            "signed_icir": 0.6730610394029555,
+            "directional_day_share": 0.7272727272727273,
+            "strict_gate_pass": true
+          },
+          {
+            "year": 2024,
+            "valid_day_count": 242,
+            "signed_mean_rank_ic": 0.09078229314655674,
+            "signed_icir": 0.5827045672719412,
+            "directional_day_share": 0.7644628099173554,
+            "strict_gate_pass": true
+          }
+        ],
+        "coverage": {
+          "status": true,
+          "valid_day_count": 1212,
+          "coverage_median": 0.9978159049819855,
+          "coverage_p05": 0.9944768581955234,
+          "coverage_minimum": 0.9909565217391304
+        },
+        "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_train_16_quality_v2/quality_summary.json"
+      },
+      "validation_2025": {
+        "start": "2025-01-02",
+        "end": "2025-12-31",
+        "valid_day_count": 243,
+        "mean_rank_ic": -0.08302788659229389,
+        "icir": -0.5003157602978341,
+        "signed_mean_rank_ic": 0.08302788659229389,
+        "signed_icir": 0.5003157602978341,
+        "directional_day_share": 0.6666666666666666,
+        "coverage": {
+          "status": true,
+          "valid_day_count": 243,
+          "coverage_median": 0.9977029096477795,
+          "coverage_p05": 0.996068255067303,
+          "coverage_minimum": 0.9950533715178339
+        },
+        "quality_artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/quality_summary.json"
+      },
+      "redundancy_edge": {
+        "reference_factor_id": "yeslab_380",
+        "threshold": 0.9,
+        "training": {
+          "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_similarity_cluster_train_v1/similarity_summary.json",
+          "pair": {
+            "factor_id_left": "yeslab_380",
+            "factor_id_right": "yeslab_388",
+            "median_abs_spearman": 0.9799907357,
+            "max_abs_spearman": 0.9906008145,
+            "valid_day_count": 1212
+          },
+          "status": "FAIL_REDUNDANT_EARLY_STOP"
+        },
+        "validation": {
+          "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_rematerialized_validation_16_quality_v2/similarity_summary.json",
+          "pair": {
+            "factor_id_left": "yeslab_380",
+            "factor_id_right": "yeslab_388",
+            "median_abs_spearman": 0.9774063345,
+            "max_abs_spearman": 0.9870323133,
+            "valid_day_count": 243
+          },
+          "status": "FAIL_REDUNDANT_EARLY_STOP"
+        },
+        "rule": "A single complete formal-factor edge above 0.90 is sufficient to reject an additional candidate; remaining formal edges are intentionally not claimed as audited."
+      },
+      "formula_scope": {
+        "status": "PENDING_SCOPE_TRANSITION_REVIEW",
+        "historical_source_scope": {
+          "factor_name": "GP_019",
+          "source_bj_codes": 552,
+          "classification": "SOURCE_CROSS_SECTION_SCOPE_MISMATCH"
+        },
+        "historical_replay": {
+          "windows": [
+            "2020-01",
+            "2022-01",
+            "2024-01",
+            "2025-01"
+          ],
+          "pass_window_count": 0,
+          "artifact": "research_v2/artifacts/diagnostics/tushare_shsz_registered_gp_scope_precision_review_v1.json"
+        }
+      },
+      "decision": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380",
+      "model_eligible": false,
+      "database_writes": false,
+      "locked_test_read": false,
+      "formal_factor_set_changed": false,
+      "publication_status": "NOT_PUBLISHED"
+    }
+  },
+  "evidence_commit": "d2dc26d058e4b796526bcc42bf418b11112fea9e",
+  "model_training_started": false,
+  "reason": "Both candidates have complete quality and coverage evidence, but each is redundant with formal yeslab_380 in both phases. The review intentionally stops after the first decisive formal edge per candidate."
+}
