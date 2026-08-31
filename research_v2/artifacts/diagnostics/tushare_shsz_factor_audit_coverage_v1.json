@@ -3974,7 +3974,7 @@
       "yeslab_425"
     ],
     "annual_review_status": {
-      "yeslab_425": "PASS_SCOPE_REPLAY_BLOCKED"
+      "yeslab_425": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING"
     },
     "action": "Reject Alpha412–Alpha427 as new admissions; Alpha425 is annual-stable but requires Tushare SH/SZ rematerialization because source formula replay is blocked by cross-sectional scope mismatch.",
     "artifacts": [
