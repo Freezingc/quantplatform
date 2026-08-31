@@ -279,6 +279,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 | `yeslab_395_tushare_shsz_v1` | 严格年度门槛 `4/5`，但历史公式重放被源横截面范围阻断 | 按公式重放阻断拒绝；需源公式对账和范围决策 |
 | `yeslab_400_tushare_shsz_v1` | 2025 验证通过，但严格年度门槛仅 `3/5`；已知对正式 `yeslab_380` 未越线 | 按年度稳定性拒绝新增输入；相似度不是本次拒绝依据 |
 | `yeslab_163`（Alpha95 原始） | 完整复核年度门槛 `3/5`；正式九因子相似度未越线；三个相对金额波动变体全部拒绝 | 保留 `DEFER_ANNUAL_STABILITY_3_OF_5`，不进入模型输入；不因变体拒绝改变原始因子的保留状态 |
+| `yeslab_363_tushare_shsz_v1` | 完整九边相似度通过（训练/验证最大 `0.32094/0.34519`）；年度门槛 `4/5`；使用版本化 PIT 行业 | 保留待人工准入；需保留行业 PIT 与年度监控 |
 | `yeslab_385` | 与 `yeslab_405` 相似度 0.90134，冗余失败 | 拒绝 |
 | `yeslab_208` | 总体有信号，但严格年度 ICIR 仅 1/5 | 监控研究候选，不准入 |
 | `yeslab_471` | 历史范围和 PIT 行业映射阻断 | 先重建 PIT 行业成员关系 |
@@ -654,7 +655,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核；Alpha432 已完成同口径复核但因与正式 `yeslab_431` 冗余而拒绝新增准入；Alpha377、Alpha387、Alpha388 均以至少一条完整决定性边早停判定冗余，未声称其余边已审计；Alpha391 已完成完整 9 条训练/验证边复核，训练期对正式 `yeslab_380` 越线，验证期作为边界监控；Alpha433 按严格年度门槛 `3/5` 拒绝；Alpha395 虽然年度门槛 `4/5`，但公式重放阻断仍拒绝新增准入；Alpha400 按严格年度门槛 `3/5` 拒绝。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核；Alpha432 已完成同口径复核但因与正式 `yeslab_431` 冗余而拒绝新增准入；Alpha377、Alpha387、Alpha388 均以至少一条完整决定性边早停判定冗余，未声称其余边已审计；Alpha391 已完成完整 9 条训练/验证边复核，训练期对正式 `yeslab_380` 越线，验证期作为边界监控；Alpha433 按严格年度门槛 `3/5` 拒绝；Alpha395 虽然年度门槛 `4/5`，但公式重放阻断仍拒绝新增准入；Alpha400 按严格年度门槛 `3/5` 拒绝；Alpha363 已完成完整九边相似度和年度复核，保留为待人工准入的隔离候选。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 

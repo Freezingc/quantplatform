@@ -1590,6 +1590,40 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "alpha363_tushare_shsz_canonical_v1": {
+    "artifact": "tushare_alpha363_canonical_candidate_review_v1.json",
+    "factor_id": "yeslab_363_tushare_shsz_v1",
+    "source_factor_id": "yeslab_363",
+    "factor_name": "行业标准化绝对值除行业偏度绝对值",
+    "market_scope": "SH/SZ",
+    "excluded_exchanges": [
+      "BJ"
+    ],
+    "training_window": "2020-01-02/2024-12-31",
+    "validation_window": "2025-01-02/2025-12-31",
+    "frozen_direction": -1,
+    "training_signed_mean_rank_ic": 0.0392719701,
+    "training_signed_icir": 0.5552165165,
+    "validation_signed_mean_rank_ic": 0.0561397947,
+    "validation_signed_icir": 0.8639004891,
+    "annual_gate_years": "4/5",
+    "industry_source": "Tushare SW2014 before 2021-12-10; SW2021 from 2021-12-10",
+    "similarity_to_formal_nine": {
+      "threshold": 0.9,
+      "full_nine_edges_train": true,
+      "full_nine_edges_validation": true,
+      "training_maximum_median_abs_spearman": 0.3209363572,
+      "validation_maximum_median_abs_spearman": 0.3451944072,
+      "status": "PASS_FULL_NINE_EDGES"
+    },
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
+    "action": "Keep the formal nine unchanged. Alpha363 has complete nine-edge similarity evidence in both phases and passes the annual gate at 4/5, but remains an isolated canonical version pending explicit human admission. If admitted, retain versioned PIT industry handling and annual monitoring for the failed 2023 strict year.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
