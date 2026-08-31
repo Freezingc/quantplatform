@@ -4218,7 +4218,7 @@
     "observed_pair_count": 45,
     "pair_failures": [],
     "missing_pairs": [],
-    "preflight_status": "PASS_WITH_MONITORING",
+    "preflight_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
     "status": "HYPOTHETICAL_ONLY_NO_ADMISSION_AUTHORITY",
     "action": "This proves the proposed ten-factor pool has complete non-redundancy evidence under the current preflight rules. It does not alter the formal nine, publish a factor, or permit model training; explicit admission and an isolated SH/SZ Tushare-canonical factor version remain required.",
     "artifacts": [
@@ -4787,7 +4787,7 @@
     },
     "validation_2025": {
       "yeslab_206": "VALIDATION_2025_REPAIR_CANDIDATE_PASS",
-      "yeslab_208": "VALIDATION_2025_PASS_PENDING_ADMISSION_DECISION",
+      "yeslab_208": "VALIDATION_2025_PASS_MONITORED_RESEARCH_CANDIDATE",
       "yeslab_429": "VALIDATION_2025_FAIL_LOW_ICIR"
     },
     "tushare_rematerialized_validation_2025": {
