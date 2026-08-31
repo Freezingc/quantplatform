@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from datetime import date
@@ -35,6 +37,7 @@ def check_inference_watermarks(
     is_trading_day: bool,
     required_dependencies: Set[str],
     watermarks: Mapping[str, InferenceWatermark],
+    end_watermarks: Mapping[str, InferenceWatermark] | None = None,
 ) -> WatermarkReport:
     """Allow a trading-day inference batch only when every non-label dependency is current."""
     if any("label" in dependency.lower() for dependency in required_dependencies):
@@ -57,7 +60,48 @@ def check_inference_watermarks(
             blockers.append(f"STALE:{dependency}")
         if watermark.has_blocker:
             blockers.append(f"DQ_BLOCKER:{dependency}")
+    if end_watermarks is not None and _scoped_fingerprint(
+        required_dependencies,
+        watermarks,
+    ) != _scoped_fingerprint(required_dependencies, end_watermarks):
+        blockers.append("SOURCE_CHANGED_DURING_RUN")
     return WatermarkReport(
         status=WatermarkStatus.BLOCKED if blockers else WatermarkStatus.READY,
         blockers=tuple(blockers),
+    )
+
+
+def watermark_fingerprint(watermarks: Mapping[str, InferenceWatermark]) -> str:
+    """Hash the ordered dependency identity and state for an immutable run snapshot."""
+    if not isinstance(watermarks, Mapping):
+        raise ValueError("watermarks must be a mapping")
+    payload = []
+    for dependency in sorted(watermarks):
+        watermark = watermarks[dependency]
+        if not isinstance(dependency, str) or not isinstance(watermark, InferenceWatermark):
+            raise ValueError("watermark snapshot contains an invalid record")
+        payload.append(
+            {
+                "data_version": watermark.data_version,
+                "dependency": dependency,
+                "has_blocker": watermark.has_blocker,
+                "max_signal_date": watermark.max_signal_date.isoformat(),
+                "published": watermark.published,
+                "record_dependency": watermark.dependency,
+            }
+        )
+    encoded = json.dumps(payload, ensure_ascii=True, separators=(",", ":"), sort_keys=True)
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _scoped_fingerprint(
+    required_dependencies: Set[str],
+    watermarks: Mapping[str, InferenceWatermark],
+) -> str:
+    return watermark_fingerprint(
+        {
+            dependency: watermarks[dependency]
+            for dependency in required_dependencies
+            if dependency in watermarks
+        }
     )
