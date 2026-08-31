@@ -432,6 +432,7 @@ def test_compatibility_export_refuses_v1_destinations_and_requires_declared_v1_r
 def test_v1_connection_guard_fails_closed_on_any_non_read_call(tmp_path: Path) -> None:
     v1_root = _install_v1_snapshot(tmp_path)
     session = RecordingYesLabSession(v1_root)
+    v1_before_reads = _snapshot_tree(v1_root)
     mutation_scripts = (
         "tableInsert(loadTable('dfs://YesLab', 'stock_factor_daily'), newRows)",
         "update loadTable('dfs://YesLab', 'stock_factor_daily') set close = 0",
@@ -450,5 +451,5 @@ def test_v1_connection_guard_fails_closed_on_any_non_read_call(tmp_path: Path) -
     )
     assert isinstance(frame, pd.DataFrame)
     assert not frame.empty
-    assert _snapshot_tree(v1_root) == _snapshot_tree(v1_root)
+    assert _snapshot_tree(v1_root) == v1_before_reads
     assert _v1_schema_fingerprints(v1_root) == _APPROVED_V1_SCHEMA_FINGERPRINTS
