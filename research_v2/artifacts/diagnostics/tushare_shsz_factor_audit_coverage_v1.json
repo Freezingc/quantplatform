@@ -5185,7 +5185,7 @@
     "excluded_exchanges": [
       "BJ"
     ],
-    "status": "FAIL_SCOPE_TRANSITION_PENDING",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
     "candidate_count": 10,
     "required_pair_count": 90,
     "observed_pair_count": 90,
@@ -5203,7 +5203,7 @@
         "status": "ELEVATED_PAIR_REDUNDANCY_MONITOR"
       }
     },
-    "action": "Keep the formal nine unchanged. Do not publish, write factor values, or train. If explicitly admitted later, use an isolated SH/SZ Tushare-canonical version and retain elevated monitoring against yeslab_405.",
+    "action": "Preflight evidence is complete; formula scope transition remains explicit human approval. Keep elevated pair monitoring against yeslab_405_tushare_shsz_v1.",
     "artifacts": [
       "tushare_shsz_alpha381_admission_proposal_v1.json",
       "tushare_shsz_alpha381_admission_preflight_v1.json",
