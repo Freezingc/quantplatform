@@ -2824,7 +2824,7 @@
         "mean_rank_ic": -0.057021903,
         "icir": -0.5473955257,
         "minimum_monthly_finite_ratio": 0.9998009785,
-        "status": "ANNUAL_STABLE_PROVISIONAL"
+        "status": "FORMULA_REPLAY_BLOCKED_SOURCE_MARKET_COVERAGE_GAP"
       }
     },
     "action": "Reject Alpha164; advance Alpha165 to annual stability review.",
@@ -2851,7 +2851,7 @@
         "mean_rank_ic": 0.0370379144,
         "icir": 0.528464306,
         "minimum_monthly_finite_ratio": 0.9976449125,
-        "status": "ANNUAL_STABLE_PROVISIONAL"
+        "status": "FORMULA_REPLAY_BLOCKED_MARKET_SOURCE_VERSION"
       }
     },
     "action": "Reject Alpha166; advance Alpha167 to annual stability review.",
@@ -2902,7 +2902,7 @@
         "mean_rank_ic": -0.054797122,
         "icir": -0.5121845487,
         "minimum_monthly_finite_ratio": 1.0,
-        "status": "ANNUAL_STABLE_PROVISIONAL"
+        "status": "FORMULA_REPLAY_BLOCKED_SOURCE_MARKET_COVERAGE_GAP"
       },
       "yeslab_169": {
         "mean_rank_ic": 0.0113592048,
@@ -4801,7 +4801,7 @@
     },
     "tushare_rematerialized_train_2020_2024": {
       "yeslab_208": {
-        "status": "PASS_WITH_MONITORING",
+        "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5",
         "mean_rank_ic": -0.0389157216,
         "icir": -0.2967055793,
         "valid_day_count": 1212,
