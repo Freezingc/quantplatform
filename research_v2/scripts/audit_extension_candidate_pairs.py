@@ -30,6 +30,8 @@ from audit_formula_replay_tushare import (
     _connect,
     _query_open_dates,
     fetch_full_tushare_shsz_market,
+    required_market_fields,
+    requires_daily_basic,
 )
 from audit_tushare_pit_industry import PITIndustryProvider, VersionedPITIndustryProvider
 from evaluate_tushare_scope_validation import (
@@ -102,11 +104,12 @@ def materialize_phase(
         for definition in (*definitions, alpha206_definition)
     )
     open_dates = _query_open_dates(client, market_start, phase_end)
+    required_fields = required_market_fields(definitions)
     market = fetch_full_tushare_shsz_market(
         open_dates,
         token=os.getenv("QRV2_TUSHARE_TOKEN", ""),
         cache_dir=cache_dir,
-        include_daily_basic=False,
+        include_daily_basic=requires_daily_basic(required_fields),
     )
     codes = tuple(sorted(market["ts_code"].astype(str).unique()))
     session = TushareMarketSession(client, market, codes)
