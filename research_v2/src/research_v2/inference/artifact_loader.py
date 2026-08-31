@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
@@ -71,8 +72,9 @@ def load_inference_artifact(
     run_id: str | None = None,
 ) -> LoadedInferenceArtifact:
     """Load known model classes only after full bundle and reconstruction-contract checks."""
-    metadata = store.load_metadata(
-        model_id,
+    bundle = store.load_verified_bundle(model_id)
+    metadata = store.load_metadata_from_bundle(
+        bundle,
         expected_dataset_id=expected_dataset_id,
         expected_feature_order=expected_feature_order,
         expected_signature=None,
@@ -85,8 +87,6 @@ def load_inference_artifact(
     factor_set_status = model_card.get("factor_set_status")
     if factor_set_status is not None and factor_set_status != "FROZEN":
         raise ValueError("inference requires a FROZEN factor set")
-    bundle_digest = store.bundle_digest(model_id)
-    artifact_hashes = store.artifact_hashes(model_id)
     factory = _allowlisted_factory(model_card, metadata["config"])
     prototype = cast(ResidualMLP | TemporalGRU | SetAttention, factory())
     expected_signature = asdict(prototype.artifact_signature())
@@ -96,7 +96,7 @@ def load_inference_artifact(
     seed_states: dict[int, Mapping[str, torch.Tensor]] = {}
     for seed in REQUIRED_SEEDS:
         payload = torch.load(
-            store.bundle_path(model_id) / f"seed-{seed}.pt",
+            io.BytesIO(bundle.files[f"seed-{seed}.pt"]),
             map_location="cpu",
             weights_only=True,
         )
@@ -116,8 +116,8 @@ def load_inference_artifact(
         preprocessing=metadata["preprocessing"],
         audit=InferenceLoadAudit(
             model_id=model_id,
-            bundle_digest=bundle_digest,
-            artifact_hashes=MappingProxyType(dict(artifact_hashes)),
+            bundle_digest=bundle.digest,
+            artifact_hashes=MappingProxyType(dict(bundle.artifact_hashes)),
             device=str(device),
             code_version=_model_card_code_version(model_card),
             loaded_at=datetime.now(UTC),

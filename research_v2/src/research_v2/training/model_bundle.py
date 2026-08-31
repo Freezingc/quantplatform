@@ -10,6 +10,7 @@ import tempfile
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 
 import pandas as pd
 
@@ -22,6 +23,16 @@ _MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 class ModelArtifactBundle:
     model_id: str
     path: Path
+
+
+@dataclass(frozen=True)
+class VerifiedModelArtifactBundle:
+    """One checksum-verified, immutable-in-memory view of a model bundle."""
+
+    model_id: str
+    digest: str
+    files: Mapping[str, bytes]
+    artifact_hashes: Mapping[str, str]
 
 
 @dataclass(frozen=True)
@@ -111,18 +122,24 @@ class ModelArtifactBundleStore:
 
     def bundle_digest(self, model_id: str) -> str:
         """Return the snapshot digest a trusted selection record must bind to."""
-        try:
-            return self._load_verified_snapshot(model_id).digest
-        except (OSError, ValueError) as error:
-            raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
+        return self.load_verified_bundle(model_id).digest
 
     def artifact_hashes(self, model_id: str) -> Mapping[str, str]:
         """Return SHA-256 hashes for every file in one verified bundle snapshot."""
+        return dict(self.load_verified_bundle(model_id).artifact_hashes)
+
+    def load_verified_bundle(self, model_id: str) -> VerifiedModelArtifactBundle:
+        """Read and verify every bundle file once for consumers that need atomic bytes."""
         try:
             snapshot = self._load_verified_snapshot(model_id)
         except (OSError, ValueError) as error:
             raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
-        return dict(snapshot.artifact_hashes)
+        return VerifiedModelArtifactBundle(
+            model_id=model_id,
+            digest=snapshot.digest,
+            files=MappingProxyType(dict(snapshot.files)),
+            artifact_hashes=MappingProxyType(dict(snapshot.artifact_hashes)),
+        )
 
     def load_model_card(
         self,
@@ -131,13 +148,10 @@ class ModelArtifactBundleStore:
         expected_bundle_digest: str | None = None,
     ) -> Mapping[str, object]:
         """Read a checksum-verified model card from one immutable bundle snapshot."""
-        try:
-            snapshot = self._load_verified_snapshot(model_id)
-        except (OSError, ValueError) as error:
-            raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
-        if expected_bundle_digest is not None and snapshot.digest != expected_bundle_digest:
+        bundle = self.load_verified_bundle(model_id)
+        if expected_bundle_digest is not None and bundle.digest != expected_bundle_digest:
             raise ValueError("model bundle digest does not match frozen model selection")
-        return self._read_json_mapping_bytes(snapshot.files["model_card.json"], "model_card.json")
+        return self._read_json_mapping_bytes(bundle.files["model_card.json"], "model_card.json")
 
     def load_metadata(
         self,
@@ -149,25 +163,39 @@ class ModelArtifactBundleStore:
         expected_preprocessor_hash: str,
     ) -> dict[str, Mapping[str, object]]:
         """Verify integrity, then reject bundles whose data/model contract differs from request."""
-        try:
-            snapshot = self._load_verified_snapshot(model_id)
-        except (OSError, ValueError) as error:
-            raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
+        return self.load_metadata_from_bundle(
+            self.load_verified_bundle(model_id),
+            expected_dataset_id=expected_dataset_id,
+            expected_feature_order=expected_feature_order,
+            expected_signature=expected_signature,
+            expected_preprocessor_hash=expected_preprocessor_hash,
+        )
+
+    def load_metadata_from_bundle(
+        self,
+        bundle: VerifiedModelArtifactBundle,
+        *,
+        expected_dataset_id: str,
+        expected_feature_order: tuple[str, ...],
+        expected_signature: Mapping[str, object] | None,
+        expected_preprocessor_hash: str,
+    ) -> dict[str, Mapping[str, object]]:
+        """Validate metadata from the already verified bytes of one bundle snapshot."""
         model_card = self._read_json_mapping_bytes(
-            snapshot.files["model_card.json"],
+            bundle.files["model_card.json"],
             "model_card.json",
         )
-        config = self._read_json_mapping_bytes(snapshot.files["config.json"], "config.json")
+        config = self._read_json_mapping_bytes(bundle.files["config.json"], "config.json")
         signature = self._read_json_mapping_bytes(
-            snapshot.files["signature.json"],
+            bundle.files["signature.json"],
             "signature.json",
         )
         feature_document = self._read_json_mapping_bytes(
-            snapshot.files["feature_order.json"],
+            bundle.files["feature_order.json"],
             "feature_order.json",
         )
         preprocessing = self._read_json_mapping_bytes(
-            snapshot.files["preprocessing.json"],
+            bundle.files["preprocessing.json"],
             "preprocessing.json",
         )
         if model_card.get("dataset_id") != expected_dataset_id:

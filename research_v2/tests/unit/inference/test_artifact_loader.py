@@ -335,6 +335,29 @@ def test_loader_records_non_sensitive_load_audit_metadata(tmp_path: Path) -> Non
     assert "secret" not in repr(loaded.audit)
 
 
+def test_loader_uses_one_verified_bundle_snapshot_for_seed_bytes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store, model_id, feature_order = _write_residual_bundle(tmp_path)
+
+    def forbidden_path_lookup(unused_model_id: str) -> Path:
+        raise AssertionError("loader must not reload seed files by path")
+
+    monkeypatch.setattr(store, "bundle_path", forbidden_path_lookup)
+
+    loaded = load_inference_artifact(
+        store,
+        model_id,
+        expected_dataset_id="dataset-1",
+        expected_feature_order=feature_order,
+        expected_preprocessor_hash="pre-1",
+        device=torch.device("cpu"),
+    )
+
+    assert len(loaded.models) == len(REQUIRED_SEEDS)
+
+
 def _write_residual_bundle(
     root: Path,
     *,
