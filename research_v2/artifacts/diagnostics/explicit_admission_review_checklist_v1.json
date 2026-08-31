@@ -229,6 +229,141 @@
         "Is a new canonical review required after reconciliation?",
         "Is the blocked status still valid?"
       ]
+    },
+    {
+      "candidate_id": "yeslab_377_tushare_shsz_v1",
+      "source_factor_id": "yeslab_377",
+      "factor_name": "GP_008",
+      "status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_EARLY_STOP",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: redundant with formal yeslab_380 (early stop).",
+      "pair_or_combination_note": "Early-stop redundancy against formal yeslab_380.",
+      "evidence": [
+        "tushare_alpha377_canonical_redundancy_rejection_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the early-stop redundancy evidence sufficient?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_387_tushare_shsz_v1",
+      "source_factor_id": "yeslab_387",
+      "factor_name": "GP_018",
+      "status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_EARLY_STOP",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: redundant with formal yeslab_380 (early stop).",
+      "pair_or_combination_note": "Early-stop redundancy against formal yeslab_380.",
+      "evidence": [
+        "tushare_alpha387_alpha388_redundancy_rejection_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the early-stop redundancy evidence sufficient?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_388_tushare_shsz_v1",
+      "source_factor_id": "yeslab_388",
+      "factor_name": "GP_019",
+      "status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_EARLY_STOP",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: redundant with formal yeslab_380 (early stop).",
+      "pair_or_combination_note": "Early-stop redundancy against formal yeslab_380.",
+      "evidence": [
+        "tushare_alpha387_alpha388_redundancy_rejection_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the early-stop redundancy evidence sufficient?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_391_tushare_shsz_v1",
+      "source_factor_id": "yeslab_391",
+      "factor_name": "GP_022",
+      "status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_TRAIN_BOUNDARY_VALIDATION_MONITOR",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: training-period redundancy with formal yeslab_380; validation boundary monitor only.",
+      "pair_or_combination_note": "Validation period below threshold; monitor only.",
+      "evidence": [
+        "tushare_alpha391_canonical_candidate_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the training-period redundancy sufficient to reject?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_395_tushare_shsz_v1",
+      "source_factor_id": "yeslab_395",
+      "factor_name": "GP_026",
+      "status": "REJECT_FORMULA_REPLAY_BLOCKED_DESPITE_ANNUAL_PASS",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: formula replay blocked despite annual pass.",
+      "pair_or_combination_note": "No pair review required due to replay block.",
+      "evidence": [
+        "tushare_alpha395_formula_replay_block_rejection_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the replay block still valid?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_400_tushare_shsz_v1",
+      "source_factor_id": "yeslab_400",
+      "factor_name": "GP_031",
+      "status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: strict annual stability 3/5.",
+      "pair_or_combination_note": "No pair review required due to annual rejection.",
+      "evidence": [
+        "tushare_alpha400_annual_stability_rejection_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the annual rejection final?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_432_tushare_shsz_v1",
+      "source_factor_id": "yeslab_432",
+      "factor_name": "GP_063",
+      "status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_431",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: redundant with formal yeslab_431.",
+      "pair_or_combination_note": "Redundant with formal yeslab_431.",
+      "evidence": [
+        "tushare_alpha432_canonical_candidate_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the redundancy evidence sufficient?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_433_tushare_shsz_v1",
+      "source_factor_id": "yeslab_433",
+      "factor_name": "GP_064",
+      "status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "canonical_basis": "Tushare SH/SZ rematerialization",
+      "required_scope": "Rejected: strict annual stability 3/5.",
+      "pair_or_combination_note": "No pair review required due to annual rejection.",
+      "evidence": [
+        "tushare_alpha433_annual_stability_rejection_review_v1.json"
+      ],
+      "human_questions": [
+        "Is the annual rejection final?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_208_canonical_replay_v1",
+      "source_factor_id": "yeslab_208",
+      "factor_name": "Alpha208",
+      "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5",
+      "canonical_basis": "Canonical Tushare replay",
+      "required_scope": "Monitored research candidate; strict annual ICIR 1/5.",
+      "pair_or_combination_note": "Monitored only; no admission.",
+      "evidence": [
+        "alpha208_tushare_rematerialized_train_2020_2024_v1.json"
+      ],
+      "human_questions": [
+        "Should monitoring continue?"
+      ]
     }
   ]
 }

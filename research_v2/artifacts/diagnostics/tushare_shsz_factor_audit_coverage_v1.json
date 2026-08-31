@@ -6004,6 +6004,30 @@
       "yeslab_471_tushare_pit_blocked_v1": {
         "status": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY",
         "artifact": "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
+      },
+      "yeslab_114_tushare_shsz_v2": {
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
+        "artifact": "tushare_alpha114_canonical_candidate_review_v2.json"
+      },
+      "yeslab_206_median_abs_v2": {
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
+        "artifact": "alpha206_median_abs_candidate_review_v2.json"
+      },
+      "yeslab_381_tushare_shsz_v1": {
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+        "artifact": "tushare_alpha381_canonical_candidate_review_v1.json"
+      },
+      "yeslab_405_tushare_shsz_v1": {
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+        "artifact": "tushare_alpha405_canonical_candidate_review_v1.json"
+      },
+      "yeslab_425_tushare_shsz_v2": {
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+        "artifact": "tushare_alpha425_canonical_candidate_review_v2.json"
+      },
+      "yeslab_484_tushare_shsz_v1": {
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+        "artifact": "tushare_alpha484_canonical_v1/admission_review.json"
       }
     },
     "status": "NO_AUTOMATIC_ADMISSION",
