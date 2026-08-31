@@ -39,7 +39,7 @@
     "retain the existing 0.90 redundancy threshold and 0.80 monitor threshold",
     "do not admit multiple candidates together based only on single-factor formal-nine similarity passes"
   ],
-  "status": "EXTENSION_COMBINATION_EVIDENCE_COMPLETE",
+  "status": "EXTENSION_COMBINATION_EVIDENCE_COMPLETE_WITH_MONITORING",
   "decision": "NO_AUTOMATIC_ADMISSION",
   "formal_factor_set_changed": false,
   "model_eligible": false,
@@ -49,16 +49,29 @@
   "completed_extension_combination_audit": {
     "train_artifact": "supplemental_candidate_pair_similarity_train_v1.json",
     "validation_artifact": "supplemental_candidate_pair_similarity_validation_v1.json",
-    "edges": "18 training and 18 validation complete edges",
+    "edges": "21 training and 21 validation complete edges",
     "extension_candidates": [
       "yeslab_363_tushare_shsz_v1",
       "yeslab_357_tushare_shsz_v1",
       "yeslab_96_canonical_replay_v1"
     ],
-    "training_maximum_median_abs_spearman": 0.4944033144952934,
-    "validation_maximum_median_abs_spearman": 0.6371392859629963,
+    "training_maximum_median_abs_spearman": 0.845182017932504,
+    "validation_maximum_median_abs_spearman": 0.8787846822219363,
     "threshold_monitor": 0.8,
     "threshold_redundant": 0.9,
-    "status": "PASS_NO_REDUNDANT_EXTENSION_PAIR"
+    "status": "PASS_WITH_ELEVATED_MONITOR_357_363",
+    "elevated_pairs": [
+      {
+        "candidate_pair": [
+          "yeslab_357_tushare_shsz_v1",
+          "yeslab_363_tushare_shsz_v1"
+        ],
+        "training_median_abs_spearman": 0.845182017932504,
+        "validation_median_abs_spearman": 0.8787846822219363,
+        "threshold_monitor": 0.8,
+        "threshold_redundant": 0.9,
+        "status": "ELEVATED_PAIR_MONITOR_NO_JOINT_ADMISSION_WITHOUT_SEPARATE_REVIEW"
+      }
+    ]
   }
 }
