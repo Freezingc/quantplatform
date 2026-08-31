@@ -237,7 +237,7 @@ def test_month_key_restriction_preserves_rolling_window_nonfinite_values() -> No
     assert pd.isna(result.loc[0, "replay_value"])
 
 
-def test_load_alpha484_checkpoint_requires_complete_matching_tushare_replay(
+def test_load_alpha484_checkpoint_rejects_self_consistent_sparse_replay(
     tmp_path: Path,
 ) -> None:
     root = tmp_path / "alpha484"
@@ -274,13 +274,9 @@ def test_load_alpha484_checkpoint_requires_complete_matching_tushare_replay(
         )
 
     _write_checkpoint_integrity(root)
-    result = audit.load_alpha484_checkpoint_values(root)
 
-    assert result["ts_code"].tolist() == ["000001.SZ", "000001.SZ"]
-    assert result["trade_date"].tolist() == [
-        pd.Timestamp(audit.TRAIN_START),
-        pd.Timestamp(audit.VALIDATION_START),
-    ]
+    with pytest.raises(ValueError, match="canonical coverage"):
+        audit.load_alpha484_checkpoint_values(root)
 
 
 def test_load_alpha484_checkpoint_rejects_tampered_values(tmp_path: Path) -> None:

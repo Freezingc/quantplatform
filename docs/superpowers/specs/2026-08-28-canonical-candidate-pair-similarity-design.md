@@ -72,7 +72,10 @@ read-only command. It will:
    uses only the completed, fingerprint-verified Tushare canonical replay
    checkpoint and its adjacent `integrity.json` content/date manifest because
    recomputing its 120-day all-stock correlation matrix in each repeated
-   window would change no values while multiplying its cost.
+   window would change no values while multiplying its cost. The loader also
+   binds every phase to the checked-in canonical coverage and file-hash
+   contract; replacing the integrity file cannot make a sparse checkpoint
+   self-consistent.
 5. Calculate all 15 candidate-pair similarity edges for training and
    validation, fail closed on an incomplete edge, and write a compact JSON
    summary plus pair CSV files.

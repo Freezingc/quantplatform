@@ -43,6 +43,40 @@ DEFAULT_ALPHA484_CHECKPOINT_ROOT = Path(
 CHECKPOINT_INTEGRITY_FILENAME = "integrity.json"
 CHECKPOINT_INTEGRITY_SCHEMA_VERSION = 1
 
+# These values are the immutable output contract of the completed canonical
+# replay.  The checked-in integrity.json is checked against this second source
+# of truth so a replacement can not make a sparse checkpoint self-consistent.
+CANONICAL_ALPHA484_PHASE_INTEGRITY: Mapping[str, Mapping[str, object]] = {
+    "train": {
+        "manifest_sha256": "2fb5871af23709c607e6cf71e0efa5101ea05b8b0d96a5fb9c5c3ceda59e259f",
+        "producer_code_commit": "bf551fffa12124cb7cb0add11c062aef82aed89f",
+        "fingerprint_sha256": "3c01ebacc86f707957a5e1e286e7ca8123cc85be06f6bd53a5526eab3a477bd5",
+        "cache_manifest_sha256": "031208cb0ca988fb95b092eab1307acf0034686188b30d9def5b51601f3f9789",
+        "values_sha256": "ab570b4d747a6677d6f4f00179c8013bf6d8b9f25ea384e6844ea83275e92e72",
+        "row_count": 6432084,
+        "date_count": 1212,
+        "code_count": 5307,
+        "finite_value_count": 5575847,
+        "min_trade_date": "2020-01-02",
+        "max_trade_date": "2024-12-31",
+        "trade_dates_sha256": "2b41bc2cac22678bcbaa734ddaea668a370ae9e036d6edeef9d844b3d57ad1ae",
+    },
+    "validation": {
+        "manifest_sha256": "c17b3b18d016dba559a2dc0fa1881983954d5e9db1fee019fc233b3f3aef82b1",
+        "producer_code_commit": "bf551fffa12124cb7cb0add11c062aef82aed89f",
+        "fingerprint_sha256": "4366ac81abd9f917728060019f1f75c153030702292c828ae203c8fd8dda7411",
+        "cache_manifest_sha256": "031208cb0ca988fb95b092eab1307acf0034686188b30d9def5b51601f3f9789",
+        "values_sha256": "9e8ff9749a03e40ea501bb3691000b65bb5697633879b907eba2cc42bd693ea6",
+        "row_count": 1269432,
+        "date_count": 243,
+        "code_count": 5224,
+        "finite_value_count": 1249547,
+        "min_trade_date": "2025-01-02",
+        "max_trade_date": "2025-12-31",
+        "trade_dates_sha256": "08d75aacfd77a8485c23bdb8b5c3f70811f9f65346a61cf01f51e14fb72e0a93",
+    },
+}
+
 
 @dataclass(frozen=True)
 class CandidateSpec:
@@ -247,6 +281,13 @@ def load_alpha484_checkpoint_values(checkpoint_root: Path) -> pd.DataFrame:
         }
         if any(phase_integrity.get(key) != value for key, value in observed.items()):
             raise ValueError(f"Alpha484 checkpoint value coverage integrity mismatch for {phase}")
+        canonical = CANONICAL_ALPHA484_PHASE_INTEGRITY.get(phase)
+        if canonical is None or any(
+            phase_integrity.get(key) != value for key, value in canonical.items()
+        ):
+            raise ValueError(f"Alpha484 checkpoint canonical coverage mismatch for {phase}")
+        if any(canonical.get(key) != value for key, value in observed.items()):
+            raise ValueError(f"Alpha484 checkpoint canonical coverage mismatch for {phase}")
         frames.append(values)
     values = pd.concat(frames, ignore_index=True)
     if not values["ts_code"].str.endswith((".SH", ".SZ")).all():
