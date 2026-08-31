@@ -451,7 +451,7 @@ git commit -m "feat(v2): switch and rollback models atomically"
 
 最迟在 locked evaluation 前保存不可变 `locked_test_preregistration.json`：model id/3 seed artifacts、FINAL train/validation manifests、factor set/preprocessor、2026 universe/label definition、评价代码 hash、G1–G6、命令和预期操作者角色。不得预填结果。
 
-- [ ] **F9.2 写时间成熟 guard**
+- [x] **F9.2 写时间成熟 guard**
 
 只有当前日期晚于 2026 最后交易日的第 6 个后续交易日，且该 exit date 的 clean adjusted open 水位已稳定/对账/DQ 通过，才允许申请 unlock。系统从交易日历计算日期，不用自然日常量。
 
