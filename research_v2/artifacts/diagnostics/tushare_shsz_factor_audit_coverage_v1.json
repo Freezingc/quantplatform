@@ -4327,7 +4327,7 @@
     "required_daily_basic": [
       "total_mv"
     ],
-    "action": "Keep AttentionSpillover isolated. Reconstruct point-in-time industry membership and historical cross-section before any canonical admission review.",
+    "action": "Historical record: scope/industry replay was blocked before PIT integration. The subsequent alpha471_pit_replay_followup supersedes it: versioned PIT industry is available, but the historical source formula still fails replay; keep isolated.",
     "artifact": "formula_replay_alpha471_tushare_scope_reconciliation_2025-01_v1.json"
   },
   "alpha94_alpha98_scope_replay_followup": {
