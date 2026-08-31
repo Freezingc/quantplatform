@@ -28,6 +28,7 @@ class ModelArtifactBundle:
 class _VerifiedBundleSnapshot:
     digest: str
     files: Mapping[str, bytes]
+    artifact_hashes: Mapping[str, str]
 
 
 class ModelArtifactBundleStore:
@@ -114,6 +115,14 @@ class ModelArtifactBundleStore:
             return self._load_verified_snapshot(model_id).digest
         except (OSError, ValueError) as error:
             raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
+
+    def artifact_hashes(self, model_id: str) -> Mapping[str, str]:
+        """Return SHA-256 hashes for every file in one verified bundle snapshot."""
+        try:
+            snapshot = self._load_verified_snapshot(model_id)
+        except (OSError, ValueError) as error:
+            raise ValueError(f"model bundle integrity verification failed: {model_id}") from error
+        return dict(snapshot.artifact_hashes)
 
     def load_model_card(
         self,
@@ -211,6 +220,9 @@ class ModelArtifactBundleStore:
         return _VerifiedBundleSnapshot(
             digest=hashlib.sha256(checksums).hexdigest(),
             files=files,
+            artifact_hashes={
+                relative: hashlib.sha256(content).hexdigest() for relative, content in files.items()
+            },
         )
 
     @staticmethod
