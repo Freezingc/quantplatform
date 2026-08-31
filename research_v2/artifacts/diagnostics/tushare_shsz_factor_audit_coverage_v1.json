@@ -67,7 +67,7 @@
   },
   "alpha096_tushare_followup": {
     "factor_id": "yeslab_96",
-    "status": "VALIDATION_HISTORY_PASS_TRAIN2020_FAIL",
+    "status": "SUPERSEDED_BY_ALPHA096_CANONICAL_REPLAY",
     "train_2020": {
       "mean_rank_ic": -0.0469188009,
       "icir": -0.4747976652,
@@ -75,7 +75,7 @@
     },
     "historical_validation_icir": -0.6468450147,
     "formula_replay_status": "FORMULA_REPLAY_PASS_ALL_WINDOWS",
-    "action": "Reject before further annual or similarity computation; do not add to the complete-quality set, formal nine, publication, or model inputs.",
+    "action": "Superseded by alpha096_tushare_canonical_replay_v1 for current status. The earlier 2020-only rejection remains historical evidence only.",
     "artifact": "alpha096_tushare_train2020_rejection_review_v1.json"
   },
   "alpha385_tushare_canonical_followup": {
