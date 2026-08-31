@@ -576,6 +576,7 @@ def run_audit(args: argparse.Namespace, *, client: object) -> dict[str, object]:
         phase_start = max(args.start, fixed_start)
         phase_end = min(args.end, fixed_end)
         if phase_start > phase_end:
+            phase_expected_dates[phase_name] = ()
             phase_frames[phase_name] = {
                 candidate_id: pd.DataFrame(
                     columns=["trade_date", "ts_code", "replay_value"]
