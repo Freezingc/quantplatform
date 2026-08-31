@@ -236,7 +236,7 @@ git diff --check
 
 Expected: all tests pass and no whitespace errors.
 
-- [ ] **Step 5: Commit the audited evidence**
+- [x] **Step 5: Commit the audited evidence**
 
 ```bash
 git add research_v2/scripts/audit_canonical_candidate_pairs.py research_v2/tests/unit/scripts/test_audit_canonical_candidate_pairs.py docs/handoffs/2026-08-19-factor-quality-handoff.md research_v2/artifacts/diagnostics/tushare_shsz_candidate_admission_review_matrix_v2.json research_v2/artifacts/diagnostics/tushare_shsz_factor_audit_coverage_v1.json
