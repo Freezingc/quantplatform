@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import json
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from research_v2.monitoring.data_health import (
+    FeatureDistributionReference,
     FeatureReference,
+    MonitoringReferenceArtifact,
+    ScoreDistributionReference,
     evaluate_feature_data_health,
 )
 from research_v2.monitoring.drift import DriftSeverity
@@ -137,3 +143,118 @@ def test_feature_data_health_uses_loaded_policy_thresholds() -> None:
     )
 
     assert not report.blocking_reasons
+
+
+def _reference_artifact() -> MonitoringReferenceArtifact:
+    return MonitoringReferenceArtifact(
+        model_id="model-1",
+        feature_references=(
+            FeatureDistributionReference(
+                feature_name="quality",
+                bin_edges=tuple(index / 10 for index in range(11)),
+                bin_masses=(0.1,) * 10,
+                missing_rate=0.02,
+                median=0.5,
+                iqr=0.2,
+            ),
+        ),
+        validation_score_reference=ScoreDistributionReference(
+            bin_edges=tuple(index / 10 for index in range(11)),
+            bin_masses=(0.1,) * 10,
+            finite_coverage=0.99,
+        ),
+    )
+
+
+def test_monitoring_reference_artifact_has_stable_canonical_digest() -> None:
+    artifact = _reference_artifact()
+    reordered = MonitoringReferenceArtifact(
+        model_id=artifact.model_id,
+        feature_references=artifact.feature_references,
+        validation_score_reference=artifact.validation_score_reference,
+        validation_period=artifact.validation_period,
+        training_period=artifact.training_period,
+    )
+
+    assert artifact.digest == reordered.digest
+    document = json.loads(artifact.to_json())
+    assert document["content_hash"] == artifact.digest
+    assert artifact.to_json().endswith("\n")
+
+
+def test_monitoring_reference_artifact_write_is_immutable_and_load_is_model_bound(
+    tmp_path: Path,
+) -> None:
+    artifact = _reference_artifact()
+    path = tmp_path / "reference.json"
+
+    assert artifact.write(path) == artifact.digest
+    loaded = MonitoringReferenceArtifact.load(path, expected_model_id="model-1")
+
+    assert loaded == artifact
+    with pytest.raises(FileExistsError, match="immutable"):
+        artifact.write(path)
+    with pytest.raises(ValueError, match="model_id"):
+        MonitoringReferenceArtifact.load(path, expected_model_id="other-model")
+
+
+@pytest.mark.parametrize(
+    "tamper",
+    [
+        lambda document: document["payload"].update({"model_id": "other-model"}),
+        lambda document: document["payload"]["features"][0].update({"median": 0.7}),
+        lambda document: document.update({"content_hash": "0" * 64}),
+    ],
+)
+def test_monitoring_reference_artifact_rejects_tampered_content(
+    tmp_path: Path,
+    tamper: object,
+) -> None:
+    path = tmp_path / "reference.json"
+    path.write_text(_reference_artifact().to_json(), encoding="utf-8")
+    document = json.loads(path.read_text(encoding="utf-8"))
+    tamper(document)  # type: ignore[operator]
+    path.write_text(
+        json.dumps(document, ensure_ascii=True, separators=(",", ":"), sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="integrity|canonical"):
+        MonitoringReferenceArtifact.load(path)
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {},
+        {"content_hash": "0" * 64, "payload": {}},
+        {"content_hash": "0" * 64, "payload": {"model_id": "model-1"}},
+    ],
+)
+def test_monitoring_reference_artifact_rejects_malformed_documents(
+    tmp_path: Path,
+    document: dict[str, object],
+) -> None:
+    path = tmp_path / "reference.json"
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="reference artifact"):
+        MonitoringReferenceArtifact.load(path)
+
+
+def test_monitoring_reference_artifact_converts_features_without_losing_stats() -> None:
+    artifact = _reference_artifact()
+
+    references = artifact.feature_references_for_health(minimum_finite_coverage=0.90)
+
+    assert references == (
+        FeatureReference(
+            feature_name="quality",
+            bin_edges=tuple(index / 10 for index in range(11)),
+            reference_bin_masses=(0.1,) * 10,
+            reference_missing_rate=0.02,
+            minimum_finite_coverage=0.90,
+            reference_median=0.5,
+            reference_iqr=0.2,
+        ),
+    )
