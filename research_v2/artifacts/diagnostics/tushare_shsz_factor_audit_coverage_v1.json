@@ -1817,6 +1817,18 @@
     "model_training_started": false,
     "locked_test_read": false
   },
+  "canonical_candidate_version_contract_index": {
+    "artifact": "canonical_candidate_version_contract_index_v1.json",
+    "scope": "CANONICAL_CANDIDATE_VERSION_CONTRACT_INDEX_V1",
+    "candidate_contract_count": 10,
+    "status": "NO_AUTOMATIC_ADMISSION",
+    "action": "Use this index to identify the exact isolated factor-version contract before any explicit admission decision. It does not approve admission, publish values, write factor values, change the formal nine, or authorize model inputs.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
+  },
   "interpretation": {
     "complete_predictive_quality": "The 16-factor rematerialized subset passed primary quality gates, but similarity, formula scope, precision, and PIT checks still govern admission.",
     "formal_admission": "Only the 9-factor scoreboard is currently eligible for the existing admission workflow, with monitoring on formula precision.",
