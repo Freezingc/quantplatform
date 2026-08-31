@@ -71,6 +71,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 - `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/train_pairs.csv`
 - `research_v2/artifacts/diagnostics/tushare_canonical_candidate_pair_similarity_v1/validation_pairs.csv`
 - `research_v2/artifacts/checkpoints/alpha484_canonical_v1/integrity.json`
+- `research_v2/artifacts/diagnostics/tushare_alpha443_canonical_candidate_review_v1.json`
 - `docs/superpowers/specs/2026-08-14-factor-quality-latest-alpha484-canonical-design.md`
 - `docs/superpowers/plans/2026-08-14-factor-quality-latest.md`
 - `docs/superpowers/plans/2026-08-14-alpha484-canonical-admission.md`
@@ -203,6 +204,14 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 
 评审包为 `research_v2/artifacts/diagnostics/alpha206_median_abs_candidate_review_v2.json`。它只可作为隔离的 Tushare 规范修复候选参与人工准入审查，仍要求监控训练低波动（signed ICIR `0.47133`）和 2025 非正趋势（`0.41302`）状态；不得自动发布、写入因子值、变更正式九因子、加入模型输入或启动训练。
 
+#### Alpha443 隔离规范候选
+
+2026-08-31 使用当前 `evaluate_tushare_scope_validation.py` 对 `yeslab_443_tushare_shsz_v1` 做了独立的 Tushare SH/SZ 全训练期与验证期重放，并重新计算与正式九因子的全日相似度。训练期 signed RankIC / ICIR 为 `0.06668 / 0.58257`，2025 验证期为 `0.07875 / 0.71210`，冻结方向为 `-1`，严格年度 ICIR 门槛通过 `4/5`。训练与验证覆盖率中位数分别为 `0.99142` 和 `0.99184`，P05 分别为 `0.98177` 和 `0.98957`，均通过覆盖门槛。
+
+与正式九因子的最大绝对 Spearman 中位数为训练 `0.74651`（最近 `yeslab_431`）、验证 `0.74141`（最近 `yeslab_431`），两期 9/9 边均完整覆盖 `1212/243` 个交易日，低于 `0.90` 冗余阈值。历史 YesLab `GP_074` 源池包含 `552` 个 BJ 代码，历史值不能与新的 SH/SZ Tushare 值混用；因此该候选状态为 `READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL`，仍未发布、未写数据库、未改变正式九因子、未加入模型输入。
+
+评审包为 `research_v2/artifacts/diagnostics/tushare_alpha443_canonical_candidate_review_v1.json`；训练/验证原始 RankIC 与相似度文件位于同名 `tushare_shsz_alpha443_formal9_*` 目录。该候选只进入人工范围审批，不因质量通过而自动准入。
+
 #### 六候选统一两两相似度审计
 
 2026-08-28 已完成 `yeslab_114_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_484_tushare_shsz_v1`、`yeslab_206_median_abs_v2` 的统一比较。公式计算使用完整 SH/SZ Tushare 市场面板，输出再限制到共同的 V2 `is_member` 且 `label_valid` 业务键；标签查询显式锁定 `forward_open_5d`/版本 `1`。Alpha484 使用带代码、manifest、内容哈希和日期集合指纹的已完成 Tushare 重放检查点，完整指纹记录在 `research_v2/artifacts/checkpoints/alpha484_canonical_v1/integrity.json`；加载器同时绑定代码内的规范阶段覆盖/日期摘要和文件哈希，替换 `integrity.json` 也不能让稀疏检查点通过；Alpha206 使用 60 日滚动中位数修复。
@@ -228,6 +237,7 @@ README 中仍保留过“正式六因子”的旧检查点，不能作为当前�
 | `yeslab_405_tushare_shsz_v1` | 预测、覆盖和正式九因子相似度通过，等待范围审批 | 必须明确批准隔离 SH/SZ 版本；不能使用历史 YesLab 值 |
 | `yeslab_425_tushare_shsz_v2` | 预测、覆盖、正式九因子和 405 候选对相似度通过 | 需明确批准隔离 SH/SZ 版本，并保留训练高波动监控 |
 | `yeslab_381_tushare_shsz_v1` | 预测、覆盖和正式九因子相似度通过；与 405 组合冗余偏高 | 先明确批准隔离 SH/SZ 版本；若与 405 同时考虑，必须另行组合审批 |
+| `yeslab_443_tushare_shsz_v1` | 预测、覆盖和正式九因子全日相似度通过；历史源含 BJ | 必须明确批准隔离 SH/SZ 版本，不能混用历史 YesLab 值 |
 | `yeslab_385` | 与 `yeslab_405` 相似度 0.90134，冗余失败 | 拒绝 |
 | `yeslab_208` | 总体有信号，但严格年度 ICIR 仅 1/5 | 监控研究候选，不准入 |
 | `yeslab_471` | 历史范围和 PIT 行业映射阻断 | 先重建 PIT 行业成员关系 |
@@ -603,7 +613,7 @@ python research_v2/scripts/refresh_factor_quality_latest.py \
 
 ### P4：候选人工准入评审（当前执行点）
 
-质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
+质量表完成后，按独立决策审查 `yeslab_405_tushare_shsz_v1`、`yeslab_425_tushare_shsz_v2`、`yeslab_381_tushare_shsz_v1`、`yeslab_484_tushare_shsz_v1`、`yeslab_114_tushare_shsz_v2`、`yeslab_206_median_abs_v2`、`yeslab_443_tushare_shsz_v1` 等候选。六候选统一两两相似度审计已完成并登记为 comparison-only 证据：`114-484` 标记为 `REDUNDANT`，`381-405` 标记为 `ELEVATED_PAIR_REDUNDANCY_MONITOR`，其余边为 `PAIR_UNIQUE`；Alpha443 已另行完成与正式九因子的 9 条训练/验证边复核。下一步仍是逐个候选的明确人工准入和组合决策；任何候选都不能因为需要凑满 15 个因子而批量放宽门槛。
 
 ### P5：模型工作仍保持暂停
 
