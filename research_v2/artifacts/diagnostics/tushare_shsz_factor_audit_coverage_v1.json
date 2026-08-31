@@ -4349,7 +4349,7 @@
       "yeslab_94": 262,
       "yeslab_98": 262
     },
-    "action": "Use the independent Tushare SH/SZ rematerialized quality artifacts for Alpha94/98. Do not treat old-value replay equality as an admission gate or change the formal factor set.",
+    "action": "Historical record: Alpha94/98 formal-factor quality uses the independent Tushare SH/SZ rematerialized evidence. Historical replay equality is not an admission gate; keep formal factor set unchanged.",
     "artifact": "formula_replay_alpha94_alpha98_tushare_scope_reconciliation_2025-01_v1.json"
   },
   "alpha155_scope_replay_followup": {
