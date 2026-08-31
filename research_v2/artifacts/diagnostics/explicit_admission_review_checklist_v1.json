@@ -160,7 +160,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
       "canonical_basis": "Versioned PIT industry rematerialization",
       "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Do not mix with historical static industry values. Retain elevated pair monitoring against the other candidate (train/validation median abs Spearman 0.84518/0.87878); no joint admission without separate review.",
-      "pair_or_combination_note": "Elevated pair monitor with yeslab_357_tushare_shsz_v1; do not jointly admit without separate review.",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete; elevated pair monitor with yeslab_357_tushare_shsz_v1 requires separate review before joint admission.",
       "evidence": [
         "tushare_alpha363_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha363_formal9_train_2020_2024_v1/similarity_summary.json",
@@ -179,7 +179,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "canonical_basis": "Versioned PIT industry rematerialization",
       "required_scope": "Use Tushare SW2014 before 2021-12-10 and SW2021 from 2021-12-10. Historical source replay remains blocked; retain reconciliation monitoring. Retain elevated pair monitoring against the other candidate (train/validation median abs Spearman 0.84518/0.87878); no joint admission without separate review.",
-      "pair_or_combination_note": "Elevated pair monitor with yeslab_363_tushare_shsz_v1; do not jointly admit without separate review.",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete; elevated pair monitor with yeslab_363_tushare_shsz_v1 requires separate review before joint admission.",
       "evidence": [
         "tushare_alpha357_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha357_formal9_train_2020_2024_v1/similarity_summary.json",
@@ -199,7 +199,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
       "canonical_basis": "Complete canonical replay",
       "required_scope": "Retain 2020 annual monitoring; historical 2020-only rejection is superseded only for current-status indexing.",
-      "pair_or_combination_note": "Retain 2020 annual monitoring; the complete replay supersedes the old 2020-only rejection only for current status.",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete; no elevated pair found for 96.",
       "evidence": [
         "tushare_alpha96_canonical_candidate_review_v1.json"
       ],
