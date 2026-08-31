@@ -538,10 +538,12 @@ git commit -m "docs(v2): complete inference and recovery runbooks"
 
 ## F 计划完成标准
 
-- [x] 每个交易日只在所有非标签水位和 DQ 通过后发布完整预测，失败时无陈旧/部分数据。
-- [x] 2026 SHADOW 至少 60 个有效日，期间无任何 label/RankIC/PnL 访问。
-- [x] 兼容 CSV/PKL 仅写 V2 独立路径，V1 schema/文件/hash 不变。
-- [x] active pointer 切换/回滚原子、可审计且受模型状态约束。
-- [x] 2026 locked test 只有成熟后、双人审批、预注册、one-shot 路径可执行。
-- [x] locked test 通过前模型不进入 PRODUCTION；失败 lineage 不得重复利用 2026 作为样本外。
-- [x] 日常、迟到、回滚、灾备 runbooks 经桌面演练验证。
+- [ ] 每个交易日只在所有非标签水位和 DQ 通过后发布完整预测，失败时无陈旧/部分数据。
+- [ ] 2026 SHADOW 至少 60 个有效日，期间无任何 label/RankIC/PnL 访问。
+- [ ] 兼容 CSV/PKL 仅写 V2 独立路径，V1 schema/文件/hash 不变。
+- [ ] active pointer 切换/回滚原子、可审计且受模型状态约束。
+- [ ] 2026 locked test 只有成熟后、双人审批、预注册、one-shot 路径可执行。
+- [ ] locked test 通过前模型不进入 PRODUCTION；失败 lineage 不得重复利用 2026 作为样本外。
+- [ ] 日常、迟到、回滚、灾备 runbooks 经桌面演练验证。
+
+注：F10 已完成；以上总体验收项待 F4 的每日 CLI、运行报告、属性测试和 inference 集成测试补齐后再逐项勾选。

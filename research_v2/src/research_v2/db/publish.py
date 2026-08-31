@@ -158,14 +158,47 @@ class V2BatchPublisher:
         quality_results: list[CheckResult],
         *,
         required_blocking_checks: frozenset[str] = frozenset(),
+        idempotent: bool = True,
     ) -> None:
-        """Publish one prevalidated, DQ-approved batch to its approved V2 target."""
+        """Publish one prevalidated, DQ-approved batch to its approved V2 target.
+
+        A current content-addressed version is treated as an idempotent retry by
+        default. Callers that need duplicate publication to remain an error can
+        set ``idempotent=False``.
+        """
         if not _TABLE_NAME_PATTERN.fullmatch(batch.object_name):
             raise PublishValidationError("object_name must be a simple table identifier")
         previous_version = self._previous_version(batch)
         if previous_version == batch.data_version:
-            raise PublishValidationError("data_version is already current for this partition")
+            if not idempotent:
+                raise PublishValidationError("data_version is already current for this partition")
+            if batch.state is PublishState.CREATED:
+                batch.validate()
+            if batch.state is not PublishState.VALIDATED:
+                if batch.state is PublishState.PUBLISHED:
+                    expected_rows = len(batch.frame)
+                else:
+                    raise PublishValidationError(
+                        "batch must be newly created or validated for retry"
+                    )
+            else:
+                expected_rows = len(batch.frame)
+            current_rows = self._current_version_row_count(batch)
+            if current_rows != expected_rows:
+                raise PublishValidationError(
+                    "current data_version row count does not match the retry batch"
+                )
+            if not can_publish(quality_results, required_blocking_checks=required_blocking_checks):
+                batch.state = PublishState.REJECTED
+                raise PublishValidationError("data-quality gate rejected staged batch")
+            if batch.state is PublishState.VALIDATED:
+                batch.publish()
+            return
         batch.validate()
+        if self._current_version_row_count(batch) != 0:
+            raise PublishValidationError(
+                "target contains orphan rows for data_version; use a fresh retry nonce"
+            )
         if not can_publish(quality_results, required_blocking_checks=required_blocking_checks):
             batch.state = PublishState.REJECTED
             raise PublishValidationError("data-quality gate rejected staged batch")

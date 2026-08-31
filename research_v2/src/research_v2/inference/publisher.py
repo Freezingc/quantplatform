@@ -67,10 +67,10 @@ def build_prediction_batch(
     )
     materialized["run_id"] = context.run_id
     materialized["data_version"] = context.data_version
-    materialized["created_at"] = pd.Timestamp.now(tz="UTC").tz_localize(None)
+    signal_date_text = str(materialized.loc[0, "signal_date"])
+    materialized["created_at"] = pd.Timestamp(signal_date_text)
     materialized["source_watermark_id"] = source_watermark_id
     materialized["record_hash"] = materialized.apply(_record_hash, axis=1)
-    signal_date_text = str(materialized.loc[0, "signal_date"])
     logical_partition = f"{signal_date_text}|{model_id}|{model_version}"
     return StagedBatch.create(
         object_name="prediction_daily",

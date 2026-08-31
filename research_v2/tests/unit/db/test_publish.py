@@ -307,6 +307,7 @@ def test_database_publisher_rejects_republishing_the_current_data_version() -> N
         V2BatchPublisher(session).publish(
             batch,
             [CheckResult("keys_unique", Severity.BLOCKER, CheckStatus.PASS)],
+            idempotent=False,
         )
 
     assert session.uploads == []

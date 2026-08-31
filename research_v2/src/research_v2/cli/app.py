@@ -11,6 +11,9 @@ from research_v2.cli.baselines import run_baseline
 from research_v2.cli.datasets import inspect_dataset, plan_build, verify_dataset
 from research_v2.cli.evaluate import evaluate_walk_forward
 from research_v2.cli.export import compatibility, verify
+from research_v2.cli.inference import daily as inference_daily
+from research_v2.cli.inference import retry as inference_retry
+from research_v2.cli.inference import status as inference_status
 from research_v2.cli.materialize import emit_plan
 from research_v2.cli.models import plan_model_train
 from research_v2.cli.registry import pointer_app, promote
@@ -25,6 +28,7 @@ registry_app = typer.Typer(no_args_is_help=True)
 evaluate_app = typer.Typer(no_args_is_help=True)
 report_app = typer.Typer(no_args_is_help=True)
 export_app = typer.Typer(no_args_is_help=True)
+inference_app = typer.Typer(no_args_is_help=True)
 app.add_typer(materialize_app, name="materialize")
 app.add_typer(dataset_app, name="dataset")
 app.add_typer(baseline_app, name="baseline")
@@ -34,6 +38,7 @@ registry_app.add_typer(pointer_app, name="pointer")
 app.add_typer(evaluate_app, name="evaluate")
 app.add_typer(report_app, name="report")
 app.add_typer(export_app, name="export")
+app.add_typer(inference_app, name="inference")
 
 
 def _materialize_command(operation: str) -> Callable[..., None]:
@@ -132,6 +137,33 @@ def export_verify_command(
     manifest: Path = typer.Option(..., "--manifest"),  # noqa: B008
 ) -> None:
     verify(manifest)
+
+
+@inference_app.command("daily")
+def inference_daily_command(
+    signal_date: str = typer.Option(..., "--signal-date"),
+    model_id: str = typer.Option(..., "--model-id"),
+    mode: str = typer.Option(..., "--mode"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+) -> None:
+    inference_daily(signal_date, model_id, mode, dry_run)
+
+
+@inference_app.command("status")
+def inference_status_command(
+    signal_date: str = typer.Option(..., "--signal-date"),
+    model_id: str = typer.Option(..., "--model-id"),
+) -> None:
+    inference_status(signal_date, model_id)
+
+
+@inference_app.command("retry")
+def inference_retry_command(
+    run_id: str = typer.Option(..., "--run-id"),
+    from_step: str = typer.Option(..., "--from-step"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+) -> None:
+    inference_retry(run_id, from_step, dry_run)
 
 
 if __name__ == "__main__":
