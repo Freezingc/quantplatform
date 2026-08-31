@@ -5255,8 +5255,8 @@
     "frozen_direction": -1,
     "annual_double_gate_pass_years": 5,
     "same_direction_years": 5,
-    "status": "MULTI_YEAR_STABILITY_PASS_PENDING_SIMILARITY_AND_FORMULA_SCOPE",
-    "action": "Keep Alpha484 isolated. Complete full five-year cross-sectional similarity and formula-scope/adjusted-price reconciliation before admission, publication, factor-value writes, model input changes, or training.",
+    "status": "SUPERSEDED_BY_ALPHA484_CANONICAL_ADMISSION_REVIEW",
+    "action": "Superseded by tushare_alpha484_canonical_v1/admission_review.json. Keep Alpha484 isolated pending explicit admission; do not publish, write factor values, change formal nine, add model inputs, or train.",
     "database_writes": false,
     "locked_test_read": false
   },
