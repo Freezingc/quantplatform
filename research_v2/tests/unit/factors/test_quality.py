@@ -58,3 +58,30 @@ def test_quality_blocks_duplicate_business_keys_and_nonfinite_clean_values() -> 
 
     assert snapshot.status is QualityStatus.BLOCKER
     assert "DUPLICATE_BUSINESS_KEY" in snapshot.blockers
+
+
+def test_quality_returns_blocker_snapshot_for_duplicate_universe_keys_instead_of_crashing() -> None:
+    duplicated_universe = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 1, 2), date(2025, 1, 2)],
+            "ts_code": ["000001.SZ", "000001.SZ"],
+        }
+    )
+    observations = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 1, 2)],
+            "ts_code": ["000001.SZ"],
+            "value": [1.0],
+            "stale_days": [0],
+        }
+    )
+
+    snapshot = assess_factor_quality(
+        duplicated_universe,
+        observations,
+        factor_id="yeslab_1",
+        factor_version=1,
+    )
+
+    assert snapshot.status is QualityStatus.BLOCKER
+    assert "DUPLICATE_UNIVERSE_KEY" in snapshot.blockers

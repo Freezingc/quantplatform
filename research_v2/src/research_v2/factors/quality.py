@@ -60,6 +60,7 @@ def assess_factor_quality(
         keep="first",
     )
     universe_keys = universe.loc[:, ["signal_date", "ts_code"]].copy()
+    universe_keys = universe_keys.drop_duplicates()
     merged = universe_keys.merge(
         metric_observations.loc[:, ["signal_date", "ts_code", "value", "stale_days"]],
         on=["signal_date", "ts_code"],
