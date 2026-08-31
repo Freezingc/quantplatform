@@ -96,7 +96,8 @@
         "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",
         "tushare_shsz_alpha443_formal9_validation_2025_v1/similarity_summary.json",
         "supplemental_candidate_pair_similarity_train_v1.json",
-        "supplemental_candidate_pair_similarity_validation_v1.json"
+        "supplemental_candidate_pair_similarity_validation_v1.json",
+        "extension_candidate_monthly_stability_validation_v1.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
     },
@@ -110,7 +111,8 @@
         "tushare_shsz_alpha363_formal9_train_2020_2024_v1/similarity_summary.json",
         "tushare_shsz_alpha363_formal9_validation_2025_v1/similarity_summary.json",
         "supplemental_candidate_pair_similarity_train_v1.json",
-        "supplemental_candidate_pair_similarity_validation_v1.json"
+        "supplemental_candidate_pair_similarity_validation_v1.json",
+        "extension_candidate_monthly_stability_validation_v1.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING"
     },
@@ -125,7 +127,8 @@
         "tushare_shsz_alpha357_formal9_validation_2025_v1/similarity_summary.json",
         "formula_replay_alpha357_tushare_pit_2025-01_v1.json",
         "supplemental_candidate_pair_similarity_train_v1.json",
-        "supplemental_candidate_pair_similarity_validation_v1.json"
+        "supplemental_candidate_pair_similarity_validation_v1.json",
+        "extension_candidate_monthly_stability_validation_v1.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING"
     },
@@ -137,7 +140,8 @@
       "evidence": [
         "tushare_alpha96_canonical_candidate_review_v1.json",
         "supplemental_candidate_pair_similarity_train_v1.json",
-        "supplemental_candidate_pair_similarity_validation_v1.json"
+        "supplemental_candidate_pair_similarity_validation_v1.json",
+        "extension_candidate_monthly_stability_validation_v1.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING"
     }

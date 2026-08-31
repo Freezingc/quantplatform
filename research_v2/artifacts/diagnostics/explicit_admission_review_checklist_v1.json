@@ -151,7 +151,8 @@
         "Is the isolated canonical version explicitly approved for this candidate?",
         "Are all monitoring requirements accepted if admitted?",
         "Has any required pair/combination review been completed for joint admission?"
-      ]
+      ],
+      "required_monitoring": "Retain monthly stability monitoring (extension_candidate_monthly_stability_validation_v1.json) and pair/combination monitors."
     },
     {
       "candidate_id": "yeslab_363_tushare_shsz_v1",
@@ -170,7 +171,8 @@
         "Is the isolated canonical version explicitly approved for this candidate?",
         "Are all monitoring requirements accepted if admitted?",
         "Has any required pair/combination review been completed for joint admission?"
-      ]
+      ],
+      "required_monitoring": "Retain monthly stability monitoring (extension_candidate_monthly_stability_validation_v1.json) and pair/combination monitors."
     },
     {
       "candidate_id": "yeslab_357_tushare_shsz_v1",
@@ -190,7 +192,8 @@
         "Is the isolated canonical version explicitly approved for this candidate?",
         "Are all monitoring requirements accepted if admitted?",
         "Has any required pair/combination review been completed for joint admission?"
-      ]
+      ],
+      "required_monitoring": "Retain monthly stability monitoring (extension_candidate_monthly_stability_validation_v1.json) and pair/combination monitors."
     },
     {
       "candidate_id": "yeslab_96_canonical_replay_v1",
@@ -207,7 +210,8 @@
         "Is the isolated canonical version explicitly approved for this candidate?",
         "Are all monitoring requirements accepted if admitted?",
         "Has any required pair/combination review been completed for joint admission?"
-      ]
+      ],
+      "required_monitoring": "Retain monthly stability monitoring (extension_candidate_monthly_stability_validation_v1.json) and pair/combination monitors."
     }
   ]
 }

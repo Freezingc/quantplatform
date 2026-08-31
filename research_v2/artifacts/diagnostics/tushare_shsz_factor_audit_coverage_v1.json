@@ -6109,5 +6109,17 @@
     "database_writes": false,
     "model_training_started": false,
     "locked_test_read": false
+  },
+  "extension_candidate_monthly_stability_validation": {
+    "artifact": "extension_candidate_monthly_stability_validation_v1.json",
+    "scope": "EXTENSION_CANDIDATE_MONTHLY_STABILITY_VALIDATION_V1",
+    "candidate_count": 4,
+    "status": "READ_ONLY_VALIDATION_EVIDENCE",
+    "action": "Use monthly stability evidence for explicit admission review monitoring. It does not approve admission, publish values, write factor values, change the formal nine, or authorize model inputs.",
+    "formal_factor_set_changed": false,
+    "model_eligible": false,
+    "database_writes": false,
+    "model_training_started": false,
+    "locked_test_read": false
   }
 }

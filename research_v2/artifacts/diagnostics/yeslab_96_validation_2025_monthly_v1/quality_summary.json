@@ -1,0 +1,64 @@
+{
+  "code_count": 4911,
+  "database_writes": false,
+  "end": "2025-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_96"
+  ],
+  "industry_coverage": {
+    "conflict_code_count": 0,
+    "coverage_ratio": 0.9997191122237448,
+    "mapped_rows": 936054,
+    "requested_rows": 936317,
+    "unmapped_code_count": 20,
+    "unmapped_codes": [
+      "000048.SZ",
+      "000803.SZ",
+      "000886.SZ",
+      "002215.SZ",
+      "002243.SZ",
+      "002402.SZ",
+      "002627.SZ",
+      "002758.SZ",
+      "002765.SZ",
+      "300105.SZ",
+      "600133.SH",
+      "601211.SH",
+      "603238.SH",
+      "603279.SH",
+      "603717.SH",
+      "603991.SH",
+      "688156.SH",
+      "688186.SH",
+      "688602.SH",
+      "689009.SH"
+    ],
+    "unmapped_key_count": 263
+  },
+  "industry_source": "Tushare SW2014/SW2021 versioned PIT membership",
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-11-04",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": true,
+  "start": "2025-01-02",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.757201646090535,
+      "end": "2025-12-31",
+      "factor_id": "yeslab_96",
+      "factor_name": "修正日间反转",
+      "icir": -0.6420879194258325,
+      "mean_rank_ic": -0.0739783380223831,
+      "rank_ic_std": 0.115215277821355,
+      "signed_mean_rank_ic": 0.0739783380223831,
+      "start": "2025-01-02",
+      "valid_day_count": 243
+    }
+  ]
+}
