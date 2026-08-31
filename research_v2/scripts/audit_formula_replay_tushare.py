@@ -20,6 +20,10 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import audit_formula_replay_consistency as replay
+from audit_tushare_pit_industry import (
+    PITIndustryProvider,
+    VersionedPITIndustryProvider,
+)
 import numpy as np
 import pandas as pd
 
@@ -169,6 +173,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="explicit old-to-new BJ code alias artifact; disabled by default",
     )
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--pit-industry-cache",
+        type=Path,
+        help="cache directory containing point-in-time industry membership artifacts",
+    )
+    parser.add_argument(
+        "--pit-industry-cutover",
+        type=date.fromisoformat,
+        help="classification cutover date for versioned point-in-time industry membership",
+    )
     args = parser.parse_args(argv)
     args.factor_id = tuple(args.factor_id or SUPPORTED_FACTOR_IDS)
     unsupported = sorted(set(args.factor_id).difference(SUPPORTED_FACTOR_IDS))
@@ -180,6 +194,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         raise ValueError("start date must not be after end date")
     if args.end >= LOCKED_TEST_START:
         raise ValueError("Tushare formula replay cannot read 2026 locked-test data")
+    if args.pit_industry_cutover is not None and args.pit_industry_cache is None:
+        raise ValueError("--pit-industry-cutover requires --pit-industry-cache")
+    if args.pit_industry_cutover is not None and args.pit_industry_cutover >= LOCKED_TEST_START:
+        raise ValueError("industry cutover must be before the 2026 locked test")
     if args.max_ts_codes < 1:
         raise ValueError("max-ts-codes must be positive")
     if args.stock_batch_size < 1:
@@ -945,6 +963,16 @@ def aggregate_comparisons(comparisons: Sequence[dict[str, object]]) -> dict[str,
 
 def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -> dict[str, object]:
     definitions = [replay.REPLAY_DEFINITIONS[factor_id] for factor_id in args.factor_id]
+    industry_provider = None
+    if args.pit_industry_cache is not None:
+        industry_provider = (
+            PITIndustryProvider.from_cache(args.pit_industry_cache)
+            if args.pit_industry_cutover is None
+            else VersionedPITIndustryProvider.from_cache(
+                args.pit_industry_cache,
+                cutover=args.pit_industry_cutover,
+            )
+        )
     aliases = load_alias_map(args.bj_alias_map) if args.bj_alias_map else {}
     required_fields = required_market_fields(definitions)
     effective_include_daily_basic = args.include_daily_basic or requires_daily_basic(
@@ -1034,7 +1062,13 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
             comparisons_by_factor[factor_id].append(
                 replay.compare_replay_frames(
                     replay._query_source(wrapped, definition, args.start, args.end),
-                    replay._replay_factor(wrapped, definition, args.start, args.end),
+                    replay._replay_factor(
+                        wrapped,
+                        definition,
+                        args.start,
+                        args.end,
+                        industry_provider=industry_provider,
+                    ),
                 )
             )
     rows: list[dict[str, object]] = []
@@ -1093,6 +1127,20 @@ def run_audit(args: argparse.Namespace, *, client: object, tushare_token: str) -
         ),
         "market_date_count": int(market["trade_date"].nunique()),
         "market_source": "Tushare.daily",
+        "industry_source": (
+            "Tushare SW2014/SW2021 versioned PIT membership"
+            if args.pit_industry_cutover is not None
+            else (
+                "Tushare SW2021 L1 PIT membership"
+                if args.pit_industry_cache is not None
+                else "YesLab.stock_info_table static labels"
+            )
+        ),
+        "pit_industry_cutover": (
+            args.pit_industry_cutover.isoformat()
+            if args.pit_industry_cutover is not None
+            else None
+        ),
         "market_rows": len(market),
         "market_finite_rows": int(
             np.isfinite(market.select_dtypes(include=[np.number])).to_numpy().sum()

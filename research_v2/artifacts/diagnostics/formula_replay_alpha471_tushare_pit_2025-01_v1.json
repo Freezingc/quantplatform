@@ -1,0 +1,65 @@
+{
+  "bj_alias_count": 0,
+  "bj_alias_map": null,
+  "code_count": 5133,
+  "cross_sectional_replay_mode": "single_complete_batch",
+  "database_writes": false,
+  "end": "2025-01-31",
+  "exclude_bj": true,
+  "factor_ids": [
+    "yeslab_471"
+  ],
+  "include_daily_basic": true,
+  "industry_source": "Tushare SW2014/SW2021 versioned PIT membership",
+  "locked_test_read": false,
+  "market_code_count": 5133,
+  "market_date_count": 60,
+  "market_finite_rows": 3063800,
+  "market_hash": "ca883c3c32c56eb52cd1d7c3042efc2733304229ad0135e37809d35d7a1cbb2b",
+  "market_missing_code_count": 0,
+  "market_rows": 306380,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-11-03",
+  "market_universe_source": "YesLab.stock_factor_daily",
+  "max_ts_codes": null,
+  "pit_industry_cutover": "2021-12-10",
+  "required_market_fields": [
+    "pct_chg",
+    "total_mv"
+  ],
+  "restrict_to_v2_universe": false,
+  "rows": [
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_471",
+      "factor_name": "AttentionSpillover",
+      "lookback_days": 21,
+      "max_abs_diff": 541.6844373535617,
+      "max_rel_diff": 20991.793941432035,
+      "max_ts_codes": null,
+      "mismatch_date_count": 18,
+      "mismatch_end": "2025-01-27",
+      "mismatch_rows": 90469,
+      "mismatch_start": "2025-01-02",
+      "overlap_finite_rows": 90471,
+      "overlap_rows": 92394,
+      "reason_codes": [
+        "FINITE_OVERLAP_MISMATCH"
+      ],
+      "replay_finite_rows": 91339,
+      "replay_lookback_days": 21,
+      "replay_rows": 92394,
+      "source_finite_rows": 90490,
+      "source_finite_rows_full": 90490,
+      "source_market_uncovered_code_count": 0,
+      "source_market_uncovered_date_count": 0,
+      "source_market_uncovered_rows": 0,
+      "source_rows": 92394
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2025-01-02",
+  "stock_batch_size": 5133,
+  "universe_mode": "full_market"
+}
