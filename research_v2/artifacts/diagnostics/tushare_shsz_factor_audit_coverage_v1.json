@@ -5367,11 +5367,11 @@
       "yeslab_357": "RESEARCH_CANDIDATE_PENDING_EXPLICIT_ADMISSION",
       "yeslab_362": "NO_ADMISSION_STRICT_ANNUAL_ICIR_FAIL",
       "yeslab_363": "RESEARCH_CANDIDATE_PENDING_EXPLICIT_ADMISSION",
-      "yeslab_471": "RESEARCH_CANDIDATE_PENDING_EXPLICIT_ADMISSION"
+      "yeslab_471": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY"
     },
     "status": "PIT_PROVIDER_INTEGRATED_RESEARCH_CANDIDATES_PENDING_ADMISSION",
     "denominator_note": "Active-key coverage uses the V2 member/label intersection for each signal_date and ts_code; it excludes pre-listing dates from the denominator.",
-    "action": "Use the versioned PIT provider for isolated canonical rematerialization only. Do not integrate static stock_info_table.industry, change the formal factor set, publish, or train model inputs. Complete train-only similarity, formula/version scope review, and explicit admission; keep Alpha362 rejected by the strict annual ICIR gate.",
+    "action": "Use the versioned PIT provider for isolated canonical rematerialization only. Do not integrate static stock_info_table.industry, change the formal factor set, publish, or train model inputs. Complete train-only similarity where possible; Alpha471 remains blocked by historical source formula despite PIT industry. keep Alpha362 rejected by the strict annual ICIR gate.",
     "database_writes": false,
     "locked_test_read": false
   },
