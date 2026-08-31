@@ -141,7 +141,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "canonical_basis": "Tushare SH/SZ rematerialization",
       "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities.",
-      "pair_or_combination_note": "Historical GP_074 contains BJ securities; isolated SH/SZ Tushare version only.",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete (30 train/validation edges); no elevated pair found for 443.",
       "evidence": [
         "tushare_alpha443_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",

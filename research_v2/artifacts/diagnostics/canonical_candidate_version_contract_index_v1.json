@@ -90,11 +90,13 @@
       "source_factor_id": "yeslab_443",
       "factor_name": "GP_074",
       "canonical_basis": "Tushare SH/SZ rematerialization",
-      "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities.",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities. Combination evidence against six-candidate matrix and extension candidates is complete; no elevated pair found for 443.",
       "evidence": [
         "tushare_alpha443_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",
-        "tushare_shsz_alpha443_formal9_validation_2025_v1/similarity_summary.json"
+        "tushare_shsz_alpha443_formal9_validation_2025_v1/similarity_summary.json",
+        "supplemental_candidate_pair_similarity_train_v1.json",
+        "supplemental_candidate_pair_similarity_validation_v1.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
     },
