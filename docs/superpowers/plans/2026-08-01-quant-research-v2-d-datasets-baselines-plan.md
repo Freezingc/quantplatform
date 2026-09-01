@@ -82,7 +82,7 @@ research_v2/tests/integration/evaluation/test_walk_forward_baselines.py
 - Test: `research_v2/tests/unit/datasets/test_splits.py`
 - Test: `research_v2/tests/property/datasets/test_split_invariants.py`
 
-- [ ] **D1.1 写精确 fold 配置**
+- [x] **D1.1 写精确 fold 配置**
 
 ```text
 F01 train 2014–2018 | validation 2019 | test 2020
@@ -96,7 +96,7 @@ FINAL train 2020–2024 | validation 2025 | test 2026 (LOCKED)
 
 日界使用交易日历中各自然年的首末交易日，不硬编码某年具体日期；2013 仅 warmup，不进入正式 label samples。
 
-- [ ] **D1.2 写失败测试：窗口长度、顺序和不重叠**
+- [x] **D1.2 写失败测试：窗口长度、顺序和不重叠**
 
 ```python
 def test_outer_fold_years():
@@ -107,19 +107,19 @@ def test_outer_fold_years():
 
 覆盖所有 7 folds、自然年缺少交易日、重复 ID、段落交叠、乱序和非 5/1/1 长度。
 
-- [ ] **D1.3 实现 6 交易日 purge**
+- [x] **D1.3 实现 6 交易日 purge**
 
 每个 train/validation 段尾删除最后 6 个 signal dates，确保其 T+6 标签不跨入下一段；段首不删除，模型可使用此前已知历史作为 feature lookback，但该上下文行不参与当前段 loss/metric。test 段只保留 `exit_date <= test_end` 的成熟标签。
 
-- [ ] **D1.4 定义训练内 inner folds**
+- [x] **D1.4 定义训练内 inner folds**
 
 每个 5 年 outer train 建 3 个 expanding inner folds：前 2 年训练/第 3 年验证、前 3 年训练/第 4 年验证、前 4 年训练/第 5 年验证；各 inner-train 尾同样 purge 6 日。`positive_inner_fold_ratio` 的分母固定为 3，因此 60% 门槛实际要求至少 2/3 为正。
 
-- [ ] **D1.5 强制 locked split capability**
+- [x] **D1.5 强制 locked split capability**
 
 `FINAL.test` 默认只返回 metadata，不返回日期/行。普通 `SplitResolver` 对 locked 段抛 `LockedPeriodError`；解锁接口不在本模块暴露。
 
-- [ ] **D1.6 性质测试与提交**
+- [x] **D1.6 性质测试与提交**
 
 Hypothesis 在任意合法交易日历上验证段顺序、label exit 不跨界、inner folds 包含关系和 locked 不可读。
 
@@ -141,7 +141,7 @@ git commit -m "feat(v2): define purged annual walk-forward splits"
 - Test: `research_v2/tests/unit/datasets/test_preprocessing.py`
 - Test: `research_v2/tests/leakage/test_preprocessor_fit_scope.py`
 
-- [ ] **D2.1 固化默认预处理顺序**
+- [x] **D2.1 固化默认预处理顺序**
 
 ```text
 1. 将 ±inf 视为缺失
@@ -155,19 +155,19 @@ git commit -m "feat(v2): define purged annual walk-forward splits"
 
 所有统计以证券-日期 observation 为样本，但在每个日期对每只证券等权；配置和 fitted state 均进入 artifact hash。
 
-- [ ] **D2.2 写失败测试：validation/test 不能参与 fit**
+- [x] **D2.2 写失败测试：validation/test 不能参与 fit**
 
 用极端 validation/test 值证明 train p01/p99/median/IQR 不变；调用 `fit` 传入非 TRAIN role 直接失败；`transform` 列顺序与 factor set 不符失败。
 
-- [ ] **D2.3 实现 serializable FoldPreprocessor**
+- [x] **D2.3 实现 serializable FoldPreprocessor**
 
 state 明确保存原始 factor order、missing-mask contract、bounds、median/IQR、常数列和 fit date range；只允许 `fit` 一次，反序列化后 hash 必须一致。训练中全空/常数因子标记 ineligible，不静默输出全零有效特征。
 
-- [ ] **D2.4 写未来扰动和重排测试**
+- [x] **D2.4 写未来扰动和重排测试**
 
 改变 cutoff 后数据不影响 train transform；行顺序不影响 fitted state；训练值本身变化必须改变 state hash。
 
-- [ ] **D2.5 运行测试并提交**
+- [x] **D2.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/datasets/test_preprocessing.py tests/leakage/test_preprocessor_fit_scope.py -q`
 
@@ -186,7 +186,7 @@ git commit -m "feat(v2): add fold-scoped robust preprocessing"
 - Test: `research_v2/tests/unit/datasets/test_selection.py`
 - Test: `research_v2/tests/leakage/test_selector_fit_scope.py`
 
-- [ ] **D3.1 写失败测试：每项门槛**
+- [x] **D3.1 写失败测试：每项门槛**
 
 一个因子只有全部通过才 eligible：
 
@@ -200,27 +200,27 @@ HAC 双侧 p-value 经 BH 校正 q <= 0.10
 
 signed IC 乘 registry `expected_direction`（POSITIVE=+1，NEGATIVE=-1）；方向为 UNKNOWN 时，仅用 outer train aggregated IC 固定符号并写入 factor set，validation/test 不重新定向。
 
-- [ ] **D3.2 实现每日因子 IC 与 HAC p-value**
+- [x] **D3.2 实现每日因子 IC 与 HAC p-value**
 
 按训练日、当日 universe、非空 factor/主 raw label 计算 Spearman；有效横截面数 <30 当日无效。HAC 使用 intercept-only OLS、`maxlags=5`，对应重叠 5 日标签。有效 IC 日 <120 的因子直接 insufficient。
 
-- [ ] **D3.3 实现 Benjamini–Hochberg**
+- [x] **D3.3 实现 Benjamini–Hochberg**
 
 在同一 fold 所有 structural-eligible 因子的 HAC p-values 上执行 BH，稳定 tie-break 为 `p_value, factor_id`；保存原 p、q、family size 和规则版本。
 
-- [ ] **D3.4 调用 C 计划相似度聚类**
+- [x] **D3.4 调用 C 计划相似度聚类**
 
 仅用 outer train 计算 median daily abs Spearman；阈值 0.90。每簇代表排序：FDR q 更小 → signed mean IC 更高 → 年度正向数更多 → coverage 更高 → conflict rate 更低 → factor_id ASC。
 
-- [ ] **D3.5 限制特征数量**
+- [x] **D3.5 限制特征数量**
 
 默认按上述排序取最多 40；少于 15 时 factor set 保持 `DRAFT` 并记录 validation reason=`INSUFFICIENT_FEATURES`，可跑诊断 B0/B1 但禁止复杂模型训练。41–60 只有经配置审批、说明经济覆盖原因后允许；超过 hard max 60 无条件失败。
 
-- [ ] **D3.6 写泄漏陷阱**
+- [x] **D3.6 写泄漏陷阱**
 
 置换 validation/test labels、增加未来因子行、改变 test 极值，selection result/hash 必须不变。将 test 查询监控为 forbidden call，selector 运行中出现即失败。
 
-- [ ] **D3.7 运行测试并提交**
+- [x] **D3.7 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/datasets/test_selection.py tests/leakage/test_selector_fit_scope.py -q`
 
@@ -244,19 +244,19 @@ git commit -m "feat(v2): select stable factors inside train folds"
 - Test: `research_v2/tests/property/datasets/test_manifest_invariants.py`
 - Test: `research_v2/tests/leakage/test_locked_dataset.py`
 
-- [ ] **D4.1 写 manifest contract**
+- [x] **D4.1 写 manifest contract**
 
 必须包含：dataset id/hash、fold/split role、universe id/version、label id/version、factor set id 与有序成员、source data versions/watermarks、signal/entry/exit 范围、purged dates、行/日/证券数、每列 dtype/null count、preprocessor state hash、schema version、code commit、构建配置 hash、所有 parquet shard SHA-256。
 
-- [ ] **D4.2 写失败测试：逻辑内容寻址**
+- [x] **D4.2 写失败测试：逻辑内容寻址**
 
 相同行不同顺序/不同 parquet chunk 得到同 logical dataset hash；任一值、成员顺序、split、watermark 或预处理状态变化必须改变 hash。已发布 manifest 不可覆盖。
 
-- [ ] **D4.3 实现点时 join**
+- [x] **D4.3 实现点时 join**
 
 锚点为 `universe_daily(signal_date, ts_code)`；按同一 signal date 连接 factor observation；按 label key 连接成熟 raw label。每行断言 factor `available_date <= signal_date`、label `exit_date <= segment_end`，且业务键唯一。
 
-- [ ] **D4.4 实现列式存储布局**
+- [x] **D4.4 实现列式存储布局**
 
 ```text
 artifacts/datasets/{dataset_id}/
@@ -269,11 +269,11 @@ artifacts/datasets/{dataset_id}/
 
 parquet 使用固定 schema、zstd 和稳定列顺序；临时目录完成 hash 后原子 rename。artifact root 不位于 V1 输出目录。
 
-- [ ] **D4.5 实现 locked guard**
+- [x] **D4.5 实现 locked guard**
 
 普通命令 `--fold FINAL --role test` 在解析 manifest 前失败；禁止用任意 `--end 2026-...` 绕过 fold。SHADOW inference 数据不含 label 且由 F 计划独立 builder 生成。
 
-- [ ] **D4.6 定义 CLI**
+- [x] **D4.6 定义 CLI**
 
 ```text
 qr-v2 dataset build --fold F01 --factor-policy stable-v1
@@ -283,7 +283,7 @@ qr-v2 dataset verify --dataset-id sha256:...
 
 build 默认一次生成 train/validation，显式 `--include-test` 才在 F01–F06 选择冻结后生成 test；FINAL 永不接受该参数。
 
-- [ ] **D4.7 运行测试并提交**
+- [x] **D4.7 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/datasets/test_manifest.py tests/unit/datasets/test_builder.py tests/property/datasets/test_manifest_invariants.py tests/leakage/test_locked_dataset.py -q`
 
@@ -304,11 +304,11 @@ git commit -m "feat(v2): build immutable PIT datasets"
 - Test: `research_v2/tests/unit/evaluation/test_rank_ic.py`
 - Test: `research_v2/tests/unit/evaluation/test_hac.py`
 
-- [ ] **D5.1 写每日 RankIC 测试**
+- [x] **D5.1 写每日 RankIC 测试**
 
 按 `signal_date` 对 finite prediction 与 raw return 计算 Spearman；样本数 <30、prediction 或 label 常数时记 invalid，不填 0。并列值用 average rank；输入稳定排序后计算。
 
-- [ ] **D5.2 实现 summary 定义**
+- [x] **D5.2 实现 summary 定义**
 
 ```text
 mean_rank_ic = valid daily IC arithmetic mean
@@ -320,15 +320,15 @@ positive_day_ratio = count(IC>0) / valid_days
 
 同时按 calendar year 汇总同一字段，保存 valid/invalid day counts 与每日横截面样本分位数。
 
-- [ ] **D5.3 实现 Newey-West/HAC**
+- [x] **D5.3 实现 Newey-West/HAC**
 
 对每日 IC 序列回归常数项，`cov_type='HAC', maxlags=5, use_correction=True`；输出 mean coefficient、standard error、t-stat 和双侧 p-value。日期缺口不填 0，按有效观测顺序计算并报告缺失率。
 
-- [ ] **D5.4 用独立参考验证**
+- [x] **D5.4 用独立参考验证**
 
 小向量与 `scipy.stats.spearmanr` 对照；HAC 与 statsmodels 直接 OLS fixture 对照，容差 `1e-12`。全正/全负/常数/单日/NaN/并列全部覆盖。
 
-- [ ] **D5.5 运行测试并提交**
+- [x] **D5.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/evaluation/test_rank_ic.py tests/unit/evaluation/test_hac.py -q`
 
@@ -351,7 +351,7 @@ git commit -m "feat(v2): calculate robust RankIC statistics"
 - Test: `research_v2/tests/unit/baselines/test_single_factor.py`
 - Test: `research_v2/tests/unit/baselines/test_equal_weight.py`
 
-- [ ] **D6.1 定义统一 baseline protocol**
+- [x] **D6.1 定义统一 baseline protocol**
 
 ```python
 class Baseline(Protocol):
@@ -361,19 +361,19 @@ class Baseline(Protocol):
 
 PredictionFrame 精确包含 `signal_date, ts_code, score, model_id, fold_id, dataset_id`；重复键、非 finite score 或缺失成员失败。
 
-- [ ] **D6.2 实现 B0 best single factor**
+- [x] **D6.2 实现 B0 best single factor**
 
 方向只在 train 固定；对入选 factor set 的每个因子在 validation 算 mean RankIC，选最高者，tie-break 为 train signed mean IC 更高、coverage 更高、factor_id ASC。test 只使用冻结的因子/方向。
 
-- [ ] **D6.3 实现 B1 signed equal weight**
+- [x] **D6.3 实现 B1 signed equal weight**
 
 对每因子预处理值乘冻结方向，逐日对 finite 值 average；要求当行至少 60% 因子有效，否则 score null。再在当日对 score 做 percentile rank，tie-break 不影响相同 score 的 average rank。
 
-- [ ] **D6.4 写“强简单基线”回归测试**
+- [x] **D6.4 写“强简单基线”回归测试**
 
 合成数据包含一个强单因子和多个噪声因子，断言 B0 选强因子、B1 不会错误用 test 重选方向。加入 GP_032 类强因子 fixture，报告必须显式显示其验证/OOS 表现。
 
-- [ ] **D6.5 运行测试并提交**
+- [x] **D6.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/baselines/test_single_factor.py tests/unit/baselines/test_equal_weight.py -q`
 
@@ -395,23 +395,23 @@ git commit -m "feat(v2): establish single-factor and ensemble baselines"
 - Test: `research_v2/tests/unit/baselines/test_linear.py`
 - Test: `research_v2/tests/unit/baselines/test_lgbm_ranker.py`
 
-- [ ] **D7.1 实现 B2 Ridge/ElasticNet 小网格**
+- [x] **D7.1 实现 B2 Ridge/ElasticNet 小网格**
 
 训练目标为每日 raw return 去当日均值后的值，sample weight 使每个交易日总权重相同。候选固定：`alpha ∈ {0.01,0.1,1,10,100}`，`l1_ratio ∈ {0,0.1,0.5,0.9,1}`；按 3 inner folds mean RankIC 选组合，validation 只用于 B0–B3 最终比较。tie-break 优先更大 alpha、更小 l1 ratio。
 
-- [ ] **D7.2 实现 B3 LambdaRank**
+- [x] **D7.2 实现 B3 LambdaRank**
 
 每个训练日按 raw return 五分位生成 relevance 0–4，日期作为 query group；固定候选：`num_leaves ∈ {15,31}`、`max_depth ∈ {4,6}`、`learning_rate ∈ {0.03,0.05}`、`min_child_samples ∈ {50,200}`，max estimators=500，inner validation early stopping patience=50。seed 固定 20260801，`n_jobs` 固定以保证可重复。
 
-- [ ] **D7.3 禁止横截面 group 混乱**
+- [x] **D7.3 禁止横截面 group 混乱**
 
 排序固定 `signal_date, ts_code`；group sizes 之和必须等于行数；同日不能跨 parquet chunk 被错误切成多个 query；预测恢复原业务键后再排序。
 
-- [ ] **D7.4 写选择范围测试**
+- [x] **D7.4 写选择范围测试**
 
 监控 estimator 的 fit/eval_set，证明 test 从不传入；改变 test labels 不改变参数/model hash。训练不足 30 股票的日期从 ranker loss 排除但记录 coverage。
 
-- [ ] **D7.5 运行测试并提交**
+- [x] **D7.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/baselines/test_linear.py tests/unit/baselines/test_lgbm_ranker.py -q`
 
@@ -433,15 +433,15 @@ git commit -m "feat(v2): add linear and tree ranking baselines"
 - Test: `research_v2/tests/unit/evaluation/test_gates.py`
 - Test: `research_v2/tests/integration/evaluation/test_walk_forward_baselines.py`
 
-- [ ] **D8.1 每折冻结 best simple baseline**
+- [x] **D8.1 每折冻结 best simple baseline**
 
 B0–B3 全部在同一 fold manifest 上训练；按 validation mean RankIC 最大选 best，tie-break 固定复杂度 `B0 < B1 < B2 < B3`。写 `selection_record` 后才允许加载 test；记录 validation metrics 和未选原因。
 
-- [ ] **D8.2 拼接 F01–F06 OOS**
+- [x] **D8.2 拼接 F01–F06 OOS**
 
 每个自然年只来自对应 fold test；拼接前断言 date 唯一归属、prediction key 唯一、dataset/model hash 已冻结。总体指标从 2020–2025 所有每日 IC 重算，不平均年度 ICIR。
 
-- [ ] **D8.3 实现机器可判定门槛**
+- [x] **D8.3 实现机器可判定门槛**
 
 ```text
 G1 mean OOS RankIC >= 0.030
@@ -456,11 +456,11 @@ G5 分母为各年 `max(year_mean_ic,0)` 之和，分子为最大值；分母为
 
 基线自身报告 G1/G2/G3/G5/G6；G4 只用于候选模型，基线显示 `NOT_APPLICABLE`，不误判失败。
 
-- [ ] **D8.4 写阈值边界测试**
+- [x] **D8.4 写阈值边界测试**
 
 精确等于 0.03、2.0、5/6、0.005、0.50 均通过；浮点比较使用未格式化值，报告四舍五入不参与判断。任一缺失年度/指标、NaN、无有效日都 fail closed。
 
-- [ ] **D8.5 定义 CLI**
+- [x] **D8.5 定义 CLI**
 
 ```text
 qr-v2 baseline run --fold F01 --models B0,B1,B2,B3
@@ -497,15 +497,15 @@ git commit -m "feat(v2): evaluate purged walk-forward baselines"
 - Create: `research_v2/tests/golden/test_dataset_and_metrics.py`
 - Create: `research_v2/tests/leakage/test_end_to_end_fold_isolation.py`
 
-- [ ] **D9.1 扩充 50×60 黄金数据**
+- [x] **D9.1 扩充 50×60 黄金数据**
 
 将 B/C 黄金输入组成 dataset，人工固定 3 个因子：完全正相关、完全负相关、有并列/缺失；独立计算每日 Spearman、mean/std/ICIR 和 statsmodels HAC 参考值。manifest 保存所有输入 hash。
 
-- [ ] **D9.2 实现实验报告**
+- [x] **D9.2 实现实验报告**
 
 HTML/JSON 同时包含：数据版本、fold dates/purge、factor set、预处理、B0–B3 validation/test、每年 OOS、总体 OOS、HAC、门槛逐项 PASS/FAIL、覆盖、score collapse、运行环境和所有 artifact links。默认首先显示最佳简单基线，不只展示复杂候选。
 
-- [ ] **D9.3 完整泄漏 canary**
+- [x] **D9.3 完整泄漏 canary**
 
 在 validation/test/2026 区域注入极强“未来完美因子”和标签，断言 train selector/preprocessor/baseline fit hashes 不变；普通路径触碰 2026 时测试必须失败并记录访问尝试。
 
@@ -517,7 +517,7 @@ Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/integration/datasets tes
 
 Expected: 全部退出码 0；黄金指标与参考值一致；locked canary 被阻止。
 
-- [ ] **D9.5 提交并请求审查**
+- [x] **D9.5 提交并请求审查**
 
 ```bash
 git add research_v2/src/research_v2/reporting research_v2/tests/golden research_v2/tests/leakage/test_end_to_end_fold_isolation.py
@@ -528,9 +528,20 @@ git commit -m "test(v2): lock dataset metrics and leakage canaries"
 
 ## D 计划完成标准
 
-- [ ] F01–F06 与 FINAL 年份、3 个 inner folds 和 6 日 purge 由测试精确锁定。
-- [ ] preprocessor/selector 仅拟合 outer train；validation 只选参数，test 只评价。
-- [ ] 每个 dataset manifest 可内容寻址、验证和不可变重放。
-- [ ] B0–B3 全部完成，每折 best simple baseline 只由 validation 决定。
-- [ ] OOS RankIC/ICIR/HAC 与年度贡献按统一函数计算；门槛边界可机器判定。
-- [ ] 普通 builder/evaluator 无法读取 FINAL 2026 test。
+- [x] F01–F06 与 FINAL 年份、3 个 inner folds 和 6 日 purge 由测试精确锁定。
+- [x] preprocessor/selector 仅拟合 outer train；validation 只选参数，test 只评价。
+- [x] 每个 dataset manifest 可内容寻址、验证和不可变重放。
+- [x] B0–B3 全部完成，每折 best simple baseline 只由 validation 决定。
+- [x] OOS RankIC/ICIR/HAC 与年度贡献按统一函数计算；门槛边界可机器判定。
+- [x] 普通 builder/evaluator 无法读取 FINAL 2026 test。
+
+## 状态核对（2026-09-01）
+
+已按现有代码与测试逐项核对并勾选完成步骤（splits/manifest/preprocessing/
+selection/storage、B0–B3、gates/walk-forward、50×60 黄金数据与泄漏 canary
+均有对应测试；全量单元套件 947 通过，`ruff check` 与 `mypy src` 干净）。
+仍开放的条目及原因：
+
+- D8.6：合成 7 年端到端（split→…→OOS 拼接）集成套件缺失，
+  `tests/integration/evaluation/test_walk_forward_baselines.py` 未建立。
+- D8.7/D9.4：对应 `QRV2_INTEGRATION=1` 集成验证缺上述文件，单元侧已全部通过。
