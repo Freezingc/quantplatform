@@ -146,6 +146,7 @@ def main() -> None:
     parser.add_argument("--factor-ids", default=",".join(VERIFIED_FACTOR_LOOKBACKS))
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--skip-preflight", action="store_true")
+    parser.add_argument("--compact-only", action="store_true")
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     start_date = _parse_date(args.start)
@@ -170,6 +171,42 @@ def main() -> None:
     routes = _build_routes(metadata, factor_ids)
     source_session = RecomputedFactorSourceSession(market_client, routes)
     partitions = _months(start_date, end_date)
+
+    if args.compact_only:
+        report = {"target_database": "dfs://QuantResearchV2Test", "compact_only": True}
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        spec = CompactObjectSpec(
+            source_object="factor_observation_clean",
+            target_object="factor_observation_clean_latest",
+            business_keys=("signal_date", "ts_code", "factor_id", "factor_version"),
+            partition_date_column="signal_date",
+        )
+        compacted: list[dict[str, object]] = []
+        for pointer in list_current_source_pointers(
+            target_session, "factor_observation_clean"
+        ):
+            if pointer.logical_partition not in partitions:
+                continue
+            result = materialize_and_publish_current_partition(target_session, spec, pointer)
+            compacted.append(
+                {
+                    "logical_partition": result.logical_partition,
+                    "batch_id": result.batch_id,
+                    "row_count": result.row_count,
+                    "status": result.status,
+                }
+            )
+            print(
+                f"compacted {pointer.logical_partition} "
+                f"rows={result.row_count} status={result.status}",
+                flush=True,
+            )
+        report["compacted_latest"] = compacted
+        args.report.write_text(
+            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        print(f"compaction complete; report={args.report}", flush=True)
+        return
 
     if args.skip_preflight:
         if not args.report.exists():
@@ -277,18 +314,20 @@ def main() -> None:
         business_keys=("signal_date", "ts_code", "factor_id", "factor_version"),
         partition_date_column="signal_date",
     )
-    compacted: list[dict[str, object]] = []
+    compacted_final: list[dict[str, object]] = []
     for pointer in list_current_source_pointers(target_session, "factor_observation_clean"):
         if pointer.logical_partition not in partitions:
             continue
         result = materialize_and_publish_current_partition(target_session, spec, pointer)
-        compacted.append(
+        compacted_final.append(
             {
                 "logical_partition": result.logical_partition,
-                "data_version": result.data_version,
+                "batch_id": result.batch_id,
+                "row_count": result.row_count,
+                "status": result.status,
             }
         )
-    report["compacted_latest"] = compacted
+    report["compacted_latest"] = compacted_final
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"recomputed backfill complete; report={args.report}", flush=True)
 
