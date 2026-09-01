@@ -1,0 +1,25 @@
+# 准入 16 因子公式重放验证（2026-09-01）
+
+窗口：2020-09-14 … 2020-09-25（全横截面重放）。
+
+结论：**14/16 通过**（机器精度内一致），2 个阻塞。
+2014–2019 重算对通过集合安全；GP_026/GP_074 的存储值无法由当前计算器重建，需单独调查。
+
+| 因子 | 名称 | 判定 | max_abs_diff | mismatch_rows | overlap_finite |
+|---|---|---|---|---|---|
+| yeslab_376 | GP_007 | FORMULA_REPLAY_PASS | 3.823330541052883e-15 | 0 | 39791 |
+| yeslab_377 | GP_008 | FORMULA_REPLAY_PASS | 0.0 | 0 | 38056 |
+| yeslab_380 | GP_011 | FORMULA_REPLAY_PASS | 0.0 | 0 | 447 |
+| yeslab_381 | GP_012 | FORMULA_REPLAY_PASS | 3.725290298461914e-09 | 0 | 40107 |
+| yeslab_387 | GP_018 | FORMULA_REPLAY_PASS | 0.0 | 0 | 447 |
+| yeslab_388 | GP_019 | FORMULA_REPLAY_PASS | 3.725290298461914e-09 | 0 | 282 |
+| yeslab_391 | GP_022 | FORMULA_REPLAY_PASS | 0.0 | 0 | 460 |
+| yeslab_395 | GP_026 | FORMULA_REPLAY_BLOCKED | 83498.20699894149 | 2433 | 35431 |
+| yeslab_396 | GP_027 | FORMULA_REPLAY_PASS | 1.1368683772161603e-13 | 0 | 40107 |
+| yeslab_400 | GP_031 | FORMULA_REPLAY_PASS | 0.0 | 0 | 35431 |
+| yeslab_405 | GP_036 | FORMULA_REPLAY_PASS | 3.552713678800501e-15 | 0 | 40107 |
+| yeslab_425 | GP_056 | FORMULA_REPLAY_PASS | 0.0 | 0 | 39791 |
+| yeslab_432 | GP_063 | FORMULA_REPLAY_PASS | 5.706546346573305e-13 | 0 | 40147 |
+| yeslab_433 | GP_064 | FORMULA_REPLAY_PASS | 1.4901161193847656e-06 | 0 | 460 |
+| yeslab_442 | GP_073 | FORMULA_REPLAY_PASS | 2.842170943040401e-14 | 0 | 38046 |
+| yeslab_443 | GP_074 | FORMULA_REPLAY_BLOCKED | 0.3249168395996094 | 23 | 38575 |
