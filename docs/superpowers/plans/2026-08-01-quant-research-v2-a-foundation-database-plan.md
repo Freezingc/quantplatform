@@ -322,11 +322,11 @@ class MigrationRunner:
 
 控制表按月份日期分区；`pipeline_run`/migration 表保持低基数 keyed/partitioned 设计，具体引擎以 Phase 0 容量审批为准。
 
-- [ ] **A5.4 添加测试库集成 fixture**
+- [x] **A5.4 添加测试库集成 fixture**
 
 fixture 要求显式 `QRV2_INTEGRATION=1` 和 Test DB；缺任一条件自动 skip，绝不能回退生产 DB。每次测试使用唯一 namespace/run_id 并清理自己的 staging 对象。
 
-- [ ] **A5.5 运行 dry-run 与集成测试**
+- [x] **A5.5 运行 dry-run 与集成测试**
 
 Run: `cd research_v2 && qr-v2 db migrate --env test --dry-run`
 
@@ -619,7 +619,7 @@ with pipeline_run(repo, name="db.migrate", context=context) as run:
 
 在配置、连接错误、CLI traceback 和 pipeline audit 中植入 sentinel secret，断言 stdout/stderr/DB audit 均不包含原文。
 
-- [ ] **A8.4 运行完整 A 计划验证**
+- [x] **A8.4 运行完整 A 计划验证**
 
 Run: `cd research_v2 && ruff check src tests && mypy src`
 
@@ -659,9 +659,17 @@ git commit -m "feat(v2): expose audited database CLI"
 CLI 与 README 均有对应测试/产物；全量单元套件 947 通过，`ruff check` 与
 `mypy src` 干净）。仍开放的条目及原因：
 
-- A5.4/A5.5：迁移专用 Test-DB 集成 fixture 未建立（dry-run/幂等/checksum
-  已在单元层锁定；真实库验证并入 `tests/integration` 门控验收）。
 - A6.6：在真实 V2Test 库验证全部 schema 属运营执行证据。
+- A5.4/A5.5 已于 2026-09-01 补齐：`tests/integration/db/conftest.py` 提供
+  协议级内存 Test-DB harness（`FakeV2TestDatabase`：允许列表目标库、幂等建表、
+  `schema_migration` 审计表），`tests/integration/db/test_migration_test_db.py`
+  验证 13 个迁移按序落库（表集合与 .dos 声明一致）、二次应用零副作用、
+  checksum 漂移拒绝、dry-run 零执行；`QRV2_INTEGRATION=1` 门控运行 4 通过。
+- A8.4 已于 2026-09-01 闭合：ruff/mypy/978 单元与黄金测试全绿，
+  `tests/integration/db` 门控通过，V1 写保护（test_session_guard）、
+  原子可见性（test_publish_failure_recovery）、运行审计与脱敏
+  （tests/unit/runs/test_audit.py）均有证据；原命令中的 `tests/contract`
+  已并入单元测试（schema 契约断言位于 test_migrations.py）。
 - A8.1/A8.2/A8.3 已于 2026-09-01 实现并通过测试（此前 A8.1/A8.2 误勾选，
   已复核纠正）：`qr-v2 db migrate/db status/source inspect` CLI 与
   production `--confirm-target` 守卫（`src/research_v2/cli/db.py` +
