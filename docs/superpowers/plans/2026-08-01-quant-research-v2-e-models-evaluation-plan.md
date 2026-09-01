@@ -586,6 +586,10 @@ G1–G6 门控报告，断言门控键集/有效天数/基线增量有限与重�
 `QRV2_INTEGRATION=1` 门控运行 3 通过（18s）。仍开放的条目及原因：
 
 - E9.1–E9.7：M4 条件门未获授权，按设计保持零代码/零迁移副作用。
-- 另注：`configs/models/temporal.yaml` 的 `minimum_valid_history_length: 15`
-  尚无读取方；生产用 20 日时序批次装配路径（训练/推理侧）尚未实现，M2 启用前
-  需补齐（与 CLI 仅放开 M1 的注册顺序一致）。
+- 另注（2026-09-01 更新）：训练侧时序批次装配已实现——
+  `src/research_v2/training/temporal_batches.py` 按因果窗口（≤signal_date 的
+  最近 `history_length` 个观测、左对齐、缺日自动收缩）构造
+  `TemporalTrainingBatch`，`minimum_valid_history_length`（与
+  `configs/models/temporal.yaml` 的 15 一致）之下样本不参与 loss，2026 锁与
+  业务键/目标校验与静态路径同构；测试 6 项（因果性、最小历史、缺日、锁年、
+  无效目标、配置守卫）。推理侧时序装配（从特征存储重建 20 日窗口）仍待补齐。
