@@ -245,6 +245,23 @@
         "alpha208_tushare_rematerialized_train_2020_2024_v1.json"
       ],
       "status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5"
+    },
+    "yeslab_464_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_464",
+      "factor_name": "GP_095",
+      "canonical_basis": "Tushare SH/SZ rematerialization (coverage repair; warmup artifact resolved via 180-day replay lookback)",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_095 has sparse warmup coverage. Pair evidence against all ten READY candidates complete; maximum edge 0.77923/0.78305 vs yeslab_405_tushare_shsz_v1, below the 0.80 monitor threshold.",
+      "evidence": [
+        "tushare_alpha464_coverage_repair4_review_v1.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/similarity_summary.json",
+        "gp_coverage_repair4_train_evidence_v1.json",
+        "candidate464_pair_similarity_v1.json",
+        "gp_turnover_scalar_degeneracy_diagnostic_v1.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
     }
   },
   "decision": "NO_AUTOMATIC_ADMISSION"

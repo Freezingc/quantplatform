@@ -6158,5 +6158,70 @@
     "database_writes": false,
     "model_training_started": false,
     "locked_test_read": false
+  },
+  "gp_coverage_repair4_followup": {
+    "scope": "GP_COVERAGE_REPAIR4_TUSHARE_CANONICAL_FOLLOWUP",
+    "factor_ids": [
+      "yeslab_436",
+      "yeslab_446",
+      "yeslab_464",
+      "yeslab_468"
+    ],
+    "motivation": "These four GP factors passed the 2020 predictive screen but failed it on coverage (98-216 valid days, months with zero coverage). Canonical Tushare rematerialization with proper warmup resolves coverage.",
+    "results": {
+      "yeslab_464": {
+        "factor_name": "GP_095",
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+        "candidate_id": "yeslab_464_tushare_shsz_v1",
+        "train": {
+          "signed_mean_rank_ic": 0.0632,
+          "signed_icir": 0.6022,
+          "directional_day_share": 0.7442,
+          "strict_annual_pass_years": "5/5"
+        },
+        "validation": {
+          "signed_mean_rank_ic": 0.0798,
+          "signed_icir": 0.8404,
+          "directional_day_share": 0.7819
+        },
+        "nine_edge_maximum": {
+          "train": 0.6937,
+          "validation": 0.7029,
+          "nearest": "yeslab_396"
+        },
+        "candidate_pairs": "10/10 READY candidates, max edge 0.7792 train / 0.7830 validation vs yeslab_405_tushare_shsz_v1, below 0.80"
+      },
+      "yeslab_436": {
+        "factor_name": "GP_067",
+        "status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+        "train_signed_icir": 0.4091,
+        "annual": "1/5"
+      },
+      "yeslab_446": {
+        "factor_name": "GP_077",
+        "status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+        "train_signed_icir": 0.4088
+      },
+      "yeslab_468": {
+        "factor_name": "GP_099",
+        "status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+        "train_signed_icir": 0.4088
+      }
+    },
+    "degeneracy_note": "436/446/468 end in turnover_rate times a per-date cross-sectional scalar; mutual median abs Spearman = 1.0; identical daily RankIC series. Full 15-factor family documented in gp_turnover_scalar_degeneracy_diagnostic_v1.json (includes yeslab_426 predictive-pass member).",
+    "artifacts": [
+      "tushare_alpha464_coverage_repair4_review_v1.json",
+      "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/quality_summary.json",
+      "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/similarity_summary.json",
+      "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/quality_summary.json",
+      "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/similarity_summary.json",
+      "gp_coverage_repair4_train_evidence_v1.json",
+      "candidate464_pair_similarity_v1.json",
+      "gp_turnover_scalar_degeneracy_diagnostic_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
   }
 }

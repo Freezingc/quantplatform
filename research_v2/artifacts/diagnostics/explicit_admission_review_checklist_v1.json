@@ -364,6 +364,31 @@
       "human_questions": [
         "Should monitoring continue?"
       ]
+    },
+    {
+      "candidate_id": "yeslab_464_tushare_shsz_v1",
+      "source_factor_id": "yeslab_464",
+      "factor_name": "GP_095",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization (coverage repair; historical 2020 screen coverage failure was a warmup artifact)",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_095 has sparse warmup coverage. Use only the isolated canonical version with 180-day replay lookback.",
+      "pair_or_combination_note": "Pair evidence against all ten READY candidates complete (10 pairs x train/validation, all 1212/243 days); maximum edge vs yeslab_405_tushare_shsz_v1 at 0.77923 train / 0.78305 validation, below the 0.80 monitor threshold; no elevated pair.",
+      "evidence": [
+        "tushare_alpha464_coverage_repair4_review_v1.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/similarity_summary.json",
+        "gp_coverage_repair4_train_evidence_v1.json",
+        "candidate464_pair_similarity_v1.json",
+        "gp_turnover_scalar_degeneracy_diagnostic_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "required_monitoring": "Nearest-pair watch with yeslab_405_tushare_shsz_v1 (0.78, below threshold); formal nine nearest edge yeslab_396 (0.694 train / 0.703 validation)."
     }
   ]
 }

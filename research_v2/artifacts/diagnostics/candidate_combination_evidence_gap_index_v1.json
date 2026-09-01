@@ -86,5 +86,25 @@
       }
     ],
     "note": "Correction 2026-09-01: earlier status listed only the 357/363 elevated pair; the same supplemental audit shows yeslab_381_tushare_shsz_v1 x yeslab_443_tushare_shsz_v1 at 0.81124 train / 0.83721 validation median abs Spearman, which also breaches the 0.80 monitor threshold."
+  },
+  "candidate464_combination_audit": {
+    "artifact": "candidate464_pair_similarity_v1.json",
+    "new_candidate_id": "yeslab_464_tushare_shsz_v1",
+    "reference_candidates": [
+      "yeslab_405_tushare_shsz_v1",
+      "yeslab_425_tushare_shsz_v2",
+      "yeslab_381_tushare_shsz_v1",
+      "yeslab_114_tushare_shsz_v2",
+      "yeslab_484_tushare_shsz_v1",
+      "yeslab_206_median_abs_v2",
+      "yeslab_443_tushare_shsz_v1",
+      "yeslab_363_tushare_shsz_v1",
+      "yeslab_357_tushare_shsz_v1",
+      "yeslab_96_canonical_replay_v1"
+    ],
+    "edges": "10 training and 10 validation complete edges (all 1212/243 days)",
+    "training_maximum_median_abs_spearman": 0.7792276095200362,
+    "validation_maximum_median_abs_spearman": 0.7830484104657394,
+    "status": "PASS_NO_ELEVATED_PAIR"
   }
 }

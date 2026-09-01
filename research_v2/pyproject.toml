@@ -50,7 +50,7 @@ research_v2 = ["export/*.yaml"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-ra"
+addopts = "-ra --import-mode=importlib"
 markers = ["integration: requires QRV2_INTEGRATION=1"]
 
 [tool.ruff]
