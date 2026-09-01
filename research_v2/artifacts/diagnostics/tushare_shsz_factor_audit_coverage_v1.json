@@ -5708,13 +5708,14 @@
     "validation_signed_icir": 0.668780066,
     "annual_gate_years": "4/5",
     "formula_scope_status": "FORMULA_REPLAY_BLOCKED",
-    "status": "REJECT_FORMULA_REPLAY_BLOCKED_DESPITE_ANNUAL_PASS",
+    "status": "SUPERSEDED_BY_PRECEDENT_UPGRADE",
     "action": "Keep the formal nine unchanged. Alpha395 passes the strict annual predictive gate under canonical SH/SZ rematerialization, but the historical source formula remains replay-blocked by cross-sectional scope mismatch. Do not admit, publish, write factor values, change formal nine, add model inputs, or train until source-formula reconciliation and an explicit scope decision exist.",
     "formal_factor_set_changed": false,
     "model_eligible": false,
     "database_writes": false,
     "model_training_started": false,
-    "locked_test_read": false
+    "locked_test_read": false,
+    "superseded_by": "tushare_alpha395_precedent_upgrade_review_v1.json"
   },
   "alpha400_tushare_shsz_canonical_v1": {
     "artifact": "tushare_alpha400_annual_stability_rejection_review_v1.json",
@@ -6385,6 +6386,53 @@
       "dq3_train_evidence_v1.json",
       "tushare_yeslab_398_dq3_review_v1.json",
       "candidate398_pair_similarity_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
+  },
+  "alpha395_precedent_upgrade_followup": {
+    "scope": "ALPHA395_PRECEDENT_UPGRADE_FOLLOWUP",
+    "factor_id": "yeslab_395",
+    "candidate_id": "yeslab_395_tushare_shsz_v1",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+    "train": {
+      "signed_mean_rank_ic": 0.0753,
+      "signed_icir": 0.5468,
+      "annual": "4/5 (2021 fail)"
+    },
+    "validation": {
+      "signed_mean_rank_ic": 0.0862,
+      "signed_icir": 0.6688,
+      "directional_day_share": 0.7654
+    },
+    "nine_edge": {
+      "train_max": 0.7897,
+      "validation_max": 0.8072,
+      "nearest": "yeslab_380",
+      "validation_monitor_note": "0.8072 above 0.80 monitor line, below 0.90 redundancy threshold"
+    },
+    "pool_pair": {
+      "train_max": 0.7541,
+      "validation_max": 0.7564,
+      "status": "PASS_NO_ELEVATED_PAIR"
+    },
+    "monthly_stability_2025": {
+      "signed_mean_pass_months": 10,
+      "directional_share_pass_months": 10,
+      "strict_icir_pass_months": 9
+    },
+    "note": "Upgraded per the 357/363/471 precedent: historical replay block (cross-sectional scope mismatch) does not invalidate the self-contained canonical rematerialization.",
+    "artifacts": [
+      "tushare_alpha395_precedent_upgrade_review_v1.json",
+      "tushare_alpha395_formula_replay_block_rejection_review_v1.json",
+      "tushare_shsz_alpha395_formal9_train_2020_2024_v1/quality_summary.json",
+      "tushare_shsz_alpha395_formal9_train_2020_2024_v1/similarity_summary.json",
+      "tushare_shsz_alpha395_formal9_validation_2025_v1/quality_summary.json",
+      "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json",
+      "candidate395_pair_similarity_v1.json",
+      "yeslab_395_validation_2025_monthly_v1/monthly_stability.json"
     ],
     "formal_factor_set_changed": false,
     "database_writes": false,

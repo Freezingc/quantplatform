@@ -280,21 +280,6 @@
       ]
     },
     {
-      "candidate_id": "yeslab_395_tushare_shsz_v1",
-      "source_factor_id": "yeslab_395",
-      "factor_name": "GP_026",
-      "status": "REJECT_FORMULA_REPLAY_BLOCKED_DESPITE_ANNUAL_PASS",
-      "canonical_basis": "Tushare SH/SZ rematerialization",
-      "required_scope": "Rejected: formula replay blocked despite annual pass.",
-      "pair_or_combination_note": "No pair review required due to replay block.",
-      "evidence": [
-        "tushare_alpha395_formula_replay_block_rejection_review_v1.json"
-      ],
-      "human_questions": [
-        "Is the replay block still valid?"
-      ]
-    },
-    {
       "candidate_id": "yeslab_400_tushare_shsz_v1",
       "source_factor_id": "yeslab_400",
       "factor_name": "GP_031",
@@ -612,6 +597,42 @@
         "validation": {
           "signed_ic": 0.087,
           "signed_icir": 0.8339
+        }
+      }
+    },
+    {
+      "candidate_id": "yeslab_395_tushare_shsz_v1",
+      "source_factor_id": "yeslab_395",
+      "factor_name": "GP_026",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization; supersedes the pre-precedent replay-block rejection",
+      "required_scope": "Use only the isolated canonical version; do not mix with historical YesLab values (historical replay blocked by cross-sectional scope mismatch, same class as 357/363/471).",
+      "pair_or_combination_note": "Pair evidence against all seventeen READY candidates complete (17 pairs x train/validation); max edge 0.7541 train / 0.7564 validation, below 0.80; no elevated pair. Nine-edge validation vs formal yeslab_380 is 0.8072 (monitor note).",
+      "evidence": [
+        "tushare_alpha395_precedent_upgrade_review_v1.json",
+        "tushare_alpha395_formula_replay_block_rejection_review_v1.json",
+        "tushare_shsz_alpha395_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_alpha395_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha395_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json",
+        "candidate395_pair_similarity_v1.json",
+        "yeslab_395_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "required_monitoring": "Formula reconciliation monitoring; watch note vs formal yeslab_380 (validation nine-edge 0.8072); monthly stability 10/12 signed-mean months.",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0753,
+          "signed_icir": 0.5468,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.0862,
+          "signed_icir": 0.6688
         }
       }
     }

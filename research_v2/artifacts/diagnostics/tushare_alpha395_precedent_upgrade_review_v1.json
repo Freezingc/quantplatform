@@ -1,0 +1,86 @@
+{
+  "scope": "TUSHARE_ALPHA395_PRECEDENT_UPGRADE_REVIEW_V1",
+  "candidate_id": "yeslab_395_tushare_shsz_v1",
+  "source_factor_id": "yeslab_395",
+  "factor_name": "GP_026",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "signed_mean_rank_ic": 0.07534436278773021,
+    "signed_icir": 0.546769085593266,
+    "directional_day_share": 0.7021452145214522,
+    "strict_annual_pass_years": "4/5 (2021 fail 0.422)",
+    "gates": {
+      "rank_ic_gate": true,
+      "icir_gate": true,
+      "day_share_gate": true,
+      "annual_gate": "4/5"
+    }
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "signed_mean_rank_ic": 0.08624759784787252,
+    "signed_icir": 0.6687866945365821,
+    "directional_day_share": 0.7654320987654321,
+    "gates": {
+      "rank_ic_gate": true,
+      "icir_gate": true,
+      "day_share_gate": true
+    }
+  },
+  "similarity_to_formal_nine_train": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.7897,
+    "nearest_factor_id": "yeslab_380",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "similarity_to_formal_nine_validation": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.8072,
+    "nearest_factor_id": "yeslab_380",
+    "threshold": 0.9,
+    "status": "PASS_WITH_MONITOR_NOTE",
+    "monitor_note": "validation edge vs formal yeslab_380 is 0.8072, above the 0.80 pair-monitor line but below the 0.90 redundancy threshold"
+  },
+  "candidate_pair_similarity": {
+    "reference_pool": "seventeen READY candidates",
+    "training_maximum_median_abs_spearman": 0.7541209267756399,
+    "validation_maximum_median_abs_spearman": 0.7564114879630108,
+    "nearest_pair": "yeslab_370_tushare_shsz_v1 / yeslab_375_tushare_shsz_v1",
+    "status": "PASS_NO_ELEVATED_PAIR"
+  },
+  "monthly_stability_2025": {
+    "signed_mean_pass_months": 10,
+    "directional_share_pass_months": 10,
+    "strict_icir_pass_months": 9
+  },
+  "formula_scope": {
+    "status": "HISTORICAL_SOURCE_REPLAY_BLOCKED_CROSS_SECTION_SCOPE_MISMATCH",
+    "note": "Historical GP_026 replay blocked by source cross-sectional scope mismatch (same class as 357/363/471). Canonical Tushare SH/SZ rematerialization stands on its own evidence per the established precedent; historical values must not be mixed; reconciliation monitoring retained.",
+    "artifacts": [
+      "tushare_alpha395_formula_replay_block_rejection_review_v1.json",
+      "tushare_shsz_pending_gp_scope_completion_v1.json"
+    ]
+  },
+  "supersedes": "tushare_alpha395_formula_replay_block_rejection_review_v1.json (REJECT_FORMULA_REPLAY_BLOCKED_DESPITE_ANNUAL_PASS predates the 357/363 precedent)",
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED"
+}

@@ -199,12 +199,19 @@
     "yeslab_395_tushare_shsz_v1": {
       "source_factor_id": "yeslab_395",
       "factor_name": "GP_026",
-      "canonical_basis": "Tushare SH/SZ rematerialization",
-      "required_scope": "Rejected: formula replay blocked despite annual pass.",
+      "canonical_basis": "Tushare SH/SZ rematerialization; precedent upgrade (357/363/471 class)",
+      "required_scope": "Use only the isolated canonical version; historical replay blocked (cross-sectional scope mismatch). Pair evidence vs seventeen READY candidates complete; max edge 0.7541/0.7564, below 0.80.",
       "evidence": [
-        "tushare_alpha395_formula_replay_block_rejection_review_v1.json"
+        "tushare_alpha395_precedent_upgrade_review_v1.json",
+        "tushare_alpha395_formula_replay_block_rejection_review_v1.json",
+        "tushare_shsz_alpha395_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_alpha395_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha395_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json",
+        "candidate395_pair_similarity_v1.json",
+        "yeslab_395_validation_2025_monthly_v1/monthly_stability.json"
       ],
-      "status": "REJECT_FORMULA_REPLAY_BLOCKED_DESPITE_ANNUAL_PASS"
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING"
     },
     "yeslab_400_tushare_shsz_v1": {
       "source_factor_id": "yeslab_400",

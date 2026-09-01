@@ -179,5 +179,29 @@
         "status": "ELEVATED_PAIR_MONITOR_NO_JOINT_ADMISSION_WITHOUT_SEPARATE_REVIEW"
       }
     ]
+  },
+  "candidate395_combination_audit": {
+    "artifact": "candidate395_pair_similarity_v1.json",
+    "new_candidate_id": "yeslab_395_tushare_shsz_v1",
+    "reference_pool": "seventeen READY candidates",
+    "edges": "17 training and 17 validation complete edges",
+    "training_maximum_median_abs_spearman": 0.7541209267756399,
+    "validation_maximum_median_abs_spearman": 0.7564114879630108,
+    "status": "PASS_NO_ELEVATED_PAIR"
+  },
+  "pool_completeness_supplement": {
+    "note": "With 471 and 398 both READY, their mutual pair edge was missing; filled via the alpha395 nine-edge batches.",
+    "pair": [
+      "yeslab_398_tushare_shsz_v1",
+      "yeslab_471_tushare_pit_v1"
+    ],
+    "training_median_abs_spearman": 0.3673,
+    "validation_median_abs_spearman": 0.3886,
+    "status": "PAIR_UNIQUE",
+    "artifacts": [
+      "tushare_shsz_alpha395_formal9_train_2020_2024_v1/similarity_summary.json",
+      "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json"
+    ],
+    "pool_state": "All eighteen READY candidates now have complete pairwise evidence (base-six matrix, extension audit, 464/370/375/389/390/471/398/395 audits, and this supplement)."
   }
 }
