@@ -80,7 +80,7 @@ research_v2/tests/integration/models/test_model_walk_forward.py
 - Create: `research_v2/tests/unit/models/test_base.py`
 - Create: `research_v2/tests/unit/training/test_batches.py`
 
-- [ ] **E1.1 写失败测试：所有维度都有业务键**
+- [x] **E1.1 写失败测试：所有维度都有业务键**
 
 ```python
 @dataclass(frozen=True)
@@ -101,11 +101,11 @@ class TrainingBatch:
 
 测试 D/N/F、mask、日期、代码长度任一不匹配即失败；padding 股票不得出现在 prediction。推理只构建不含 target 的 `FeatureBatch`，因此无需伪造 label tensor。
 
-- [ ] **E1.2 定义 TemporalBatch**
+- [x] **E1.2 定义 TemporalBatch**
 
 `TemporalFeatureBatch.features` 形状 `[D, Nmax, L, F]`，另含同形 feature-missing mask 和 `[D,Nmax,L]` history mask；训练 wrapper 再附 target。每个 endpoint 只包含 `<= signal_date` 的 20 个交易日，不足 20 日可 padding，但有效历史少于 15 日的样本不参与 loss。
 
-- [ ] **E1.3 定义 QuantModel protocol**
+- [x] **E1.3 定义 QuantModel protocol**
 
 ```python
 class QuantModel(nn.Module, Protocol):
@@ -116,11 +116,11 @@ class QuantModel(nn.Module, Protocol):
 
 输出是连续 score，不在模型内部选择 top-K；模型不得保存训练数据引用。
 
-- [ ] **E1.4 定义稳定 prediction 转换**
+- [x] **E1.4 定义稳定 prediction 转换**
 
 只保留 `stock_mask=true`，输出 `signal_date, ts_code, raw_score`；当日 percentile rank 使用 average ties，最终稳定排序 `signal_date, score DESC, ts_code ASC`。非 finite score 触发 blocker。
 
-- [ ] **E1.5 运行测试并提交**
+- [x] **E1.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/models/test_base.py tests/unit/training/test_batches.py -q`
 
@@ -139,27 +139,27 @@ git commit -m "feat(v2): define keyed model batch contracts"
 - Test: `research_v2/tests/unit/training/test_losses.py`
 - Test: `research_v2/tests/property/training/test_loss_invariants.py`
 
-- [ ] **E2.1 写 IC loss 数值测试**
+- [x] **E2.1 写 IC loss 数值测试**
 
 每个有效日期对预测 score 与预先计算的 target percentile rank 做 Pearson correlation：`L_ic = 1 - corr(score, target_rank)`；横截面有效数 <30 或任一边零方差的日期不进入均值。完全同向接近 0，完全反向接近 2。
 
-- [ ] **E2.2 写 pairwise ranking loss**
+- [x] **E2.2 写 pairwise ranking loss**
 
 每日期从有效股票中按 `sha256(run_seed|date|code_i|code_j)` 稳定抽最多 4096 对；仅保留 label 差绝对值位于当日前 50% 的 informative pairs。`L_pair = softplus(-sign(y_i-y_j)*(s_i-s_j))`，日期等权。
 
-- [ ] **E2.3 写 Huber loss**
+- [x] **E2.3 写 Huber loss**
 
 对当日去均值 raw return，使用 `SmoothL1Loss(beta=0.01)`；每日期先平均、再跨日期平均，避免大横截面日期权重更高。mask/padding/invalid label 不参与。
 
-- [ ] **E2.4 固化权重和可选小网格**
+- [x] **E2.4 固化权重和可选小网格**
 
 默认 `0.60*L_ic + 0.30*L_pair + 0.10*L_huber`。只允许 validation 比较三个预注册组合：`(0.7,0.2,0.1)`、`(0.6,0.3,0.1)`、`(0.5,0.4,0.1)`；三者之和必须为 1，Huber 固定 0.1。
 
-- [ ] **E2.5 性质测试**
+- [x] **E2.5 性质测试**
 
 验证股票 permutation 不改变 loss；预测加常数不改变 IC/pair；正比例缩放不改变 IC 但可改变 pair/Huber；padding 值任意改变不影响 loss；所有日期无效时明确失败而不是返回 0/NaN。
 
-- [ ] **E2.6 梯度测试并提交**
+- [x] **E2.6 梯度测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/training/test_losses.py tests/property/training/test_loss_invariants.py -q`
 
@@ -182,7 +182,7 @@ git commit -m "feat(v2): add cross-sectional ranking losses"
 - Test: `research_v2/tests/unit/training/test_trainer.py`
 - Test: `research_v2/tests/leakage/test_training_data_access.py`
 
-- [ ] **E3.1 固化训练默认值**
+- [x] **E3.1 固化训练默认值**
 
 ```yaml
 max_epochs: 100
@@ -197,27 +197,27 @@ seeds: [20260801, 20260802, 20260803]
 min_valid_stocks_per_date: 30
 ```
 
-- [ ] **E3.2 写日期等权 sampler 测试**
+- [x] **E3.2 写日期等权 sampler 测试**
 
 batch 以完整交易日为最小单位；不同 N 不改变日期被抽概率。大型日期可在模型内部 padding/induced attention，不能把股票 chunk 当独立 loss 日期。epoch 对每个 train date 恰访问一次，顺序由 seed 决定。
 
-- [ ] **E3.3 实现 reproducibility setup**
+- [x] **E3.3 实现 reproducibility setup**
 
 设置 Python/NumPy/Torch/CUDA seeds、deterministic algorithms 和 cuDNN flags；记录 GPU 型号/driver/library。若某算子无法 deterministic，启动时失败并列出算子，不静默降级。
 
-- [ ] **E3.4 实现 Trainer 状态机**
+- [x] **E3.4 实现 Trainer 状态机**
 
 `INITIALIZED → TRAINING → VALIDATING → CHECKPOINTED → COMPLETED`，异常转 `FAILED`。每 epoch 保存 train loss components、validation RankIC、coverage、lr、gradient norm、显存峰值；只按 validation mean RankIC 保存 best checkpoint。
 
-- [ ] **E3.5 强制数据访问 role**
+- [x] **E3.5 强制数据访问 role**
 
 Trainer constructor 只接受 train/validation `DatasetView`；任何 TEST/LOCKED role 立即失败。mock repository 记录所有 query，测试断言训练期间无 test/2026 请求。
 
-- [ ] **E3.6 实现 GPU lease**
+- [x] **E3.6 实现 GPU lease**
 
 每训练进程显式领取一个 GPU ID，默认单 GPU，不跨卡 DDP；lease 记录 run/trial/seed，进程退出释放。最多四 trial 并行，但同一 trial 的结果不依赖调度顺序。
 
-- [ ] **E3.7 CPU/CUDA smoke test 并提交**
+- [x] **E3.7 CPU/CUDA smoke test 并提交**
 
 Run: `cd research_v2 && pytest tests/unit/training/test_sampler.py tests/unit/training/test_trainer.py tests/leakage/test_training_data_access.py -q`
 
@@ -237,15 +237,15 @@ git commit -m "feat(v2): train models reproducibly by date"
 - Create: `research_v2/src/research_v2/models/residual_mlp.py`
 - Test: `research_v2/tests/unit/models/test_residual_mlp.py`
 
-- [ ] **E4.1 写 shape/mask/gradient 失败测试**
+- [x] **E4.1 写 shape/mask/gradient 失败测试**
 
 任意原始因子数 `F=15..60`、可变 N、padding 下输出 `[D,Nmax]`；模型在 input projection 前拼接 transformed values 与 missing mask，实际输入宽度为 `2F`。padding score 被 mask；前向/反向 finite；eval mode 同输入精确一致。
 
-- [ ] **E4.2 实现 residual block**
+- [x] **E4.2 实现 residual block**
 
 默认结构：`concat(features, feature_missing.float())` → input projection → 2 个 `LayerNorm → Linear → GELU → Dropout → Linear` residual blocks → scalar head。默认 hidden 128、dropout 0.1；不用 BatchNorm（避免横截面/批次统计泄漏）。
 
-- [ ] **E4.3 固化受限搜索空间**
+- [x] **E4.3 固化受限搜索空间**
 
 ```text
 hidden_dim: 64, 128, 256
@@ -280,19 +280,19 @@ git commit -m "feat(v2): implement residual MLP candidate"
 - Create: `research_v2/src/research_v2/models/temporal.py`
 - Test: `research_v2/tests/unit/models/test_temporal.py`
 
-- [ ] **E5.1 写 causal window 测试**
+- [x] **E5.1 写 causal window 测试**
 
 endpoint T 的序列严格为交易日 `[T-19, ..., T]`；扰动 T+1 及以后不改变输出；股票上市前/padding history mask 正确；代码缺日不把另一股票行接入序列。
 
-- [ ] **E5.2 实现 GRU encoder**
+- [x] **E5.2 实现 GRU encoder**
 
 每只股票独立编码 20×(2F) 的 transformed value + missing mask，使用 masked packed sequence，取最后有效 hidden，经 residual head 输出 score。默认 hidden 128、1 layer、dropout 0.1。
 
-- [ ] **E5.3 实现 causal TCN encoder**
+- [x] **E5.3 实现 causal TCN encoder**
 
 3 个 causal depthwise-separable Conv1d residual blocks，kernel=3、dilation=1/2/4；左 padding，绝不使用右侧未来。masked global last-state head 输出 score。
 
-- [ ] **E5.4 固化 M2 选择空间**
+- [x] **E5.4 固化 M2 选择空间**
 
 family `{GRU, TCN}`，hidden `{64,128}`，dropout `{0.0,0.1,0.2}`，lr `{0.0003,0.001}`，loss weights 三组；按稳定 hash 取最多 30 trials。validation 决定 family/config，test 不参与。
 
@@ -320,19 +320,19 @@ git commit -m "feat(v2): implement causal GRU and TCN candidates"
 - Test: `research_v2/tests/unit/models/test_set_attention.py`
 - Test: `research_v2/tests/property/models/test_permutation_equivariance.py`
 
-- [ ] **E6.1 写 permutation equivariance 失败测试**
+- [x] **E6.1 写 permutation equivariance 失败测试**
 
 随机 permutation 同日股票，输出必须按相同 permutation 变化；反向恢复后误差 `<1e-6`。padding 股票的值/数量变化不能改变有效股票输出。
 
-- [ ] **E6.2 实现 induced set attention**
+- [x] **E6.2 实现 induced set attention**
 
 将 transformed values 与 missing mask 拼接后做 input projection，再使用 2 个 ISAB，每层 64 个 learned inducing points、4 heads、hidden 128，最后以每个证券表示加全局 PMA summary 的 residual head 输出 score。复杂度 O(N×64)，不构造 N² 全 attention、不使用证券位置编码或 ts_code embedding。
 
-- [ ] **E6.3 保证日期隔离**
+- [x] **E6.3 保证日期隔离**
 
 attention 仅在同一个 signal date 的有效股票间执行；不同日期打包只用于 GPU 并行，mask 防止跨日交互。日期顺序改变不改变逐日输出。
 
-- [ ] **E6.4 固化 M3 搜索空间**
+- [x] **E6.4 固化 M3 搜索空间**
 
 hidden `{64,128}`、heads `{2,4}`、inducing points `{32,64}`、blocks `{1,2}`、dropout `{0.0,0.1}`、lr `{0.0003,0.001}`，按稳定 hash 限 30 trials；hidden 必须整除 heads。
 
@@ -361,19 +361,19 @@ git commit -m "feat(v2): implement scalable set-attention candidate"
 - Test: `research_v2/tests/unit/training/test_artifacts.py`
 - Test: `research_v2/tests/leakage/test_model_selection_scope.py`
 
-- [ ] **E7.1 实现可审计 TrialScheduler**
+- [x] **E7.1 实现可审计 TrialScheduler**
 
 对批准搜索空间做 canonical product，以 `sha256(model_family|fold|config_json)` 排序，最多执行 30 个 config trials；不采用会根据 test 反馈新增 trial 的自适应搜索。trial 状态和 GPU lease 写 experiment audit。
 
-- [ ] **E7.2 定义超参选择**
+- [x] **E7.2 定义超参选择**
 
 每个 config 先用 seed 20260801 在 3 inner folds评估，按 mean inner validation RankIC 选前 3；再在 outer train 完整训练、outer validation 比较，tie-break 为 validation HAC t-stat、较少参数、config hash。最终 config 用 3 个固定 seeds 各训练一次。
 
-- [ ] **E7.3 定义 seed ensemble**
+- [x] **E7.3 定义 seed ensemble**
 
 每个 seed 输出当日 percentile rank，ensemble score 为三者等权均值；不得挑最好 seed。报告 seed mean/std、最差 seed 和 ensemble；任一 seed 失败则整个 config incomplete，不以两 seed 替代。
 
-- [ ] **E7.4 实现 immutable artifact bundle**
+- [x] **E7.4 实现 immutable artifact bundle**
 
 ```text
 artifacts/models/{model_id}/
@@ -391,11 +391,11 @@ artifacts/models/{model_id}/
 
 只保存 `state_dict` 和已知类/config，不 pickle 任意 Python 对象。加载先验证每个 hash、schema/model code version、feature order 和 dataset id。
 
-- [ ] **E7.5 写选择泄漏测试**
+- [x] **E7.5 写选择泄漏测试**
 
 改变 outer test/2026 labels 不改变 trial list、inner metrics、chosen config、seed artifacts；改变 outer validation 允许改变 chosen config但不能重训已完成 trial 的 train input。
 
-- [ ] **E7.6 运行测试并提交**
+- [x] **E7.6 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/training/test_search.py tests/unit/training/test_artifacts.py tests/leakage/test_model_selection_scope.py -q`
 
@@ -415,7 +415,7 @@ git commit -m "feat(v2): audit model search and seed ensembles"
 - Test: `research_v2/tests/unit/evaluation/test_model_evaluator.py`
 - Test: `research_v2/tests/integration/models/test_model_walk_forward.py`
 
-- [ ] **E8.1 定义命令**
+- [x] **E8.1 定义命令**
 
 ```text
 qr-v2 model train --family M1 --fold F01
@@ -426,15 +426,15 @@ qr-v2 evaluate walk-forward --experiment-id sha256:... --compare best-simple
 
 family 必须按 registry 顺序启用；命令拒绝 FINAL test 和缺失 best-simple 的 fold。
 
-- [ ] **E8.2 每折冻结候选后再评价 test**
+- [x] **E8.2 每折冻结候选后再评价 test**
 
 训练/验证完成后写 signed selection record；evaluator 独立加载冻结 artifact 与 test manifest，生成 prediction_daily、metric_daily、metric_summary。训练进程本身无 test repository capability。
 
-- [ ] **E8.3 使用 fold-matched baseline 计算增量**
+- [x] **E8.3 使用 fold-matched baseline 计算增量**
 
 每个测试日同时要求 candidate 与当折 best-simple 有效，先在相同 date/code coverage 上各算 RankIC，再计算年度/总体差。主 G4 为各折 test 日拼接后的 candidate mean RankIC 减 baseline mean RankIC，不用两个不同样本集指标相减。
 
-- [ ] **E8.4 运行 D 计划全部门槛**
+- [x] **E8.4 运行 D 计划全部门槛**
 
 模型只有 G1–G6 全 PASS 才获得 `WALK_FORWARD_PASSED` 候选资格；同时报告相对 B0/B1/B2/B3 各自增量、参数量、训练时长和最差 seed。任何缺 fold、缺 seed、score collapse、年度集中均失败。
 
@@ -512,7 +512,7 @@ git commit -m "feat(v2): add approved PIT economic graph candidate"
 - Create: `research_v2/tests/golden/data/expected_model_outputs.json`
 - Create: `research_v2/tests/golden/test_models.py`
 
-- [ ] **E10.1 写状态机失败测试**
+- [x] **E10.1 写状态机失败测试**
 
 唯一合法主路径：
 
@@ -523,11 +523,11 @@ DRAFT → WALK_FORWARD_PASSED → SHADOW → LOCKED_TEST_APPROVED
 
 `LOCKED_TEST_APPROVED → LOCKED_TEST_FAILED`、任意非 RETIRED 状态 → RETIRED 合法；禁止 DRAFT 直接 SHADOW/PRODUCTION、SHADOW 直接 PRODUCTION、FAILED 回到 PASSED。
 
-- [ ] **E10.2 实现 transition guards**
+- [x] **E10.2 实现 transition guards**
 
 `WALK_FORWARD_PASSED` 要求 E8 G1–G6 artifact；`SHADOW` 由 F 计划创建且不在本 Task 直接设置；locked/production transitions 要求 F 计划专用审批 evidence。每次 transition append-only，保存 actor、previous/new、reason、evidence hashes、timestamp。
 
-- [ ] **E10.3 实现历史门槛晋级 CLI**
+- [x] **E10.3 实现历史门槛晋级 CLI**
 
 ```text
 qr-v2 registry promote --model-id sha256:MODEL_ID --to WALK_FORWARD_PASSED --evidence artifacts/reports/walk_forward.json --dry-run
@@ -536,11 +536,11 @@ qr-v2 registry promote --model-id sha256:MODEL_ID --to WALK_FORWARD_PASSED --evi
 
 命令重算 evidence hash 与 G1–G6，不相信报告中的布尔字段；本计划只允许目标 `WALK_FORWARD_PASSED`。F 计划扩展同一 CLI 以处理带 shadow/locked 专用 evidence 的后续转换。
 
-- [ ] **E10.4 建黄金 batch 输出**
+- [x] **E10.4 建黄金 batch 输出**
 
 固定 tiny batch/config/state_dict，保存 M1/M2/M3 CPU eval outputs 与 tolerance；验证模型重构、artifact load 和 feature order。黄金 fixture 不包含从真实标签学到的权重。
 
-- [ ] **E10.5 运行完整 E 计划验证**
+- [x] **E10.5 运行完整 E 计划验证**
 
 Run: `cd research_v2 && ruff check src tests && mypy src`
 
@@ -550,7 +550,7 @@ Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/integration/models -q -m
 
 Expected: 全部退出码 0；若 E9 未获授权，则 M4 测试明确 skip reason=`M4_NOT_AUTHORIZED`，不能伪装通过。
 
-- [ ] **E10.6 提交并请求审查**
+- [x] **E10.6 提交并请求审查**
 
 ```bash
 git add research_v2/src/research_v2/registry/model_registry.py research_v2/src/research_v2/cli/registry.py research_v2/tests/unit/registry/test_model_registry.py research_v2/tests/unit/cli/test_registry.py research_v2/tests/golden
@@ -562,8 +562,25 @@ git commit -m "feat(v2): govern model evidence and transitions"
 ## E 计划完成标准
 
 - [ ] M1/M2/M3 共享同一 batch/loss/evaluator contract，均通过 shape、mask、causal/permutation 和 artifact 测试。
-- [ ] 每 family 每 fold 搜索不超过 30 configs；最终配置固定 3 seeds 并等权 ensemble。
-- [ ] 训练/选模进程无法访问 test/2026；test 只由冻结 evaluator 加载。
-- [ ] 所有候选与 fold-matched best simple baseline 在相同 coverage 上比较。
-- [ ] 只有 G1–G6 全通过模型可进入 `WALK_FORWARD_PASSED`。
-- [ ] M4 未满足条件时没有 migration/code 副作用；满足后也只使用 PIT 经济边。
+- [x] 每 family 每 fold 搜索不超过 30 configs；最终配置固定 3 seeds 并等权 ensemble。
+- [x] 训练/选模进程无法访问 test/2026；test 只由冻结 evaluator 加载。
+- [x] 所有候选与 fold-matched best simple baseline 在相同 coverage 上比较。
+- [x] 只有 G1–G6 全通过模型可进入 `WALK_FORWARD_PASSED`。
+- [x] M4 未满足条件时没有 migration/code 副作用；满足后也只使用 PIT 经济边。
+
+## 状态核对（2026-09-01）
+
+已按现有代码与测试逐项核对并勾选完成步骤（测试文件按演进后的实际命名存在，如
+`test_pre_registered_search.py`、`test_cross_sectional_losses.py`、
+`test_frozen_oos_evaluator.py` 等）。全量单元套件 947 通过，`ruff check` 与
+`mypy src` 干净。仍开放的条目及原因：
+
+- E4.4/E4.5、E5.5/E5.6、E6.5/E6.6：缺小样本过拟合、temporal 股票置换等变、
+  CUDA 显存/极端横截面资源测试（现有模型测试覆盖 shape、mask、因果、确定性
+  与置换等变（M3），未含上述深度项）。
+- E8.5/E8.6：缺合成数据端到端编排测试；集成测试受 `QRV2_INTEGRATION=1` 门控。
+- E9.1–E9.7：M4 条件门未获授权，按设计保持零代码/零迁移副作用。
+- 完成标准第 1 条：M2 尚无显式置换等变测试，随 E5.5 一并开放。
+- 另注：`configs/models/temporal.yaml` 的 `minimum_valid_history_length: 15`
+  尚无读取方；生产用 20 日时序批次装配路径（训练/推理侧）尚未实现，M2 启用前
+  需补齐（与 CLI 仅放开 M1 的注册顺序一致）。
