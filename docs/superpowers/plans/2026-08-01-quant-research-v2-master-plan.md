@@ -312,6 +312,15 @@ docs(v2): record locked-test runbook
   测试）；模型卡模板：`docs/model_card_template.md`；runbooks 6 篇见
   `research_v2/runbooks/`；实验报告与交接材料见 `docs/reports/`、
   `docs/handoffs/`。2014–2025 真实候选 OOS 复现待真实因子数据物化后执行。
+- 10.1 数据现状盘点（2026-09-01，只读）：V2Test 已有真实物化数据——
+  `factor_observation_clean` 170,333,348 行（2020-01-02…2026-07-31，81 个
+  factor_id，其中约 16 个准入因子覆盖 2020 起全历史）、`label_daily`
+  5,540,699 行、`universe_daily` 8,628,939 行、`factor_registry` 6 个
+  ACTIVE 因子、`dataset_manifest` 0 行。**完成标准 303（2014–2025 F01–F06
+  OOS 复现）的前置缺口：TRAIN 年（2014–2019）因子尚未回填**——现有物化从
+  2020 开始；需排期执行 2014–2019 因子回填（大规模物化运行，涉及共享库
+  写入与源库读取负载），随后按 D 计划构建 F01–F06 数据集并运行 B0–B3
+  walk-forward。
 
 即使没有复杂候选通过，平台工程仍可判定完成；此时模型停留在 `DRAFT`，不得启动正式 SHADOW 或声称模型有效。
 
