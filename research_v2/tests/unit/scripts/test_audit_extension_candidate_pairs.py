@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import audit_extension_candidate_pairs as ext
 import pandas as pd
 import pytest
-import audit_extension_candidate_pairs as ext
 
 
 def test_required_pairs_cover_extensions_and_base() -> None:
@@ -20,7 +20,11 @@ def test_required_pairs_cover_extensions_and_base() -> None:
 def test_summarize_extension_pairs_requires_expected_dates() -> None:
     date = pd.Timestamp("2025-01-02")
     frames = {}
-    for candidate_id in [*ext.EXTENSION_CANDIDATES, *[candidate.candidate_id for candidate in ext.CANDIDATES]]:
+    candidate_ids = [
+        *ext.EXTENSION_CANDIDATES,
+        *[candidate.candidate_id for candidate in ext.CANDIDATES],
+    ]
+    for candidate_id in candidate_ids:
         frames[candidate_id] = pd.DataFrame(
             {"trade_date": [date], "ts_code": ["000001.SZ"], "replay_value": [0.1]}
         )
