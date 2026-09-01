@@ -1,0 +1,1435 @@
+{
+  "scope": "POOL18_MARKET_REGIME_ROBUSTNESS_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "regime_definitions": {
+    "trend": "CSI300 close >= 120-day moving average -> above_ma120, else below_ma120",
+    "volatility": "within-window terciles of CSI300 20-day realized volatility of daily returns",
+    "index": "000300.SH",
+    "index_artifact": "research_v2/artifacts/tushare_cache/index_daily_000300_SH_20190701_20251231.csv"
+  },
+  "windows": {
+    "train": {
+      "start": "2020-01-02",
+      "end": "2024-12-31"
+    },
+    "validation": {
+      "start": "2025-01-02",
+      "end": "2025-12-31"
+    }
+  },
+  "candidates": {
+    "yeslab_114_tushare_shsz_v2": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.075676,
+          "signed_icir": 0.5496,
+          "directional_day_share": 0.7079
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.078549,
+          "signed_icir": 0.5577,
+          "directional_day_share": 0.7041
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.07361,
+          "signed_icir": 0.5435,
+          "directional_day_share": 0.7106
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.085588,
+          "signed_icir": 0.637,
+          "directional_day_share": 0.7302
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.074367,
+          "signed_icir": 0.543,
+          "directional_day_share": 0.6807
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.067073,
+          "signed_icir": 0.4744,
+          "directional_day_share": 0.7129
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.076235,
+          "signed_icir": 0.5227,
+          "directional_day_share": 0.6955
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.083195,
+          "signed_icir": 0.5838,
+          "directional_day_share": 0.7178
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.041947,
+          "signed_icir": 0.2643,
+          "directional_day_share": 0.5854
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.096405,
+          "signed_icir": 0.9917,
+          "directional_day_share": 0.8025
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.109494,
+          "signed_icir": 0.639,
+          "directional_day_share": 0.716
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.022807,
+          "signed_icir": 0.157,
+          "directional_day_share": 0.5679
+        }
+      }
+    },
+    "yeslab_381_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.075403,
+          "signed_icir": 0.6153,
+          "directional_day_share": 0.7294
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.07532,
+          "signed_icir": 0.5831,
+          "directional_day_share": 0.716
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.075463,
+          "signed_icir": 0.6415,
+          "directional_day_share": 0.739
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.075441,
+          "signed_icir": 0.6672,
+          "directional_day_share": 0.755
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.059097,
+          "signed_icir": 0.4629,
+          "directional_day_share": 0.6832
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.091671,
+          "signed_icir": 0.7359,
+          "directional_day_share": 0.75
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.095061,
+          "signed_icir": 0.8904,
+          "directional_day_share": 0.823
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.096162,
+          "signed_icir": 0.867,
+          "directional_day_share": 0.8069
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.089638,
+          "signed_icir": 1.0642,
+          "directional_day_share": 0.9024
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.102105,
+          "signed_icir": 1.0751,
+          "directional_day_share": 0.9259
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.081762,
+          "signed_icir": 0.6632,
+          "directional_day_share": 0.716
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.101315,
+          "signed_icir": 1.0139,
+          "directional_day_share": 0.8272
+        }
+      }
+    },
+    "yeslab_405_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.067094,
+          "signed_icir": 0.6236,
+          "directional_day_share": 0.731
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.064841,
+          "signed_icir": 0.6075,
+          "directional_day_share": 0.7101
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.068714,
+          "signed_icir": 0.6349,
+          "directional_day_share": 0.7461
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.067101,
+          "signed_icir": 0.6958,
+          "directional_day_share": 0.7574
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.05493,
+          "signed_icir": 0.5115,
+          "directional_day_share": 0.6757
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.079251,
+          "signed_icir": 0.6782,
+          "directional_day_share": 0.7599
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.09017,
+          "signed_icir": 1.0391,
+          "directional_day_share": 0.8642
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.095122,
+          "signed_icir": 1.0676,
+          "directional_day_share": 0.8663
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.065773,
+          "signed_icir": 0.9364,
+          "directional_day_share": 0.8537
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.095872,
+          "signed_icir": 1.19,
+          "directional_day_share": 0.9259
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.084856,
+          "signed_icir": 0.8668,
+          "directional_day_share": 0.8148
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.089781,
+          "signed_icir": 1.1016,
+          "directional_day_share": 0.8519
+        }
+      }
+    },
+    "yeslab_425_tushare_shsz_v2": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.070955,
+          "signed_icir": 0.5577,
+          "directional_day_share": 0.7178
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.071042,
+          "signed_icir": 0.5342,
+          "directional_day_share": 0.7081
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.070891,
+          "signed_icir": 0.5763,
+          "directional_day_share": 0.7248
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.070097,
+          "signed_icir": 0.6289,
+          "directional_day_share": 0.7351
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.061107,
+          "signed_icir": 0.4707,
+          "directional_day_share": 0.6906
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.08166,
+          "signed_icir": 0.5901,
+          "directional_day_share": 0.7277
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.095586,
+          "signed_icir": 0.8494,
+          "directional_day_share": 0.7984
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.096885,
+          "signed_icir": 0.8263,
+          "directional_day_share": 0.7921
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.089184,
+          "signed_icir": 1.0312,
+          "directional_day_share": 0.8293
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.108372,
+          "signed_icir": 1.2101,
+          "directional_day_share": 0.9012
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.097117,
+          "signed_icir": 0.6897,
+          "directional_day_share": 0.7407
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.081267,
+          "signed_icir": 0.8093,
+          "directional_day_share": 0.7531
+        }
+      }
+    },
+    "yeslab_484_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.069921,
+          "signed_icir": 0.5807,
+          "directional_day_share": 0.7236
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.074649,
+          "signed_icir": 0.6213,
+          "directional_day_share": 0.7377
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.066521,
+          "signed_icir": 0.5518,
+          "directional_day_share": 0.7135
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.074996,
+          "signed_icir": 0.5959,
+          "directional_day_share": 0.7327
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.070674,
+          "signed_icir": 0.612,
+          "directional_day_share": 0.7005
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.064094,
+          "signed_icir": 0.5355,
+          "directional_day_share": 0.7376
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.069163,
+          "signed_icir": 0.5085,
+          "directional_day_share": 0.6708
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.07238,
+          "signed_icir": 0.5338,
+          "directional_day_share": 0.6782
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.053317,
+          "signed_icir": 0.3846,
+          "directional_day_share": 0.6341
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.082326,
+          "signed_icir": 0.7891,
+          "directional_day_share": 0.7407
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.096605,
+          "signed_icir": 0.5985,
+          "directional_day_share": 0.6914
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.028559,
+          "signed_icir": 0.2229,
+          "directional_day_share": 0.5802
+        }
+      }
+    },
+    "yeslab_206_median_abs_v2": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.04085,
+          "signed_icir": 0.5605,
+          "directional_day_share": 0.7417
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.045684,
+          "signed_icir": 0.585,
+          "directional_day_share": 0.7574
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.037373,
+          "signed_icir": 0.5438,
+          "directional_day_share": 0.7305
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.03843,
+          "signed_icir": 0.5854,
+          "directional_day_share": 0.7376
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.035028,
+          "signed_icir": 0.4841,
+          "directional_day_share": 0.7203
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.049091,
+          "signed_icir": 0.6182,
+          "directional_day_share": 0.7673
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.05046,
+          "signed_icir": 0.7332,
+          "directional_day_share": 0.7778
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.047923,
+          "signed_icir": 0.6906,
+          "directional_day_share": 0.7624
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.062961,
+          "signed_icir": 0.9641,
+          "directional_day_share": 0.8537
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.084108,
+          "signed_icir": 1.4083,
+          "directional_day_share": 0.9506
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.0467,
+          "signed_icir": 0.6825,
+          "directional_day_share": 0.7284
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.020573,
+          "signed_icir": 0.3248,
+          "directional_day_share": 0.6543
+        }
+      }
+    },
+    "yeslab_363_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.039272,
+          "signed_icir": 0.5552,
+          "directional_day_share": 0.7153
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.045407,
+          "signed_icir": 0.6454,
+          "directional_day_share": 0.7554
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.03486,
+          "signed_icir": 0.4929,
+          "directional_day_share": 0.6865
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.03092,
+          "signed_icir": 0.4545,
+          "directional_day_share": 0.6856
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.034866,
+          "signed_icir": 0.4906,
+          "directional_day_share": 0.698
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.05203,
+          "signed_icir": 0.7284,
+          "directional_day_share": 0.7624
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.05614,
+          "signed_icir": 0.8639,
+          "directional_day_share": 0.8519
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.057326,
+          "signed_icir": 1.0133,
+          "directional_day_share": 0.8614
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.050298,
+          "signed_icir": 0.5181,
+          "directional_day_share": 0.8049
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.07025,
+          "signed_icir": 1.0585,
+          "directional_day_share": 0.8765
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.044547,
+          "signed_icir": 0.8869,
+          "directional_day_share": 0.8272
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.053622,
+          "signed_icir": 0.7229,
+          "directional_day_share": 0.8519
+        }
+      }
+    },
+    "yeslab_357_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.050523,
+          "signed_icir": 0.955,
+          "directional_day_share": 0.8523
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.055274,
+          "signed_icir": 0.9646,
+          "directional_day_share": 0.8462
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.047106,
+          "signed_icir": 0.9564,
+          "directional_day_share": 0.8567
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.047492,
+          "signed_icir": 1.0314,
+          "directional_day_share": 0.8713
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.045635,
+          "signed_icir": 0.8442,
+          "directional_day_share": 0.8094
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.058442,
+          "signed_icir": 1.0218,
+          "directional_day_share": 0.8762
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.060191,
+          "signed_icir": 1.1563,
+          "directional_day_share": 0.9012
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.062183,
+          "signed_icir": 1.3085,
+          "directional_day_share": 0.9059
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.050377,
+          "signed_icir": 0.7178,
+          "directional_day_share": 0.878
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.067099,
+          "signed_icir": 1.6195,
+          "directional_day_share": 0.9259
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.058481,
+          "signed_icir": 1.074,
+          "directional_day_share": 0.8889
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.054994,
+          "signed_icir": 0.9381,
+          "directional_day_share": 0.8889
+        }
+      }
+    },
+    "yeslab_96_canonical_replay_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.060914,
+          "signed_icir": 0.5743,
+          "directional_day_share": 0.7318
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.063164,
+          "signed_icir": 0.5479,
+          "directional_day_share": 0.7278
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.059296,
+          "signed_icir": 0.5991,
+          "directional_day_share": 0.7348
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.06742,
+          "signed_icir": 0.6403,
+          "directional_day_share": 0.7277
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.053036,
+          "signed_icir": 0.5188,
+          "directional_day_share": 0.703
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.062286,
+          "signed_icir": 0.5647,
+          "directional_day_share": 0.7649
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.073978,
+          "signed_icir": 0.6421,
+          "directional_day_share": 0.7572
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.072801,
+          "signed_icir": 0.6067,
+          "directional_day_share": 0.7426
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.079778,
+          "signed_icir": 0.8962,
+          "directional_day_share": 0.8293
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.076054,
+          "signed_icir": 0.8036,
+          "directional_day_share": 0.7901
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.098011,
+          "signed_icir": 0.6951,
+          "directional_day_share": 0.7531
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.04787,
+          "signed_icir": 0.4778,
+          "directional_day_share": 0.7284
+        }
+      }
+    },
+    "yeslab_443_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.06668,
+          "signed_icir": 0.5826,
+          "directional_day_share": 0.7137
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.067276,
+          "signed_icir": 0.5677,
+          "directional_day_share": 0.7022
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.066251,
+          "signed_icir": 0.594,
+          "directional_day_share": 0.722
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.070322,
+          "signed_icir": 0.6588,
+          "directional_day_share": 0.745
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.047922,
+          "signed_icir": 0.4191,
+          "directional_day_share": 0.646
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.081796,
+          "signed_icir": 0.6839,
+          "directional_day_share": 0.75
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.078745,
+          "signed_icir": 0.7121,
+          "directional_day_share": 0.7407
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.08085,
+          "signed_icir": 0.7047,
+          "directional_day_share": 0.7327
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.068376,
+          "signed_icir": 0.7785,
+          "directional_day_share": 0.7805
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.09584,
+          "signed_icir": 0.9089,
+          "directional_day_share": 0.8395
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.07331,
+          "signed_icir": 0.6217,
+          "directional_day_share": 0.6914
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.067087,
+          "signed_icir": 0.6255,
+          "directional_day_share": 0.6914
+        }
+      }
+    },
+    "yeslab_464_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.063211,
+          "signed_icir": 0.6022,
+          "directional_day_share": 0.7442
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.067213,
+          "signed_icir": 0.7055,
+          "directional_day_share": 0.7692
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.060333,
+          "signed_icir": 0.5416,
+          "directional_day_share": 0.7262
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.069569,
+          "signed_icir": 0.6771,
+          "directional_day_share": 0.7475
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.056742,
+          "signed_icir": 0.5532,
+          "directional_day_share": 0.7228
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.063322,
+          "signed_icir": 0.5793,
+          "directional_day_share": 0.7624
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.079759,
+          "signed_icir": 0.8404,
+          "directional_day_share": 0.7819
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.075858,
+          "signed_icir": 0.8223,
+          "directional_day_share": 0.7871
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.098981,
+          "signed_icir": 0.9321,
+          "directional_day_share": 0.7561
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.094422,
+          "signed_icir": 1.2756,
+          "directional_day_share": 0.8519
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.085359,
+          "signed_icir": 0.8081,
+          "directional_day_share": 0.7901
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.059497,
+          "signed_icir": 0.5965,
+          "directional_day_share": 0.7037
+        }
+      }
+    },
+    "yeslab_370_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.085603,
+          "signed_icir": 0.5721,
+          "directional_day_share": 0.7228
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.084734,
+          "signed_icir": 0.5887,
+          "directional_day_share": 0.7377
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.086227,
+          "signed_icir": 0.561,
+          "directional_day_share": 0.7121
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.095045,
+          "signed_icir": 0.6441,
+          "directional_day_share": 0.7376
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.083788,
+          "signed_icir": 0.5775,
+          "directional_day_share": 0.7054
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.077975,
+          "signed_icir": 0.5001,
+          "directional_day_share": 0.7252
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.079417,
+          "signed_icir": 0.5717,
+          "directional_day_share": 0.7243
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.08633,
+          "signed_icir": 0.6298,
+          "directional_day_share": 0.7376
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.045361,
+          "signed_icir": 0.3137,
+          "directional_day_share": 0.6585
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.088944,
+          "signed_icir": 0.7699,
+          "directional_day_share": 0.8272
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.107272,
+          "signed_icir": 0.686,
+          "directional_day_share": 0.716
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.042036,
+          "signed_icir": 0.3108,
+          "directional_day_share": 0.6296
+        }
+      }
+    },
+    "yeslab_375_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.087544,
+          "signed_icir": 0.632,
+          "directional_day_share": 0.7508
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.08313,
+          "signed_icir": 0.6286,
+          "directional_day_share": 0.7653
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.090718,
+          "signed_icir": 0.6349,
+          "directional_day_share": 0.7404
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.094926,
+          "signed_icir": 0.702,
+          "directional_day_share": 0.7426
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.088532,
+          "signed_icir": 0.6633,
+          "directional_day_share": 0.745
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.079175,
+          "signed_icir": 0.5407,
+          "directional_day_share": 0.7649
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.096913,
+          "signed_icir": 0.7912,
+          "directional_day_share": 0.7737
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.099356,
+          "signed_icir": 0.8269,
+          "directional_day_share": 0.797
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.084876,
+          "signed_icir": 0.6319,
+          "directional_day_share": 0.6585
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.112541,
+          "signed_icir": 1.0904,
+          "directional_day_share": 0.8272
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.119634,
+          "signed_icir": 0.8743,
+          "directional_day_share": 0.7778
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.058565,
+          "signed_icir": 0.4995,
+          "directional_day_share": 0.716
+        }
+      }
+    },
+    "yeslab_389_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.075597,
+          "signed_icir": 0.6042,
+          "directional_day_share": 0.7376
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.075494,
+          "signed_icir": 0.6084,
+          "directional_day_share": 0.7535
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.075672,
+          "signed_icir": 0.6009,
+          "directional_day_share": 0.7262
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.078928,
+          "signed_icir": 0.6589,
+          "directional_day_share": 0.7401
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.072323,
+          "signed_icir": 0.6074,
+          "directional_day_share": 0.7228
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.075541,
+          "signed_icir": 0.5556,
+          "directional_day_share": 0.75
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.080948,
+          "signed_icir": 0.699,
+          "directional_day_share": 0.7778
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.086489,
+          "signed_icir": 0.7475,
+          "directional_day_share": 0.7772
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.053648,
+          "signed_icir": 0.4713,
+          "directional_day_share": 0.7805
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.091411,
+          "signed_icir": 0.9146,
+          "directional_day_share": 0.8272
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.095131,
+          "signed_icir": 0.7504,
+          "directional_day_share": 0.7778
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.056302,
+          "signed_icir": 0.4832,
+          "directional_day_share": 0.7284
+        }
+      }
+    },
+    "yeslab_390_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.079163,
+          "signed_icir": 0.6534,
+          "directional_day_share": 0.7459
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.073314,
+          "signed_icir": 0.6132,
+          "directional_day_share": 0.7377
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.083369,
+          "signed_icir": 0.6822,
+          "directional_day_share": 0.7518
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.082115,
+          "signed_icir": 0.7439,
+          "directional_day_share": 0.7723
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.074799,
+          "signed_icir": 0.5515,
+          "directional_day_share": 0.7079
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.080574,
+          "signed_icir": 0.6933,
+          "directional_day_share": 0.7574
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.089028,
+          "signed_icir": 0.8335,
+          "directional_day_share": 0.8148
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.088425,
+          "signed_icir": 0.8037,
+          "directional_day_share": 0.8069
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.092002,
+          "signed_icir": 1.0164,
+          "directional_day_share": 0.8537
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.095918,
+          "signed_icir": 0.9485,
+          "directional_day_share": 0.8272
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.096739,
+          "signed_icir": 0.8306,
+          "directional_day_share": 0.8025
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.074428,
+          "signed_icir": 0.7298,
+          "directional_day_share": 0.8148
+        }
+      }
+    },
+    "yeslab_471_tushare_pit_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.061659,
+          "signed_icir": 0.8069,
+          "directional_day_share": 0.7921
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.069739,
+          "signed_icir": 0.8774,
+          "directional_day_share": 0.8185
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.055848,
+          "signed_icir": 0.7584,
+          "directional_day_share": 0.773
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.06238,
+          "signed_icir": 0.931,
+          "directional_day_share": 0.8267
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.056739,
+          "signed_icir": 0.7309,
+          "directional_day_share": 0.7574
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.065857,
+          "signed_icir": 0.7878,
+          "directional_day_share": 0.7921
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.071462,
+          "signed_icir": 0.9657,
+          "directional_day_share": 0.8724
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.078532,
+          "signed_icir": 1.1298,
+          "directional_day_share": 0.901
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.036629,
+          "signed_icir": 0.4271,
+          "directional_day_share": 0.7317
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.086582,
+          "signed_icir": 1.3875,
+          "directional_day_share": 0.9383
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.074009,
+          "signed_icir": 0.9606,
+          "directional_day_share": 0.8642
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.053794,
+          "signed_icir": 0.6842,
+          "directional_day_share": 0.8148
+        }
+      }
+    },
+    "yeslab_398_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.069918,
+          "signed_icir": 0.6001,
+          "directional_day_share": 0.7244
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.072168,
+          "signed_icir": 0.5981,
+          "directional_day_share": 0.714
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.068299,
+          "signed_icir": 0.6018,
+          "directional_day_share": 0.7319
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.070718,
+          "signed_icir": 0.6257,
+          "directional_day_share": 0.7302
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.054059,
+          "signed_icir": 0.4584,
+          "directional_day_share": 0.6832
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.084977,
+          "signed_icir": 0.7278,
+          "directional_day_share": 0.7599
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.087012,
+          "signed_icir": 0.8339,
+          "directional_day_share": 0.8025
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.086533,
+          "signed_icir": 0.7908,
+          "directional_day_share": 0.7871
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.089373,
+          "signed_icir": 1.1844,
+          "directional_day_share": 0.878
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.108004,
+          "signed_icir": 1.1564,
+          "directional_day_share": 0.9012
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.082346,
+          "signed_icir": 0.7199,
+          "directional_day_share": 0.7654
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.070687,
+          "signed_icir": 0.6934,
+          "directional_day_share": 0.7407
+        }
+      }
+    },
+    "yeslab_395_tushare_shsz_v1": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.075344,
+          "signed_icir": 0.5468,
+          "directional_day_share": 0.7021
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.078026,
+          "signed_icir": 0.5707,
+          "directional_day_share": 0.7258
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.073416,
+          "signed_icir": 0.5295,
+          "directional_day_share": 0.6851
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.080959,
+          "signed_icir": 0.591,
+          "directional_day_share": 0.7228
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.071996,
+          "signed_icir": 0.523,
+          "directional_day_share": 0.6683
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.073078,
+          "signed_icir": 0.5261,
+          "directional_day_share": 0.7153
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.086248,
+          "signed_icir": 0.6688,
+          "directional_day_share": 0.7654
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.087016,
+          "signed_icir": 0.6448,
+          "directional_day_share": 0.7673
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.08246,
+          "signed_icir": 0.8651,
+          "directional_day_share": 0.7561
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.09437,
+          "signed_icir": 0.8901,
+          "directional_day_share": 0.8148
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.112284,
+          "signed_icir": 0.7049,
+          "directional_day_share": 0.7654
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.052088,
+          "signed_icir": 0.4803,
+          "directional_day_share": 0.716
+        }
+      }
+    }
+  },
+  "note": "Read-only decision-support evidence; regimes with signed_mean_rank_ic <= 0 are flagged as monitoring concerns.",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}
