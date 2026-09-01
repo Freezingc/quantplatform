@@ -6529,5 +6529,50 @@
     "locked_test_read": false,
     "formal_factor_set_changed": false,
     "model_training_started": false
+  },
+  "pool27_correlation_clusters_followup": {
+    "scope": "POOL27_CORRELATION_CLUSTERS_FOLLOWUP",
+    "status": "COMPLETE",
+    "artifact": "pool27_correlation_clusters_v1.json",
+    "method": "full 27-factor (formal nine + 18 READY candidates) training-window median abs Spearman matrix (351 pairs) assembled from existing evidence; average-linkage clustering + >=0.80 substitution groups",
+    "substitution_groups": [
+      [
+        "yeslab_380",
+        "yeslab_431",
+        "yeslab_437"
+      ],
+      [
+        "yeslab_114_tushare_shsz_v2",
+        "yeslab_376",
+        "yeslab_484_tushare_shsz_v1"
+      ],
+      [
+        "yeslab_396",
+        "yeslab_442"
+      ],
+      [
+        "yeslab_381_tushare_shsz_v1",
+        "yeslab_398_tushare_shsz_v1",
+        "yeslab_405_tushare_shsz_v1",
+        "yeslab_443_tushare_shsz_v1"
+      ],
+      [
+        "yeslab_357_tushare_shsz_v1",
+        "yeslab_363_tushare_shsz_v1"
+      ],
+      [
+        "yeslab_370_tushare_shsz_v1",
+        "yeslab_389_tushare_shsz_v1"
+      ]
+    ],
+    "new_findings": [
+      "114 has a 0.806 edge with formal yeslab_376 (its substitution group overlaps the formal set)",
+      "formal nine contains two internal substitution groups (380/431/437, 396/442)",
+      "11 pool factors are isolated (no >=0.80 edge): cleanest marginal information"
+    ],
+    "database_writes": false,
+    "locked_test_read": false,
+    "formal_factor_set_changed": false,
+    "model_training_started": false
   }
 }
