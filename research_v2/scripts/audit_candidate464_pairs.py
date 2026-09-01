@@ -50,8 +50,10 @@ from evaluate_tushare_scope_validation import (
     compute_pair_daily_spearman,
 )
 
-NEW_CANDIDATE_ID = "yeslab_464_tushare_shsz_v1"
-NEW_CANDIDATE_SOURCE = "yeslab_464"
+DEFAULT_NEW_CANDIDATE_ID = "yeslab_464_tushare_shsz_v1"
+DEFAULT_NEW_CANDIDATE_SOURCE = "yeslab_464"
+NEW_CANDIDATE_ID = DEFAULT_NEW_CANDIDATE_ID
+NEW_CANDIDATE_SOURCE = DEFAULT_NEW_CANDIDATE_SOURCE
 LOCKED_TEST_START = date(2026, 1, 1)
 THRESHOLD_MONITOR = 0.80
 THRESHOLD_REDUNDANT = 0.90
@@ -208,15 +210,22 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--pit-industry-cutover", type=date.fromisoformat, default=date(2021, 12, 10))
     parser.add_argument("--alpha484-checkpoint-root", type=Path, default=Path("research_v2/artifacts/checkpoints/alpha484_canonical_v1"))
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--candidate-id", default=DEFAULT_NEW_CANDIDATE_ID)
+    parser.add_argument("--candidate-source", default=DEFAULT_NEW_CANDIDATE_SOURCE)
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> dict[str, object]:
     args = parse_args(argv)
+    global NEW_CANDIDATE_ID, NEW_CANDIDATE_SOURCE
+    NEW_CANDIDATE_ID = args.candidate_id
+    NEW_CANDIDATE_SOURCE = args.candidate_source
+    if NEW_CANDIDATE_SOURCE not in replay.REPLAY_DEFINITIONS:
+        raise ValueError(f"unsupported candidate source factor id: {NEW_CANDIDATE_SOURCE}")
     client = _connect()
     phases = ("train", "validation") if args.phase == "all" else (args.phase,)
     payload: dict[str, object] = {
-        "scope": "CANDIDATE_464_PAIR_SIMILARITY_V1",
+        "scope": "NEW_CANDIDATE_PAIR_SIMILARITY_V1",
         "new_candidate_id": NEW_CANDIDATE_ID,
         "source_factor_id": NEW_CANDIDATE_SOURCE,
         "reference_candidates": [c.candidate_id for c in CANDIDATES] + list(EXTENSION_CANDIDATES),
