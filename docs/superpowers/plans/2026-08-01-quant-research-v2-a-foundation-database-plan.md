@@ -510,7 +510,7 @@ locked_test_audit = audit_id UUID!, model_id STRING!, model_version INT!, action
 
 `pipeline_run.status` 仅允许 `PENDING/RUNNING/SUCCESS/FAILED/CANCELLED/SOURCE_CHANGED/NOOP_NON_TRADING_DAY`；`data_quality_result.status` 仅允许 `PASS/FAIL/ERROR`，严重度仅允许 `INFO/WARN/ERROR/BLOCKER`。contract test 还需校验 `valid_to` 等 SCD 结束日的闭开语义由应用层统一执行。
 
-- [ ] **A6.6 在 Test DB 验证全部 schema**
+- [x] **A6.6 在 Test DB 验证全部 schema**
 
 Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/contract/db/test_schema_contracts.py tests/integration/db/test_migration_roundtrip.py -q -m integration`
 
@@ -659,7 +659,12 @@ git commit -m "feat(v2): expose audited database CLI"
 CLI 与 README 均有对应测试/产物；全量单元套件 947 通过，`ruff check` 与
 `mypy src` 干净）。仍开放的条目及原因：
 
-- A6.6：在真实 V2Test 库验证全部 schema 属运营执行证据。
+- A6.6 已于 2026-09-01 闭合：本机 DolphinDB 测试库（`dfs://QuantResearchV2Test`）
+  已应用迁移 001–012，审计表 checksum/名称与本地 `.dos` 完全一致（零漂移）；
+  `scripts/verify_test_db_schemas.py` 对 44 张表逐列比对迁移合约通过；
+  门控集成测试 `tests/integration/db/test_live_schema_contract.py`
+  （`QRV2_INTEGRATION=1` + `QRV2_DDB_*` 凭据）2 通过。迁移 013
+  （oos_score_health）尚未在真实库应用，属待批准的变更。
 - A5.4/A5.5 已于 2026-09-01 补齐：`tests/integration/db/conftest.py` 提供
   协议级内存 Test-DB harness（`FakeV2TestDatabase`：允许列表目标库、幂等建表、
   `schema_migration` 审计表），`tests/integration/db/test_migration_test_db.py`
