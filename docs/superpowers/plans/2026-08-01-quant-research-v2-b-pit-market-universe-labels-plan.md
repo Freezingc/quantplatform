@@ -503,8 +503,11 @@ tradability/universe、T+1..T+6 标签与 2026 locked guard、Tushare 对账、
 materialize/backfill 均有对应测试；全量单元套件 947 通过，`ruff check` 与
 `mypy src` 干净）。仍开放的条目及原因：
 
-- B7.4/B7.5/B7.6：V2Test 与 locked-year 的专用集成套件未建立（单元层已覆盖
-  locked guard 与 DQ 决策）。
+- B7.4/B7.5/B7.6：materialize CLI 级 V2Test 与 locked-year 专用集成套件未建立。
+  2026-09-01 已先建立 DB 层 V2Test 集成证据（`tests/integration/db/
+  test_publish_test_db.py`，基于内存 Test-DB harness）：发布追加行并最后推进
+  可见性指针、当前版本重发幂等、BLOCKER 级 DQ 拒绝且零可见行、多分片共享单
+  版本单指针；单元层仍覆盖 locked guard 与 DQ 决策。
 - B8.1–B8.5：真实历史 50×60 黄金样本未建立（需历史只读源与 watermark
   provenance）。2026-09-01 已先建立合成边界黄金夹具与等价性测试：
   `tests/golden/data/pit_label_{calendar,members,market}.csv` +

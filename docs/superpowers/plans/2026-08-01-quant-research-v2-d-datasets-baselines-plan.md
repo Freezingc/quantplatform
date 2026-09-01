@@ -542,7 +542,9 @@ selection/storage、B0–B3、gates/walk-forward、50×60 黄金数据与泄漏 
 均有对应测试；全量单元套件 947 通过，`ruff check` 与 `mypy src` 干净）。
 仍开放的条目及原因：
 
-- D9.4：`tests/integration/datasets` 集成套件仍未建立（单元侧已全部通过）。
+- D9.4：`tests/integration/datasets` 与 `tests/property/datasets` 仍未建立；
+  `tests/integration/evaluation` 已由 D8.6 端到端套件覆盖（2026-09-01）。
+  单元侧全部通过。
   D8.6/D8.7 已于 2026-09-01 补齐：合成 7 年（2015–2019 训练/2020 验证/2021
   测试）端到端编排测试 `tests/integration/evaluation/test_walk_forward_baselines.py`
   覆盖 split→B0–B3→validation 选模→延迟 test 评价，断言两次运行选择记录与
