@@ -13,7 +13,7 @@ import argparse
 import json
 import os
 from collections.abc import Mapping, Sequence
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import audit_formula_replay_consistency as replay
@@ -111,6 +111,10 @@ def materialize_phase(
         _calculator_market_start(client, definition, phase_start, phase_end)
         for definition in (*definitions, alpha206_definition)
     )
+    # Safety buffer: some calculators (e.g. AttentionSpillover/yeslab_471) need
+    # more warmup than their declared lookback_days; extend the market start so
+    # every factor has values from phase_start.
+    market_start = market_start - timedelta(days=90)
     open_dates = _query_open_dates(client, market_start, phase_end)
     required_fields = required_market_fields(definitions)
     market = fetch_full_tushare_shsz_market(

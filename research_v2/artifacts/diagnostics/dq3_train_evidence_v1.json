@@ -1,0 +1,52 @@
+{
+  "scope": "TUSHARE_SHSZ_DQ3_TRAIN_EVIDENCE_V1",
+  "purpose": "Training-window (2020-01-02/2024-12-31) evaluation of the remaining warmup60-DQ-pass group (398/438/451) that failed the historical 2020 predictive screen, with formal nine for nine-edge similarity.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "train_artifact": "tushare_shsz_dq3_formal9_train_2020_2024_v1",
+  "candidates": {
+    "yeslab_398": {
+      "factor_name": "GP_029",
+      "signed_ic": 0.0699,
+      "signed_icir": 0.6001,
+      "day_share": 0.724,
+      "annual": "4/5 (2020 fail 0.39)",
+      "nine_edge_max": 0.7829,
+      "nearest_formal": "yeslab_431",
+      "training_decision": "PASS"
+    },
+    "yeslab_438": {
+      "factor_name": "GP_069",
+      "signed_ic": 0.0692,
+      "signed_icir": 0.4915,
+      "day_share": 0.693,
+      "annual": "2/5",
+      "nine_edge_max": 0.9029,
+      "nearest_formal": "yeslab_431",
+      "training_decision": "REJECT_AGGREGATE_ICIR_ANNUAL_2_OF_5_AND_REDUNDANT_WITH_FORMAL_431"
+    },
+    "yeslab_451": {
+      "factor_name": "GP_082",
+      "signed_ic": 0.0691,
+      "signed_icir": 0.4912,
+      "day_share": 0.694,
+      "annual": "2/5",
+      "nine_edge_max": 0.9025,
+      "nearest_formal": "yeslab_431",
+      "training_decision": "REJECT_AGGREGATE_ICIR_ANNUAL_2_OF_5_AND_REDUNDANT_WITH_FORMAL_431"
+    }
+  },
+  "notable_observations": [
+    "yeslab_438 and yeslab_451 are exactly rank-identical (mutual median abs Spearman 1.0000) despite different GP formulas; both rejected.",
+    "Both 438/451 are redundant with formal yeslab_431 (0.903 >= 0.90).",
+    "Historical screen ICIR uplift confirmed again: 398 screen -0.327 -> canonical 0.600."
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "evidence_commit_at_train": "49bf214e12e18d956963f2019d7d4fa8e8194806"
+}
