@@ -1,5 +1,7 @@
 # 因子质量改进与服务器迁移交接文档
 
+> 最新进展（2026-09-01）：准入证据独立核验已完成，人工准入决策简报见 `docs/handoffs/2026-09-01-admission-decision-brief.md`。
+>
 > 状态日期：2026-08-31（Asia/Shanghai）
 >
 > 当前工作区：`/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX`
