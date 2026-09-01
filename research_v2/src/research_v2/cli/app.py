@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import date
 from pathlib import Path
 
 import typer
 
 from research_v2.cli.baselines import run_baseline
 from research_v2.cli.datasets import inspect_dataset, plan_build, verify_dataset
+from research_v2.cli.db import BackendNotConfigured
+from research_v2.cli.db import migrate as db_migrate
+from research_v2.cli.db import source_inspect as db_source_inspect
+from research_v2.cli.db import status as db_status
 from research_v2.cli.evaluate import evaluate_walk_forward
 from research_v2.cli.export import compatibility, verify
 from research_v2.cli.inference import daily as inference_daily
@@ -29,6 +34,8 @@ evaluate_app = typer.Typer(no_args_is_help=True)
 report_app = typer.Typer(no_args_is_help=True)
 export_app = typer.Typer(no_args_is_help=True)
 inference_app = typer.Typer(no_args_is_help=True)
+db_app = typer.Typer(no_args_is_help=True)
+source_app = typer.Typer(no_args_is_help=True)
 app.add_typer(materialize_app, name="materialize")
 app.add_typer(dataset_app, name="dataset")
 app.add_typer(baseline_app, name="baseline")
@@ -39,6 +46,8 @@ app.add_typer(evaluate_app, name="evaluate")
 app.add_typer(report_app, name="report")
 app.add_typer(export_app, name="export")
 app.add_typer(inference_app, name="inference")
+app.add_typer(db_app, name="db")
+app.add_typer(source_app, name="source")
 
 
 def _materialize_command(operation: str) -> Callable[..., None]:
@@ -137,6 +146,45 @@ def export_verify_command(
     manifest: Path = typer.Option(..., "--manifest"),  # noqa: B008
 ) -> None:
     verify(manifest)
+
+
+@db_app.command("migrate")
+def db_migrate_command(
+    env: str = typer.Option("test", "--env"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+    confirm_target: str = typer.Option(None, "--confirm-target"),
+) -> None:
+    """Apply V2 schema migrations; production requires explicit confirmation."""
+    try:
+        db_migrate(env, dry_run, confirm_target)
+    except (PermissionError, BackendNotConfigured) as error:
+        typer.echo(str(error), err=False)
+        raise typer.Exit(code=2) from None
+
+
+@db_app.command("status")
+def db_status_command(
+    env: str = typer.Option("test", "--env"),
+) -> None:
+    """Report applied schema migration versions."""
+    try:
+        db_status(env)
+    except BackendNotConfigured as error:
+        typer.echo(str(error), err=False)
+        raise typer.Exit(code=2) from None
+
+
+@source_app.command("inspect")
+def source_inspect_command(
+    env: str = typer.Option("test", "--env"),
+    as_of: str = typer.Option(..., "--as-of"),
+) -> None:
+    """Report captured source watermarks up to one observation date."""
+    try:
+        db_source_inspect(env, date.fromisoformat(as_of))
+    except BackendNotConfigured as error:
+        typer.echo(str(error), err=False)
+        raise typer.Exit(code=2) from None
 
 
 @inference_app.command("daily")

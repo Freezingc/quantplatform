@@ -615,7 +615,7 @@ with pipeline_run(repo, name="db.migrate", context=context) as run:
 
 进入写 `RUNNING`；正常退出写 `SUCCESS`；异常写 `FAILED`、异常类和截断后的安全信息，再重新抛出。不得把 secret、完整查询结果或 token 写入 error message。
 
-- [ ] **A8.3 增加日志脱敏测试**
+- [x] **A8.3 增加日志脱敏测试**
 
 在配置、连接错误、CLI traceback 和 pipeline audit 中植入 sentinel secret，断言 stdout/stderr/DB audit 均不包含原文。
 
@@ -662,5 +662,12 @@ CLI 与 README 均有对应测试/产物；全量单元套件 947 通过，`ruff
 - A5.4/A5.5：迁移专用 Test-DB 集成 fixture 未建立（dry-run/幂等/checksum
   已在单元层锁定；真实库验证并入 `tests/integration` 门控验收）。
 - A6.6：在真实 V2Test 库验证全部 schema 属运营执行证据。
-- A8.3：日志脱敏测试缺失（配置层 secret 禁令已有测试）。
+- A8.1/A8.2/A8.3 已于 2026-09-01 实现并通过测试（此前 A8.1/A8.2 误勾选，
+  已复核纠正）：`qr-v2 db migrate/db status/source inspect` CLI 与
+  production `--confirm-target` 守卫（`src/research_v2/cli/db.py` +
+  `tests/unit/cli/test_db_commands.py`）；`pipeline_run` 审计上下文管理器
+  与脱敏（`src/research_v2/runs/audit.py` + `tests/unit/runs/test_audit.py`：
+  RUNNING/SUCCESS/FAILED 状态、异常类+截断脱敏信息、注册 secret 与
+  password/token/secret/apikey 模式双重脱敏）。写入 `pipeline_run` 控制表
+  的 DolphinDB sink 与真实客户端接线属运营步骤。
 - A8.4：完整验证含 `QRV2_INTEGRATION=1` 集成（发布故障恢复测试存在但门控未跑）。
