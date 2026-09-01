@@ -317,10 +317,17 @@ docs(v2): record locked-test runbook
   factor_id，其中约 16 个准入因子覆盖 2020 起全历史）、`label_daily`
   5,540,699 行、`universe_daily` 8,628,939 行、`factor_registry` 6 个
   ACTIVE 因子、`dataset_manifest` 0 行。**完成标准 303（2014–2025 F01–F06
-  OOS 复现）的前置缺口：TRAIN 年（2014–2019）因子尚未回填**——现有物化从
-  2020 开始；需排期执行 2014–2019 因子回填（大规模物化运行，涉及共享库
-  写入与源库读取负载），随后按 D 计划构建 F01–F06 数据集并运行 B0–B3
-  walk-forward。
+  OOS 复现）的前置缺口：TRAIN 年（2014–2019）因子无存储数据**——
+  factor_data8/9/10 源表均从 2020-01-02 开始，V1 库（dayFactorTB）亦无
+  GP 谱系，存储回填不可行。2026-09-01 完成公式重放验证
+  （`docs/reports/2026-09-01-admitted16-formula-replay-verification.md`）：
+  用 `数据库/factor_calculators/GP_Factor_*_Calculator.py` 对存储值做
+  全横截面重放，**14/16 准入因子机器精度复现**（max_abs_diff ≤ 4e-9），
+  即 2014–2019 可由原始行情（stock_factor_daily 覆盖 2013+）安全重算；
+  GP_026（yeslab_395）与 GP_074（yeslab_443）重放阻塞，需调查输入源差异。
+  后续步骤：为 14 个已验证因子构建重算物化路径（经审计发布到
+  factor_observation_clean），再按 D 计划构建 F01–F06 数据集并运行
+  B0–B3 walk-forward。
 
 即使没有复杂候选通过，平台工程仍可判定完成；此时模型停留在 `DRAFT`，不得启动正式 SHADOW 或声称模型有效。
 
