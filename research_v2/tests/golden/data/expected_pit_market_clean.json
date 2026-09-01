@@ -1,0 +1,9 @@
+{
+  "description": "Hand-computed cleaned market rows. adjusted_open = open * adj_factor exactly.",
+  "rows": [
+    {"trade_date": "2025-01-02", "ts_code": "M01", "open": 10.0, "high": 11.0, "low": 9.5, "close": 10.8, "vol": 1000.0, "amount": 10500.0, "adj_factor": 1.0, "dedup_resolution": "IDENTICAL_COLLAPSE", "adjusted_open": 10.0},
+    {"trade_date": "2025-01-02", "ts_code": "M02", "open": 20.0, "high": 21.0, "low": 19.0, "close": 20.5, "vol": 500.0, "amount": 10250.0, "adj_factor": 2.0, "dedup_resolution": "UNIQUE", "adjusted_open": 40.0},
+    {"trade_date": "2025-01-03", "ts_code": "M01", "open": 10.8, "high": 12.0, "low": 10.5, "close": 11.5, "vol": 1200.0, "amount": 13200.0, "adj_factor": 1.0, "dedup_resolution": "UNIQUE", "adjusted_open": 10.8},
+    {"trade_date": "2025-01-06", "ts_code": "M01", "open": 11.5, "high": 12.5, "low": 11.0, "close": 12.0, "vol": 900.0, "amount": 10800.0, "adj_factor": 0.5, "dedup_resolution": "UNIQUE", "adjusted_open": 5.75}
+  ]
+}

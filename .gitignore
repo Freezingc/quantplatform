@@ -53,3 +53,4 @@ skills/
 # Deliberately committed V1/V2 parallel-acceptance fixtures (plan F, task F10.4).
 !research_v2/tests/integration/data/
 !research_v2/tests/integration/data/**
+!research_v2/tests/golden/data/*.csv

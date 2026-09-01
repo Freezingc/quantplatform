@@ -505,6 +505,13 @@ materialize/backfill 均有对应测试；全量单元套件 947 通过，`ruff 
 
 - B7.4/B7.5/B7.6：V2Test 与 locked-year 的专用集成套件未建立（单元层已覆盖
   locked guard 与 DQ 决策）。
-- B8.1–B8.5：PIT 域 50×60 黄金样本与独立预期值未建立（dataset 层黄金数据
-  已在 D9 完成，见 `tests/golden/data/dataset_50x60.parquet`）。
+- B8.1–B8.5：真实历史 50×60 黄金样本未建立（需历史只读源与 watermark
+  provenance）。2026-09-01 已先建立合成边界黄金夹具与等价性测试：
+  `tests/golden/data/pit_label_{calendar,members,market}.csv` +
+  `expected_pit_labels.json`（T+1..T+6 标签全边界：缺入场/退场价、非正价格、
+  日历覆盖不足、零收益；预期值按定义手工独立计算）与
+  `tests/golden/data/pit_market_raw.csv` + `expected_pit_market_clean.json`
+  （清洗/去重/复权精确值），测试为 `tests/golden/test_pit_labels.py`、
+  `tests/golden/test_pit_market.py`（972 单元+黄金测试全绿）。待补：真实
+  50×60 样本、README 行级算例、canonical SHA-256 比较与人工复核记录。
 - 完成标准第 1 条：2013–2025 全范围稳定生成属真实运行证据，待运营执行。

@@ -1,0 +1,13 @@
+{
+  "description": "Independently hand-computed T+1..T+6 adjusted-open labels for the pit_label fixture. return = exit_open/entry_open - 1.",
+  "rows": [
+    {"signal_date": "2025-01-02", "ts_code": "A01", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": 0.125, "label_valid": true, "invalid_reason": null, "entry_realized_tradable": true, "exit_price_observed": true},
+    {"signal_date": "2025-01-02", "ts_code": "A02", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": null, "label_valid": false, "invalid_reason": "MISSING_ENTRY_PRICE", "entry_realized_tradable": false, "exit_price_observed": false},
+    {"signal_date": "2025-01-02", "ts_code": "A03", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": null, "label_valid": false, "invalid_reason": "MISSING_EXIT_PRICE", "entry_realized_tradable": true, "exit_price_observed": false},
+    {"signal_date": "2025-01-02", "ts_code": "A04", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": null, "label_valid": false, "invalid_reason": "INVALID_ENTRY_PRICE", "entry_realized_tradable": false, "exit_price_observed": true},
+    {"signal_date": "2025-01-02", "ts_code": "A05", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": null, "label_valid": false, "invalid_reason": "INVALID_EXIT_PRICE", "entry_realized_tradable": true, "exit_price_observed": false},
+    {"signal_date": "2025-01-02", "ts_code": "A06", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": null, "label_valid": false, "invalid_reason": "MISSING_ENTRY_PRICE", "entry_realized_tradable": false, "exit_price_observed": false},
+    {"signal_date": "2025-01-08", "ts_code": "A01", "entry_date": "2025-01-09", "exit_date": "2025-01-16", "label_available_date": "2025-01-16", "raw_return_5d": 0.0, "label_valid": true, "invalid_reason": null, "entry_realized_tradable": true, "exit_price_observed": true},
+    {"signal_date": "2025-01-10", "ts_code": "A01", "entry_date": null, "exit_date": null, "label_available_date": null, "raw_return_5d": null, "label_valid": false, "invalid_reason": "INSUFFICIENT_CALENDAR_COVERAGE", "entry_realized_tradable": false, "exit_price_observed": false}
+  ]
+}
