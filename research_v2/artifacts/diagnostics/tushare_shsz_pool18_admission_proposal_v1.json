@@ -1,0 +1,189 @@
+{
+  "scope": "TUSHARE_SHSZ_POOL18_ADMISSION_PROPOSAL_V1",
+  "proposal_type": "POOL_READ_ONLY_PREFLIGHT",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d",
+  "train_window": "2020-01-02/2024-12-31",
+  "validation_window": "2025-01-02/2025-12-31",
+  "similarity_threshold": 0.9,
+  "similarity_periods": [
+    "train",
+    "validation"
+  ],
+  "admission_authority": "NOT_GRANTED",
+  "publication_status": "NOT_PUBLISHED",
+  "model_training_started": false,
+  "database_writes": false,
+  "locked_test_read": false,
+  "note": "Read-only decision-readiness preflight over all eighteen READY candidates. annual_stability_gate uses PASS for 5/5 strict years and MONITOR for 4/5 (the unchanged gate requires >= 4/5). Elevated candidate pairs (370/389 validation 0.9127 >= 0.90; monitor pairs with 381 and the 395-vs-formal-380 watch) are documented in the checklist; preflight pair checks below 0.90 remain expected to pass except the 370/389 validation edge.",
+  "candidates": [
+    {
+      "factor_id": "yeslab_114_tushare_shsz_v2",
+      "factor_name": "惊恐波动",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_206_median_abs_v2",
+      "factor_name": "60日量中位偏离(修复)",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_357_tushare_shsz_v1",
+      "factor_name": "行业内收益标准化",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_363_tushare_shsz_v1",
+      "factor_name": "行业标准化/行业偏度",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_370_tushare_shsz_v1",
+      "factor_name": "GP_001",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_375_tushare_shsz_v1",
+      "factor_name": "GP_006",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_381_tushare_shsz_v1",
+      "factor_name": "GP_012",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_389_tushare_shsz_v1",
+      "factor_name": "GP_020",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_390_tushare_shsz_v1",
+      "factor_name": "GP_021",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_395_tushare_shsz_v1",
+      "factor_name": "GP_026",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_398_tushare_shsz_v1",
+      "factor_name": "GP_029",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_405_tushare_shsz_v1",
+      "factor_name": "GP_036",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_425_tushare_shsz_v2",
+      "factor_name": "GP_056",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_443_tushare_shsz_v1",
+      "factor_name": "GP_074",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_464_tushare_shsz_v1",
+      "factor_name": "GP_095",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_471_tushare_pit_v1",
+      "factor_name": "AttentionSpillover",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_484_tushare_shsz_v1",
+      "factor_name": "羊群效应_CSAD波动率21",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "PASS",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    },
+    {
+      "factor_id": "yeslab_96_canonical_replay_v1",
+      "factor_name": "修正日间反转",
+      "version_scope": "isolated_tushare_canonical",
+      "predictive_gate": "PASS",
+      "annual_stability_gate": "MONITOR",
+      "similarity_gate": "PASS",
+      "formula_scope_gate": "PASS"
+    }
+  ]
+}

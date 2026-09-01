@@ -1,0 +1,92 @@
+{
+  "summaries": [
+    {
+      "factor_id": "yeslab_484_tushare_shsz_v1",
+      "icir": -0.5807482425908108
+    },
+    {
+      "factor_id": "yeslab_206_median_abs_v2",
+      "icir": -0.5605326518505653
+    },
+    {
+      "factor_id": "yeslab_405_tushare_shsz_v1",
+      "icir": -1.0391000640556851,
+      "mean_rank_ic": -0.0901699589936261
+    },
+    {
+      "factor_id": "yeslab_425_tushare_shsz_v2",
+      "icir": -0.8493809616418155,
+      "mean_rank_ic": -0.09558551046641821
+    },
+    {
+      "factor_id": "yeslab_381_tushare_shsz_v1",
+      "icir": -0.8904495364967474,
+      "mean_rank_ic": -0.09506094436867395
+    },
+    {
+      "factor_id": "yeslab_114_tushare_shsz_v2",
+      "icir": -0.5227216040344088,
+      "mean_rank_ic": -0.07623526197950761
+    },
+    {
+      "factor_id": "yeslab_363_tushare_shsz_v1",
+      "icir": -0.863900489120149,
+      "mean_rank_ic": -0.05613979467852103
+    },
+    {
+      "factor_id": "yeslab_357_tushare_shsz_v1",
+      "icir": -1.156313140171648,
+      "mean_rank_ic": -0.06019135062766167
+    },
+    {
+      "factor_id": "yeslab_443_tushare_shsz_v1",
+      "icir": -0.7120967740412297,
+      "mean_rank_ic": -0.07874547252622145
+    },
+    {
+      "factor_id": "yeslab_96_canonical_replay_v1",
+      "icir": -0.6420883584200128,
+      "mean_rank_ic": -0.07397836239198964
+    },
+    {
+      "factor_id": "yeslab_464_tushare_shsz_v1",
+      "icir": -0.8403621923959331,
+      "mean_rank_ic": -0.0797594313937492
+    },
+    {
+      "factor_id": "yeslab_370_tushare_shsz_v1",
+      "icir": -0.5716580156529784,
+      "mean_rank_ic": -0.07941718261511091
+    },
+    {
+      "factor_id": "yeslab_375_tushare_shsz_v1",
+      "icir": -0.7912494365980416,
+      "mean_rank_ic": -0.09691319040241518
+    },
+    {
+      "factor_id": "yeslab_389_tushare_shsz_v1",
+      "icir": -0.6989796727549997,
+      "mean_rank_ic": -0.08094764612009951
+    },
+    {
+      "factor_id": "yeslab_390_tushare_shsz_v1",
+      "icir": -0.8334501498219872,
+      "mean_rank_ic": -0.08902820324367082
+    },
+    {
+      "factor_id": "yeslab_398_tushare_shsz_v1",
+      "icir": -0.8338762316712006,
+      "mean_rank_ic": -0.08701237269105842
+    },
+    {
+      "factor_id": "yeslab_471_tushare_pit_v1",
+      "icir": 0.965694543184178,
+      "mean_rank_ic": 0.0714618646209547
+    },
+    {
+      "factor_id": "yeslab_395_tushare_shsz_v1",
+      "icir": -0.6687866945365821,
+      "mean_rank_ic": -0.08624759784787252
+    }
+  ]
+}

@@ -190,7 +190,7 @@
     "status": "PASS_NO_ELEVATED_PAIR"
   },
   "pool_completeness_supplement": {
-    "note": "With 471 and 398 both READY, their mutual pair edge was missing; filled via the alpha395 nine-edge batches.",
+    "note": "With 471, 398 and 395 promoted, several cross-cohort edges were missing (370/375/389/390 vs 471, mutual pairs among 370/375/389/390). Filled via tushare_shsz_nearmiss4_471_fill batches and the nearmiss6 batch; the pool18 preflight then verified all 306 pair-windows.",
     "pair": [
       "yeslab_398_tushare_shsz_v1",
       "yeslab_471_tushare_pit_v1"
@@ -200,8 +200,65 @@
     "status": "PAIR_UNIQUE",
     "artifacts": [
       "tushare_shsz_alpha395_formal9_train_2020_2024_v1/similarity_summary.json",
-      "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json"
+      "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json",
+      "tushare_shsz_nearmiss4_471_fill_train_2020_2024_v1/similarity_summary.json",
+      "tushare_shsz_nearmiss4_471_fill_validation_2025_v1/similarity_summary.json",
+      "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+      "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+      "tushare_shsz_pool18_admission_preflight_v1.json"
     ],
-    "pool_state": "All eighteen READY candidates now have complete pairwise evidence (base-six matrix, extension audit, 464/370/375/389/390/471/398/395 audits, and this supplement)."
+    "pool_state": "All eighteen READY candidates now have complete pairwise evidence (base-six matrix, extension audit, 464/370/375/389/390/471/398/395 audits, and this supplement).",
+    "filled_edges": {
+      "yeslab_471 vs yeslab_370": {
+        "train": 0.31,
+        "validation": 0.2858
+      },
+      "yeslab_471 vs yeslab_375": {
+        "train": 0.3559,
+        "validation": 0.3593
+      },
+      "yeslab_471 vs yeslab_389": {
+        "train": 0.2826,
+        "validation": 0.2787
+      },
+      "yeslab_471 vs yeslab_390": {
+        "train": 0.2979,
+        "validation": 0.3095
+      }
+    }
+  },
+  "pool18_preflight": {
+    "artifact": "tushare_shsz_pool18_admission_preflight_v1.json",
+    "proposal": "tushare_shsz_pool18_admission_proposal_v1.json",
+    "required_pair_windows": 306,
+    "observed_pair_windows": 306,
+    "missing": 0,
+    "pair_status": {
+      "PASS": 151,
+      "FAIL": 2
+    },
+    "failing_pairs": [
+      {
+        "pair": [
+          "yeslab_114_tushare_shsz_v2",
+          "yeslab_484_tushare_shsz_v1"
+        ],
+        "period": "validation",
+        "metric": 0.9078748386736184,
+        "rule": "documented redundancy; choose one"
+      },
+      {
+        "pair": [
+          "yeslab_370_tushare_shsz_v1",
+          "yeslab_389_tushare_shsz_v1"
+        ],
+        "period": "validation",
+        "metric": 0.9127035431,
+        "rule": "documented redundancy; choose one"
+      }
+    ],
+    "candidate_gate_failures": 0,
+    "status": "PREFLIGHT_CLEAN_EXCEPT_DOCUMENTED_REDUNDANT_PAIRS",
+    "note": "Read-only decision-readiness verification over all eighteen READY candidates; does not grant admission."
   }
 }

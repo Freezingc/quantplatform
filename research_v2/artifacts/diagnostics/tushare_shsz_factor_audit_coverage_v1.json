@@ -6438,5 +6438,35 @@
     "database_writes": false,
     "locked_test_read": false,
     "model_training_started": false
+  },
+  "pool18_preflight_followup": {
+    "scope": "POOL18_ADMISSION_PREFLIGHT_FOLLOWUP",
+    "status": "PREFLIGHT_CLEAN_EXCEPT_DOCUMENTED_REDUNDANT_PAIRS",
+    "pair_windows": "306/306 covered (153 pairs x train/validation)",
+    "individual_gate_failures": 0,
+    "redundant_pairs": [
+      [
+        "yeslab_114_tushare_shsz_v2",
+        "yeslab_484_tushare_shsz_v1",
+        "validation 0.9079"
+      ],
+      [
+        "yeslab_370_tushare_shsz_v1",
+        "yeslab_389_tushare_shsz_v1",
+        "validation 0.9127"
+      ]
+    ],
+    "note": "Integration preflight also exposed and fixed cross-cohort evidence gaps (471 vs near-miss four; mutual pairs among 370/375/389/390).",
+    "artifacts": [
+      "tushare_shsz_pool18_admission_preflight_v1.json",
+      "tushare_shsz_pool18_admission_proposal_v1.json",
+      "pool18_preflight_train_similarity_v1.csv",
+      "pool18_preflight_validation_similarity_v1.csv",
+      "pool18_preflight_quality_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
   }
 }

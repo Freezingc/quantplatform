@@ -1,0 +1,91 @@
+{
+  "code_count": 5113,
+  "database_writes": false,
+  "end": "2024-12-31",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_370",
+    "yeslab_375",
+    "yeslab_389",
+    "yeslab_390",
+    "yeslab_471"
+  ],
+  "industry_coverage": null,
+  "industry_source": "YesLab.stock_info_table static labels",
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2019-03-11",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": false,
+  "start": "2020-01-02",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.7227722772277227,
+      "end": "2024-12-31",
+      "factor_id": "yeslab_370",
+      "factor_name": "GP_001",
+      "icir": -0.5720678397974055,
+      "mean_rank_ic": -0.08560251535066968,
+      "rank_ic_std": 0.14963700001207078,
+      "signed_mean_rank_ic": 0.08560251535066968,
+      "start": "2020-01-02",
+      "valid_day_count": 1212
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.7508250825082509,
+      "end": "2024-12-31",
+      "factor_id": "yeslab_375",
+      "factor_name": "GP_006",
+      "icir": -0.6319535148686858,
+      "mean_rank_ic": -0.08754412916518972,
+      "rank_ic_std": 0.13852938088868863,
+      "signed_mean_rank_ic": 0.08754412916518972,
+      "start": "2020-01-02",
+      "valid_day_count": 1212
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.7376237623762376,
+      "end": "2024-12-31",
+      "factor_id": "yeslab_389",
+      "factor_name": "GP_020",
+      "icir": -0.6042360292734024,
+      "mean_rank_ic": -0.0755974330207161,
+      "rank_ic_std": 0.1251124218984798,
+      "signed_mean_rank_ic": 0.0755974330207161,
+      "start": "2020-01-02",
+      "valid_day_count": 1212
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.7458745874587459,
+      "end": "2024-12-31",
+      "factor_id": "yeslab_390",
+      "factor_name": "GP_021",
+      "icir": -0.6533723037471041,
+      "mean_rank_ic": -0.07916272357486376,
+      "rank_ic_std": 0.12116020700734305,
+      "signed_mean_rank_ic": 0.07916272357486376,
+      "start": "2020-01-02",
+      "valid_day_count": 1212
+    },
+    {
+      "direction": 1,
+      "directional_day_share": 0.8085808580858086,
+      "end": "2024-12-31",
+      "factor_id": "yeslab_471",
+      "factor_name": "AttentionSpillover",
+      "icir": 0.8299499309067583,
+      "mean_rank_ic": 0.05503175886567438,
+      "rank_ic_std": 0.06630732387139265,
+      "signed_mean_rank_ic": 0.05503175886567438,
+      "start": "2020-01-02",
+      "valid_day_count": 1212
+    }
+  ]
+}
