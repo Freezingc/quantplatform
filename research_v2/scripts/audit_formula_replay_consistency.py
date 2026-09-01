@@ -119,6 +119,15 @@ REPLAY_DEFINITIONS = {
         calculator_class="TerriStdCalculator",
         lookback_days=20,
     ),
+    "yeslab_213": ReplayDefinition(
+        factor_id="yeslab_213",
+        factor_name="量价齐飞加换手率",
+        store_factor="factor_data5",
+        calculator_module="FlyPlusTurnoverCalculator",
+        calculator_class="FlyPlusTurnoverCalculator",
+        lookback_days=20,
+        replay_lookback_days=180,
+    ),
     "yeslab_143": ReplayDefinition(
         factor_id="yeslab_143",
         factor_name="日换手率波动偏离（1个月内）",
@@ -234,6 +243,15 @@ REPLAY_DEFINITIONS = {
         calculator_module="GP_Factor_010_Calculator",
         calculator_class="GP_Factor_010_Calculator",
         lookback_days=20,
+        replay_lookback_days=180,
+    ),
+    "yeslab_375": ReplayDefinition(
+        factor_id="yeslab_375",
+        factor_name="GP_006",
+        store_factor="factor_data8",
+        calculator_module="GP_Factor_006_Calculator",
+        calculator_class="GP_Factor_006_Calculator",
+        lookback_days=60,
         replay_lookback_days=180,
     ),
     "yeslab_384": ReplayDefinition(

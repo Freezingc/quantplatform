@@ -381,14 +381,15 @@
         "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/similarity_summary.json",
         "gp_coverage_repair4_train_evidence_v1.json",
         "candidate464_pair_similarity_v1.json",
-        "gp_turnover_scalar_degeneracy_diagnostic_v1.json"
+        "gp_turnover_scalar_degeneracy_diagnostic_v1.json",
+        "yeslab_464_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
         "Are all monitoring requirements accepted if admitted?",
         "Has any required pair/combination review been completed for joint admission?"
       ],
-      "required_monitoring": "Nearest-pair watch with yeslab_405_tushare_shsz_v1 (0.78, below threshold); formal nine nearest edge yeslab_396 (0.694 train / 0.703 validation)."
+      "required_monitoring": "Monthly stability in 2025 validation: signed mean pass 11/12 months, directional share pass 11/12, strict ICIR pass 9/12, all 12 months positive. Nearest-pair watch with yeslab_405_tushare_shsz_v1 (0.78, below threshold); formal nine nearest edge yeslab_396 (0.694 train / 0.703 validation)."
     }
   ]
 }

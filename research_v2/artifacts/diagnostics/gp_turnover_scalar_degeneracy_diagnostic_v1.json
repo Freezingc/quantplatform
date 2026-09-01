@@ -22,7 +22,7 @@
       "smoke_single_yeslab_468_2020_v1/daily_rank_ic.csv"
     ]
   },
-  "decision": "REJECT_STRUCTURAL_DEGENERACY_FOR_FAMILY_436_446_468_426; other family members already rejected by predictive gates. Full training-window evaluation of 436/446/468 proceeds only to document the degeneracy empirically; their admission is excluded regardless of gate outcomes.",
+  "decision": "REJECT_STRUCTURAL_DEGENERACY_FOR_FAMILY_19_FACTORS (436/446/468/426/411/449/450/466 predictive-pass-or-borderline members; others already rejected by predictive gates). Full training-window evaluation of 436/446/468 documented the degeneracy empirically.",
   "decision_reason": "A factor equal to turnover_rate times a per-date scalar has the same cross-sectional ranks as turnover_rate (or its reversal) every day. The three factors are mutually redundant (median abs Spearman = 1.0 by construction, above the 0.90 threshold) and add no information beyond a signed turnover stream. They must not be admitted regardless of gate outcomes in the full training window.",
   "yeslab_464_status": "NOT_DEGENERATE_PROCEEDS_TO_FULL_EVALUATION",
   "yeslab_464_note": "GP_Factor_095 ends in a per-stock regression residual; its smoke-window RankIC series differs from the turnover-scalar triple.",
@@ -84,6 +84,26 @@
         "gp": "GP_099",
         "factor_id": "yeslab_468",
         "screen_2020": "PREDICTIVE_PASS_COVERAGE_FAIL (ICIR -0.500); smoke-confirmed identical ranks with 436/446"
+      },
+      {
+        "gp": "GP_042",
+        "factor_id": "yeslab_411",
+        "screen_2020": "ICIR -0.6104698738, status PREDICTIVE_PASS_COVERAGE_FAIL"
+      },
+      {
+        "gp": "GP_080",
+        "factor_id": "yeslab_449",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.460)"
+      },
+      {
+        "gp": "GP_081",
+        "factor_id": "yeslab_450",
+        "screen_2020": "ICIR None, status NO_FINITE_OUTPUT_COVERAGE_FAIL"
+      },
+      {
+        "gp": "GP_097",
+        "factor_id": "yeslab_466",
+        "screen_2020": "PREDICTIVE_FAIL_COVERAGE_FAIL (ICIR -0.472); found by second-pass scan (Series.rank time-axis variant)"
       }
     ],
     "amount_family": [
@@ -113,6 +133,7 @@
         "screen_2020": "PREDICTIVE_FAIL (ICIR -0.222)"
       }
     ],
-    "note": "The amount family members with identical 2020 ICIR (-0.222) are themselves mutually rank-identical, consistent with the shared degenerate structure."
+    "note": "The amount family members with identical 2020 ICIR (-0.222) are themselves mutually rank-identical, consistent with the shared degenerate structure.",
+    "scan_note": "Second-pass scan (2026-09-02) caught four more members whose scalar operand is built via Series.min(axis=1)/Series.rank(pct=True) chains: GP_042/080/081/097. GP_004/005/006/009/017/049/100 were verified NOT degenerate (turnover multiplied by a per-stock cross-sectional rank DataFrame). Family total: 19."
   }
 }

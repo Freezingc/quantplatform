@@ -1,0 +1,49 @@
+{
+  "code_count": 3033,
+  "database_writes": false,
+  "end": "2020-02-29",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_375",
+    "yeslab_213"
+  ],
+  "industry_coverage": null,
+  "industry_source": "YesLab.stock_info_table static labels",
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2019-03-11",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": false,
+  "start": "2020-01-02",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.6666666666666666,
+      "end": "2020-02-28",
+      "factor_id": "yeslab_375",
+      "factor_name": "GP_006",
+      "icir": -0.28580145591814504,
+      "mean_rank_ic": -0.04097311821708169,
+      "rank_ic_std": 0.143362174574844,
+      "signed_mean_rank_ic": 0.04097311821708169,
+      "start": "2020-01-02",
+      "valid_day_count": 36
+    },
+    {
+      "direction": -1,
+      "directional_day_share": 0.5,
+      "end": "2020-02-28",
+      "factor_id": "yeslab_213",
+      "factor_name": "量价齐飞加换手率",
+      "icir": 0.03558006246695406,
+      "mean_rank_ic": 0.006543663371591873,
+      "rank_ic_std": 0.1839137684951924,
+      "signed_mean_rank_ic": -0.006543663371591873,
+      "start": "2020-01-02",
+      "valid_day_count": 36
+    }
+  ]
+}

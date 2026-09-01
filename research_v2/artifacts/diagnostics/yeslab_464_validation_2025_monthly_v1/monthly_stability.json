@@ -1,0 +1,114 @@
+{
+  "scope": "YESLAB_464_VALIDATION_2025_MONTHLY_STABILITY_V1",
+  "candidate_id": "yeslab_464_tushare_shsz_v1",
+  "source_factor_id": "yeslab_464",
+  "factor_name": "GP_095",
+  "direction": -1,
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "validation_window": "2025-01-02/2025-12-31",
+  "thresholds": {
+    "signed_mean_rank_ic": 0.02,
+    "signed_icir": 0.5,
+    "directional_day_share": 0.55
+  },
+  "valid_day_count": 243,
+  "months": 12,
+  "signed_mean_pass_months": 11,
+  "directional_share_pass_months": 11,
+  "strict_icir_pass_months": 9,
+  "monthly": [
+    {
+      "month": "2025-01",
+      "valid_day_count": 18,
+      "signed_mean_rank_ic": 0.03347715486582197,
+      "signed_icir": 0.37295321417025173,
+      "directional_day_share": 0.6666666666666666
+    },
+    {
+      "month": "2025-02",
+      "valid_day_count": 18,
+      "signed_mean_rank_ic": 0.05830407185740256,
+      "signed_icir": 0.5162930903541005,
+      "directional_day_share": 0.7777777777777778
+    },
+    {
+      "month": "2025-03",
+      "valid_day_count": 21,
+      "signed_mean_rank_ic": 0.166620755990763,
+      "signed_icir": 2.0559814474000984,
+      "directional_day_share": 0.9523809523809523
+    },
+    {
+      "month": "2025-04",
+      "valid_day_count": 21,
+      "signed_mean_rank_ic": 0.08998760664899168,
+      "signed_icir": 0.6930283423611736,
+      "directional_day_share": 0.6190476190476191
+    },
+    {
+      "month": "2025-05",
+      "valid_day_count": 19,
+      "signed_mean_rank_ic": 0.08252289293417772,
+      "signed_icir": 1.6428039222428452,
+      "directional_day_share": 0.8947368421052632
+    },
+    {
+      "month": "2025-06",
+      "valid_day_count": 20,
+      "signed_mean_rank_ic": 0.13054110007028788,
+      "signed_icir": 1.9455816030204107,
+      "directional_day_share": 1.0
+    },
+    {
+      "month": "2025-07",
+      "valid_day_count": 23,
+      "signed_mean_rank_ic": 0.10332681062350721,
+      "signed_icir": 1.4131023811557113,
+      "directional_day_share": 0.8695652173913043
+    },
+    {
+      "month": "2025-08",
+      "valid_day_count": 21,
+      "signed_mean_rank_ic": 0.06738046941241499,
+      "signed_icir": 0.6955215014585179,
+      "directional_day_share": 0.7142857142857143
+    },
+    {
+      "month": "2025-09",
+      "valid_day_count": 22,
+      "signed_mean_rank_ic": 0.03884347040756818,
+      "signed_icir": 0.41414448327735237,
+      "directional_day_share": 0.5454545454545454
+    },
+    {
+      "month": "2025-10",
+      "valid_day_count": 17,
+      "signed_mean_rank_ic": 0.11000073544099635,
+      "signed_icir": 1.6387873408451272,
+      "directional_day_share": 1.0
+    },
+    {
+      "month": "2025-11",
+      "valid_day_count": 20,
+      "signed_mean_rank_ic": 0.06799272080322805,
+      "signed_icir": 0.9189925807140877,
+      "directional_day_share": 0.85
+    },
+    {
+      "month": "2025-12",
+      "valid_day_count": 23,
+      "signed_mean_rank_ic": 0.012435538936680401,
+      "signed_icir": 0.1643782841698033,
+      "directional_day_share": 0.5652173913043478
+    }
+  ],
+  "source_artifact": "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/daily_rank_ic.csv",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}

@@ -259,7 +259,8 @@
         "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/similarity_summary.json",
         "gp_coverage_repair4_train_evidence_v1.json",
         "candidate464_pair_similarity_v1.json",
-        "gp_turnover_scalar_degeneracy_diagnostic_v1.json"
+        "gp_turnover_scalar_degeneracy_diagnostic_v1.json",
+        "yeslab_464_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
     }
