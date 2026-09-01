@@ -1,0 +1,130 @@
+{
+  "scope": "TUSHARE_SHSZ_BAND10_TRAIN_EVIDENCE_V1",
+  "purpose": "Training-window (2020-01-02/2024-12-31) and validation (2025) evaluation of the ten non-degenerate GP factors from the 0.30-0.40 historical screen band (378/386/409/418/419/428/434/444/461/467), with formal nine for nine-edge similarity.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "key_finding": "GP uplift confirmed again: historical screen ICIR 0.30-0.40 rose to canonical 0.43-0.63. Two factors pass the training double gate: 378 (0.629, annual 5/5) and 386 (0.614, annual 4/5); they are mutually REDUNDANT (0.9096 train / 0.9021 validation >= 0.90) - at most one may be admitted. 378 dominates 386 on every metric.",
+  "candidates": {
+    "yeslab_378": {
+      "factor_name": "GP_009",
+      "train_signed_icir": 0.6292,
+      "annual": "5/5",
+      "validation_signed_icir": 0.7982,
+      "nine_edge_max": {
+        "train": 0.7039,
+        "validation": 0.7424
+      },
+      "nearest_formal": "yeslab_380",
+      "decision": "REJECT_REDUNDANT_WITH_CANDIDATE_375",
+      "redundancy_vs_375": {
+        "train": 0.8966,
+        "validation": 0.9027
+      }
+    },
+    "yeslab_386": {
+      "factor_name": "GP_017",
+      "train_signed_icir": 0.6137,
+      "annual": "4/5 (2021 fail 0.496)",
+      "validation_signed_icir": 0.7853,
+      "nine_edge_max": {
+        "train": 0.6947,
+        "validation": 0.7356
+      },
+      "nearest_formal": "yeslab_380",
+      "decision": "REJECT_REDUNDANT_WITH_CANDIDATE_375",
+      "redundancy_vs_375": {
+        "train": 0.8939,
+        "validation": 0.8937
+      }
+    },
+    "yeslab_409": {
+      "factor_name": "GP_040",
+      "train_signed_icir": 0.4356,
+      "annual": "1/5",
+      "validation_signed_icir": 0.3784,
+      "decision": "REJECT_TRAINING_GATE"
+    },
+    "yeslab_418": {
+      "factor_name": "GP_049",
+      "train_signed_icir": 0.5323,
+      "annual": "3/5",
+      "validation_signed_icir": 0.3858,
+      "decision": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5"
+    },
+    "yeslab_419": {
+      "factor_name": "GP_050",
+      "train_signed_icir": 0.4321,
+      "annual": "1/5",
+      "validation_signed_icir": 0.3745,
+      "decision": "REJECT_TRAINING_GATE"
+    },
+    "yeslab_428": {
+      "factor_name": "GP_059",
+      "train_signed_icir": 0.4821,
+      "annual": "2/5",
+      "validation_signed_icir": 0.7046,
+      "decision": "REJECT_TRAINING_AGGREGATE_ICIR_AND_ANNUAL_2_OF_5",
+      "note": "validation strong but training gate is primary"
+    },
+    "yeslab_434": {
+      "factor_name": "GP_065",
+      "train_signed_icir": 0.4405,
+      "annual": "2/5",
+      "validation_signed_icir": 0.3991,
+      "decision": "REJECT_TRAINING_GATE"
+    },
+    "yeslab_444": {
+      "factor_name": "GP_075",
+      "train_signed_icir": 0.5127,
+      "annual": "3/5",
+      "validation_signed_icir": 0.4369,
+      "decision": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5"
+    },
+    "yeslab_461": {
+      "factor_name": "GP_092",
+      "train_signed_icir": 0.4402,
+      "annual": "1/5",
+      "validation_signed_icir": 0.357,
+      "decision": "REJECT_TRAINING_GATE"
+    },
+    "yeslab_467": {
+      "factor_name": "GP_098",
+      "train_signed_icir": 0.443,
+      "annual": "2/5",
+      "validation_signed_icir": 0.4056,
+      "decision": "REJECT_TRAINING_GATE"
+    }
+  },
+  "internal_redundancy": {
+    "pair": [
+      "yeslab_378",
+      "yeslab_386"
+    ],
+    "train": 0.9096,
+    "validation": 0.9021,
+    "status": "REDUNDANT_NO_JOINT_ADMISSION",
+    "elevated_with_rejected": {
+      "yeslab_378 vs yeslab_409": [
+        0.8195,
+        0.8399
+      ],
+      "yeslab_386 vs yeslab_419": [
+        0.8157,
+        0.8358
+      ]
+    }
+  },
+  "artifacts": [
+    "tushare_shsz_band10_formal9_train_2020_2024_v1",
+    "tushare_shsz_band10_formal9_validation_2025_v1"
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "evidence_commit_at_band10": "81da35d3b9f569a7a44ea094792926e6288a5ef8",
+  "conclusion": "Band closed with zero new READY candidates: 378/386 rejected as redundant with existing READY candidate yeslab_375 (validation edges 0.903/0.894; 378-386 also mutually redundant 0.910/0.902). The GP turnover-rank family {370,375,378,386,389,390} contains at most two admissible factors: one of {370,389} (already constrained) and one of {375,378,386} (375 retained). 390 remains independently compatible."
+}

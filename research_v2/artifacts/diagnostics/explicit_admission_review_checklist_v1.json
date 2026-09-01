@@ -635,6 +635,40 @@
           "signed_icir": 0.6688
         }
       }
+    },
+    {
+      "candidate_id": "yeslab_378_tushare_shsz_v1",
+      "source_factor_id": "yeslab_378",
+      "factor_name": "GP_009",
+      "status": "REJECT_REDUNDANT_WITH_CANDIDATE_375",
+      "canonical_basis": "Tushare SH/SZ rematerialization (band10 evaluation)",
+      "required_scope": "Rejected: Redundant with yeslab_375_tushare_shsz_v1 (train 0.8966 / validation 0.9027 >= 0.90); also redundant with yeslab_386 (0.9096/0.9021).",
+      "pair_or_combination_note": "Redundant with yeslab_375_tushare_shsz_v1 (train 0.8966 / validation 0.9027 >= 0.90); also redundant with yeslab_386 (0.9096/0.9021).",
+      "evidence": [
+        "tushare_yeslab_378_band10_review_v1.json",
+        "candidate378_pair_similarity_v1.json",
+        "band10_train_evidence_v1.json"
+      ],
+      "human_questions": [
+        "Is the redundancy rejection accepted?"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_386_tushare_shsz_v1",
+      "source_factor_id": "yeslab_386",
+      "factor_name": "GP_017",
+      "status": "REJECT_REDUNDANT_WITH_CANDIDATE_375",
+      "canonical_basis": "Tushare SH/SZ rematerialization (band10 evaluation)",
+      "required_scope": "Rejected: Redundant with yeslab_375_tushare_shsz_v1 (train 0.8939 / validation 0.8937, elevated-borderline); redundant with yeslab_378 (0.9096/0.9021). 375 retained as pool-optimal.",
+      "pair_or_combination_note": "Redundant with yeslab_375_tushare_shsz_v1 (train 0.8939 / validation 0.8937, elevated-borderline); redundant with yeslab_378 (0.9096/0.9021). 375 retained as pool-optimal.",
+      "evidence": [
+        "tushare_yeslab_386_band10_review_v1.json",
+        "candidate386_pair_similarity_v1.json",
+        "band10_train_evidence_v1.json"
+      ],
+      "human_questions": [
+        "Is the redundancy rejection accepted?"
+      ]
     }
   ]
 }

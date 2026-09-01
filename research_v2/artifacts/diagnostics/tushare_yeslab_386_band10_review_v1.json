@@ -1,0 +1,49 @@
+{
+  "scope": "TUSHARE_SHSZ_BAND10_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_386_tushare_shsz_v1",
+  "source_factor_id": "yeslab_386",
+  "factor_name": "GP_017",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "signed_icir": 0.6137,
+    "annual": "4/5 (2021 fail 0.496)"
+  },
+  "validation_2025": {
+    "signed_icir": 0.7853
+  },
+  "redundancy": {
+    "reference": "yeslab_375_tushare_shsz_v1",
+    "train_median_abs_spearman": 0.8939,
+    "validation_median_abs_spearman": 0.8937,
+    "threshold": 0.9,
+    "note": "train/validation 0.894, borderline elevated; also redundant with yeslab_378 (0.910/0.902)"
+  },
+  "additional_redundancy": {
+    "yeslab_378": {
+      "train": 0.9096,
+      "validation": 0.9021
+    }
+  },
+  "decision": "REJECT_REDUNDANT_WITH_CANDIDATE_375",
+  "decision_reason": "yeslab_375_tushare_shsz_v1 (already READY, train ICIR 0.632 annual 5/5, validation 0.791) is quality-equivalent and precedes this candidate; the redundancy edge is >= 0.90 in validation (378) or the whole 375/378/386 triangle is mutually redundant/elevated. Keeping 375 is pool-optimal; admitting this candidate would add no information.",
+  "evidence": [
+    "candidate386_pair_similarity_v1.json",
+    "tushare_shsz_band10_formal9_train_2020_2024_v1/quality_summary.json",
+    "tushare_shsz_band10_formal9_validation_2025_v1/quality_summary.json",
+    "band10_train_evidence_v1.json"
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED"
+}

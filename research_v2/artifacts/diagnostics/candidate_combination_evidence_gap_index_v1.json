@@ -260,5 +260,24 @@
     "candidate_gate_failures": 0,
     "status": "PREFLIGHT_CLEAN_EXCEPT_DOCUMENTED_REDUNDANT_PAIRS",
     "note": "Read-only decision-readiness verification over all eighteen READY candidates; does not grant admission."
+  },
+  "band10_combination_audits": {
+    "artifacts": [
+      "candidate378_pair_similarity_v1.json",
+      "candidate386_pair_similarity_v1.json"
+    ],
+    "reference_pool": "eighteen READY candidates",
+    "results": {
+      "yeslab_378": {
+        "train_max": 0.8966,
+        "validation_max": 0.9027,
+        "status": "REJECT_REDUNDANT_WITH_yeslab_375(validation 0.9027)"
+      },
+      "yeslab_386": {
+        "train_max": 0.8939,
+        "validation_max": 0.8937,
+        "status": "REJECT_REDUNDANT_WITH_yeslab_375(train/validation 0.894; plus 378 redundancy)"
+      }
+    }
   }
 }

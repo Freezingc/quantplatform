@@ -6468,5 +6468,42 @@
     "database_writes": false,
     "locked_test_read": false,
     "model_training_started": false
+  },
+  "band10_canonical_followup": {
+    "scope": "BAND10_TUSHARE_CANONICAL_FOLLOWUP",
+    "factor_ids": [
+      "yeslab_378",
+      "yeslab_386",
+      "yeslab_409",
+      "yeslab_418",
+      "yeslab_419",
+      "yeslab_428",
+      "yeslab_434",
+      "yeslab_444",
+      "yeslab_461",
+      "yeslab_467"
+    ],
+    "status": "BAND_CLOSED_ZERO_NEW_CANDIDATES",
+    "rejected": {
+      "yeslab_378": "redundant with candidate 375 (validation 0.9027)",
+      "yeslab_386": "redundant with candidate 375 (0.894) and 378 (0.902)",
+      "yeslab_409": "training ICIR 0.436, annual 1/5",
+      "yeslab_418": "annual 3/5",
+      "yeslab_419": "training ICIR 0.432, annual 1/5",
+      "yeslab_428": "training ICIR 0.482, annual 2/5 (validation 0.705 noted)",
+      "yeslab_434": "annual 2/5",
+      "yeslab_444": "annual 3/5",
+      "yeslab_461": "annual 1/5",
+      "yeslab_467": "annual 2/5"
+    },
+    "artifacts": [
+      "band10_train_evidence_v1.json",
+      "tushare_yeslab_378_band10_review_v1.json",
+      "tushare_yeslab_386_band10_review_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
   }
 }
