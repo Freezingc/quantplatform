@@ -664,7 +664,10 @@ CLI 与 README 均有对应测试/产物；全量单元套件 947 通过，`ruff
   `scripts/verify_test_db_schemas.py` 对 44 张表逐列比对迁移合约通过；
   门控集成测试 `tests/integration/db/test_live_schema_contract.py`
   （`QRV2_INTEGRATION=1` + `QRV2_DDB_*` 凭据）2 通过。迁移 013
-  （oos_score_health）尚未在真实库应用，属待批准的变更。
+  （oos_score_health）已于 2026-09-01 经审计运行器应用于真实测试库：
+  dry-run→应用（仅执行 013）→幂等重跑零执行→审计表 13 版本 checksum
+  全一致→6 个 score-health 列确认存在；`verify_test_db_schemas.py` 解析器
+  已支持 `addColumn` 前向迁移，44 表零漂移复验通过。
 - A5.4/A5.5 已于 2026-09-01 补齐：`tests/integration/db/conftest.py` 提供
   协议级内存 Test-DB harness（`FakeV2TestDatabase`：允许列表目标库、幂等建表、
   `schema_migration` 审计表），`tests/integration/db/test_migration_test_db.py`

@@ -27,10 +27,19 @@ _TABLE_NAME = re.compile(
     r"createPartitionedTable\(\s*table=(?P<variable>[A-Za-z_][A-Za-z0-9_]*),"
     r"\s*tableName=`(?P<name>[A-Za-z_][A-Za-z0-9_]*)"
 )
+_LOAD_TABLE_VARIABLE = re.compile(
+    r"(?P<variable>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*loadTable\(\s*targetDatabase\s*,"
+    r"\s*`(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\)"
+)
+_ADD_COLUMN = re.compile(
+    r"addColumn\(\s*(?P<variable>[A-Za-z_][A-Za-z0-9_]*)\s*,"
+    r'\s*"(?P<column>[A-Za-z_][A-Za-z0-9_]*)"\s*,\s*(?P<type>[A-Z]+)\s*\)'
+)
 
 
 def parse_expected_schemas(migration_directory: Path) -> dict[str, list[tuple[str, str]]]:
     expected: dict[str, list[tuple[str, str]]] = {}
+    variable_tables: dict[str, str] = {}
     for migration in discover_migrations(migration_directory):
         variables: dict[str, list[tuple[str, str]]] = {}
         for match in _TABLE_DDL.finditer(migration.script):
@@ -57,6 +66,20 @@ def parse_expected_schemas(migration_directory: Path) -> dict[str, list[tuple[st
                     f"{match.group('name')} from unknown variable {variable}"
                 )
             expected[match.group("name")] = variables[variable]
+            variable_tables[match.group("variable")] = match.group("name")
+        for match in _LOAD_TABLE_VARIABLE.finditer(migration.script):
+            variable_tables[match.group("variable")] = match.group("name")
+        for match in _ADD_COLUMN.finditer(migration.script):
+            table_name = variable_tables.get(match.group("variable"))
+            if table_name is None or table_name not in expected:
+                raise ValueError(
+                    f"migration {migration.version:03d} adds column "
+                    f"{match.group('column')} to unknown table variable "
+                    f"{match.group('variable')}"
+                )
+            expected[table_name] = expected[table_name] + [
+                (match.group("column"), match.group("type"))
+            ]
     return expected
 
 
