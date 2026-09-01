@@ -6505,5 +6505,29 @@
     "database_writes": false,
     "locked_test_read": false,
     "model_training_started": false
+  },
+  "pool18_rank_turnover_followup": {
+    "scope": "POOL18_RANK_TURNOVER_FOLLOWUP",
+    "status": "COMPLETE",
+    "artifact": "pool18_rank_turnover_v1.json",
+    "metrics": "rank_autocorr_mean (daily rank autocorrelation) + quintile_transition_rate (daily quintile switch share), train and validation windows",
+    "high_turnover_candidates": [
+      "yeslab_357_tushare_shsz_v1 (75%)",
+      "yeslab_363_tushare_shsz_v1 (71%)",
+      "yeslab_389_tushare_shsz_v1 (69%)",
+      "yeslab_390_tushare_shsz_v1 (62%)",
+      "yeslab_206_median_abs_v2 (62%)",
+      "yeslab_370_tushare_shsz_v1 (62%)"
+    ],
+    "lowest_turnover_candidates": [
+      "yeslab_114_tushare_shsz_v2 (10-11%)",
+      "yeslab_484_tushare_shsz_v1 (13-16%)",
+      "yeslab_471_tushare_pit_v1 (14-15%)"
+    ],
+    "note": "Decision-support evidence for cost-aware model design; not an admission gate. Turnover profiles are stable across train/validation.",
+    "database_writes": false,
+    "locked_test_read": false,
+    "formal_factor_set_changed": false,
+    "model_training_started": false
   }
 }
