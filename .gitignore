@@ -54,3 +54,4 @@ skills/
 !research_v2/tests/integration/data/
 !research_v2/tests/integration/data/**
 !research_v2/tests/golden/data/*.csv
+!research_v2/tests/golden/data/*.parquet
