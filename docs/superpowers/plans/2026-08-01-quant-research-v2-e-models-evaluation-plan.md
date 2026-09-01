@@ -257,11 +257,11 @@ loss_weights: 三个预注册组合
 
 Trial scheduler 只抽取预先按 hash 排序的前 30 个组合，不根据 test 扩展搜索。
 
-- [ ] **E4.4 写过拟合小样本测试**
+- [x] **E4.4 写过拟合小样本测试**
 
 在 3 日×40 股、单个线性信号的 fixture 上，100 小步后 combined loss 显著下降且 prediction 与 target rank 正相关；该测试只验证实现，不设置真实业绩期望。
 
-- [ ] **E4.5 运行测试并提交**
+- [x] **E4.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/models/test_residual_mlp.py -q`
 
@@ -561,7 +561,7 @@ git commit -m "feat(v2): govern model evidence and transitions"
 
 ## E 计划完成标准
 
-- [ ] M1/M2/M3 共享同一 batch/loss/evaluator contract，均通过 shape、mask、causal/permutation 和 artifact 测试。
+- [x] M1/M2/M3 共享同一 batch/loss/evaluator contract，均通过 shape、mask、causal/permutation 和 artifact 测试。
 - [x] 每 family 每 fold 搜索不超过 30 configs；最终配置固定 3 seeds 并等权 ensemble。
 - [x] 训练/选模进程无法访问 test/2026；test 只由冻结 evaluator 加载。
 - [x] 所有候选与 fold-matched best simple baseline 在相同 coverage 上比较。
@@ -572,16 +572,16 @@ git commit -m "feat(v2): govern model evidence and transitions"
 
 已按现有代码与测试逐项核对并勾选完成步骤（测试文件按演进后的实际命名存在，如
 `test_pre_registered_search.py`、`test_cross_sectional_losses.py`、
-`test_frozen_oos_evaluator.py` 等）。全量单元套件通过（949），`ruff check` 与
-`mypy src` 干净。E5.5 temporal 置换等变测试已于 2026-09-01 补齐
-（`tests/unit/models/test_temporal_gru.py`）。仍开放的条目及原因：
+`test_frozen_oos_evaluator.py` 等）。全量单元套件通过（951），`ruff check` 与
+`mypy src` 干净。2026-09-01 补齐：E5.5 temporal 置换等变测试
+（`tests/unit/models/test_temporal_gru.py`）、E4.4 小样本过拟合与 M1 置换等变
+测试（`tests/unit/models/test_residual_mlp.py`），完成标准第 1 条随之闭合。
+仍开放的条目及原因：
 
-- E4.4/E4.5、E5.6、E6.5/E6.6：缺小样本过拟合与 CUDA 显存/极端横截面资源测试
-  （现有模型测试覆盖 shape、mask、因果、确定性与 M2/M3 置换等变）。
+- E5.6、E6.5/E6.6：E5.6 的 Expected 仍缺 temporal 过拟合测试；E6.5/E6.6 缺
+  CUDA 显存/极端横截面资源测试（CPU 等价逻辑亦未建立）。
 - E8.5/E8.6：缺合成数据端到端编排测试；集成测试受 `QRV2_INTEGRATION=1` 门控。
 - E9.1–E9.7：M4 条件门未获授权，按设计保持零代码/零迁移副作用。
-- 完成标准第 1 条：M2 置换等变测试已补齐；M1 逐股 pointwise 结构上等变但尚无
-  显式置换测试，随 E4.4/E4.5 深度项一并开放。
 - 另注：`configs/models/temporal.yaml` 的 `minimum_valid_history_length: 15`
   尚无读取方；生产用 20 日时序批次装配路径（训练/推理侧）尚未实现，M2 启用前
   需补齐（与 CLI 仅放开 M1 的注册顺序一致）。
