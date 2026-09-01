@@ -139,9 +139,24 @@ def test_resolve_name_history_truncates_stale_tail_and_merges_repeats() -> None:
 
     dirty = pd.DataFrame(
         [
-            {"ts_code": "X1.SZ", "name": "旧名", "start_date": date(2010, 1, 1), "end_date": date(2026, 8, 10)},
-            {"ts_code": "X1.SZ", "name": "新名", "start_date": date(2026, 7, 18), "end_date": None},
-            {"ts_code": "X1.SZ", "name": "新名", "start_date": date(2026, 8, 11), "end_date": None},
+            {
+                "ts_code": "X1.SZ",
+                "name": "旧名",
+                "start_date": date(2010, 1, 1),
+                "end_date": date(2026, 8, 10),
+            },
+            {
+                "ts_code": "X1.SZ",
+                "name": "新名",
+                "start_date": date(2026, 7, 18),
+                "end_date": None,
+            },
+            {
+                "ts_code": "X1.SZ",
+                "name": "新名",
+                "start_date": date(2026, 8, 11),
+                "end_date": None,
+            },
         ]
     )
     resolved = resolve_name_history_overlaps(dirty)
@@ -172,8 +187,18 @@ def test_resolve_name_history_is_idempotent() -> None:
 
     dirty = pd.DataFrame(
         [
-            {"ts_code": "X3.SZ", "name": "旧名", "start_date": date(2015, 1, 1), "end_date": date(2024, 5, 5)},
-            {"ts_code": "X3.SZ", "name": "新名", "start_date": date(2024, 5, 1), "end_date": None},
+            {
+                "ts_code": "X3.SZ",
+                "name": "旧名",
+                "start_date": date(2015, 1, 1),
+                "end_date": date(2024, 5, 5),
+            },
+            {
+                "ts_code": "X3.SZ",
+                "name": "新名",
+                "start_date": date(2024, 5, 1),
+                "end_date": None,
+            },
         ]
     )
     once = resolve_name_history_overlaps(dirty)

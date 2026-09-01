@@ -86,19 +86,19 @@ def resolve_name_history_overlaps(name_history: pd.DataFrame) -> pd.DataFrame:
                 merged.append({"start": start, "end": end, "name": name})
                 continue
             current = merged[-1]
-            current_end = current["end"]
+            current_end = cast("date | None", current["end"])
             overlaps = current_end is None or start <= current_end
             if overlaps and current["name"] == name:
                 if current_end is not None and (end is None or end > current_end):
                     current["end"] = end
                 continue
-            if overlaps and start == current["start"]:
+            if overlaps and start == cast(date, current["start"]):
                 raise SecurityMasterConflict(
                     f"{ts_code} has conflicting name records starting {start.isoformat()}"
                 )
             if overlaps:
                 truncated_end = start - timedelta(days=1)
-                if current["start"] <= truncated_end:
+                if cast(date, current["start"]) <= truncated_end:
                     current["end"] = truncated_end
                 else:
                     merged.pop()
