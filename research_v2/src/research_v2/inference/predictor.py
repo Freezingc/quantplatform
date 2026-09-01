@@ -10,7 +10,7 @@ import pandas as pd
 import torch
 from torch import nn
 
-from research_v2.models.base import FeatureBatch, predictions_to_frame
+from research_v2.models.base import PredictionInputBatch, predictions_to_frame
 from research_v2.training.ensemble import REQUIRED_SEEDS, combine_seed_percentile_ranks
 
 
@@ -21,7 +21,7 @@ class InferencePrediction:
 
 
 def predict_three_seed_ensemble(
-    batch: FeatureBatch,
+    batch: PredictionInputBatch,
     models: Mapping[int, nn.Module],
 ) -> InferencePrediction:
     """Generate all three seed ranks and combine them equally without any label access."""

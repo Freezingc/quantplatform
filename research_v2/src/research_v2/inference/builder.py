@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from datetime import date
 
+import numpy as np
 import pandas as pd
 import torch
 
 from research_v2.datasets.builder import FactorInput
 from research_v2.datasets.preprocessing import FoldPreprocessor
-from research_v2.models.base import FeatureBatch
+from research_v2.models.base import FeatureBatch, TemporalFeatureBatch
 
 
 def build_label_free_inference_frame(
@@ -106,3 +107,120 @@ def build_label_free_inference_batch(
 def _require_columns(frame: pd.DataFrame, required: set[str], name: str) -> None:
     if missing := sorted(required.difference(frame.columns)):
         raise ValueError(f"{name} is missing columns: {missing}")
+
+
+def build_label_free_temporal_inference_batch(
+    universe: pd.DataFrame,
+    factors: pd.DataFrame,
+    *,
+    factor_members: tuple[FactorInput, ...],
+    signal_date: date,
+    preprocessor: FoldPreprocessor,
+    history_length: int = 20,
+    minimum_valid_history_length: int = 15,
+) -> TemporalFeatureBatch:
+    """Assemble one causal left-aligned history batch for temporal model inference.
+
+    Each universe member's window is its most recent ``history_length`` observed
+    factor rows at or before ``signal_date`` (oldest first).  Securities with fewer
+    than ``minimum_valid_history_length`` observed steps cannot be scored and are
+    excluded; if none remain the call fails closed.  Rows whose ``available_date``
+    is after the signal date are rejected before assembly.
+    """
+    if history_length < 1:
+        raise ValueError("history_length must be at least one")
+    if not 1 <= minimum_valid_history_length <= history_length:
+        raise ValueError("minimum_valid_history_length must be within [1, history_length]")
+    current_frame = build_label_free_inference_frame(
+        universe,
+        factors,
+        factor_members=factor_members,
+        signal_date=signal_date,
+    )
+    factor_order = tuple(member.feature_name for member in factor_members)
+    codes = tuple(current_frame["ts_code"].astype(str))
+
+    _require_columns(
+        factors,
+        {"signal_date", "ts_code", "factor_id", "factor_version", "value", "available_date"},
+        "factors",
+    )
+    normalized = factors.copy(deep=True)
+    normalized["signal_date"] = pd.to_datetime(normalized["signal_date"], errors="raise").dt.date
+    normalized["available_date"] = pd.to_datetime(
+        normalized["available_date"], errors="raise"
+    ).dt.date
+    normalized = normalized.loc[normalized["signal_date"] <= signal_date]
+    if (normalized["available_date"] > signal_date).any():
+        raise ValueError("factor is not available by signal date: history rows")
+    if normalized["available_date"].isna().any() or normalized["signal_date"].isna().any():
+        raise ValueError("factor history rows cannot contain null dates")
+
+    member_mask = pd.Series(False, index=normalized.index)
+    for member in factor_members:
+        member_mask |= (normalized["factor_id"].astype(str) == member.factor_id) & (
+            normalized["factor_version"].astype(int) == member.factor_version
+        )
+    normalized = normalized.loc[member_mask]
+
+    observations_by_code: dict[str, list[date]] = {}
+    for day, code in normalized.loc[:, ["signal_date", "ts_code"]].itertuples(
+        index=False, name=None
+    ):
+        observations_by_code.setdefault(str(code), []).append(day)
+
+    eligible: list[str] = []
+    windows: dict[str, tuple[date, ...]] = {}
+    for code in codes:
+        history_dates = tuple(sorted(set(observations_by_code.get(code, ()))))
+        if len(history_dates) < minimum_valid_history_length:
+            continue
+        eligible.append(code)
+        windows[code] = history_dates[-history_length:]
+    if not eligible:
+        raise ValueError("no security has sufficient history for temporal inference")
+
+    transformed_by_step: dict[tuple[str, date], tuple[np.ndarray, np.ndarray]] = {}
+    for code, history_dates in windows.items():
+        for day in history_dates:
+            if (code, day) in transformed_by_step:
+                continue
+            day_rows = normalized.loc[normalized["signal_date"] == day]
+            day_frame = day_rows.pivot_table(
+                index="ts_code",
+                columns="factor_id",
+                values="value",
+                aggfunc="first",
+            )
+            named = pd.DataFrame(index=day_frame.index)
+            for member in factor_members:
+                column = member.factor_id
+                named[member.feature_name] = (
+                    day_frame[column] if column in day_frame.columns else np.nan
+                )
+            transformed = preprocessor.transform(named.loc[:, list(factor_order)])
+            values = transformed.values.to_numpy(dtype=float)
+            missing = transformed.missing_mask.to_numpy(dtype=bool)
+            for position, code in enumerate(day_frame.index.astype(str)):
+                transformed_by_step[(code, day)] = (values[position], missing[position])
+
+    stock_count = len(eligible)
+    factor_count = len(factor_order)
+    features = np.zeros((1, stock_count, history_length, factor_count), dtype=np.float32)
+    missing = np.zeros((1, stock_count, history_length, factor_count), dtype=bool)
+    history_mask = np.zeros((1, stock_count, history_length), dtype=bool)
+    for position, code in enumerate(eligible):
+        for step, day in enumerate(windows[code]):
+            values, mask = transformed_by_step[(code, day)]
+            features[0, position, step] = values.astype(np.float32)
+            missing[0, position, step] = mask
+            history_mask[0, position, step] = True
+
+    return TemporalFeatureBatch(
+        signal_dates=(signal_date,),
+        ts_codes=(tuple(eligible),),
+        features=torch.from_numpy(features),
+        feature_missing=torch.from_numpy(missing),
+        stock_mask=torch.ones((1, stock_count), dtype=torch.bool),
+        history_mask=torch.from_numpy(history_mask),
+    )

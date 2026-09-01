@@ -592,4 +592,10 @@ G1–G6 门控报告，断言门控键集/有效天数/基线增量有限与重�
   `TemporalTrainingBatch`，`minimum_valid_history_length`（与
   `configs/models/temporal.yaml` 的 15 一致）之下样本不参与 loss，2026 锁与
   业务键/目标校验与静态路径同构；测试 6 项（因果性、最小历史、缺日、锁年、
-  无效目标、配置守卫）。推理侧时序装配（从特征存储重建 20 日窗口）仍待补齐。
+  无效目标、配置守卫）。推理侧时序装配已于 2026-09-01 补齐：
+  `src/research_v2/inference/builder.py::build_label_free_temporal_inference_batch`
+  从 universe + 因子长表为信号日重建因果左对齐历史窗口（最近
+  `history_length` 个观测、可用日守卫、历史不足 `minimum_valid_history_length`
+  的证券剔除且全缺时 fail-closed），预测器类型放宽为
+  `PredictionInputBatch`；测试 6 项（窗口装配、未来行不变性、历史下限、
+  可用日拒绝、配置守卫、GRU 贯通预测帧）。
