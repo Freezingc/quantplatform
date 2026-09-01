@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from datetime import date, timedelta
-from typing import Any, Final
+from typing import Any, Final, cast
 
 import pandas as pd
 
@@ -46,6 +46,76 @@ def _as_date(value: Any) -> date | None:
 
 def _next_day(value: date) -> date:
     return value + timedelta(days=1)
+
+
+def resolve_name_history_overlaps(name_history: pd.DataFrame) -> pd.DataFrame:
+    """Deterministically reconcile overlapping source name intervals.
+
+    Source extracts can contain dirty histories: a renamed security may keep an
+    outdated ``end_date`` while its successor name starts earlier, or the same
+    name may appear twice.  Rules, applied per security in sorted order:
+
+    1. Records are ordered by ``start_date`` (ties broken by ``end_date``,
+       open-ended last).  Same-start records with different names are an
+       unresolvable conflict and raise.
+    2. Consecutive records with the same name merge into one interval.
+    3. A later record truncates the previous record's interval to the day
+       before its start; a previous interval that disappears entirely is
+       dropped.
+
+    The output preserves the input schema and is sorted by
+    ``(ts_code, start_date)``; it never invents names outside source records.
+    """
+    _validate_columns(name_history, _NAME_COLUMNS, "name_history")
+    resolved_rows: list[dict[str, object]] = []
+    normalized = name_history.loc[:, list(_NAME_COLUMNS)].copy()
+    normalized["start_date"] = normalized["start_date"].map(_as_date)
+    normalized["end_date"] = normalized["end_date"].map(_as_date)
+    if normalized["start_date"].isna().any():
+        raise SecurityMasterConflict("name history contains rows without start_date")
+    for ts_code, records in normalized.groupby(normalized["ts_code"].astype(str), sort=True):
+        ordered = records.sort_values(
+            ["start_date", "end_date"], kind="mergesort", na_position="last"
+        )
+        merged: list[dict[str, object]] = []
+        for record in ordered.itertuples(index=False):
+            start = cast(date, record.start_date)
+            end = record.end_date if isinstance(record.end_date, date) else None
+            name = str(record.name)
+            if not merged:
+                merged.append({"start": start, "end": end, "name": name})
+                continue
+            current = merged[-1]
+            current_end = current["end"]
+            overlaps = current_end is None or start <= current_end
+            if overlaps and current["name"] == name:
+                if current_end is not None and (end is None or end > current_end):
+                    current["end"] = end
+                continue
+            if overlaps and start == current["start"]:
+                raise SecurityMasterConflict(
+                    f"{ts_code} has conflicting name records starting {start.isoformat()}"
+                )
+            if overlaps:
+                truncated_end = start - timedelta(days=1)
+                if current["start"] <= truncated_end:
+                    current["end"] = truncated_end
+                else:
+                    merged.pop()
+            merged.append({"start": start, "end": end, "name": name})
+        for item in merged:
+            resolved_rows.append(
+                {
+                    "ts_code": ts_code,
+                    "name": item["name"],
+                    "start_date": item["start"],
+                    "end_date": item["end"],
+                }
+            )
+    resolved = pd.DataFrame(resolved_rows, columns=list(_NAME_COLUMNS))
+    return resolved.sort_values(
+        ["ts_code", "start_date"], kind="mergesort", ignore_index=True
+    )
 
 
 def _board(exchange: object, market: object) -> str:

@@ -13,6 +13,8 @@ from research_v2.db.publish import StagedBatch
 from research_v2.pit.security_master import build_security_master_scd
 from research_v2.runs.context import RunContext
 
+_RUN_LINEAGE_COLUMNS = frozenset({"run_id", "data_version", "created_at"})
+
 
 def _watermark_id(*batches: SourceBatch) -> str:
     payload = "|".join(sorted(batch.watermark_id for batch in batches))
@@ -23,6 +25,7 @@ def _record_hash(row: pd.Series) -> str:
     payload = {
         column: (value.isoformat() if isinstance(value, (date, pd.Timestamp)) else value)
         for column, value in row.items()
+        if column not in _RUN_LINEAGE_COLUMNS
     }
     return hashlib.sha256(
         json.dumps(payload, ensure_ascii=False, default=str, sort_keys=True).encode()

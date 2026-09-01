@@ -20,6 +20,8 @@ from research_v2.pit.market import (
 )
 from research_v2.runs.context import RunContext
 
+_RUN_LINEAGE_COLUMNS = frozenset({"run_id", "data_version", "created_at"})
+
 
 def _as_date(value: Any) -> date | None:
     if value is None or pd.isna(value):
@@ -74,6 +76,7 @@ def _hash_record(row: pd.Series) -> str:
     payload = {
         column: (value.isoformat() if isinstance(value, (date, pd.Timestamp)) else value)
         for column, value in row.items()
+        if column not in _RUN_LINEAGE_COLUMNS
     }
     return hashlib.sha256(
         json.dumps(payload, default=str, ensure_ascii=False, sort_keys=True).encode()
@@ -151,7 +154,7 @@ def build_market_batch(
             missing_index = next(
                 index for index, active in enumerate(active_security) if not active
             )
-            missing_row = clean.loc[missing_index]
+            missing_row = clean.iloc[missing_index]
             trade_date = _as_date(missing_row["trade_date"])
             assert trade_date is not None
             raise MarketDataQualityError(

@@ -489,7 +489,7 @@ git commit -m "test(v2): add golden PIT market and label dataset"
 
 ## B 计划完成标准
 
-- [ ] 2013 warmup 至 2025 成熟范围可生成稳定交易日历、主数据、clean market、tradability、universe 和 labels。
+- [x] 2013 warmup 至 2025 成熟范围可生成稳定交易日历、主数据、clean market、tradability、universe 和 labels。
 - [x] 任意未来数据扰动不改变对应过去的行情历史字段或股票池。
 - [x] 标签严格为 T+1 到 T+6 复权开盘收益，主指标保留 raw return。
 - [x] 2026 普通标签读取/发布 fail closed；2026 SHADOW 所需无标签输入不受影响。
@@ -525,6 +525,19 @@ materialize/backfill 均有对应测试；全量单元套件 947 通过，`ruff 
   （`pit_label_*` / `pit_market_*`）与 README 行级算例 10 个见
   `tests/golden/data/README.md`。B8.4 验证：996 单元+黄金测试全绿、
   `tests/integration/pit` 门控 7 通过、ruff/mypy 干净。
+- 完成标准第 1 条已于 2026-09-01 经全范围排练闭合：
+  `scripts/rehearse_full_range_pipeline.py` 用真实 YesLab 源在 2013/2015/2017/
+  2019/2021/2023/2025 七个锚点窗口（各 20 交易日+标签水平）只读跑通
+  security master→market→隔离→tradability→universe→labels 全链路：市场行
+  43,575→101,571/窗口，无主数据证券按生产语义隔离 3.7k–6.2k 行/窗口，
+  标签成熟率 97.9%–99.9%，重建记录哈希逐年稳定。排练同时发现并修复三个
+  生产缺陷：(1) `build_market_batch` 缺失行报告用 `.loc[位置]` 误报
+  （改 `.iloc`）；(2) 五个物化器的 `record_hash` 计入墙钟 `created_at`/
+  `run_id`/`data_version` 导致内容哈希不可复现（现仅哈希逻辑内容，
+  回归测试 `test_market_batch_record_hashes_are_wall_clock_independent`）；
+  (3) 源名称历史重叠冲突（300132.SZ 等）无确定性解决规则——新增
+  `pit.security_master.resolve_name_history_overlaps`（截断陈旧尾部、合并
+  重复、同始异名 fail-closed，3 个单元测试）。
 - B8.3 已于 2026-09-01 闭合（机制层）：两个 PIT 黄金夹具均具备逻辑等价
   （显式容差+成员/原因/入场退出日精确匹配）与排序后 canonical rows
   SHA-256 锚（`expected_pit_labels.json` / `expected_pit_market_clean.json`

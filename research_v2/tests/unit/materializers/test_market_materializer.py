@@ -245,3 +245,50 @@ def test_active_listing_dates_indexes_only_the_scd_interval_active_on_each_date(
     indexed = active_listing_dates(security_scd, date(2025, 1, 2))
 
     assert indexed == {"000001.SZ": date(2020, 1, 1), "000002.SZ": date(2021, 1, 1)}
+
+
+def test_market_batch_record_hashes_are_wall_clock_independent() -> None:
+    frame = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "trade_date": [date(2025, 1, 2), date(2025, 1, 3)],
+            "open": [10.0, 11.0],
+            "high": [10.5, 11.5],
+            "low": [9.8, 10.8],
+            "close": [10.2, 11.2],
+            "vol": [1000.0, 1000.0],
+            "amount": [10000.0, 11000.0],
+            "adj_factor": [1.2, 1.2],
+        }
+    )
+    scd = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "list_date": [pd.Timestamp("2025-01-02")],
+            "valid_from": [pd.Timestamp("2025-01-02")],
+            "valid_to": [pd.NaT],
+        }
+    )
+    calendar = TradingCalendar.from_dates([date(2025, 1, 2), date(2025, 1, 3)])
+
+    def build_once() -> list[str]:
+        source = SourceBatch(
+            frame=frame.copy(),
+            source_name="YesLab",
+            table_name="stock_factor_daily",
+            watermark_id="market-watermark",
+            max_observation_date=date(2025, 1, 3),
+            source_row_count=2,
+            schema_fingerprint="schema",
+            extracted_at=datetime(2025, 1, 4, tzinfo=UTC),
+        )
+        context = RunContext(
+            run_id="00000000-0000-0000-0000-000000000001", data_version="version-a"
+        )
+        return build_market_batch(source, scd, calendar, context).frame[
+            "record_hash"
+        ].tolist()
+
+    first = build_once()
+    second = build_once()
+    assert first == second

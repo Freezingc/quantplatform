@@ -14,6 +14,8 @@ from research_v2.db.publish import StagedBatch
 from research_v2.runs.context import RunContext
 from research_v2.universe.builder import UniverseDefinition, build_universe_snapshot
 
+_RUN_LINEAGE_COLUMNS = frozenset({"run_id", "data_version", "created_at"})
+
 
 def _as_date(value: Any) -> date | None:
     if value is None or pd.isna(value):
@@ -66,6 +68,7 @@ def _record_hash(row: pd.Series) -> str:
     payload = {
         column: (value.isoformat() if isinstance(value, (date, pd.Timestamp)) else value)
         for column, value in row.items()
+        if column not in _RUN_LINEAGE_COLUMNS
     }
     return hashlib.sha256(
         json.dumps(payload, ensure_ascii=False, default=str, sort_keys=True).encode()

@@ -132,3 +132,50 @@ def test_security_master_scd_flags_canonical_st_designation_prefixes() -> None:
         scd = build_security_master_scd(_security_master(), names)
         alpha = scd.loc[scd["ts_code"] == "000001.SZ"]
         assert alpha["is_st"].tolist() == [True], st_name
+
+
+def test_resolve_name_history_truncates_stale_tail_and_merges_repeats() -> None:
+    from research_v2.pit.security_master import resolve_name_history_overlaps
+
+    dirty = pd.DataFrame(
+        [
+            {"ts_code": "X1.SZ", "name": "旧名", "start_date": date(2010, 1, 1), "end_date": date(2026, 8, 10)},
+            {"ts_code": "X1.SZ", "name": "新名", "start_date": date(2026, 7, 18), "end_date": None},
+            {"ts_code": "X1.SZ", "name": "新名", "start_date": date(2026, 8, 11), "end_date": None},
+        ]
+    )
+    resolved = resolve_name_history_overlaps(dirty)
+
+    assert resolved["name"].tolist() == ["旧名", "新名"]
+    assert resolved["start_date"].tolist() == [date(2010, 1, 1), date(2026, 7, 18)]
+    assert resolved["end_date"].tolist() == [date(2026, 7, 17), None]
+
+
+def test_resolve_name_history_rejects_same_start_conflicts() -> None:
+    from research_v2.pit.security_master import (
+        SecurityMasterConflict,
+        resolve_name_history_overlaps,
+    )
+
+    dirty = pd.DataFrame(
+        [
+            {"ts_code": "X2.SZ", "name": "甲", "start_date": date(2020, 1, 1), "end_date": None},
+            {"ts_code": "X2.SZ", "name": "乙", "start_date": date(2020, 1, 1), "end_date": None},
+        ]
+    )
+    with pytest.raises(SecurityMasterConflict):
+        resolve_name_history_overlaps(dirty)
+
+
+def test_resolve_name_history_is_idempotent() -> None:
+    from research_v2.pit.security_master import resolve_name_history_overlaps
+
+    dirty = pd.DataFrame(
+        [
+            {"ts_code": "X3.SZ", "name": "旧名", "start_date": date(2015, 1, 1), "end_date": date(2024, 5, 5)},
+            {"ts_code": "X3.SZ", "name": "新名", "start_date": date(2024, 5, 1), "end_date": None},
+        ]
+    )
+    once = resolve_name_history_overlaps(dirty)
+    twice = resolve_name_history_overlaps(once)
+    pd.testing.assert_frame_equal(once, twice)
