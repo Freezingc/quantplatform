@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 from datetime import date
@@ -14,6 +15,23 @@ from research_v2.labels.forward_return import build_forward_open_labels
 from research_v2.pit.calendar import TradingCalendar
 
 _DATA = Path(__file__).parent / "data"
+
+
+def _canonical_value(value: object) -> object:
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, float) and value != value:
+        return None
+    return value
+
+
+def _canonical_rows_sha256(rows: list[dict[str, object]]) -> str:
+    normalized = [
+        {key: _canonical_value(value) for key, value in record.items()} for record in rows
+    ]
+    normalized.sort(key=lambda record: (record["signal_date"], record["ts_code"]))
+    payload = json.dumps(normalized, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def _load_calendar() -> TradingCalendar:
@@ -71,3 +89,20 @@ def test_golden_fixture_covers_every_invalid_boundary_class() -> None:
         "INVALID_EXIT_PRICE",
         "INSUFFICIENT_CALENDAR_COVERAGE",
     }
+
+
+def test_golden_pit_labels_canonical_rows_sha256_is_stable() -> None:
+    calendar = _load_calendar()
+    members = pd.read_csv(_DATA / "pit_label_members.csv", dtype=str)
+    market = pd.read_csv(
+        _DATA / "pit_label_market.csv",
+        dtype={"trade_date": str, "ts_code": str},
+    )
+    market["adjusted_open"] = pd.to_numeric(market["adjusted_open"], errors="coerce")
+    expected = json.loads((_DATA / "expected_pit_labels.json").read_text(encoding="utf-8"))
+
+    labels = build_forward_open_labels(members, market, calendar)
+
+    assert _canonical_rows_sha256(labels.to_dict(orient="records")) == expected[
+        "canonical_rows_sha256"
+    ]

@@ -468,7 +468,7 @@ git commit -m "feat(v2): orchestrate audited PIT materialization"
 
 预期 universe 和 labels 用简短审计脚本/人工 spreadsheet 独立计算，不调用生产 builder；在 README 写出 10 个具体行级算例及公式，至少人工复核 T+1/T+6 的 5 个信号日。
 
-- [ ] **B8.3 写 byte/logical equality 测试**
+- [x] **B8.3 写 byte/logical equality 测试**
 
 数值使用明确 tolerance；成员、reason、entry/exit date 必须精确相等；排序后对 canonical rows 比较 SHA-256。
 
@@ -520,4 +520,9 @@ materialize/backfill 均有对应测试；全量单元套件 947 通过，`ruff 
   （清洗/去重/复权精确值），测试为 `tests/golden/test_pit_labels.py`、
   `tests/golden/test_pit_market.py`（972 单元+黄金测试全绿）。待补：真实
   50×60 样本、README 行级算例、canonical SHA-256 比较与人工复核记录。
+- B8.3 已于 2026-09-01 闭合（机制层）：两个 PIT 黄金夹具均具备逻辑等价
+  （显式容差+成员/原因/入场退出日精确匹配）与排序后 canonical rows
+  SHA-256 锚（`expected_pit_labels.json` / `expected_pit_market_clean.json`
+  的 `canonical_rows_sha256`），在合成边界样本上验证；同一机制直接复用于
+  真实 50×60 样本（B8.1/B8.2 待历史只读源）。
 - 完成标准第 1 条：2013–2025 全范围稳定生成属真实运行证据，待运营执行。

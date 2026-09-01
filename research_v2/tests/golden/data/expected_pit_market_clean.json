@@ -1,5 +1,6 @@
 {
   "description": "Hand-computed cleaned market rows. adjusted_open = open * adj_factor exactly.",
+  "canonical_rows_sha256": "d5f2921e7d2bfe895ed0da54dda7886cc7afdb82b76a77f161bf2dd14a9e6a10",
   "rows": [
     {"trade_date": "2025-01-02", "ts_code": "M01", "open": 10.0, "high": 11.0, "low": 9.5, "close": 10.8, "vol": 1000.0, "amount": 10500.0, "adj_factor": 1.0, "dedup_resolution": "IDENTICAL_COLLAPSE", "adjusted_open": 10.0},
     {"trade_date": "2025-01-02", "ts_code": "M02", "open": 20.0, "high": 21.0, "low": 19.0, "close": 20.5, "vol": 500.0, "amount": 10250.0, "adj_factor": 2.0, "dedup_resolution": "UNIQUE", "adjusted_open": 40.0},

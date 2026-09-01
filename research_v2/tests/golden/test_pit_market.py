@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -11,6 +13,23 @@ import pytest
 from research_v2.pit.market import clean_market_daily
 
 _DATA = Path(__file__).parent / "data"
+
+
+def _canonical_value(value: object) -> object:
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, float) and value != value:
+        return None
+    return value
+
+
+def _canonical_rows_sha256(rows: list[dict[str, object]]) -> str:
+    normalized = [
+        {key: _canonical_value(value) for key, value in record.items()} for record in rows
+    ]
+    normalized.sort(key=lambda record: (record["trade_date"], record["ts_code"]))
+    payload = json.dumps(normalized, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def test_golden_market_clean_matches_independent_reference() -> None:
@@ -30,3 +49,14 @@ def test_golden_market_clean_matches_independent_reference() -> None:
         assert float(actual["adjusted_open"]) == pytest.approx(
             expected_row["adjusted_open"], abs=1e-12
         )
+
+
+def test_golden_market_clean_canonical_rows_sha256_is_stable() -> None:
+    raw = pd.read_csv(_DATA / "pit_market_raw.csv")
+    expected = json.loads((_DATA / "expected_pit_market_clean.json").read_text(encoding="utf-8"))
+
+    clean = clean_market_daily(raw)
+
+    assert _canonical_rows_sha256(clean.to_dict(orient="records")) == expected[
+        "canonical_rows_sha256"
+    ]

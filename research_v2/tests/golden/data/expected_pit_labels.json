@@ -1,5 +1,6 @@
 {
   "description": "Independently hand-computed T+1..T+6 adjusted-open labels for the pit_label fixture. return = exit_open/entry_open - 1.",
+  "canonical_rows_sha256": "720730a9023c9019ac303f95026a99c475d8e8dd94ae53a6e60ebca15efa67c7",
   "rows": [
     {"signal_date": "2025-01-02", "ts_code": "A01", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": 0.125, "label_valid": true, "invalid_reason": null, "entry_realized_tradable": true, "exit_price_observed": true},
     {"signal_date": "2025-01-02", "ts_code": "A02", "entry_date": "2025-01-03", "exit_date": "2025-01-10", "label_available_date": "2025-01-10", "raw_return_5d": null, "label_valid": false, "invalid_reason": "MISSING_ENTRY_PRICE", "entry_realized_tradable": false, "exit_price_observed": false},

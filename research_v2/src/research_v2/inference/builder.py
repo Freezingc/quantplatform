@@ -10,7 +10,7 @@ import torch
 
 from research_v2.datasets.builder import FactorInput
 from research_v2.datasets.preprocessing import FoldPreprocessor
-from research_v2.models.base import FeatureBatch, TemporalFeatureBatch
+from research_v2.models.base import FeatureBatch, PredictionInputBatch, TemporalFeatureBatch
 
 
 def build_label_free_inference_frame(
@@ -107,6 +107,48 @@ def build_label_free_inference_batch(
 def _require_columns(frame: pd.DataFrame, required: set[str], name: str) -> None:
     if missing := sorted(required.difference(frame.columns)):
         raise ValueError(f"{name} is missing columns: {missing}")
+
+
+_CROSS_SECTIONAL_FAMILIES = frozenset({"RESIDUAL_MLP", "SET_ATTENTION"})
+_TEMPORAL_FAMILIES = frozenset({"TEMPORAL_GRU"})
+
+
+def build_inference_batch_for_family(
+    model_family: str,
+    universe: pd.DataFrame,
+    factors: pd.DataFrame,
+    *,
+    factor_members: tuple[FactorInput, ...],
+    signal_date: date,
+    preprocessor: FoldPreprocessor,
+    history_length: int = 20,
+    minimum_valid_history_length: int = 15,
+) -> PredictionInputBatch:
+    """Dispatch label-free inference batch assembly by the frozen model family.
+
+    Cross-sectional families receive one same-day keyed frame; temporal families
+    receive one causal left-aligned history window per security.  Unknown
+    families fail closed instead of falling back to a default shape.
+    """
+    if model_family in _CROSS_SECTIONAL_FAMILIES:
+        return build_label_free_inference_batch(
+            universe,
+            factors,
+            factor_members=factor_members,
+            signal_date=signal_date,
+            preprocessor=preprocessor,
+        )
+    if model_family in _TEMPORAL_FAMILIES:
+        return build_label_free_temporal_inference_batch(
+            universe,
+            factors,
+            factor_members=factor_members,
+            signal_date=signal_date,
+            preprocessor=preprocessor,
+            history_length=history_length,
+            minimum_valid_history_length=minimum_valid_history_length,
+        )
+    raise ValueError(f"unknown model family for inference batch assembly: {model_family}")
 
 
 def build_label_free_temporal_inference_batch(

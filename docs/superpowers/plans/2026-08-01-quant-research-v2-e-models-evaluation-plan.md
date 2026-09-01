@@ -598,4 +598,7 @@ G1–G6 门控报告，断言门控键集/有效天数/基线增量有限与重�
   `history_length` 个观测、可用日守卫、历史不足 `minimum_valid_history_length`
   的证券剔除且全缺时 fail-closed），预测器类型放宽为
   `PredictionInputBatch`；测试 6 项（窗口装配、未来行不变性、历史下限、
-  可用日拒绝、配置守卫、GRU 贯通预测帧）。
+  可用日拒绝、配置守卫、GRU 贯通预测帧）。2026-09-01 再补族感知分派
+  `build_inference_batch_for_family`（横截面族→同日帧、时序族→历史窗口、
+  未知族 fail-closed；含三种子集成贯通测试 5 项），日频运行接线在
+  runtime backend 建立时直接调用该入口。
