@@ -6053,7 +6053,7 @@
     "artifact": "candidate_combination_evidence_gap_index_v1.json",
     "scope": "CANDIDATE_COMBINATION_EVIDENCE_GAP_INDEX_V1",
     "status": "EXTENSION_COMBINATION_EVIDENCE_COMPLETE_WITH_MONITORING",
-    "action": "Extension combination evidence is complete for yeslab_363_tushare_shsz_v1, yeslab_357_tushare_shsz_v1, yeslab_96_canonical_replay_v1, and yeslab_443_tushare_shsz_v1 against the six-candidate matrix and among extension candidates. The 357/363 pair is elevated-monitor; do not jointly admit them without a separate combination review.",
+    "action": "Extension combination evidence is complete for yeslab_363_tushare_shsz_v1, yeslab_357_tushare_shsz_v1, yeslab_96_canonical_replay_v1, and yeslab_443_tushare_shsz_v1 against the six-candidate matrix and among extension candidates. The 357/363 pair and the 381/443 pair are elevated-monitor (median abs Spearman >= 0.80); do not jointly admit either pair without a separate combination review. The 114/484 pair is redundant in validation (median abs Spearman 0.9079 >= 0.90); they cannot be jointly admitted.",
     "formal_factor_set_changed": false,
     "model_eligible": false,
     "database_writes": false,

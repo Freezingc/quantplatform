@@ -60,7 +60,7 @@
     "validation_maximum_median_abs_spearman": 0.8787846822219363,
     "threshold_monitor": 0.8,
     "threshold_redundant": 0.9,
-    "status": "PASS_WITH_ELEVATED_MONITOR_357_363",
+    "status": "PASS_WITH_ELEVATED_MONITOR_357_363_AND_381_443",
     "elevated_pairs": [
       {
         "candidate_pair": [
@@ -72,7 +72,19 @@
         "threshold_monitor": 0.8,
         "threshold_redundant": 0.9,
         "status": "ELEVATED_PAIR_MONITOR_NO_JOINT_ADMISSION_WITHOUT_SEPARATE_REVIEW"
+      },
+      {
+        "candidate_pair": [
+          "yeslab_381_tushare_shsz_v1",
+          "yeslab_443_tushare_shsz_v1"
+        ],
+        "training_median_abs_spearman": 0.8112354523262499,
+        "validation_median_abs_spearman": 0.8372108238068372,
+        "threshold_monitor": 0.8,
+        "threshold_redundant": 0.9,
+        "status": "ELEVATED_PAIR_MONITOR_NO_JOINT_ADMISSION_WITHOUT_SEPARATE_REVIEW"
       }
-    ]
+    ],
+    "note": "Correction 2026-09-01: earlier status listed only the 357/363 elevated pair; the same supplemental audit shows yeslab_381_tushare_shsz_v1 x yeslab_443_tushare_shsz_v1 at 0.81124 train / 0.83721 validation median abs Spearman, which also breaches the 0.80 monitor threshold."
   }
 }

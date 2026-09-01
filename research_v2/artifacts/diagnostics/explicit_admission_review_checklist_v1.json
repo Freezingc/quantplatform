@@ -63,8 +63,8 @@
       "factor_name": "GP_012",
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization",
-      "required_scope": "Do not mix with historical YesLab values; historical GP_012 contains BJ securities. Retain elevated pair monitoring against yeslab_405_tushare_shsz_v1.",
-      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1; separate combination approval required if both are considered.",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_012 contains BJ securities. Retain elevated pair monitoring against yeslab_405_tushare_shsz_v1 and yeslab_443_tushare_shsz_v1.",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1 (train/validation median abs Spearman 0.86451/0.88824) and yeslab_443_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721); separate combination approval required if any of these pairs is jointly considered.",
       "evidence": [
         "tushare_alpha381_canonical_candidate_review_v1.json",
         "tushare_alpha381_canonical_train_similarity_v1/similarity_summary.json",
@@ -138,10 +138,10 @@
       "candidate_id": "yeslab_443_tushare_shsz_v1",
       "source_factor_id": "yeslab_443",
       "factor_name": "GP_074",
-      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization",
       "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities.",
-      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete (30 train/validation edges); no elevated pair found for 443.",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete (30 train/validation edges); elevated pair monitor with yeslab_381_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721, monitor threshold 0.80); no joint admission with yeslab_381_tushare_shsz_v1 without separate combination review.",
       "evidence": [
         "tushare_alpha443_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",

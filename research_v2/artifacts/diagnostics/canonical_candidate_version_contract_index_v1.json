@@ -41,7 +41,7 @@
       "source_factor_id": "yeslab_381",
       "factor_name": "GP_012",
       "canonical_basis": "Tushare SH/SZ rematerialization",
-      "required_scope": "Do not mix with historical YesLab values; historical GP_012 contains BJ securities. Retain elevated pair monitoring against yeslab_405_tushare_shsz_v1.",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_012 contains BJ securities. Retain elevated pair monitoring against yeslab_405_tushare_shsz_v1 and yeslab_443_tushare_shsz_v1.",
       "evidence": [
         "tushare_alpha381_canonical_candidate_review_v1.json",
         "tushare_alpha381_canonical_train_similarity_v1/similarity_summary.json",
@@ -90,7 +90,7 @@
       "source_factor_id": "yeslab_443",
       "factor_name": "GP_074",
       "canonical_basis": "Tushare SH/SZ rematerialization",
-      "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities. Combination evidence against six-candidate matrix and extension candidates is complete; no elevated pair found for 443.",
+      "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities. Combination evidence against six-candidate matrix and extension candidates is complete; elevated pair monitor with yeslab_381_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721).",
       "evidence": [
         "tushare_alpha443_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",
@@ -99,7 +99,7 @@
         "supplemental_candidate_pair_similarity_validation_v1.json",
         "extension_candidate_monthly_stability_validation_v1.json"
       ],
-      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING"
     },
     "yeslab_363_tushare_shsz_v1": {
       "source_factor_id": "yeslab_363",
