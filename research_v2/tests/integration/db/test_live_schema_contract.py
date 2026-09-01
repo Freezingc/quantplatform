@@ -13,9 +13,9 @@ from pathlib import Path
 
 import dolphindb as ddb
 import pytest
+from verify_test_db_schemas import parse_expected_schemas
 
 from research_v2.db.migrations import discover_migrations
-from verify_test_db_schemas import parse_expected_schemas
 
 pytestmark = [
     pytest.mark.integration,
