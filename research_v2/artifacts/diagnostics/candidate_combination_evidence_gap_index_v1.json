@@ -148,5 +148,36 @@
       "status": "REDUNDANT_NO_JOINT_ADMISSION"
     },
     "note": "The 370/389 redundancy was observed in the near-miss training batch (0.8972) and confirmed in validation (0.9127)."
+  },
+  "candidate471_combination_audit": {
+    "artifact": "candidate471_pair_similarity_v1.json",
+    "new_candidate_id": "yeslab_471_tushare_pit_v1",
+    "reference_pool": "fifteen READY candidates",
+    "edges": "15 training and 15 validation complete edges",
+    "training_maximum_median_abs_spearman": 0.765505190874133,
+    "validation_maximum_median_abs_spearman": 0.7750845258906457,
+    "status": "PASS_NO_ELEVATED_PAIR"
+  },
+  "candidate398_combination_audit": {
+    "artifact": "candidate398_pair_similarity_v1.json",
+    "new_candidate_id": "yeslab_398_tushare_shsz_v1",
+    "reference_pool": "fifteen READY candidates",
+    "edges": "15 training and 15 validation complete edges",
+    "training_maximum_median_abs_spearman": 0.8366207992117427,
+    "validation_maximum_median_abs_spearman": 0.8242744096812478,
+    "status": "PASS_WITH_ELEVATED_MONITOR_381_398",
+    "elevated_pairs": [
+      {
+        "candidate_pair": [
+          "yeslab_381_tushare_shsz_v1",
+          "yeslab_398_tushare_shsz_v1"
+        ],
+        "training_median_abs_spearman": 0.8366207992117427,
+        "validation_median_abs_spearman": 0.8242744096812478,
+        "threshold_monitor": 0.8,
+        "threshold_redundant": 0.9,
+        "status": "ELEVATED_PAIR_MONITOR_NO_JOINT_ADMISSION_WITHOUT_SEPARATE_REVIEW"
+      }
+    ]
   }
 }

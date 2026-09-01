@@ -1,0 +1,91 @@
+{
+  "scope": "TUSHARE_ALPHA471_CANONICAL_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_471_tushare_pit_v1",
+  "source_factor_id": "yeslab_471",
+  "factor_name": "AttentionSpillover",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily+daily_basic",
+  "industry_source": "Tushare SW2014 before 2021-12-10; SW2021 from 2021-12-10",
+  "label": "forward_open_5d:v1",
+  "direction": 1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "signed_mean_rank_ic_range": [
+      0.0556,
+      0.0705
+    ],
+    "strict_annual_double_gate_pass_years": "5/5",
+    "annual_signed_icir": {
+      "2020": 0.6976,
+      "2021": 0.6955,
+      "2022": 0.829,
+      "2023": 0.8518,
+      "2024": 1.0055
+    },
+    "gates": {
+      "rank_ic_gate": true,
+      "icir_gate": true,
+      "day_share_gate": true,
+      "annual_gate": "5/5"
+    }
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "signed_mean_rank_ic": 0.0714618646209547,
+    "signed_icir": 0.965694543184178,
+    "directional_day_share": 0.8724279835390947,
+    "gates": {
+      "rank_ic_gate": true,
+      "icir_gate": true,
+      "day_share_gate": true
+    }
+  },
+  "similarity_to_formal_nine_train": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.559555,
+    "nearest_factor_id": "yeslab_376",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "similarity_to_formal_nine_validation": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.6248,
+    "nearest_factor_id": "yeslab_376",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "candidate_pair_similarity": {
+    "reference_pool": "fifteen READY candidates",
+    "training_maximum_median_abs_spearman": 0.765505190874133,
+    "validation_maximum_median_abs_spearman": 0.7750845258906457,
+    "nearest_pair": "yeslab_114_tushare_shsz_v2",
+    "status": "PASS_NO_ELEVATED_PAIR"
+  },
+  "monthly_stability_2025": {
+    "signed_mean_pass_months": 11,
+    "directional_share_pass_months": 12,
+    "strict_icir_pass_months": 11
+  },
+  "formula_scope": {
+    "status": "HISTORICAL_SOURCE_REPLAY_BLOCKED_PIT_INDUSTRY_INTEGRATED",
+    "note": "Historical YesLab replay mismatches on all overlap rows (90469/90471); consistent with historical static/BJ-inclusive industry classification vs versioned PIT SH/SZ canonical scope. Same evidence class as yeslab_357/363 precedent. Canonical version stands on its own evidence; historical values must not be mixed; reconciliation monitoring retained.",
+    "artifact": "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
+  },
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+  "decision_reason": "Precedent: yeslab_357/363 were admitted to review despite blocked historical replay because the canonical rematerialization is self-contained. Alpha471 canonical quality is the strongest in the pool (annual 5/5 with rising ICIR 0.70->1.01; validation ICIR 0.966).",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED"
+}

@@ -1,0 +1,81 @@
+{
+  "scope": "TUSHARE_YESLAB_398_DQ3_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_398_tushare_shsz_v1",
+  "source_factor_id": "yeslab_398",
+  "factor_name": "GP_029",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "valid_day_count": 1212,
+    "mean_rank_ic": -0.0699,
+    "signed_mean_rank_ic": 0.0699,
+    "icir": -0.6001,
+    "signed_icir": 0.6001,
+    "directional_day_share": 0.724,
+    "strict_annual_pass_years": "4/5 (2020 fail 0.39)",
+    "gates": {
+      "rank_ic_gate": true,
+      "icir_gate": true,
+      "day_share_gate": true,
+      "annual_gate": "4/5"
+    }
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "valid_day_count": 243,
+    "mean_rank_ic": -0.087,
+    "signed_mean_rank_ic": 0.087,
+    "icir": -0.8339,
+    "signed_icir": 0.8339,
+    "directional_day_share": 0.802,
+    "gates": {
+      "rank_ic_gate": true,
+      "icir_gate": true,
+      "day_share_gate": true
+    }
+  },
+  "similarity_to_formal_nine_train": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.7829,
+    "nearest_factor_id": "yeslab_431",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "similarity_to_formal_nine_validation": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.7834,
+    "nearest_factor_id": "yeslab_431",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "candidate_pair_similarity": {
+    "reference_pool": "fifteen READY candidates",
+    "training_maximum_median_abs_spearman": 0.8366207992117427,
+    "validation_maximum_median_abs_spearman": 0.8242744096812478,
+    "nearest_pair": "yeslab_381_tushare_shsz_v1",
+    "status": "PASS_WITH_ELEVATED_MONITOR_381_398"
+  },
+  "monthly_stability_2025": {
+    "signed_mean_pass_months": 11,
+    "directional_share_pass_months": 11,
+    "strict_icir_pass_months": 8
+  },
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+  "decision_reason": "Elevated pair with yeslab_381_tushare_shsz_v1 (train 0.8366 / validation 0.8243, above the 0.80 monitor threshold); no joint admission with 381 without separate combination review.",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED"
+}

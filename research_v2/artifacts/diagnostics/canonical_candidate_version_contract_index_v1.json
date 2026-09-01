@@ -331,6 +331,40 @@
         "yeslab_390_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+    },
+    "yeslab_471_tushare_pit_v1": {
+      "source_factor_id": "yeslab_471",
+      "factor_name": "AttentionSpillover",
+      "canonical_basis": "Tushare SH/SZ rematerialization with versioned PIT industry; supersedes the blocked-pit entry",
+      "required_scope": "Use only the isolated canonical PIT version; historical replay blocked (industry-scope difference, same class as 357/363). Pair evidence vs fifteen READY candidates complete; max edge 0.7655/0.7751, below 0.80.",
+      "evidence": [
+        "tushare_alpha471_canonical_candidate_review_v1.json",
+        "tushare_pit_alpha471_train_2020_2024_annual_v1.json",
+        "tushare_pit_alpha471_validation_2025_v1.json",
+        "alpha471_vs_formal9_train_similarity_2020_2024_v1.csv",
+        "tushare_pit_alpha471_formal9_validation_2025_v1/similarity_summary.json",
+        "candidate471_pair_similarity_v1.json",
+        "yeslab_471_validation_2025_monthly_v1/monthly_stability.json",
+        "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING"
+    },
+    "yeslab_398_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_398",
+      "factor_name": "GP_029",
+      "canonical_basis": "Tushare SH/SZ rematerialization (warmup60-DQ-pass group canonical repair)",
+      "required_scope": "Do not mix with historical YesLab values. Pair evidence vs fifteen READY candidates complete; elevated pair with yeslab_381_tushare_shsz_v1 (0.8366/0.8243).",
+      "evidence": [
+        "tushare_yeslab_398_dq3_review_v1.json",
+        "tushare_shsz_dq3_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_dq3_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_dq3_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_dq3_formal9_validation_2025_v1/similarity_summary.json",
+        "dq3_train_evidence_v1.json",
+        "candidate398_pair_similarity_v1.json",
+        "yeslab_398_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING"
     }
   },
   "decision": "NO_AUTOMATIC_ADMISSION"

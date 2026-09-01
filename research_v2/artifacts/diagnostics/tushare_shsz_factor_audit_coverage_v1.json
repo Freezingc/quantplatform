@@ -5376,7 +5376,7 @@
       "yeslab_357": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "yeslab_362": "NO_ADMISSION_STRICT_ANNUAL_ICIR_FAIL",
       "yeslab_363": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
-      "yeslab_471": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY"
+      "yeslab_471": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING"
     },
     "status": "PIT_PROVIDER_INTEGRATED_RESEARCH_CANDIDATES_REVIEWED",
     "denominator_note": "Active-key coverage uses the V2 member/label intersection for each signal_date and ts_code; it excludes pre-listing dates from the denominator.",
@@ -5849,7 +5849,7 @@
   },
   "alpha471_pit_replay_followup": {
     "factor_id": "yeslab_471",
-    "status": "BLOCKED_HISTORICAL_SOURCE_FORMULA_DESPITE_PIT_INDUSTRY",
+    "status": "READY_CANONICAL_WITH_RECONCILIATION_MONITORING",
     "window": "2025-01-02/2025-01-31",
     "market_scope": "SH/SZ",
     "excluded_exchanges": [
@@ -5865,7 +5865,7 @@
       "max_abs_diff": 541.6844373535617,
       "market_code_count": 5133
     },
-    "action": "Keep AttentionSpillover isolated. Versioned PIT industry is now available and was used, but the historical stored formula still does not replay; do not admit, publish, write factor values, change formal nine, add model inputs, or train until source-formula reconciliation exists.",
+    "action": "Canonical PIT rematerialization has complete evidence (annual 5/5, validation ICIR 0.966, nine-edge and pool-pair clean) and is upgraded to READY_FOR_EXPLICIT_ADMISSION_REVIEW per the yeslab_357/363 precedent. Historical source replay remains blocked (industry-scope difference); do not mix historical values; reconciliation monitoring retained. See tushare_alpha471_canonical_candidate_review_v1.json.",
     "formal_factor_set_changed": false,
     "model_eligible": false,
     "database_writes": false,
@@ -6292,6 +6292,99 @@
       "tushare_yeslab_390_nearmiss6_review_v1.json",
       "tushare_yeslab_415_nearmiss6_review_v1.json",
       "tushare_yeslab_213_nearmiss6_review_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
+  },
+  "alpha471_canonical_followup": {
+    "scope": "ALPHA471_TUSHARE_CANONICAL_FOLLOWUP",
+    "factor_id": "yeslab_471",
+    "candidate_id": "yeslab_471_tushare_pit_v1",
+    "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+    "train": {
+      "annual_double_gate": "5/5",
+      "annual_signed_icir": [
+        0.6976,
+        0.6955,
+        0.829,
+        0.8518,
+        1.0055
+      ]
+    },
+    "validation": {
+      "signed_mean_rank_ic": 0.0715,
+      "signed_icir": 0.9657,
+      "directional_day_share": 0.8724
+    },
+    "nine_edge": {
+      "train_max": 0.5596,
+      "validation_max": 0.6248,
+      "nearest": "yeslab_376"
+    },
+    "pool_pair": {
+      "train_max": 0.7655,
+      "validation_max": 0.7751,
+      "nearest": "yeslab_114_tushare_shsz_v2"
+    },
+    "monthly_stability_2025": {
+      "signed_mean_pass_months": 11,
+      "directional_share_pass_months": 12,
+      "strict_icir_pass_months": 11
+    },
+    "note": "Strongest canonical quality in the pool; upgrade follows the 357/363 precedent for historical-replay-blocked industry factors.",
+    "artifacts": [
+      "tushare_alpha471_canonical_candidate_review_v1.json",
+      "tushare_pit_alpha471_train_2020_2024_annual_v1.json",
+      "tushare_pit_alpha471_validation_2025_v1.json",
+      "alpha471_vs_formal9_train_similarity_2020_2024_v1.csv",
+      "tushare_pit_alpha471_formal9_validation_2025_v1/similarity_summary.json",
+      "candidate471_pair_similarity_v1.json",
+      "yeslab_471_validation_2025_monthly_v1/monthly_stability.json",
+      "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
+  },
+  "dq3_canonical_followup": {
+    "scope": "DQ3_TUSHARE_CANONICAL_FOLLOWUP",
+    "factor_ids": [
+      "yeslab_398",
+      "yeslab_438",
+      "yeslab_451"
+    ],
+    "motivation": "Remaining warmup60-DQ-pass group that failed the historical 2020 predictive screen (ICIR -0.25 to -0.33).",
+    "results": {
+      "yeslab_398": {
+        "factor_name": "GP_029",
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+        "train_signed_icir": 0.6001,
+        "annual": "4/5",
+        "validation_signed_icir": 0.8339,
+        "pair_constraint": "elevated pair with yeslab_381 (0.8366/0.8243)"
+      },
+      "yeslab_438": {
+        "factor_name": "GP_069",
+        "status": "REJECT_ANNUAL_2_OF_5_AND_REDUNDANT_WITH_FORMAL_431",
+        "train_signed_icir": 0.4915,
+        "validation_signed_icir": 0.6433,
+        "note": "Rank-identical to yeslab_451 (mutual rho 1.0); nine-edge vs yeslab_431 train 0.9029 >= 0.90"
+      },
+      "yeslab_451": {
+        "factor_name": "GP_082",
+        "status": "REJECT_ANNUAL_2_OF_5_AND_REDUNDANT_WITH_FORMAL_431",
+        "train_signed_icir": 0.4912,
+        "validation_signed_icir": 0.643,
+        "note": "Rank-identical to yeslab_438 (mutual rho 1.0); nine-edge vs yeslab_431 train 0.9025 >= 0.90"
+      }
+    },
+    "artifacts": [
+      "dq3_train_evidence_v1.json",
+      "tushare_yeslab_398_dq3_review_v1.json",
+      "candidate398_pair_similarity_v1.json"
     ],
     "formal_factor_set_changed": false,
     "database_writes": false,
