@@ -325,8 +325,13 @@ docs(v2): record locked-test runbook
   全横截面重放，**14/16 准入因子机器精度复现**（max_abs_diff ≤ 4e-9），
   即 2014–2019 可由原始行情（stock_factor_daily 覆盖 2013+）安全重算；
   GP_026（yeslab_395）与 GP_074（yeslab_443）重放阻塞，需调查输入源差异。
-  后续步骤：为 14 个已验证因子构建重算物化路径（经审计发布到
-  factor_observation_clean），再按 D 计划构建 F01–F06 数据集并运行
+  **2026-09-01 重算回填已完成**
+  （`docs/reports/2026-09-01-train-years-recomputed-backfill-completion.md`）：
+  14 个已验证因子经重算物化路径（`publish_recomputed_factor_backfill.py`，
+  preflight→publish→compact 全程审计）发布 2014-01…2019-12 共 72 个月、
+  56,235,259 行；`factor_observation_clean` 覆盖 2014-01-02…2025-12-31，
+  发布后核验零丢失，独立抽样核对 7.5e-16 精度。**标准 303 的 TRAIN 年
+  数据缺口已消除**；剩余步骤：按 D 计划构建 F01–F06 数据集并运行
   B0–B3 walk-forward。
 
 即使没有复杂候选通过，平台工程仍可判定完成；此时模型停留在 `DRAFT`，不得启动正式 SHADOW 或声称模型有效。
