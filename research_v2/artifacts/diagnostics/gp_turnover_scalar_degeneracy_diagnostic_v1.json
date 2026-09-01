@@ -1,0 +1,118 @@
+{
+  "scope": "GP_TURNOVER_SCALAR_DEGENERACY_DIAGNOSTIC_V1",
+  "purpose": "Record that yeslab_436 (GP_067), yeslab_446 (GP_077) and yeslab_468 (GP_099) are structurally degenerate: their final operation is turnover multiplied by a per-date cross-sectional scalar, so their cross-sectional rank equals +/- the rank of turnover_rate on every day. They carry no stock-specific information and are perfectly redundant with each other.",
+  "date": "2026-09-01",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "structural_evidence": {
+    "yeslab_436": "GP_Factor_067_Calculator: _v20 = _v19.mean(axis=1) (per-date Series); factor = turnover.mul(_v20, axis=0)",
+    "yeslab_446": "GP_Factor_077_Calculator: _v19 = _v18.max(axis=1) (per-date Series); factor = turnover.mul(_v19, axis=0)",
+    "yeslab_468": "GP_Factor_099_Calculator: _v9 = _v8.mean(axis=1) (per-date Series); factor = turnover.mul(_v9, axis=0)"
+  },
+  "empirical_evidence": {
+    "window": "2020-01-02/2020-02-29 (smoke rematerialization, Tushare SH/SZ)",
+    "observation": "Daily RankIC series of yeslab_436, yeslab_446 and yeslab_468 are exactly identical over all 36 signal days; yeslab_464 differs.",
+    "smoke_artifacts": [
+      "smoke_single_yeslab_436_2020_v1/daily_rank_ic.csv",
+      "smoke_single_yeslab_446_2020_v2/daily_rank_ic.csv",
+      "smoke_single_yeslab_464_2020_v1/daily_rank_ic.csv",
+      "smoke_single_yeslab_468_2020_v1/daily_rank_ic.csv"
+    ]
+  },
+  "decision": "REJECT_STRUCTURAL_DEGENERACY_FOR_FAMILY_436_446_468_426; other family members already rejected by predictive gates. Full training-window evaluation of 436/446/468 proceeds only to document the degeneracy empirically; their admission is excluded regardless of gate outcomes.",
+  "decision_reason": "A factor equal to turnover_rate times a per-date scalar has the same cross-sectional ranks as turnover_rate (or its reversal) every day. The three factors are mutually redundant (median abs Spearman = 1.0 by construction, above the 0.90 threshold) and add no information beyond a signed turnover stream. They must not be admitted regardless of gate outcomes in the full training window.",
+  "yeslab_464_status": "NOT_DEGENERATE_PROCEEDS_TO_FULL_EVALUATION",
+  "yeslab_464_note": "GP_Factor_095 ends in a per-stock regression residual; its smoke-window RankIC series differs from the turnover-scalar triple.",
+  "formal_nine_check": "The final operations of GP_036/GP_012/GP_056/GP_074 (yeslab_405/381/425/443) and GP_095 are stock-specific; no degenerate turnover-scalar structure found in the formal nine or READY candidates.",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "evidence_commit_at_diagnosis": "00dbfc60b35d9e3bc585b36d5dd0babe4ef81450",
+  "full_degenerate_family": {
+    "definition": "Final factor equals a raw market field (turnover_rate or amount) multiplied by a per-date cross-sectional scalar. Cross-sectional ranks equal +/- the ranks of that field on every day; such factors carry no stock-specific information.",
+    "turnover_rate_family": [
+      {
+        "gp": "GP_039",
+        "factor_id": "yeslab_408",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.391)"
+      },
+      {
+        "gp": "GP_047",
+        "factor_id": "yeslab_416",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.404)"
+      },
+      {
+        "gp": "GP_053",
+        "factor_id": "yeslab_422",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.422)"
+      },
+      {
+        "gp": "GP_055",
+        "factor_id": "yeslab_424",
+        "screen_2020": "PREDICTIVE_FAIL_COVERAGE_FAIL (ICIR 0.175)"
+      },
+      {
+        "gp": "GP_057",
+        "factor_id": "yeslab_426",
+        "screen_2020": "PREDICTIVE_PASS_COVERAGE_FAIL (ICIR -0.505); degenerate, do not evaluate"
+      },
+      {
+        "gp": "GP_066",
+        "factor_id": "yeslab_435",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.463)"
+      },
+      {
+        "gp": "GP_067",
+        "factor_id": "yeslab_436",
+        "screen_2020": "PREDICTIVE_PASS_COVERAGE_FAIL (ICIR -0.535); smoke-confirmed identical ranks with 446/468"
+      },
+      {
+        "gp": "GP_077",
+        "factor_id": "yeslab_446",
+        "screen_2020": "PREDICTIVE_PASS_COVERAGE_FAIL (ICIR -0.520); smoke-confirmed identical ranks with 436/468"
+      },
+      {
+        "gp": "GP_083",
+        "factor_id": "yeslab_452",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.463)"
+      },
+      {
+        "gp": "GP_099",
+        "factor_id": "yeslab_468",
+        "screen_2020": "PREDICTIVE_PASS_COVERAGE_FAIL (ICIR -0.500); smoke-confirmed identical ranks with 436/446"
+      }
+    ],
+    "amount_family": [
+      {
+        "gp": "GP_058",
+        "factor_id": "yeslab_427",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.222)"
+      },
+      {
+        "gp": "GP_091",
+        "factor_id": "yeslab_460",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.181)"
+      },
+      {
+        "gp": "GP_093",
+        "factor_id": "yeslab_462",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.222)"
+      },
+      {
+        "gp": "GP_094",
+        "factor_id": "yeslab_463",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.222)"
+      },
+      {
+        "gp": "GP_096",
+        "factor_id": "yeslab_465",
+        "screen_2020": "PREDICTIVE_FAIL (ICIR -0.222)"
+      }
+    ],
+    "note": "The amount family members with identical 2020 ICIR (-0.222) are themselves mutually rank-identical, consistent with the shared degenerate structure."
+  }
+}

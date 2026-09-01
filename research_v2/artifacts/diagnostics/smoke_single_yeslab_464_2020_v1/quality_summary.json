@@ -1,0 +1,35 @@
+{
+  "code_count": 3033,
+  "database_writes": false,
+  "end": "2020-02-29",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "factor_ids": [
+    "yeslab_464"
+  ],
+  "industry_coverage": null,
+  "industry_source": "YesLab.stock_info_table static labels",
+  "locked_test_read": false,
+  "market_source": "Tushare.daily",
+  "market_start": "2019-03-11",
+  "scope": "TUSHARE_SHSZ_REMATERIALIZED_VALIDATION_V1",
+  "similarity_skipped": false,
+  "start": "2020-01-02",
+  "stored_factor_ids": [],
+  "summaries": [
+    {
+      "direction": -1,
+      "directional_day_share": 0.6388888888888888,
+      "end": "2020-02-28",
+      "factor_id": "yeslab_464",
+      "factor_name": "GP_095",
+      "icir": -0.385831953111406,
+      "mean_rank_ic": -0.052735261336799226,
+      "rank_ic_std": 0.13667935201202044,
+      "signed_mean_rank_ic": 0.052735261336799226,
+      "start": "2020-01-02",
+      "valid_day_count": 36
+    }
+  ]
+}

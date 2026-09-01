@@ -506,6 +506,15 @@ REPLAY_DEFINITIONS = {
         lookback_days=60,
         replay_lookback_days=180,
     ),
+    "yeslab_436": ReplayDefinition(
+        factor_id="yeslab_436",
+        factor_name="GP_067",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_067_Calculator",
+        calculator_class="GP_Factor_067_Calculator",
+        lookback_days=60,
+        replay_lookback_days=180,
+    ),
     "yeslab_437": ReplayDefinition(
         factor_id="yeslab_437",
         factor_name="GP_068",
@@ -539,6 +548,15 @@ REPLAY_DEFINITIONS = {
         calculator_class="GP_Factor_074_Calculator",
         lookback_days=30,
     ),
+    "yeslab_446": ReplayDefinition(
+        factor_id="yeslab_446",
+        factor_name="GP_077",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_077_Calculator",
+        calculator_class="GP_Factor_077_Calculator",
+        lookback_days=60,
+        replay_lookback_days=300,
+    ),
     "yeslab_451": ReplayDefinition(
         factor_id="yeslab_451",
         factor_name="GP_082",
@@ -555,6 +573,15 @@ REPLAY_DEFINITIONS = {
         calculator_module="GP_Factor_095_Calculator",
         calculator_class="GP_Factor_095_Calculator",
         lookback_days=60,
+        replay_lookback_days=180,
+    ),
+    "yeslab_468": ReplayDefinition(
+        factor_id="yeslab_468",
+        factor_name="GP_099",
+        store_factor="factor_data10",
+        calculator_module="GP_Factor_099_Calculator",
+        calculator_class="GP_Factor_099_Calculator",
+        lookback_days=120,
         replay_lookback_days=180,
     ),
     "yeslab_395": ReplayDefinition(
