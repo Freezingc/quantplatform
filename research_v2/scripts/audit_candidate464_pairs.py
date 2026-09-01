@@ -54,6 +54,9 @@ DEFAULT_NEW_CANDIDATE_ID = "yeslab_464_tushare_shsz_v1"
 DEFAULT_NEW_CANDIDATE_SOURCE = "yeslab_464"
 NEW_CANDIDATE_ID = DEFAULT_NEW_CANDIDATE_ID
 NEW_CANDIDATE_SOURCE = DEFAULT_NEW_CANDIDATE_SOURCE
+EXTRA_REFERENCE_CANDIDATES: tuple[tuple[str, str], ...] = (
+    ("yeslab_464_tushare_shsz_v1", "yeslab_464"),
+)
 LOCKED_TEST_START = date(2026, 1, 1)
 THRESHOLD_MONITOR = 0.80
 THRESHOLD_REDUNDANT = 0.90
@@ -66,9 +69,14 @@ def _validate_window(start: date, end: date) -> None:
         raise ValueError("comparison must end before the 2026 locked test")
 
 
-def _required_pairs() -> tuple[tuple[str, str], ...]:
+def _reference_candidate_ids() -> list[str]:
     others = [c.candidate_id for c in CANDIDATES] + list(EXTENSION_CANDIDATES)
-    return tuple(sorted((NEW_CANDIDATE_ID, other) for other in others))
+    others.extend(cid for cid, _ in EXTRA_REFERENCE_CANDIDATES)
+    return [candidate_id for candidate_id in others if candidate_id != NEW_CANDIDATE_ID]
+
+
+def _required_pairs() -> tuple[tuple[str, str], ...]:
+    return tuple(sorted((NEW_CANDIDATE_ID, other) for other in _reference_candidate_ids()))
 
 
 def materialize_phase(
@@ -131,6 +139,12 @@ def materialize_phase(
         definition = replay.REPLAY_DEFINITIONS[EXTENSION_SOURCE_FACTOR_IDS[extension_candidate]]
         values = replay._replay_factor(session, definition, phase_start, phase_end, industry_provider=industry_provider)
         frames[extension_candidate] = _restrict_replay_to_keys(values, keys)
+    for extra_candidate_id, extra_source_factor_id in EXTRA_REFERENCE_CANDIDATES:
+        if extra_candidate_id == NEW_CANDIDATE_ID or extra_candidate_id in frames:
+            continue
+        definition = replay.REPLAY_DEFINITIONS[extra_source_factor_id]
+        values = replay._replay_factor(session, definition, phase_start, phase_end, industry_provider=industry_provider)
+        frames[extra_candidate_id] = _restrict_replay_to_keys(values, keys)
     definition = replay.REPLAY_DEFINITIONS[NEW_CANDIDATE_SOURCE]
     values = replay._replay_factor(session, definition, phase_start, phase_end, industry_provider=industry_provider)
     frames[NEW_CANDIDATE_ID] = _restrict_replay_to_keys(values, keys)
@@ -228,7 +242,7 @@ def main(argv: Sequence[str] | None = None) -> dict[str, object]:
         "scope": "NEW_CANDIDATE_PAIR_SIMILARITY_V1",
         "new_candidate_id": NEW_CANDIDATE_ID,
         "source_factor_id": NEW_CANDIDATE_SOURCE,
-        "reference_candidates": [c.candidate_id for c in CANDIDATES] + list(EXTENSION_CANDIDATES),
+        "reference_candidates": _reference_candidate_ids(),
         "market_scope": "SH/SZ",
         "excluded_exchanges": ["BJ"],
         "threshold_monitor": THRESHOLD_MONITOR,

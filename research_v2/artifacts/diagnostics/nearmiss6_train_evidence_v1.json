@@ -1,0 +1,101 @@
+{
+  "scope": "TUSHARE_SHSZ_NEARMISS6_TRAIN_EVIDENCE_V1",
+  "purpose": "Full training-window (2020-01-02/2024-12-31) Tushare SH/SZ rematerialization of six near-miss coverage-limited factors (370/375/389/390/415/213) that scored |ICIR| 0.44-0.49 in the historical 2020 screen, evaluated with the formal nine for nine-edge similarity.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "train_artifact": "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1",
+  "key_finding": "Historical YesLab materialization systematically understated these factors: canonical ICIR exceeds screen ICIR by 0.06-0.20 for all six (e.g. 390: screen -0.450 vs canonical 0.653). Five of six pass the aggregate training double gate after coverage repair.",
+  "candidates": {
+    "yeslab_370": {
+      "factor_name": "GP_001",
+      "signed_ic": 0.0856,
+      "signed_icir": 0.5721,
+      "day_share": 0.723,
+      "annual": "4/5 (2020 fail 0.47)",
+      "nine_edge_max": 0.7396,
+      "nearest_formal": "yeslab_380",
+      "training_decision": "PASS"
+    },
+    "yeslab_375": {
+      "factor_name": "GP_006",
+      "signed_ic": 0.0875,
+      "signed_icir": 0.632,
+      "day_share": 0.751,
+      "annual": "5/5",
+      "nine_edge_max": 0.7091,
+      "nearest_formal": "yeslab_380",
+      "training_decision": "PASS"
+    },
+    "yeslab_389": {
+      "factor_name": "GP_020",
+      "signed_ic": 0.0756,
+      "signed_icir": 0.6042,
+      "day_share": 0.738,
+      "annual": "4/5 (2020 fail 0.46)",
+      "nine_edge_max": 0.557,
+      "nearest_formal": "yeslab_380",
+      "training_decision": "PASS"
+    },
+    "yeslab_390": {
+      "factor_name": "GP_021",
+      "signed_ic": 0.0792,
+      "signed_icir": 0.6534,
+      "day_share": 0.746,
+      "annual": "4/5 (2020 fail 0.45)",
+      "nine_edge_max": 0.6542,
+      "nearest_formal": "yeslab_437",
+      "training_decision": "PASS"
+    },
+    "yeslab_415": {
+      "factor_name": "GP_046",
+      "signed_ic": 0.0693,
+      "signed_icir": 0.5802,
+      "day_share": 0.727,
+      "annual": "3/5",
+      "nine_edge_max": 0.6183,
+      "nearest_formal": "yeslab_380",
+      "training_decision": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5"
+    },
+    "yeslab_213": {
+      "factor_name": "量价齐飞加换手率",
+      "signed_ic": 0.0634,
+      "signed_icir": 0.3545,
+      "day_share": 0.634,
+      "annual": "0/5",
+      "nine_edge_max": 0.6447,
+      "nearest_formal": "yeslab_380",
+      "training_decision": "REJECT_AGGREGATE_ICIR_AND_ANNUAL_0_OF_5"
+    }
+  },
+  "internal_redundancy": {
+    "elevated_pairs": [
+      {
+        "pair": [
+          "yeslab_370",
+          "yeslab_389"
+        ],
+        "train_median_abs_spearman": 0.8972,
+        "note": "near the 0.90 redundancy threshold; joint admission forbidden without separate combination review"
+      }
+    ],
+    "watch_pairs": [
+      {
+        "pair": [
+          "yeslab_370",
+          "yeslab_375"
+        ],
+        "train_median_abs_spearman": 0.7669
+      }
+    ],
+    "others": "all remaining pairs < 0.71"
+  },
+  "next_step": "2025 validation run in progress; passing candidates then get pair audits against the eleven READY candidates.",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "evidence_commit_at_train": "0ce6783c924fb10b54df8fd2238f69a7e4749199"
+}
