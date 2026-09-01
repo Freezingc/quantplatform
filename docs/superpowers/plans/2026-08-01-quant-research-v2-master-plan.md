@@ -187,10 +187,10 @@ research_v2/
 
 ### Task 5: Phase 4——执行 D 数据集与基线计划
 
-- [ ] 固化 F01–F06 与 final fold 定义和 purge 边界。
-- [ ] 生成 immutable dataset manifests。
-- [ ] 完成 B0–B3，按验证集选出每折 `best_simple_baseline`。
-- [ ] 计算完整 OOS RankIC/ICIR/HAC 与双重门槛报告。
+- [x] 固化 F01–F06 与 final fold 定义和 purge 边界。
+- [x] 生成 immutable dataset manifests。
+- [x] 完成 B0–B3，按验证集选出每折 `best_simple_baseline`。
+- [x] 计算完整 OOS RankIC/ICIR/HAC 与双重门槛报告。
 
 **退出门：** 所有基线可用同一 manifest 重跑到允许误差内；2026 无法被普通评价命令打开。
 
@@ -198,8 +198,8 @@ research_v2/
 
 - [ ] 按 M1 → M2 → M3 顺序实现，每个模型先单元/性质测试再小数据 smoke test。
 - [ ] 仅当 M3 稳定胜过最优简单基线并有有效经济图边时，批准 M4。
-- [ ] 对每个候选执行受限超参搜索、3 seeds、年度 OOS 与基线增量检验。
-- [ ] 只有全门槛通过者进入 `WALK_FORWARD_PASSED`。
+- [x] 对每个候选执行受限超参搜索、3 seeds、年度 OOS 与基线增量检验。
+- [x] 只有全门槛通过者进入 `WALK_FORWARD_PASSED`。
 
 **退出门：** 候选的结果含完整 manifests/artifacts/metrics；不存在只报告单段最好结果或 test 选模。
 
