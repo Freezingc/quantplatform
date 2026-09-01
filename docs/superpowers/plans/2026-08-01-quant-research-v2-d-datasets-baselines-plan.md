@@ -470,11 +470,11 @@ qr-v2 report experiment --experiment-id sha256:... --format html
 
 命令拒绝 FINAL test；若 B0–B3 未齐不计算 `best_simple_baseline`。
 
-- [ ] **D8.6 V2Test 端到端基线测试**
+- [x] **D8.6 V2Test 端到端基线测试**
 
 使用合成 7 年数据完成 split → preprocess → select → B0–B3 → validation select → test evaluate → OOS concatenate，断言 test perturbation 不改变选模，重复运行 metrics/model hashes 一致。
 
-- [ ] **D8.7 运行测试并提交**
+- [x] **D8.7 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/evaluation/test_gates.py -q`
 
@@ -542,6 +542,9 @@ selection/storage、B0–B3、gates/walk-forward、50×60 黄金数据与泄漏 
 均有对应测试；全量单元套件 947 通过，`ruff check` 与 `mypy src` 干净）。
 仍开放的条目及原因：
 
-- D8.6：合成 7 年端到端（split→…→OOS 拼接）集成套件缺失，
-  `tests/integration/evaluation/test_walk_forward_baselines.py` 未建立。
-- D8.7/D9.4：对应 `QRV2_INTEGRATION=1` 集成验证缺上述文件，单元侧已全部通过。
+- D9.4：`tests/integration/datasets` 集成套件仍未建立（单元侧已全部通过）。
+  D8.6/D8.7 已于 2026-09-01 补齐：合成 7 年（2015–2019 训练/2020 验证/2021
+  测试）端到端编排测试 `tests/integration/evaluation/test_walk_forward_baselines.py`
+  覆盖 split→B0–B3→validation 选模→延迟 test 评价，断言两次运行选择记录与
+  预测逐帧一致（B3 固定单线程+种子），且 TEST 标签强扰动不改变选模；
+  `QRV2_INTEGRATION=1` 门控运行 3 通过（216s）。
