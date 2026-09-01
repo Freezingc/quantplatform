@@ -1,0 +1,188 @@
+{
+  "scope": "NEW_CANDIDATE_PAIR_SIMILARITY_V1",
+  "new_candidate_id": "yeslab_370_tushare_shsz_v1",
+  "source_factor_id": "yeslab_370",
+  "reference_candidates": [
+    "yeslab_114_tushare_shsz_v2",
+    "yeslab_381_tushare_shsz_v1",
+    "yeslab_405_tushare_shsz_v1",
+    "yeslab_425_tushare_shsz_v2",
+    "yeslab_484_tushare_shsz_v1",
+    "yeslab_206_median_abs_v2",
+    "yeslab_363_tushare_shsz_v1",
+    "yeslab_357_tushare_shsz_v1",
+    "yeslab_96_canonical_replay_v1",
+    "yeslab_443_tushare_shsz_v1",
+    "yeslab_464_tushare_shsz_v1"
+  ],
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "threshold_monitor": 0.8,
+  "threshold_redundant": 0.9,
+  "database_writes": false,
+  "locked_test_read": false,
+  "train_pairs": [
+    {
+      "factor_id_left": "yeslab_114_tushare_shsz_v2",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.5022015452512076,
+      "max_abs_spearman": 0.7730951840367696,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_206_median_abs_v2",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.35698911631322716,
+      "max_abs_spearman": 0.7519041429860349,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_357_tushare_shsz_v1",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.5218775673736038,
+      "max_abs_spearman": 0.7751992480473721,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_363_tushare_shsz_v1",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.3777470286636574,
+      "max_abs_spearman": 0.7341855146423122,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_381_tushare_shsz_v1",
+      "median_abs_spearman": 0.5218386228628966,
+      "max_abs_spearman": 0.7415390180386758,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_405_tushare_shsz_v1",
+      "median_abs_spearman": 0.5900820309181585,
+      "max_abs_spearman": 0.8684916660408938,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_425_tushare_shsz_v2",
+      "median_abs_spearman": 0.5013740946890546,
+      "max_abs_spearman": 0.7320917616650416,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.4661415572999718,
+      "max_abs_spearman": 0.6907885877670534,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_464_tushare_shsz_v1",
+      "median_abs_spearman": 0.5085606891281655,
+      "max_abs_spearman": 0.7789610847279202,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_484_tushare_shsz_v1",
+      "median_abs_spearman": 0.4442946776750667,
+      "max_abs_spearman": 0.8177892210724262,
+      "valid_day_count": 1212
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_96_canonical_replay_v1",
+      "median_abs_spearman": 0.38593907482004847,
+      "max_abs_spearman": 0.7330478101120304,
+      "valid_day_count": 1212
+    }
+  ],
+  "validation_pairs": [
+    {
+      "factor_id_left": "yeslab_114_tushare_shsz_v2",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.5031022861210145,
+      "max_abs_spearman": 0.7093035707615106,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_206_median_abs_v2",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.38702415452055217,
+      "max_abs_spearman": 0.6965178792163311,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_357_tushare_shsz_v1",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.5416331696586312,
+      "max_abs_spearman": 0.7642332114893035,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_363_tushare_shsz_v1",
+      "factor_id_right": "yeslab_370_tushare_shsz_v1",
+      "median_abs_spearman": 0.40778581089506166,
+      "max_abs_spearman": 0.6778663771267788,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_381_tushare_shsz_v1",
+      "median_abs_spearman": 0.5553968278595449,
+      "max_abs_spearman": 0.7575063397086658,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_405_tushare_shsz_v1",
+      "median_abs_spearman": 0.6030680449437535,
+      "max_abs_spearman": 0.8178319325744072,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_425_tushare_shsz_v2",
+      "median_abs_spearman": 0.5463646321549098,
+      "max_abs_spearman": 0.7356949736101766,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_443_tushare_shsz_v1",
+      "median_abs_spearman": 0.4968954031627181,
+      "max_abs_spearman": 0.6525230871527093,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_464_tushare_shsz_v1",
+      "median_abs_spearman": 0.5137865335652638,
+      "max_abs_spearman": 0.7775038885120436,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_484_tushare_shsz_v1",
+      "median_abs_spearman": 0.4655803760937311,
+      "max_abs_spearman": 0.7349044047554812,
+      "valid_day_count": 243
+    },
+    {
+      "factor_id_left": "yeslab_370_tushare_shsz_v1",
+      "factor_id_right": "yeslab_96_canonical_replay_v1",
+      "median_abs_spearman": 0.4076045066900313,
+      "max_abs_spearman": 0.6470652729282723,
+      "valid_day_count": 243
+    }
+  ],
+  "training_maximum_median_abs_spearman": 0.5900820309181585,
+  "validation_maximum_median_abs_spearman": 0.6030680449437535,
+  "elevated_or_redundant_pairs": [],
+  "status": "PASS"
+}

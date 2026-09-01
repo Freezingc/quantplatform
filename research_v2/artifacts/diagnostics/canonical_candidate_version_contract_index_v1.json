@@ -263,6 +263,74 @@
         "yeslab_464_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+    },
+    "yeslab_370_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_370",
+      "factor_name": "GP_001",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version. Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5901 train / 0.6031 validation vs yeslab_405_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_389_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden.",
+      "evidence": [
+        "tushare_yeslab_370_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate370_pair_similarity_v1.json",
+        "yeslab_370_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+    },
+    "yeslab_375_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_375",
+      "factor_name": "GP_006",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version. Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5741 train / 0.5902 validation vs yeslab_206_median_abs_v2, below 0.80; no elevated pair.",
+      "evidence": [
+        "tushare_yeslab_375_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate375_pair_similarity_v1.json",
+        "yeslab_375_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+    },
+    "yeslab_389_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_389",
+      "factor_name": "GP_020",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version. Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.6038 train / 0.6226 validation vs yeslab_357_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_370_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden.",
+      "evidence": [
+        "tushare_yeslab_389_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate389_pair_similarity_v1.json",
+        "yeslab_389_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+    },
+    "yeslab_390_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_390",
+      "factor_name": "GP_021",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version. Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.6019 train / 0.6251 validation vs yeslab_405_tushare_shsz_v1, below 0.80; no elevated pair.",
+      "evidence": [
+        "tushare_yeslab_390_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate390_pair_similarity_v1.json",
+        "yeslab_390_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
     }
   },
   "decision": "NO_AUTOMATIC_ADMISSION"

@@ -390,6 +390,170 @@
         "Has any required pair/combination review been completed for joint admission?"
       ],
       "required_monitoring": "Monthly stability in 2025 validation: signed mean pass 11/12 months, directional share pass 11/12, strict ICIR pass 9/12, all 12 months positive. Nearest-pair watch with yeslab_405_tushare_shsz_v1 (0.78, below threshold); formal nine nearest edge yeslab_396 (0.694 train / 0.703 validation)."
+    },
+    {
+      "candidate_id": "yeslab_370_tushare_shsz_v1",
+      "source_factor_id": "yeslab_370",
+      "factor_name": "GP_001",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version.",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5901 train / 0.6031 validation vs yeslab_405_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_389_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden.",
+      "evidence": [
+        "tushare_yeslab_370_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate370_pair_similarity_v1.json",
+        "yeslab_370_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "required_monitoring": "Mutual exclusivity with yeslab_389_tushare_shsz_v1 (validation redundancy 0.9127); monthly stability 9/12 signed-mean months.",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0856,
+          "signed_icir": 0.5721,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.0794,
+          "signed_icir": 0.5717
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 9,
+        "directional_share_pass_months": 9,
+        "strict_icir_pass_months": 7
+      }
+    },
+    {
+      "candidate_id": "yeslab_375_tushare_shsz_v1",
+      "source_factor_id": "yeslab_375",
+      "factor_name": "GP_006",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version.",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5741 train / 0.5902 validation vs yeslab_206_median_abs_v2, below 0.80; no elevated pair.",
+      "evidence": [
+        "tushare_yeslab_375_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate375_pair_similarity_v1.json",
+        "yeslab_375_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "required_monitoring": "Monthly stability 12/12 signed-mean months; formal nine nearest edge yeslab_380 (0.709 train / 0.745 validation).",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0875,
+          "signed_icir": 0.632,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_ic": 0.0969,
+          "signed_icir": 0.7912
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 11,
+        "strict_icir_pass_months": 9
+      }
+    },
+    {
+      "candidate_id": "yeslab_389_tushare_shsz_v1",
+      "source_factor_id": "yeslab_389",
+      "factor_name": "GP_020",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version.",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.6038 train / 0.6226 validation vs yeslab_357_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_370_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden.",
+      "evidence": [
+        "tushare_yeslab_389_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate389_pair_similarity_v1.json",
+        "yeslab_389_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "required_monitoring": "Mutual exclusivity with yeslab_370_tushare_shsz_v1 (validation redundancy 0.9127); monthly stability 12/12 signed-mean months.",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0756,
+          "signed_icir": 0.6042,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.0809,
+          "signed_icir": 0.699
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 8
+      }
+    },
+    {
+      "candidate_id": "yeslab_390_tushare_shsz_v1",
+      "source_factor_id": "yeslab_390",
+      "factor_name": "GP_021",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
+      "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version.",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.6019 train / 0.6251 validation vs yeslab_405_tushare_shsz_v1, below 0.80; no elevated pair.",
+      "evidence": [
+        "tushare_yeslab_390_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate390_pair_similarity_v1.json",
+        "yeslab_390_validation_2025_monthly_v1/monthly_stability.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "required_monitoring": "Monthly stability 12/12 signed-mean months; formal nine nearest edge yeslab_437 (0.654 train / 0.680 validation).",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0792,
+          "signed_icir": 0.6534,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.089,
+          "signed_icir": 0.8335
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 9
+      }
     }
   ]
 }

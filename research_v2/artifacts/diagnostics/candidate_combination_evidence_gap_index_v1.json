@@ -106,5 +106,47 @@
     "training_maximum_median_abs_spearman": 0.7792276095200362,
     "validation_maximum_median_abs_spearman": 0.7830484104657394,
     "status": "PASS_NO_ELEVATED_PAIR"
+  },
+  "nearmiss6_combination_audit": {
+    "artifacts": [
+      "candidate370_pair_similarity_v1.json",
+      "candidate375_pair_similarity_v1.json",
+      "candidate389_pair_similarity_v1.json",
+      "candidate390_pair_similarity_v1.json"
+    ],
+    "reference_pool": "eleven READY candidates (base six + extension four + yeslab_464_tushare_shsz_v1)",
+    "edges_per_candidate": "11 training and 11 validation complete edges (all 1212/243 days)",
+    "results": {
+      "yeslab_370": {
+        "train_max": 0.5900820309181585,
+        "validation_max": 0.6030680449437535,
+        "status": "PASS_NO_ELEVATED_PAIR"
+      },
+      "yeslab_375": {
+        "train_max": 0.5740718081534149,
+        "validation_max": 0.5902443782325703,
+        "status": "PASS_NO_ELEVATED_PAIR"
+      },
+      "yeslab_389": {
+        "train_max": 0.6037693409509926,
+        "validation_max": 0.6225565337305508,
+        "status": "PASS_NO_ELEVATED_PAIR"
+      },
+      "yeslab_390": {
+        "train_max": 0.6018961657564484,
+        "validation_max": 0.6251076633752067,
+        "status": "PASS_NO_ELEVATED_PAIR"
+      }
+    },
+    "internal_redundancy": {
+      "pair": [
+        "yeslab_370_tushare_shsz_v1",
+        "yeslab_389_tushare_shsz_v1"
+      ],
+      "train_median_abs_spearman": 0.8972,
+      "validation_median_abs_spearman": 0.9127,
+      "status": "REDUNDANT_NO_JOINT_ADMISSION"
+    },
+    "note": "The 370/389 redundancy was observed in the near-miss training batch (0.8972) and confirmed in validation (0.9127)."
   }
 }

@@ -1,0 +1,69 @@
+{
+  "scope": "TUSHARE_SHSZ_NEARMISS6_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_370_tushare_shsz_v1",
+  "source_factor_id": "yeslab_370",
+  "factor_name": "GP_001",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "signed_mean_rank_ic": 0.08560251535066968,
+    "signed_icir": 0.5720678397974055,
+    "directional_day_share": 0.7227722772277227,
+    "valid_day_count": 1212,
+    "rank_ic_gate": true,
+    "icir_gate": true,
+    "day_share_gate": true,
+    "mean_rank_ic": -0.08560251535066968,
+    "icir": -0.5720678397974055,
+    "strict_annual_pass_years": "4/5"
+  },
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "signed_mean_rank_ic": 0.07941718261511091,
+    "signed_icir": 0.5716580156529784,
+    "directional_day_share": 0.7242798353909465,
+    "valid_day_count": 243,
+    "rank_ic_gate": true,
+    "icir_gate": true,
+    "day_share_gate": true,
+    "mean_rank_ic": -0.07941718261511091,
+    "icir": -0.5716580156529784
+  },
+  "similarity_to_formal_nine_train": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.7395808048,
+    "nearest_factor_id": "yeslab_380",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "similarity_to_formal_nine_validation": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.7316089691,
+    "nearest_factor_id": "yeslab_380",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED",
+  "candidate_pair_similarity": {
+    "reference_pool": "eleven READY candidates",
+    "training_maximum_median_abs_spearman": 0.5900820309181585,
+    "validation_maximum_median_abs_spearman": 0.6030680449437535,
+    "status": "PASS"
+  },
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+}

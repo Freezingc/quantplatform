@@ -6223,5 +6223,79 @@
     "database_writes": false,
     "locked_test_read": false,
     "model_training_started": false
+  },
+  "nearmiss6_canonical_followup": {
+    "scope": "NEARMISS6_TUSHARE_CANONICAL_FOLLOWUP",
+    "factor_ids": [
+      "yeslab_370",
+      "yeslab_375",
+      "yeslab_389",
+      "yeslab_390",
+      "yeslab_415",
+      "yeslab_213"
+    ],
+    "motivation": "Six factors scored |ICIR| 0.44-0.49 (below the 0.50 gate) in the historical 2020 screen with warmup coverage gaps; canonical Tushare rematerialization tests whether coverage repair changes the verdict.",
+    "key_finding": "Historical YesLab materialization systematically understated all six by 0.06-0.20 ICIR; five pass the aggregate training double gate after repair.",
+    "results": {
+      "yeslab_370": {
+        "factor_name": "GP_001",
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+        "train_signed_icir": 0.5721,
+        "annual": "4/5",
+        "validation_signed_icir": 0.5717,
+        "pair_max_vs_ready_pool": "0.590/0.603",
+        "constraint": "redundant with yeslab_389 (val 0.9127)"
+      },
+      "yeslab_375": {
+        "factor_name": "GP_006",
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+        "train_signed_icir": 0.632,
+        "annual": "5/5",
+        "validation_signed_icir": 0.7912,
+        "pair_max_vs_ready_pool": "0.574/0.590"
+      },
+      "yeslab_389": {
+        "factor_name": "GP_020",
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+        "train_signed_icir": 0.6042,
+        "annual": "4/5",
+        "validation_signed_icir": 0.699,
+        "pair_max_vs_ready_pool": "0.604/0.623",
+        "constraint": "redundant with yeslab_370 (val 0.9127)"
+      },
+      "yeslab_390": {
+        "factor_name": "GP_021",
+        "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+        "train_signed_icir": 0.6534,
+        "annual": "4/5",
+        "validation_signed_icir": 0.8335,
+        "pair_max_vs_ready_pool": "0.602/0.625"
+      },
+      "yeslab_415": {
+        "factor_name": "GP_046",
+        "status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+        "train_signed_icir": 0.5802,
+        "validation_signed_icir": 0.7874
+      },
+      "yeslab_213": {
+        "factor_name": "量价齐飞加换手率",
+        "status": "REJECT_AGGREGATE_ICIR_AND_ANNUAL_0_OF_5",
+        "train_signed_icir": 0.3545,
+        "validation_signed_icir": 0.268
+      }
+    },
+    "artifacts": [
+      "nearmiss6_train_evidence_v1.json",
+      "tushare_yeslab_370_nearmiss6_review_v1.json",
+      "tushare_yeslab_375_nearmiss6_review_v1.json",
+      "tushare_yeslab_389_nearmiss6_review_v1.json",
+      "tushare_yeslab_390_nearmiss6_review_v1.json",
+      "tushare_yeslab_415_nearmiss6_review_v1.json",
+      "tushare_yeslab_213_nearmiss6_review_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
   }
 }
