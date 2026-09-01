@@ -460,11 +460,11 @@ git commit -m "feat(v2): orchestrate audited PIT materialization"
 - Create: `research_v2/tests/golden/data/README.md`
 - Create: `research_v2/tests/golden/test_market_universe_labels.py`
 
-- [ ] **B8.1 选取覆盖边界的固定样本**
+- [x] **B8.1 选取覆盖边界的固定样本**
 
 从历史只读源抽取 50 只股票、连续 60 个交易日，必须包含主板/科创板/创业板/北交所、ST 变更、停牌、上市临界、流动性并列、除权和缺失开盘。parquet 中删除无关列并记录 source watermark/hash，不包含凭据。
 
-- [ ] **B8.2 独立生成预期值**
+- [x] **B8.2 独立生成预期值**
 
 预期 universe 和 labels 用简短审计脚本/人工 spreadsheet 独立计算，不调用生产 builder；在 README 写出 10 个具体行级算例及公式，至少人工复核 T+1/T+6 的 5 个信号日。
 
@@ -472,13 +472,13 @@ git commit -m "feat(v2): orchestrate audited PIT materialization"
 
 数值使用明确 tolerance；成员、reason、entry/exit date 必须精确相等；排序后对 canonical rows 比较 SHA-256。
 
-- [ ] **B8.4 运行完整 B 计划验证**
+- [x] **B8.4 运行完整 B 计划验证**
 
 Run: `cd research_v2 && pytest tests/unit/sources tests/unit/pit tests/unit/universe tests/unit/labels tests/unit/quality tests/property/pit tests/property/universe tests/leakage/test_future_market_perturbation.py tests/golden/test_market_universe_labels.py -q`
 
 Expected: 全部退出码 0。
 
-- [ ] **B8.5 提交并请求审查**
+- [x] **B8.5 提交并请求审查**
 
 ```bash
 git add research_v2/tests/golden
@@ -511,15 +511,20 @@ materialize/backfill 均有对应测试；全量单元套件 947 通过，`ruff 
   记录成熟、未成熟退场价保持失效不外泄。内存 Test-DB harness 提升至
   `tests/integration/conftest.py` 共享；`tests/integration/db/
   test_publish_test_db.py` 继续覆盖发布层不变量。
-- B8.1–B8.5：真实历史 50×60 黄金样本未建立（需历史只读源与 watermark
-  provenance）。2026-09-01 已先建立合成边界黄金夹具与等价性测试：
-  `tests/golden/data/pit_label_{calendar,members,market}.csv` +
-  `expected_pit_labels.json`（T+1..T+6 标签全边界：缺入场/退场价、非正价格、
-  日历覆盖不足、零收益；预期值按定义手工独立计算）与
-  `tests/golden/data/pit_market_raw.csv` + `expected_pit_market_clean.json`
-  （清洗/去重/复权精确值），测试为 `tests/golden/test_pit_labels.py`、
-  `tests/golden/test_pit_market.py`（972 单元+黄金测试全绿）。待补：真实
-  50×60 样本、README 行级算例、canonical SHA-256 比较与人工复核记录。
+- B8.1–B8.5 已于 2026-09-01 全部闭合。真实历史样本：从本机
+  `dfs://YesLab/stock_factor_daily`（18,189,397 行，1990–2026-08）只读抽取
+  50 证券 × 60 交易日（2025-09-01…2025-12-01），覆盖主板沪深、创业板、科创板、
+  北交所、ST 变更（000711.SZ 窗口内摘帽）、停牌缺口、新股上市（603370.SH /
+  920100.BJ）、窗口内除权（5 只）与 BJ/SSE 日历差异；确定性抽取脚本
+  `scripts/extract_pit_golden_sample.py`，provenance 见
+  `yeslab_market_50x60_manifest.json`（窗口日历、边界标签、内容 SHA-256）。
+  独立期望 `scripts/compute_pit_golden_expected.py` 不共享生产代码（滚动特征
+  以 pandas rolling 均值为文档化数值原语），`tests/golden/test_yeslab_market_50x60.py`
+  对清洗/历史特征与 2835 条成熟标签做 canonical rows SHA-256 等价（修复了
+  两处实现差异：停牌窗口语义与停牌日非成员语义）。合成边界夹具
+  （`pit_label_*` / `pit_market_*`）与 README 行级算例 10 个见
+  `tests/golden/data/README.md`。B8.4 验证：996 单元+黄金测试全绿、
+  `tests/integration/pit` 门控 7 通过、ruff/mypy 干净。
 - B8.3 已于 2026-09-01 闭合（机制层）：两个 PIT 黄金夹具均具备逻辑等价
   （显式容差+成员/原因/入场退出日精确匹配）与排序后 canonical rows
   SHA-256 锚（`expected_pit_labels.json` / `expected_pit_market_clean.json`
