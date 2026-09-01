@@ -75,3 +75,67 @@ def test_temporal_models_accept_a_six_factor_frozen_set() -> None:
 
     assert gru.artifact_signature().raw_factor_count == 6
     assert tcn.artifact_signature().raw_factor_count == 6
+
+
+def _three_stock_batch() -> TemporalFeatureBatch:
+    features = torch.randn((1, 4, 20, 6), generator=torch.Generator().manual_seed(11))
+    return TemporalFeatureBatch(
+        signal_dates=(date(2025, 1, 30),),
+        ts_codes=(("a", "b", "c", ""),),
+        features=features,
+        feature_missing=torch.zeros_like(features, dtype=torch.bool),
+        stock_mask=torch.tensor([[True, True, True, False]]),
+        history_mask=torch.tensor(
+            [[[True] * 20, [True] * 20, [True] * 20, [False] * 20]]
+        ),
+    )
+
+
+def test_temporal_models_are_stock_permutation_equivariant() -> None:
+    gru = TemporalGRU(TemporalGRUConfig(raw_factor_count=6, hidden_dim=8, dropout=0.0)).eval()
+    tcn = TemporalTCN(TemporalTCNConfig(raw_factor_count=6, hidden_dim=8, dropout=0.0)).eval()
+    batch = _three_stock_batch()
+    permutation = [2, 0, 1]
+    permuted = TemporalFeatureBatch(
+        signal_dates=batch.signal_dates,
+        ts_codes=(tuple(batch.ts_codes[0][index] for index in permutation + [3]),),
+        features=batch.features[:, permutation + [3]],
+        feature_missing=batch.feature_missing[:, permutation + [3]],
+        stock_mask=batch.stock_mask[:, permutation + [3]],
+        history_mask=batch.history_mask[:, permutation + [3]],
+    )
+
+    for model in (gru, tcn):
+        original = model(batch)
+        reordered = model(permuted)
+        assert torch.allclose(reordered[0, :3], original[0, permutation], atol=1e-6)
+        assert reordered[0, 3] == 0.0
+
+
+def test_temporal_models_react_to_time_order_but_not_masked_history() -> None:
+    gru = TemporalGRU(TemporalGRUConfig(raw_factor_count=6, hidden_dim=8, dropout=0.0)).eval()
+    tcn = TemporalTCN(TemporalTCNConfig(raw_factor_count=6, hidden_dim=8, dropout=0.0)).eval()
+    batch = _three_stock_batch()
+    reversed_batch = TemporalFeatureBatch(
+        signal_dates=batch.signal_dates,
+        ts_codes=batch.ts_codes,
+        features=batch.features.flip(dims=(2,)),
+        feature_missing=batch.feature_missing,
+        stock_mask=batch.stock_mask,
+        history_mask=batch.history_mask,
+    )
+    masked_history_batch = TemporalFeatureBatch(
+        signal_dates=batch.signal_dates,
+        ts_codes=batch.ts_codes,
+        features=batch.features.clone(),
+        feature_missing=batch.feature_missing,
+        stock_mask=batch.stock_mask,
+        history_mask=batch.history_mask,
+    )
+    masked_history_batch.features[0, 3] = 123.0
+
+    for model in (gru, tcn):
+        original = model(batch)
+        reversed_scores = model(reversed_batch)
+        assert not torch.allclose(original, reversed_scores, atol=1e-4)
+        assert torch.equal(model(masked_history_batch), original)

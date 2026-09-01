@@ -296,7 +296,7 @@ endpoint T 的序列严格为交易日 `[T-19, ..., T]`；扰动 T+1 及以后�
 
 family `{GRU, TCN}`，hidden `{64,128}`，dropout `{0.0,0.1,0.2}`，lr `{0.0003,0.001}`，loss weights 三组；按稳定 hash 取最多 30 trials。validation 决定 family/config，test 不参与。
 
-- [ ] **E5.5 写 temporal permutation 测试**
+- [x] **E5.5 写 temporal permutation 测试**
 
 交换股票顺序后输出按同样交换；交换时间顺序必须改变输出；改变 masked history 不影响输出；GRU/TCN 都能在小因果 fixture 过拟合。
 
@@ -572,15 +572,16 @@ git commit -m "feat(v2): govern model evidence and transitions"
 
 已按现有代码与测试逐项核对并勾选完成步骤（测试文件按演进后的实际命名存在，如
 `test_pre_registered_search.py`、`test_cross_sectional_losses.py`、
-`test_frozen_oos_evaluator.py` 等）。全量单元套件 947 通过，`ruff check` 与
-`mypy src` 干净。仍开放的条目及原因：
+`test_frozen_oos_evaluator.py` 等）。全量单元套件通过（949），`ruff check` 与
+`mypy src` 干净。E5.5 temporal 置换等变测试已于 2026-09-01 补齐
+（`tests/unit/models/test_temporal_gru.py`）。仍开放的条目及原因：
 
-- E4.4/E4.5、E5.5/E5.6、E6.5/E6.6：缺小样本过拟合、temporal 股票置换等变、
-  CUDA 显存/极端横截面资源测试（现有模型测试覆盖 shape、mask、因果、确定性
-  与置换等变（M3），未含上述深度项）。
+- E4.4/E4.5、E5.6、E6.5/E6.6：缺小样本过拟合与 CUDA 显存/极端横截面资源测试
+  （现有模型测试覆盖 shape、mask、因果、确定性与 M2/M3 置换等变）。
 - E8.5/E8.6：缺合成数据端到端编排测试；集成测试受 `QRV2_INTEGRATION=1` 门控。
 - E9.1–E9.7：M4 条件门未获授权，按设计保持零代码/零迁移副作用。
-- 完成标准第 1 条：M2 尚无显式置换等变测试，随 E5.5 一并开放。
+- 完成标准第 1 条：M2 置换等变测试已补齐；M1 逐股 pointwise 结构上等变但尚无
+  显式置换测试，随 E4.4/E4.5 深度项一并开放。
 - 另注：`configs/models/temporal.yaml` 的 `minimum_valid_history_length: 15`
   尚无读取方；生产用 20 日时序批次装配路径（训练/推理侧）尚未实现，M2 启用前
   需补齐（与 CLI 仅放开 M1 的注册顺序一致）。
