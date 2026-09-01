@@ -438,11 +438,11 @@ family 必须按 registry 顺序启用；命令拒绝 FINAL test 和缺失 best-
 
 模型只有 G1–G6 全 PASS 才获得 `WALK_FORWARD_PASSED` 候选资格；同时报告相对 B0/B1/B2/B3 各自增量、参数量、训练时长和最差 seed。任何缺 fold、缺 seed、score collapse、年度集中均失败。
 
-- [ ] **E8.5 端到端小规模测试**
+- [x] **E8.5 端到端小规模测试**
 
 用合成 F01/F02 小数据依次训练 M1/M2/M3 smoke config，验证 artifact → prediction → matched baseline → gates；测试只验证编排，不将合成业绩作为模型通过证据。
 
-- [ ] **E8.6 运行测试并提交**
+- [x] **E8.6 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/evaluation/test_model_evaluator.py -q`
 
@@ -578,9 +578,13 @@ git commit -m "feat(v2): govern model evidence and transitions"
 测试（`tests/unit/models/test_residual_mlp.py`）、E5.6 temporal GRU 小样本
 过拟合测试、E6.5 极端横截面资源测试（CPU 等价 N=256 + CUDA N=6000 峰值
 显存 <20 GiB，已在 4090 实测）与日期隔离测试；完成标准第 1 条随之闭合。
-仍开放的条目及原因：
+2026-09-01 再补 E8.5/E8.6：`tests/integration/models/test_model_walk_forward.py`
+对 M1（Residual MLP）、M2（Temporal GRU）、M3（Set Attention）smoke 配置执行
+合成数据端到端链路——3 seeds 训练→不可变 checkpoint→三种子模型 bundle
+（覆盖写被拒）→`load_inference_artifact` 白名单重建→冻结 TEST 评价→
+G1–G6 门控报告，断言门控键集/有效天数/基线增量有限与重复评价确定性；
+`QRV2_INTEGRATION=1` 门控运行 3 通过（18s）。仍开放的条目及原因：
 
-- E8.5/E8.6：缺合成数据端到端编排测试；集成测试受 `QRV2_INTEGRATION=1` 门控。
 - E9.1–E9.7：M4 条件门未获授权，按设计保持零代码/零迁移副作用。
 - 另注：`configs/models/temporal.yaml` 的 `minimum_valid_history_length: 15`
   尚无读取方；生产用 20 日时序批次装配路径（训练/推理侧）尚未实现，M2 启用前
