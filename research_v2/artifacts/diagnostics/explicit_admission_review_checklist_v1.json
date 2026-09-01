@@ -30,7 +30,8 @@
       "evidence": [
         "tushare_alpha405_canonical_candidate_review_v1.json",
         "tushare_alpha405_canonical_train_similarity_v1/similarity_summary.json",
-        "tushare_alpha405_canonical_validation_v1/similarity_summary.json"
+        "tushare_alpha405_canonical_validation_v1/similarity_summary.json",
+        "yeslab_405_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -49,7 +50,8 @@
       "evidence": [
         "tushare_alpha425_canonical_candidate_review_v2.json",
         "tushare_alpha425_canonical_train_similarity_v1/similarity_summary.json",
-        "tushare_alpha425_canonical_validation_v1/similarity_summary.json"
+        "tushare_alpha425_canonical_validation_v1/similarity_summary.json",
+        "yeslab_425_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -69,7 +71,8 @@
         "tushare_alpha381_canonical_candidate_review_v1.json",
         "tushare_alpha381_canonical_train_similarity_v1/similarity_summary.json",
         "tushare_alpha381_canonical_validation_v1/similarity_summary.json",
-        "tushare_shsz_alpha381_admission_preflight_v1.json"
+        "tushare_shsz_alpha381_admission_preflight_v1.json",
+        "yeslab_381_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -88,7 +91,8 @@
       "evidence": [
         "tushare_alpha114_canonical_candidate_review_v2.json",
         "alpha114_tushare_formal9_full_similarity_audit_v1.json",
-        "tushare_shsz_alpha114_admission_preflight_v1.json"
+        "tushare_shsz_alpha114_admission_preflight_v1.json",
+        "yeslab_114_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -106,7 +110,8 @@
       "pair_or_combination_note": "Cannot be jointly admitted with yeslab_114_tushare_shsz_v2; historical 484 metrics are not candidate evidence.",
       "evidence": [
         "tushare_alpha484_canonical_v1/admission_review.json",
-        "../checkpoints/alpha484_canonical_v1/integrity.json"
+        "../checkpoints/alpha484_canonical_v1/integrity.json",
+        "yeslab_484_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -126,7 +131,8 @@
         "alpha206_median_abs_candidate_review_v2.json",
         "alpha206_median_abs_formal9_similarity_2020_2024_v1.json",
         "alpha206_median_abs_formal9_similarity_2025_v1.json",
-        "alpha206_median_abs_robustness_v1.json"
+        "alpha206_median_abs_robustness_v1.json",
+        "yeslab_206_median_abs_v2_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",

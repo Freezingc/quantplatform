@@ -56,6 +56,10 @@ NEW_CANDIDATE_ID = DEFAULT_NEW_CANDIDATE_ID
 NEW_CANDIDATE_SOURCE = DEFAULT_NEW_CANDIDATE_SOURCE
 EXTRA_REFERENCE_CANDIDATES: tuple[tuple[str, str], ...] = (
     ("yeslab_464_tushare_shsz_v1", "yeslab_464"),
+    ("yeslab_370_tushare_shsz_v1", "yeslab_370"),
+    ("yeslab_375_tushare_shsz_v1", "yeslab_375"),
+    ("yeslab_389_tushare_shsz_v1", "yeslab_389"),
+    ("yeslab_390_tushare_shsz_v1", "yeslab_390"),
 )
 LOCKED_TEST_START = date(2026, 1, 1)
 THRESHOLD_MONITOR = 0.80
