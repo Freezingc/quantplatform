@@ -1,0 +1,44 @@
+{
+  "scope": "TUSHARE_SHSZ_GP_COVERAGE_REPAIR4_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_436_tushare_shsz_v1",
+  "source_factor_id": "yeslab_436",
+  "factor_name": "GP_067",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "signed_mean_rank_ic": 0.07104984936112405,
+    "signed_icir": 0.4090892923414197,
+    "directional_day_share": 0.6600660066006601,
+    "valid_day_count": 1212,
+    "rank_ic_gate": true,
+    "icir_gate": false,
+    "day_share_gate": true,
+    "mean_rank_ic": -0.07104984936112405,
+    "icir": -0.4090892923414197
+  },
+  "similarity_to_formal_nine_train": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.802592116,
+    "nearest_factor_id": "yeslab_380",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "structural_degeneracy": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED",
+  "decision": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+  "decision_reason": "Factor is structurally turnover_rate times a per-date cross-sectional scalar; see gp_turnover_scalar_degeneracy_diagnostic_v1.json. Admission excluded regardless of gate outcomes."
+}

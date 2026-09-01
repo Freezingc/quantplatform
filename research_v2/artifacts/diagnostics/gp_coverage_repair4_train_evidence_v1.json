@@ -1,0 +1,115 @@
+{
+  "scope": "TUSHARE_SHSZ_GP_COVERAGE_REPAIR4_TRAIN_EVIDENCE_V1",
+  "purpose": "Full training-window (2020-01-02/2024-12-31) Tushare SH/SZ rematerialization evidence for the four GP factors that passed the 2020 predictive screen but failed it on coverage (436/446/464/468), evaluated together with the formal nine for nine-edge similarity.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "training_window": "2020-01-02/2024-12-31",
+  "validation_window": "2025-01-02/2025-12-31 (pending)",
+  "train_artifact": "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1",
+  "consistency_check": {
+    "description": "Formal-nine rematerialized training RankIC matches the alpha443 canonical batch within 5.5e-9.",
+    "status": "PASS"
+  },
+  "candidates": {
+    "yeslab_464": {
+      "factor_name": "GP_095",
+      "direction": -1,
+      "training": {
+        "mean_rank_ic": -0.06321103622758437,
+        "signed_mean_rank_ic": 0.06321103622758437,
+        "icir": -0.6022100569478165,
+        "signed_icir": 0.6022100569478165,
+        "directional_day_share": 0.7442244224422442,
+        "valid_day_count": 1212
+      },
+      "strict_annual_gate": "5/5",
+      "annual_detail": {
+        "2020": [
+          0.051,
+          0.5816,
+          0.708
+        ],
+        "2021": [
+          0.0497,
+          0.5764,
+          0.724
+        ],
+        "2022": [
+          0.0761,
+          0.6965,
+          0.793
+        ],
+        "2023": [
+          0.0582,
+          0.5619,
+          0.694
+        ],
+        "2024": [
+          0.0812,
+          0.6289,
+          0.802
+        ]
+      },
+      "nine_edge_train": {
+        "edges": "9/9",
+        "maximum_median_abs_spearman": 0.6937,
+        "nearest_factor_id": "yeslab_396",
+        "threshold": 0.9,
+        "status": "PASS"
+      },
+      "training_decision": "PASS_DOUBLE_GATE_AND_ANNUAL_5_OF_5"
+    },
+    "yeslab_436": {
+      "factor_name": "GP_067",
+      "direction": -1,
+      "training": {
+        "signed_mean_rank_ic": 0.071,
+        "signed_icir": 0.4091,
+        "directional_day_share": 0.66
+      },
+      "strict_annual_gate": "1/5",
+      "decision": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+      "note": "Identical daily RankIC series with 446/468; aggregate ICIR below 0.50; annual 1/5."
+    },
+    "yeslab_446": {
+      "factor_name": "GP_077",
+      "direction": -1,
+      "training": {
+        "signed_mean_rank_ic": 0.071,
+        "signed_icir": 0.4088,
+        "directional_day_share": 0.662
+      },
+      "strict_annual_gate": "not evaluated (rejected on structure)",
+      "decision": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR"
+    },
+    "yeslab_468": {
+      "factor_name": "GP_099",
+      "direction": -1,
+      "training": {
+        "signed_mean_rank_ic": 0.071,
+        "signed_icir": 0.4088,
+        "directional_day_share": 0.662
+      },
+      "strict_annual_gate": "not evaluated (rejected on structure)",
+      "decision": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR"
+    }
+  },
+  "degeneracy_empirical_proof": {
+    "triple_mutual_median_abs_spearman": {
+      "yeslab_436 vs yeslab_446": 1.0,
+      "yeslab_436 vs yeslab_468": 1.0,
+      "yeslab_446 vs yeslab_468": 1.0
+    },
+    "identical_daily_rank_ic_series": "all three factors produce the same daily RankIC values over training and smoke windows",
+    "reference": "gp_turnover_scalar_degeneracy_diagnostic_v1.json"
+  },
+  "next_step": "2025 validation-window evaluation running for the same 13-factor batch; 464 proceeds to candidate review if validation gates pass.",
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "evidence_commit_at_train": "95a33907efa6c436e7b70fe12f7bcdd7a926b154"
+}

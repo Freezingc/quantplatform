@@ -1,0 +1,64 @@
+{
+  "scope": "TUSHARE_SHSZ_GP_COVERAGE_REPAIR4_CANDIDATE_REVIEW_V1",
+  "candidate_id": "yeslab_464_tushare_shsz_v1",
+  "source_factor_id": "yeslab_464",
+  "factor_name": "GP_095",
+  "market_scope": [
+    "SH",
+    "SZ"
+  ],
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "Tushare.daily",
+  "label": "forward_open_5d:v1",
+  "direction": -1,
+  "training_2020_2024": {
+    "start": "2020-01-02",
+    "end": "2024-12-31",
+    "signed_mean_rank_ic": 0.06321103622758437,
+    "signed_icir": 0.6022100569478165,
+    "directional_day_share": 0.7442244224422442,
+    "valid_day_count": 1212,
+    "rank_ic_gate": true,
+    "icir_gate": true,
+    "day_share_gate": true,
+    "mean_rank_ic": -0.06321103622758437,
+    "icir": -0.6022100569478165
+  },
+  "similarity_to_formal_nine_train": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.6937093953,
+    "nearest_factor_id": "yeslab_396",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "structural_degeneracy": null,
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "publication_status": "NOT_PUBLISHED",
+  "training_gate_pass": true,
+  "validation_2025": {
+    "start": "2025-01-02",
+    "end": "2025-12-31",
+    "signed_mean_rank_ic": 0.0797594313937492,
+    "signed_icir": 0.8403621923959331,
+    "directional_day_share": 0.7818930041152263,
+    "valid_day_count": 243,
+    "rank_ic_gate": true,
+    "icir_gate": true,
+    "day_share_gate": true,
+    "mean_rank_ic": -0.0797594313937492,
+    "icir": -0.8403621923959331
+  },
+  "similarity_to_formal_nine_validation": {
+    "edges": "9/9",
+    "maximum_median_abs_spearman": 0.7029374394,
+    "nearest_factor_id": "yeslab_396",
+    "threshold": 0.9,
+    "status": "PASS"
+  },
+  "decision": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+}
