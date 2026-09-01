@@ -428,15 +428,15 @@ qr-v2 dq run --scope market_daily_clean --data-version sha256:DATA_VERSION
 
 源水位新增日期时只处理新增/变化分区；market 改变日期 D 时，滚动字段重算 D 至后 19 个交易日，标签重算前 6 至当日相关 signal dates，universe 重算 D 至后 19 日。每个重算集合写审计，不全库盲扫。
 
-- [ ] **B7.4 V2Test 集成测试**
+- [x] **B7.4 V2Test 集成测试**
 
 写入 50×60 source fixture，执行 market → universe → labels → 重跑：首次发布有行、第二次相同 data version 幂等；改变一条源行只影响计算图定义的日期；在 stage 注入重复键时正式表仍保持旧版本。
 
-- [ ] **B7.5 locked year 集成测试**
+- [x] **B7.5 locked year 集成测试**
 
 普通身份请求 2026 labels 必须在查询/计算前失败；2025-12 信号若 exit 落在 2026，按照 `signal_date` 仍属于 2025 历史标签但必须等 exit 成熟，并清晰记录跨年。专用 unlock capability 在本计划中不存在。
 
-- [ ] **B7.6 运行验证并提交**
+- [x] **B7.6 运行验证并提交**
 
 Run: `cd research_v2 && pytest tests/unit/quality -q`
 
@@ -503,11 +503,14 @@ tradability/universe、T+1..T+6 标签与 2026 locked guard、Tushare 对账、
 materialize/backfill 均有对应测试；全量单元套件 947 通过，`ruff check` 与
 `mypy src` 干净）。仍开放的条目及原因：
 
-- B7.4/B7.5/B7.6：materialize CLI 级 V2Test 与 locked-year 专用集成套件未建立。
-  2026-09-01 已先建立 DB 层 V2Test 集成证据（`tests/integration/db/
-  test_publish_test_db.py`，基于内存 Test-DB harness）：发布追加行并最后推进
-  可见性指针、当前版本重发幂等、BLOCKER 级 DQ 拒绝且零可见行、多分片共享单
-  版本单指针；单元层仍覆盖 locked guard 与 DQ 决策。
+- B7.4/B7.5/B7.6 已于 2026-09-01 闭合：`tests/integration/pit/test_market_publish.py`
+  用 50×60 合成源走 market 物化→发布全链路（首发有行、相同 data_version 重跑
+  幂等、单行变更仅影响滚动重算窗口且分区指针按窗口推进、stage 注入重复键时
+  正式表保持旧版本可见）；`tests/integration/pit/test_label_lock.py` 覆盖普通
+  身份请求 2026 标签在计算前失败、2025-12 信号跨年退场仍属历史标签并以退出日
+  记录成熟、未成熟退场价保持失效不外泄。内存 Test-DB harness 提升至
+  `tests/integration/conftest.py` 共享；`tests/integration/db/
+  test_publish_test_db.py` 继续覆盖发布层不变量。
 - B8.1–B8.5：真实历史 50×60 黄金样本未建立（需历史只读源与 watermark
   provenance）。2026-09-01 已先建立合成边界黄金夹具与等价性测试：
   `tests/golden/data/pit_label_{calendar,members,market}.csv` +
