@@ -71,7 +71,7 @@ research_v2/tests/integration/db/test_atomic_publish.py
 - Create: `research_v2/tests/conftest.py`
 - Create: `research_v2/tests/unit/test_package.py`
 
-- [ ] **A1.1 写失败的包导入测试**
+- [x] **A1.1 写失败的包导入测试**
 
 ```python
 def test_package_exposes_version() -> None:
@@ -81,29 +81,29 @@ def test_package_exposes_version() -> None:
     assert research_v2.__version__
 ```
 
-- [ ] **A1.2 验证测试先失败**
+- [x] **A1.2 验证测试先失败**
 
 Run: `cd research_v2 && /data/zhangyudong/.conda/envs/quantyd/bin/python -m pytest tests/unit/test_package.py -q`
 
 Expected: `ModuleNotFoundError: No module named 'research_v2'` 或缺少 `__version__`。
 
-- [ ] **A1.3 定义项目元数据和依赖边界**
+- [x] **A1.3 定义项目元数据和依赖边界**
 
 `pyproject.toml` 固定 `requires-python = ">=3.11,<3.12"`，运行依赖包括 `dolphindb`、`pandas`、`numpy`、`pyarrow`、`pydantic`、`PyYAML`、`typer`、`scikit-learn`、`scipy`、`statsmodels`、`lightgbm`、`torch`；dev extra 包括 `pytest`、`pytest-cov`、`hypothesis`、`ruff`、`mypy` 与 pandas stubs。不要把凭据或本机路径写入配置。
 
-- [ ] **A1.4 实现最小包并安装开发依赖**
+- [x] **A1.4 实现最小包并安装开发依赖**
 
 Run: `cd research_v2 && /data/zhangyudong/.conda/envs/quantyd/bin/python -m pip install -e '.[dev]'`
 
 Expected: 安装成功；此命令只能在获得实施授权后执行。
 
-- [ ] **A1.5 运行静态与单元测试**
+- [x] **A1.5 运行静态与单元测试**
 
 Run: `cd research_v2 && ruff check src tests && mypy src && pytest tests/unit/test_package.py -q`
 
 Expected: 退出码 0。
 
-- [ ] **A1.6 提交**
+- [x] **A1.6 提交**
 
 ```bash
 git add research_v2/pyproject.toml research_v2/README.md research_v2/src/research_v2/__init__.py research_v2/tests/conftest.py research_v2/tests/unit/test_package.py
@@ -122,7 +122,7 @@ git commit -m "build(v2): scaffold isolated research package"
 - Create: `research_v2/src/research_v2/config/loader.py`
 - Test: `research_v2/tests/unit/config/test_loader.py`
 
-- [ ] **A2.1 写失败测试：环境覆盖与禁止明文 secret**
+- [x] **A2.1 写失败测试：环境覆盖与禁止明文 secret**
 
 ```python
 def test_loader_reads_secret_only_from_environment(monkeypatch, tmp_path):
@@ -137,13 +137,13 @@ def test_plaintext_password_in_yaml_is_rejected(tmp_path):
         load_settings("test", config_root=tmp_path)
 ```
 
-- [ ] **A2.2 运行测试并确认失败**
+- [x] **A2.2 运行测试并确认失败**
 
 Run: `cd research_v2 && pytest tests/unit/config/test_loader.py -q`
 
 Expected: 导入或断言失败。
 
-- [ ] **A2.3 实现 Pydantic 配置模型**
+- [x] **A2.3 实现 Pydantic 配置模型**
 
 最小类型：
 
@@ -166,17 +166,17 @@ class AppSettings(BaseModel):
 
 loader 合并顺序固定为 `base.yaml` → `dev.yaml`/`test.yaml`/`production.yaml` 中与目标环境同名的文件 → 环境变量；日志输出使用 `model_dump(exclude={...})` 或 SecretStr 掩码。
 
-- [ ] **A2.4 增加配置性质测试**
+- [x] **A2.4 增加配置性质测试**
 
 覆盖未知字段拒绝、production 不得指向 Test DB、test 不得指向生产 DB、目标 URI 白名单、端口边界、环境缺 secret fail closed。
 
-- [ ] **A2.5 运行验证**
+- [x] **A2.5 运行验证**
 
 Run: `cd research_v2 && pytest tests/unit/config/test_loader.py -q && ruff check src/research_v2/config tests/unit/config`
 
 Expected: 全部通过且测试日志没有 secret 原文。
 
-- [ ] **A2.6 提交**
+- [x] **A2.6 提交**
 
 ```bash
 git add research_v2/configs research_v2/src/research_v2/config research_v2/tests/unit/config
@@ -191,7 +191,7 @@ git commit -m "feat(v2): add typed configuration and secret boundary"
 - Test: `research_v2/tests/unit/db/test_session_guard.py`
 - Test: `research_v2/tests/contract/db/test_schema_contracts.py`
 
-- [ ] **A3.1 写失败测试：YesLab 只读**
+- [x] **A3.1 写失败测试：YesLab 只读**
 
 ```python
 @pytest.mark.parametrize("script", [
@@ -204,11 +204,11 @@ def test_read_only_session_rejects_mutating_script(script: str) -> None:
         YesLabReadOnlySession(fake_client()).run(script)
 ```
 
-- [ ] **A3.2 写失败测试：目标库白名单与参数化查询**
+- [x] **A3.2 写失败测试：目标库白名单与参数化查询**
 
 测试 `V2WriteSession` 只接受 V2/V2Test，禁止拼接外部字符串为表名；表名通过 registry enum 映射。
 
-- [ ] **A3.3 实现接口与 guard**
+- [x] **A3.3 实现接口与 guard**
 
 ```python
 class QuerySession(Protocol):
@@ -221,17 +221,17 @@ class WriteSession(QuerySession, Protocol):
 
 只读实现不暴露 `execute`；底层 `run` 再用 tokenizer/command allowlist 进行纵深防御，不能只靠字符串 `startswith("select")`。
 
-- [ ] **A3.4 加连接生命周期和重试**
+- [x] **A3.4 加连接生命周期和重试**
 
 仅对连接中断、超时等瞬时错误做有限指数退避；语法、权限、schema、质量错误立即失败。每次连接记录 host/port/username（不含密码）、DB role 和 trace id。
 
-- [ ] **A3.5 运行验证**
+- [x] **A3.5 运行验证**
 
 Run: `cd research_v2 && pytest tests/unit/db/test_session_guard.py tests/contract/db/test_schema_contracts.py -q`
 
 Expected: YesLab 的所有 mutation fixture 被拒绝，V2 query/write contract 通过。
 
-- [ ] **A3.6 提交**
+- [x] **A3.6 提交**
 
 ```bash
 git add research_v2/src/research_v2/db/session.py research_v2/tests/unit/db/test_session_guard.py research_v2/tests/contract/db/test_schema_contracts.py
@@ -246,7 +246,7 @@ git commit -m "feat(v2): enforce readonly source database sessions"
 - Create: `research_v2/src/research_v2/runs/context.py`
 - Test: `research_v2/tests/unit/runs/test_context.py`
 
-- [ ] **A4.1 写失败测试：同输入产生稳定 data version**
+- [x] **A4.1 写失败测试：同输入产生稳定 data version**
 
 ```python
 def test_data_version_is_content_addressed() -> None:
@@ -256,21 +256,21 @@ def test_data_version_is_content_addressed() -> None:
     assert left.run_id != right.run_id
 ```
 
-- [ ] **A4.2 实现核心 value objects**
+- [x] **A4.2 实现核心 value objects**
 
 定义 `RunId`（UUIDv7 或时间有序 UUID）、`DataVersion`（canonical JSON SHA-256）、`SchemaVersion`、`SourceWatermarkId`、UTC `created_at`。canonicalizer 必须排序 mapping/set、标准化日期/时区/浮点与 NaN，拒绝不可序列化对象。
 
-- [ ] **A4.3 记录环境摘要**
+- [x] **A4.3 记录环境摘要**
 
 收集 Python、OS、包版本、CUDA/GPU 名称和 code commit；环境摘要不参与业务数据版本，但写入 experiment/pipeline audit。
 
-- [ ] **A4.4 运行测试**
+- [x] **A4.4 运行测试**
 
 Run: `cd research_v2 && pytest tests/unit/runs/test_context.py -q`
 
 Expected: 排序不影响 hash，内容变化必然改变 hash，run id 每次唯一。
 
-- [ ] **A4.5 提交**
+- [x] **A4.5 提交**
 
 ```bash
 git add research_v2/src/research_v2/contracts/base.py research_v2/src/research_v2/runs research_v2/tests/unit/runs
@@ -286,11 +286,11 @@ git commit -m "feat(v2): add reproducible run context"
 - Test: `research_v2/tests/unit/db/test_migrations.py`
 - Test: `research_v2/tests/integration/db/test_migration_roundtrip.py`
 
-- [ ] **A5.1 写失败测试：排序、checksum、锁和幂等**
+- [x] **A5.1 写失败测试：排序、checksum、锁和幂等**
 
 覆盖：迁移文件按三位版本升序；已执行同 checksum 跳过；同版本内容变化拒绝；两个 runner 只能一个持有锁；中途失败不记录成功版本；目标非 V2/V2Test 拒绝。
 
-- [ ] **A5.2 实现 migration parser 与 runner**
+- [x] **A5.2 实现 migration parser 与 runner**
 
 ```python
 @dataclass(frozen=True)
@@ -308,7 +308,7 @@ class MigrationRunner:
 
 `dry_run` 输出版本、checksum、目标库和待建表，不执行 script。
 
-- [ ] **A5.3 在 001 创建 bootstrap 与控制表**
+- [x] **A5.3 在 001 创建 bootstrap 与控制表**
 
 `001_control_tables.dos` 必须幂等创建：
 
@@ -336,7 +336,7 @@ Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/integration/db/test_migr
 
 Expected: 首次 applied=1，第二次 applied=0；篡改 checksum fixture 被拒绝。
 
-- [ ] **A5.6 提交**
+- [x] **A5.6 提交**
 
 ```bash
 git add research_v2/src/research_v2/db/migrations.py research_v2/migrations/001_control_tables.dos research_v2/tests/unit/db/test_migrations.py research_v2/tests/integration/db/test_migration_roundtrip.py
@@ -352,11 +352,11 @@ git commit -m "feat(v2): add audited DolphinDB migrations"
 - Create: `research_v2/migrations/004_experiment_tables.dos`
 - Modify: `research_v2/tests/contract/db/test_schema_contracts.py`
 
-- [ ] **A6.1 先写 schema contract fixtures**
+- [x] **A6.1 先写 schema contract fixtures**
 
 以 Python 常量声明每张表的精确列名、DolphinDB 类型、列顺序、分区键、sort columns、业务唯一键和可空性。测试通过 `schema(loadTable(...))` 比较，禁止只检查“表存在”。
 
-- [ ] **A6.2 编写 002 PIT 表迁移**
+- [x] **A6.2 编写 002 PIT 表迁移**
 
 创建：`security_master_scd`、`market_daily_clean`、`tradability_daily`、`universe_definition`、`universe_daily`。事实表业务唯一键分别为：
 
@@ -370,7 +370,7 @@ universe_daily: signal_date + universe_id + universe_version + ts_code
 
 所有日期事实表含统一审计字段；`market_daily_clean` 保留 raw OHLC、adj_factor、adjusted_open、volume、amount、ADV20 和 source flags。
 
-- [ ] **A6.3 编写 003 因子与标签表迁移**
+- [x] **A6.3 编写 003 因子与标签表迁移**
 
 创建：`factor_registry`、`factor_observation_clean`、`factor_quarantine`、`factor_quality_snapshot`、`factor_similarity`、`factor_set`、`factor_set_member`、`label_daily`。关键业务唯一键：
 
@@ -384,7 +384,7 @@ label_daily: signal_date + ts_code + label_id + label_version
 
 `label_daily` 必须显式包含 `entry_date`、`exit_date`、`label_available_date`、`raw_return`、`rank_pct`、`winsorized_return`、`zscore_return`、可空的 `neutral_residual`、`label_valid`、`invalid_reason` 和统一审计字段。2026 行的访问/发布由应用 capability 与专用数据库角色共同保护，普通研究身份无读取权限。
 
-- [ ] **A6.4 编写 004 实验表迁移**
+- [x] **A6.4 编写 004 实验表迁移**
 
 创建：`split_definition`、`dataset_manifest`、`experiment_run`、`metric_daily`、`metric_summary`、`prediction_daily`、`model_registry`、`active_model_pointer`、`locked_test_audit`。`model_registry.status` 仅允许：
 
@@ -399,13 +399,13 @@ PRODUCTION
 RETIRED
 ```
 
-- [ ] **A6.5 固化 TSDB 物理设计**
+- [x] **A6.5 固化 TSDB 物理设计**
 
 日期事实表使用 `RANGE/HASH` 组合：月份日期分区 + `ts_code` 或 `factor_id` HASH；sortColumns 从高频过滤顺序推导。实际 HASH bucket 常量从已批准 capacity config 读取并渲染迁移，不得临场硬编码。
 
 任何可版本化事实表的“逻辑业务键”都只要求在同一 `data_version` 内唯一；物理唯一键为 `logical_business_key + data_version`。消费者先从 `published_version` 按 `object_name + logical_partition` 取得唯一可见版本，再读取事实表。publish 在一个原子脚本中写事实行并 compare-and-swap 更新该 pointer，禁止原地覆盖旧版本。
 
-- [ ] **A6.5a 固化 DolphinDB 类型契约**
+- [x] **A6.5a 固化 DolphinDB 类型契约**
 
 contract tests 使用以下统一类型，不允许 adapter 自行猜测类型。`!` 表示应用层必填，`?` 表示允许 DolphinDB null；所有枚举保存为 `SYMBOL`，JSON/canonical hash 保存为 `STRING`。
 
@@ -516,7 +516,7 @@ Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/contract/db/test_schema_
 
 Expected: 4 个版本依次应用；每张表列、类型、分区和 sort contract 精确相符；再次执行无变化。
 
-- [ ] **A6.7 提交**
+- [x] **A6.7 提交**
 
 ```bash
 git add research_v2/migrations/002_pit_tables.dos research_v2/migrations/003_factor_tables.dos research_v2/migrations/004_experiment_tables.dos research_v2/tests/contract/db/test_schema_contracts.py
@@ -533,7 +533,7 @@ git commit -m "feat(v2): define versioned research schemas"
 - Test: `research_v2/tests/property/db/test_publish_idempotency.py`
 - Test: `research_v2/tests/integration/db/test_atomic_publish.py`
 
-- [ ] **A7.1 写失败的状态机测试**
+- [x] **A7.1 写失败的状态机测试**
 
 ```python
 def test_publish_never_exposes_failed_staging(repo, invalid_batch):
@@ -545,11 +545,11 @@ def test_publish_never_exposes_failed_staging(repo, invalid_batch):
 
 覆盖 `CREATED → STAGED → VALIDATED → PUBLISHED`，失败转 `REJECTED`；`PUBLISHED` 不可回退；同一 `data_version + logical_partition` 内容相同幂等、内容不同冲突。
 
-- [ ] **A7.2 实现表 registry 和 typed repository**
+- [x] **A7.2 实现表 registry 和 typed repository**
 
 只允许 enum 中的表，所有 DataFrame 入库先做列、dtype、nullability、唯一键、日期时区和审计字段验证。repository 不接受任意数据库 URI 或任意 script。
 
-- [ ] **A7.3 实现 staging 验证**
+- [x] **A7.3 实现 staging 验证**
 
 必检：
 
@@ -562,15 +562,15 @@ def test_publish_never_exposes_failed_staging(repo, invalid_batch):
 - schema fingerprint；
 - DQ 中不存在 `BLOCKER/FAIL`。
 
-- [ ] **A7.4 实现原子 publish 与并发锁**
+- [x] **A7.4 实现原子 publish 与并发锁**
 
 同一 logical partition 只允许一个 owner；publish 写入正式表并更新可见版本必须处于同一 DolphinDB transaction/原子脚本。进程崩溃后 staging 可由 TTL 清理，但不可自动发布。
 
-- [ ] **A7.5 性质测试与故障注入**
+- [x] **A7.5 性质测试与故障注入**
 
 Hypothesis 生成乱序行、重复行、NaN、不同 chunk 切分；验证 record hash 与幂等性。集成测试在 stage 后、validate 后、正式 append 前后注入异常，证明消费者只能看见旧版本或完整新版本。
 
-- [ ] **A7.6 运行验证**
+- [x] **A7.6 运行验证**
 
 Run: `cd research_v2 && pytest tests/unit/db/test_publish.py tests/property/db/test_publish_idempotency.py -q`
 
@@ -578,7 +578,7 @@ Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/integration/db/test_atom
 
 Expected: 所有故障点均不出现部分可见数据。
 
-- [ ] **A7.7 提交**
+- [x] **A7.7 提交**
 
 ```bash
 git add research_v2/src/research_v2/db/repositories.py research_v2/src/research_v2/db/publish.py research_v2/tests/unit/db/test_publish.py research_v2/tests/property/db/test_publish_idempotency.py research_v2/tests/integration/db/test_atomic_publish.py
@@ -594,7 +594,7 @@ git commit -m "feat(v2): add validated atomic publishing"
 - Create: `research_v2/tests/unit/cli/test_app.py`
 - Create: `research_v2/tests/integration/db/test_pipeline_run_audit.py`
 
-- [ ] **A8.1 写失败的 CLI 测试**
+- [x] **A8.1 写失败的 CLI 测试**
 
 要求存在：
 
@@ -606,7 +606,7 @@ qr-v2 source inspect --env test --as-of 2025-12-31
 
 所有 mutation command 必须打印目标库、环境和计划摘要；production migration 额外要求显式 `--confirm-target QuantResearchV2`，非交互环境缺少该参数即失败。
 
-- [ ] **A8.2 实现 pipeline run context manager**
+- [x] **A8.2 实现 pipeline run context manager**
 
 ```python
 with pipeline_run(repo, name="db.migrate", context=context) as run:
@@ -629,11 +629,11 @@ Run: `cd research_v2 && QRV2_INTEGRATION=1 pytest tests/integration/db -q -m int
 
 Expected: 全部退出码 0；V1 write guard、migration idempotency、atomic visibility 和 audit 状态均通过。
 
-- [ ] **A8.5 更新 README**
+- [x] **A8.5 更新 README**
 
 记录本地配置、环境变量名称（不含值）、dry-run、Test DB 限制、迁移审批流程和常见故障恢复。
 
-- [ ] **A8.6 提交并请求审查**
+- [x] **A8.6 提交并请求审查**
 
 ```bash
 git add research_v2/src/research_v2/cli research_v2/src/research_v2/runs research_v2/tests/unit/cli research_v2/tests/integration/db/test_pipeline_run_audit.py research_v2/README.md
@@ -644,10 +644,23 @@ git commit -m "feat(v2): expose audited database CLI"
 
 ## A 计划完成标准
 
-- [ ] V1 写操作在类型层、API 层和运行时三层被拒绝。
-- [ ] 四个 migration 版本在 V2Test 首次成功、再次执行零副作用、checksum 漂移失败。
-- [ ] 所有目标表 schema/分区/sort columns 与 contract 一致。
-- [ ] 发布故障注入不能产生部分可见数据。
-- [ ] pipeline run 对成功、失败、取消均有完整审计。
-- [ ] 日志与配置不含明文凭据。
-- [ ] 尚未写入生产业务数据，也未改动 V1。
+- [x] V1 写操作在类型层、API 层和运行时三层被拒绝。
+- [x] 四个 migration 版本在 V2Test 首次成功、再次执行零副作用、checksum 漂移失败。
+- [x] 所有目标表 schema/分区/sort columns 与 contract 一致。
+- [x] 发布故障注入不能产生部分可见数据。
+- [x] pipeline run 对成功、失败、取消均有完整审计。
+- [x] 日志与配置不含明文凭据。
+- [x] 尚未写入生产业务数据，也未改动 V1。
+
+## 状态核对（2026-09-01）
+
+已按现有代码与测试逐项核对并勾选完成步骤（包与质量工具、配置与 secret
+边界、V1 会话保护、运行上下文、迁移运行器与 001–013 迁移、两阶段原子发布、
+CLI 与 README 均有对应测试/产物；全量单元套件 947 通过，`ruff check` 与
+`mypy src` 干净）。仍开放的条目及原因：
+
+- A5.4/A5.5：迁移专用 Test-DB 集成 fixture 未建立（dry-run/幂等/checksum
+  已在单元层锁定；真实库验证并入 `tests/integration` 门控验收）。
+- A6.6：在真实 V2Test 库验证全部 schema 属运营执行证据。
+- A8.3：日志脱敏测试缺失（配置层 secret 禁令已有测试）。
+- A8.4：完整验证含 `QRV2_INTEGRATION=1` 集成（发布故障恢复测试存在但门控未跑）。
