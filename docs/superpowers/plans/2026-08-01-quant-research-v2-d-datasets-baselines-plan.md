@@ -509,7 +509,7 @@ HTML/JSON 同时包含：数据版本、fold dates/purge、factor set、预处�
 
 在 validation/test/2026 区域注入极强“未来完美因子”和标签，断言 train selector/preprocessor/baseline fit hashes 不变；普通路径触碰 2026 时测试必须失败并记录访问尝试。
 
-- [ ] **D9.4 运行完整 D 计划验证**
+- [x] **D9.4 运行完整 D 计划验证**
 
 Run: `cd research_v2 && pytest tests/unit/datasets tests/unit/evaluation tests/unit/baselines tests/property/datasets tests/leakage tests/golden/test_dataset_and_metrics.py -q`
 
@@ -542,9 +542,13 @@ selection/storage、B0–B3、gates/walk-forward、50×60 黄金数据与泄漏 
 均有对应测试；全量单元套件 947 通过，`ruff check` 与 `mypy src` 干净）。
 仍开放的条目及原因：
 
-- D9.4：`tests/integration/datasets` 与 `tests/property/datasets` 仍未建立；
-  `tests/integration/evaluation` 已由 D8.6 端到端套件覆盖（2026-09-01）。
-  单元侧全部通过。
+- D9.4 已于 2026-09-01 闭合：`tests/property/datasets/
+  test_manifest_content_addressing.py`（行序不变、任意值变更敏感、拆分归属参与
+  身份，hypothesis 3 性质）与 `tests/integration/datasets/
+  test_point_in_time_build.py`（合成训练构建形状/排序/确定性、2026 输入拒绝、
+  FINAL 锁、available_date 点时守卫、segment_end 退场守卫）。计划原文两条
+  验证命令实测：单元+性质+黄金 117 通过；`QRV2_INTEGRATION=1` 集成
+  （datasets+evaluation）8 通过（221s）。
   D8.6/D8.7 已于 2026-09-01 补齐：合成 7 年（2015–2019 训练/2020 验证/2021
   测试）端到端编排测试 `tests/integration/evaluation/test_walk_forward_baselines.py`
   覆盖 split→B0–B3→validation 选模→延迟 test 评价，断言两次运行选择记录与

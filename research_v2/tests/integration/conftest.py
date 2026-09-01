@@ -33,6 +33,10 @@ _ROW_COUNT_QUERY = re.compile(
     r"select count\(\*\) as row_count from loadTable\('(?P<db>[^']+)', "
     r"'(?P<table>[A-Za-z_][A-Za-z0-9_]*)'\) where data_version='(?P<version>(?:[^']|'')*)'"
 )
+_DATE_PREDICATE = re.compile(
+    r"and (?P<column>[A-Za-z_][A-Za-z0-9_]*) between "
+    r"date\('(?P<start>\d{4}\.\d{2}\.\d{2})'\) and date\('(?P<end>\d{4}\.\d{2}\.\d{2})'\)"
+)
 _SCHEMA_QUERY = re.compile(
     r"schema\(loadTable\('(?P<db>[^']+)', '(?P<table>[A-Za-z_][A-Za-z0-9_]*)'\)\)\.colDefs"
 )
@@ -48,6 +52,10 @@ def _unquote(raw: str) -> str:
     if len(text) >= 2 and text.startswith("'") and text.endswith("'"):
         text = text[1:-1]
     return text.replace("''", "'")
+
+
+def _dot_date(raw: str) -> pd.Timestamp:
+    return pd.to_datetime(raw.replace(".", "-"))
 
 
 class FakeV2TestDatabase:
@@ -88,6 +96,14 @@ class FakeV2TestDatabase:
                 matched = table.loc[table["data_version"] == version]
             else:
                 matched = table.iloc[0:0]
+            predicate_match = _DATE_PREDICATE.search(script)
+            if predicate_match is not None and not matched.empty:
+                column = predicate_match.group("column")
+                if column in matched.columns:
+                    start = _dot_date(predicate_match.group("start"))
+                    end = _dot_date(predicate_match.group("end"))
+                    dates = pd.to_datetime(matched[column], errors="raise")
+                    matched = matched.loc[dates.between(start, end)]
             return pd.DataFrame({"row_count": [len(matched)]})
         schema_match = _SCHEMA_QUERY.search(script)
         if schema_match is not None:
