@@ -64,7 +64,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization",
       "required_scope": "Do not mix with historical YesLab values; historical GP_012 contains BJ securities. Retain elevated pair monitoring against yeslab_405_tushare_shsz_v1 and yeslab_443_tushare_shsz_v1.",
-      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1 (train/validation median abs Spearman 0.86451/0.88824) and yeslab_443_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721); separate combination approval required if any of these pairs is jointly considered.",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1 (train/validation median abs Spearman 0.86451/0.88821) and yeslab_443_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721); separate combination approval required if any of these pairs is jointly considered.",
       "evidence": [
         "tushare_alpha381_canonical_candidate_review_v1.json",
         "tushare_alpha381_canonical_train_similarity_v1/similarity_summary.json",
