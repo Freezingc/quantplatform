@@ -336,11 +336,11 @@ attention 仅在同一个 signal date 的有效股票间执行；不同日期打
 
 hidden `{64,128}`、heads `{2,4}`、inducing points `{32,64}`、blocks `{1,2}`、dropout `{0.0,0.1}`、lr `{0.0003,0.001}`，按稳定 hash 限 30 trials；hidden 必须整除 heads。
 
-- [ ] **E6.5 显存和极端横截面测试**
+- [x] **E6.5 显存和极端横截面测试**
 
 在 CUDA 可用时用 `N=6000, raw F=60, effective input=120, D=1` 前向/反向，峰值显存必须 <20 GiB，给 24 GiB 卡保留余量；CPU CI 使用 N=256 等价逻辑。OOM 不能通过裁掉低分股票解决，只能调 batch date 数/inducing config。
 
-- [ ] **E6.6 运行测试并提交**
+- [x] **E6.6 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/models/test_set_attention.py tests/property/models/test_permutation_equivariance.py -q`
 
@@ -572,13 +572,14 @@ git commit -m "feat(v2): govern model evidence and transitions"
 
 已按现有代码与测试逐项核对并勾选完成步骤（测试文件按演进后的实际命名存在，如
 `test_pre_registered_search.py`、`test_cross_sectional_losses.py`、
-`test_frozen_oos_evaluator.py` 等）。全量单元套件通过（951），`ruff check` 与
+`test_frozen_oos_evaluator.py` 等）。全量单元套件通过（969），`ruff check` 与
 `mypy src` 干净。2026-09-01 补齐：E5.5 temporal 置换等变测试
 （`tests/unit/models/test_temporal_gru.py`）、E4.4 小样本过拟合与 M1 置换等变
-测试（`tests/unit/models/test_residual_mlp.py`）、E5.6 所需的 temporal GRU
-小样本过拟合测试；完成标准第 1 条随之闭合。仍开放的条目及原因：
+测试（`tests/unit/models/test_residual_mlp.py`）、E5.6 temporal GRU 小样本
+过拟合测试、E6.5 极端横截面资源测试（CPU 等价 N=256 + CUDA N=6000 峰值
+显存 <20 GiB，已在 4090 实测）与日期隔离测试；完成标准第 1 条随之闭合。
+仍开放的条目及原因：
 
-- E6.5/E6.6：缺 CUDA 显存/极端横截面资源测试（CPU 等价逻辑亦未建立）。
 - E8.5/E8.6：缺合成数据端到端编排测试；集成测试受 `QRV2_INTEGRATION=1` 门控。
 - E9.1–E9.7：M4 条件门未获授权，按设计保持零代码/零迁移副作用。
 - 另注：`configs/models/temporal.yaml` 的 `minimum_valid_history_length: 15`

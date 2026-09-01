@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+import pytest
 import torch
 
 from research_v2.models.base import FeatureBatch
@@ -78,3 +79,105 @@ def test_set_attention_signature_binds_dropout_for_artifact_reconstruction() -> 
         without_dropout.artifact_signature().config_hash
         != with_dropout.artifact_signature().config_hash
     )
+
+
+def test_set_attention_isolates_dates_within_one_packed_batch() -> None:
+    model = SetAttention(
+        SetAttentionConfig(
+            raw_factor_count=15, hidden_dim=16, num_heads=2, inducing_points=4, num_blocks=1
+        )
+    ).eval()
+    features = torch.randn((2, 3, 15), generator=torch.Generator().manual_seed(8))
+    batch = FeatureBatch(
+        signal_dates=(date(2025, 1, 2), date(2025, 1, 3)),
+        ts_codes=(("a", "b", ""), ("c", "d", "e")),
+        features=features,
+        feature_missing=torch.zeros_like(features, dtype=torch.bool),
+        stock_mask=torch.tensor([[True, True, False], [True, True, True]]),
+    )
+    single_first = FeatureBatch(
+        signal_dates=(date(2025, 1, 2),),
+        ts_codes=(("a", "b", ""),),
+        features=features[:1],
+        feature_missing=batch.feature_missing[:1],
+        stock_mask=batch.stock_mask[:1],
+    )
+    single_second = FeatureBatch(
+        signal_dates=(date(2025, 1, 3),),
+        ts_codes=(("c", "d", "e"),),
+        features=features[1:],
+        feature_missing=batch.feature_missing[1:],
+        stock_mask=batch.stock_mask[1:],
+    )
+
+    packed = model(batch)
+    assert torch.allclose(packed[0], model(single_first)[0], atol=1e-6)
+    assert torch.allclose(packed[1], model(single_second)[0], atol=1e-6)
+
+
+def test_set_attention_extreme_cross_section_cpu_equivalent() -> None:
+    model = SetAttention(
+        SetAttentionConfig(
+            raw_factor_count=60,
+            hidden_dim=128,
+            num_heads=4,
+            inducing_points=64,
+            num_blocks=2,
+            dropout=0.0,
+        )
+    )
+    stock_count = 256
+    batch = FeatureBatch(
+        signal_dates=(date(2025, 1, 2),),
+        ts_codes=(tuple(f"s{index:04d}" for index in range(stock_count)),),
+        features=torch.randn(
+            (1, stock_count, 60), generator=torch.Generator().manual_seed(9)
+        ),
+        feature_missing=torch.zeros((1, stock_count, 60), dtype=torch.bool),
+        stock_mask=torch.ones((1, stock_count), dtype=torch.bool),
+    )
+
+    scores = model(batch)
+    loss = scores[batch.stock_mask].pow(2).mean()
+    loss.backward()  # type: ignore[no-untyped-call]
+
+    assert scores.shape == (1, stock_count)
+    assert bool(torch.isfinite(scores).all().item())
+    assert all(
+        parameter.grad is None or bool(torch.isfinite(parameter.grad).all().item())
+        for parameter in model.parameters()
+    )
+
+
+def test_set_attention_cuda_capacity_stays_under_twenty_gib() -> None:
+    if not torch.cuda.is_available():
+        pytest.skip("CUDA capacity budget test requires a GPU")
+    model = SetAttention(
+        SetAttentionConfig(
+            raw_factor_count=60,
+            hidden_dim=128,
+            num_heads=4,
+            inducing_points=64,
+            num_blocks=2,
+            dropout=0.0,
+        )
+    ).cuda()
+    stock_count = 6000
+    batch = FeatureBatch(
+        signal_dates=(date(2025, 1, 2),),
+        ts_codes=(tuple(f"s{index:04d}" for index in range(stock_count)),),
+        features=torch.randn(
+            (1, stock_count, 60), generator=torch.Generator().manual_seed(9)
+        ).cuda(),
+        feature_missing=torch.zeros(
+            (1, stock_count, 60), dtype=torch.bool, device="cuda"
+        ),
+        stock_mask=torch.ones((1, stock_count), dtype=torch.bool, device="cuda"),
+    )
+
+    torch.cuda.reset_peak_memory_stats()
+    scores = model(batch)
+    scores[batch.stock_mask].pow(2).mean().backward()
+
+    peak_gib = torch.cuda.max_memory_allocated() / float(1024**3)
+    assert peak_gib < 20.0
