@@ -846,6 +846,8 @@
         "icir_full_market": 0.7772,
         "ic_adv20_liquid": 0.082401,
         "icir_adv20_liquid": 0.8034,
+        "ic_official_cn_liquid_a": 0.080208,
+        "icir_official_cn_liquid_a": 0.7562,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -854,6 +856,8 @@
         "icir_full_market": 1.0368,
         "ic_adv20_liquid": 0.095273,
         "icir_adv20_liquid": 1.0027,
+        "ic_official_cn_liquid_a": 0.092316,
+        "icir_official_cn_liquid_a": 1.0391,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -1007,6 +1011,8 @@
         "icir_full_market": 0.5934,
         "ic_adv20_liquid": 0.083977,
         "icir_adv20_liquid": 0.612,
+        "ic_official_cn_liquid_a": 0.078685,
+        "icir_official_cn_liquid_a": 0.5792,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -1015,6 +1021,8 @@
         "icir_full_market": 0.5682,
         "ic_adv20_liquid": 0.071206,
         "icir_adv20_liquid": 0.5472,
+        "ic_official_cn_liquid_a": 0.070308,
+        "icir_official_cn_liquid_a": 0.5835,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -1752,6 +1760,8 @@
         "icir_full_market": 0.9474,
         "ic_adv20_liquid": 0.062082,
         "icir_adv20_liquid": 0.9009,
+        "ic_official_cn_liquid_a": 0.062642,
+        "icir_official_cn_liquid_a": 0.884,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -1760,6 +1770,8 @@
         "icir_full_market": 0.8785,
         "ic_adv20_liquid": 0.051387,
         "icir_adv20_liquid": 0.8349,
+        "ic_official_cn_liquid_a": 0.050036,
+        "icir_official_cn_liquid_a": 0.7911,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -2978,6 +2990,8 @@
         "icir_full_market": 1.2719,
         "ic_adv20_liquid": 0.064263,
         "icir_adv20_liquid": 1.227,
+        "ic_official_cn_liquid_a": 0.060702,
+        "icir_official_cn_liquid_a": 1.1593,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -2986,6 +3000,8 @@
         "icir_full_market": 0.9863,
         "ic_adv20_liquid": 0.048149,
         "icir_adv20_liquid": 0.8141,
+        "ic_official_cn_liquid_a": 0.047415,
+        "icir_official_cn_liquid_a": 0.8596,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3043,6 +3059,8 @@
         "icir_full_market": 1.0073,
         "ic_adv20_liquid": 0.057382,
         "icir_adv20_liquid": 0.9327,
+        "ic_official_cn_liquid_a": 0.054908,
+        "icir_official_cn_liquid_a": 0.8751,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3051,6 +3069,8 @@
         "icir_full_market": 0.8389,
         "ic_adv20_liquid": 0.045253,
         "icir_adv20_liquid": 0.691,
+        "ic_official_cn_liquid_a": 0.044495,
+        "icir_official_cn_liquid_a": 0.6558,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3116,14 +3136,18 @@
         "icir_full_market": 0.6105,
         "ic_adv20_liquid": 0.094762,
         "icir_adv20_liquid": 0.6392,
+        "ic_official_cn_liquid_a": 0.088014,
+        "icir_official_cn_liquid_a": 0.5856,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
       "historical_window_2018": {
-        "ic_full_market": 0.08958,
-        "icir_full_market": 0.5887,
-        "ic_adv20_liquid": 0.086302,
-        "icir_adv20_liquid": 0.5486,
+        "ic_full_market": 0.089564,
+        "icir_full_market": 0.5885,
+        "ic_adv20_liquid": 0.086284,
+        "icir_adv20_liquid": 0.5485,
+        "ic_official_cn_liquid_a": 0.085817,
+        "icir_official_cn_liquid_a": 0.6334,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3141,6 +3165,8 @@
         "icir_full_market": 0.566,
         "ic_adv20_liquid": 0.100021,
         "icir_adv20_liquid": 0.5613,
+        "ic_official_cn_liquid_a": 0.094593,
+        "icir_official_cn_liquid_a": 0.5304,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3149,6 +3175,8 @@
         "icir_full_market": 0.6384,
         "ic_adv20_liquid": 0.091599,
         "icir_adv20_liquid": 0.5992,
+        "ic_official_cn_liquid_a": 0.092039,
+        "icir_official_cn_liquid_a": 0.6533,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3166,14 +3194,18 @@
         "icir_full_market": 0.607,
         "ic_adv20_liquid": 0.087873,
         "icir_adv20_liquid": 0.6448,
+        "ic_official_cn_liquid_a": 0.082107,
+        "icir_official_cn_liquid_a": 0.6018,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
       "historical_window_2018": {
-        "ic_full_market": 0.089776,
+        "ic_full_market": 0.089777,
         "icir_full_market": 0.6435,
-        "ic_adv20_liquid": 0.090812,
-        "icir_adv20_liquid": 0.6539,
+        "ic_adv20_liquid": 0.090828,
+        "icir_adv20_liquid": 0.6541,
+        "ic_official_cn_liquid_a": 0.087549,
+        "icir_official_cn_liquid_a": 0.7444,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3207,6 +3239,8 @@
         "icir_full_market": 0.6828,
         "ic_adv20_liquid": 0.096019,
         "icir_adv20_liquid": 0.6972,
+        "ic_official_cn_liquid_a": 0.091499,
+        "icir_official_cn_liquid_a": 0.6548,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3215,6 +3249,8 @@
         "icir_full_market": 0.7344,
         "ic_adv20_liquid": 0.092045,
         "icir_adv20_liquid": 0.7381,
+        "ic_official_cn_liquid_a": 0.089386,
+        "icir_official_cn_liquid_a": 0.7978,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3258,6 +3294,8 @@
         "icir_full_market": 0.6678,
         "ic_adv20_liquid": 0.094318,
         "icir_adv20_liquid": 0.6842,
+        "ic_official_cn_liquid_a": 0.089937,
+        "icir_official_cn_liquid_a": 0.6439,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3266,6 +3304,8 @@
         "icir_full_market": 0.7628,
         "ic_adv20_liquid": 0.094237,
         "icir_adv20_liquid": 0.7638,
+        "ic_official_cn_liquid_a": 0.091427,
+        "icir_official_cn_liquid_a": 0.8314,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3291,6 +3331,8 @@
         "icir_full_market": 0.7168,
         "ic_adv20_liquid": 0.076825,
         "icir_adv20_liquid": 0.7348,
+        "ic_official_cn_liquid_a": 0.073405,
+        "icir_official_cn_liquid_a": 0.6955,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3299,6 +3341,8 @@
         "icir_full_market": 0.7124,
         "ic_adv20_liquid": 0.069894,
         "icir_adv20_liquid": 0.6472,
+        "ic_official_cn_liquid_a": 0.062836,
+        "icir_official_cn_liquid_a": 0.5558,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3332,6 +3376,8 @@
         "icir_full_market": 0.7005,
         "ic_adv20_liquid": 0.103478,
         "icir_adv20_liquid": 0.7117,
+        "ic_official_cn_liquid_a": 0.099516,
+        "icir_official_cn_liquid_a": 0.6744,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3340,6 +3386,8 @@
         "icir_full_market": 0.8613,
         "ic_adv20_liquid": 0.094903,
         "icir_adv20_liquid": 0.8241,
+        "ic_official_cn_liquid_a": 0.093798,
+        "icir_official_cn_liquid_a": 0.8685,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3392,14 +3440,18 @@
         "icir_full_market": 0.7062,
         "ic_adv20_liquid": 0.081403,
         "icir_adv20_liquid": 0.7058,
+        "ic_official_cn_liquid_a": 0.076884,
+        "icir_official_cn_liquid_a": 0.6562,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
       "historical_window_2018": {
-        "ic_full_market": 0.071199,
-        "icir_full_market": 0.5915,
-        "ic_adv20_liquid": 0.068016,
-        "icir_adv20_liquid": 0.542,
+        "ic_full_market": 0.071184,
+        "icir_full_market": 0.5914,
+        "ic_adv20_liquid": 0.067997,
+        "icir_adv20_liquid": 0.5418,
+        "ic_official_cn_liquid_a": 0.068777,
+        "icir_official_cn_liquid_a": 0.5991,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3417,6 +3469,8 @@
         "icir_full_market": 0.8827,
         "ic_adv20_liquid": 0.091635,
         "icir_adv20_liquid": 0.8869,
+        "ic_official_cn_liquid_a": 0.093304,
+        "icir_official_cn_liquid_a": 0.8726,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3425,6 +3479,8 @@
         "icir_full_market": 0.7178,
         "ic_adv20_liquid": 0.070486,
         "icir_adv20_liquid": 0.6623,
+        "ic_official_cn_liquid_a": 0.067715,
+        "icir_official_cn_liquid_a": 0.6149,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3475,6 +3531,8 @@
         "icir_full_market": 0.5757,
         "ic_adv20_liquid": 0.095224,
         "icir_adv20_liquid": 0.626,
+        "ic_official_cn_liquid_a": 0.091202,
+        "icir_official_cn_liquid_a": 0.5914,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3483,6 +3541,8 @@
         "icir_full_market": 0.5903,
         "ic_adv20_liquid": 0.079402,
         "icir_adv20_liquid": 0.6208,
+        "ic_official_cn_liquid_a": 0.07619,
+        "icir_official_cn_liquid_a": 0.6132,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3516,6 +3576,8 @@
         "icir_full_market": 0.6883,
         "ic_adv20_liquid": 0.075498,
         "icir_adv20_liquid": 0.7289,
+        "ic_official_cn_liquid_a": 0.069803,
+        "icir_official_cn_liquid_a": 0.6804,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3524,6 +3586,8 @@
         "icir_full_market": 0.7056,
         "ic_adv20_liquid": 0.068904,
         "icir_adv20_liquid": 0.6661,
+        "ic_official_cn_liquid_a": 0.061868,
+        "icir_official_cn_liquid_a": 0.5787,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3590,6 +3654,8 @@
         "icir_full_market": 0.8309,
         "ic_adv20_liquid": 0.079725,
         "icir_adv20_liquid": 0.8191,
+        "ic_official_cn_liquid_a": 0.077656,
+        "icir_official_cn_liquid_a": 0.7901,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3598,6 +3664,8 @@
         "icir_full_market": 0.6982,
         "ic_adv20_liquid": 0.063851,
         "icir_adv20_liquid": 0.648,
+        "ic_official_cn_liquid_a": 0.059866,
+        "icir_official_cn_liquid_a": 0.6163,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3615,14 +3683,18 @@
         "icir_full_market": 0.8038,
         "ic_adv20_liquid": 0.083084,
         "icir_adv20_liquid": 0.8208,
+        "ic_official_cn_liquid_a": 0.080508,
+        "icir_official_cn_liquid_a": 0.7629,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
       "historical_window_2018": {
-        "ic_full_market": 0.080267,
-        "icir_full_market": 0.9659,
-        "ic_adv20_liquid": 0.080388,
-        "icir_adv20_liquid": 0.9448,
+        "ic_full_market": 0.080283,
+        "icir_full_market": 0.9662,
+        "ic_adv20_liquid": 0.080408,
+        "icir_adv20_liquid": 0.9452,
+        "ic_official_cn_liquid_a": 0.08011,
+        "icir_official_cn_liquid_a": 0.9487,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -3784,6 +3856,8 @@
         "icir_full_market": 0.8743,
         "ic_adv20_liquid": 0.09258,
         "icir_adv20_liquid": 0.8822,
+        "ic_official_cn_liquid_a": 0.092016,
+        "icir_official_cn_liquid_a": 0.8648,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3792,6 +3866,8 @@
         "icir_full_market": 0.508,
         "ic_adv20_liquid": 0.051194,
         "icir_adv20_liquid": 0.4644,
+        "ic_official_cn_liquid_a": 0.049237,
+        "icir_official_cn_liquid_a": 0.4297,
         "verdict": "WATCH",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
         "weak_months_liquid": [
@@ -3953,6 +4029,8 @@
         "icir_full_market": 0.5916,
         "ic_adv20_liquid": 0.060066,
         "icir_adv20_liquid": 0.6243,
+        "ic_official_cn_liquid_a": 0.05654,
+        "icir_official_cn_liquid_a": 0.5973,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -3961,6 +4039,8 @@
         "icir_full_market": 0.5282,
         "ic_adv20_liquid": 0.046506,
         "icir_adv20_liquid": 0.4662,
+        "ic_official_cn_liquid_a": 0.040133,
+        "icir_official_cn_liquid_a": 0.3973,
         "verdict": "WATCH",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
         "weak_months_liquid": [
@@ -4146,6 +4226,8 @@
         "icir_full_market": 0.7093,
         "ic_adv20_liquid": 0.071974,
         "icir_adv20_liquid": 0.696,
+        "ic_official_cn_liquid_a": 0.067492,
+        "icir_official_cn_liquid_a": 0.6462,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -4154,6 +4236,8 @@
         "icir_full_market": 0.6676,
         "ic_adv20_liquid": 0.05335,
         "icir_adv20_liquid": 0.5912,
+        "ic_official_cn_liquid_a": 0.054005,
+        "icir_official_cn_liquid_a": 0.6252,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -4219,6 +4303,8 @@
         "icir_full_market": 0.961,
         "ic_adv20_liquid": 0.077735,
         "icir_adv20_liquid": 0.9731,
+        "ic_official_cn_liquid_a": 0.073539,
+        "icir_official_cn_liquid_a": 0.9671,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -4227,6 +4313,8 @@
         "icir_full_market": 0.7157,
         "ic_adv20_liquid": 0.065236,
         "icir_adv20_liquid": 0.6842,
+        "ic_official_cn_liquid_a": 0.063164,
+        "icir_official_cn_liquid_a": 0.7349,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }
@@ -4340,6 +4428,8 @@
         "icir_full_market": 0.6338,
         "ic_adv20_liquid": 0.077337,
         "icir_adv20_liquid": 0.6198,
+        "ic_official_cn_liquid_a": 0.072424,
+        "icir_official_cn_liquid_a": 0.5778,
         "verdict": "PASS",
         "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
       },
@@ -4348,6 +4438,8 @@
         "icir_full_market": 0.7841,
         "ic_adv20_liquid": 0.070945,
         "icir_adv20_liquid": 0.6584,
+        "ic_official_cn_liquid_a": 0.068644,
+        "icir_official_cn_liquid_a": 0.7002,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
       }

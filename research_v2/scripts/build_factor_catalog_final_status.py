@@ -167,6 +167,8 @@ def main() -> None:
                 "icir_full_market": hr.get("icir_full_market"),
                 "ic_adv20_liquid": hr.get("ic_adv20_liquid"),
                 "icir_adv20_liquid": hr.get("icir_adv20_liquid"),
+                "ic_official_cn_liquid_a": hr.get("ic_official_cn_liquid_a"),
+                "icir_official_cn_liquid_a": hr.get("icir_official_cn_liquid_a"),
                 "verdict": hr.get("classify_overall"),
                 "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020",
             }
@@ -177,6 +179,8 @@ def main() -> None:
                 "icir_full_market": hr.get("icir_full_market"),
                 "ic_adv20_liquid": hr.get("ic_adv20_liquid"),
                 "icir_adv20_liquid": hr.get("icir_adv20_liquid"),
+                "ic_official_cn_liquid_a": hr.get("ic_official_cn_liquid_a"),
+                "icir_official_cn_liquid_a": hr.get("icir_official_cn_liquid_a"),
                 "verdict": hr.get("classify_overall"),
                 "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
             }

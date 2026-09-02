@@ -86,6 +86,11 @@ def main(argv=None) -> int:
     parser.add_argument("--end", type=date.fromisoformat, default=date(2019, 12, 31))
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
+        "--official-universe",
+        action="store_true",
+        help="also compute IC restricted to the official cn_liquid_a universe (latest data_version per signal_date) read from V2 universe_daily",
+    )
+    parser.add_argument(
         "--dump-daily",
         action="store_true",
         help="also write per-candidate daily IC CSVs (date, ic_full, n_full, ic_liquid, n_liquid)",
@@ -170,6 +175,29 @@ def main(argv=None) -> int:
     session = TushareMarketSession(client, market, tuple(sorted(market["ts_code"].astype(str).unique())))
     provider = VersionedPITIndustryProvider.from_cache(CACHE, cutover=PIT_CUTOVER)
 
+    official_members: dict[pd.Timestamp, set[str]] | None = None
+    if args.official_universe:
+        uni = client.run(
+            "select signal_date, ts_code, data_version "
+            "from loadTable('dfs://QuantResearchV2Test','universe_daily') "
+            f"where signal_date between {args.start:%Y.%m.%d} and {args.end:%Y.%m.%d} "
+            "and universe_id='cn_liquid_a' and is_member=1"
+        )
+        if uni is None or len(uni) == 0:
+            raise RuntimeError("official cn_liquid_a universe has no members in window")
+        uni["signal_date"] = pd.to_datetime(uni["signal_date"]).dt.normalize()
+        uni["ts_code"] = uni["ts_code"].astype(str)
+        # latest data_version per (signal_date); version is per-date watermark
+        latest = (
+            uni.groupby("signal_date")["data_version"].max().rename("latest_version")
+        )
+        uni = uni.merge(latest, on="signal_date", how="left")
+        uni = uni[uni["data_version"] == uni["latest_version"]]
+        official_members = {
+            dt: set(grp["ts_code"]) for dt, grp in uni.groupby("signal_date")
+        }
+        print(f"official universe dates: {len(official_members)}", flush=True)
+
     results = {}
     for fid, direction in candidates.items():
         if fid == ALPHA206_MEDIAN_CANDIDATE:
@@ -190,6 +218,20 @@ def main(argv=None) -> int:
         factor_liq = factor_wide.where(keep.reindex(index=factor_wide.index).astype(bool), np.nan)
         labels_liq = labels_wide.where(keep.astype(bool), np.nan)
         daily_liq = spearman_rows(direction * factor_liq, labels_liq)
+        # official cn_liquid_a variant
+        daily_official = pd.DataFrame()
+        if official_members is not None:
+            keep_off = pd.DataFrame(
+                False, index=factor_wide.index, columns=factor_wide.columns
+            )
+            for dt in keep_off.index:
+                members = official_members.get(dt)
+                if members:
+                    cols = keep_off.columns.intersection(list(members))
+                    keep_off.loc[dt, cols] = True
+            factor_off = factor_wide.where(keep_off, np.nan)
+            labels_off = labels_wide.where(keep_off.reindex(index=labels_wide.index), np.nan)
+            daily_official = spearman_rows(direction * factor_off, labels_off)
         def summarize(daily):
             if daily.empty:
                 return {"days": 0}
@@ -205,13 +247,22 @@ def main(argv=None) -> int:
             "full_market": summarize(daily_full),
             "adv20_liquid": summarize(daily_liq),
         }
+        if official_members is not None:
+            results[fid]["official_cn_liquid_a"] = summarize(daily_official)
         if args.dump_daily:
             merged_daily = pd.merge(
                 daily_full.rename(columns={"ic": "ic_full", "n": "n_full"}),
                 daily_liq.rename(columns={"ic": "ic_liquid", "n": "n_liquid"}),
                 on="signal_date",
                 how="outer",
-            ).sort_values("signal_date")
+            )
+            if official_members is not None and not daily_official.empty:
+                merged_daily = merged_daily.merge(
+                    daily_official.rename(columns={"ic": "ic_official", "n": "n_official"}),
+                    on="signal_date",
+                    how="outer",
+                )
+            merged_daily = merged_daily.sort_values("signal_date")
             merged_daily["signal_date"] = merged_daily["signal_date"].dt.strftime("%Y-%m-%d")
             merged_daily.to_csv(args.output / f"daily_ic_{fid}.csv", index=False)
         print(f"{fid}: full={results[fid]['full_market']} liquid={results[fid]['adv20_liquid']}", flush=True)
@@ -224,6 +275,7 @@ def main(argv=None) -> int:
         "universe_variants": {
             "full_market": "every SH/SZ code with a valid adjusted open on the signal date",
             "adv20_liquid": "full market minus bottom-20% adv20 (approximation of cn_liquid_a until pre-2020 universe backfill lands)",
+            **({"official_cn_liquid_a": "official V2 universe_daily cn_liquid_a members, latest data_version per signal_date"} if official_members is not None else {}),
         },
         "candidates": results,
         "database_writes": False,

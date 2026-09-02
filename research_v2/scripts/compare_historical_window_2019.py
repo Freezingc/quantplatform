@@ -62,8 +62,15 @@ def main(argv=None) -> int:
         base = baseline.get(fid, {})
         full_cls = classify(res["full_market"])
         liq_cls = classify(res["adv20_liquid"])
-        overall = full_cls if full_cls == liq_cls else (
-            "COLLAPSE" if "COLLAPSE" in (full_cls, liq_cls) else "WATCH"
+        official = res.get("official_cn_liquid_a")
+        off_cls = classify(official) if official else None
+        if off_cls is not None:
+            # official universe supersedes the adv20 approximation when present
+            pair = (full_cls, off_cls)
+        else:
+            pair = (full_cls, liq_cls)
+        overall = pair[0] if pair[0] == pair[1] else (
+            "COLLAPSE" if "COLLAPSE" in pair else "WATCH"
         )
         rows.append({
             "factor_id": fid,
@@ -75,8 +82,11 @@ def main(argv=None) -> int:
             "icir_full_market": res["full_market"].get("icir"),
             "ic_adv20_liquid": res["adv20_liquid"].get("mean_rank_ic"),
             "icir_adv20_liquid": res["adv20_liquid"].get("icir"),
+            "ic_official_cn_liquid_a": official.get("mean_rank_ic") if official else None,
+            "icir_official_cn_liquid_a": official.get("icir") if official else None,
             "classify_full": full_cls,
             "classify_liquid": liq_cls,
+            "classify_official": off_cls,
             "classify_overall": overall,
         })
 
@@ -85,7 +95,7 @@ def main(argv=None) -> int:
 
     header = (
         f"{'factor':28s} {'trnICIR':>7s} {'valICIR':>7s} | "
-        f"{'19fullIC':>8s} {'19fICIR':>7s} {'19liqIC':>8s} {'19lICIR':>7s} | verdict"
+        f"{'fullIC':>8s} {'fICIR':>7s} {'liqIC':>8s} {'lICIR':>7s} {'offIC':>8s} {'oICIR':>7s} | verdict"
     )
     print(header)
     print("-" * len(header))
@@ -94,8 +104,9 @@ def main(argv=None) -> int:
             f"{r['factor_id']:28s} "
             f"{str(r['train_icir_2020_2024']):>7s} {str(r['val_icir_2025']):>7s} | "
             f"{str(r['ic_full_market']):>8s} {str(r['icir_full_market']):>7s} "
-            f"{str(r['ic_adv20_liquid']):>8s} {str(r['icir_adv20_liquid']):>7s} | "
-            f"{r['classify_overall']} (full={r['classify_full']}, liq={r['classify_liquid']})"
+            f"{str(r['ic_adv20_liquid']):>8s} {str(r['icir_adv20_liquid']):>7s} "
+            f"{str(r['ic_official_cn_liquid_a']):>8s} {str(r['icir_official_cn_liquid_a']):>7s} | "
+            f"{r['classify_overall']} (full={r['classify_full']}, liq={r['classify_liquid']}, off={r['classify_official']})"
         )
 
     summary = {
