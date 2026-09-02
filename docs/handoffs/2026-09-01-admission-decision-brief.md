@@ -398,7 +398,9 @@ READY 池维持 **18 个候选**，探索至此已覆盖：通过池、近阈带
 - **方案 A（推荐）**：以隔离规范版本 `yeslab_443_reg30_max20_v1` **替换**规范 443 进入准入评审（规范版本被取代/拒绝），附加条件：(a) 大盘股主导体制监控（2017 型：沪深300-中证500 60 日收益差高企）；(b) 准入前完成标准九边冗余审计。
 - **方案 B（保守）**：维持 MONITORED，修复证据留档。
 
-产物：`regime_repair_443_v1/{window_scan_2017, window_scan_2017_v2, stage1, stage2, alpha443_repair_summary.json}`；台账 443 条目已加注 `regime_repair_2017_collapse`。
+**冗余预检（4s 补充）**：规范 443 与修复变体的日度截面 Spearman 中位数训练期 **0.639**、验证期 **0.607**——远低于 0.95 迁移阈值，修复变体实质上是**一个新因子**（相关水平等同于独立候选对）。因此规范 443 的九边审计**不可迁移**：方案 A 的前置九边冗余审计是硬性要求，不可豁免。
+
+产物：`regime_repair_443_v1/{window_scan_2017, window_scan_2017_v2, stage1, stage2, redundancy_train, redundancy_validation, alpha443_repair_summary.json}`；台账 443 条目已加注 `regime_repair_2017_collapse`。
 
 ## 5. 待人工决策事项
 

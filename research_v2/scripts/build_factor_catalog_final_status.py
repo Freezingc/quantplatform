@@ -220,7 +220,7 @@ def main() -> None:
                 "train_2020_2024": {"canonical": ev["train_2020_2024_aggregate"]["canonical"], "repair": ev["train_2020_2024_aggregate"]["repair"], "annual_repair": ev["train_annual_gate"]["repair"]},
                 "validation_2025": {"canonical": ev["validation_2025"]["canonical"], "repair": ev["validation_2025"]["repair"]},
                 "status": "REPAIR_AVAILABLE_AWAITING_DECISION",
-                "conditions": ["large-cap-dominance regime monitor", "nine-edge redundancy audit before admission"],
+                "conditions": ["large-cap-dominance regime monitor", "nine-edge redundancy audit before admission (mandatory: variant correlates only 0.639 train / 0.607 validation with canonical, canonical nine-edge does not transfer)"],
             }
         entries.append(entry)
 

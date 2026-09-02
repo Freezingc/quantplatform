@@ -4279,7 +4279,7 @@
         "status": "REPAIR_AVAILABLE_AWAITING_DECISION",
         "conditions": [
           "large-cap-dominance regime monitor",
-          "nine-edge redundancy audit before admission"
+          "nine-edge redundancy audit before admission (mandatory: variant correlates only 0.639 train / 0.607 validation with canonical, canonical nine-edge does not transfer)"
         ]
       }
     },
