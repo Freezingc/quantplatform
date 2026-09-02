@@ -1,0 +1,63 @@
+{
+  "scope": "TUSHARE_SHSZ_PASS7_TRAIN_EVIDENCE_V1",
+  "purpose": "Training-window evaluation of the seven GP factors that passed the historical 2020 screen predictive gate but were never canonically evaluated (discovered during the catalog final-status consolidation).",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "key_finding": "Historical screen ICIR 0.51-0.69 confirmed canonically (0.50-0.66); five pass the strict annual gate.",
+  "candidates": {
+    "yeslab_371": {
+      "factor_name": "GP_002",
+      "train_signed_icir": 0.5239,
+      "annual": "4/5 (2024 fail 0.44)",
+      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+    },
+    "yeslab_372": {
+      "factor_name": "GP_003",
+      "train_signed_icir": 0.5942,
+      "annual": "5/5",
+      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+    },
+    "yeslab_379": {
+      "factor_name": "GP_010",
+      "train_signed_icir": 0.6205,
+      "annual": "5/5",
+      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+    },
+    "yeslab_384": {
+      "factor_name": "GP_015",
+      "train_signed_icir": 0.529,
+      "annual": "4/5 (2021 fail 0.33)",
+      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+    },
+    "yeslab_397": {
+      "factor_name": "GP_028",
+      "train_signed_icir": 0.5112,
+      "annual": "2/5",
+      "decision": "REJECT_STRICT_ANNUAL_STABILITY_2_OF_5"
+    },
+    "yeslab_406": {
+      "factor_name": "GP_037",
+      "train_signed_icir": 0.6601,
+      "annual": "5/5",
+      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+    },
+    "yeslab_423": {
+      "factor_name": "GP_054",
+      "train_signed_icir": 0.5024,
+      "annual": "3/5",
+      "decision": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5"
+    }
+  },
+  "artifacts": [
+    "tushare_shsz_pass7_formal9_train_2020_2024_v1",
+    "tushare_shsz_pass7_formal9_validation_2025_v1"
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false,
+  "evidence_commit": "7121b4782a3d9eb411e3643c1b1cf2f0c6ff1619"
+}

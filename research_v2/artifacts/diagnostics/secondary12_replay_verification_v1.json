@@ -1,0 +1,35 @@
+{
+  "scope": "SECONDARY12_FORMULA_MAPPING_VERIFICATION_V1",
+  "purpose": "Replay verification of the twelve secondary factors (screen ICIR >= 0.5, previously unclassified) against historical YesLab values over 2025-01, establishing which factor_id->calculator mappings are machine-precision correct.",
+  "window": "2025-01-02/2025-01-31",
+  "market_scope": "full market SH/SZ (+BJ codes present in source)",
+  "verified_machine_precision": [
+    "yeslab_46 月换手波动 (1.3e-11)",
+    "yeslab_140 日换手率波动1个月 (6.3e-12)",
+    "yeslab_209 量价齐飞 (1.1e-10)",
+    "yeslab_211 量价齐飞-开盘价 (1.0e-10)",
+    "yeslab_214 量价齐飞乘换手率5日均值 (2.3e-10)"
+  ],
+  "verified_note": "Overlap comparisons at machine precision; BLOCKED labels reflect minor Tushare market coverage gaps (a few codes), not formula mismatch. These five mappings are trusted for canonical evaluation.",
+  "wrong_mapping": [
+    "yeslab_83 Alpha74 (100% mismatch, max_abs 1.09)",
+    "yeslab_212 量价齐飞-排名 (99.99% mismatch, max_abs 1.49)"
+  ],
+  "partial_mismatch_needs_investigation": [
+    "yeslab_252 1个月上行波动率 (19%)",
+    "yeslab_260 3个月上行波动率 (11%)",
+    "yeslab_271 1个月日内振幅标准差 (15%)",
+    "yeslab_272 3个月日内振幅标准差 (8%)"
+  ],
+  "industry_class": [
+    "yeslab_359 行业标准化绝对值乘行业波动率 (100% mismatch; industry classification PIT vs historical static)"
+  ],
+  "next_step": "Canonical train+validation evaluation of the five verified factors.",
+  "artifacts": [
+    "formula_replay_secondary12_tushare_2025-01_v1.json"
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}

@@ -1,0 +1,3992 @@
+{
+  "scope": "FACTOR_CATALOG_FINAL_STATUS_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "catalog_factor_count": 487,
+  "status_class_counts": {
+    "SCREENED_ONLY": 403,
+    "REJECT_OR_BLOCKED": 53,
+    "FORMAL": 9,
+    "MONITORED": 4,
+    "READY": 18
+  },
+  "summary": {
+    "formal_nine": [
+      "yeslab_155",
+      "yeslab_376",
+      "yeslab_380",
+      "yeslab_396",
+      "yeslab_431",
+      "yeslab_437",
+      "yeslab_442",
+      "yeslab_94",
+      "yeslab_98"
+    ],
+    "ready_candidates": [
+      "yeslab_114",
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_363",
+      "yeslab_370",
+      "yeslab_375",
+      "yeslab_381",
+      "yeslab_389",
+      "yeslab_390",
+      "yeslab_395",
+      "yeslab_398",
+      "yeslab_405",
+      "yeslab_425",
+      "yeslab_443",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_484",
+      "yeslab_96"
+    ],
+    "monitored": [
+      "yeslab_167",
+      "yeslab_208",
+      "yeslab_429",
+      "yeslab_95"
+    ],
+    "rejected_or_blocked_count": 53
+  },
+  "status_definitions": {
+    "FORMAL": "already in the formal nine factor set",
+    "READY": "admission-ready with complete evidence; awaiting explicit human admission decision",
+    "MONITORED": "research candidate kept under monitoring (annual stability etc.), not admission-ready",
+    "REJECT_OR_BLOCKED": "rejected or blocked with a documented reason",
+    "SCREENED_ONLY": "only the historical 2020 screen exists; no canonical evaluation"
+  },
+  "entries": [
+    {
+      "factor_id": "yeslab_0",
+      "factor_name": "test_factor",
+      "screen_2020_signed_icir": 0.4713,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_1",
+      "factor_name": "Alpha1",
+      "screen_2020_signed_icir": 0.2325,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_2",
+      "factor_name": "Alpha2",
+      "screen_2020_signed_icir": 0.0289,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_3",
+      "factor_name": "Alpha3",
+      "screen_2020_signed_icir": 0.197,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_4",
+      "factor_name": "Alpha4",
+      "screen_2020_signed_icir": 0.1634,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_5",
+      "factor_name": "Alpha5",
+      "screen_2020_signed_icir": 0.4742,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_6",
+      "factor_name": "Alpha6",
+      "screen_2020_signed_icir": 0.0806,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_7",
+      "factor_name": "Alpha7",
+      "screen_2020_signed_icir": 0.1465,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_8",
+      "factor_name": "Alpha8",
+      "screen_2020_signed_icir": 0.1463,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_9",
+      "factor_name": "Alpha9",
+      "screen_2020_signed_icir": 0.0986,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_10",
+      "factor_name": "Alpha10",
+      "screen_2020_signed_icir": 0.1635,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_11",
+      "factor_name": "Alpha11",
+      "screen_2020_signed_icir": 0.0741,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_12",
+      "factor_name": "Alpha12",
+      "screen_2020_signed_icir": 0.114,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_13",
+      "factor_name": "Alpha13",
+      "screen_2020_signed_icir": 0.0577,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_14",
+      "factor_name": "Alpha14",
+      "screen_2020_signed_icir": 0.1712,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_15",
+      "factor_name": "Alpha15",
+      "screen_2020_signed_icir": 0.2037,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_16",
+      "factor_name": "Alpha16",
+      "screen_2020_signed_icir": 0.4951,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_17",
+      "factor_name": "Alpha17",
+      "screen_2020_signed_icir": 0.1435,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_18",
+      "factor_name": "Alpha18",
+      "screen_2020_signed_icir": 0.1885,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_19",
+      "factor_name": "Alpha19",
+      "screen_2020_signed_icir": 0.1885,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_20",
+      "factor_name": "Alpha20",
+      "screen_2020_signed_icir": 0.2026,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_21",
+      "factor_name": "Alpha21",
+      "screen_2020_signed_icir": 0.1576,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_22",
+      "factor_name": "Alpha22",
+      "screen_2020_signed_icir": 0.1732,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_23",
+      "factor_name": "Alpha23",
+      "screen_2020_signed_icir": 0.1038,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_24",
+      "factor_name": "Alpha24",
+      "screen_2020_signed_icir": 0.1599,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_25",
+      "factor_name": "Alpha25",
+      "screen_2020_signed_icir": 0.0554,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_26",
+      "factor_name": "Alpha26",
+      "screen_2020_signed_icir": 0.1381,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_27",
+      "factor_name": "Alpha27",
+      "screen_2020_signed_icir": 0.2247,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_28",
+      "factor_name": "Alpha28",
+      "screen_2020_signed_icir": 0.0546,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_29",
+      "factor_name": "Alpha29",
+      "screen_2020_signed_icir": 0.2023,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_30",
+      "factor_name": "Alpha31",
+      "screen_2020_signed_icir": 0.1884,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_31",
+      "factor_name": "Alpha32",
+      "screen_2020_signed_icir": 0.6093,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_CANONICAL_STRICT_GATE (train ICIR 0.20-class fail, see alpha31/alpha62 rematerialization audit)",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_32",
+      "factor_name": "Alpha33",
+      "screen_2020_signed_icir": 0.1465,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_33",
+      "factor_name": "Alpha34",
+      "screen_2020_signed_icir": 0.1884,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_34",
+      "factor_name": "Alpha35",
+      "screen_2020_signed_icir": 0.3526,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_35",
+      "factor_name": "Alpha36",
+      "screen_2020_signed_icir": 0.4839,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_36",
+      "factor_name": "Alpha37",
+      "screen_2020_signed_icir": 0.1292,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_37",
+      "factor_name": "Alpha38",
+      "screen_2020_signed_icir": 0.1312,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_38",
+      "factor_name": "Alpha40",
+      "screen_2020_signed_icir": 0.1692,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_39",
+      "factor_name": "Alpha39",
+      "screen_2020_signed_icir": 0.0019,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_40",
+      "factor_name": "Alpha41",
+      "screen_2020_signed_icir": 0.1008,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_41",
+      "factor_name": "Alpha42",
+      "screen_2020_signed_icir": 0.4643,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_42",
+      "factor_name": "Alpha43",
+      "screen_2020_signed_icir": 0.2116,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_43",
+      "factor_name": "Alpha44",
+      "screen_2020_signed_icir": 0.2484,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_44",
+      "factor_name": "Alpha45",
+      "screen_2020_signed_icir": 0.162,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_45",
+      "factor_name": "月均换手",
+      "screen_2020_signed_icir": 0.4348,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_46",
+      "factor_name": "月换手波动",
+      "screen_2020_signed_icir": 0.5887,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_47",
+      "factor_name": "月度Amihud非流动性",
+      "screen_2020_signed_icir": 0.0933,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_48",
+      "factor_name": "加速换手",
+      "screen_2020_signed_icir": 0.2457,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_49",
+      "factor_name": "价格上涨加速换手",
+      "screen_2020_signed_icir": 0.2278,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_50",
+      "factor_name": "Alpha46",
+      "screen_2020_signed_icir": 0.1963,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_51",
+      "factor_name": "Alpha48",
+      "screen_2020_signed_icir": 0.2393,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_52",
+      "factor_name": "Alpha49",
+      "screen_2020_signed_icir": 0.1713,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_53",
+      "factor_name": "Alpha50",
+      "screen_2020_signed_icir": 0.171,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_54",
+      "factor_name": "Alpha51",
+      "screen_2020_signed_icir": 0.1713,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_55",
+      "factor_name": "Alpha52",
+      "screen_2020_signed_icir": 0.1377,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_56",
+      "factor_name": "Alpha53",
+      "screen_2020_signed_icir": 0.1632,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_57",
+      "factor_name": "Alpha54",
+      "screen_2020_signed_icir": 0.1081,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_58",
+      "factor_name": "Alpha55",
+      "screen_2020_signed_icir": 0.082,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_59",
+      "factor_name": "Alpha56",
+      "screen_2020_signed_icir": 0.1308,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_60",
+      "factor_name": "Alpha57",
+      "screen_2020_signed_icir": 0.0343,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_61",
+      "factor_name": "Alpha58",
+      "screen_2020_signed_icir": 0.1303,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_62",
+      "factor_name": "Alpha60",
+      "screen_2020_signed_icir": 0.2172,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_63",
+      "factor_name": "Alpha59",
+      "screen_2020_signed_icir": 0.2284,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_64",
+      "factor_name": "价格下跌加速换手",
+      "screen_2020_signed_icir": 0.1785,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_65",
+      "factor_name": "成交量上升加速换手",
+      "screen_2020_signed_icir": 0.2772,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_66",
+      "factor_name": "成交量下降加速换手",
+      "screen_2020_signed_icir": 0.2029,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_67",
+      "factor_name": "BP账面市值比",
+      "screen_2020_signed_icir": 0.0282,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_68",
+      "factor_name": "Quart_EP单季度市盈率倒数",
+      "screen_2020_signed_icir": 0.1194,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_69",
+      "factor_name": "TTM_EP滚动市盈率倒数",
+      "screen_2020_signed_icir": 0.1797,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_70",
+      "factor_name": "Alpha61",
+      "screen_2020_signed_icir": 0.2058,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_71",
+      "factor_name": "Alpha62",
+      "screen_2020_signed_icir": 0.5365,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_CANONICAL_STRICT_GATE (alpha62 rematerialization audit)",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_72",
+      "factor_name": "Alpha63",
+      "screen_2020_signed_icir": 0.1194,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_73",
+      "factor_name": "Alpha64",
+      "screen_2020_signed_icir": 0.4169,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_74",
+      "factor_name": "Alpha65",
+      "screen_2020_signed_icir": 0.1675,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_75",
+      "factor_name": "Alpha66",
+      "screen_2020_signed_icir": 0.1675,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_76",
+      "factor_name": "Alpha67",
+      "screen_2020_signed_icir": 0.1497,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_77",
+      "factor_name": "Alpha68",
+      "screen_2020_signed_icir": 0.1203,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_78",
+      "factor_name": "Alpha69",
+      "screen_2020_signed_icir": 0.2307,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_79",
+      "factor_name": "Alpha70",
+      "screen_2020_signed_icir": 0.2996,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_80",
+      "factor_name": "Alpha71",
+      "screen_2020_signed_icir": 0.2301,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_81",
+      "factor_name": "Alpha72",
+      "screen_2020_signed_icir": 0.0129,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_82",
+      "factor_name": "Alpha73",
+      "screen_2020_signed_icir": 0.1074,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_83",
+      "factor_name": "Alpha74",
+      "screen_2020_signed_icir": 0.6382,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_84",
+      "factor_name": "Alpha76",
+      "screen_2020_signed_icir": 0.041,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_85",
+      "factor_name": "Alpha77",
+      "screen_2020_signed_icir": 0.1034,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_86",
+      "factor_name": "Alpha78",
+      "screen_2020_signed_icir": 0.1522,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_87",
+      "factor_name": "Alpha79",
+      "screen_2020_signed_icir": 0.1678,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_88",
+      "factor_name": "Alpha80",
+      "screen_2020_signed_icir": 0.1481,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_89",
+      "factor_name": "SP市销率倒数",
+      "screen_2020_signed_icir": 0.0032,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_90",
+      "factor_name": "TTM_SP滚动市销率倒数",
+      "screen_2020_signed_icir": 0.0397,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_91",
+      "factor_name": "股息率",
+      "screen_2020_signed_icir": 0.3313,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_92",
+      "factor_name": "1个月真实波动率",
+      "screen_2020_signed_icir": 0.0542,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_93",
+      "factor_name": "3个月真实波动率",
+      "screen_2020_signed_icir": 0.0814,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_94",
+      "factor_name": "日间反转-波动翻转",
+      "screen_2020_signed_icir": 0.451,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_95",
+      "factor_name": "日间反转-换手翻转",
+      "screen_2020_signed_icir": 0.4409,
+      "screen_2020_days": 243,
+      "final_status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_2_OF_5",
+      "status_class": "MONITORED"
+    },
+    {
+      "factor_id": "yeslab_96",
+      "factor_name": "修正日间反转",
+      "screen_2020_signed_icir": 0.479,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
+      "candidate_id": "yeslab_96_canonical_replay_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_97",
+      "factor_name": "日内反转",
+      "screen_2020_signed_icir": 0.1601,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_98",
+      "factor_name": "日内反转-波动翻转",
+      "screen_2020_signed_icir": 0.512,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_99",
+      "factor_name": "Alpha81",
+      "screen_2020_signed_icir": 0.4142,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_100",
+      "factor_name": "Alpha82",
+      "screen_2020_signed_icir": 0.0278,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_101",
+      "factor_name": "换手率加权收益率（1个月内）",
+      "screen_2020_signed_icir": 0.3265,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_102",
+      "factor_name": "换手率加权收益率（3个月内）",
+      "screen_2020_signed_icir": 0.3568,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_103",
+      "factor_name": "换手率加权收益率（6个月内）",
+      "screen_2020_signed_icir": 0.2242,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_104",
+      "factor_name": "换手率加权收益率（12个月内）",
+      "screen_2020_signed_icir": 0.2573,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_105",
+      "factor_name": "Alpha83",
+      "screen_2020_signed_icir": 0.6334,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_CANONICAL_ANNUAL_3_OF_5 (alpha83 rematerialization audit)",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_106",
+      "factor_name": "Alpha84",
+      "screen_2020_signed_icir": 0.3477,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_107",
+      "factor_name": "Alpha85",
+      "screen_2020_signed_icir": 0.1379,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_108",
+      "factor_name": "Alpha86",
+      "screen_2020_signed_icir": 0.0696,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_109",
+      "factor_name": "Alpha87",
+      "screen_2020_signed_icir": 0.1189,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_110",
+      "factor_name": "Alpha88",
+      "screen_2020_signed_icir": 0.2226,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_111",
+      "factor_name": "Alpha89",
+      "screen_2020_signed_icir": 0.1646,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_112",
+      "factor_name": "Alpha90",
+      "screen_2020_signed_icir": 0.4515,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_113",
+      "factor_name": "惊恐收益",
+      "screen_2020_signed_icir": 0.2812,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_114",
+      "factor_name": "惊恐波动",
+      "screen_2020_signed_icir": 0.5021,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
+      "candidate_id": "yeslab_114_tushare_shsz_v2",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_115",
+      "factor_name": "原始惊恐",
+      "screen_2020_signed_icir": 0.4712,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_116",
+      "factor_name": "注意力衰减-惊恐收益",
+      "screen_2020_signed_icir": 0.3712,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_117",
+      "factor_name": "注意力衰减-惊恐波动",
+      "screen_2020_signed_icir": 0.4113,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_118",
+      "factor_name": "注意力衰减-惊恐",
+      "screen_2020_signed_icir": 0.4414,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_119",
+      "factor_name": "halpha",
+      "screen_2020_signed_icir": 0.1924,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_120",
+      "factor_name": "1个月收益率",
+      "screen_2020_signed_icir": 0.2216,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_121",
+      "factor_name": "3个月收益率",
+      "screen_2020_signed_icir": 0.1734,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_122",
+      "factor_name": "6个月收益率",
+      "screen_2020_signed_icir": 0.0299,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_123",
+      "factor_name": "12个月收益率",
+      "screen_2020_signed_icir": 0.0532,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_124",
+      "factor_name": "TestFactor",
+      "screen_2020_signed_icir": 0.4713,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_126",
+      "factor_name": "Alpha47",
+      "screen_2020_signed_icir": 0.0069,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_127",
+      "factor_name": "Alpha75",
+      "screen_2020_signed_icir": null,
+      "screen_2020_days": 0,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_128",
+      "factor_name": "Alpha91",
+      "screen_2020_signed_icir": 0.1266,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_129",
+      "factor_name": "Alpha92",
+      "screen_2020_signed_icir": 0.1564,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_130",
+      "factor_name": "指数衰减换手率加权收益率（1个月内）",
+      "screen_2020_signed_icir": 0.3243,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_131",
+      "factor_name": "指数衰减换手率加权收益率（3个月内）",
+      "screen_2020_signed_icir": 0.3632,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_132",
+      "factor_name": "指数衰减换手率加权收益率（6个月内）",
+      "screen_2020_signed_icir": 0.2385,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_133",
+      "factor_name": "指数衰减换手率加权收益率（12个月内）",
+      "screen_2020_signed_icir": 0.2689,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_134",
+      "factor_name": "日均换手率（1个月内）",
+      "screen_2020_signed_icir": 0.4307,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_135",
+      "factor_name": "日均换手率（3个月内）",
+      "screen_2020_signed_icir": 0.3076,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_136",
+      "factor_name": "日均换手率（6个月内）",
+      "screen_2020_signed_icir": 0.2438,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_137",
+      "factor_name": "日均换手率偏离（1个月内）",
+      "screen_2020_signed_icir": 0.3815,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_138",
+      "factor_name": "日均换手率偏离（3个月内）",
+      "screen_2020_signed_icir": 0.3308,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_139",
+      "factor_name": "日均换手率偏离（6个月内）",
+      "screen_2020_signed_icir": 0.22,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_140",
+      "factor_name": "日换手率波动（1个月内）",
+      "screen_2020_signed_icir": 0.5856,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_141",
+      "factor_name": "日换手率波动（3个月内）",
+      "screen_2020_signed_icir": 0.448,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_142",
+      "factor_name": "日换手率波动（6个月内）",
+      "screen_2020_signed_icir": 0.3683,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_143",
+      "factor_name": "日换手率波动偏离（1个月内）",
+      "screen_2020_signed_icir": 0.413,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_144",
+      "factor_name": "日换手率波动偏离（3个月内）",
+      "screen_2020_signed_icir": 0.4177,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_145",
+      "factor_name": "日换手率波动偏离（6个月内）",
+      "screen_2020_signed_icir": 0.3199,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_146",
+      "factor_name": "日收益率波动（4个月内）",
+      "screen_2020_signed_icir": 0.3434,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_147",
+      "factor_name": "日内最大涨幅波动率（4个月内）",
+      "screen_2020_signed_icir": 0.4102,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_148",
+      "factor_name": "日内最大跌幅波动率（4个月内）",
+      "screen_2020_signed_icir": 0.2923,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_149",
+      "factor_name": "涨跌幅波动率差（5个月内）",
+      "screen_2020_signed_icir": 0.4505,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_150",
+      "factor_name": "涨跌幅波动率和（5个月内）",
+      "screen_2020_signed_icir": 0.3282,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_151",
+      "factor_name": "隔夜跳空",
+      "screen_2020_signed_icir": 0.2037,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_152",
+      "factor_name": "隔夜跳空10日均值",
+      "screen_2020_signed_icir": 0.1003,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_153",
+      "factor_name": "隔夜跳空绝对值10日均值",
+      "screen_2020_signed_icir": 0.3682,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_154",
+      "factor_name": "纯跳空",
+      "screen_2020_signed_icir": 0.3667,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_155",
+      "factor_name": "跳空去均值绝对值",
+      "screen_2020_signed_icir": 0.5401,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_156",
+      "factor_name": "EP历史分位数（2季度）",
+      "screen_2020_signed_icir": 0.258,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_157",
+      "factor_name": "BP历史分位数（2季度）",
+      "screen_2020_signed_icir": 0.1667,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_158",
+      "factor_name": "SP历史分位数（2季度）",
+      "screen_2020_signed_icir": 0.1786,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_159",
+      "factor_name": "dv_ttm股息率",
+      "screen_2020_signed_icir": 0.0925,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_160",
+      "factor_name": "1个月隔夜动量",
+      "screen_2020_signed_icir": 0.1443,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_161",
+      "factor_name": "Alpha93",
+      "screen_2020_signed_icir": 0.1298,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_162",
+      "factor_name": "Alpha94",
+      "screen_2020_signed_icir": 0.3138,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_163",
+      "factor_name": "Alpha95",
+      "screen_2020_signed_icir": 0.2779,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_164",
+      "factor_name": "Alpha96",
+      "screen_2020_signed_icir": 0.0141,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_165",
+      "factor_name": "Alpha97",
+      "screen_2020_signed_icir": 0.5474,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRICT_ANNUAL_1_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_166",
+      "factor_name": "Alpha98",
+      "screen_2020_signed_icir": 0.105,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_167",
+      "factor_name": "Alpha99",
+      "screen_2020_signed_icir": 0.5285,
+      "screen_2020_days": 243,
+      "final_status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_3_OF_5",
+      "status_class": "MONITORED"
+    },
+    {
+      "factor_id": "yeslab_168",
+      "factor_name": "Alpha100",
+      "screen_2020_signed_icir": 0.5122,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRICT_ANNUAL_1_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_169",
+      "factor_name": "Alpha101",
+      "screen_2020_signed_icir": 0.1918,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_170",
+      "factor_name": "Alpha102",
+      "screen_2020_signed_icir": 0.158,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_171",
+      "factor_name": "Alpha103",
+      "screen_2020_signed_icir": 0.1809,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_172",
+      "factor_name": "Alpha104",
+      "screen_2020_signed_icir": 0.134,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_173",
+      "factor_name": "Alpha105",
+      "screen_2020_signed_icir": 0.4784,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_174",
+      "factor_name": "Alpha106",
+      "screen_2020_signed_icir": 0.2652,
+      "screen_2020_days": 223,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_175",
+      "factor_name": "Alpha107",
+      "screen_2020_signed_icir": 0.1178,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_176",
+      "factor_name": "Alpha108",
+      "screen_2020_signed_icir": 0.1196,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_177",
+      "factor_name": "Alpha109",
+      "screen_2020_signed_icir": 0.3069,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_178",
+      "factor_name": "Alpha110",
+      "screen_2020_signed_icir": 0.1792,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_179",
+      "factor_name": "1年日内动量",
+      "screen_2020_signed_icir": 0.0592,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_180",
+      "factor_name": "1个月日内动量",
+      "screen_2020_signed_icir": 0.2709,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_181",
+      "factor_name": "1年去涨跌停动量",
+      "screen_2020_signed_icir": 0.2998,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_182",
+      "factor_name": "1个月去涨跌停动量",
+      "screen_2020_signed_icir": 0.0828,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_183",
+      "factor_name": "1年隔夜动量",
+      "screen_2020_signed_icir": 0.4022,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_184",
+      "factor_name": "Alpha111",
+      "screen_2020_signed_icir": 0.1457,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_185",
+      "factor_name": "Alpha112",
+      "screen_2020_signed_icir": 0.1686,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_186",
+      "factor_name": "Alpha113",
+      "screen_2020_signed_icir": 0.1648,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_187",
+      "factor_name": "Alpha114",
+      "screen_2020_signed_icir": 0.1798,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_188",
+      "factor_name": "Alpha115",
+      "screen_2020_signed_icir": 0.0796,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_189",
+      "factor_name": "Alpha116",
+      "screen_2020_signed_icir": 0.1785,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_190",
+      "factor_name": "Alpha117",
+      "screen_2020_signed_icir": 0.1053,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_191",
+      "factor_name": "Alpha118",
+      "screen_2020_signed_icir": 0.2367,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_192",
+      "factor_name": "Alpha119",
+      "screen_2020_signed_icir": 0.1425,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_193",
+      "factor_name": "Alpha120",
+      "screen_2020_signed_icir": 0.0014,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_194",
+      "factor_name": "Alpha121",
+      "screen_2020_signed_icir": 0.0249,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_195",
+      "factor_name": "Alpha122",
+      "screen_2020_signed_icir": 0.1451,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_196",
+      "factor_name": "Alpha123",
+      "screen_2020_signed_icir": 0.0036,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_197",
+      "factor_name": "Alpha124",
+      "screen_2020_signed_icir": 0.1217,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_198",
+      "factor_name": "Alpha125",
+      "screen_2020_signed_icir": 0.0655,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_199",
+      "factor_name": "Alpha126",
+      "screen_2020_signed_icir": 0.1807,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_200",
+      "factor_name": "Alpha127",
+      "screen_2020_signed_icir": 0.0915,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_201",
+      "factor_name": "Alpha128",
+      "screen_2020_signed_icir": 0.1873,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_202",
+      "factor_name": "Alpha129",
+      "screen_2020_signed_icir": 0.0737,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_203",
+      "factor_name": "Alpha130",
+      "screen_2020_signed_icir": 0.1394,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_204",
+      "factor_name": "60日价格均线乖离率",
+      "screen_2020_signed_icir": 0.2058,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_205",
+      "factor_name": "60日成交量均线乖离率",
+      "screen_2020_signed_icir": 0.2264,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_206",
+      "factor_name": "60日成交量去均值相对偏离",
+      "screen_2020_signed_icir": 0.655,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
+      "candidate_id": "yeslab_206_median_abs_v2",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_207",
+      "factor_name": "60日价格均值加3倍标准差乖离率",
+      "screen_2020_signed_icir": 0.0272,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_208",
+      "factor_name": "价格均值标准差乖离乘短期成交量波动",
+      "screen_2020_signed_icir": 0.5064,
+      "screen_2020_days": 243,
+      "final_status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_1_OF_5",
+      "candidate_id": "yeslab_208_canonical_replay_v1",
+      "status_class": "MONITORED"
+    },
+    {
+      "factor_id": "yeslab_209",
+      "factor_name": "量价齐飞",
+      "screen_2020_signed_icir": 0.5421,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_210",
+      "factor_name": "量价齐飞-收益率",
+      "screen_2020_signed_icir": 0.0098,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_211",
+      "factor_name": "量价齐飞-开盘价",
+      "screen_2020_signed_icir": 0.5221,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_212",
+      "factor_name": "量价齐飞-排名",
+      "screen_2020_signed_icir": 0.5231,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_213",
+      "factor_name": "量价齐飞加换手率",
+      "screen_2020_signed_icir": 0.4899,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_AGGREGATE_ICIR_AND_ANNUAL_0_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_214",
+      "factor_name": "量价齐飞乘换手率5日均值",
+      "screen_2020_signed_icir": 0.6319,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_215",
+      "factor_name": "1年信息离散度动量",
+      "screen_2020_signed_icir": 0.1206,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_216",
+      "factor_name": "1个月路径调整动量",
+      "screen_2020_signed_icir": 0.1781,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_217",
+      "factor_name": "1个月信息离散度动量",
+      "screen_2020_signed_icir": 0.1456,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_218",
+      "factor_name": "1年路径调整动量",
+      "screen_2020_signed_icir": 0.0584,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_219",
+      "factor_name": "CFOA",
+      "screen_2020_signed_icir": 0.4294,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_220",
+      "factor_name": "ROA",
+      "screen_2020_signed_icir": 0.4369,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_221",
+      "factor_name": "ROAD",
+      "screen_2020_signed_icir": 0.4376,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_222",
+      "factor_name": "ROE",
+      "screen_2020_signed_icir": 0.3978,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_223",
+      "factor_name": "ROED",
+      "screen_2020_signed_icir": 0.425,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_224",
+      "factor_name": "ROIC",
+      "screen_2020_signed_icir": 0.3962,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_225",
+      "factor_name": "NP_Q_YOY",
+      "screen_2020_signed_icir": 0.1944,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_226",
+      "factor_name": "ROE_YOY",
+      "screen_2020_signed_icir": 0.4083,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_227",
+      "factor_name": "TA_YOY",
+      "screen_2020_signed_icir": 0.3282,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_228",
+      "factor_name": "TOE",
+      "screen_2020_signed_icir": 0.2755,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_229",
+      "factor_name": "ROICD",
+      "screen_2020_signed_icir": 0.4375,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_230",
+      "factor_name": "CFOAD",
+      "screen_2020_signed_icir": 0.0487,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_231",
+      "factor_name": "NP_QOQ",
+      "screen_2020_signed_icir": 0.4295,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_232",
+      "factor_name": "NP_Z",
+      "screen_2020_signed_icir": 0.1411,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_233",
+      "factor_name": "OCF_Q_YOY",
+      "screen_2020_signed_icir": 0.0533,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_234",
+      "factor_name": "OCF_YOY",
+      "screen_2020_signed_icir": 0.0152,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_235",
+      "factor_name": "OP_YOY",
+      "screen_2020_signed_icir": 0.114,
+      "screen_2020_days": 234,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_236",
+      "factor_name": "1个月振幅调整动量",
+      "screen_2020_signed_icir": 0.0727,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_237",
+      "factor_name": "1年振幅调整动量",
+      "screen_2020_signed_icir": 0.2759,
+      "screen_2020_days": 230,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_238",
+      "factor_name": "1个月横截面rank动量",
+      "screen_2020_signed_icir": 0.068,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_239",
+      "factor_name": "1年横截面rank动量",
+      "screen_2020_signed_icir": 0.3021,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_240",
+      "factor_name": "1个月时序rank动量",
+      "screen_2020_signed_icir": 0.0694,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_241",
+      "factor_name": "OR_Q_YOY",
+      "screen_2020_signed_icir": 0.3535,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_242",
+      "factor_name": "OR_YOY",
+      "screen_2020_signed_icir": 0.0384,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_243",
+      "factor_name": "OT_Z",
+      "screen_2020_signed_icir": 0.1839,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_244",
+      "factor_name": "GPMD",
+      "screen_2020_signed_icir": 0.3778,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_245",
+      "factor_name": "AT",
+      "screen_2020_signed_icir": 0.1988,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_246",
+      "factor_name": "ATD",
+      "screen_2020_signed_icir": 0.3265,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_247",
+      "factor_name": "PTCF_Z",
+      "screen_2020_signed_icir": 0.1839,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_248",
+      "factor_name": "近1年最高价日期距今的天数",
+      "screen_2020_signed_icir": 0.0453,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_249",
+      "factor_name": "1个月下行波动率",
+      "screen_2020_signed_icir": 0.2459,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_250",
+      "factor_name": "3个月下行波动率",
+      "screen_2020_signed_icir": 0.2506,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_251",
+      "factor_name": "6个月下行波动率",
+      "screen_2020_signed_icir": 0.2569,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_252",
+      "factor_name": "1个月上行波动率",
+      "screen_2020_signed_icir": 0.506,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_253",
+      "factor_name": "OPMD",
+      "screen_2020_signed_icir": 0.351,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_254",
+      "factor_name": "OPM_TTM",
+      "screen_2020_signed_icir": 0.0726,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_255",
+      "factor_name": "OPtoGR_TTM",
+      "screen_2020_signed_icir": 0.1005,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_256",
+      "factor_name": "RAT",
+      "screen_2020_signed_icir": 0.1193,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_257",
+      "factor_name": "RATD",
+      "screen_2020_signed_icir": 0.305,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_258",
+      "factor_name": "APR_TTM",
+      "screen_2020_signed_icir": 0.2136,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_259",
+      "factor_name": "APRD",
+      "screen_2020_signed_icir": 0.1184,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_260",
+      "factor_name": "3个月上行波动率",
+      "screen_2020_signed_icir": 0.5227,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_261",
+      "factor_name": "6个月上行波动率",
+      "screen_2020_signed_icir": 0.398,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_262",
+      "factor_name": "1个月日内振幅",
+      "screen_2020_signed_icir": 0.3567,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_263",
+      "factor_name": "3个月日内振幅",
+      "screen_2020_signed_icir": 0.2863,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_264",
+      "factor_name": "6个月日内振幅",
+      "screen_2020_signed_icir": 0.2124,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_265",
+      "factor_name": "CSR",
+      "screen_2020_signed_icir": 0.3111,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_266",
+      "factor_name": "CURD",
+      "screen_2020_signed_icir": 0.056,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_267",
+      "factor_name": "DAD",
+      "screen_2020_signed_icir": 0.0009,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_268",
+      "factor_name": "Debt_Asset",
+      "screen_2020_signed_icir": 0.0146,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_269",
+      "factor_name": "DTE",
+      "screen_2020_signed_icir": 0.0146,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_270",
+      "factor_name": "DTED",
+      "screen_2020_signed_icir": 0.019,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_271",
+      "factor_name": "1个月日内振幅标准差",
+      "screen_2020_signed_icir": 0.5673,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_272",
+      "factor_name": "3个月日内振幅标准差",
+      "screen_2020_signed_icir": 0.5662,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_273",
+      "factor_name": "6个月日内振幅标准差",
+      "screen_2020_signed_icir": 0.4775,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_274",
+      "factor_name": "1个月上影线均值",
+      "screen_2020_signed_icir": 0.3299,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_275",
+      "factor_name": "3个月上影线均值",
+      "screen_2020_signed_icir": 0.2505,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_276",
+      "factor_name": "BP_LR",
+      "screen_2020_signed_icir": 0.024,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_277",
+      "factor_name": "DP",
+      "screen_2020_signed_icir": 0.0136,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_278",
+      "factor_name": "EP_TTM",
+      "screen_2020_signed_icir": 0.1439,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_279",
+      "factor_name": "FCFP_TTM",
+      "screen_2020_signed_icir": 0.0273,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_280",
+      "factor_name": "NCFP_TTM",
+      "screen_2020_signed_icir": 0.052,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_281",
+      "factor_name": "OCFP_TTM",
+      "screen_2020_signed_icir": 0.062,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_282",
+      "factor_name": "Alpha131",
+      "screen_2020_signed_icir": 0.0309,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_283",
+      "factor_name": "Alpha132",
+      "screen_2020_signed_icir": 0.108,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_284",
+      "factor_name": "Alpha133",
+      "screen_2020_signed_icir": 0.1952,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_285",
+      "factor_name": "Alpha134",
+      "screen_2020_signed_icir": 0.2917,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_286",
+      "factor_name": "Alpha135",
+      "screen_2020_signed_icir": 0.1504,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_287",
+      "factor_name": "Alpha136",
+      "screen_2020_signed_icir": 0.3394,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_288",
+      "factor_name": "Alpha137",
+      "screen_2020_signed_icir": 0.1585,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_289",
+      "factor_name": "Alpha139",
+      "screen_2020_signed_icir": 0.4301,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_290",
+      "factor_name": "Alpha150",
+      "screen_2020_signed_icir": 0.2226,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_291",
+      "factor_name": "Alpha148",
+      "screen_2020_signed_icir": 0.0233,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_292",
+      "factor_name": "Alpha147",
+      "screen_2020_signed_icir": 0.1525,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_293",
+      "factor_name": "Alpha146",
+      "screen_2020_signed_icir": 0.1145,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_294",
+      "factor_name": "Alpha145",
+      "screen_2020_signed_icir": 0.3113,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_295",
+      "factor_name": "Alpha144",
+      "screen_2020_signed_icir": 0.0913,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_296",
+      "factor_name": "Alpha143",
+      "screen_2020_signed_icir": 0.3807,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_297",
+      "factor_name": "Alpha142",
+      "screen_2020_signed_icir": 0.0559,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_298",
+      "factor_name": "Alpha141",
+      "screen_2020_signed_icir": 0.2729,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_299",
+      "factor_name": "Alpha151",
+      "screen_2020_signed_icir": 0.1493,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_300",
+      "factor_name": "Alpha152",
+      "screen_2020_signed_icir": 0.1669,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_301",
+      "factor_name": "Alpha153",
+      "screen_2020_signed_icir": 0.1951,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_302",
+      "factor_name": "Alpha154",
+      "screen_2020_signed_icir": 0.0369,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_303",
+      "factor_name": "Alpha155",
+      "screen_2020_signed_icir": 0.0369,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_304",
+      "factor_name": "Alpha156",
+      "screen_2020_signed_icir": 0.1291,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_305",
+      "factor_name": "Alpha157",
+      "screen_2020_signed_icir": 0.1236,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_306",
+      "factor_name": "Alpha158",
+      "screen_2020_signed_icir": 0.3984,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_307",
+      "factor_name": "Alpha159",
+      "screen_2020_signed_icir": 0.4122,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_308",
+      "factor_name": "Alpha160",
+      "screen_2020_signed_icir": 0.4122,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_309",
+      "factor_name": "Alpha170",
+      "screen_2020_signed_icir": 0.0473,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_310",
+      "factor_name": "Alpha169",
+      "screen_2020_signed_icir": 0.1059,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_311",
+      "factor_name": "Alpha168",
+      "screen_2020_signed_icir": 0.2155,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_312",
+      "factor_name": "Alpha171",
+      "screen_2020_signed_icir": 0.1412,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_313",
+      "factor_name": "Alpha172",
+      "screen_2020_signed_icir": 0.1058,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_314",
+      "factor_name": "Alpha173",
+      "screen_2020_signed_icir": 0.1849,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_315",
+      "factor_name": "Alpha174",
+      "screen_2020_signed_icir": 0.0782,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_316",
+      "factor_name": "Alpha175",
+      "screen_2020_signed_icir": 0.0024,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_317",
+      "factor_name": "Alpha176",
+      "screen_2020_signed_icir": 0.422,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_318",
+      "factor_name": "Alpha177",
+      "screen_2020_signed_icir": 0.2074,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_319",
+      "factor_name": "Alpha178",
+      "screen_2020_signed_icir": 0.1482,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_320",
+      "factor_name": "Alpha179",
+      "screen_2020_signed_icir": 0.4117,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_321",
+      "factor_name": "Alpha180",
+      "screen_2020_signed_icir": 0.1224,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_322",
+      "factor_name": "Alpha183",
+      "screen_2020_signed_icir": 0.0138,
+      "screen_2020_days": 242,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_323",
+      "factor_name": "Alpha184",
+      "screen_2020_signed_icir": 0.2642,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_324",
+      "factor_name": "Alpha185",
+      "screen_2020_signed_icir": 0.3073,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_325",
+      "factor_name": "Alpha186",
+      "screen_2020_signed_icir": 0.3073,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_326",
+      "factor_name": "Alpha187",
+      "screen_2020_signed_icir": 0.0186,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_327",
+      "factor_name": "Alpha188",
+      "screen_2020_signed_icir": 0.0927,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_328",
+      "factor_name": "Alpha189",
+      "screen_2020_signed_icir": 0.006,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_329",
+      "factor_name": "Alpha190",
+      "screen_2020_signed_icir": 0.1173,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_330",
+      "factor_name": "Alpha191",
+      "screen_2020_signed_icir": 0.0992,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_331",
+      "factor_name": "6个月上影线均值",
+      "screen_2020_signed_icir": 0.1866,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_332",
+      "factor_name": "1个月上影线标准差",
+      "screen_2020_signed_icir": 0.4942,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_333",
+      "factor_name": "3个月上影线标准差",
+      "screen_2020_signed_icir": 0.4351,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_334",
+      "factor_name": "6个月上影线标准差",
+      "screen_2020_signed_icir": 0.3651,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_335",
+      "factor_name": "1个月下影线均值",
+      "screen_2020_signed_icir": 0.2866,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_336",
+      "factor_name": "SP_TTM",
+      "screen_2020_signed_icir": 0.0903,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_337",
+      "factor_name": "FC",
+      "screen_2020_signed_icir": 0.2493,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_338",
+      "factor_name": "FC_MC",
+      "screen_2020_signed_icir": 0.0221,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_339",
+      "factor_name": "Ln_FC",
+      "screen_2020_signed_icir": 0.2493,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_340",
+      "factor_name": "Ln_MC",
+      "screen_2020_signed_icir": 0.256,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_341",
+      "factor_name": "MC",
+      "screen_2020_signed_icir": 0.256,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_342",
+      "factor_name": "Opt",
+      "screen_2020_signed_icir": 0.3727,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_343",
+      "factor_name": "CCR",
+      "screen_2020_signed_icir": 0.3354,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_344",
+      "factor_name": "CCRD",
+      "screen_2020_signed_icir": 0.0473,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_345",
+      "factor_name": "CSRD",
+      "screen_2020_signed_icir": 0.0296,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_346",
+      "factor_name": "OP_QOQ",
+      "screen_2020_signed_icir": 0.5126,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_ANNUAL_STABILITY_FOLLOWUP",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_347",
+      "factor_name": "Profit",
+      "screen_2020_signed_icir": 0.3961,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_348",
+      "factor_name": "3个月下影线均值",
+      "screen_2020_signed_icir": 0.2306,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_349",
+      "factor_name": "6个月下影线均值",
+      "screen_2020_signed_icir": 0.1569,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_350",
+      "factor_name": "1个月下影线标准差",
+      "screen_2020_signed_icir": 0.353,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_351",
+      "factor_name": "3个月下影线标准差",
+      "screen_2020_signed_icir": 0.3404,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_352",
+      "factor_name": "6个月下影线标准差",
+      "screen_2020_signed_icir": 0.2895,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_353",
+      "factor_name": "行业补涨_除法_20日",
+      "screen_2020_signed_icir": 0.0731,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_354",
+      "factor_name": "行业补涨_减法_20日",
+      "screen_2020_signed_icir": 0.2852,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_355",
+      "factor_name": "行业内收益排名",
+      "screen_2020_signed_icir": 0.1238,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_356",
+      "factor_name": "行业内收益标准化",
+      "screen_2020_signed_icir": 0.1392,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_357",
+      "factor_name": "行业内收益标准化绝对值",
+      "screen_2020_signed_icir": 0.7418,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "candidate_id": "yeslab_357_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_358",
+      "factor_name": "行业标准化乘行业波动率",
+      "screen_2020_signed_icir": 0.1318,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_359",
+      "factor_name": "行业标准化绝对值乘行业波动率",
+      "screen_2020_signed_icir": 0.5996,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_360",
+      "factor_name": "行业标准化乘行业偏度5日均",
+      "screen_2020_signed_icir": 0.1217,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_361",
+      "factor_name": "行业标准化绝对值乘行业偏度5日均",
+      "screen_2020_signed_icir": 0.2348,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_362",
+      "factor_name": "行业标准化绝对值除行业偏度5日均",
+      "screen_2020_signed_icir": 0.4298,
+      "screen_2020_days": 243,
+      "final_status": "NO_ADMISSION_STRICT_ANNUAL_ICIR_FAIL_AND_FORMULA_REPLAY_BLOCKED",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_363",
+      "factor_name": "行业标准化绝对值除行业偏度绝对值",
+      "screen_2020_signed_icir": 0.7451,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
+      "candidate_id": "yeslab_363_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_364",
+      "factor_name": "行业标准化绝对值加行业偏度5日均",
+      "screen_2020_signed_icir": 0.2769,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_365",
+      "factor_name": "行业标准化绝对值按正偏度过滤",
+      "screen_2020_signed_icir": 0.4318,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_366",
+      "factor_name": "行业标准化绝对值正偏度加权",
+      "screen_2020_signed_icir": 0.3754,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_367",
+      "factor_name": "行业标准化绝对值偏度高于截面中位数过滤",
+      "screen_2020_signed_icir": null,
+      "screen_2020_days": 0,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_368",
+      "factor_name": "行业残差_20日滚动",
+      "screen_2020_signed_icir": 0.0645,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_369",
+      "factor_name": "行业Alpha_20日滚动",
+      "screen_2020_signed_icir": 0.2389,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_370",
+      "factor_name": "GP_001",
+      "screen_2020_signed_icir": 0.4858,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "candidate_id": "yeslab_370_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_371",
+      "factor_name": "GP_002",
+      "screen_2020_signed_icir": 0.5565,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_372",
+      "factor_name": "GP_003",
+      "screen_2020_signed_icir": 0.5368,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_373",
+      "factor_name": "GP_004",
+      "screen_2020_signed_icir": 0.1987,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_374",
+      "factor_name": "GP_005",
+      "screen_2020_signed_icir": 0.2046,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_375",
+      "factor_name": "GP_006",
+      "screen_2020_signed_icir": 0.4629,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "candidate_id": "yeslab_375_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_376",
+      "factor_name": "GP_007",
+      "screen_2020_signed_icir": 0.5503,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_377",
+      "factor_name": "GP_008",
+      "screen_2020_signed_icir": 0.4326,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_EARLY_STOP",
+      "candidate_id": "yeslab_377_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_378",
+      "factor_name": "GP_009",
+      "screen_2020_signed_icir": 0.323,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_CANDIDATE_375",
+      "candidate_id": "yeslab_378_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_379",
+      "factor_name": "GP_010",
+      "screen_2020_signed_icir": 0.6863,
+      "screen_2020_days": 210,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_380",
+      "factor_name": "GP_011",
+      "screen_2020_signed_icir": 0.3623,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "screen_2020_signed_icir": 0.3465,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "candidate_id": "yeslab_381_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_382",
+      "factor_name": "GP_013",
+      "screen_2020_signed_icir": 0.4289,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_383",
+      "factor_name": "GP_014",
+      "screen_2020_signed_icir": 0.4011,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_384",
+      "factor_name": "GP_015",
+      "screen_2020_signed_icir": 0.6735,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_385",
+      "factor_name": "GP_016",
+      "screen_2020_signed_icir": 0.4922,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_CANDIDATE_405",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_386",
+      "factor_name": "GP_017",
+      "screen_2020_signed_icir": 0.3861,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_CANDIDATE_375",
+      "candidate_id": "yeslab_386_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_387",
+      "factor_name": "GP_018",
+      "screen_2020_signed_icir": 0.3566,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_EARLY_STOP",
+      "candidate_id": "yeslab_387_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_388",
+      "factor_name": "GP_019",
+      "screen_2020_signed_icir": 0.367,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_EARLY_STOP",
+      "candidate_id": "yeslab_388_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_389",
+      "factor_name": "GP_020",
+      "screen_2020_signed_icir": 0.479,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "candidate_id": "yeslab_389_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_390",
+      "factor_name": "GP_021",
+      "screen_2020_signed_icir": 0.4502,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "candidate_id": "yeslab_390_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_391",
+      "factor_name": "GP_022",
+      "screen_2020_signed_icir": 0.2991,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_380_TRAIN_BOUNDARY_VALIDATION_MONITOR",
+      "candidate_id": "yeslab_391_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_392",
+      "factor_name": "GP_023",
+      "screen_2020_signed_icir": 0.4728,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_393",
+      "factor_name": "GP_024",
+      "screen_2020_signed_icir": 0.5302,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_FORMAL_376 (annual structure passes; documented in alpha_393_395_train_2020_2024_annual_v1.json)",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_394",
+      "factor_name": "GP_025",
+      "screen_2020_signed_icir": null,
+      "screen_2020_days": 0,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_395",
+      "factor_name": "GP_026",
+      "screen_2020_signed_icir": 0.5317,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "candidate_id": "yeslab_395_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_396",
+      "factor_name": "GP_027",
+      "screen_2020_signed_icir": 0.4969,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_397",
+      "factor_name": "GP_028",
+      "screen_2020_signed_icir": 0.5115,
+      "screen_2020_days": 230,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_398",
+      "factor_name": "GP_029",
+      "screen_2020_signed_icir": 0.3265,
+      "screen_2020_days": 190,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "candidate_id": "yeslab_398_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_399",
+      "factor_name": "GP_030",
+      "screen_2020_signed_icir": 0.2013,
+      "screen_2020_days": 222,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_400",
+      "factor_name": "GP_031",
+      "screen_2020_signed_icir": 0.4547,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "candidate_id": "yeslab_400_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_401",
+      "factor_name": "GP_032",
+      "screen_2020_signed_icir": 0.2808,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_2020_PREDICTIVE_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_402",
+      "factor_name": "GP_033",
+      "screen_2020_signed_icir": null,
+      "screen_2020_days": 0,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_403",
+      "factor_name": "GP_034",
+      "screen_2020_signed_icir": null,
+      "screen_2020_days": 0,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_404",
+      "factor_name": "GP_035",
+      "screen_2020_signed_icir": 0.2515,
+      "screen_2020_days": 116,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "screen_2020_signed_icir": 0.4195,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "candidate_id": "yeslab_405_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_406",
+      "factor_name": "GP_037",
+      "screen_2020_signed_icir": 0.5956,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_407",
+      "factor_name": "GP_038",
+      "screen_2020_signed_icir": 0.2493,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_408",
+      "factor_name": "GP_039",
+      "screen_2020_signed_icir": 0.3911,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_409",
+      "factor_name": "GP_040",
+      "screen_2020_signed_icir": 0.3947,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_TRAINING_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_410",
+      "factor_name": "GP_041",
+      "screen_2020_signed_icir": 0.1313,
+      "screen_2020_days": 174,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_411",
+      "factor_name": "GP_042",
+      "screen_2020_signed_icir": 0.6105,
+      "screen_2020_days": 222,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_412",
+      "factor_name": "GP_043",
+      "screen_2020_signed_icir": 0.1351,
+      "screen_2020_days": 186,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_413",
+      "factor_name": "GP_044",
+      "screen_2020_signed_icir": 0.4711,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_414",
+      "factor_name": "GP_045",
+      "screen_2020_signed_icir": 0.1941,
+      "screen_2020_days": 202,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_415",
+      "factor_name": "GP_046",
+      "screen_2020_signed_icir": 0.4373,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_416",
+      "factor_name": "GP_047",
+      "screen_2020_signed_icir": 0.4039,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_417",
+      "factor_name": "GP_048",
+      "screen_2020_signed_icir": 0.2585,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_418",
+      "factor_name": "GP_049",
+      "screen_2020_signed_icir": 0.3677,
+      "screen_2020_days": 183,
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_419",
+      "factor_name": "GP_050",
+      "screen_2020_signed_icir": 0.3912,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_TRAINING_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_420",
+      "factor_name": "GP_051",
+      "screen_2020_signed_icir": 0.3368,
+      "screen_2020_days": 44,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_421",
+      "factor_name": "GP_052",
+      "screen_2020_signed_icir": 0.4785,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_422",
+      "factor_name": "GP_053",
+      "screen_2020_signed_icir": 0.4216,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_423",
+      "factor_name": "GP_054",
+      "screen_2020_signed_icir": 0.51,
+      "screen_2020_days": 164,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_424",
+      "factor_name": "GP_055",
+      "screen_2020_signed_icir": 0.1752,
+      "screen_2020_days": 150,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "screen_2020_signed_icir": 0.5169,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+      "candidate_id": "yeslab_425_tushare_shsz_v2",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_426",
+      "factor_name": "GP_057",
+      "screen_2020_signed_icir": 0.5051,
+      "screen_2020_days": 209,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_427",
+      "factor_name": "GP_058",
+      "screen_2020_signed_icir": 0.2222,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_428",
+      "factor_name": "GP_059",
+      "screen_2020_signed_icir": 0.3327,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_TRAINING_AGGREGATE_ICIR_AND_ANNUAL_2_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_429",
+      "factor_name": "GP_060",
+      "screen_2020_signed_icir": 0.5017,
+      "screen_2020_days": 243,
+      "final_status": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_2_OF_5",
+      "status_class": "MONITORED"
+    },
+    {
+      "factor_id": "yeslab_430",
+      "factor_name": "GP_061",
+      "screen_2020_signed_icir": 0.1679,
+      "screen_2020_days": 158,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_431",
+      "factor_name": "GP_062",
+      "screen_2020_signed_icir": 0.2886,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_432",
+      "factor_name": "GP_063",
+      "screen_2020_signed_icir": 0.3101,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_REDUNDANT_WITH_FORMAL_YESLAB_431",
+      "candidate_id": "yeslab_432_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_433",
+      "factor_name": "GP_064",
+      "screen_2020_signed_icir": 0.2219,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "candidate_id": "yeslab_433_tushare_shsz_v1",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_434",
+      "factor_name": "GP_065",
+      "screen_2020_signed_icir": 0.3873,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_TRAINING_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_435",
+      "factor_name": "GP_066",
+      "screen_2020_signed_icir": 0.4625,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_436",
+      "factor_name": "GP_067",
+      "screen_2020_signed_icir": 0.5352,
+      "screen_2020_days": 209,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_437",
+      "factor_name": "GP_068",
+      "screen_2020_signed_icir": 0.253,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_438",
+      "factor_name": "GP_069",
+      "screen_2020_signed_icir": 0.2472,
+      "screen_2020_days": 209,
+      "final_status": "REJECT_AGGREGATE_ICIR_ANNUAL_2_OF_5_AND_REDUNDANT_WITH_FORMAL_431",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_439",
+      "factor_name": "GP_070",
+      "screen_2020_signed_icir": 0.4315,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_440",
+      "factor_name": "GP_071",
+      "screen_2020_signed_icir": 0.2272,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_441",
+      "factor_name": "GP_072",
+      "screen_2020_signed_icir": 0.2904,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_442",
+      "factor_name": "GP_073",
+      "screen_2020_signed_icir": 0.5448,
+      "screen_2020_days": 243,
+      "final_status": "FORMAL_NINE",
+      "status_class": "FORMAL"
+    },
+    {
+      "factor_id": "yeslab_443",
+      "factor_name": "GP_074",
+      "screen_2020_signed_icir": 0.3579,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "candidate_id": "yeslab_443_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_444",
+      "factor_name": "GP_075",
+      "screen_2020_signed_icir": 0.3451,
+      "screen_2020_days": 139,
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_445",
+      "factor_name": "GP_076",
+      "screen_2020_signed_icir": 0.1848,
+      "screen_2020_days": 199,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_446",
+      "factor_name": "GP_077",
+      "screen_2020_signed_icir": 0.5199,
+      "screen_2020_days": 98,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_447",
+      "factor_name": "GP_078",
+      "screen_2020_signed_icir": 0.2222,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_448",
+      "factor_name": "GP_079",
+      "screen_2020_signed_icir": 0.4602,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_449",
+      "factor_name": "GP_080",
+      "screen_2020_signed_icir": 0.4625,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_450",
+      "factor_name": "GP_081",
+      "screen_2020_signed_icir": null,
+      "screen_2020_days": 0,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_451",
+      "factor_name": "GP_082",
+      "screen_2020_signed_icir": 0.2657,
+      "screen_2020_days": 217,
+      "final_status": "REJECT_AGGREGATE_ICIR_ANNUAL_2_OF_5_AND_REDUNDANT_WITH_FORMAL_431",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_452",
+      "factor_name": "GP_083",
+      "screen_2020_signed_icir": 0.4625,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_453",
+      "factor_name": "GP_084",
+      "screen_2020_signed_icir": 0.2213,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_454",
+      "factor_name": "GP_085",
+      "screen_2020_signed_icir": 0.2134,
+      "screen_2020_days": 240,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_455",
+      "factor_name": "GP_086",
+      "screen_2020_signed_icir": 0.2118,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_456",
+      "factor_name": "GP_087",
+      "screen_2020_signed_icir": 0.4453,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_457",
+      "factor_name": "GP_088",
+      "screen_2020_signed_icir": 0.2205,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_458",
+      "factor_name": "GP_089",
+      "screen_2020_signed_icir": 0.2826,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_459",
+      "factor_name": "GP_090",
+      "screen_2020_signed_icir": 0.2114,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_460",
+      "factor_name": "GP_091",
+      "screen_2020_signed_icir": 0.1805,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_461",
+      "factor_name": "GP_092",
+      "screen_2020_signed_icir": 0.3949,
+      "screen_2020_days": 222,
+      "final_status": "REJECT_TRAINING_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_462",
+      "factor_name": "GP_093",
+      "screen_2020_signed_icir": 0.2222,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_463",
+      "factor_name": "GP_094",
+      "screen_2020_signed_icir": 0.2222,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_464",
+      "factor_name": "GP_095",
+      "screen_2020_signed_icir": 0.7213,
+      "screen_2020_days": 216,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "candidate_id": "yeslab_464_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_465",
+      "factor_name": "GP_096",
+      "screen_2020_signed_icir": 0.2222,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_466",
+      "factor_name": "GP_097",
+      "screen_2020_signed_icir": 0.4717,
+      "screen_2020_days": 231,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR_FAMILY",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_467",
+      "factor_name": "GP_098",
+      "screen_2020_signed_icir": 0.3867,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_TRAINING_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_468",
+      "factor_name": "GP_099",
+      "screen_2020_signed_icir": 0.5001,
+      "screen_2020_days": 191,
+      "final_status": "REJECT_STRUCTURAL_DEGENERACY_TURNOVER_SCALAR",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_469",
+      "factor_name": "GP_100",
+      "screen_2020_signed_icir": 0.4625,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_470",
+      "factor_name": "特质异常换手波动率",
+      "screen_2020_signed_icir": 0.2219,
+      "screen_2020_days": 239,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_471",
+      "factor_name": "AttentionSpillover",
+      "screen_2020_signed_icir": 0.5652,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "candidate_id": "yeslab_471_tushare_pit_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_472",
+      "factor_name": "SpecificSizeResidual",
+      "screen_2020_signed_icir": 0.0348,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_473",
+      "factor_name": "彼得林奇特质市值_21日滚动标准差",
+      "screen_2020_signed_icir": 0.3727,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_474",
+      "factor_name": "收益率不对称性_MMD",
+      "screen_2020_signed_icir": 0.1692,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_475",
+      "factor_name": "行业捕捉动量_ICM",
+      "screen_2020_signed_icir": 0.4281,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_476",
+      "factor_name": "行业捕捉反转_ICR",
+      "screen_2020_signed_icir": 0.1437,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_477",
+      "factor_name": "行业联合动量_CMC",
+      "screen_2020_signed_icir": 0.3145,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_478",
+      "factor_name": "量价行业捕捉动量_VICM",
+      "screen_2020_signed_icir": 0.4553,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_479",
+      "factor_name": "量价行业捕捉反转_VICR",
+      "screen_2020_signed_icir": 0.1283,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_480",
+      "factor_name": "量价行业联合动量_VCMC",
+      "screen_2020_signed_icir": 0.313,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_481",
+      "factor_name": "羊群效应_CSAD收益波动比20",
+      "screen_2020_signed_icir": 0.5013,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_TRAINING_AGGREGATE_ICIR_BELOW_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_482",
+      "factor_name": "羊群效应_CSAD收益波动比120",
+      "screen_2020_signed_icir": 0.5848,
+      "screen_2020_days": 243,
+      "final_status": "REJECT_TRAINING_AGGREGATE_ICIR_BELOW_GATE",
+      "status_class": "REJECT_OR_BLOCKED"
+    },
+    {
+      "factor_id": "yeslab_483",
+      "factor_name": "羊群效应_CSAD短长周期比",
+      "screen_2020_signed_icir": 0.1255,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_484",
+      "factor_name": "羊群效应_CSAD波动率21",
+      "screen_2020_signed_icir": 0.5937,
+      "screen_2020_days": 243,
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+      "candidate_id": "yeslab_484_tushare_shsz_v1",
+      "status_class": "READY"
+    },
+    {
+      "factor_id": "yeslab_485",
+      "factor_name": "CS价差_日频",
+      "screen_2020_signed_icir": 0.3439,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_486",
+      "factor_name": "CS价差_21日均值",
+      "screen_2020_signed_icir": 0.3549,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    },
+    {
+      "factor_id": "yeslab_487",
+      "factor_name": "CS价差_21日标准差",
+      "screen_2020_signed_icir": 0.3602,
+      "screen_2020_days": 243,
+      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
+      "status_class": "SCREENED_ONLY"
+    }
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}

@@ -99,7 +99,18 @@ SUPPORTED_FACTOR_IDS = (
     "yeslab_484",
     "yeslab_485",
     "yeslab_486",
-    "yeslab_487",
+    "yeslab_487",    "yeslab_46",
+    "yeslab_83",
+    "yeslab_140",
+    "yeslab_209",
+    "yeslab_211",
+    "yeslab_212",
+    "yeslab_214",
+    "yeslab_252",
+    "yeslab_260",
+    "yeslab_271",
+    "yeslab_272",
+    "yeslab_359",
 )
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALCULATOR_ROOT = REPO_ROOT / "数据库"
@@ -664,6 +675,24 @@ def missing_required_market_codes(
     return tuple(sorted(left.loc[~covered, "ts_code"].unique()))
 
 
+def _canonical_trade_date_strings(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize trade_date to YYYYMMDD strings.
+
+    Frames loaded from orient="table" JSON caches may parse trade_date into
+    datetime64 while live Tushare API responses carry YYYYMMDD strings; the
+    in-fallback merges require a single dtype on both sides.
+    """
+
+    if "trade_date" not in frame.columns:
+        return frame
+    col = frame["trade_date"]
+    if pd.api.types.is_datetime64_any_dtype(col):
+        frame["trade_date"] = col.dt.strftime("%Y%m%d")
+    else:
+        frame["trade_date"] = col.astype(str).str.replace("-", "", regex=False).str.slice(0, 8)
+    return frame
+
+
 def fetch_missing_code_ranges(
     pro: object,
     codes: Sequence[str],
@@ -699,7 +728,7 @@ def fetch_missing_code_ranges(
                 )
         if not isinstance(daily, pd.DataFrame) or daily.empty:
             continue
-        daily = daily.copy()
+        daily = _canonical_trade_date_strings(daily.copy())
         daily["ts_code"] = historical_code
         if include_adjusted_fields:
             adjustment_cache = cache_dir / (
@@ -719,7 +748,7 @@ def fetch_missing_code_ranges(
                         encoding="utf-8",
                     )
             if isinstance(adjustment, pd.DataFrame) and not adjustment.empty:
-                adjustment = adjustment.copy()
+                adjustment = _canonical_trade_date_strings(adjustment.copy())
                 adjustment["ts_code"] = historical_code
                 daily = merge_tushare_adjustment_factor(daily, adjustment)
         if include_daily_basic:
@@ -742,8 +771,9 @@ def fetch_missing_code_ranges(
                         basic.to_json(orient="table", date_format="iso"), encoding="utf-8"
                     )
             if isinstance(basic, pd.DataFrame) and not basic.empty:
-                basic = basic.copy()
+                basic = _canonical_trade_date_strings(basic.copy())
                 basic["ts_code"] = historical_code
+                daily = _canonical_trade_date_strings(daily)
                 daily = daily.merge(
                     basic.reindex(
                         columns=["ts_code", "trade_date", "turnover_rate", "total_mv"]

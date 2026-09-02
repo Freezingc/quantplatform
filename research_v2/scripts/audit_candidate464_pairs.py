@@ -62,6 +62,7 @@ EXTRA_REFERENCE_CANDIDATES: tuple[tuple[str, str], ...] = (
     ("yeslab_390_tushare_shsz_v1", "yeslab_390"),
     ("yeslab_398_tushare_shsz_v1", "yeslab_398"),
     ("yeslab_471_tushare_pit_v1", "yeslab_471"),
+    ("yeslab_395_tushare_shsz_v1", "yeslab_395"),
 )
 LOCKED_TEST_START = date(2026, 1, 1)
 THRESHOLD_MONITOR = 0.80
