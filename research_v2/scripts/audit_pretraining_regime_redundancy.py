@@ -55,6 +55,11 @@ CANDIDATES = {
     "yeslab_372": -1, "yeslab_379": -1, "yeslab_384": -1, "yeslab_406": -1,
 }
 REPAIR_ID = "yeslab_443_reg30_max20_v1"
+FORMAL_NINE = {
+    "yeslab_380": -1, "yeslab_431": -1, "yeslab_437": -1, "yeslab_155": -1,
+    "yeslab_98": -1, "yeslab_94": -1, "yeslab_376": -1, "yeslab_396": -1,
+    "yeslab_442": 1,
+}
 ALPHA206_MEDIAN_CANDIDATE = "yeslab_206_median_abs_v2"
 ALPHA206_SOURCE = "yeslab_206"
 PIT_FACTORS = {"yeslab_357", "yeslab_363", "yeslab_471"}
@@ -111,13 +116,21 @@ def main(argv=None) -> int:
     parser.add_argument("--start", type=date.fromisoformat, required=True)
     parser.add_argument("--end", type=date.fromisoformat, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--include-formal-nine", action="store_true", help="also materialize the formal nine factors (full pool + formal set matrix)")
+    parser.add_argument("--formal-only", action="store_true", help="materialize only the formal nine factors")
     args = parser.parse_args(argv)
     args.output.mkdir(parents=True, exist_ok=True)
 
     client = _connect()
+    if args.formal_only:
+        series_ids = dict(FORMAL_NINE)
+    else:
+        series_ids = dict(CANDIDATES)
+        if args.include_formal_nine:
+            series_ids.update(FORMAL_NINE)
     definitions = [
         replay.REPLAY_DEFINITIONS[ALPHA206_SOURCE if fid == ALPHA206_MEDIAN_CANDIDATE else fid]
-        for fid in CANDIDATES
+        for fid in series_ids
     ]
     market_start = min(
         _calculator_market_start(client, d, args.start, args.end) for d in definitions
@@ -143,10 +156,11 @@ def main(argv=None) -> int:
     wides: dict[str, pd.DataFrame] = {}
     amount = market.pivot_table(index="trade_date", columns="ts_code", values="amount", aggfunc="last").sort_index()
     pct_chg = market.pivot_table(index="trade_date", columns="ts_code", values="pct_chg", aggfunc="last").sort_index()
-    repair_wide = compute_gp074_variant({"amount": amount, "pct_chg": pct_chg}, 30, 20)
-    wides[REPAIR_ID] = repair_wide.reindex(index=window_idx, columns=codes)
+    if not args.formal_only:
+        repair_wide = compute_gp074_variant({"amount": amount, "pct_chg": pct_chg}, 30, 20)
+        wides[REPAIR_ID] = repair_wide.reindex(index=window_idx, columns=codes)
 
-    for fid in CANDIDATES:
+    for fid in series_ids:
         if fid == ALPHA206_MEDIAN_CANDIDATE:
             values = materialize_alpha206_median_repair(market, args.start, args.end)
         else:
@@ -160,7 +174,7 @@ def main(argv=None) -> int:
     redundant = [p for p in pairs if p["median_abs_spearman"] >= THRESHOLD_REDUNDANT]
     elevated = [p for p in pairs if THRESHOLD_MONITOR <= p["median_abs_spearman"] < THRESHOLD_REDUNDANT]
     payload = {
-        "scope": "PRETRAINING_REGIME_REDUNDANCY_V1",
+        "scope": "PRETRAINING_REGIME_REDUNDANCY_V2_WITH_FORMAL_NINE" if args.include_formal_nine else "PRETRAINING_REGIME_REDUNDANCY_V1",
         "window": f"{args.start}/{args.end}",
         "market_scope": "SH/SZ full market cross-section",
         "metric": "median |daily cross-sectional Spearman| over window days (min cross-section 30)",
