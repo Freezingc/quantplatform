@@ -2082,7 +2082,7 @@
       "factor_name": "1个月上行波动率",
       "screen_2020_signed_icir": 0.506,
       "screen_2020_days": 243,
-      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (19% mismatch)",
+      "final_status": "REJECT_TRAINING_AGGREGATE_ICIR_0.4957_BELOW_0.50 (mapping verified; annual 4/5)",
       "status_class": "REJECT_OR_BLOCKED"
     },
     {
@@ -2146,7 +2146,7 @@
       "factor_name": "3个月上行波动率",
       "screen_2020_signed_icir": 0.5227,
       "screen_2020_days": 243,
-      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (11% mismatch)",
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_2_OF_5 (mapping verified)",
       "status_class": "REJECT_OR_BLOCKED"
     },
     {
@@ -2234,7 +2234,7 @@
       "factor_name": "1个月日内振幅标准差",
       "screen_2020_signed_icir": 0.5673,
       "screen_2020_days": 243,
-      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (15% mismatch)",
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_2_OF_5 (mapping verified)",
       "status_class": "REJECT_OR_BLOCKED"
     },
     {
@@ -2242,7 +2242,7 @@
       "factor_name": "3个月日内振幅标准差",
       "screen_2020_signed_icir": 0.5662,
       "screen_2020_days": 243,
-      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (8% mismatch)",
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (mapping verified)",
       "status_class": "REJECT_OR_BLOCKED"
     },
     {

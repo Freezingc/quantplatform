@@ -59,10 +59,10 @@ PRIOR_EVALUATED = {
     "yeslab_214": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_3_OF_5 (canonical ICIR 0.478)",
     "yeslab_83": "MAPPING_UNVERIFIED (replay mismatch 100%, max_abs 1.09; no canonical evaluation)",
     "yeslab_212": "MAPPING_UNVERIFIED (replay mismatch 99.99%, max_abs 1.49; no canonical evaluation)",
-    "yeslab_252": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (19% mismatch)",
-    "yeslab_260": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (11% mismatch)",
-    "yeslab_271": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (15% mismatch)",
-    "yeslab_272": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (8% mismatch)",
+    "yeslab_252": "REJECT_TRAINING_AGGREGATE_ICIR_0.4957_BELOW_0.50 (mapping verified; annual 4/5)",
+    "yeslab_260": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_2_OF_5 (mapping verified)",
+    "yeslab_271": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_2_OF_5 (mapping verified)",
+    "yeslab_272": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (mapping verified)",
     "yeslab_359": "REPLAY_BLOCKED_INDUSTRY_CLASS (industry classification PIT vs historical static; no canonical evaluation)",
 }
 

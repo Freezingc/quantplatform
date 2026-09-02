@@ -1,0 +1,17 @@
+/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/数据库/factor_calculators/Vol_Up_Std_1M_Calculator.py:19: FutureWarning: The default fill_method='pad' in DataFrame.pct_change is deprecated and will be removed in a future version. Either fill in any non-leading NA values prior to calling pct_change or specify 'fill_method=None' to not fill NA values.
+  ret = close_hfq.pct_change()
+/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/数据库/factor_calculators/Vol_Up_Std_3M_Calculator.py:19: FutureWarning: The default fill_method='pad' in DataFrame.pct_change is deprecated and will be removed in a future version. Either fill in any non-leading NA values prior to calling pct_change or specify 'fill_method=None' to not fill NA values.
+  ret = close_hfq.pct_change()
+将开始日期从2020.01.02预处理为2019.12.25
+将开始日期从2020.01.02预处理为2019.12.04
+将开始日期从2020.01.02预处理为2019.10.09
+将开始日期从2020.01.02预处理为2019.12.31
+将开始日期从2020.01.02预处理为2019.12.04
+将开始日期从2020.01.02预处理为2019.12.04
+将开始日期从2020.01.02预处理为2019.12.18
+将开始日期从2020.01.02预处理为2019.12.25
+将开始日期从2020.01.02预处理为2019.10.09
+将开始日期从2020.01.02预处理为2019.09.03
+将开始日期从2020.01.02预处理为2019.07.09
+将开始日期从2020.01.02预处理为2019.09.03
+将开始日期从2020.01.02预处理为2019.07.09

@@ -6599,5 +6599,25 @@
     "database_writes": false,
     "locked_test_read": false,
     "model_training_started": false
+  },
+  "vol4_canonical_followup": {
+    "scope": "VOL4_TUSHARE_CANONICAL_FOLLOWUP",
+    "status": "COMPLETE_ZERO_NEW_CANDIDATES",
+    "rejected": {
+      "yeslab_252": "aggregate ICIR 0.4957 (annual 4/5)",
+      "yeslab_260": "annual 2/5",
+      "yeslab_271": "annual 2/5",
+      "yeslab_272": "annual 1/5"
+    },
+    "note": "Partial replay mismatch resolved as floating-point noise plus recent-IPO hfq anchor divergence (272 row-level diagnosis: 99.5% of rows match to ~1e-7; 0.5% of rows in 28 stocks, 15 of them BJ). All four rejected on canonical gates. The twenty-factor unclassified group is now fully resolved: 5 new READY (pass7) + 15 rejected/documented.",
+    "artifacts": [
+      "vol4_train_evidence_v1.json",
+      "tushare_shsz_vol4_formal9_train_2020_2024_v1",
+      "secondary12_replay_verification_v1.json"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
   }
 }

@@ -1,0 +1,44 @@
+{
+  "scope": "TUSHARE_SHSZ_VOL4_TRAIN_EVIDENCE_V1",
+  "purpose": "Canonical evaluation of the four hfq-volatility factors (252/260/271/272) after their partial replay mismatch was resolved as floating-point noise plus recent-IPO hfq anchor divergence.",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "candidates": {
+    "yeslab_252": {
+      "factor_name": "1个月上行波动率",
+      "train_signed_icir": 0.4957,
+      "annual": "4/5 (2024 fail 0.42)",
+      "decision": "REJECT_TRAINING_AGGREGATE_ICIR_0.4957_BELOW_0.50",
+      "note": "misses aggregate gate by 0.004; annual gate passes 4/5"
+    },
+    "yeslab_260": {
+      "factor_name": "3个月上行波动率",
+      "train_signed_icir": 0.432,
+      "annual": "2/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_2_OF_5"
+    },
+    "yeslab_271": {
+      "factor_name": "1个月日内振幅标准差",
+      "train_signed_icir": 0.4343,
+      "annual": "2/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_2_OF_5"
+    },
+    "yeslab_272": {
+      "factor_name": "3个月日内振幅标准差",
+      "train_signed_icir": 0.3781,
+      "annual": "1/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_1_OF_5"
+    }
+  },
+  "family_note": "Family internal correlations: 260<->272 elevated (0.844), 252<->271 0.780. Historical screen ICIR (0.51-0.57) again overstated canonical performance for non-GP factors.",
+  "artifacts": [
+    "tushare_shsz_vol4_formal9_train_2020_2024_v1"
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}
