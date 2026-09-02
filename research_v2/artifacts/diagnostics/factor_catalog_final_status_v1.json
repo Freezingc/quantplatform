@@ -6,11 +6,11 @@
   ],
   "catalog_factor_count": 487,
   "status_class_counts": {
-    "SCREENED_ONLY": 403,
-    "REJECT_OR_BLOCKED": 53,
+    "SCREENED_ONLY": 384,
+    "REJECT_OR_BLOCKED": 67,
     "FORMAL": 9,
     "MONITORED": 4,
-    "READY": 18
+    "READY": 23
   },
   "summary": {
     "formal_nine": [
@@ -30,13 +30,18 @@
       "yeslab_357",
       "yeslab_363",
       "yeslab_370",
+      "yeslab_371",
+      "yeslab_372",
       "yeslab_375",
+      "yeslab_379",
       "yeslab_381",
+      "yeslab_384",
       "yeslab_389",
       "yeslab_390",
       "yeslab_395",
       "yeslab_398",
       "yeslab_405",
+      "yeslab_406",
       "yeslab_425",
       "yeslab_443",
       "yeslab_464",
@@ -50,7 +55,7 @@
       "yeslab_429",
       "yeslab_95"
     ],
-    "rejected_or_blocked_count": 53
+    "rejected_or_blocked_count": 67
   },
   "status_definitions": {
     "FORMAL": "already in the formal nine factor set",
@@ -433,8 +438,8 @@
       "factor_name": "月换手波动",
       "screen_2020_signed_icir": 0.5887,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (secondary12 verified mapping, canonical ICIR 0.370)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_47",
@@ -729,8 +734,8 @@
       "factor_name": "Alpha74",
       "screen_2020_signed_icir": 0.6382,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "MAPPING_UNVERIFIED (replay mismatch 100%, max_abs 1.09; no canonical evaluation)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_84",
@@ -1179,8 +1184,8 @@
       "factor_name": "日换手率波动（1个月内）",
       "screen_2020_signed_icir": 0.5856,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (identical to 46, mutual 0.997)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_141",
@@ -1733,8 +1738,8 @@
       "factor_name": "量价齐飞",
       "screen_2020_signed_icir": 0.5421,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_3_OF_5 (canonical ICIR 0.419)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_210",
@@ -1749,16 +1754,16 @@
       "factor_name": "量价齐飞-开盘价",
       "screen_2020_signed_icir": 0.5221,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (canonical ICIR 0.337)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_212",
       "factor_name": "量价齐飞-排名",
       "screen_2020_signed_icir": 0.5231,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "MAPPING_UNVERIFIED (replay mismatch 99.99%, max_abs 1.49; no canonical evaluation)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_213",
@@ -1773,8 +1778,8 @@
       "factor_name": "量价齐飞乘换手率5日均值",
       "screen_2020_signed_icir": 0.6319,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_3_OF_5 (canonical ICIR 0.478)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_215",
@@ -2077,8 +2082,8 @@
       "factor_name": "1个月上行波动率",
       "screen_2020_signed_icir": 0.506,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (19% mismatch)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_253",
@@ -2141,8 +2146,8 @@
       "factor_name": "3个月上行波动率",
       "screen_2020_signed_icir": 0.5227,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (11% mismatch)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_261",
@@ -2229,16 +2234,16 @@
       "factor_name": "1个月日内振幅标准差",
       "screen_2020_signed_icir": 0.5673,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (15% mismatch)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_272",
       "factor_name": "3个月日内振幅标准差",
       "screen_2020_signed_icir": 0.5662,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (8% mismatch)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_273",
@@ -2934,8 +2939,8 @@
       "factor_name": "行业标准化绝对值乘行业波动率",
       "screen_2020_signed_icir": 0.5996,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REPLAY_BLOCKED_INDUSTRY_CLASS (industry classification PIT vs historical static; no canonical evaluation)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_360",
@@ -3032,16 +3037,18 @@
       "factor_name": "GP_002",
       "screen_2020_signed_icir": 0.5565,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "candidate_id": "yeslab_371_tushare_shsz_v1",
+      "status_class": "READY"
     },
     {
       "factor_id": "yeslab_372",
       "factor_name": "GP_003",
       "screen_2020_signed_icir": 0.5368,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "candidate_id": "yeslab_372_tushare_shsz_v1",
+      "status_class": "READY"
     },
     {
       "factor_id": "yeslab_373",
@@ -3099,8 +3106,9 @@
       "factor_name": "GP_010",
       "screen_2020_signed_icir": 0.6863,
       "screen_2020_days": 210,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "candidate_id": "yeslab_379_tushare_shsz_v1",
+      "status_class": "READY"
     },
     {
       "factor_id": "yeslab_380",
@@ -3140,8 +3148,9 @@
       "factor_name": "GP_015",
       "screen_2020_signed_icir": 0.6735,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "candidate_id": "yeslab_384_tushare_shsz_v1",
+      "status_class": "READY"
     },
     {
       "factor_id": "yeslab_385",
@@ -3251,8 +3260,8 @@
       "factor_name": "GP_028",
       "screen_2020_signed_icir": 0.5115,
       "screen_2020_days": 230,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_2_OF_5 (pass7 canonical evaluation)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_398",
@@ -3326,8 +3335,9 @@
       "factor_name": "GP_037",
       "screen_2020_signed_icir": 0.5956,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "candidate_id": "yeslab_406_tushare_shsz_v1",
+      "status_class": "READY"
     },
     {
       "factor_id": "yeslab_407",
@@ -3462,8 +3472,8 @@
       "factor_name": "GP_054",
       "screen_2020_signed_icir": 0.51,
       "screen_2020_days": 164,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5 (pass7 canonical evaluation)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_424",

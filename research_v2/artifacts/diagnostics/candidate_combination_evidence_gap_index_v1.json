@@ -279,5 +279,42 @@
         "status": "REJECT_REDUNDANT_WITH_yeslab_375(train/validation 0.894; plus 378 redundancy)"
       }
     }
+  },
+  "pass7_combination_audits": {
+    "artifacts": [
+      "candidate371_pair_similarity_v1.json",
+      "candidate372_pair_similarity_v1.json",
+      "candidate379_pair_similarity_v1.json",
+      "candidate384_pair_similarity_v1.json",
+      "candidate406_pair_similarity_v1.json"
+    ],
+    "reference_pool": "eighteen READY candidates",
+    "results": {
+      "yeslab_371": {
+        "train_max": 0.8846,
+        "validation_max": 0.8855,
+        "status": "PASS_WITH_MONITORING (elevated vs 370/375/395)"
+      },
+      "yeslab_372": {
+        "train_max": 0.7468,
+        "validation_max": 0.7523,
+        "status": "PASS"
+      },
+      "yeslab_379": {
+        "train_max": 0.8864,
+        "validation_max": 0.8942,
+        "status": "PASS_WITH_MONITORING (elevated vs 375, near redundancy)"
+      },
+      "yeslab_384": {
+        "train_max": 0.8757,
+        "validation_max": 0.8764,
+        "status": "PASS_WITH_MONITORING (elevated vs 375/395)"
+      },
+      "yeslab_406": {
+        "train_max": 0.8162,
+        "validation_max": 0.818,
+        "status": "PASS_WITH_MONITORING (elevated vs 375 only)"
+      }
+    }
   }
 }

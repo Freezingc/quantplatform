@@ -372,6 +372,71 @@
         "yeslab_398_validation_2025_monthly_v1/monthly_stability.json"
       ],
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING"
+    },
+    "yeslab_371_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_371",
+      "factor_name": "GP_002",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7 discovery)",
+      "required_scope": "Do not mix with historical YesLab values. Elevated pairs with 370 (0.81), 375 (0.84), 395 (0.885); nine-edge overlap with formal 380 (0.848/0.870). Marginal information value.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate371_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING"
+    },
+    "yeslab_372_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_372",
+      "factor_name": "GP_003",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7 discovery)",
+      "required_scope": "Do not mix with historical YesLab values. Pool-clean: max edge 0.747/0.752 vs 375, no elevated pairs. Annual 5/5.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate372_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL"
+    },
+    "yeslab_379_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_379",
+      "factor_name": "GP_010",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7 discovery)",
+      "required_scope": "Do not mix with historical YesLab values. Elevated pair with 375 (0.886/0.894, near redundancy); no joint admission with 375 without separate review. Annual 5/5.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate379_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING"
+    },
+    "yeslab_384_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_384",
+      "factor_name": "GP_015",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7 discovery)",
+      "required_scope": "Do not mix with historical YesLab values. Elevated pairs with 375 (0.876) and 395 (0.803). Annual 4/5 (2021 fail).",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate384_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING"
+    },
+    "yeslab_406_tushare_shsz_v1": {
+      "source_factor_id": "yeslab_406",
+      "factor_name": "GP_037",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7 discovery)",
+      "required_scope": "Do not mix with historical YesLab values. Elevated pair with 375 only (0.816/0.818); otherwise pool-clean. Annual 5/5; validation ICIR 0.922 strongest in batch.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate406_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING"
     }
   },
   "decision": "NO_AUTOMATIC_ADMISSION"

@@ -669,6 +669,151 @@
       "human_questions": [
         "Is the redundancy rejection accepted?"
       ]
+    },
+    {
+      "candidate_id": "yeslab_371_tushare_shsz_v1",
+      "source_factor_id": "yeslab_371",
+      "factor_name": "GP_002",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
+      "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
+      "pair_or_combination_note": "Elevated pairs with 370 (0.81), 375 (0.84), 395 (0.885); nine-edge overlap with formal 380 (0.848/0.870). Marginal information value.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate371_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "quality": {
+        "train": {
+          "signed_icir": 0.5239,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_icir": 0.5927
+        }
+      }
+    },
+    {
+      "candidate_id": "yeslab_372_tushare_shsz_v1",
+      "source_factor_id": "yeslab_372",
+      "factor_name": "GP_003",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
+      "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
+      "pair_or_combination_note": "Pool-clean: max edge 0.747/0.752 vs 375, no elevated pairs. Annual 5/5.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate372_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "quality": {
+        "train": {
+          "signed_icir": 0.5942,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_icir": 0.5824
+        }
+      }
+    },
+    {
+      "candidate_id": "yeslab_379_tushare_shsz_v1",
+      "source_factor_id": "yeslab_379",
+      "factor_name": "GP_010",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
+      "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
+      "pair_or_combination_note": "Elevated pair with 375 (0.886/0.894, near redundancy); no joint admission with 375 without separate review. Annual 5/5.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate379_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "quality": {
+        "train": {
+          "signed_icir": 0.6205,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_icir": 0.7827
+        }
+      }
+    },
+    {
+      "candidate_id": "yeslab_384_tushare_shsz_v1",
+      "source_factor_id": "yeslab_384",
+      "factor_name": "GP_015",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
+      "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
+      "pair_or_combination_note": "Elevated pairs with 375 (0.876) and 395 (0.803). Annual 4/5 (2021 fail).",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate384_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "quality": {
+        "train": {
+          "signed_icir": 0.529,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_icir": 0.7906
+        }
+      }
+    },
+    {
+      "candidate_id": "yeslab_406_tushare_shsz_v1",
+      "source_factor_id": "yeslab_406",
+      "factor_name": "GP_037",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
+      "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
+      "pair_or_combination_note": "Elevated pair with 375 only (0.816/0.818); otherwise pool-clean. Annual 5/5; validation ICIR 0.922 strongest in batch.",
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate406_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ],
+      "human_questions": [
+        "Is the isolated canonical version explicitly approved for this candidate?",
+        "Are all monitoring requirements accepted if admitted?",
+        "Has any required pair/combination review been completed for joint admission?"
+      ],
+      "quality": {
+        "train": {
+          "signed_icir": 0.6601,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_icir": 0.9219
+        }
+      }
     }
   ]
 }

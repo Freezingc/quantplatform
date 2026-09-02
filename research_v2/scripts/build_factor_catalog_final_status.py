@@ -50,6 +50,20 @@ PRIOR_EVALUATED = {
     "yeslab_95": "MONITORED_RESEARCH_CANDIDATE_STRICT_ANNUAL_2_OF_5",
     "yeslab_163": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5",
     "yeslab_393": "REJECT_REDUNDANT_WITH_FORMAL_376 (annual structure passes; documented in alpha_393_395_train_2020_2024_annual_v1.json)",
+    "yeslab_397": "REJECT_STRICT_ANNUAL_STABILITY_2_OF_5 (pass7 canonical evaluation)",
+    "yeslab_423": "REJECT_STRICT_ANNUAL_STABILITY_3_OF_5 (pass7 canonical evaluation)",
+    "yeslab_46": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (secondary12 verified mapping, canonical ICIR 0.370)",
+    "yeslab_140": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (identical to 46, mutual 0.997)",
+    "yeslab_209": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_3_OF_5 (canonical ICIR 0.419)",
+    "yeslab_211": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (canonical ICIR 0.337)",
+    "yeslab_214": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_3_OF_5 (canonical ICIR 0.478)",
+    "yeslab_83": "MAPPING_UNVERIFIED (replay mismatch 100%, max_abs 1.09; no canonical evaluation)",
+    "yeslab_212": "MAPPING_UNVERIFIED (replay mismatch 99.99%, max_abs 1.49; no canonical evaluation)",
+    "yeslab_252": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (19% mismatch)",
+    "yeslab_260": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (11% mismatch)",
+    "yeslab_271": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (15% mismatch)",
+    "yeslab_272": "PARTIAL_MAPPING_MISMATCH_PENDING_INVESTIGATION (8% mismatch)",
+    "yeslab_359": "REPLAY_BLOCKED_INDUSTRY_CLASS (industry classification PIT vs historical static; no canonical evaluation)",
 }
 
 

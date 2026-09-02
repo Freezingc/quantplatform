@@ -31,5 +31,35 @@
   "database_writes": false,
   "locked_test_read": false,
   "formal_factor_set_changed": false,
-  "model_training_started": false
+  "model_training_started": false,
+  "canonical_evaluation_results": {
+    "yeslab_46": {
+      "train_signed_icir": 0.3704,
+      "annual": "1/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_1_OF_5"
+    },
+    "yeslab_140": {
+      "train_signed_icir": 0.368,
+      "annual": "1/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_1_OF_5",
+      "note": "essentially identical to yeslab_46 (mutual 0.997)"
+    },
+    "yeslab_209": {
+      "train_signed_icir": 0.4186,
+      "annual": "3/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_3_OF_5"
+    },
+    "yeslab_211": {
+      "train_signed_icir": 0.3365,
+      "annual": "1/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_1_OF_5"
+    },
+    "yeslab_214": {
+      "train_signed_icir": 0.478,
+      "annual": "3/5",
+      "decision": "REJECT_TRAINING_GATE_ANNUAL_3_OF_5"
+    },
+    "conclusion": "All five machine-precision-verified secondary factors fail canonical training gates; historical screen ICIR (0.54-0.63) overstated them. Secondary-12 workstream closes with zero new candidates.",
+    "artifact": "tushare_shsz_verified5_formal9_train_2020_2024_v1"
+  }
 }

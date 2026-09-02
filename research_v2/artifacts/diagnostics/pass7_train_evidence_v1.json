@@ -12,25 +12,51 @@
       "factor_name": "GP_002",
       "train_signed_icir": 0.5239,
       "annual": "4/5 (2024 fail 0.44)",
-      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+      "decision": "READY_WITH_MONITORS",
+      "validation_signed_icir": 0.5927,
+      "nine_edge_val_max": 0.8702,
+      "pool_audit": "PASS_WITH_MONITORING",
+      "pool_constraints": [
+        "elevated vs 370 (0.81)",
+        "elevated vs 375 (0.84)",
+        "elevated vs 395 (0.885)",
+        "nine-edge overlap with formal 380 (0.848 train/0.870 val)"
+      ]
     },
     "yeslab_372": {
       "factor_name": "GP_003",
       "train_signed_icir": 0.5942,
       "annual": "5/5",
-      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+      "decision": "READY_CLEAN",
+      "validation_signed_icir": 0.5824,
+      "nine_edge_val_max": 0.6316,
+      "pool_audit": "PASS",
+      "pool_constraints": []
     },
     "yeslab_379": {
       "factor_name": "GP_010",
       "train_signed_icir": 0.6205,
       "annual": "5/5",
-      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+      "decision": "READY_WITH_MONITORS",
+      "validation_signed_icir": 0.7827,
+      "nine_edge_val_max": 0.7318,
+      "pool_audit": "PASS_WITH_MONITORING",
+      "pool_constraints": [
+        "elevated vs 375 (0.886/0.894)"
+      ]
     },
     "yeslab_384": {
       "factor_name": "GP_015",
       "train_signed_icir": 0.529,
       "annual": "4/5 (2021 fail 0.33)",
-      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+      "decision": "READY_WITH_MONITORS",
+      "validation_signed_icir": 0.7906,
+      "nine_edge_val_max": 0.6761,
+      "pool_audit": "PASS_WITH_MONITORING",
+      "pool_constraints": [
+        "elevated vs 375 (0.876)",
+        "elevated vs 395 (0.803)"
+      ]
     },
     "yeslab_397": {
       "factor_name": "GP_028",
@@ -42,7 +68,13 @@
       "factor_name": "GP_037",
       "train_signed_icir": 0.6601,
       "annual": "5/5",
-      "decision": "TRAIN_PASS_VALIDATION_PENDING"
+      "decision": "READY_WITH_MONITORS",
+      "validation_signed_icir": 0.9219,
+      "nine_edge_val_max": 0.5978,
+      "pool_audit": "PASS_WITH_MONITORING",
+      "pool_constraints": [
+        "elevated vs 375 (0.816/0.818)"
+      ]
     },
     "yeslab_423": {
       "factor_name": "GP_054",
@@ -59,5 +91,13 @@
   "locked_test_read": false,
   "formal_factor_set_changed": false,
   "model_training_started": false,
-  "evidence_commit": "7121b4782a3d9eb411e3643c1b1cf2f0c6ff1619"
+  "evidence_commit": "7121b4782a3d9eb411e3643c1b1cf2f0c6ff1619",
+  "family_structure": "GP_00x pass7 family plus 375/395 form a broad correlation block. 372 is pool-clean (max 0.752); 406 elevated only with 375 (0.816); 384/379 elevated with 375 (0.876/0.886); 371 multi-constrained (370/375/395 + formal 380 overlap).",
+  "pool_artifacts": [
+    "candidate371_pair_similarity_v1.json",
+    "candidate372_pair_similarity_v1.json",
+    "candidate379_pair_similarity_v1.json",
+    "candidate384_pair_similarity_v1.json",
+    "candidate406_pair_similarity_v1.json"
+  ]
 }

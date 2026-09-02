@@ -6574,5 +6574,30 @@
     "locked_test_read": false,
     "formal_factor_set_changed": false,
     "model_training_started": false
+  },
+  "pass7_canonical_followup": {
+    "scope": "PASS7_TUSHARE_CANONICAL_FOLLOWUP",
+    "status": "COMPLETE_FIVE_NEW_READY",
+    "passed": [
+      "yeslab_371 (monitors)",
+      "yeslab_372 (clean)",
+      "yeslab_379 (monitors)",
+      "yeslab_384 (monitors)",
+      "yeslab_406 (monitors)"
+    ],
+    "rejected": {
+      "yeslab_397": "annual 2/5",
+      "yeslab_423": "annual 3/5"
+    },
+    "note": "Discovered via catalog final-status consolidation: these GP factors passed the historical screen predictive gate but were never evaluated. Canonical ICIR 0.50-0.66; five pass all gates.",
+    "artifacts": [
+      "pass7_train_evidence_v1.json",
+      "tushare_shsz_pass7_formal9_train_2020_2024_v1",
+      "tushare_shsz_pass7_formal9_validation_2025_v1"
+    ],
+    "formal_factor_set_changed": false,
+    "database_writes": false,
+    "locked_test_read": false,
+    "model_training_started": false
   }
 }
