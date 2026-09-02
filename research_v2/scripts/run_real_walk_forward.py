@@ -120,7 +120,12 @@ def _extract_dataset(
         "validation": fold_definition.validation_years,
         "test": fold_definition.test_years,
     }[role]
-    segment_end = date(max(role_years), 12, 31)
+    # Train/validation exits must stay inside their years (no leak into the next
+    # segment); test-year signals legitimately exit into the following January.
+    if role == "test":
+        segment_end = date(max(role_years) + 1, 1, 31)
+    else:
+        segment_end = date(max(role_years), 12, 31)
     years = list(range(start.year, end.year + 1))
     universe_parts = []
     for year in years:
