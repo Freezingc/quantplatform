@@ -6628,5 +6628,28 @@
     "locked_test_read": false,
     "formal_factor_set_changed": false,
     "model_training_started": false
+  },
+  "alpha167_window_variant_exploration_followup": {
+    "scope": "ALPHA167_WINDOW_VARIANT_EXPLORATION_FOLLOWUP",
+    "status": "CLOSED_WINDOW_VARIANTS_CANNOT_REPAIR",
+    "windows_screened": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      10
+    ],
+    "best_window": {
+      "window": 4,
+      "train_signed_icir": 0.5034,
+      "annual": "3/5"
+    },
+    "finding": "All six covariance windows leave 2021 (ICIR 0.35-0.40) and 2023 (0.35-0.47) below the 0.50 strict gate; annual gate stays 3/5 (2/5 at window 10). The annual failures are a genuine regime weakness of the factor, not window-tunable. Alpha167 remains MONITORED, repair path exhausted.",
+    "artifact": "alpha167_window_variant_exploration_v1/window_variant_exploration.json",
+    "database_writes": false,
+    "locked_test_read": false,
+    "formal_factor_set_changed": false,
+    "model_training_started": false
   }
 }

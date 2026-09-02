@@ -1,0 +1,112 @@
+{
+  "scope": "ALPHA167_WINDOW_VARIANT_EXPLORATION_V1",
+  "factor_id": "yeslab_167",
+  "factor_name": "Alpha99",
+  "formula": "-cross-sectional rank of rolling covariance between rank(close) and rank(vol), window variant",
+  "frozen_direction": 1,
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "market_source": "local Tushare.daily cache",
+  "label": "forward_open_5d:v1",
+  "training_window": "2020-01-02/2024-12-31",
+  "windows_screened": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    10
+  ],
+  "results": {
+    "window_3": {
+      "window": 3,
+      "train_signed_mean_rank_ic": 0.029614619715803935,
+      "train_signed_icir": 0.5008515909513804,
+      "directional_day_share": 0.6872937293729373,
+      "strict_annual_icir_pass_years": 3,
+      "annual_icir": {
+        "2020": 0.5243,
+        "2021": 0.4048,
+        "2022": 0.5123,
+        "2023": 0.4408,
+        "2024": 0.6147
+      }
+    },
+    "window_4": {
+      "window": 4,
+      "train_signed_mean_rank_ic": 0.03378054703703767,
+      "train_signed_icir": 0.5033922392600275,
+      "directional_day_share": 0.6897689768976898,
+      "strict_annual_icir_pass_years": 3,
+      "annual_icir": {
+        "2020": 0.5419,
+        "2021": 0.3765,
+        "2022": 0.537,
+        "2023": 0.4589,
+        "2024": 0.5964
+      }
+    },
+    "window_5": {
+      "window": 5,
+      "train_signed_mean_rank_ic": 0.03636188180331062,
+      "train_signed_icir": 0.5011017472048988,
+      "directional_day_share": 0.6922442244224423,
+      "strict_annual_icir_pass_years": 3,
+      "annual_icir": {
+        "2020": 0.5516,
+        "2021": 0.3487,
+        "2022": 0.5557,
+        "2023": 0.4698,
+        "2024": 0.5794
+      }
+    },
+    "window_6": {
+      "window": 6,
+      "train_signed_mean_rank_ic": 0.038424465588867106,
+      "train_signed_icir": 0.5011321237093948,
+      "directional_day_share": 0.6773927392739274,
+      "strict_annual_icir_pass_years": 3,
+      "annual_icir": {
+        "2020": 0.5669,
+        "2021": 0.3501,
+        "2022": 0.5527,
+        "2023": 0.4737,
+        "2024": 0.5668
+      }
+    },
+    "window_7": {
+      "window": 7,
+      "train_signed_mean_rank_ic": 0.039436783926256665,
+      "train_signed_icir": 0.495031760565786,
+      "directional_day_share": 0.6732673267326733,
+      "strict_annual_icir_pass_years": 3,
+      "annual_icir": {
+        "2020": 0.5716,
+        "2021": 0.3523,
+        "2022": 0.5413,
+        "2023": 0.4584,
+        "2024": 0.5552
+      }
+    },
+    "window_10": {
+      "window": 10,
+      "train_signed_mean_rank_ic": 0.03992869588699782,
+      "train_signed_icir": 0.45451635297622467,
+      "directional_day_share": 0.6633663366336634,
+      "strict_annual_icir_pass_years": 2,
+      "annual_icir": {
+        "2020": 0.577,
+        "2021": 0.3494,
+        "2022": 0.4879,
+        "2023": 0.3461,
+        "2024": 0.5104
+      }
+    }
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}
