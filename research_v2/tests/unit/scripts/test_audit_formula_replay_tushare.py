@@ -192,7 +192,7 @@ def test_fetch_full_tushare_shsz_market_can_include_daily_basic(
     assert result.loc[0, "total_mv"] == 4.0
 
 
-def test_fetch_full_tushare_shsz_market_accepts_legacy_basic_cache(
+def test_fetch_full_tushare_shsz_market_refetches_partial_legacy_basic_cache(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     trade_date = date(2025, 1, 2)
@@ -217,17 +217,37 @@ def test_fetch_full_tushare_shsz_market_accepts_legacy_basic_cache(
             "adj_factor": [2.0],
         }
     )
-    basic = pd.DataFrame({"ts_code": ["000001.SZ"], "turnover_rate": [3.0]})
+    partial_basic = pd.DataFrame({"ts_code": ["000001.SZ"], "turnover_rate": [3.0]})
     daily.to_json(tmp_path / "daily_20250102.json", orient="table")
     adjustment.to_json(tmp_path / "adj_factor_20250102.json", orient="table")
-    basic.to_json(tmp_path / "daily_basic_20250102.json", orient="table")
-    monkeypatch.setitem(sys.modules, "tushare", None)
+    partial_basic.to_json(tmp_path / "daily_basic_20250102.json", orient="table")
+    calls: list[str] = []
+
+    class FakePro:
+        def daily_basic(self, *, trade_date: str, fields: str) -> pd.DataFrame:
+            calls.append(trade_date)
+            assert fields == "ts_code,trade_date,turnover_rate,total_mv"
+            return pd.DataFrame(
+                {
+                    "ts_code": ["000001.SZ"],
+                    "trade_date": [trade_date],
+                    "turnover_rate": [3.5],
+                    "total_mv": [4.0],
+                }
+            )
+
+    monkeypatch.setitem(sys.modules, "tushare", SimpleNamespace(pro_api=lambda _: FakePro()))
 
     result = audit.fetch_full_tushare_shsz_market(
-        (trade_date,), token="", cache_dir=tmp_path, include_daily_basic=True
+        (trade_date,), token="token", cache_dir=tmp_path, include_daily_basic=True
     )
 
-    assert result.loc[0, "turnover_rate"] == 3.0
+    # Partial legacy cache (turnover_rate only) must be refetched, not accepted.
+    assert calls == ["20250102"]
+    assert result.loc[0, "turnover_rate"] == 3.5
+    assert result.loc[0, "total_mv"] == 4.0
+    rewritten = pd.read_json(tmp_path / "daily_basic_20250102.json", orient="table")
+    assert "total_mv" in rewritten.columns
 
 
 def test_fetch_full_tushare_shsz_market_uses_complete_cache_without_token(

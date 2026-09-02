@@ -94,18 +94,23 @@ def main() -> None:
         if source:
             checklist_status[source] = entry
 
-    hist_rows: dict[str, dict] = {}
-    hist_path = DIAG / "historical_window_2019_robustness_v1" / "historical_window_2019_comparison.json"
-    if hist_path.exists():
-        hist = json.loads(hist_path.read_text(encoding="utf-8"))
-        cand_to_src = {
-            str(e.get("candidate_id")): str(e.get("source_factor_id"))
-            for e in checklist
-            if e.get("candidate_id")
-        }
-        for row in hist.get("rows", []):
-            cid = str(row["factor_id"])
-            hist_rows[cand_to_src.get(cid, cid)] = row
+    cand_to_src = {
+        str(e.get("candidate_id")): str(e.get("source_factor_id"))
+        for e in checklist
+        if e.get("candidate_id")
+    }
+
+    def _load_hist_rows(path: Path) -> dict[str, dict]:
+        rows: dict[str, dict] = {}
+        if path.exists():
+            hist = json.loads(path.read_text(encoding="utf-8"))
+            for row in hist.get("rows", []):
+                cid = str(row["factor_id"])
+                rows[cand_to_src.get(cid, cid)] = row
+        return rows
+
+    hist_rows = _load_hist_rows(DIAG / "historical_window_2019_robustness_v1" / "historical_window_2019_comparison.json")
+    hist_rows_2018 = _load_hist_rows(DIAG / "historical_window_2018_robustness_v1" / "historical_window_2018_comparison.json")
 
     band_decisions: dict[str, str] = {}
     for ledger_name in ("band10_train_evidence_v1.json", "nearmiss6_train_evidence_v1.json",
@@ -151,12 +156,22 @@ def main() -> None:
         if fid in hist_rows:
             hr = hist_rows[fid]
             entry["historical_window_2019"] = {
-                "ic_full_market": hr.get("ic_2019_full"),
-                "icir_full_market": hr.get("icir_2019_full"),
-                "ic_adv20_liquid": hr.get("ic_2019_liquid"),
-                "icir_adv20_liquid": hr.get("icir_2019_liquid"),
+                "ic_full_market": hr.get("ic_full_market"),
+                "icir_full_market": hr.get("icir_full_market"),
+                "ic_adv20_liquid": hr.get("ic_adv20_liquid"),
+                "icir_adv20_liquid": hr.get("icir_adv20_liquid"),
                 "verdict": hr.get("classify_overall"),
                 "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020",
+            }
+        if fid in hist_rows_2018:
+            hr = hist_rows_2018[fid]
+            entry["historical_window_2018"] = {
+                "ic_full_market": hr.get("ic_full_market"),
+                "icir_full_market": hr.get("icir_full_market"),
+                "ic_adv20_liquid": hr.get("ic_adv20_liquid"),
+                "icir_adv20_liquid": hr.get("icir_adv20_liquid"),
+                "verdict": hr.get("classify_overall"),
+                "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
             }
         entries.append(entry)
 

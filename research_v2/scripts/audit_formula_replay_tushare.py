@@ -364,9 +364,15 @@ def fetch_full_tushare_shsz_market(
         merged = merge_tushare_adjustment_factor(daily, adjustment)
         if include_daily_basic:
             basic_path = cache_dir / f"daily_basic_{trade_date:%Y%m%d}.json"
+            basic = None
             if basic_path.is_file():
                 basic = pd.read_json(basic_path, orient="table")
-            else:
+                if not isinstance(basic, pd.DataFrame) or basic.empty or "total_mv" not in basic.columns:
+                    # Stale/partial cache (e.g. early turnover_rate-only
+                    # downloads): refetch so total_mv is not silently NaN.
+                    basic = None
+                    basic_path.unlink()
+            if basic is None:
                 basic = api().daily_basic(
                     trade_date=trade_date.strftime("%Y%m%d"),
                     fields="ts_code,trade_date,turnover_rate,total_mv",

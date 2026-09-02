@@ -203,7 +203,7 @@ def main(argv=None) -> int:
         print(f"{fid}: full={results[fid]['full_market']} liquid={results[fid]['adv20_liquid']}", flush=True)
 
     payload = {
-        "scope": "HISTORICAL_WINDOW_2019_ROBUSTNESS_V1",
+        "scope": f"HISTORICAL_WINDOW_{args.start.year}_ROBUSTNESS_V1",
         "window": f"{args.start}/{args.end}",
         "market_scope": "SH/SZ",
         "label": "forward_open_5d:v1 equivalent (Tushare adjusted open T+1 -> T+6; validated machine-precision-equal to V2 labels on 2020)",
@@ -217,10 +217,11 @@ def main(argv=None) -> int:
         "formal_factor_set_changed": False,
         "model_training_started": False,
     }
-    (args.output / "historical_window_2019_robustness.json").write_text(
+    out_name = f"historical_window_{args.start.year}_robustness.json"
+    (args.output / out_name).write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    print(f"wrote {args.output / 'historical_window_2019_robustness.json'}")
+    print(f"wrote {args.output / out_name}")
     client.close()
     return 0
 

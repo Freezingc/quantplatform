@@ -71,17 +71,17 @@ def main(argv=None) -> int:
             "train_icir_2020_2024": base.get("train_icir"),
             "val_icir_2025": base.get("val_icir"),
             "annual_gate": base.get("annual"),
-            "ic_2019_full": res["full_market"].get("mean_rank_ic"),
-            "icir_2019_full": res["full_market"].get("icir"),
-            "ic_2019_liquid": res["adv20_liquid"].get("mean_rank_ic"),
-            "icir_2019_liquid": res["adv20_liquid"].get("icir"),
+            "ic_full_market": res["full_market"].get("mean_rank_ic"),
+            "icir_full_market": res["full_market"].get("icir"),
+            "ic_adv20_liquid": res["adv20_liquid"].get("mean_rank_ic"),
+            "icir_adv20_liquid": res["adv20_liquid"].get("icir"),
             "classify_full": full_cls,
             "classify_liquid": liq_cls,
             "classify_overall": overall,
         })
 
     order = {"COLLAPSE": 0, "WATCH": 1, "NO_DATA": 2, "PASS": 3}
-    rows.sort(key=lambda r: (order[r["classify_overall"]], -(r["icir_2019_full"] or 0)))
+    rows.sort(key=lambda r: (order[r["classify_overall"]], -(r["icir_full_market"] or 0)))
 
     header = (
         f"{'factor':28s} {'trnICIR':>7s} {'valICIR':>7s} | "
@@ -93,8 +93,8 @@ def main(argv=None) -> int:
         print(
             f"{r['factor_id']:28s} "
             f"{str(r['train_icir_2020_2024']):>7s} {str(r['val_icir_2025']):>7s} | "
-            f"{str(r['ic_2019_full']):>8s} {str(r['icir_2019_full']):>7s} "
-            f"{str(r['ic_2019_liquid']):>8s} {str(r['icir_2019_liquid']):>7s} | "
+            f"{str(r['ic_full_market']):>8s} {str(r['icir_full_market']):>7s} "
+            f"{str(r['ic_adv20_liquid']):>8s} {str(r['icir_adv20_liquid']):>7s} | "
             f"{r['classify_overall']} (full={r['classify_full']}, liq={r['classify_liquid']})"
         )
 
