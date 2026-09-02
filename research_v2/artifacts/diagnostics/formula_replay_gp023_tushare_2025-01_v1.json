@@ -1,0 +1,66 @@
+{
+  "bj_alias_count": 0,
+  "bj_alias_map": null,
+  "code_count": 5441,
+  "cross_sectional_replay_mode": "single_complete_batch",
+  "database_writes": false,
+  "end": "2025-01-31",
+  "exclude_bj": false,
+  "factor_ids": [
+    "yeslab_392"
+  ],
+  "include_daily_basic": true,
+  "industry_source": "YesLab.stock_info_table static labels",
+  "locked_test_read": false,
+  "market_code_count": 5193,
+  "market_date_count": 217,
+  "market_finite_rows": 11072280,
+  "market_hash": "fc2e061f30f6b073746e20ed6895e0dd696ebea1aee0067ac649affdbd27547e",
+  "market_missing_code_count": 248,
+  "market_rows": 1107228,
+  "market_source": "Tushare.daily",
+  "market_start": "2024-03-10",
+  "market_universe_source": "YesLab.stock_factor_daily",
+  "max_ts_codes": null,
+  "pit_industry_cutover": null,
+  "required_market_fields": [
+    "pct_chg",
+    "turnover_rate"
+  ],
+  "restrict_to_v2_universe": false,
+  "rows": [
+    {
+      "batch_count": 1,
+      "decision_status": "FORMULA_REPLAY_BLOCKED",
+      "factor_id": "yeslab_392",
+      "factor_name": "GP_023",
+      "lookback_days": 20,
+      "max_abs_diff": 1.1368683772161603e-13,
+      "max_rel_diff": 5.165583278701803e-16,
+      "max_ts_codes": null,
+      "mismatch_date_count": 0,
+      "mismatch_end": null,
+      "mismatch_rows": 0,
+      "mismatch_start": null,
+      "overlap_finite_rows": 91606,
+      "overlap_rows": 93474,
+      "reason_codes": [
+        "TUSHARE_MARKET_MISSING_CODES",
+        "TUSHARE_SOURCE_MARKET_COVERAGE_GAP"
+      ],
+      "replay_finite_rows": 91613,
+      "replay_lookback_days": 180,
+      "replay_rows": 93474,
+      "source_finite_rows": 91606,
+      "source_finite_rows_full": 96067,
+      "source_market_uncovered_code_count": 248,
+      "source_market_uncovered_date_count": 18,
+      "source_market_uncovered_rows": 4461,
+      "source_rows": 93474
+    }
+  ],
+  "scope": "FORMULA_REPLAY_CONSISTENCY_TUSHARE_MARKET_V1",
+  "start": "2025-01-02",
+  "stock_batch_size": 5193,
+  "universe_mode": "full_market"
+}

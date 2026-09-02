@@ -87,6 +87,7 @@ SUPPORTED_FACTOR_IDS = (
     # These two remain isolated by default admission policy, but are allowed
     # here for explicit full-cross-section diagnostics.
     "yeslab_395",
+    "yeslab_392",
     "yeslab_471",
     # Industry-normalized factors require full-market replay because their
     # cross-sectional grouping is performed inside the calculator.
@@ -139,6 +140,7 @@ FULL_CROSS_SECTION_FACTOR_IDS = frozenset(
         "yeslab_442",
         "yeslab_432",
         "yeslab_395",
+    "yeslab_392",
         "yeslab_443",
         "yeslab_357",
         "yeslab_362",

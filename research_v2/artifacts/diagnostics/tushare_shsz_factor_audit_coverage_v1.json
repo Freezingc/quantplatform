@@ -6651,5 +6651,19 @@
     "locked_test_read": false,
     "formal_factor_set_changed": false,
     "model_training_started": false
+  },
+  "gp023_borderline_followup": {
+    "scope": "GP023_BORDERLINE_BAND_FOLLOWUP",
+    "status": "CLOSED_REJECTED",
+    "factor_id": "yeslab_392",
+    "finding": "GP_023 (the only GP factor in the 0.45-0.50 borderline band) replay-verified at machine precision (0/91606 mismatch, 1.1e-13) then canonically evaluated: train signed IC 0.0766 but ICIR 0.4356 (< 0.50) and annual strict 1/5. The GP uplift did not generalize here (canonical below the historical screen 0.473). The borderline band is definitively closed; exploration space exhausted.",
+    "artifacts": [
+      "formula_replay_gp023_tushare_2025-01_v1.json",
+      "tushare_shsz_gp023_formal9_train_2020_2024_v1"
+    ],
+    "database_writes": false,
+    "locked_test_read": false,
+    "formal_factor_set_changed": false,
+    "model_training_started": false
   }
 }

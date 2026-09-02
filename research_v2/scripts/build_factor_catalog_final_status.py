@@ -57,6 +57,7 @@ PRIOR_EVALUATED = {
     "yeslab_209": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_3_OF_5 (canonical ICIR 0.419)",
     "yeslab_211": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_1_OF_5 (canonical ICIR 0.337)",
     "yeslab_214": "REJECT_CANONICAL_TRAINING_GATE_ANNUAL_3_OF_5 (canonical ICIR 0.478)",
+    "yeslab_392": "REJECT_CANONICAL_TRAINING_ICIR_0.4356_ANNUAL_1_OF_5 (borderline-band GP evaluated; uplift did not generalize)",
     "yeslab_83": "MAPPING_UNVERIFIED (replay mismatch 100%, max_abs 1.09; no canonical evaluation)",
     "yeslab_212": "MAPPING_UNVERIFIED (replay mismatch 99.99%, max_abs 1.49; no canonical evaluation)",
     "yeslab_252": "REJECT_TRAINING_AGGREGATE_ICIR_0.4957_BELOW_0.50 (mapping verified; annual 4/5)",

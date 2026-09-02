@@ -6,8 +6,8 @@
   ],
   "catalog_factor_count": 487,
   "status_class_counts": {
-    "SCREENED_ONLY": 384,
-    "REJECT_OR_BLOCKED": 67,
+    "SCREENED_ONLY": 383,
+    "REJECT_OR_BLOCKED": 68,
     "FORMAL": 9,
     "MONITORED": 4,
     "READY": 23
@@ -55,7 +55,7 @@
       "yeslab_429",
       "yeslab_95"
     ],
-    "rejected_or_blocked_count": 67
+    "rejected_or_blocked_count": 68
   },
   "status_definitions": {
     "FORMAL": "already in the formal nine factor set",
@@ -3219,8 +3219,8 @@
       "factor_name": "GP_023",
       "screen_2020_signed_icir": 0.4728,
       "screen_2020_days": 243,
-      "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "final_status": "REJECT_CANONICAL_TRAINING_ICIR_0.4356_ANNUAL_1_OF_5 (borderline-band GP evaluated; uplift did not generalize)",
+      "status_class": "REJECT_OR_BLOCKED"
     },
     {
       "factor_id": "yeslab_393",

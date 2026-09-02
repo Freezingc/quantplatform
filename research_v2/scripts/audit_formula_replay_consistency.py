@@ -800,6 +800,15 @@ REPLAY_DEFINITIONS = {
         lookback_days=60,
         replay_lookback_days=180,
     ),
+    "yeslab_392": ReplayDefinition(
+        factor_id="yeslab_392",
+        factor_name="GP_023",
+        store_factor="factor_data9",
+        calculator_module="GP_Factor_023_Calculator",
+        calculator_class="GP_Factor_023_Calculator",
+        lookback_days=20,
+        replay_lookback_days=180,
+    ),
     "yeslab_395": ReplayDefinition(
         factor_id="yeslab_395",
         factor_name="GP_026",
