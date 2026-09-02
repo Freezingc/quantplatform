@@ -860,6 +860,16 @@
         "icir_official_cn_liquid_a": 1.0391,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.070826,
+        "icir_full_market": 0.8109,
+        "ic_adv20_liquid": 0.077339,
+        "icir_adv20_liquid": 0.8088,
+        "ic_official_cn_liquid_a": 0.082044,
+        "icir_official_cn_liquid_a": 0.9007,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -1025,6 +1035,16 @@
         "icir_official_cn_liquid_a": 0.5835,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.080931,
+        "icir_full_market": 0.5848,
+        "ic_adv20_liquid": 0.087371,
+        "icir_adv20_liquid": 0.5749,
+        "ic_official_cn_liquid_a": 0.084395,
+        "icir_official_cn_liquid_a": 0.6409,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -1774,6 +1794,16 @@
         "icir_official_cn_liquid_a": 0.7911,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.047593,
+        "icir_full_market": 0.7137,
+        "ic_adv20_liquid": 0.048112,
+        "icir_adv20_liquid": 0.6528,
+        "ic_official_cn_liquid_a": 0.046117,
+        "icir_official_cn_liquid_a": 0.6151,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3004,6 +3034,16 @@
         "icir_official_cn_liquid_a": 0.8596,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.040328,
+        "icir_full_market": 0.6419,
+        "ic_adv20_liquid": 0.039539,
+        "icir_adv20_liquid": 0.5874,
+        "ic_official_cn_liquid_a": 0.035902,
+        "icir_official_cn_liquid_a": 0.6112,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3073,6 +3113,16 @@
         "icir_official_cn_liquid_a": 0.6558,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.031165,
+        "icir_full_market": 0.5689,
+        "ic_adv20_liquid": 0.028921,
+        "icir_adv20_liquid": 0.5035,
+        "ic_official_cn_liquid_a": 0.024805,
+        "icir_official_cn_liquid_a": 0.4514,
+        "verdict": "WATCH",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3150,6 +3200,16 @@
         "icir_official_cn_liquid_a": 0.6334,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.08041,
+        "icir_full_market": 0.5629,
+        "ic_adv20_liquid": 0.082381,
+        "icir_adv20_liquid": 0.5356,
+        "ic_official_cn_liquid_a": 0.080257,
+        "icir_official_cn_liquid_a": 0.6122,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3179,6 +3239,16 @@
         "icir_official_cn_liquid_a": 0.6533,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.111513,
+        "icir_full_market": 0.7038,
+        "ic_adv20_liquid": 0.117172,
+        "icir_adv20_liquid": 0.7007,
+        "ic_official_cn_liquid_a": 0.108862,
+        "icir_official_cn_liquid_a": 0.6636,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3208,6 +3278,16 @@
         "icir_official_cn_liquid_a": 0.7444,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.081212,
+        "icir_full_market": 0.5958,
+        "ic_adv20_liquid": 0.085271,
+        "icir_adv20_liquid": 0.5777,
+        "ic_official_cn_liquid_a": 0.084481,
+        "icir_official_cn_liquid_a": 0.6682,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3253,6 +3333,16 @@
         "icir_official_cn_liquid_a": 0.7978,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.093857,
+        "icir_full_market": 0.7187,
+        "ic_adv20_liquid": 0.101122,
+        "icir_adv20_liquid": 0.6938,
+        "ic_official_cn_liquid_a": 0.089447,
+        "icir_official_cn_liquid_a": 0.6835,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3308,6 +3398,16 @@
         "icir_official_cn_liquid_a": 0.8314,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.092875,
+        "icir_full_market": 0.7186,
+        "ic_adv20_liquid": 0.100694,
+        "icir_adv20_liquid": 0.6977,
+        "ic_official_cn_liquid_a": 0.090229,
+        "icir_official_cn_liquid_a": 0.7017,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3345,6 +3445,16 @@
         "icir_official_cn_liquid_a": 0.5558,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.058729,
+        "icir_full_market": 0.5197,
+        "ic_adv20_liquid": 0.05119,
+        "icir_adv20_liquid": 0.4292,
+        "ic_official_cn_liquid_a": 0.044419,
+        "icir_official_cn_liquid_a": 0.3565,
+        "verdict": "WATCH",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3390,6 +3500,16 @@
         "icir_official_cn_liquid_a": 0.8685,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.095331,
+        "icir_full_market": 0.8036,
+        "ic_adv20_liquid": 0.099662,
+        "icir_adv20_liquid": 0.7545,
+        "ic_official_cn_liquid_a": 0.093729,
+        "icir_official_cn_liquid_a": 0.7087,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3454,6 +3574,16 @@
         "icir_official_cn_liquid_a": 0.5991,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.057259,
+        "icir_full_market": 0.547,
+        "ic_adv20_liquid": 0.058582,
+        "icir_adv20_liquid": 0.5226,
+        "ic_official_cn_liquid_a": 0.056957,
+        "icir_official_cn_liquid_a": 0.5614,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3483,6 +3613,16 @@
         "icir_official_cn_liquid_a": 0.6149,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.058527,
+        "icir_full_market": 0.5323,
+        "ic_adv20_liquid": 0.058956,
+        "icir_adv20_liquid": 0.5074,
+        "ic_official_cn_liquid_a": 0.058377,
+        "icir_official_cn_liquid_a": 0.4697,
+        "verdict": "WATCH",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3545,6 +3685,16 @@
         "icir_official_cn_liquid_a": 0.6132,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.072128,
+        "icir_full_market": 0.5892,
+        "ic_adv20_liquid": 0.076132,
+        "icir_adv20_liquid": 0.5796,
+        "ic_official_cn_liquid_a": 0.07312,
+        "icir_official_cn_liquid_a": 0.5381,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3590,6 +3740,16 @@
         "icir_official_cn_liquid_a": 0.5787,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.050813,
+        "icir_full_market": 0.5122,
+        "ic_adv20_liquid": 0.049015,
+        "icir_adv20_liquid": 0.4872,
+        "ic_official_cn_liquid_a": 0.038113,
+        "icir_official_cn_liquid_a": 0.3542,
+        "verdict": "WATCH",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3668,6 +3828,16 @@
         "icir_official_cn_liquid_a": 0.6163,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.053643,
+        "icir_full_market": 0.5297,
+        "ic_adv20_liquid": 0.056242,
+        "icir_adv20_liquid": 0.5174,
+        "ic_official_cn_liquid_a": 0.055807,
+        "icir_official_cn_liquid_a": 0.534,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3697,6 +3867,16 @@
         "icir_official_cn_liquid_a": 0.9487,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.0719,
+        "icir_full_market": 0.7779,
+        "ic_adv20_liquid": 0.073022,
+        "icir_adv20_liquid": 0.7303,
+        "ic_official_cn_liquid_a": 0.068321,
+        "icir_official_cn_liquid_a": 0.6819,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -3876,6 +4056,16 @@
           "2018-06"
         ],
         "monitoring_note": "isolated weak months in the 2018 bear regime; add an acute-liquidity-shock regime monitor (2018-06 type) - weakness does not persist into adjacent months"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.063764,
+        "icir_full_market": 0.5978,
+        "ic_adv20_liquid": 0.062219,
+        "icir_adv20_liquid": 0.5591,
+        "ic_official_cn_liquid_a": 0.054887,
+        "icir_official_cn_liquid_a": 0.4815,
+        "verdict": "WATCH",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -4051,6 +4241,16 @@
           "2018-10"
         ],
         "monitoring_note": "isolated weak months in the 2018 bear regime; add an acute-liquidity-shock regime monitor (2018-06 type) - weakness does not persist into adjacent months"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.03747,
+        "icir_full_market": 0.37,
+        "ic_adv20_liquid": 0.035231,
+        "icir_adv20_liquid": 0.3363,
+        "ic_official_cn_liquid_a": 0.027725,
+        "icir_official_cn_liquid_a": 0.2618,
+        "verdict": "COLLAPSE",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -4240,6 +4440,16 @@
         "icir_official_cn_liquid_a": 0.6252,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.065365,
+        "icir_full_market": 0.6506,
+        "ic_adv20_liquid": 0.065116,
+        "icir_adv20_liquid": 0.6141,
+        "ic_official_cn_liquid_a": 0.057957,
+        "icir_official_cn_liquid_a": 0.5923,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -4317,6 +4527,16 @@
         "icir_official_cn_liquid_a": 0.7349,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.061997,
+        "icir_full_market": 0.6106,
+        "ic_adv20_liquid": 0.068997,
+        "icir_adv20_liquid": 0.6152,
+        "ic_official_cn_liquid_a": 0.062579,
+        "icir_official_cn_liquid_a": 0.709,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {
@@ -4442,6 +4662,16 @@
         "icir_official_cn_liquid_a": 0.7002,
         "verdict": "PASS",
         "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+      },
+      "historical_window_2017": {
+        "ic_full_market": 0.068731,
+        "icir_full_market": 0.6398,
+        "ic_adv20_liquid": 0.071436,
+        "icir_adv20_liquid": 0.5923,
+        "ic_official_cn_liquid_a": 0.067087,
+        "icir_official_cn_liquid_a": 0.6641,
+        "verdict": "PASS",
+        "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
       }
     },
     {

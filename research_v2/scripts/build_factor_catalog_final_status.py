@@ -111,6 +111,7 @@ def main() -> None:
 
     hist_rows = _load_hist_rows(DIAG / "historical_window_2019_robustness_v1" / "historical_window_2019_comparison.json")
     hist_rows_2018 = _load_hist_rows(DIAG / "historical_window_2018_robustness_v1" / "historical_window_2018_comparison.json")
+    hist_rows_2017 = _load_hist_rows(DIAG / "historical_window_2017_robustness_v1" / "historical_window_2017_comparison.json")
 
     watch_monthly_path = DIAG / "watch_monthly_425_443_v1" / "watch_monthly_breakdown.json"
     watch_monthly: dict[str, dict] = {}
@@ -184,6 +185,18 @@ def main() -> None:
                 "verdict": hr.get("classify_overall"),
                 "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
             }
+            if fid in hist_rows_2017:
+                hr17 = hist_rows_2017[fid]
+                entry["historical_window_2017"] = {
+                    "ic_full_market": hr17.get("ic_full_market"),
+                    "icir_full_market": hr17.get("icir_full_market"),
+                    "ic_adv20_liquid": hr17.get("ic_adv20_liquid"),
+                    "icir_adv20_liquid": hr17.get("icir_adv20_liquid"),
+                    "ic_official_cn_liquid_a": hr17.get("ic_official_cn_liquid_a"),
+                    "icir_official_cn_liquid_a": hr17.get("icir_official_cn_liquid_a"),
+                    "verdict": hr17.get("classify_overall"),
+                    "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included",
+                }
             wm_years = watch_monthly.get(fid)
             if wm_years and "2018" in wm_years:
                 liquid_block = wm_years["2018"].get("adv20_liquid", {})
