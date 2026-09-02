@@ -16,7 +16,10 @@
     "Approve only an explicitly identified isolated canonical version; never mix historical YesLab values.",
     "Retain every listed monitoring requirement after admission.",
     "Any joint admission requires the corresponding pair/combination review; 114-484 cannot be jointly admitted, 381-405 and 357-363 require elevated monitoring.",
-    "Do not admit to reach a target factor count; factor quality gates are unchanged."
+    "Do not admit to reach a target factor count; factor quality gates are unchanged.",
+    "Pre-training regime evidence (brief 4r-4v): 370-372 and 379-384 are redundant (>=0.93) across all three pre-training years while staying below 0.80 in-training; joint admission of either pair is prohibited (same treatment as 379-375). Keep-one guidance: 372 over 370; 379 over 384 (near-tie).",
+    "Canonical yeslab_443 collapses in the 2017 large-cap regime (official ICIR 0.134). Decision point: prefer the fully evaluated repair variant yeslab_443_reg30_max20_v1 (large-cap regime monitor + pair monitor vs formal 431), or keep canonical 443 MONITORED (brief 4s).",
+    "114-471 requires a cross-regime elevated monitor (0.766 in-training, 0.846/0.805 in 2018/2019 pre-training regimes)."
   ],
   "checklists": [
     {
@@ -66,13 +69,16 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization",
       "required_scope": "Do not mix with historical YesLab values; historical GP_012 contains BJ securities. Retain elevated pair monitoring against yeslab_405_tushare_shsz_v1 and yeslab_443_tushare_shsz_v1.",
-      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1 (train/validation median abs Spearman 0.86451/0.88821) and yeslab_443_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721); separate combination approval required if any of these pairs is jointly considered.",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1 (train/validation median abs Spearman 0.86451/0.88821) and yeslab_443_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721); separate combination approval required if any of these pairs is jointly considered. PRE-TRAINING REGIME (4v): elevated overlap with formal yeslab_431 (0.810/0.838/0.809 across 2017-2019 vs 0.785 in-training nine-edge) and formal yeslab_437 (0.804/0.828/0.826) - regime-amplified; admitting 381 stacks redundancy on the two weakest production factors in large-cap/bear regimes (formal 431/437 collapse per brief 4u). Add regime-overlap monitoring note.",
       "evidence": [
         "tushare_alpha381_canonical_candidate_review_v1.json",
         "tushare_alpha381_canonical_train_similarity_v1/similarity_summary.json",
         "tushare_alpha381_canonical_validation_v1/similarity_summary.json",
         "tushare_shsz_alpha381_admission_preflight_v1.json",
-        "yeslab_381_validation_2025_monthly_v1/monthly_stability.json"
+        "yeslab_381_validation_2025_monthly_v1/monthly_stability.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2017.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -87,12 +93,14 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization",
       "required_scope": "Use only the isolated canonical version; retain monthly and regime monitoring.",
-      "pair_or_combination_note": "Cannot be jointly admitted with yeslab_484_tushare_shsz_v1; retain monthly and regime monitoring.",
+      "pair_or_combination_note": "Cannot be jointly admitted with yeslab_484_tushare_shsz_v1; retain monthly and regime monitoring. PRE-TRAINING REGIME (4t): cross-regime elevated pair with yeslab_471 (0.846 in 2018, 0.805 in 2019 vs 0.766 in-training) - add cross-regime pair monitor.",
       "evidence": [
         "tushare_alpha114_canonical_candidate_review_v2.json",
         "alpha114_tushare_formal9_full_similarity_audit_v1.json",
         "tushare_shsz_alpha114_admission_preflight_v1.json",
-        "yeslab_114_validation_2025_monthly_v1/monthly_stability.json"
+        "yeslab_114_validation_2025_monthly_v1/monthly_stability.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -147,11 +155,14 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization",
       "required_scope": "Do not mix with historical YesLab values; historical GP_074 contains BJ securities.",
-      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete (30 train/validation edges); elevated pair monitor with yeslab_381_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721, monitor threshold 0.80); no joint admission with yeslab_381_tushare_shsz_v1 without separate combination review.",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete (30 train/validation edges); elevated pair monitor with yeslab_381_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721, monitor threshold 0.80); no joint admission with yeslab_381_tushare_shsz_v1 without separate combination review. PRE-TRAINING REGIME (4r/4s): canonical version COLLAPSES in the 2017 large-cap regime (signed ICIR full 0.370 / liquid 0.336 / official cn_liquid_a 0.262; train-period evidence intact). Repair variant yeslab_443_reg30_max20_v1 (ts_max 5->20) fully evaluated: 2017 0.574 full/0.481 official (borderline WATCH), 2018 PASS, 2019 PASS, train 0.558 PASS (annual 4/5), validation 0.550 PASS, nine-edge train 0.816 vs formal 431 (pair monitor) / validation 0.790 PASS, pool-clean in all pre-training regimes (max edge 0.711). Recommended: admit the repair variant REPLACING canonical, with large-cap-dominance regime monitor (CSI300-CSI500 60d spread) + 431 pair monitor.",
       "evidence": [
         "tushare_alpha443_canonical_candidate_review_v1.json",
         "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",
-        "tushare_shsz_alpha443_formal9_validation_2025_v1/similarity_summary.json"
+        "tushare_shsz_alpha443_formal9_validation_2025_v1/similarity_summary.json",
+        "regime_repair_443_v1/alpha443_repair_summary.json",
+        "regime_repair_443_v1/nine_edge/alpha443_repair_nine_edge_train.json",
+        "regime_repair_443_v1/nine_edge/alpha443_repair_nine_edge_validation.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -372,7 +383,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "canonical_basis": "Tushare SH/SZ rematerialization (near-miss coverage repair; historical screen ICIR understated by 0.06-0.20)",
       "required_scope": "Do not mix with historical YesLab values; historical materialization had warmup coverage gaps. Use only the isolated canonical version.",
-      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5901 train / 0.6031 validation vs yeslab_405_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_389_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden.",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5901 train / 0.6031 validation vs yeslab_405_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_389_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden. PRE-TRAINING REGIME (4t): REDUNDANT with yeslab_372 across all pre-training years (0.937/0.955/0.954) despite in-training edges < 0.80; joint admission with 372 prohibited. Keep-one guidance favors 372 (dominates 370 across all windows and is pool-clean).",
       "evidence": [
         "tushare_yeslab_370_nearmiss6_review_v1.json",
         "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
@@ -381,7 +392,10 @@
         "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
         "nearmiss6_train_evidence_v1.json",
         "candidate370_pair_similarity_v1.json",
-        "yeslab_370_validation_2025_monthly_v1/monthly_stability.json"
+        "yeslab_370_validation_2025_monthly_v1/monthly_stability.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2017.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -536,7 +550,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization with versioned PIT industry (SW2014 before 2021-12-10, SW2021 after); supersedes yeslab_471_tushare_pit_blocked_v1",
       "required_scope": "Use only the isolated canonical PIT version; do not mix with historical YesLab values (historical replay blocked on all rows; industry-scope difference). Historical stored values remain excluded.",
-      "pair_or_combination_note": "Pair evidence against all fifteen READY candidates complete (15 pairs x train/validation); max edge 0.7655 train / 0.7751 validation vs yeslab_114_tushare_shsz_v2, below 0.80; no elevated pair.",
+      "pair_or_combination_note": "Pair evidence against all fifteen READY candidates complete (15 pairs x train/validation); max edge 0.7655 train / 0.7751 validation vs yeslab_114_tushare_shsz_v2, below 0.80; no elevated pair. PRE-TRAINING REGIME (4t): cross-regime elevated pair with yeslab_114 (0.846 in 2018, 0.805 in 2019 vs 0.766 in-training) - add cross-regime pair monitor. Note: formal yeslab_431 (471's nearest formal edge context) itself collapses in 2017 (brief 4u).",
       "evidence": [
         "tushare_alpha471_canonical_candidate_review_v1.json",
         "tushare_pit_alpha471_train_2020_2024_annual_v1.json",
@@ -545,7 +559,9 @@
         "tushare_pit_alpha471_formal9_validation_2025_v1/similarity_summary.json",
         "candidate471_pair_similarity_v1.json",
         "yeslab_471_validation_2025_monthly_v1/monthly_stability.json",
-        "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
+        "formula_replay_alpha471_tushare_pit_2025-01_v1.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -607,7 +623,7 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization; supersedes the pre-precedent replay-block rejection",
       "required_scope": "Use only the isolated canonical version; do not mix with historical YesLab values (historical replay blocked by cross-sectional scope mismatch, same class as 357/363/471).",
-      "pair_or_combination_note": "Pair evidence against all seventeen READY candidates complete (17 pairs x train/validation); max edge 0.7541 train / 0.7564 validation, below 0.80; no elevated pair. Nine-edge validation vs formal yeslab_380 is 0.8072 (monitor note).",
+      "pair_or_combination_note": "Pair evidence against all seventeen READY candidates complete (17 pairs x train/validation); max edge 0.7541 train / 0.7564 validation, below 0.80; no elevated pair. Nine-edge validation vs formal yeslab_380 is 0.8072 (monitor note). PRE-TRAINING REGIME (4v): elevated overlap with formal yeslab_380 in 2018/2019 (0.803/0.812 vs 0.754 in-training max edge) - regime-amplified; add regime-overlap monitoring note.",
       "evidence": [
         "tushare_alpha395_precedent_upgrade_review_v1.json",
         "tushare_alpha395_formula_replay_block_rejection_review_v1.json",
@@ -616,7 +632,9 @@
         "tushare_shsz_alpha395_formal9_validation_2025_v1/quality_summary.json",
         "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json",
         "candidate395_pair_similarity_v1.json",
-        "yeslab_395_validation_2025_monthly_v1/monthly_stability.json"
+        "yeslab_395_validation_2025_monthly_v1/monthly_stability.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v2/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -706,12 +724,15 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
       "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
-      "pair_or_combination_note": "Pool-clean: max edge 0.747/0.752 vs 375, no elevated pairs. Annual 5/5.",
+      "pair_or_combination_note": "Pool-clean: max edge 0.747/0.752 vs 375, no elevated pairs. Annual 5/5. PRE-TRAINING REGIME (4t): REDUNDANT with yeslab_370 across all pre-training years (0.937/0.955/0.954) despite in-training edges < 0.80; joint admission with 370 prohibited. 372 is the preferred member of this pair (strictly dominates 370 across all windows).",
       "evidence": [
         "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
         "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
         "candidate372_pair_similarity_v1.json",
-        "pass7_train_evidence_v1.json"
+        "pass7_train_evidence_v1.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2017.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -735,12 +756,15 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
       "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
-      "pair_or_combination_note": "Elevated pair with 375 (0.886/0.894, near redundancy); no joint admission with 375 without separate review. Annual 5/5.",
+      "pair_or_combination_note": "Elevated pair with 375 (0.886/0.894, near redundancy); no joint admission with 375 without separate review. Annual 5/5. PRE-TRAINING REGIME (4t): REDUNDANT with yeslab_384 across all pre-training years (0.931/0.921/0.918) despite no in-training flag; joint admission with 384 prohibited (adds to the existing 379-375 prohibition). Keep-one guidance leans 379 (train 0.621, annual 5/5); 384 is the robustness-weighted alternative - genuine near-tie.",
       "evidence": [
         "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
         "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
         "candidate379_pair_similarity_v1.json",
-        "pass7_train_evidence_v1.json"
+        "pass7_train_evidence_v1.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2017.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
@@ -764,12 +788,15 @@
       "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "canonical_basis": "Tushare SH/SZ rematerialization (pass7: never-evaluated screen-pass GPs discovered by catalog consolidation)",
       "required_scope": "Do not mix with historical YesLab values; use only the isolated canonical version.",
-      "pair_or_combination_note": "Elevated pairs with 375 (0.876) and 395 (0.803). Annual 4/5 (2021 fail).",
+      "pair_or_combination_note": "Elevated pairs with 375 (0.876) and 395 (0.803). Annual 4/5 (2021 fail). PRE-TRAINING REGIME (4t): REDUNDANT with yeslab_379 across all pre-training years (0.931/0.921/0.918) despite no in-training flag; joint admission with 379 prohibited (adds to the existing 384-375 elevated pair). 384 is the robustness-weighted alternative to 379 (stronger validation 0.791 and pre-training windows; weaker train 0.529 and annual 4/5).",
       "evidence": [
         "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
         "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
         "candidate384_pair_similarity_v1.json",
-        "pass7_train_evidence_v1.json"
+        "pass7_train_evidence_v1.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2017.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2018.json",
+        "pretraining_regime_redundancy_v1/pretraining_redundancy_2019.json"
       ],
       "human_questions": [
         "Is the isolated canonical version explicitly approved for this candidate?",
