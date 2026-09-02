@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from datetime import date
 from pathlib import Path
 
 import dolphindb as ddb
@@ -27,7 +28,7 @@ from research_v2.datasets.builder import (
     FactorInput,
     build_point_in_time_dataset,
 )
-from research_v2.datasets.splits import SplitResolver
+from research_v2.datasets.splits import SplitResolver, annual_folds
 from research_v2.evaluation.walk_forward import (
     run_walk_forward_baselines,
 )
@@ -113,6 +114,13 @@ def _extract_dataset(
     segment = resolver.resolve(fold_id, role)
     start = min(segment.signal_dates)
     end = max(segment.signal_dates)
+    fold_definition = next(fold for fold in annual_folds() if fold.fold_id == fold_id)
+    role_years = {
+        "train": fold_definition.train_years,
+        "validation": fold_definition.validation_years,
+        "test": fold_definition.test_years,
+    }[role]
+    segment_end = date(max(role_years), 12, 31)
     years = list(range(start.year, end.year + 1))
     universe_parts = []
     for year in years:
@@ -170,7 +178,7 @@ def _extract_dataset(
         ],
         label_rows.loc[:, ["signal_date", "ts_code", "raw_return", "label_valid", "exit_date"]],
         factor_members=factor_members,
-        segment_end=end,
+        segment_end=segment_end,
         request=DatasetBuildRequest(fold_id=fold_id, split_role=role.upper()),
     )
     return dataset
