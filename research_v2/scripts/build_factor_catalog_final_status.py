@@ -219,8 +219,9 @@ def main() -> None:
                 "official_icir_2019": {"canonical": ev["2019"]["canonical"], "repair": ev["2019"]["repair"]},
                 "train_2020_2024": {"canonical": ev["train_2020_2024_aggregate"]["canonical"], "repair": ev["train_2020_2024_aggregate"]["repair"], "annual_repair": ev["train_annual_gate"]["repair"]},
                 "validation_2025": {"canonical": ev["validation_2025"]["canonical"], "repair": ev["validation_2025"]["repair"]},
-                "status": "REPAIR_AVAILABLE_AWAITING_DECISION",
-                "conditions": ["large-cap-dominance regime monitor", "nine-edge redundancy audit before admission (mandatory: variant correlates only 0.639 train / 0.607 validation with canonical, canonical nine-edge does not transfer)"],
+                "status": "REPAIR_EVALUATION_COMPLETE_AWAITING_DECISION",
+                "nine_edge": {"train_max": {"vs": "yeslab_431", "median_abs_spearman": 0.8163}, "validation_max": {"vs": "yeslab_431", "median_abs_spearman": 0.7904}, "redundant": False},
+                "conditions": ["large-cap-dominance regime monitor (2017 official ICIR 0.481 borderline)", "pair monitor vs formal yeslab_431 (train edge 0.816)"],
             }
         entries.append(entry)
 
