@@ -1,0 +1,780 @@
+{
+  "scope": "ADMISSION_DECISION_PACK_V1",
+  "purpose": "Consolidated per-candidate evidence for the human admission decision over all READY candidates.",
+  "ready_candidate_count": 23,
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "decision_rules": {
+    "gates": "signed RankIC > 0.02, signed ICIR >= 0.50, directional day share >= 0.55, annual strict gate >= 4/5 years",
+    "redundancy": "median abs Spearman >= 0.90 blocks joint admission; >= 0.80 requires monitoring",
+    "authority": "Admission is a human decision; this pack is evidence only."
+  },
+  "candidates": [
+    {
+      "candidate_id": "yeslab_405_tushare_shsz_v1",
+      "source_factor_id": "yeslab_405",
+      "factor_name": "GP_036",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_381_tushare_shsz_v1; separate combination approval required if both are considered.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 11
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.7911592016004702,
+        "train_quintile_transition": 0.279472334960139,
+        "validation_quintile_transition": 0.27254605545951693
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha405_canonical_candidate_review_v1.json",
+        "tushare_alpha405_canonical_train_similarity_v1/similarity_summary.json",
+        "tushare_alpha405_canonical_validation_v1/similarity_summary.json",
+        "yeslab_405_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_425_tushare_shsz_v2",
+      "source_factor_id": "yeslab_425",
+      "factor_name": "GP_056",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
+      "pair_or_combination_note": null,
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 11,
+        "directional_share_pass_months": 10,
+        "strict_icir_pass_months": 10
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.8923742480109754,
+        "train_quintile_transition": 0.31951831406018905,
+        "validation_quintile_transition": 0.29961912748711506
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha425_canonical_candidate_review_v2.json",
+        "tushare_alpha425_canonical_train_similarity_v1/similarity_summary.json",
+        "tushare_alpha425_canonical_validation_v1/similarity_summary.json",
+        "yeslab_425_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_381_tushare_shsz_v1",
+      "source_factor_id": "yeslab_381",
+      "factor_name": "GP_012",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "pair_or_combination_note": "Elevated pair monitor with yeslab_405_tushare_shsz_v1 (train/validation median abs Spearman 0.86451/0.88821) and yeslab_443_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721); separate combination approval required if any of these pairs is jointly considered.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 11,
+        "directional_share_pass_months": 11,
+        "strict_icir_pass_months": 9
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.8442266530589154,
+        "train_quintile_transition": 0.24407739112387367,
+        "validation_quintile_transition": 0.24399190385444738
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha381_canonical_candidate_review_v1.json",
+        "tushare_alpha381_canonical_train_similarity_v1/similarity_summary.json",
+        "tushare_alpha381_canonical_validation_v1/similarity_summary.json",
+        "tushare_shsz_alpha381_admission_preflight_v1.json",
+        "yeslab_381_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_114_tushare_shsz_v2",
+      "source_factor_id": "yeslab_114",
+      "factor_name": "Terri volatility",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
+      "pair_or_combination_note": "Cannot be jointly admitted with yeslab_484_tushare_shsz_v1; retain monthly and regime monitoring.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 9,
+        "directional_share_pass_months": 8,
+        "strict_icir_pass_months": 7
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.9790086338517051,
+        "train_quintile_transition": 0.11344799574903784,
+        "validation_quintile_transition": 0.10348352864356039
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha114_canonical_candidate_review_v2.json",
+        "alpha114_tushare_formal9_full_similarity_audit_v1.json",
+        "tushare_shsz_alpha114_admission_preflight_v1.json",
+        "yeslab_114_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_484_tushare_shsz_v1",
+      "source_factor_id": "yeslab_484",
+      "factor_name": "CSAD/herding related candidate",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
+      "pair_or_combination_note": "Cannot be jointly admitted with yeslab_114_tushare_shsz_v2; historical 484 metrics are not candidate evidence.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 9,
+        "directional_share_pass_months": 8,
+        "strict_icir_pass_months": 7
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.9659636179818072,
+        "train_quintile_transition": 0.16225583582291736,
+        "validation_quintile_transition": 0.1313012343108123
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha484_canonical_v1/admission_review.json",
+        "../checkpoints/alpha484_canonical_v1/integrity.json",
+        "yeslab_484_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_206_median_abs_v2",
+      "source_factor_id": "yeslab_206",
+      "factor_name": "60日成交量中位数偏离（修复版）",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
+      "pair_or_combination_note": "Retain low-volatility and nonpositive-trend monitoring; only the isolated median repair candidate is under review.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 10,
+        "directional_share_pass_months": 10,
+        "strict_icir_pass_months": 8
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.5243016946924495,
+        "train_quintile_transition": 0.618662459968774,
+        "validation_quintile_transition": 0.6171132873536805
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "alpha206_median_abs_candidate_review_v2.json",
+        "alpha206_median_abs_formal9_similarity_2020_2024_v1.json",
+        "alpha206_median_abs_formal9_similarity_2025_v1.json",
+        "alpha206_median_abs_robustness_v1.json",
+        "yeslab_206_median_abs_v2_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_443_tushare_shsz_v1",
+      "source_factor_id": "yeslab_443",
+      "factor_name": "GP_074",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete (30 train/validation edges); elevated pair monitor with yeslab_381_tushare_shsz_v1 (train/validation median abs Spearman 0.81124/0.83721, monitor threshold 0.80); no joint admission with yeslab_381_tushare_shsz_v1 without separate combination review.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 9,
+        "directional_share_pass_months": 9,
+        "strict_icir_pass_months": 8
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.832898751512174,
+        "train_quintile_transition": 0.25621237280807685,
+        "validation_quintile_transition": 0.2525621320328476
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha443_canonical_candidate_review_v1.json",
+        "tushare_shsz_alpha443_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha443_formal9_validation_2025_v1/similarity_summary.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_363_tushare_shsz_v1",
+      "source_factor_id": "yeslab_363",
+      "factor_name": "行业标准化绝对值除行业偏度绝对值",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete; elevated pair monitor with yeslab_357_tushare_shsz_v1 requires separate review before joint admission.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 11
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.32887039279496355,
+        "train_quintile_transition": 0.7142528972014949,
+        "validation_quintile_transition": 0.7165892706512331
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha363_canonical_candidate_review_v1.json",
+        "tushare_shsz_alpha363_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha363_formal9_validation_2025_v1/similarity_summary.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_357_tushare_shsz_v1",
+      "source_factor_id": "yeslab_357",
+      "factor_name": "行业内收益标准化绝对值",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete; elevated pair monitor with yeslab_363_tushare_shsz_v1 requires separate review before joint admission.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 11
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.2034388966305378,
+        "train_quintile_transition": 0.7488840185828548,
+        "validation_quintile_transition": 0.7455912874829799
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha357_canonical_candidate_review_v1.json",
+        "tushare_shsz_alpha357_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha357_formal9_validation_2025_v1/similarity_summary.json",
+        "formula_replay_alpha357_tushare_pit_2025-01_v1.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_96_canonical_replay_v1",
+      "source_factor_id": "yeslab_96",
+      "factor_name": "修正日间反转",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
+      "pair_or_combination_note": "Combination evidence against six-candidate matrix and extension candidates is complete; no elevated pair found for 96.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 11,
+        "directional_share_pass_months": 11,
+        "strict_icir_pass_months": 8
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.9249236595385418,
+        "train_quintile_transition": 0.24041893116762897,
+        "validation_quintile_transition": 0.22495413408616088
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha96_canonical_candidate_review_v1.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_464_tushare_shsz_v1",
+      "source_factor_id": "yeslab_464",
+      "factor_name": "GP_095",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "pair_or_combination_note": "Pair evidence against all ten READY candidates complete (10 pairs x train/validation, all 1212/243 days); maximum edge vs yeslab_405_tushare_shsz_v1 at 0.77923 train / 0.78305 validation, below the 0.80 monitor threshold; no elevated pair.",
+      "quality": null,
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 11,
+        "directional_share_pass_months": 11,
+        "strict_icir_pass_months": 9
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.7715830131647009,
+        "train_quintile_transition": 0.2947302494097739,
+        "validation_quintile_transition": 0.28600187009854516
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha464_coverage_repair4_review_v1.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_gp_coverage_repair4_formal9_validation_2025_v1/similarity_summary.json",
+        "gp_coverage_repair4_train_evidence_v1.json",
+        "candidate464_pair_similarity_v1.json",
+        "gp_turnover_scalar_degeneracy_diagnostic_v1.json",
+        "yeslab_464_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_370_tushare_shsz_v1",
+      "source_factor_id": "yeslab_370",
+      "factor_name": "GP_001",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5901 train / 0.6031 validation vs yeslab_405_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_389_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden.",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0856,
+          "signed_icir": 0.5721,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.0794,
+          "signed_icir": 0.5717
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 9,
+        "directional_share_pass_months": 9,
+        "strict_icir_pass_months": 7
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.572515637448608,
+        "train_quintile_transition": 0.6180450662771135,
+        "validation_quintile_transition": 0.6214836290477734
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_yeslab_370_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate370_pair_similarity_v1.json",
+        "yeslab_370_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_375_tushare_shsz_v1",
+      "source_factor_id": "yeslab_375",
+      "factor_name": "GP_006",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.5741 train / 0.5902 validation vs yeslab_206_median_abs_v2, below 0.80; no elevated pair.",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0875,
+          "signed_icir": 0.632,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_ic": 0.0969,
+          "signed_icir": 0.7912
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 11,
+        "strict_icir_pass_months": 9
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.774592610141445,
+        "train_quintile_transition": 0.4956031666836525,
+        "validation_quintile_transition": 0.4974942830327064
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_yeslab_375_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate375_pair_similarity_v1.json",
+        "yeslab_375_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_389_tushare_shsz_v1",
+      "source_factor_id": "yeslab_389",
+      "factor_name": "GP_020",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.6038 train / 0.6226 validation vs yeslab_357_tushare_shsz_v1, below 0.80. REDUNDANT with yeslab_370_tushare_shsz_v1 (train 0.8972 / validation 0.9127 >= 0.90): joint admission forbidden.",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0756,
+          "signed_icir": 0.6042,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.0809,
+          "signed_icir": 0.699
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 8
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.2905523923406133,
+        "train_quintile_transition": 0.6920624006654703,
+        "validation_quintile_transition": 0.6944239799057753
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_yeslab_389_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate389_pair_similarity_v1.json",
+        "yeslab_389_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_390_tushare_shsz_v1",
+      "source_factor_id": "yeslab_390",
+      "factor_name": "GP_021",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "pair_or_combination_note": "Pair evidence against all eleven prior READY candidates complete (11 pairs x train/validation); max edge 0.6019 train / 0.6251 validation vs yeslab_405_tushare_shsz_v1, below 0.80; no elevated pair.",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0792,
+          "signed_icir": 0.6534,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.089,
+          "signed_icir": 0.8335
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 9
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.5874814145305292,
+        "train_quintile_transition": 0.6253729559949347,
+        "validation_quintile_transition": 0.6184127033289244
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_yeslab_390_nearmiss6_review_v1.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_nearmiss6_formal9_validation_2025_v1/similarity_summary.json",
+        "nearmiss6_train_evidence_v1.json",
+        "candidate390_pair_similarity_v1.json",
+        "yeslab_390_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_471_tushare_pit_v1",
+      "source_factor_id": "yeslab_471",
+      "factor_name": "AttentionSpillover",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "pair_or_combination_note": "Pair evidence against all fifteen READY candidates complete (15 pairs x train/validation); max edge 0.7655 train / 0.7751 validation vs yeslab_114_tushare_shsz_v2, below 0.80; no elevated pair.",
+      "quality": {
+        "train": {
+          "annual": "5/5",
+          "annual_icir": "0.70/0.70/0.83/0.85/1.01"
+        },
+        "validation": {
+          "signed_ic": 0.0715,
+          "signed_icir": 0.9657
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 11,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 11
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.9623060549637649,
+        "train_quintile_transition": 0.14980265915705515,
+        "validation_quintile_transition": 0.14427801674023413
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha471_canonical_candidate_review_v1.json",
+        "tushare_pit_alpha471_train_2020_2024_annual_v1.json",
+        "tushare_pit_alpha471_validation_2025_v1.json",
+        "alpha471_vs_formal9_train_similarity_2020_2024_v1.csv",
+        "tushare_pit_alpha471_formal9_validation_2025_v1/similarity_summary.json",
+        "candidate471_pair_similarity_v1.json",
+        "yeslab_471_validation_2025_monthly_v1/monthly_stability.json",
+        "formula_replay_alpha471_tushare_pit_2025-01_v1.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_398_tushare_shsz_v1",
+      "source_factor_id": "yeslab_398",
+      "factor_name": "GP_029",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "pair_or_combination_note": "Pair evidence against all fifteen READY candidates complete (15 pairs x train/validation); elevated pair with yeslab_381_tushare_shsz_v1 (train 0.8366 / validation 0.8243 >= 0.80): no joint admission without separate combination review. Watch-level similarity with yeslab_443_tushare_shsz_v1 (0.785/0.760, below threshold).",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0699,
+          "signed_icir": 0.6001,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.087,
+          "signed_icir": 0.8339
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 11,
+        "directional_share_pass_months": 11,
+        "strict_icir_pass_months": 8
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.8404476749182156,
+        "train_quintile_transition": 0.23810982838266967,
+        "validation_quintile_transition": 0.23803393333585046
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_yeslab_398_dq3_review_v1.json",
+        "tushare_shsz_dq3_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_dq3_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_dq3_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_dq3_formal9_validation_2025_v1/similarity_summary.json",
+        "dq3_train_evidence_v1.json",
+        "candidate398_pair_similarity_v1.json",
+        "yeslab_398_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_395_tushare_shsz_v1",
+      "source_factor_id": "yeslab_395",
+      "factor_name": "GP_026",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
+      "pair_or_combination_note": "Pair evidence against all seventeen READY candidates complete (17 pairs x train/validation); max edge 0.7541 train / 0.7564 validation, below 0.80; no elevated pair. Nine-edge validation vs formal yeslab_380 is 0.8072 (monitor note).",
+      "quality": {
+        "train": {
+          "signed_ic": 0.0753,
+          "signed_icir": 0.5468,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_ic": 0.0862,
+          "signed_icir": 0.6688
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 10,
+        "directional_share_pass_months": 10,
+        "strict_icir_pass_months": 9
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.8737977145013208,
+        "train_quintile_transition": 0.3649905518625076,
+        "validation_quintile_transition": 0.3722184761995275
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_alpha395_precedent_upgrade_review_v1.json",
+        "tushare_alpha395_formula_replay_block_rejection_review_v1.json",
+        "tushare_shsz_alpha395_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_alpha395_formal9_train_2020_2024_v1/similarity_summary.json",
+        "tushare_shsz_alpha395_formal9_validation_2025_v1/quality_summary.json",
+        "tushare_shsz_alpha395_formal9_validation_2025_v1/similarity_summary.json",
+        "candidate395_pair_similarity_v1.json",
+        "yeslab_395_validation_2025_monthly_v1/monthly_stability.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_371_tushare_shsz_v1",
+      "source_factor_id": "yeslab_371",
+      "factor_name": "GP_002",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "pair_or_combination_note": "Elevated pairs with 370 (0.81), 375 (0.84), 395 (0.885); nine-edge overlap with formal 380 (0.848/0.870). Marginal information value.",
+      "quality": {
+        "train": {
+          "signed_icir": 0.5239,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_icir": 0.5927
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 10,
+        "directional_share_pass_months": 9,
+        "strict_icir_pass_months": 7
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.92484043285574,
+        "train_quintile_transition": 0.33955780862341306,
+        "validation_quintile_transition": 0.34096763268229924
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate371_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_372_tushare_shsz_v1",
+      "source_factor_id": "yeslab_372",
+      "factor_name": "GP_003",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
+      "pair_or_combination_note": "Pool-clean: max edge 0.747/0.752 vs 375, no elevated pairs. Annual 5/5.",
+      "quality": {
+        "train": {
+          "signed_icir": 0.5942,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_icir": 0.5824
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 10,
+        "directional_share_pass_months": 10,
+        "strict_icir_pass_months": 8
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.4938228740206918,
+        "train_quintile_transition": 0.6266360356674247,
+        "validation_quintile_transition": 0.6208203994288193
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate372_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_379_tushare_shsz_v1",
+      "source_factor_id": "yeslab_379",
+      "factor_name": "GP_010",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "pair_or_combination_note": "Elevated pair with 375 (0.886/0.894, near redundancy); no joint admission with 375 without separate review. Annual 5/5.",
+      "quality": {
+        "train": {
+          "signed_icir": 0.6205,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_icir": 0.7827
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 11,
+        "directional_share_pass_months": 11,
+        "strict_icir_pass_months": 10
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.7584912703148939,
+        "train_quintile_transition": 0.5075357163531418,
+        "validation_quintile_transition": 0.5037880846110259
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate379_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_384_tushare_shsz_v1",
+      "source_factor_id": "yeslab_384",
+      "factor_name": "GP_015",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "pair_or_combination_note": "Elevated pairs with 375 (0.876) and 395 (0.803). Annual 4/5 (2021 fail).",
+      "quality": {
+        "train": {
+          "signed_icir": 0.529,
+          "annual": "4/5"
+        },
+        "validation": {
+          "signed_icir": 0.7906
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 9
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.7823023432174392,
+        "train_quintile_transition": 0.5004163346314312,
+        "validation_quintile_transition": 0.5085713015489262
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate384_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ]
+    },
+    {
+      "candidate_id": "yeslab_406_tushare_shsz_v1",
+      "source_factor_id": "yeslab_406",
+      "factor_name": "GP_037",
+      "status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
+      "pair_or_combination_note": "Elevated pair with 375 only (0.816/0.818); otherwise pool-clean. Annual 5/5; validation ICIR 0.922 strongest in batch.",
+      "quality": {
+        "train": {
+          "signed_icir": 0.6601,
+          "annual": "5/5"
+        },
+        "validation": {
+          "signed_icir": 0.9219
+        }
+      },
+      "monthly_stability_2025": {
+        "signed_mean_pass_months": 12,
+        "directional_share_pass_months": 12,
+        "strict_icir_pass_months": 11
+      },
+      "rank_turnover": {
+        "train_autocorr": 0.5876000089252893,
+        "train_quintile_transition": 0.5894072628930281,
+        "validation_quintile_transition": 0.5885313923187144
+      },
+      "regime_robustness": {
+        "red_flags": []
+      },
+      "evidence": [
+        "tushare_shsz_pass7_formal9_train_2020_2024_v1/quality_summary.json",
+        "tushare_shsz_pass7_formal9_validation_2025_v1/quality_summary.json",
+        "candidate406_pair_similarity_v1.json",
+        "pass7_train_evidence_v1.json"
+      ]
+    }
+  ],
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}

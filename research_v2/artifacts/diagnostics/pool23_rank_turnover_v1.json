@@ -1,0 +1,305 @@
+{
+  "scope": "POOL23_RANK_TURNOVER_V1",
+  "market_scope": "SH/SZ",
+  "excluded_exchanges": [
+    "BJ"
+  ],
+  "label": "forward_open_5d:v1",
+  "windows": {
+    "train": {
+      "start": "2020-01-02",
+      "end": "2024-12-31"
+    },
+    "validation": {
+      "start": "2025-01-02",
+      "end": "2025-12-31"
+    }
+  },
+  "metric_definitions": {
+    "rank_autocorr_mean": "mean daily Spearman autocorrelation of factor values between consecutive signal dates (1.0 = perfectly stable ranks)",
+    "quintile_transition_rate": "mean share of common stocks whose factor quintile changed between consecutive signal dates (0.0 = no turnover)",
+    "note": "values restricted to V2 universe intersection; days with fewer than 100 common stocks are skipped"
+  },
+  "candidates": {
+    "yeslab_114_tushare_shsz_v2": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.9790086338517051,
+        "quintile_transition_rate": 0.11344799574903784
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.9803854481305728,
+        "quintile_transition_rate": 0.10348352864356039
+      }
+    },
+    "yeslab_381_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.8442266530589154,
+        "quintile_transition_rate": 0.24407739112387367
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.836616536757213,
+        "quintile_transition_rate": 0.24399190385444738
+      }
+    },
+    "yeslab_405_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.7911592016004702,
+        "quintile_transition_rate": 0.279472334960139
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.7947595883678948,
+        "quintile_transition_rate": 0.27254605545951693
+      }
+    },
+    "yeslab_425_tushare_shsz_v2": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.8923742480109754,
+        "quintile_transition_rate": 0.31951831406018905
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.8992394853983154,
+        "quintile_transition_rate": 0.29961912748711506
+      }
+    },
+    "yeslab_484_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.9659636179818072,
+        "quintile_transition_rate": 0.16225583582291736
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.9732164353580947,
+        "quintile_transition_rate": 0.1313012343108123
+      }
+    },
+    "yeslab_206_median_abs_v2": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.5243016946924495,
+        "quintile_transition_rate": 0.618662459968774
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.5235198806719393,
+        "quintile_transition_rate": 0.6171132873536805
+      }
+    },
+    "yeslab_363_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.32887039279496355,
+        "quintile_transition_rate": 0.7142528972014949
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.32354267401427694,
+        "quintile_transition_rate": 0.7165892706512331
+      }
+    },
+    "yeslab_357_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.2034388966305378,
+        "quintile_transition_rate": 0.7488840185828548
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.21723873007556666,
+        "quintile_transition_rate": 0.7455912874829799
+      }
+    },
+    "yeslab_96_canonical_replay_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.9249236595385418,
+        "quintile_transition_rate": 0.24041893116762897
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.9335467395686919,
+        "quintile_transition_rate": 0.22495413408616088
+      }
+    },
+    "yeslab_443_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.832898751512174,
+        "quintile_transition_rate": 0.25621237280807685
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.833062181691541,
+        "quintile_transition_rate": 0.2525621320328476
+      }
+    },
+    "yeslab_464_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.7715830131647009,
+        "quintile_transition_rate": 0.2947302494097739
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.7839778069011376,
+        "quintile_transition_rate": 0.28600187009854516
+      }
+    },
+    "yeslab_370_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1182,
+        "rank_autocorr_mean": 0.572515637448608,
+        "quintile_transition_rate": 0.6180450662771135
+      },
+      "validation": {
+        "days_used": 240,
+        "rank_autocorr_mean": 0.5693126797630567,
+        "quintile_transition_rate": 0.6214836290477734
+      }
+    },
+    "yeslab_375_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.774592610141445,
+        "quintile_transition_rate": 0.4956031666836525
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.777044725991024,
+        "quintile_transition_rate": 0.4974942830327064
+      }
+    },
+    "yeslab_389_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1182,
+        "rank_autocorr_mean": 0.2905523923406133,
+        "quintile_transition_rate": 0.6920624006654703
+      },
+      "validation": {
+        "days_used": 240,
+        "rank_autocorr_mean": 0.3050821853026104,
+        "quintile_transition_rate": 0.6944239799057753
+      }
+    },
+    "yeslab_390_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1182,
+        "rank_autocorr_mean": 0.5874814145305292,
+        "quintile_transition_rate": 0.6253729559949347
+      },
+      "validation": {
+        "days_used": 240,
+        "rank_autocorr_mean": 0.6005239382017366,
+        "quintile_transition_rate": 0.6184127033289244
+      }
+    },
+    "yeslab_471_tushare_pit_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.9623060549637649,
+        "quintile_transition_rate": 0.14980265915705515
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.9595801733389966,
+        "quintile_transition_rate": 0.14427801674023413
+      }
+    },
+    "yeslab_398_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.8404476749182156,
+        "quintile_transition_rate": 0.23810982838266967
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.835369431816921,
+        "quintile_transition_rate": 0.23803393333585046
+      }
+    },
+    "yeslab_395_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.8737977145013208,
+        "quintile_transition_rate": 0.3649905518625076
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.8887419592069302,
+        "quintile_transition_rate": 0.3722184761995275
+      }
+    },
+    "yeslab_371_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.92484043285574,
+        "quintile_transition_rate": 0.33955780862341306
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.9234217964151161,
+        "quintile_transition_rate": 0.34096763268229924
+      }
+    },
+    "yeslab_372_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1181,
+        "rank_autocorr_mean": 0.4938228740206918,
+        "quintile_transition_rate": 0.6266360356674247
+      },
+      "validation": {
+        "days_used": 240,
+        "rank_autocorr_mean": 0.4858291185061926,
+        "quintile_transition_rate": 0.6208203994288193
+      }
+    },
+    "yeslab_379_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.7584912703148939,
+        "quintile_transition_rate": 0.5075357163531418
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.7686970598244778,
+        "quintile_transition_rate": 0.5037880846110259
+      }
+    },
+    "yeslab_384_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.7823023432174392,
+        "quintile_transition_rate": 0.5004163346314312
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.7691766793322183,
+        "quintile_transition_rate": 0.5085713015489262
+      }
+    },
+    "yeslab_406_tushare_shsz_v1": {
+      "train": {
+        "days_used": 1211,
+        "rank_autocorr_mean": 0.5876000089252893,
+        "quintile_transition_rate": 0.5894072628930281
+      },
+      "validation": {
+        "days_used": 242,
+        "rank_autocorr_mean": 0.5884655266322735,
+        "quintile_transition_rate": 0.5885313923187144
+      }
+    }
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}

@@ -1,0 +1,280 @@
+{
+  "scope": "PASS7_MARKET_REGIME_ROBUSTNESS_V1",
+  "method": "same regime definitions as pool18 analysis (CSI300 trend vs 120d MA; within-window vol terciles)",
+  "candidates": {
+    "yeslab_371": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.088884
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.082543
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.093444
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.10132
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.095554
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.069778
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.092813
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.097933
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.067589
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.107562
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.137385
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.033492
+        }
+      }
+    },
+    "yeslab_372": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.078474
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.077203
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.079388
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.086145
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.078493
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.070784
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.070504
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.074136
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.052608
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.076808
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.102136
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.032568
+        }
+      }
+    },
+    "yeslab_379": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.084074
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.079611
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.087283
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.090584
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.083068
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.078571
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.094684
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.09536
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.091351
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.109532
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.113672
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.060847
+        }
+      }
+    },
+    "yeslab_384": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.07817
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.075829
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.079853
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.083893
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.078892
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.071725
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.092978
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.094452
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.085715
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.111729
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.112015
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.055188
+        }
+      }
+    },
+    "yeslab_406": {
+      "train": {
+        "all": {
+          "days": 1212,
+          "signed_mean_rank_ic": 0.070127
+        },
+        "above_ma120": {
+          "days": 507,
+          "signed_mean_rank_ic": 0.067856
+        },
+        "below_ma120": {
+          "days": 705,
+          "signed_mean_rank_ic": 0.071761
+        },
+        "low_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.072921
+        },
+        "mid_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.066575
+        },
+        "high_vol": {
+          "days": 404,
+          "signed_mean_rank_ic": 0.070887
+        }
+      },
+      "validation": {
+        "all": {
+          "days": 243,
+          "signed_mean_rank_ic": 0.0827
+        },
+        "above_ma120": {
+          "days": 202,
+          "signed_mean_rank_ic": 0.080427
+        },
+        "below_ma120": {
+          "days": 41,
+          "signed_mean_rank_ic": 0.0939
+        },
+        "low_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.100274
+        },
+        "mid_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.084169
+        },
+        "high_vol": {
+          "days": 81,
+          "signed_mean_rank_ic": 0.063658
+        }
+      }
+    }
+  },
+  "database_writes": false,
+  "locked_test_read": false,
+  "formal_factor_set_changed": false,
+  "model_training_started": false
+}

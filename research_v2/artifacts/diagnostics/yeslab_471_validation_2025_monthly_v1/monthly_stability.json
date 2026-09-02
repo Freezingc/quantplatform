@@ -1,6 +1,6 @@
 {
   "scope": "READY_POOL_VALIDATION_2025_MONTHLY_STABILITY_V1",
-  "candidate_id": "yeslab_471_tushare_shsz_v1",
+  "candidate_id": "yeslab_471_tushare_pit_v1",
   "source_factor_id": "yeslab_471",
   "factor_name": "AttentionSpillover",
   "direction": 1,

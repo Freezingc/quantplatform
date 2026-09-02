@@ -1,6 +1,6 @@
 {
   "scope": "READY_POOL_VALIDATION_2025_MONTHLY_STABILITY_V1",
-  "candidate_id": "yeslab_114_tushare_shsz_v1",
+  "candidate_id": "yeslab_114_tushare_shsz_v2",
   "source_factor_id": "yeslab_114",
   "factor_name": "惊恐波动",
   "direction": -1,

@@ -6619,5 +6619,14 @@
     "database_writes": false,
     "locked_test_read": false,
     "model_training_started": false
+  },
+  "alpha83_variant_search_followup": {
+    "scope": "ALPHA83_VARIANT_SEARCH_FOLLOWUP",
+    "status": "CLOSED_VARIANT_NOT_FOUND",
+    "finding": "18-variant sweep (3 VWAP scalings x 6 rank/combiner combinations) all mismatch 100% vs historical values; daily Spearman with best variant 0.553 — historical Alpha74 is a genuinely different formula. rank2 component alone correlates 0.634. Search exhausted; factor remains MAPPING_UNVERIFIED.",
+    "database_writes": false,
+    "locked_test_read": false,
+    "formal_factor_set_changed": false,
+    "model_training_started": false
   }
 }

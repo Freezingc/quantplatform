@@ -1,0 +1,156 @@
+=== window train: 2020-01-02 .. 2024-12-31 ===
+将开始日期从2020.01.02预处理为2019.12.04
+materialized yeslab_114_tushare_shsz_v2: 3996562 rows
+将开始日期从2020.01.02预处理为2019.12.25
+materialized yeslab_381_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.12.25
+materialized yeslab_405_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.11.20
+materialized yeslab_425_tushare_shsz_v2: 3996562 rows
+materialized yeslab_484_tushare_shsz_v1: 3996562 rows
+materialized yeslab_206_median_abs_v2: 3996562 rows
+将开始日期从2020.01.02预处理为2019.12.25
+materialized yeslab_363_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.12.31
+materialized yeslab_357_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.12.04
+将开始日期从2019.11.04预处理为2019.09.30
+将开始日期从2019.11.04预处理为2019.09.30
+materialized yeslab_96_canonical_replay_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.11.20
+materialized yeslab_443_tushare_shsz_v1: 3996562 rows
+/data/zhangyudong/.conda/envs/quantyd/lib/python3.11/site-packages/pandas/core/window/rolling.py:611: RuntimeWarning: All-NaN slice encountered
+  return func(x, start, end, min_periods, *numba_args)
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_464_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_370_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_375_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_389_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_390_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.12.03
+AttentionSpillover 进度: 200/1470
+AttentionSpillover 进度: 400/1470
+AttentionSpillover 进度: 600/1470
+AttentionSpillover 进度: 800/1470
+AttentionSpillover 进度: 1000/1470
+AttentionSpillover 进度: 1200/1470
+AttentionSpillover 进度: 1400/1470
+AttentionSpillover 进度: 1470/1470
+materialized yeslab_471_tushare_pit_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_398_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.10.09
+materialized yeslab_395_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_371_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_372_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_379_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_384_tushare_shsz_v1: 3996562 rows
+将开始日期从2020.01.02预处理为2019.04.10
+materialized yeslab_406_tushare_shsz_v1: 3996562 rows
+yeslab_114_tushare_shsz_v2 [train] autocorr=0.9790 quintile_transition=0.1134
+yeslab_381_tushare_shsz_v1 [train] autocorr=0.8442 quintile_transition=0.2441
+yeslab_405_tushare_shsz_v1 [train] autocorr=0.7912 quintile_transition=0.2795
+yeslab_425_tushare_shsz_v2 [train] autocorr=0.8924 quintile_transition=0.3195
+yeslab_484_tushare_shsz_v1 [train] autocorr=0.9660 quintile_transition=0.1623
+yeslab_206_median_abs_v2 [train] autocorr=0.5243 quintile_transition=0.6187
+yeslab_363_tushare_shsz_v1 [train] autocorr=0.3289 quintile_transition=0.7143
+yeslab_357_tushare_shsz_v1 [train] autocorr=0.2034 quintile_transition=0.7489
+yeslab_96_canonical_replay_v1 [train] autocorr=0.9249 quintile_transition=0.2404
+yeslab_443_tushare_shsz_v1 [train] autocorr=0.8329 quintile_transition=0.2562
+yeslab_464_tushare_shsz_v1 [train] autocorr=0.7716 quintile_transition=0.2947
+yeslab_370_tushare_shsz_v1 [train] autocorr=0.5725 quintile_transition=0.6180
+yeslab_375_tushare_shsz_v1 [train] autocorr=0.7746 quintile_transition=0.4956
+yeslab_389_tushare_shsz_v1 [train] autocorr=0.2906 quintile_transition=0.6921
+yeslab_390_tushare_shsz_v1 [train] autocorr=0.5875 quintile_transition=0.6254
+yeslab_471_tushare_pit_v1 [train] autocorr=0.9623 quintile_transition=0.1498
+yeslab_398_tushare_shsz_v1 [train] autocorr=0.8404 quintile_transition=0.2381
+yeslab_395_tushare_shsz_v1 [train] autocorr=0.8738 quintile_transition=0.3650
+yeslab_371_tushare_shsz_v1 [train] autocorr=0.9248 quintile_transition=0.3396
+yeslab_372_tushare_shsz_v1 [train] autocorr=0.4938 quintile_transition=0.6266
+yeslab_379_tushare_shsz_v1 [train] autocorr=0.7585 quintile_transition=0.5075
+yeslab_384_tushare_shsz_v1 [train] autocorr=0.7823 quintile_transition=0.5004
+yeslab_406_tushare_shsz_v1 [train] autocorr=0.5876 quintile_transition=0.5894
+=== window validation: 2025-01-02 .. 2025-12-31 ===
+将开始日期从2025.01.02预处理为2024.12.04
+materialized yeslab_114_tushare_shsz_v2: 936317 rows
+将开始日期从2025.01.02预处理为2024.12.25
+materialized yeslab_381_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.12.25
+materialized yeslab_405_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.11.20
+materialized yeslab_425_tushare_shsz_v2: 936317 rows
+materialized yeslab_484_tushare_shsz_v1: 936317 rows
+materialized yeslab_206_median_abs_v2: 936317 rows
+将开始日期从2025.01.02预处理为2024.12.25
+materialized yeslab_363_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.12.31
+materialized yeslab_357_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.12.04
+将开始日期从2024.11.04预处理为2024.09.30
+将开始日期从2024.11.04预处理为2024.09.30
+materialized yeslab_96_canonical_replay_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.11.20
+materialized yeslab_443_tushare_shsz_v1: 936317 rows
+/data/zhangyudong/.conda/envs/quantyd/lib/python3.11/site-packages/pandas/core/window/rolling.py:611: RuntimeWarning: All-NaN slice encountered
+  return func(x, start, end, min_periods, *numba_args)
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_464_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_370_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_375_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_389_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_390_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.12.03
+AttentionSpillover 进度: 200/500
+AttentionSpillover 进度: 400/500
+AttentionSpillover 进度: 500/500
+materialized yeslab_471_tushare_pit_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_398_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.10.09
+materialized yeslab_395_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_371_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_372_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_379_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_384_tushare_shsz_v1: 936317 rows
+将开始日期从2025.01.02预处理为2024.04.09
+materialized yeslab_406_tushare_shsz_v1: 936317 rows
+yeslab_114_tushare_shsz_v2 [validation] autocorr=0.9804 quintile_transition=0.1035
+yeslab_381_tushare_shsz_v1 [validation] autocorr=0.8366 quintile_transition=0.2440
+yeslab_405_tushare_shsz_v1 [validation] autocorr=0.7948 quintile_transition=0.2725
+yeslab_425_tushare_shsz_v2 [validation] autocorr=0.8992 quintile_transition=0.2996
+yeslab_484_tushare_shsz_v1 [validation] autocorr=0.9732 quintile_transition=0.1313
+yeslab_206_median_abs_v2 [validation] autocorr=0.5235 quintile_transition=0.6171
+yeslab_363_tushare_shsz_v1 [validation] autocorr=0.3235 quintile_transition=0.7166
+yeslab_357_tushare_shsz_v1 [validation] autocorr=0.2172 quintile_transition=0.7456
+yeslab_96_canonical_replay_v1 [validation] autocorr=0.9335 quintile_transition=0.2250
+yeslab_443_tushare_shsz_v1 [validation] autocorr=0.8331 quintile_transition=0.2526
+yeslab_464_tushare_shsz_v1 [validation] autocorr=0.7840 quintile_transition=0.2860
+yeslab_370_tushare_shsz_v1 [validation] autocorr=0.5693 quintile_transition=0.6215
+yeslab_375_tushare_shsz_v1 [validation] autocorr=0.7770 quintile_transition=0.4975
+yeslab_389_tushare_shsz_v1 [validation] autocorr=0.3051 quintile_transition=0.6944
+yeslab_390_tushare_shsz_v1 [validation] autocorr=0.6005 quintile_transition=0.6184
+yeslab_471_tushare_pit_v1 [validation] autocorr=0.9596 quintile_transition=0.1443
+yeslab_398_tushare_shsz_v1 [validation] autocorr=0.8354 quintile_transition=0.2380
+yeslab_395_tushare_shsz_v1 [validation] autocorr=0.8887 quintile_transition=0.3722
+yeslab_371_tushare_shsz_v1 [validation] autocorr=0.9234 quintile_transition=0.3410
+yeslab_372_tushare_shsz_v1 [validation] autocorr=0.4858 quintile_transition=0.6208
+yeslab_379_tushare_shsz_v1 [validation] autocorr=0.7687 quintile_transition=0.5038
+yeslab_384_tushare_shsz_v1 [validation] autocorr=0.7692 quintile_transition=0.5086
+yeslab_406_tushare_shsz_v1 [validation] autocorr=0.5885 quintile_transition=0.5885
+wrote /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/diagnostics/pool23_rank_turnover_v1.json
