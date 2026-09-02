@@ -4251,6 +4251,36 @@
         "icir_official_cn_liquid_a": 0.2618,
         "verdict": "COLLAPSE",
         "note": "third pre-training-period window (2017 large-cap bull / small-cap drought); official universe variant included"
+      },
+      "regime_repair_2017_collapse": {
+        "repair_candidate_id": "yeslab_443_reg30_max20_v1",
+        "change": "ts_max window 5 -> 20 (reg window 30 unchanged)",
+        "official_icir_2017": {
+          "canonical": 0.262,
+          "repair": 0.481
+        },
+        "official_icir_2018": {
+          "canonical": 0.397,
+          "repair": 0.54
+        },
+        "official_icir_2019": {
+          "canonical": 0.597,
+          "repair": 0.523
+        },
+        "train_2020_2024": {
+          "canonical": 0.588,
+          "repair": 0.558,
+          "annual_repair": "4/5 (2020 fail 0.293)"
+        },
+        "validation_2025": {
+          "canonical": 0.712,
+          "repair": 0.55
+        },
+        "status": "REPAIR_AVAILABLE_AWAITING_DECISION",
+        "conditions": [
+          "large-cap-dominance regime monitor",
+          "nine-edge redundancy audit before admission"
+        ]
       }
     },
     {

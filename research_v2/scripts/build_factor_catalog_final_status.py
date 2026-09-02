@@ -113,6 +113,9 @@ def main() -> None:
     hist_rows_2018 = _load_hist_rows(DIAG / "historical_window_2018_robustness_v1" / "historical_window_2018_comparison.json")
     hist_rows_2017 = _load_hist_rows(DIAG / "historical_window_2017_robustness_v1" / "historical_window_2017_comparison.json")
 
+    repair_443_path = DIAG / "regime_repair_443_v1" / "alpha443_repair_summary.json"
+    repair_443 = json.loads(repair_443_path.read_text(encoding="utf-8")) if repair_443_path.exists() else None
+
     watch_monthly_path = DIAG / "watch_monthly_425_443_v1" / "watch_monthly_breakdown.json"
     watch_monthly: dict[str, dict] = {}
     if watch_monthly_path.exists():
@@ -206,6 +209,19 @@ def main() -> None:
                         "isolated weak months in the 2018 bear regime; add an acute-liquidity-shock "
                         "regime monitor (2018-06 type) - weakness does not persist into adjacent months"
                     )
+        if repair_443 is not None and fid == "yeslab_443":
+            ev = repair_443["evidence_official_universe_signed_icir"]
+            entry["regime_repair_2017_collapse"] = {
+                "repair_candidate_id": repair_443["repair_variant"]["candidate_id"],
+                "change": "ts_max window 5 -> 20 (reg window 30 unchanged)",
+                "official_icir_2017": {"canonical": ev["2017"]["canonical"], "repair": ev["2017"]["repair"]},
+                "official_icir_2018": {"canonical": ev["2018"]["canonical"], "repair": ev["2018"]["repair"]},
+                "official_icir_2019": {"canonical": ev["2019"]["canonical"], "repair": ev["2019"]["repair"]},
+                "train_2020_2024": {"canonical": ev["train_2020_2024_aggregate"]["canonical"], "repair": ev["train_2020_2024_aggregate"]["repair"], "annual_repair": ev["train_annual_gate"]["repair"]},
+                "validation_2025": {"canonical": ev["validation_2025"]["canonical"], "repair": ev["validation_2025"]["repair"]},
+                "status": "REPAIR_AVAILABLE_AWAITING_DECISION",
+                "conditions": ["large-cap-dominance regime monitor", "nine-edge redundancy audit before admission"],
+            }
         entries.append(entry)
 
     classes = Counter(e["status_class"] for e in entries)
