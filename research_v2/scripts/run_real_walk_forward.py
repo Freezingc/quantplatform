@@ -152,14 +152,16 @@ def _extract_dataset(
             label_parts.append(part)
     label_rows = pd.concat(label_parts, ignore_index=True)
     label_rows = _filter_current(label_rows, "signal_date", versions["label_daily"])
+    start_ts = pd.Timestamp(start)
+    end_ts = pd.Timestamp(end)
     universe_rows = universe_rows.loc[
-        (universe_rows["signal_date"] >= start) & (universe_rows["signal_date"] <= end)
+        (universe_rows["signal_date"] >= start_ts) & (universe_rows["signal_date"] <= end_ts)
     ]
     factor_rows = factor_rows.loc[
-        (factor_rows["signal_date"] >= start) & (factor_rows["signal_date"] <= end)
+        (factor_rows["signal_date"] >= start_ts) & (factor_rows["signal_date"] <= end_ts)
     ]
     label_rows = label_rows.loc[
-        (label_rows["signal_date"] >= start) & (label_rows["signal_date"] <= end)
+        (label_rows["signal_date"] >= start_ts) & (label_rows["signal_date"] <= end_ts)
     ]
     dataset = build_point_in_time_dataset(
         universe_rows.loc[:, ["signal_date", "ts_code"]],
