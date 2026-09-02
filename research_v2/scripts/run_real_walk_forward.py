@@ -215,6 +215,10 @@ def main() -> None:
         )
         test = _extract_dataset(session, resolver, fold_id, "test", factor_members, versions)
         dataset_id = f"real-{fold_id.lower()}-v1"
+        # Baselines require finite features: keep only complete-coverage rows.
+        train = train.dropna(subset=list(feature_order)).copy()
+        validation = validation.dropna(subset=list(feature_order)).copy()
+        test = test.dropna(subset=list(feature_order)).copy()
         train_ds = BaselineDataset(
             role="TRAIN", fold_id=fold_id, dataset_id=f"{dataset_id}-train",
             features=train.loc[:, ["signal_date", "ts_code", *feature_order]],
