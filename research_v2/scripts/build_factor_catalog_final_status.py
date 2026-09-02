@@ -112,6 +112,13 @@ def main() -> None:
     hist_rows = _load_hist_rows(DIAG / "historical_window_2019_robustness_v1" / "historical_window_2019_comparison.json")
     hist_rows_2018 = _load_hist_rows(DIAG / "historical_window_2018_robustness_v1" / "historical_window_2018_comparison.json")
 
+    watch_monthly_path = DIAG / "watch_monthly_425_443_v1" / "watch_monthly_breakdown.json"
+    watch_monthly: dict[str, dict] = {}
+    if watch_monthly_path.exists():
+        wm = json.loads(watch_monthly_path.read_text(encoding="utf-8"))
+        for fid, years in wm.get("factors", {}).items():
+            watch_monthly[cand_to_src.get(fid, fid)] = years
+
     band_decisions: dict[str, str] = {}
     for ledger_name in ("band10_train_evidence_v1.json", "nearmiss6_train_evidence_v1.json",
                         "dq3_train_evidence_v1.json", "gp_coverage_repair4_train_evidence_v1.json"):
@@ -173,6 +180,15 @@ def main() -> None:
                 "verdict": hr.get("classify_overall"),
                 "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
             }
+            wm_years = watch_monthly.get(fid)
+            if wm_years and "2018" in wm_years:
+                liquid_block = wm_years["2018"].get("adv20_liquid", {})
+                if liquid_block.get("weak_month_count"):
+                    entry["historical_window_2018"]["weak_months_liquid"] = liquid_block["weak_months"]
+                    entry["historical_window_2018"]["monitoring_note"] = (
+                        "isolated weak months in the 2018 bear regime; add an acute-liquidity-shock "
+                        "regime monitor (2018-06 type) - weakness does not persist into adjacent months"
+                    )
         entries.append(entry)
 
     classes = Counter(e["status_class"] for e in entries)

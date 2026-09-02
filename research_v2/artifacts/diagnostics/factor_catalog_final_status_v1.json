@@ -3793,7 +3793,13 @@
         "ic_adv20_liquid": 0.051194,
         "icir_adv20_liquid": 0.4644,
         "verdict": "WATCH",
-        "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+        "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
+        "weak_months_liquid": [
+          "2018-03",
+          "2018-05",
+          "2018-06"
+        ],
+        "monitoring_note": "isolated weak months in the 2018 bear regime; add an acute-liquidity-shock regime monitor (2018-06 type) - weakness does not persist into adjacent months"
       }
     },
     {
@@ -3956,7 +3962,15 @@
         "ic_adv20_liquid": 0.046506,
         "icir_adv20_liquid": 0.4662,
         "verdict": "WATCH",
-        "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window"
+        "note": "second pre-training-period window (2018 bear regime); same validated pipeline as the 2019 window",
+        "weak_months_liquid": [
+          "2018-01",
+          "2018-02",
+          "2018-06",
+          "2018-09",
+          "2018-10"
+        ],
+        "monitoring_note": "isolated weak months in the 2018 bear regime; add an acute-liquidity-shock regime monitor (2018-06 type) - weakness does not persist into adjacent months"
       }
     },
     {

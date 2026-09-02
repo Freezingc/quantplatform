@@ -86,6 +86,11 @@ def main(argv=None) -> int:
     parser.add_argument("--end", type=date.fromisoformat, default=date(2019, 12, 31))
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
+        "--dump-daily",
+        action="store_true",
+        help="also write per-candidate daily IC CSVs (date, ic_full, n_full, ic_liquid, n_liquid)",
+    )
+    parser.add_argument(
         "--candidates",
         type=str,
         default=None,
@@ -200,6 +205,15 @@ def main(argv=None) -> int:
             "full_market": summarize(daily_full),
             "adv20_liquid": summarize(daily_liq),
         }
+        if args.dump_daily:
+            merged_daily = pd.merge(
+                daily_full.rename(columns={"ic": "ic_full", "n": "n_full"}),
+                daily_liq.rename(columns={"ic": "ic_liquid", "n": "n_liquid"}),
+                on="signal_date",
+                how="outer",
+            ).sort_values("signal_date")
+            merged_daily["signal_date"] = merged_daily["signal_date"].dt.strftime("%Y-%m-%d")
+            merged_daily.to_csv(args.output / f"daily_ic_{fid}.csv", index=False)
         print(f"{fid}: full={results[fid]['full_market']} liquid={results[fid]['adv20_liquid']}", flush=True)
 
     payload = {
