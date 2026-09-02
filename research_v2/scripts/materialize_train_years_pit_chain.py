@@ -30,7 +30,11 @@ from research_v2.contracts.source import SourceBatch
 from research_v2.db.publish import V2BatchPublisher
 from research_v2.db.session import V2WriteSession, YesLabReadOnlySession
 from research_v2.materializers.labels import build_label_batch
-from research_v2.materializers.market import build_market_batch
+from research_v2.materializers.market import (
+    build_market_batch,
+    build_market_ohlc_quarantine_batch,
+    partition_invalid_ohlc,
+)
 from research_v2.materializers.security_master import build_security_master_batch
 from research_v2.materializers.tradability import build_tradability_batch
 from research_v2.materializers.universe import build_universe_batch
@@ -166,6 +170,7 @@ def stage_market(
     if not isinstance(frame, pd.DataFrame) or frame.empty:
         raise ValueError("market source query returned no rows")
     frame["trade_date"] = pd.to_datetime(frame["trade_date"]).dt.date
+    frame, ohlc_invalid = partition_invalid_ohlc(frame)
     source = SourceBatch(
         frame=frame,
         source_name="yeslab",
@@ -177,6 +182,17 @@ def stage_market(
         extracted_at=datetime.now(UTC),
     )
     context = _context("market", month_start.strftime("%Y-%m"), nonce)
+    quarantined_rows = 0
+    ohlc_invalid = ohlc_invalid.loc[
+        (pd.to_datetime(ohlc_invalid["trade_date"]) >= pd.Timestamp(month_start))
+        & (pd.to_datetime(ohlc_invalid["trade_date"]) <= pd.Timestamp(month_end))
+    ]
+    if not ohlc_invalid.empty:
+        quarantine_batch = build_market_ohlc_quarantine_batch(ohlc_invalid, source, context)
+        V2BatchPublisher(target_session).publish(
+            quarantine_batch, _dq_checks(("market_ohlc_quarantine",))
+        )
+        quarantined_rows = len(quarantine_batch.frame)
     batch = build_market_batch(
         source,
         scd,
@@ -192,7 +208,7 @@ def stage_market(
         batch,
         _dq_checks(("market_source_schema", "market_keys_unique", "market_finite_values")),
     )
-    return len(batch.frame)
+    return len(batch.frame) + quarantined_rows
 
 
 def stage_tradability(

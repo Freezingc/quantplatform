@@ -310,3 +310,63 @@ def build_market_quarantine_batch(source: SourceBatch, context: RunContext) -> S
         business_keys=("trade_date", "ts_code", "field_name"),
         partition_date_column="trade_date",
     )
+
+
+def partition_invalid_ohlc(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Split market rows into OHLC-consistent rows and legacy OHLC-violation rows.
+
+    Used for historical source ranges where legacy feeds occasionally contain
+    rows whose close falls outside [low, high].  Callers publish the invalid
+    rows to ``market_quarantine`` for audit and materialize only the consistent
+    rows downstream.
+    """
+    required = {"ts_code", "trade_date", "open", "high", "low", "close"}
+    if missing := sorted(required.difference(frame.columns)):
+        raise MarketDataQualityError(f"market frame is missing columns: {missing}")
+    ohlc = frame.loc[:, ["open", "high", "low", "close"]].apply(
+        pd.to_numeric, errors="coerce"
+    )
+    invalid_relationship = (
+        ohlc["high"].lt(ohlc[["open", "low", "close"]].max(axis=1))
+        | ohlc["low"].gt(ohlc[["open", "high", "close"]].min(axis=1))
+    )
+    clean = frame.loc[~invalid_relationship].copy(deep=True)
+    invalid = frame.loc[invalid_relationship].copy(deep=True)
+    return clean, invalid
+
+
+def build_market_ohlc_quarantine_batch(
+    invalid_rows: pd.DataFrame, source: SourceBatch, context: RunContext
+) -> StagedBatch:
+    """Materialize legacy OHLC-violation rows for audit without admitting them."""
+    if invalid_rows.empty:
+        raise MarketDataQualityError("no OHLC-invalid rows to quarantine")
+    ohlc = invalid_rows.loc[:, ["open", "high", "low", "close"]].apply(
+        pd.to_numeric, errors="coerce"
+    )
+    materialized = pd.DataFrame(
+        {
+            "trade_date": pd.to_datetime(invalid_rows["trade_date"], errors="raise").dt.date,
+            "ts_code": invalid_rows["ts_code"].astype(str),
+            "field_name": "ohlc",
+            "reason": "INVALID_OHLC_RELATIONSHIP",
+            "raw_value": [
+                f"o={row.open};h={row.high};l={row.low};c={row.close}"
+                for row in ohlc.itertuples(index=False)
+            ],
+        }
+    )
+    materialized["run_id"] = context.run_id
+    materialized["data_version"] = context.data_version
+    materialized["created_at"] = pd.Timestamp.now(tz="UTC").tz_localize(None)
+    materialized["source_watermark_id"] = source.watermark_id
+    materialized["record_hash"] = materialized.apply(_hash_record, axis=1)
+    logical_partition = min(materialized["trade_date"]).strftime("%Y-%m")
+    return StagedBatch.create(
+        object_name="market_quarantine",
+        logical_partition=logical_partition,
+        data_version=context.data_version,
+        frame=materialized,
+        business_keys=("trade_date", "ts_code", "field_name"),
+        partition_date_column="trade_date",
+    )
