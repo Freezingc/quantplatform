@@ -94,6 +94,19 @@ def main() -> None:
         if source:
             checklist_status[source] = entry
 
+    hist_rows: dict[str, dict] = {}
+    hist_path = DIAG / "historical_window_2019_robustness_v1" / "historical_window_2019_comparison.json"
+    if hist_path.exists():
+        hist = json.loads(hist_path.read_text(encoding="utf-8"))
+        cand_to_src = {
+            str(e.get("candidate_id")): str(e.get("source_factor_id"))
+            for e in checklist
+            if e.get("candidate_id")
+        }
+        for row in hist.get("rows", []):
+            cid = str(row["factor_id"])
+            hist_rows[cand_to_src.get(cid, cid)] = row
+
     band_decisions: dict[str, str] = {}
     for ledger_name in ("band10_train_evidence_v1.json", "nearmiss6_train_evidence_v1.json",
                         "dq3_train_evidence_v1.json", "gp_coverage_repair4_train_evidence_v1.json"):
@@ -135,6 +148,16 @@ def main() -> None:
         else:
             entry["final_status"] = "NOT_EVALUATED_BEYOND_2020_SCREEN"
             entry["status_class"] = "SCREENED_ONLY"
+        if fid in hist_rows:
+            hr = hist_rows[fid]
+            entry["historical_window_2019"] = {
+                "ic_full_market": hr.get("ic_2019_full"),
+                "icir_full_market": hr.get("icir_2019_full"),
+                "ic_adv20_liquid": hr.get("ic_2019_liquid"),
+                "icir_adv20_liquid": hr.get("icir_2019_liquid"),
+                "verdict": hr.get("classify_overall"),
+                "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020",
+            }
         entries.append(entry)
 
     classes = Counter(e["status_class"] for e in entries)

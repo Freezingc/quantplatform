@@ -840,7 +840,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_2020_ANNUAL_MONITORING",
       "candidate_id": "yeslab_96_canonical_replay_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.076364,
+        "icir_full_market": 0.7772,
+        "ic_adv20_liquid": 0.082401,
+        "icir_adv20_liquid": 0.8034,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_97",
@@ -985,7 +993,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_MONTHLY_AND_REGIME_MONITORING",
       "candidate_id": "yeslab_114_tushare_shsz_v2",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.080372,
+        "icir_full_market": 0.5934,
+        "ic_adv20_liquid": 0.083977,
+        "icir_adv20_liquid": 0.612,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_115",
@@ -1714,7 +1730,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_REGIME_MONITORING",
       "candidate_id": "yeslab_206_median_abs_v2",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.059574,
+        "icir_full_market": 0.9474,
+        "ic_adv20_liquid": 0.062082,
+        "icir_adv20_liquid": 0.9009,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_207",
@@ -2924,7 +2948,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "candidate_id": "yeslab_357_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.064557,
+        "icir_full_market": 1.2719,
+        "ic_adv20_liquid": 0.064263,
+        "icir_adv20_liquid": 1.227,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_358",
@@ -2973,7 +3005,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_PIT_AND_ANNUAL_MONITORING",
       "candidate_id": "yeslab_363_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.057498,
+        "icir_full_market": 1.0073,
+        "ic_adv20_liquid": 0.057382,
+        "icir_adv20_liquid": 0.9327,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_364",
@@ -3030,7 +3070,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "candidate_id": "yeslab_370_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.088343,
+        "icir_full_market": 0.6105,
+        "ic_adv20_liquid": 0.094762,
+        "icir_adv20_liquid": 0.6392,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_371",
@@ -3039,7 +3087,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "candidate_id": "yeslab_371_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.096968,
+        "icir_full_market": 0.566,
+        "ic_adv20_liquid": 0.100021,
+        "icir_adv20_liquid": 0.5613,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_372",
@@ -3048,7 +3104,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "candidate_id": "yeslab_372_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.080742,
+        "icir_full_market": 0.607,
+        "ic_adv20_liquid": 0.087873,
+        "icir_adv20_liquid": 0.6448,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_373",
@@ -3073,7 +3137,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "candidate_id": "yeslab_375_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.090448,
+        "icir_full_market": 0.6828,
+        "ic_adv20_liquid": 0.096019,
+        "icir_adv20_liquid": 0.6972,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_376",
@@ -3108,7 +3180,15 @@
       "screen_2020_days": 210,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "candidate_id": "yeslab_379_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.088871,
+        "icir_full_market": 0.6678,
+        "ic_adv20_liquid": 0.094318,
+        "icir_adv20_liquid": 0.6842,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_380",
@@ -3125,7 +3205,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "candidate_id": "yeslab_381_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.078481,
+        "icir_full_market": 0.7168,
+        "ic_adv20_liquid": 0.076825,
+        "icir_adv20_liquid": 0.7348,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_382",
@@ -3150,7 +3238,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "candidate_id": "yeslab_384_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.09725,
+        "icir_full_market": 0.7005,
+        "ic_adv20_liquid": 0.103478,
+        "icir_adv20_liquid": 0.7117,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_385",
@@ -3194,7 +3290,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "candidate_id": "yeslab_389_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.078317,
+        "icir_full_market": 0.7062,
+        "ic_adv20_liquid": 0.081403,
+        "icir_adv20_liquid": 0.7058,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_390",
@@ -3203,7 +3307,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "candidate_id": "yeslab_390_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.085853,
+        "icir_full_market": 0.8827,
+        "ic_adv20_liquid": 0.091635,
+        "icir_adv20_liquid": 0.8869,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_391",
@@ -3245,7 +3357,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "candidate_id": "yeslab_395_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.087158,
+        "icir_full_market": 0.5757,
+        "ic_adv20_liquid": 0.095224,
+        "icir_adv20_liquid": 0.626,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_396",
@@ -3270,7 +3390,15 @@
       "screen_2020_days": 190,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "candidate_id": "yeslab_398_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.075916,
+        "icir_full_market": 0.6883,
+        "ic_adv20_liquid": 0.075498,
+        "icir_adv20_liquid": 0.7289,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_399",
@@ -3328,7 +3456,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "candidate_id": "yeslab_405_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.077744,
+        "icir_full_market": 0.8309,
+        "ic_adv20_liquid": 0.079725,
+        "icir_adv20_liquid": 0.8191,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_406",
@@ -3337,7 +3473,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "candidate_id": "yeslab_406_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.078928,
+        "icir_full_market": 0.8038,
+        "ic_adv20_liquid": 0.083084,
+        "icir_adv20_liquid": 0.8208,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_407",
@@ -3490,7 +3634,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_HIGH_VOL_MONITORING",
       "candidate_id": "yeslab_425_tushare_shsz_v2",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.089002,
+        "icir_full_market": 0.8743,
+        "ic_adv20_liquid": 0.09258,
+        "icir_adv20_liquid": 0.8822,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_426",
@@ -3637,7 +3789,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_PAIR_MONITORING",
       "candidate_id": "yeslab_443_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.061766,
+        "icir_full_market": 0.5916,
+        "ic_adv20_liquid": 0.060066,
+        "icir_adv20_liquid": 0.6243,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_444",
@@ -3806,7 +3966,15 @@
       "screen_2020_days": 216,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_APPROVAL",
       "candidate_id": "yeslab_464_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.070939,
+        "icir_full_market": 0.7093,
+        "ic_adv20_liquid": 0.071974,
+        "icir_adv20_liquid": 0.696,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_465",
@@ -3863,7 +4031,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW_WITH_SCOPE_AND_FORMULA_RECONCILIATION_MONITORING",
       "candidate_id": "yeslab_471_tushare_pit_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.07426,
+        "icir_full_market": 0.961,
+        "ic_adv20_liquid": 0.077735,
+        "icir_adv20_liquid": 0.9731,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_472",
@@ -3968,7 +4144,15 @@
       "screen_2020_days": 243,
       "final_status": "READY_FOR_EXPLICIT_ADMISSION_REVIEW",
       "candidate_id": "yeslab_484_tushare_shsz_v1",
-      "status_class": "READY"
+      "status_class": "READY",
+      "historical_window_2019": {
+        "ic_full_market": 0.076642,
+        "icir_full_market": 0.6338,
+        "ic_adv20_liquid": 0.077337,
+        "icir_adv20_liquid": 0.6198,
+        "verdict": "PASS",
+        "note": "pre-training-period robustness window; Tushare-sourced replay and labels validated equivalent to V2 on 2020"
+      }
     },
     {
       "factor_id": "yeslab_485",

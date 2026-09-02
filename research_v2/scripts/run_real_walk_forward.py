@@ -113,29 +113,54 @@ def _extract_dataset(
     segment = resolver.resolve(fold_id, role)
     start = min(segment.signal_dates)
     end = max(segment.signal_dates)
-    factor_ids = ",".join(f"'{member.factor_id}'" for member in factor_members)
-    universe_rows = session.run(
-        f"select signal_date, ts_code, data_version "
-        f"from loadTable('{TARGET_DATABASE}','universe_daily') "
-        f"where signal_date between date('{start.strftime('%Y.%m.%d')}') "
-        f"and date('{end.strftime('%Y.%m.%d')}') and is_member=1"
-    )
+    years = list(range(start.year, end.year + 1))
+    universe_parts = []
+    for year in years:
+        part = session.run(
+            f"select signal_date, ts_code, data_version "
+            f"from loadTable('{TARGET_DATABASE}','universe_daily') "
+            f"where signal_date between date('{year}.01.01') and date('{year}.12.31') "
+            f"and is_member=1"
+        )
+        if isinstance(part, pd.DataFrame) and not part.empty:
+            universe_parts.append(part)
+    universe_rows = pd.concat(universe_parts, ignore_index=True)
     universe_rows = _filter_current(universe_rows, "signal_date", versions["universe_daily"])
-    factor_rows = session.run(
-        f"select signal_date, ts_code, factor_id, factor_version, value, available_date, "
-        f"data_version "
-        f"from loadTable('{TARGET_DATABASE}','factor_observation_clean') "
-        f"where signal_date between date('{start.strftime('%Y.%m.%d')}') "
-        f"and date('{end.strftime('%Y.%m.%d')}') and factor_id in [{factor_ids}]"
-    )
+    factor_parts = []
+    for member in factor_members:
+        for year in years:
+            part = session.run(
+                f"select signal_date, ts_code, factor_id, factor_version, value, "
+                f"available_date, data_version "
+                f"from loadTable('{TARGET_DATABASE}','factor_observation_clean') "
+                f"where signal_date between date('{year}.01.01') and date('{year}.12.31') "
+                f"and factor_id='{member.factor_id}'"
+            )
+            if isinstance(part, pd.DataFrame) and not part.empty:
+                factor_parts.append(part)
+        print(f"  extracted factor {member.factor_id} for {fold_id}/{role}", flush=True)
+    factor_rows = pd.concat(factor_parts, ignore_index=True)
     factor_rows = _filter_current(factor_rows, "signal_date", versions["factor_observation_clean"])
-    label_rows = session.run(
-        f"select signal_date, ts_code, raw_return, label_valid, exit_date, data_version "
-        f"from loadTable('{TARGET_DATABASE}','label_daily') "
-        f"where signal_date between date('{start.strftime('%Y.%m.%d')}') "
-        f"and date('{end.strftime('%Y.%m.%d')}')"
-    )
+    label_parts = []
+    for year in years:
+        part = session.run(
+            f"select signal_date, ts_code, raw_return, label_valid, exit_date, data_version "
+            f"from loadTable('{TARGET_DATABASE}','label_daily') "
+            f"where signal_date between date('{year}.01.01') and date('{year}.12.31')"
+        )
+        if isinstance(part, pd.DataFrame) and not part.empty:
+            label_parts.append(part)
+    label_rows = pd.concat(label_parts, ignore_index=True)
     label_rows = _filter_current(label_rows, "signal_date", versions["label_daily"])
+    universe_rows = universe_rows.loc[
+        (universe_rows["signal_date"] >= start) & (universe_rows["signal_date"] <= end)
+    ]
+    factor_rows = factor_rows.loc[
+        (factor_rows["signal_date"] >= start) & (factor_rows["signal_date"] <= end)
+    ]
+    label_rows = label_rows.loc[
+        (label_rows["signal_date"] >= start) & (label_rows["signal_date"] <= end)
+    ]
     dataset = build_point_in_time_dataset(
         universe_rows.loc[:, ["signal_date", "ts_code"]],
         factor_rows.loc[
