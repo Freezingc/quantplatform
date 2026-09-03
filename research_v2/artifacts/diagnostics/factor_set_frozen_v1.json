@@ -1,0 +1,36 @@
+{
+  "scope": "FACTOR_SET_FROZEN_V1",
+  "frozen_date": "2026-09-03",
+  "factors": [
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_372",
+    "yeslab_375",
+    "yeslab_381",
+    "yeslab_384",
+    "yeslab_389",
+    "yeslab_390",
+    "yeslab_398",
+    "yeslab_405",
+    "yeslab_406",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+    "yeslab_96"
+  ],
+  "count": 17,
+  "special_decisions": {
+    "D1": "A",
+    "D2": "采纳",
+    "D3": "a",
+    "D4": "按表"
+  },
+  "conflicts": [],
+  "warnings": [
+    "MONITOR pair both admitted (needs combination review): yeslab_381 & yeslab_405",
+    "MONITOR pair both admitted (needs combination review): yeslab_398 & yeslab_381"
+  ],
+  "data_version": "78203c90269f5bee8740ab12a133ab6e51bdce8e200bc5bbc8f29b0ec8d9a895"
+}

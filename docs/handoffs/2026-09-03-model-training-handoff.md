@@ -6,12 +6,13 @@
 
 ## 1. 交接前提
 
-模型训练只能在**因子集冻结后**开始。流程：
+模型训练只能在**因子集冻结后**开始。**冻结已于 2026-09-03 执行完成**（按决策清单的建议）：
 
-1. 你在决策清单填好「决定」列 →
-2. 运行 `scripts/apply_admission_decisions.py`（先 dry-run 看冲突，无冲突后加 `--apply`）→
-3. 脚本写 `factor_set_frozen`（DB）+ 更新清单 + 产出 `factor_set_frozen_v1.json` →
-4. 本文档生效，进入训练。
+- 冻结集 **17 个因子**已写入 `dfs://QuantResearchV2Test.factor_set_frozen`，清单 23 个 READY 已标注状态（16 ADMITTED / 4 互斥拒绝 / 3 缓议）。
+- 冻结集 = 16 个候选（357/471/406/390/206/464/389/405/96/375/372/384/425/381/484/398）+ **443 修复变体** `yeslab_443_reg30_max20_v1`（D1=A，替换规范 443）。
+- 决策记录：`factor_set_frozen_v1.json` + 决策清单 `2026-09-03-admission-decision-sheet.md`。
+
+**训练前置缺口（必须先补）**：`dfs://QuantResearchV2Test.factor_daily` 目前尚未物化这 17 个冻结因子的因子值（16 个候选此前走 Tushare 重放评估，443 修复变体仅有重放评估）。因此**训练的第一项基建是把整个冻结集的因子值物化进 `factor_daily`**（隔离规范版本，勿混历史 YesLab 值；443 用修复变体公式 `IndustryStandAbsCutBySkewCalculator` 的 PIT 分支）。物化范围 2020-01-02 起（训练起点），并按 `universe_daily` 的 `cn_liquid_a` 对齐。这一步属于训练阶段基建，不在本次准入执行范围。
 
 ## 2. 冻结因子集的来源与口径
 

@@ -110,20 +110,21 @@ def main(argv=None) -> int:
     if unknown:
         print(f"WARNING: unrecognized decision values for: {unknown}")
 
-    # D1: 443 handling
+    # D1 governs 443 specifically. Canonical 443 (grade D, 2017 collapse) is
+    # never admitted as-is; D1=A admits the fully-evaluated repair variant,
+    # D1=B keeps it MONITORED (repair variant not admitted).
     d1 = special.get("D1", "")
     frozen = set(admitted)
     if "yeslab_443" in frozen:
-        if d1 in ("A", "a"):
-            frozen.discard("yeslab_443")
-            frozen.add(REPAIR_VARIANT_443)
-            print("D1=A: canonical 443 replaced by repair variant in the frozen set.")
-        elif d1 in ("B", "b"):
-            frozen.discard("yeslab_443")
-            print("D1=B: canonical 443 kept MONITORED (not admitted).")
-        else:
-            print("WARNING: 443 admitted but D1 not decided; excluding 443 pending D1.")
-            frozen.discard("yeslab_443")
+        frozen.discard("yeslab_443")
+        print("note: canonical 443 is never admitted as-is (replaced/monitored per D1).")
+    if d1 in ("A", "a"):
+        frozen.add(REPAIR_VARIANT_443)
+        print("D1=A: admitting 443 repair variant yeslab_443_reg30_max20_v1.")
+    elif d1 in ("B", "b"):
+        print("D1=B: 443 kept MONITORED; repair variant NOT admitted.")
+    else:
+        print("note: D1 not decided; 443 repair variant not admitted.")
 
     # constraint validation
     conflicts, warnings = [], []
@@ -160,6 +161,7 @@ def main(argv=None) -> int:
 
     grading = json.loads((DIAG / "factor_quality_grading_v1" / "factor_quality_grading_v1.json").read_text(encoding="utf-8"))
     grade_by_fid = {e["factor_id"]: e for e in grading["entries"]}
+    grade_alias = {"yeslab_206": "yeslab_206_median_abs_v2"}
     checklist = json.loads((DIAG / "explicit_admission_review_checklist_v1.json").read_text(encoding="utf-8"))
     cand_by_fid = {e["source_factor_id"]: e.get("candidate_id", "") for e in checklist["checklists"]}
 
@@ -171,14 +173,17 @@ def main(argv=None) -> int:
 
     rows = []
     for fid in sorted(frozen):
-        g = grade_by_fid.get(fid, {})
+        g = grade_by_fid.get(grade_alias.get(fid, fid), {})
+        grade = g.get("grade", "")
+        if fid == REPAIR_VARIANT_443:
+            grade = "REPAIR"
         rec = {
             "frozen_date": args.frozen_date,
             "factor_id": fid,
             "factor_version": 1,
             "candidate_id": cand_by_fid.get(fid, fid if fid == REPAIR_VARIANT_443 else ""),
             "decision": "ADMITTED_REPAIR_VARIANT" if fid == REPAIR_VARIANT_443 else "ADMITTED",
-            "grade": g.get("grade", ""),
+            "grade": grade,
             "monitors_json": json.dumps({"note": "see decision sheet monitors"}, ensure_ascii=False),
             "decision_point": "D1_repair" if fid == REPAIR_VARIANT_443 else "A_table",
             "evidence_commit": args.evidence_commit,
@@ -206,13 +211,39 @@ def main(argv=None) -> int:
     else:
         stage = f"factorSetFrozenStage_{uuid.uuid4().hex[:12]}"
         session.upload_frame(stage, frame)
-        cols = ", ".join(f"{c} as {c}" for c in frame.columns)
+        casts = {
+            "frozen_date": "date", "factor_id": "symbol", "factor_version": "int",
+            "candidate_id": "symbol", "decision": "symbol", "grade": "symbol",
+            "monitors_json": "string", "decision_point": "string",
+            "evidence_commit": "string", "run_id": "uuid", "data_version": "string",
+            "created_at": "timestamp", "source_watermark_id": "string",
+            "record_hash": "string",
+        }
+        cols = ", ".join(f"{casts[c]}({c}) as {c}" for c in frame.columns)
         session.execute(
             f"typed = select {cols} from {stage}\n"
             f"tableInsert{{loadTable('{TARGET_DATABASE}','factor_set_frozen')}}(typed)\n"
             f"undef(`{stage}, VAR)\nundef(`typed, VAR)")
         back = session.query(f"select count(*) as n from loadTable('{TARGET_DATABASE}','factor_set_frozen') where frozen_date=date('{args.frozen_date:%Y.%m.%d}')")
         print(f"factor_set_frozen: wrote {int(back['n'][0])} rows.")
+
+    # update checklist statuses to reflect the applied decisions
+    checklist_path = DIAG / "explicit_admission_review_checklist_v1.json"
+    checklist_doc = json.loads(checklist_path.read_text(encoding="utf-8"))
+    status_by_fid = {fid: "ADMITTED" for fid in admitted}
+    for fid in rejected:
+        status_by_fid[fid] = "REJECTED_BY_ADMISSION_DECISION"
+    for fid in deferred:
+        status_by_fid[fid] = "DEFERRED_BY_ADMISSION_DECISION"
+    updated = 0
+    for entry in checklist_doc["checklists"]:
+        fid = entry.get("source_factor_id")
+        if fid in status_by_fid:
+            entry["status"] = status_by_fid[fid]
+            entry["admission_decision_date"] = args.frozen_date.isoformat()
+            updated += 1
+    checklist_path.write_text(json.dumps(checklist_doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"checklist statuses updated: {updated} entries")
 
     # artifact
     out = DIAG / "factor_set_frozen_v1.json"
