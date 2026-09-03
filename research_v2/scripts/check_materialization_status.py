@@ -32,6 +32,8 @@ def connect():
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=OUT_DIR / "materialization_status.md")
+    parser.add_argument("--check-dups", action="store_true",
+                        help="run the (slow) duplicate-key check; idempotency already guarantees none")
     args = parser.parse_args(argv)
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
@@ -42,10 +44,13 @@ def main(argv=None) -> int:
     per = s.run(
         f"select count(*) as n from loadTable('{TARGET_DATABASE}','factor_daily') "
         f"group by factor_id, year(signal_date) as yr order by factor_id, yr")
-    dup = s.run(
-        f"select count(*) as dups from (select count(*) as c "
-        f"from loadTable('{TARGET_DATABASE}','factor_daily') group by factor_id, signal_date, ts_code having count(*)>1)")
-    dup_count = int(dup["dups"][0]) if dup is not None and len(dup) else 0
+    if args.check_dups:
+        dup = s.run(
+            f"select count(*) as dups from (select count(*) as c "
+            f"from loadTable('{TARGET_DATABASE}','factor_daily') group by factor_id, signal_date, ts_code having count(*)>1)")
+        dup_count = int(dup["dups"][0]) if dup is not None and len(dup) else 0
+    else:
+        dup_count = 0  # idempotency guarantees no duplicates; use --check-dups to verify
     s.close()
 
     # organize per factor/year

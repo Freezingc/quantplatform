@@ -1,19 +1,20 @@
 {
-  "generated_at": "2026-09-03T23:50:04",
+  "generated_at": "2026-09-04T00:19:00",
   "target_database": "dfs://QuantResearchV2Test",
-  "total_rows": 24225303,
+  "total_rows": 36535674,
   "duplicate_key_groups": 0,
   "materializer_running": true,
   "materializer_pids": [
-    "3225716"
+    "3225716",
+    "3245380"
   ],
   "expected_factors_per_year": 17,
   "factors_materialized_total": 17,
   "factors_per_year": {
     "2020": 17,
     "2021": 17,
-    "2022": 9,
-    "2023": 0,
+    "2022": 13,
+    "2023": 14,
     "2024": 0,
     "2025": 0
   },
