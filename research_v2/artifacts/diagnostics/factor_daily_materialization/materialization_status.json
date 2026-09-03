@@ -1,13 +1,12 @@
 {
-  "generated_at": "2026-09-04T00:32:57",
+  "generated_at": "2026-09-04T00:48:17",
   "target_database": "dfs://QuantResearchV2Test",
   "total_rows": 38919995,
   "duplicate_key_groups": 0,
   "materializer_running": true,
   "materializer_pids": [
     "3225716",
-    "3245380",
-    "3266189"
+    "3245380"
   ],
   "expected_factors_per_year": 17,
   "factors_materialized_total": 17,
