@@ -1,0 +1,10 @@
+// targetDatabase is injected by the V2 migration runner.
+db = database(targetDatabase)
+
+if (!existsTable(targetDatabase, `factor_set_frozen)) {
+    factorSetFrozen = table(1:0,
+        `frozen_date`factor_id`factor_version`candidate_id`decision`grade`monitors_json`decision_point`evidence_commit`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, SYMBOL, INT, SYMBOL, SYMBOL, SYMBOL, STRING, STRING, STRING, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=factorSetFrozen, tableName=`factor_set_frozen,
+        partitionColumns=`frozen_date, sortColumns=`factor_id`frozen_date)
+}

@@ -3,7 +3,7 @@
 由 `scripts/generate_data_dictionary.py` 从 `research_v2/migrations/*.dos`
 冻结合约渲染。迁移变更后必须重新生成本文件。
 
-迁移版本：001–014；表数量：47。
+迁移版本：001–015；表数量：48。
 
 ## active_model_pointer
 
@@ -461,6 +461,30 @@
 | member_count | INT |
 | status | SYMBOL |
 | content_hash | STRING |
+| run_id | UUID |
+| data_version | STRING |
+| created_at | TIMESTAMP |
+| source_watermark_id | STRING |
+| record_hash | STRING |
+
+## factor_set_frozen
+
+- 来源：迁移 015；生产者：（见迁移脚本）
+- 说明：-
+- 业务键：`-`
+- 分区列：`frozen_date`；排序列：`factor_id, frozen_date`
+
+| 列名 | 类型 |
+|---|---|
+| frozen_date | DATE |
+| factor_id | SYMBOL |
+| factor_version | INT |
+| candidate_id | SYMBOL |
+| decision | SYMBOL |
+| grade | SYMBOL |
+| monitors_json | STRING |
+| decision_point | STRING |
+| evidence_commit | STRING |
 | run_id | UUID |
 | data_version | STRING |
 | created_at | TIMESTAMP |
