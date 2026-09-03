@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from collections.abc import Mapping, Sequence
 from datetime import date
 from pathlib import Path
 
@@ -30,6 +31,7 @@ from research_v2.datasets.builder import (
 )
 from research_v2.datasets.splits import SplitResolver, annual_folds
 from research_v2.evaluation.walk_forward import (
+    BaselineWalkForwardResult,
     run_walk_forward_baselines,
 )
 from research_v2.pit.calendar import TradingCalendar
@@ -189,6 +191,58 @@ def _extract_dataset(
     return dataset
 
 
+def build_walk_forward_report(
+    fold_ids: Sequence[str],
+    result: BaselineWalkForwardResult,
+    versions: Mapping[str, Mapping[str, str]],
+) -> dict[str, object]:
+    """Serialize the walk-forward result for archival.
+
+    Note: GateReport.all_passed is a property; calling it raises TypeError.
+    """
+    return {
+        "folds": list(fold_ids),
+        "data_versions": {
+            table: dict(sorted(partitions.items())) for table, partitions in versions.items()
+        },
+        "selections": [
+            {
+                "fold_id": record.fold_id,
+                "selected_baseline_id": record.selected_baseline_id,
+                "validation_scores": [
+                    {
+                        "baseline_id": score.baseline_id,
+                        "mean_rank_ic": score.mean_rank_ic,
+                        "valid_day_count": score.valid_day_count,
+                    }
+                    for score in record.validation_scores
+                ],
+            }
+            for record in result.selection_records
+        ],
+        "oos": {
+            "valid_day_count": result.evaluation.summary.valid_day_count,
+            "mean_rank_ic": result.evaluation.summary.mean_rank_ic,
+            "icir": result.evaluation.summary.icir,
+            "hac_t_statistic": result.evaluation.hac.t_statistic,
+            "baseline_mean_rank_ic": result.evaluation.baseline_mean_rank_ic,
+            "delta_rank_ic": result.evaluation.delta_rank_ic,
+            "yearly_mean_rank_ic": {
+                str(year): value for year, value in result.evaluation.yearly_mean_rank_ic.items()
+            },
+            "gates": {
+                gate: {
+                    "status": gate_result.status.value,
+                    "observed_value": gate_result.observed_value,
+                    "threshold": gate_result.threshold,
+                }
+                for gate, gate_result in sorted(result.evaluation.gate_report.results.items())
+            },
+            "all_passed": result.evaluation.gate_report.all_passed,
+        },
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--folds", default="F01,F02,F03,F04,F05,F06")
@@ -251,47 +305,7 @@ def main() -> None:
     print("running walk-forward baselines", flush=True)
     result = run_walk_forward_baselines(folds, minimum_cross_section=30)
 
-    report = {
-        "folds": list(fold_ids),
-        "data_versions": {
-            table: dict(sorted(partitions.items())) for table, partitions in versions.items()
-        },
-        "selections": [
-            {
-                "fold_id": record.fold_id,
-                "selected_baseline_id": record.selected_baseline_id,
-                "validation_scores": [
-                    {
-                        "baseline_id": score.baseline_id,
-                        "mean_rank_ic": score.mean_rank_ic,
-                        "valid_day_count": score.valid_day_count,
-                    }
-                    for score in record.validation_scores
-                ],
-            }
-            for record in result.selection_records
-        ],
-        "oos": {
-            "valid_day_count": result.evaluation.summary.valid_day_count,
-            "mean_rank_ic": result.evaluation.summary.mean_rank_ic,
-            "icir": result.evaluation.summary.icir,
-            "hac_t_statistic": result.evaluation.hac.t_statistic,
-            "baseline_mean_rank_ic": result.evaluation.baseline_mean_rank_ic,
-            "delta_rank_ic": result.evaluation.delta_rank_ic,
-            "yearly_mean_rank_ic": {
-                str(year): value for year, value in result.evaluation.yearly_mean_rank_ic.items()
-            },
-            "gates": {
-                gate: {
-                    "status": gate_result.status.value,
-                    "observed_value": gate_result.observed_value,
-                    "threshold": gate_result.threshold,
-                }
-                for gate, gate_result in sorted(result.evaluation.gate_report.results.items())
-            },
-            "all_passed": result.evaluation.gate_report.all_passed(),
-        },
-    }
+    report = build_walk_forward_report(fold_ids, result, versions)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report["oos"], ensure_ascii=False, indent=2), flush=True)
