@@ -188,6 +188,48 @@ def main(argv=None) -> int:
             "grade": grade_of(scores),
         })
 
+    # ---- five pass7 candidates (documented in 4m/4n tables, not section 3) ----
+    pass7_ev = load_json(DIAG / "pass7_train_evidence_v1.json")["candidates"]
+    sim_train = load_json(DIAG / "tushare_shsz_pass7_formal9_train_2020_2024_v1" / "similarity_summary.json")
+    sim_val = load_json(DIAG / "tushare_shsz_pass7_formal9_validation_2025_v1" / "similarity_summary.json")
+    FORMAL_IDS = set(dirs)
+
+    def max_formal_edge(pairs, fid):
+        vals = [
+            pr["median_abs_spearman"]
+            for pr in pairs
+            if fid in (pr["factor_id_left"], pr["factor_id_right"])
+            and (set((pr["factor_id_left"], pr["factor_id_right"])) - {fid}) <= FORMAL_IDS
+        ]
+        return max(vals) if vals else None
+
+    for fid in ("yeslab_371", "yeslab_372", "yeslab_379", "yeslab_384", "yeslab_406"):
+        ev = pass7_ev[fid]
+        t_icir = ev.get("train_signed_icir")
+        v_icir = ev.get("validation_signed_icir")
+        max_edge_candidates = [max_formal_edge(sim_train, fid), max_formal_edge(sim_val, fid)]
+        max_edge = max((e for e in max_edge_candidates if e is not None), default=None)
+        pt = pretrain.get(fid, {})
+        regime_min = min((v for v in pt.values() if v is not None), default=None) if pt else None
+        scores = {
+            "train_predictive": score_train(t_icir),
+            "oos_validation": score_oos(v_icir),
+            "regime_robustness": score_regime(regime_min),
+            "uniqueness": score_unique(max_edge),
+        }
+        entries.append({
+            "factor_id": fid,
+            "group": "READY_CANDIDATE",
+            "train_icir": t_icir,
+            "validation_icir": v_icir,
+            "pretrain_official_icir": pt,
+            "regime_min_official_icir": regime_min,
+            "max_nine_edge": max_edge,
+            "scores": scores,
+            "total": sum(s for s in scores.values() if s is not None) if all(s is not None for s in scores.values()) else None,
+            "grade": grade_of(scores),
+        })
+
     order = {"S": 0, "A": 1, "B": 2, "C": 3, "D": 4, "INCOMPLETE": 5}
     entries.sort(key=lambda e: (order[e["grade"]], -(e["total"] if e["total"] is not None else -1)))
 

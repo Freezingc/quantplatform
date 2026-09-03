@@ -3,7 +3,7 @@
 由 `scripts/generate_data_dictionary.py` 从 `research_v2/migrations/*.dos`
 冻结合约渲染。迁移变更后必须重新生成本文件。
 
-迁移版本：001–013；表数量：44。
+迁移版本：001–014；表数量：47。
 
 ## active_model_pointer
 
@@ -140,6 +140,58 @@
 | stale_days | INT |
 | dedup_resolution | SYMBOL |
 | source_revision_id | STRING |
+
+## factor_pair_redundancy
+
+- 来源：迁移 014；生产者：scripts.record_regime_window_quality
+- 说明：pairwise median abs Spearman redundancy per window
+- 业务键：`-`
+- 分区列：`as_of_date`；排序列：`factor_id_left, factor_id_right, window_id, as_of_date`
+
+| 列名 | 类型 |
+|---|---|
+| as_of_date | DATE |
+| factor_id_left | SYMBOL |
+| factor_id_right | SYMBOL |
+| window_id | SYMBOL |
+| median_abs_spearman | DOUBLE |
+| valid_day_count | INT |
+| pair_class | SYMBOL |
+| run_id | UUID |
+| data_version | STRING |
+| created_at | TIMESTAMP |
+| source_watermark_id | STRING |
+| record_hash | STRING |
+
+## factor_quality_grade
+
+- 来源：迁移 014；生产者：scripts.record_regime_window_quality
+- 说明：four-dimension quality grade per factor
+- 业务键：`-`
+- 分区列：`as_of_date`；排序列：`factor_id, as_of_date`
+
+| 列名 | 类型 |
+|---|---|
+| as_of_date | DATE |
+| factor_id | SYMBOL |
+| factor_group | SYMBOL |
+| grade | SYMBOL |
+| total_score | INT |
+| score_train_predictive | INT |
+| score_oos_validation | INT |
+| score_regime_robustness | INT |
+| score_uniqueness | INT |
+| train_icir | DOUBLE |
+| validation_icir | DOUBLE |
+| regime_min_official_icir | DOUBLE |
+| max_similarity_edge | DOUBLE |
+| grade_rules_version | INT |
+| evidence_path | STRING |
+| run_id | UUID |
+| data_version | STRING |
+| created_at | TIMESTAMP |
+| source_watermark_id | STRING |
+| record_hash | STRING |
 
 ## factor_quality_latest
 
@@ -453,6 +505,32 @@
 | valid_days | INT |
 | status | SYMBOL |
 | cluster_id | STRING |
+| run_id | UUID |
+| data_version | STRING |
+| created_at | TIMESTAMP |
+| source_watermark_id | STRING |
+| record_hash | STRING |
+
+## factor_window_quality
+
+- 来源：迁移 014；生产者：scripts.record_regime_window_quality
+- 说明：signed IC metrics per factor/window/universe (pre-training + train + validation)
+- 业务键：`-`
+- 分区列：`as_of_date`；排序列：`factor_id, window_id, universe_id, as_of_date`
+
+| 列名 | 类型 |
+|---|---|
+| as_of_date | DATE |
+| factor_id | SYMBOL |
+| factor_version | INT |
+| factor_group | SYMBOL |
+| window_id | SYMBOL |
+| universe_id | SYMBOL |
+| valid_day_count | INT |
+| signed_mean_rank_ic | DOUBLE |
+| signed_icir | DOUBLE |
+| directional_day_share | DOUBLE |
+| evidence_path | STRING |
 | run_id | UUID |
 | data_version | STRING |
 | created_at | TIMESTAMP |

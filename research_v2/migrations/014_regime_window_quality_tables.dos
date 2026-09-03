@@ -1,0 +1,26 @@
+// targetDatabase is injected by the V2 migration runner.
+db = database(targetDatabase)
+
+if (!existsTable(targetDatabase, `factor_window_quality)) {
+    factorWindowQuality = table(1:0,
+        `as_of_date`factor_id`factor_version`factor_group`window_id`universe_id`valid_day_count`signed_mean_rank_ic`signed_icir`directional_day_share`evidence_path`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, SYMBOL, INT, SYMBOL, SYMBOL, SYMBOL, INT, DOUBLE, DOUBLE, DOUBLE, STRING, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=factorWindowQuality, tableName=`factor_window_quality,
+        partitionColumns=`as_of_date, sortColumns=`factor_id`window_id`universe_id`as_of_date)
+}
+
+if (!existsTable(targetDatabase, `factor_pair_redundancy)) {
+    factorPairRedundancy = table(1:0,
+        `as_of_date`factor_id_left`factor_id_right`window_id`median_abs_spearman`valid_day_count`pair_class`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, SYMBOL, SYMBOL, SYMBOL, DOUBLE, INT, SYMBOL, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=factorPairRedundancy, tableName=`factor_pair_redundancy,
+        partitionColumns=`as_of_date, sortColumns=`factor_id_left`factor_id_right`window_id`as_of_date)
+}
+
+if (!existsTable(targetDatabase, `factor_quality_grade)) {
+    factorQualityGrade = table(1:0,
+        `as_of_date`factor_id`factor_group`grade`total_score`score_train_predictive`score_oos_validation`score_regime_robustness`score_uniqueness`train_icir`validation_icir`regime_min_official_icir`max_similarity_edge`grade_rules_version`evidence_path`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, SYMBOL, SYMBOL, SYMBOL, INT, INT, INT, INT, INT, DOUBLE, DOUBLE, DOUBLE, DOUBLE, INT, STRING, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=factorQualityGrade, tableName=`factor_quality_grade,
+        partitionColumns=`as_of_date, sortColumns=`factor_id`as_of_date)
+}
