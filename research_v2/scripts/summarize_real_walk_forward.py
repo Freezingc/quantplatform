@@ -118,6 +118,24 @@ def yearly_mean_rank_ic(report: dict[str, Any]) -> dict[str, float | None]:
     return {year: yearly.get(year) for year in REQUIRED_YEARS}
 
 
+def data_version_summary(report: dict[str, Any]) -> dict[str, str] | None:
+    """Compact per-table version summary, or None when the report lacks versions."""
+    raw = report.get("data_versions")
+    if not isinstance(raw, dict) or not raw:
+        return None
+    summary: dict[str, str] = {}
+    for table in sorted(raw):
+        partitions = cast(dict[str, Any], raw[table])
+        if not partitions:
+            summary[str(table)] = "0 partitions"
+            continue
+        keys = sorted(partitions)
+        summary[str(table)] = (
+            f"{len(keys)} partitions ({keys[0]}..{keys[-1]})"
+        )
+    return summary
+
+
 def criterion_303_verdict(report: dict[str, Any]) -> Criterion303Verdict:
     oos = _oos(report)
     selections = fold_selections(report)
@@ -205,6 +223,20 @@ def render_markdown(report: dict[str, Any]) -> str:
     for year in REQUIRED_YEARS:
         lines.append(f"| {year} | {_fmt(yearly[year])} |")
     lines.append("")
+    versions = data_version_summary(report)
+    if versions is not None:
+        lines.append("## Data versions (published_version snapshot)")
+        lines.append("")
+        lines.append("| Table | Partitions |")
+        lines.append("|---|---|")
+        for table, description in versions.items():
+            lines.append(f"| {table} | {description} |")
+        lines.append("")
+        lines.append(
+            "Full per-partition version mapping is stored in the report JSON "
+            "under `data_versions`."
+        )
+        lines.append("")
     lines.append("## Criterion 303 verdict")
     lines.append("")
     lines.append(f"- All G1-G6 gates satisfied: {'yes' if verdict.all_gates_passed else 'no'}")

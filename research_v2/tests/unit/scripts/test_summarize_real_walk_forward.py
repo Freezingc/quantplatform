@@ -145,3 +145,34 @@ def test_main_writes_report(tmp_path: Path, capsys: pytest.CaptureFixture[str]) 
     assert out_path.exists()
     captured = capsys.readouterr()
     assert "criterion-303: SATISFIED" in captured.out
+
+
+def test_data_version_summary_absent_returns_none() -> None:
+    assert summarizer.data_version_summary(_make_report()) is None
+
+
+def test_data_version_summary_compact() -> None:
+    report = _make_report()
+    report["data_versions"] = {
+        "universe_daily": {"2020.01M": "v1", "2020.02M": "v2"},
+        "label_daily": {},
+    }
+    summary = summarizer.data_version_summary(report)
+    assert summary == {
+        "label_daily": "0 partitions",
+        "universe_daily": "2 partitions (2020.01M..2020.02M)",
+    }
+
+
+def test_render_markdown_includes_versions_when_present() -> None:
+    report = _make_report()
+    report["data_versions"] = {"universe_daily": {"2020.01M": "v1"}}
+    markdown = summarizer.render_markdown(report)
+    assert "## Data versions (published_version snapshot)" in markdown
+    assert "| universe_daily | 1 partitions (2020.01M..2020.01M) |" in markdown
+
+
+def test_render_markdown_without_versions_still_renders_verdict() -> None:
+    markdown = summarizer.render_markdown(_make_report())
+    assert "Data versions" not in markdown
+    assert "## Criterion 303 verdict" in markdown

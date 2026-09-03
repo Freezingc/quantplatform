@@ -253,6 +253,9 @@ def main() -> None:
 
     report = {
         "folds": list(fold_ids),
+        "data_versions": {
+            table: dict(sorted(partitions.items())) for table, partitions in versions.items()
+        },
         "selections": [
             {
                 "fold_id": record.fold_id,
