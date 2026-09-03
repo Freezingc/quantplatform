@@ -85,7 +85,11 @@ The renderer checks four completeness conditions and prints the verdict:
 - yearly mean RankIC present for every year 2020-2025.
 
 Archive the rendered markdown under `docs/reports/` together with the raw JSON
-(or a copy of it) as the criterion-303 evidence pair.
+(or a copy of it) as the criterion-303 evidence pair. The report JSON carries a
+`data_versions` snapshot (per logical partition) identifying exactly which
+published versions were consumed; if a report predates that field, capture the
+`published_version` rows externally during the run and archive them alongside
+(see `docs/reports/2026-09-02-real-walk-forward-data-versions.json`).
 
 ## Failure modes
 
