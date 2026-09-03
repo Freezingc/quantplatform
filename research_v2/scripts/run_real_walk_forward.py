@@ -13,11 +13,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
-from collections.abc import Mapping, Sequence
+import time
+from collections.abc import Callable, Mapping, Sequence
 from datetime import date
 from pathlib import Path
+from typing import Any, Literal
 
 import dolphindb as ddb
 import pandas as pd
@@ -55,6 +58,60 @@ WALK_FORWARD_FACTOR_IDS: tuple[str, ...] = (
 )
 
 
+FOLD_CACHE_ROOT = Path("/tmp/walk_forward_cache_v1")
+SplitRole = Literal["train", "validation", "test"]
+SPLIT_ROLE_REQUEST: dict[str, Literal["TRAIN", "VALIDATION", "TEST"]] = {
+    "train": "TRAIN",
+    "validation": "VALIDATION",
+    "test": "TEST",
+}
+
+
+def fold_cache_key(fold_id: str, role: str, versions: Mapping[str, Mapping[str, str]]) -> str:
+    """Deterministic cache key bound to the published versions consumed."""
+    payload = json.dumps(
+        {"fold_id": fold_id, "role": role, "versions": {k: dict(v) for k, v in versions.items()}},
+        sort_keys=True,
+        ensure_ascii=True,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def run_query_with_retry(
+    connect: Callable[[], Any],
+    session: Any,
+    script: str,
+    *,
+    attempts: int = 5,
+    base_delay: float = 2.0,
+) -> tuple[Any, Any]:
+    """Run one read-only query, reconnecting and retrying on transient failures.
+
+    Returns (session, frame); the session may have been replaced after a failure.
+    """
+    last_error: Exception | None = None
+    current_session = session
+    for attempt in range(attempts):
+        try:
+            return current_session, current_session.run(script)
+        except Exception as error:  # noqa: BLE001 - transient DB faults must not kill a 40h run
+            last_error = error
+            if attempt + 1 >= attempts:
+                break
+            delay = base_delay * (2**attempt)
+            print(
+                f"  query failed (attempt {attempt + 1}/{attempts}): {error}; "
+                f"reconnecting in {delay:.0f}s",
+                flush=True,
+            )
+            time.sleep(delay)
+            try:
+                current_session = connect()
+            except Exception as reconnect_error:  # noqa: BLE001
+                print(f"  reconnect failed: {reconnect_error}", flush=True)
+    raise RuntimeError(f"query failed after {attempts} attempts: {last_error}") from last_error
+
+
 def _connect() -> object:
     session = ddb.session()
     session.connect(
@@ -73,8 +130,8 @@ def _factor_members() -> tuple[FactorInput, ...]:
     )
 
 
-def _load_calendar(session: object) -> TradingCalendar:
-    frame = session.run(
+def _load_calendar(holder: dict[str, Any]) -> TradingCalendar:
+    _, frame = _query(holder,
         "select cal_date from loadTable('dfs://YesLab', 'trade_calendar') "
         "where exchange='SSE' and is_open=1 and cal_date between 2013.01.01 and 2026.12.31 "
         "order by cal_date"
@@ -82,8 +139,17 @@ def _load_calendar(session: object) -> TradingCalendar:
     return TradingCalendar.from_dates([pd.Timestamp(v).date() for v in frame["cal_date"]])
 
 
-def _current_versions(session: object, object_name: str) -> dict[str, str]:
-    frame = session.run(
+def _query(holder: dict[str, Any], script: str) -> tuple[Any, Any]:
+    """Run one query through the retry helper, keeping the holder's session fresh."""
+    session, frame = run_query_with_retry(
+        holder["connect"], holder["session"], script
+    )
+    holder["session"] = session
+    return session, frame
+
+
+def _current_versions(holder: dict[str, Any], object_name: str) -> dict[str, str]:
+    _, frame = _query(holder,
         f"select logical_partition, data_version, published_at "
         f"from loadTable('{TARGET_DATABASE}','published_version') "
         f"where object_name='{object_name}'"
@@ -105,14 +171,29 @@ def _filter_current(
     return frame.loc[expected.notna() & (frame["data_version"] == expected)].copy()
 
 
+def _constant_loader(dataset: BaselineDataset) -> Callable[[], BaselineDataset]:
+    def loader() -> BaselineDataset:
+        return dataset
+
+    return loader
+
+
 def _extract_dataset(
-    session: object,
+    holder: dict[str, Any],
     resolver: SplitResolver,
     fold_id: str,
-    role: str,
+    role: SplitRole,
     factor_members: tuple[FactorInput, ...],
     versions: dict[str, dict[str, str]],
 ) -> pd.DataFrame:
+    cache_path = FOLD_CACHE_ROOT / f"{fold_cache_key(fold_id, role, versions)}.parquet"
+    if cache_path.exists():
+        cached = pd.read_parquet(cache_path)
+        expected = {"signal_date", "ts_code", "raw_return_5d", "label_valid"}
+        if not expected.issubset(cached.columns):
+            raise ValueError(f"cached dataset for {fold_id}/{role} is corrupt")
+        print(f"  loaded cached dataset for {fold_id}/{role} ({len(cached)} rows)", flush=True)
+        return cached
     segment = resolver.resolve(fold_id, role)
     start = min(segment.signal_dates)
     end = max(segment.signal_dates)
@@ -131,7 +212,7 @@ def _extract_dataset(
     years = list(range(start.year, end.year + 1))
     universe_parts = []
     for year in years:
-        part = session.run(
+        _, part = _query(holder,
             f"select signal_date, ts_code, data_version "
             f"from loadTable('{TARGET_DATABASE}','universe_daily') "
             f"where signal_date between date('{year}.01.01') and date('{year}.12.31') "
@@ -144,7 +225,7 @@ def _extract_dataset(
     factor_parts = []
     for member in factor_members:
         for year in years:
-            part = session.run(
+            _, part = _query(holder,
                 f"select signal_date, ts_code, factor_id, factor_version, value, "
                 f"available_date, data_version "
                 f"from loadTable('{TARGET_DATABASE}','factor_observation_clean') "
@@ -158,7 +239,7 @@ def _extract_dataset(
     factor_rows = _filter_current(factor_rows, "signal_date", versions["factor_observation_clean"])
     label_parts = []
     for year in years:
-        part = session.run(
+        _, part = _query(holder,
             f"select signal_date, ts_code, raw_return, label_valid, exit_date, data_version "
             f"from loadTable('{TARGET_DATABASE}','label_daily') "
             f"where signal_date between date('{year}.01.01') and date('{year}.12.31')"
@@ -186,8 +267,13 @@ def _extract_dataset(
         label_rows.loc[:, ["signal_date", "ts_code", "raw_return", "label_valid", "exit_date"]],
         factor_members=factor_members,
         segment_end=segment_end,
-        request=DatasetBuildRequest(fold_id=fold_id, split_role=role.upper()),
+        request=DatasetBuildRequest(fold_id=fold_id, split_role=SPLIT_ROLE_REQUEST[role]),
     )
+    FOLD_CACHE_ROOT.mkdir(parents=True, exist_ok=True)
+    tmp_path = cache_path.with_suffix(".parquet.tmp")
+    dataset.to_parquet(tmp_path, index=False)
+    tmp_path.replace(cache_path)
+    print(f"  cached dataset for {fold_id}/{role} at {cache_path.name}", flush=True)
     return dataset
 
 
@@ -250,12 +336,12 @@ def main() -> None:
     args = parser.parse_args()
     fold_ids = tuple(value.strip().upper() for value in args.folds.split(",") if value.strip())
 
-    session = _connect()
-    calendar = _load_calendar(session)
+    holder: dict[str, Any] = {"connect": _connect, "session": _connect()}
+    calendar = _load_calendar(holder)
     resolver = SplitResolver(calendar)
     factor_members = _factor_members()
     versions = {
-        table: _current_versions(session, table)
+        table: _current_versions(holder, table)
         for table in ("universe_daily", "factor_observation_clean", "label_daily")
     }
 
@@ -263,11 +349,11 @@ def main() -> None:
     folds: dict[str, BaselineFold] = {}
     for fold_id in fold_ids:
         print(f"assembling datasets for {fold_id}", flush=True)
-        train = _extract_dataset(session, resolver, fold_id, "train", factor_members, versions)
+        train = _extract_dataset(holder, resolver, fold_id, "train", factor_members, versions)
         validation = _extract_dataset(
-            session, resolver, fold_id, "validation", factor_members, versions
+            holder, resolver, fold_id, "validation", factor_members, versions
         )
-        test = _extract_dataset(session, resolver, fold_id, "test", factor_members, versions)
+        test = _extract_dataset(holder, resolver, fold_id, "test", factor_members, versions)
         dataset_id = f"real-{fold_id.lower()}-v1"
         # Baselines require finite features: keep only complete-coverage rows.
         train = train.dropna(subset=list(feature_order)).copy()
@@ -294,7 +380,7 @@ def main() -> None:
             validation=validation_ds,
             factor_order=feature_order,
             frozen_directions={name: 1 for name in feature_order},
-            test_loader=lambda ds=test_ds: ds,
+            test_loader=_constant_loader(test_ds),
         )
         folds[fold_id] = fold
         print(
