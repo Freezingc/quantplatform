@@ -7,7 +7,7 @@ RankIC, evaluates each winner on TEST, and produces the concatenated OOS
 evaluation with G1-G6 gates.
 
 Usage:
-  run_real_walk_forward.py --folds F01,F02 --report <path> [--build-only]
+  run_real_walk_forward.py --folds F01,F02,F03,F04,F05,F06 --report <path>
 """
 
 from __future__ import annotations
