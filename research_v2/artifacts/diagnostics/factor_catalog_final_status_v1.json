@@ -3183,7 +3183,40 @@
       "screen_recovery_2020_2024": {
         "full_period_abs_icir": 0.6197,
         "annual_gate": "4/5",
-        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa",
+        "final_evaluation": {
+          "outcome": "DO_NOT_RECOVER",
+          "official_icir": {
+            "w2017": {
+              "full_icir": 0.3019,
+              "liquid_icir": 0.2549,
+              "official_icir": 0.2344
+            },
+            "w2018": {
+              "full_icir": 0.6202,
+              "liquid_icir": 0.555,
+              "official_icir": 0.5305
+            },
+            "w2019": {
+              "full_icir": 0.6991,
+              "liquid_icir": 0.6646,
+              "official_icir": 0.6052
+            },
+            "wtrain": {
+              "full_icir": 0.7234,
+              "liquid_icir": 0.6842,
+              "official_icir": 0.652
+            },
+            "wval": {
+              "full_icir": 0.9104,
+              "liquid_icir": 0.9224,
+              "official_icir": 0.8984
+            }
+          },
+          "annual_gate": "4/5 (2020:0.467 fail)",
+          "redundancy_vs_357": 0.8827,
+          "reason": "near-redundant with and dominated by S-grade yeslab_357; shares 2017 large-cap regime weakness"
+        }
       }
     },
     {

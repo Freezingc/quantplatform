@@ -12,6 +12,15 @@ class IndustryStandAbsCutBySkewCalculator(FactorCalculator):
         data = self.fetch_data(start_time, end_time)
         close = data.xs('close', level=0)
 
+        if self.industry_provider is not None:
+            stock_ret = close / close.shift(1) - 1
+            labels = self.get_industry_labels(close.index, close.columns)
+            industry_ret_standard, industry_skew = self.industry_zscore_and_skew(
+                stock_ret, labels
+            )
+            factor = industry_ret_standard.abs() * (industry_skew.rolling(5).mean() > 0)
+            return factor.replace([np.inf, -np.inf], np.nan)
+
         industry_info = self.fetcher.get_stock_industry_info()
         industry_info = industry_info.dropna(subset=['l1_name'])
         industry_map = industry_info.set_index('ts_code')['l1_name']

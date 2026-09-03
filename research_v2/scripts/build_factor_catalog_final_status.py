@@ -84,6 +84,8 @@ def load_screen() -> dict[str, dict]:
 def main() -> None:
     recovery_path = DIAG / "screen_recovery_2020_2024_v1.json"
     recovery = json.loads(recovery_path.read_text(encoding="utf-8")) if recovery_path.exists() else None
+    recovery365_path = DIAG / "recovery365" / "recovery365_full_evaluation_v1.json"
+    recovery365 = json.loads(recovery365_path.read_text(encoding="utf-8")) if recovery365_path.exists() else None
     import yaml
     catalog = yaml.safe_load((REPO_ROOT / "research_v2/configs/factors/source_catalog.yaml").read_text(encoding="utf-8"))
     names = {e["factor_id"]: str(e.get("source_factor_name", "")) for e in catalog["factors"]}
@@ -233,6 +235,14 @@ def main() -> None:
                     "annual_gate": rec_map[fid]["annual_gate"],
                     "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa",
                 }
+        if recovery365 is not None and fid == "yeslab_365":
+            entry["screen_recovery_2020_2024"]["final_evaluation"] = {
+                "outcome": "DO_NOT_RECOVER",
+                "official_icir": recovery365["windows_official_icir"],
+                "annual_gate": recovery365["annual_gate"],
+                "redundancy_vs_357": 0.8827,
+                "reason": "near-redundant with and dominated by S-grade yeslab_357; shares 2017 large-cap regime weakness",
+            }
         entries.append(entry)
 
     classes = Counter(e["status_class"] for e in entries)

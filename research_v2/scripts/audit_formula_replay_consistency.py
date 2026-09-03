@@ -377,6 +377,14 @@ REPLAY_DEFINITIONS = {
         calculator_class="IndustryStandAbsDivSkewAbsCalculator",
         lookback_days=5,
     ),
+    "yeslab_365": ReplayDefinition(
+        factor_id="yeslab_365",
+        factor_name="行业标准化绝对值按正偏度过滤",
+        store_factor="factor_data8",
+        calculator_module="IndustryStandAbsCutBySkewCalculator",
+        calculator_class="IndustryStandAbsCutBySkewCalculator",
+        lookback_days=5,
+    ),
     "yeslab_376": ReplayDefinition(
         factor_id="yeslab_376",
         factor_name="GP_007",

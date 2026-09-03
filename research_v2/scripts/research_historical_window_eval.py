@@ -52,7 +52,7 @@ CANDIDATES = {
 }
 ALPHA206_MEDIAN_CANDIDATE = "yeslab_206_median_abs_v2"
 ALPHA206_SOURCE_FACTOR = "yeslab_206"
-PIT_FACTORS = {"yeslab_357", "yeslab_363", "yeslab_471"}
+PIT_FACTORS = {"yeslab_357", "yeslab_363", "yeslab_471", "yeslab_365"}
 PIT_CUTOVER = date(2021, 12, 10)
 
 
