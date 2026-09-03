@@ -3,7 +3,7 @@
 由 `scripts/generate_data_dictionary.py` 从 `research_v2/migrations/*.dos`
 冻结合约渲染。迁移变更后必须重新生成本文件。
 
-迁移版本：001–015；表数量：48。
+迁移版本：001–016；表数量：49。
 
 ## active_model_pointer
 
@@ -87,6 +87,27 @@
 | artifact_uri | STRING |
 | started_at | TIMESTAMP |
 | finished_at | TIMESTAMP |
+| run_id | UUID |
+| data_version | STRING |
+| created_at | TIMESTAMP |
+| source_watermark_id | STRING |
+| record_hash | STRING |
+
+## factor_daily
+
+- 来源：迁移 016；生产者：factor admission pipeline
+- 说明：admitted factor values
+- 业务键：`-`
+- 分区列：`signal_date`；排序列：`factor_id, ts_code, signal_date`
+
+| 列名 | 类型 |
+|---|---|
+| signal_date | DATE |
+| ts_code | SYMBOL |
+| factor_id | SYMBOL |
+| factor_version | INT |
+| universe_id | SYMBOL |
+| value | DOUBLE |
 | run_id | UUID |
 | data_version | STRING |
 | created_at | TIMESTAMP |

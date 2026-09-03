@@ -1,0 +1,10 @@
+// targetDatabase is injected by the V2 migration runner.
+db = database(targetDatabase)
+
+if (!existsTable(targetDatabase, `factor_daily)) {
+    factorDaily = table(1:0,
+        `signal_date`ts_code`factor_id`factor_version`universe_id`value`run_id`data_version`created_at`source_watermark_id`record_hash,
+        [DATE, SYMBOL, SYMBOL, INT, SYMBOL, DOUBLE, UUID, STRING, TIMESTAMP, STRING, STRING])
+    db.createPartitionedTable(table=factorDaily, tableName=`factor_daily,
+        partitionColumns=`signal_date, sortColumns=`factor_id`ts_code`signal_date)
+}
