@@ -224,6 +224,135 @@ def main() -> int:
         disagree = v2017["merged_rows"] - round(v2017["label_valid_agreement"] * v2017["merged_rows"])
         check("4r 2017 disagreement rows", int(m.group(1)), disagree)
 
+    # ---------- Section 3: main candidate table ----------
+    ver = load_json(DIAG / "admission_evidence_verification_v1.json")
+    ver_by_fid = {c["source_factor_id"]: c for c in ver["candidates"]}
+    nearmiss = load_json(DIAG / "nearmiss6_train_evidence_v1.json")["candidates"]
+    dq3 = load_json(DIAG / "dq3_train_evidence_v1.json")["candidates"]
+    gp4 = load_json(DIAG / "gp_coverage_repair4_train_evidence_v1.json")["candidates"]
+    pass7 = load_json(DIAG / "pass7_train_evidence_v1.json")["candidates"]
+    directions = {"yeslab_471": 1}
+
+    def val2025_from_csv(fid: str):
+        import pandas as pd
+        folder = DIAG / f"{fid}_validation_2025_monthly_v1"
+        path = folder / "daily_rank_ic.csv"
+        if not path.is_file():
+            return None, None
+        df = pd.read_csv(path)
+        col = [c for c in df.columns if "ic" in c.lower()][0]
+        ic = df[col].dropna()
+        dr = directions.get(fid, -1)
+        return float(dr * ic.mean()), float(dr * ic.mean() / ic.std()) if ic.std() > 0 else None
+
+    sec = section(text, "## 3. \u5341\u4e2a READY \u5019\u9009\u4e00\u89c8")
+    for row in parse_table_rows(sec)[1:]:
+        fid = row[0]
+        if not fid.startswith("yeslab_"):
+            continue
+        train_cell, val_cell, nine_cell = row[2], row[3], row[5]
+        t_ic = cell_float(train_cell.split("/")[0]) if "/" in train_cell else None
+        t_icir = cell_float(train_cell.split("/")[1]) if "/" in train_cell else None
+        v_parts = val_cell.split("/")
+        v_ic, v_icir = cell_float(v_parts[0]), cell_float(v_parts[1]) if len(v_parts) > 1 else None
+        nine_parts = nine_cell.split("/")
+        n_tr = cell_float(nine_parts[0]) if nine_parts else None
+        n_va = cell_float(nine_parts[1]) if len(nine_parts) > 1 else None
+
+        ver_fid = "yeslab_206" if fid == "yeslab_206_median_abs_v2" else fid
+        if ver_fid in ver_by_fid:
+            c = ver_by_fid[ver_fid]
+            check(f"S3 {fid} train IC", t_ic, c["train"]["signed_mean_rank_ic"])
+            check(f"S3 {fid} train ICIR", t_icir, c["train"]["signed_icir"])
+            check(f"S3 {fid} val IC", v_ic, c["validation"]["signed_mean_rank_ic"])
+            check(f"S3 {fid} val ICIR", v_icir, c["validation"]["signed_icir"])
+            check(f"S3 {fid} nine train", n_tr, c["formal_nine_train"]["maximum_median_abs_spearman"])
+            check(f"S3 {fid} nine val", n_va, c["formal_nine_validation"]["maximum_median_abs_spearman"])
+        elif fid in nearmiss:
+            c = nearmiss[fid]
+            check(f"S3 {fid} train IC", t_ic, c.get("signed_ic"))
+            check(f"S3 {fid} train ICIR", t_icir, c.get("signed_icir"))
+            check(f"S3 {fid} nine train", n_tr, c.get("nine_edge_max"))
+            csv_ic, csv_icir = val2025_from_csv(fid)
+            check(f"S3 {fid} val IC", v_ic, csv_ic)
+            check(f"S3 {fid} val ICIR", v_icir, csv_icir)
+        elif fid in dq3:
+            c = dq3[fid]
+            check(f"S3 {fid} train IC", t_ic, c.get("signed_ic"))
+            check(f"S3 {fid} train ICIR", t_icir, c.get("signed_icir"))
+            check(f"S3 {fid} nine train", n_tr, c.get("nine_edge_max"))
+            csv_ic, csv_icir = val2025_from_csv(fid)
+            check(f"S3 {fid} val IC", v_ic, csv_ic)
+            check(f"S3 {fid} val ICIR", v_icir, csv_icir)
+        elif fid in gp4:
+            c = gp4[fid]
+            check(f"S3 {fid} train IC", t_ic, c["training"]["signed_mean_rank_ic"])
+            check(f"S3 {fid} train ICIR", t_icir, c["training"]["signed_icir"])
+            check(f"S3 {fid} nine train", n_tr, c.get("nine_edge_train", {}).get("maximum_median_abs_spearman"))
+            csv_ic, csv_icir = val2025_from_csv(fid)
+            check(f"S3 {fid} val IC", v_ic, csv_ic)
+            check(f"S3 {fid} val ICIR", v_icir, csv_icir)
+        elif fid in pass7:
+            c = pass7[fid]
+            check(f"S3 {fid} train ICIR", t_icir, c.get("train_signed_icir"))
+            check(f"S3 {fid} val ICIR", v_icir, c.get("validation_signed_icir"))
+            check(f"S3 {fid} nine val", n_va, c.get("nine_edge_val_max"))
+            csv_ic, csv_icir = val2025_from_csv(fid)
+            check(f"S3 {fid} val IC", v_ic, csv_ic)
+        elif fid == "yeslab_395":
+            c = load_json(DIAG / "tushare_alpha395_precedent_upgrade_review_v1.json")
+            check(f"S3 {fid} train IC", t_ic, c["training_2020_2024"]["signed_mean_rank_ic"])
+            check(f"S3 {fid} train ICIR", t_icir, c["training_2020_2024"]["signed_icir"])
+            check(f"S3 {fid} val IC", v_ic, c["validation_2025"]["signed_mean_rank_ic"])
+            check(f"S3 {fid} val ICIR", v_icir, c["validation_2025"]["signed_icir"])
+            check(f"S3 {fid} nine train", n_tr, c["similarity_to_formal_nine_train"]["maximum_median_abs_spearman"])
+            if "similarity_to_formal_nine_validation" in c:
+                check(f"S3 {fid} nine val", n_va, c["similarity_to_formal_nine_validation"]["maximum_median_abs_spearman"])
+        elif fid == "yeslab_471":
+            csv_ic, csv_icir = val2025_from_csv(fid)
+            check(f"S3 {fid} val IC", v_ic, csv_ic)
+            check(f"S3 {fid} val ICIR", v_icir, csv_icir)
+        else:
+            FAILURES.append(f"S3 {fid}: no source mapping")
+
+    # ---------- 4i: vol4 rejection table ----------
+    vol4 = load_json(DIAG / "vol4_train_evidence_v1.json")["candidates"]
+    sec = section(text, "## 4i.")
+    vol4_ids = {"252": "yeslab_252", "260": "yeslab_260", "271": "yeslab_271", "272": "yeslab_272"}
+    for row in parse_table_rows(sec)[1:]:
+        head = row[0]
+        for short, fid in vol4_ids.items():
+            if head.startswith(short):
+                check(f"4i {fid} train ICIR", cell_float(row[1]), vol4[fid]["train_signed_icir"])
+
+    # ---------- 4k: alpha167 window scan table ----------
+    scan167_full = load_json(DIAG / "alpha167_window_variant_exploration_v1" / "window_variant_exploration.json")
+    scan167 = scan167_full.get("windows") or scan167_full.get("results")
+    sec = section(text, "## 4k.")
+    for row in parse_table_rows(sec)[1:]:
+        win = row[0].split("（")[0].strip()
+        key = f"window_{win}"
+        if key not in scan167:
+            continue
+        w = scan167[key]
+        check(f"4k window {win} train IC", cell_float(row[1]), w["train_signed_mean_rank_ic"])
+        check(f"4k window {win} ICIR", cell_float(strip_md(row[2])), w["train_signed_icir"])
+        check(f"4k window {win} annual", int(row[3].split("/")[0]), w["strict_annual_icir_pass_years"])
+
+    # ---------- 4l: GP_023 near-threshold closure ----------
+    q392 = load_json(DIAG / "tushare_shsz_gp023_formal9_train_2020_2024_v1" / "quality_summary.json")
+    s392 = [e for e in q392["summaries"] if e.get("factor_id") == "yeslab_392"]
+    if s392:
+        sec = section(text, "## 4l.")
+        m = re.search(r"ICIR (0\.\d+)（<0\.50）", sec)
+        if m:
+            check("4l 392 train ICIR", float(m.group(1)), abs(s392[0]["icir"]))
+        replay392 = load_json(DIAG / "formula_replay_gp023_tushare_2025-01_v1.json")["rows"][0]
+        m = re.search(r"（(\d+)/(\d+)，([\d.e\-]+)）", sec)
+        if m:
+            check("4l 392 mismatch rows", int(m.group(1)), replay392["mismatch_rows"])
+            check("4l 392 overlap rows", int(m.group(2)), replay392["overlap_finite_rows"])
+
     print(f"checks run: {CHECKS}")
     if FAILURES:
         print(f"DISCREPANCIES ({len(FAILURES)}):")
