@@ -71,7 +71,12 @@
       "screen_2020_signed_icir": 0.4713,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.6077,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_1",
@@ -399,7 +404,12 @@
       "screen_2020_signed_icir": 0.4643,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5486,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_42",
@@ -703,7 +713,12 @@
       "screen_2020_signed_icir": 0.2996,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5605,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_80",
@@ -1053,7 +1068,12 @@
       "screen_2020_signed_icir": 0.4712,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5869,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_116",
@@ -1069,7 +1089,12 @@
       "screen_2020_signed_icir": 0.4113,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5173,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_118",
@@ -1077,7 +1102,12 @@
       "screen_2020_signed_icir": 0.4414,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5512,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_119",
@@ -1125,7 +1155,12 @@
       "screen_2020_signed_icir": 0.4713,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.6077,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_126",
@@ -1269,7 +1304,12 @@
       "screen_2020_signed_icir": 0.413,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5425,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_144",
@@ -3139,7 +3179,12 @@
       "screen_2020_signed_icir": 0.4318,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.6197,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_366",
@@ -3147,7 +3192,12 @@
       "screen_2020_signed_icir": 0.3754,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5819,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_367",
@@ -3463,7 +3513,12 @@
       "screen_2020_signed_icir": 0.4289,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.524,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_383",
@@ -3471,7 +3526,12 @@
       "screen_2020_signed_icir": 0.4011,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5915,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_384",
@@ -3799,7 +3859,12 @@
       "screen_2020_signed_icir": 0.2515,
       "screen_2020_days": 116,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.6105,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_405",
@@ -3941,7 +4006,12 @@
       "screen_2020_signed_icir": 0.1941,
       "screen_2020_days": 202,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5014,
+        "annual_gate": "2/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_415",
@@ -3989,7 +4059,12 @@
       "screen_2020_signed_icir": 0.3368,
       "screen_2020_days": 44,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5299,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_421",
@@ -4106,7 +4181,12 @@
       "screen_2020_signed_icir": 0.1679,
       "screen_2020_days": 158,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5084,
+        "annual_gate": "2/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_431",
@@ -4180,7 +4260,12 @@
       "screen_2020_signed_icir": 0.4315,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5096,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_440",
@@ -4396,7 +4481,12 @@
       "screen_2020_signed_icir": 0.4453,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5318,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_457",
@@ -4412,7 +4502,12 @@
       "screen_2020_signed_icir": 0.2826,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5526,
+        "annual_gate": "3/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_459",
@@ -4594,7 +4689,12 @@
       "screen_2020_signed_icir": 0.3727,
       "screen_2020_days": 243,
       "final_status": "NOT_EVALUATED_BEYOND_2020_SCREEN",
-      "status_class": "SCREENED_ONLY"
+      "status_class": "SCREENED_ONLY",
+      "screen_recovery_2020_2024": {
+        "full_period_abs_icir": 0.5998,
+        "annual_gate": "4/5",
+        "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa"
+      }
     },
     {
       "factor_id": "yeslab_474",

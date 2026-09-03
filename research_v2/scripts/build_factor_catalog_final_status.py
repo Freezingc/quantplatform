@@ -82,6 +82,8 @@ def load_screen() -> dict[str, dict]:
 
 
 def main() -> None:
+    recovery_path = DIAG / "screen_recovery_2020_2024_v1.json"
+    recovery = json.loads(recovery_path.read_text(encoding="utf-8")) if recovery_path.exists() else None
     import yaml
     catalog = yaml.safe_load((REPO_ROOT / "research_v2/configs/factors/source_catalog.yaml").read_text(encoding="utf-8"))
     names = {e["factor_id"]: str(e.get("source_factor_name", "")) for e in catalog["factors"]}
@@ -223,6 +225,14 @@ def main() -> None:
                 "nine_edge": {"train_max": {"vs": "yeslab_431", "median_abs_spearman": 0.8163}, "validation_max": {"vs": "yeslab_431", "median_abs_spearman": 0.7904}, "redundant": False},
                 "conditions": ["large-cap-dominance regime monitor (2017 official ICIR 0.481 borderline)", "pair monitor vs formal yeslab_431 (train edge 0.816)"],
             }
+        if recovery is not None:
+            rec_map = {r["factor_id"]: r for r in recovery["factors"]}
+            if fid in rec_map:
+                entry["screen_recovery_2020_2024"] = {
+                    "full_period_abs_icir": rec_map[fid]["full_period_abs_icir"],
+                    "annual_gate": rec_map[fid]["annual_gate"],
+                    "note": "2020 screen dropped this factor; full 2020-2024 recompute passes aggregate gate - see screen_recovery_2020_2024_v1.json and brief 4aa",
+                }
         entries.append(entry)
 
     classes = Counter(e["status_class"] for e in entries)
