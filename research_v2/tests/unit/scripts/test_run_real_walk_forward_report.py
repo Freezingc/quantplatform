@@ -9,10 +9,14 @@ real evaluation objects so that class of attribute misuse fails fast.
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 import run_real_walk_forward as driver
 
+from research_v2.baselines.base import PredictionFrame
 from research_v2.baselines.orchestration import (
+    BaselineFoldResult,
     BaselineSelectionRecord,
+    BaselineTestEvaluation,
     BaselineValidationScore,
 )
 from research_v2.evaluation.gates import GateReport, GateResult, GateStatus
@@ -110,3 +114,81 @@ def test_build_report_structure() -> None:
     assert selection["validation_scores"][0]["mean_rank_ic"] == 0.022
     assert report["oos"]["yearly_mean_rank_ic"] == {"2020": 0.04}
     assert report["oos"]["hac_t_statistic"] == 2.1
+
+
+_FOLD_IDS = ("F01", "F02", "F03", "F04", "F05", "F06")
+
+
+def _fold_result(fold_id: str) -> BaselineFoldResult:
+    frame = pd.DataFrame(
+        {
+            "signal_date": [pd.Timestamp("2020-01-02")],
+            "ts_code": ["000001.SZ"],
+            "score": [0.5],
+            "model_id": ["B2"],
+            "fold_id": [fold_id],
+            "dataset_id": [f"real-{fold_id.lower()}-v1-test"],
+        }
+    )
+    record = BaselineSelectionRecord(
+        fold_id=fold_id,
+        selected_baseline_id="B2",
+        validation_scores=(
+            BaselineValidationScore(
+                baseline_id="B2", mean_rank_ic=0.02, valid_day_count=1, invalid_day_count=0
+            ),
+        ),
+        unselected_reasons=(),
+    )
+    evaluation = BaselineTestEvaluation(
+        baseline_id="B2",
+        predictions=PredictionFrame(frame=frame),
+        labels=pd.DataFrame({"signal_date": [pd.Timestamp("2020-01-02")]}),
+        daily_rank_ic=pd.DataFrame({"mean_rank_ic": [0.02]}),
+        summary=RankICSummary(
+            valid_day_count=1, mean_rank_ic=0.02, rank_ic_std=0.01, icir=0.5
+        ),
+    )
+    return BaselineFoldResult(selection_record=record, test_evaluation=evaluation)
+
+
+def _full_result():
+    from research_v2.evaluation.walk_forward import BaselineWalkForwardResult
+
+    return BaselineWalkForwardResult(
+        fold_results={fold: _fold_result(fold) for fold in _FOLD_IDS},
+        selection_records=(),
+        evaluation=_evaluation(
+            _gate_report({"G1": GateStatus.PASS, "G4": GateStatus.NOT_APPLICABLE})
+        ),
+    )
+
+
+def test_save_baseline_oos_artifacts_writes_per_fold_parquet(tmp_path) -> None:
+    paths = driver.save_baseline_oos_artifacts(_full_result(), tmp_path)
+    assert sorted(paths) == list(_FOLD_IDS)
+    for fold_id, file_path in paths.items():
+        loaded = pd.read_parquet(file_path)
+        assert list(loaded.columns) == [
+            "signal_date",
+            "ts_code",
+            "score",
+            "model_id",
+            "fold_id",
+            "dataset_id",
+        ]
+        assert loaded["fold_id"].iloc[0] == fold_id
+
+
+def test_save_baseline_oos_artifacts_requires_all_folds(tmp_path) -> None:
+    from research_v2.evaluation.walk_forward import BaselineWalkForwardResult
+
+    partial = BaselineWalkForwardResult(
+        fold_results={"F01": _fold_result("F01")},
+        selection_records=(),
+        evaluation=_evaluation(
+            _gate_report({"G1": GateStatus.PASS, "G4": GateStatus.NOT_APPLICABLE})
+        ),
+    )
+    with pytest.raises(ValueError, match="missing"):
+        driver.save_baseline_oos_artifacts(partial, tmp_path)

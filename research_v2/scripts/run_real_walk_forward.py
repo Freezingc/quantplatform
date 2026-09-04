@@ -277,6 +277,31 @@ def _extract_dataset(
     return dataset
 
 
+def save_baseline_oos_artifacts(
+    result: BaselineWalkForwardResult, root: Path
+) -> dict[str, str]:
+    """Persist each ordinary fold's winner-baseline TEST predictions as parquet.
+
+    These fold-matched baseline predictions are the comparison artifacts required
+    for candidate evaluation (E8.3 delta computation).
+    """
+    expected = ("F01", "F02", "F03", "F04", "F05", "F06")
+    missing = [fold for fold in expected if fold not in result.fold_results]
+    if missing:
+        raise ValueError(f"missing fold results for baseline artifacts: {missing}")
+    root.mkdir(parents=True, exist_ok=True)
+    paths: dict[str, str] = {}
+    for fold_id in expected:
+        fold_result = result.fold_results[fold_id]
+        if fold_result.test_evaluation is None:
+            raise ValueError(f"missing TEST evaluation for baseline artifacts: {fold_id}")
+        frame = fold_result.test_evaluation.predictions.frame
+        target = root / f"{fold_id}.parquet"
+        frame.to_parquet(target, index=False)
+        paths[fold_id] = str(target)
+    return paths
+
+
 def build_walk_forward_report(
     fold_ids: Sequence[str],
     result: BaselineWalkForwardResult,
@@ -392,6 +417,8 @@ def main() -> None:
     result = run_walk_forward_baselines(folds, minimum_cross_section=30)
 
     report = build_walk_forward_report(fold_ids, result, versions)
+    artifact_paths = save_baseline_oos_artifacts(result, args.report.parent / "baseline_oos")
+    report["baseline_oos_artifacts"] = artifact_paths
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report["oos"], ensure_ascii=False, indent=2), flush=True)
