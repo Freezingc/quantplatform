@@ -300,7 +300,7 @@ docs(v2): record locked-test runbook
 
 - [x] A–F 的代码、schema、单元/契约/性质/泄漏/黄金/集成测试全部完成并通过代码审查；需要真实候选的运营步骤可以保留未执行证据，但其实现与 V2Test 演练必须完成。
 - [x] V1 全程未被修改，V2Test 与 V2 迁移均有审计记录。
-- [ ] 2014–2025 F01–F06 OOS 评价可复现，B0–B3 齐全。
+- [x] 2014–2025 F01–F06 OOS 评价可复现，B0–B3 齐全。
 - [x] runbooks、数据字典、模型卡模板、实验报告和运营交接材料齐全。
 
 - 10.1 核对（2026-09-01）：A 计划 0 剩余、B 计划 0 剩余（含真实数据全范围
@@ -333,6 +333,23 @@ docs(v2): record locked-test runbook
   发布后核验零丢失，独立抽样核对 7.5e-16 精度。**标准 303 的 TRAIN 年
   数据缺口已消除**；剩余步骤：按 D 计划构建 F01–F06 数据集并运行
   B0–B3 walk-forward。
+- 10.1 标准 303 达成（2026-09-04）：真实数据 6 折 B0–B3 walk-forward
+  于 2026-09-04 09:00 完成（运行自 2026-09-03 15:39，约 17.3 小时；更早
+  一次完成全部训练的尝试在报告序列化处因 `GateReport.all_passed` 属性被
+  当方法调用而崩溃，已修复并加回归测试，见提交 3909ee6）。14 个准入因子
+  （GP_026/GP_074 因重放阻塞排除）装配出逐位一致的六折数据集
+  （F01 train=1,780,624 … F06 train=3,563,890），OOS 结果：
+  mean RankIC 0.0864、ICIR 0.6344、HAC t=13.09、有效日 1455；
+  G1=PASS（0.0864≥0.030）、G2=PASS（13.09≥2.0）、G3=PASS（6/6 正年）、
+  G4=NOT_APPLICABLE（基线路径）、G5=PASS（最大年贡献 0.20≤0.50）、
+  G6=PASS（1.0≥0.95）。折内验证选择：F01/F02/F06 选 B3（LGBM ranker），
+  F03/F04/F05 选 B2（线性）。证据：
+  `docs/reports/2026-09-04-real-walk-forward-criterion-303.md` 与
+  `…-criterion-303.json`（JSON 内嵌三表 151 分区逐版本快照，可复现）；
+  判定器 `research_v2/scripts/summarize_real_walk_forward.py`（14 测试）；
+  复现 runbook `research_v2/runbooks/real-walk-forward-reproduction.md`；
+  版本快照对照 `docs/reports/2026-09-02-real-walk-forward-data-versions.json`。
+  **平台工程完成（10.1 全部勾选）**；10.2 待复杂候选（M1–M3）训练与评价。
 
 即使没有复杂候选通过，平台工程仍可判定完成；此时模型停留在 `DRAFT`，不得启动正式 SHADOW 或声称模型有效。
 
