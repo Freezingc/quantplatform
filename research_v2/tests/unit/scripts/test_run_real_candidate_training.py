@@ -8,6 +8,7 @@ fail-closed. Actual training wiring lands in Tasks 3-4.
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -22,6 +23,7 @@ def _load_module():
     spec = importlib.util.spec_from_file_location("run_real_candidate_training", SCRIPT_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
+    sys.modules["run_real_candidate_training"] = module
     spec.loader.exec_module(module)
     return module
 
@@ -243,3 +245,12 @@ def test_issue_baseline_selection_evidence_signs_and_verifies(tmp_path: Path) ->
     assert loaded.fold_id == "F01"
     assert loaded.test_dataset_id == dataset_id
     assert loaded.selected_baseline_id == "B2"
+
+
+def test_config_grids_respect_e7_budget() -> None:
+    """E7: at most 30 configs per family search."""
+    assert len(MODULE.m1_config_grid()) == 27 <= 30
+    assert len(MODULE.m2_config_grid()) == 24 <= 30
+    assert len(MODULE.m3_config_grid()) == 16 <= 30
+    m2_families = {config["family"] for config in MODULE.m2_config_grid()}
+    assert m2_families == {"GRU", "TCN"}

@@ -18,7 +18,7 @@ import contextlib
 import json
 import os
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -56,7 +56,12 @@ from research_v2.evaluation.selection_evidence import (
 from research_v2.inference.artifact_loader import load_inference_artifact
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
-from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
+from research_v2.models.temporal import (
+    TemporalGRU,
+    TemporalGRUConfig,
+    TemporalTCN,
+    TemporalTCNConfig,
+)
 from research_v2.training.artifacts import CheckpointStore
 from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
@@ -806,15 +811,11 @@ def _train_cross_section_seed(
     train_dataset_id: str,
     validation_dataset_id: str,
     max_epochs: int,
+    model_factory: Any,
+    learning_rate: float = 0.003,
 ) -> tuple[torch.nn.Module, Path]:
-    config = ResidualMLPConfig(
-        raw_factor_count=len(factor_order),
-        hidden_dim=int(config_payload["hidden_dim"]),
-        num_blocks=int(config_payload["num_blocks"]),
-        dropout=float(config_payload["dropout"]),
-    )
-    model = ResidualMLP(config)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
+    model = model_factory(config_payload, factor_order)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
     run = run_validation_governed_training(
         model,
         optimizer,
@@ -832,26 +833,31 @@ def _train_cross_section_seed(
     return model, checkpoint_store._root / run.checkpoint_ids[-1] / "checkpoint.pt"
 
 
-def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
-    """Full real-data M1 pipeline: assembly -> search -> bundles -> signed evidence -> gates."""
+@dataclass(frozen=True)
+class _FullRunContext:
+    workspace: Path
+    dataset_store: DatasetArtifactStore
+    model_store: ModelArtifactBundleStore
+    checkpoint_store: CheckpointStore
+    selection_store: SelectionEvidenceStore
+    prediction_store: FrozenPredictionStore
+    baseline_report: dict[str, Any]
+    baseline_predictions: dict[str, pd.DataFrame]
+    holder: dict[str, Any]
+    resolver: SplitResolver
+    versions: dict[str, dict[str, str]]
+    factor_members: tuple[Any, ...]
+    factor_order: tuple[str, ...]
+
+
+def setup_full_run_context(args: argparse.Namespace) -> _FullRunContext:
+    """Validate trust-root inputs and build every shared store/dataset dependency."""
     secret = os.environ.get("QRV2_SELECTION_EVIDENCE_HMAC_KEY", "")
     if not secret:
         raise SystemExit(
             "full runs require QRV2_SELECTION_EVIDENCE_HMAC_KEY (signed evidence chain)"
         )
     workspace: Path = args.workspace
-    dataset_store = DatasetArtifactStore(workspace / "datasets")
-    model_store = ModelArtifactBundleStore(workspace / "models")
-    checkpoint_store = CheckpointStore(workspace / "checkpoints")
-    selection_store = SelectionEvidenceStore(
-        workspace / "selections", signing_key=secret.encode("utf-8")
-    )
-    prediction_store = FrozenPredictionStore(
-        workspace / "predictions", signing_key=secret.encode("utf-8")
-    )
-    baseline_report = json.loads(Path(args.baseline_report).read_text(encoding="utf-8"))
-    baseline_predictions = load_baseline_predictions(Path(args.baseline_artifacts))
-
     holder = new_holder()
     calendar = load_calendar(holder)
     resolver = SplitResolver(calendar)
@@ -861,8 +867,56 @@ def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
     }
     factor_members = factor_members_for(WALK_FORWARD_FACTOR_IDS)
     factor_order = tuple(member.feature_name for member in factor_members)
+    return _FullRunContext(
+        workspace=workspace,
+        dataset_store=DatasetArtifactStore(workspace / "datasets"),
+        model_store=ModelArtifactBundleStore(workspace / "models"),
+        checkpoint_store=CheckpointStore(workspace / "checkpoints"),
+        selection_store=SelectionEvidenceStore(
+            workspace / "selections", signing_key=secret.encode("utf-8")
+        ),
+        prediction_store=FrozenPredictionStore(
+            workspace / "predictions", signing_key=secret.encode("utf-8")
+        ),
+        baseline_report=json.loads(Path(args.baseline_report).read_text(encoding="utf-8")),
+        baseline_predictions=load_baseline_predictions(Path(args.baseline_artifacts)),
+        holder=holder,
+        resolver=resolver,
+        versions=versions,
+        factor_members=factor_members,
+        factor_order=factor_order,
+    )
 
-    configs = m1_config_grid(args.max_configs)
+
+def _run_full_cross_section(
+    args: argparse.Namespace,
+    *,
+    family: str,
+    family_name: str,
+    model_code_version: str,
+    configs: list[dict[str, Any]],
+    model_factory: Any,
+) -> dict[str, Any]:
+    """Full real-data cross-sectional pipeline (M1/M3 shared).
+
+    assembly -> publication -> per-fold constrained search -> final bundles ->
+    signed evidence chain -> frozen TEST predictions -> G1-G6 walk-forward gates.
+    """
+    context = setup_full_run_context(args)
+    workspace = context.workspace
+    dataset_store = context.dataset_store
+    model_store = context.model_store
+    checkpoint_store = context.checkpoint_store
+    selection_store = context.selection_store
+    prediction_store = context.prediction_store
+    baseline_report = context.baseline_report
+    baseline_predictions = context.baseline_predictions
+    holder = context.holder
+    resolver = context.resolver
+    versions = context.versions
+    factor_members = context.factor_members
+    factor_order = context.factor_order
+
     max_epochs = int(args.max_epochs)
     oos_folds: dict[str, ModelOosFold] = {}
     fold_reports: list[dict[str, Any]] = []
@@ -911,10 +965,12 @@ def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
                     validation_batches,
                     seed=seed,
                     checkpoint_store=checkpoint_store,
-                    checkpoint_prefix=f"m1-{fold_id.lower()}-c{config_index}-{seed}",
+                    checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-c{config_index}-{seed}",
                     train_dataset_id=train_dataset_id,
                     validation_dataset_id=validation_dataset_id,
                     max_epochs=max_epochs,
+                    model_factory=model_factory,
+                    learning_rate=float(config_payload.get("learning_rate", 0.003)),
                 )
                 predictions = _predict_validation_percentiles(model, validation_batches)
                 seed_validation_predictions[seed] = predictions
@@ -954,10 +1010,12 @@ def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
                 validation_batches,
                 seed=seed,
                 checkpoint_store=checkpoint_store,
-                checkpoint_prefix=f"m1-{fold_id.lower()}-final-{seed}",
+                checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-final-{seed}",
                 train_dataset_id=train_dataset_id,
                 validation_dataset_id=validation_dataset_id,
                 max_epochs=max_epochs,
+                model_factory=model_factory,
+                learning_rate=float(best_config.get("learning_rate", 0.003)),
             )
             seed_checkpoints[seed] = checkpoint_path
             predictions = _predict_validation_percentiles(model, validation_batches)
@@ -966,21 +1024,15 @@ def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
         ensemble = build_seed_ensemble(
             seed_validation_predictions, validation_rank_ic=seed_rank_ic
         )
-        final_config = ResidualMLPConfig(
-            raw_factor_count=len(factor_order),
-            hidden_dim=int(best_config["hidden_dim"]),
-            num_blocks=int(best_config["num_blocks"]),
-            dropout=float(best_config["dropout"]),
-        )
-        prototype = ResidualMLP(final_config)
-        model_id = f"m1-{fold_id.lower()}"
+        prototype = model_factory(best_config, factor_order)
+        model_id = f"{family.lower()}-{fold_id.lower()}"
         model_store.write(
             model_id,
             model_card={
-                "family": "RESIDUAL_MLP",
+                "family": family_name,
                 "dataset_id": dataset_id,
                 "model_status": "WALK_FORWARD_PASSED",
-                "model_code_version": "residual-mlp-1",
+                "model_code_version": model_code_version,
             },
             config=dict(best_config, raw_factor_count=len(factor_order)),
             signature=asdict(prototype.artifact_signature()),
@@ -999,7 +1051,7 @@ def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
         if model_evidence_id is None:
             model_evidence = selection_store.write_model_selection(
                 fold_id=fold_id,
-                model_family="M1",
+                model_family=family,
                 model_artifact_id=model_id,
                 model_bundle_digest=model_store.bundle_digest(model_id),
                 training_dataset_id=train_dataset_id,
@@ -1092,7 +1144,415 @@ def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
     )
     evaluation = result.evaluation
     return {
-        "family": "M1",
+        "family": family,
+        "mode": "full",
+        "folds": fold_reports,
+        "oos": {
+            "valid_day_count": evaluation.summary.valid_day_count,
+            "mean_rank_ic": evaluation.summary.mean_rank_ic,
+            "icir": evaluation.summary.icir,
+            "hac_t_statistic": evaluation.hac.t_statistic,
+            "baseline_mean_rank_ic": evaluation.baseline_mean_rank_ic,
+            "delta_rank_ic": evaluation.delta_rank_ic,
+            "yearly_mean_rank_ic": {
+                str(year): value for year, value in evaluation.yearly_mean_rank_ic.items()
+            },
+            "gates": {
+                gate: {
+                    "status": gate_result.status.value,
+                    "observed_value": gate_result.observed_value,
+                    "threshold": gate_result.threshold,
+                }
+                for gate, gate_result in sorted(evaluation.gate_report.results.items())
+            },
+            "all_passed": evaluation.gate_report.all_passed,
+        },
+    }
+
+
+def _m1_model_factory(config_payload: Mapping[str, Any], factor_order: tuple[str, ...]) -> Any:
+    return ResidualMLP(
+        ResidualMLPConfig(
+            raw_factor_count=len(factor_order),
+            hidden_dim=int(config_payload["hidden_dim"]),
+            num_blocks=int(config_payload["num_blocks"]),
+            dropout=float(config_payload["dropout"]),
+        )
+    )
+
+
+def _m3_model_factory(config_payload: Mapping[str, Any], factor_order: tuple[str, ...]) -> Any:
+    return SetAttention(
+        SetAttentionConfig(
+            raw_factor_count=len(factor_order),
+            hidden_dim=int(config_payload["hidden_dim"]),
+            num_heads=int(config_payload["num_heads"]),
+            inducing_points=int(config_payload["inducing_points"]),
+            num_blocks=int(config_payload["num_blocks"]),
+            dropout=float(config_payload["dropout"]),
+        )
+    )
+
+
+def m3_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
+    """Budget-compliant M3 subspace: architecture grid with dropout/lr fixed.
+
+    The yaml space has 64 combinations (above the E7 budget of 30); the
+    documented reduction fixes dropout=0.1 and learning_rate=0.0003 and
+    searches hidden_dim x num_heads x inducing_points x num_blocks (16).
+    """
+    grid: list[dict[str, Any]] = [
+        {
+            "hidden_dim": hidden,
+            "num_heads": heads,
+            "inducing_points": points,
+            "num_blocks": blocks,
+            "dropout": 0.1,
+            "learning_rate": 0.0003,
+        }
+        for hidden in (64, 128)
+        for heads in (2, 4)
+        for points in (32, 64)
+        for blocks in (1, 2)
+    ]
+    return grid if max_configs is None else grid[:max_configs]
+
+
+def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
+    """Full real-data M1 (ResidualMLP) pipeline."""
+    return _run_full_cross_section(
+        args,
+        family="M1",
+        family_name="RESIDUAL_MLP",
+        model_code_version="residual-mlp-1",
+        configs=m1_config_grid(args.max_configs),
+        model_factory=_m1_model_factory,
+    )
+
+
+def run_full_m3(args: argparse.Namespace) -> dict[str, Any]:
+    """Full real-data M3 (SetAttention) pipeline."""
+    return _run_full_cross_section(
+        args,
+        family="M3",
+        family_name="SET_ATTENTION",
+        model_code_version="set-attention-1",
+        configs=m3_config_grid(args.max_configs),
+        model_factory=_m3_model_factory,
+    )
+
+
+def m2_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
+    """M2 search space: family x hidden_dim x dropout x learning_rate (24 <= 30)."""
+    grid: list[dict[str, Any]] = [
+        {"family": family, "hidden_dim": hidden, "dropout": dropout, "learning_rate": lr}
+        for family in ("GRU", "TCN")
+        for hidden in (64, 128)
+        for dropout in (0.0, 0.1, 0.2)
+        for lr in (0.0003, 0.001)
+    ]
+    return grid if max_configs is None else grid[:max_configs]
+
+
+def _m2_model_factory(config_payload: Mapping[str, Any], factor_order: tuple[str, ...]) -> Any:
+    if config_payload["family"] == "GRU":
+        return TemporalGRU(
+            TemporalGRUConfig(
+                raw_factor_count=len(factor_order),
+                hidden_dim=int(config_payload["hidden_dim"]),
+                dropout=float(config_payload["dropout"]),
+            )
+        )
+    return TemporalTCN(
+        TemporalTCNConfig(
+            raw_factor_count=len(factor_order),
+            hidden_dim=int(config_payload["hidden_dim"]),
+            dropout=float(config_payload["dropout"]),
+        )
+    )
+
+
+def _temporal_panel_batches(
+    panel: pd.DataFrame,
+    factor_order: tuple[str, ...],
+    allowed_dates: set[date],
+) -> dict[date, TemporalTrainingBatch]:
+    batches = build_temporal_training_batches(
+        panel,
+        factor_order=factor_order,
+        history_length=20,
+        minimum_valid_history_length=15,
+    )
+    return {day: batch for day, batch in batches.items() if day in allowed_dates}
+
+
+def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
+    """Full real-data M2 (GRU/TCN temporal) pipeline with the signed evidence chain."""
+    context = setup_full_run_context(args)
+    workspace = context.workspace
+    dataset_store = context.dataset_store
+    model_store = context.model_store
+    checkpoint_store = context.checkpoint_store
+    selection_store = context.selection_store
+    prediction_store = context.prediction_store
+    baseline_report = context.baseline_report
+    baseline_predictions = context.baseline_predictions
+    holder = context.holder
+    resolver = context.resolver
+    versions = context.versions
+    factor_members = context.factor_members
+    factor_order = context.factor_order
+
+    configs = m2_config_grid(args.max_configs)
+    max_epochs = int(args.max_epochs)
+    oos_folds: dict[str, ModelOosFold] = {}
+    fold_reports: list[dict[str, Any]] = []
+
+    for fold_id in ORDINARY_FOLDS:
+        train = extract_dataset(holder, resolver, fold_id, "train", factor_members, versions)
+        validation = extract_dataset(
+            holder, resolver, fold_id, "validation", factor_members, versions
+        )
+        test = extract_dataset(holder, resolver, fold_id, "test", factor_members, versions)
+        frames = {"train": train, "validation": validation, "test": test}
+        dataset_id = publish_fold_dataset(dataset_store, fold_id, frames, versions, factor_order)
+        train_dataset_id = f"{dataset_id}:train"
+        validation_dataset_id = f"{dataset_id}:validation"
+
+        entry = next(e for e in baseline_report["selections"] if e["fold_id"] == fold_id)
+        baseline_evidence_id = _existing_evidence_id(
+            workspace / "selections", selection_store, "baseline", fold_id, dataset_id
+        )
+        if baseline_evidence_id is None:
+            baseline_evidence = selection_store.write_baseline_selection(
+                record=reconstruct_baseline_record(entry),
+                test_dataset_id=dataset_id,
+            )
+            baseline_evidence_id = baseline_evidence.evidence_id
+
+        preprocessor = FoldPreprocessor(factor_order=factor_order)
+        preprocessor.fit(train.loc[:, list(factor_order)], role="TRAIN")
+        prepared_train = _prepare_frame(train, preprocessor, factor_order)
+        prepared_validation = _prepare_frame(validation, preprocessor, factor_order)
+        prepared_test = _prepare_frame(test, preprocessor, factor_order)
+
+        train_dates = set(pd.to_datetime(train["signal_date"]).dt.date)
+        validation_dates = set(pd.to_datetime(validation["signal_date"]).dt.date)
+        test_dates = set(pd.to_datetime(test["signal_date"]).dt.date)
+
+        train_batches = _temporal_panel_batches(prepared_train, factor_order, train_dates)
+        validation_panel = pd.concat(
+            [prepared_train, prepared_validation], ignore_index=True
+        )
+        validation_batches = _temporal_panel_batches(
+            validation_panel, factor_order, validation_dates
+        )
+        test_panel = pd.concat(
+            [prepared_train, prepared_validation, prepared_test], ignore_index=True
+        )
+        test_batches = _temporal_panel_batches(test_panel, factor_order, test_dates)
+
+        search_results: list[dict[str, Any]] = []
+        for config_index, config_payload in enumerate(configs):
+            seed_validation_predictions: dict[int, pd.DataFrame] = {}
+            seed_rank_ic: dict[int, float] = {}
+            for seed in REQUIRED_SEEDS:
+                model = _m2_model_factory(config_payload, factor_order)
+                optimizer = torch.optim.AdamW(
+                    model.parameters(), lr=float(config_payload["learning_rate"])
+                )
+                run = run_validation_governed_training(
+                    model,
+                    optimizer,
+                    train_batches=train_batches,
+                    validation_batches=validation_batches,
+                    train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id=train_dataset_id),
+                    validation_view=DatasetView(
+                        role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
+                    ),
+                    trainer_config=TrainerConfig(
+                        max_epochs=max_epochs, early_stopping_patience=10
+                    ),
+                    seed=seed,
+                    checkpoint_store=checkpoint_store,
+                    checkpoint_prefix=(
+                        f"m2-{fold_id.lower()}-c{config_index}-{seed}"
+                    ),
+                )
+                predictions = _predict_temporal_validation_percentiles(
+                    model, validation_batches
+                )
+                seed_validation_predictions[seed] = predictions
+                seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+            ensemble = build_seed_ensemble(
+                seed_validation_predictions, validation_rank_ic=seed_rank_ic
+            )
+            ensemble_predictions = ensemble.predictions.rename(
+                columns={"ensemble_score": "percentile_rank"}
+            )
+            ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
+            search_results.append(
+                {
+                    "config": config_payload,
+                    "ensemble_validation_rank_ic": ensemble_rank_ic,
+                    "seed_validation_rank_ic": seed_rank_ic,
+                    "worst_seed": ensemble.worst_seed,
+                }
+            )
+            print(
+                f"  {fold_id} config {config_index + 1}/{len(configs)}: "
+                f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
+                flush=True,
+            )
+        best = max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])
+        best_config = best["config"]
+
+        seed_checkpoints: dict[int, Path] = {}
+        seed_validation_predictions = {}
+        seed_rank_ic = {}
+        for seed in REQUIRED_SEEDS:
+            model = _m2_model_factory(best_config, factor_order)
+            optimizer = torch.optim.AdamW(
+                model.parameters(), lr=float(best_config["learning_rate"])
+            )
+            run = run_validation_governed_training(
+                model,
+                optimizer,
+                train_batches=train_batches,
+                validation_batches=validation_batches,
+                train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id=train_dataset_id),
+                validation_view=DatasetView(
+                    role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
+                ),
+                trainer_config=TrainerConfig(max_epochs=max_epochs, early_stopping_patience=10),
+                seed=seed,
+                checkpoint_store=checkpoint_store,
+                checkpoint_prefix=f"m2-{fold_id.lower()}-final-{seed}",
+            )
+            seed_checkpoints[seed] = (
+                workspace / "checkpoints" / run.checkpoint_ids[-1] / "checkpoint.pt"
+            )
+            predictions = _predict_temporal_validation_percentiles(model, validation_batches)
+            seed_validation_predictions[seed] = predictions
+            seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+        ensemble = build_seed_ensemble(
+            seed_validation_predictions, validation_rank_ic=seed_rank_ic
+        )
+        prototype = _m2_model_factory(best_config, factor_order)
+        model_id = f"m2-{fold_id.lower()}"
+        model_store.write(
+            model_id,
+            model_card={
+                "family": f"TEMPORAL_{best_config['family']}",
+                "dataset_id": dataset_id,
+                "model_status": "WALK_FORWARD_PASSED",
+                "model_code_version": f"temporal-{str(best_config['family']).lower()}-1",
+            },
+            config=dict(best_config, raw_factor_count=len(factor_order)),
+            signature=asdict(prototype.artifact_signature()),
+            feature_order=factor_order,
+            preprocessing={"state_hash": preprocessor.state_hash},
+            seed_checkpoints=seed_checkpoints,
+            validation_predictions=ensemble.predictions.rename(
+                columns={"ensemble_score": "percentile_rank"}
+            ),
+        )
+
+        model_evidence_id = _existing_evidence_id(
+            workspace / "selections", selection_store, "model", fold_id, dataset_id
+        )
+        if model_evidence_id is None:
+            model_evidence = selection_store.write_model_selection(
+                fold_id=fold_id,
+                model_family="M2",
+                model_artifact_id=model_id,
+                model_bundle_digest=model_store.bundle_digest(model_id),
+                training_dataset_id=train_dataset_id,
+                validation_dataset_id=validation_dataset_id,
+                test_dataset_id=dataset_id,
+                baseline_selection_id=baseline_evidence_id,
+                validation_rank_ic=float(best["ensemble_validation_rank_ic"]),
+            )
+            model_evidence_id = model_evidence.evidence_id
+
+        loaded = load_inference_artifact(
+            model_store,
+            model_id,
+            expected_dataset_id=dataset_id,
+            expected_feature_order=factor_order,
+            expected_preprocessor_hash=preprocessor.state_hash,
+            device=torch.device("cpu"),
+        )
+        rows: list[dict[str, object]] = []
+        for signal_date in sorted(test_batches):
+            batch = test_batches[signal_date]
+            accumulated: torch.Tensor | None = None
+            for seed_model in loaded.models:
+                with torch.no_grad():
+                    scores = seed_model(batch.inputs)[0]
+                ranks = _percentile_rank_series(scores)
+                accumulated = ranks if accumulated is None else accumulated + ranks
+            assert accumulated is not None
+            mean_ranks = accumulated / len(loaded.models)
+            for stock_index, code in enumerate(batch.inputs.ts_codes[0]):
+                rows.append(
+                    {
+                        "signal_date": signal_date,
+                        "ts_code": code,
+                        "score": float(mean_ranks[stock_index]),
+                    }
+                )
+        candidate_scores = pd.DataFrame(rows)
+        candidate_artifact = prediction_store.write(
+            selection_id=model_evidence_id,
+            kind="candidate",
+            fold_id=fold_id,
+            dataset_id=dataset_id,
+            model_id=model_id,
+            scores=candidate_scores,
+            selections=selection_store,
+        )
+        baseline_scores = baseline_predictions[fold_id].loc[
+            :, ["signal_date", "ts_code", "score"]
+        ]
+        baseline_artifact = prediction_store.write(
+            selection_id=baseline_evidence_id,
+            kind="best_simple",
+            fold_id=fold_id,
+            dataset_id=dataset_id,
+            model_id=str(entry["selected_baseline_id"]),
+            scores=baseline_scores,
+            selections=selection_store,
+        )
+        oos_folds[fold_id] = ModelOosFold(
+            model_selection_id=model_evidence_id,
+            candidate_prediction_id=candidate_artifact.prediction_id,
+            best_simple_prediction_id=baseline_artifact.prediction_id,
+        )
+        fold_reports.append(
+            {
+                "fold_id": fold_id,
+                "dataset_id": dataset_id,
+                "model_id": model_id,
+                "best_config": best_config,
+                "search_results": search_results,
+                "baseline_selection_id": baseline_evidence_id,
+                "model_selection_id": model_evidence_id,
+            }
+        )
+        print(f"  {fold_id} complete: model={model_id}", flush=True)
+
+    result = evaluate_model_walk_forward(
+        oos_folds,
+        dataset_store=dataset_store,
+        model_store=model_store,
+        selection_root=workspace / "selections",
+        prediction_root=workspace / "predictions",
+        minimum_cross_section=30,
+    )
+    evaluation = result.evaluation
+    return {
+        "family": "M2",
         "mode": "full",
         "folds": fold_reports,
         "oos": {
@@ -1146,8 +1606,12 @@ def main() -> None:
     load_baseline_predictions(Path(args.baseline_artifacts))
     if args.family == "M1":
         report = run_full_m1(args)
+    elif args.family == "M2":
+        report = run_full_m2(args)
+    elif args.family == "M3":
+        report = run_full_m3(args)
     else:
-        raise SystemExit(f"family {args.family} full-run wiring lands in Task 4")
+        raise SystemExit(f"unsupported family: {args.family}")
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report["oos"], ensure_ascii=False, indent=2))
