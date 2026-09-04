@@ -106,9 +106,11 @@ def build_walk_forward_report(
                         "baseline_id": score.baseline_id,
                         "mean_rank_ic": score.mean_rank_ic,
                         "valid_day_count": score.valid_day_count,
+                        "invalid_day_count": score.invalid_day_count,
                     }
                     for score in record.validation_scores
                 ],
+                "unselected_reasons": [list(reason) for reason in record.unselected_reasons],
             }
             for record in result.selection_records
         ],

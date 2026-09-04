@@ -14,6 +14,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict
@@ -25,9 +26,16 @@ import numpy as np
 import pandas as pd
 import torch
 
+from research_v2.baselines.orchestration import (
+    BaselineSelectionRecord,
+    BaselineValidationScore,
+)
+from research_v2.datasets.manifest import build_split_dataset_manifest
 from research_v2.datasets.preprocessing import FoldPreprocessor
+from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.evaluation.model_evaluator import evaluate_frozen_oos
 from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
+from research_v2.evaluation.selection_evidence import SelectionEvidenceStore
 from research_v2.inference.artifact_loader import load_inference_artifact
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -398,6 +406,69 @@ def train_m3_smoke(workspace: Path) -> dict[str, Any]:
             )
         ),
     )
+
+
+def publish_fold_dataset(
+    store: DatasetArtifactStore,
+    fold_id: str,
+    frames: Mapping[str, pd.DataFrame],
+    versions: Mapping[str, Mapping[str, str]],
+    factor_order: tuple[str, ...],
+) -> str:
+    """Publish one fold's train/validation/test splits; content-addressed idempotent."""
+    metadata = {
+        "fold_id": fold_id,
+        "factor_order": list(factor_order),
+        "data_versions": {table: dict(parts) for table, parts in versions.items()},
+    }
+    manifest = build_split_dataset_manifest(
+        dict(frames),
+        business_keys=("signal_date", "ts_code"),
+        metadata=metadata,
+    )
+    with contextlib.suppress(FileExistsError):
+        # identical content already published: same dataset_id by construction
+        store.write(manifest, dict(frames), preprocessing={"assembler": "walk_forward_common"})
+    return manifest.dataset_id
+
+
+def reconstruct_baseline_record(selection_entry: Mapping[str, Any]) -> BaselineSelectionRecord:
+    """Rebuild the immutable baseline selection record from the report JSON."""
+    return BaselineSelectionRecord(
+        fold_id=str(selection_entry["fold_id"]),
+        selected_baseline_id=str(selection_entry["selected_baseline_id"]),
+        validation_scores=tuple(
+            BaselineValidationScore(
+                baseline_id=str(score["baseline_id"]),
+                mean_rank_ic=float(score["mean_rank_ic"]),
+                valid_day_count=int(score["valid_day_count"]),
+                invalid_day_count=int(score["invalid_day_count"]),
+            )
+            for score in selection_entry["validation_scores"]
+        ),
+        unselected_reasons=tuple(
+            (str(reason[0]), str(reason[1]))
+            for reason in selection_entry["unselected_reasons"]
+        ),
+    )
+
+
+def issue_baseline_selection_evidence(
+    baseline_report: Mapping[str, Any],
+    dataset_ids: Mapping[str, str],
+    selection_store: SelectionEvidenceStore,
+) -> dict[str, str]:
+    """Sign per-fold baseline selection evidence from the baseline report (idempotent)."""
+    evidence_ids: dict[str, str] = {}
+    for entry in baseline_report["selections"]:
+        fold_id = str(entry["fold_id"])
+        record = reconstruct_baseline_record(entry)
+        evidence = selection_store.write_baseline_selection(
+            record=record,
+            test_dataset_id=dataset_ids[fold_id],
+        )
+        evidence_ids[fold_id] = evidence.evidence_id
+    return evidence_ids
 
 
 SMOKE_TEMPORAL_HISTORY_LENGTH = 20

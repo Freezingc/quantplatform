@@ -137,3 +137,109 @@ def test_m3_smoke_pipeline_end_to_end(tmp_path: Path) -> None:
     assert set(oos["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
     assert oos["baseline_mean_rank_ic"] is not None
     assert set(report["seed_validation_rank_ic"]) == set(MODULE.REQUIRED_SEEDS)
+
+
+def _fold_frames() -> dict[str, pd.DataFrame]:
+    def _split(day, with_target: bool) -> pd.DataFrame:
+        rows = []
+        for index in range(32):
+            row: dict[str, object] = {
+                "signal_date": day,
+                "ts_code": f"s{index:02d}",
+                "label_valid": True,
+                "f00": float(index) * 0.1,
+                "f01": float(index) * -0.05,
+            }
+            if with_target:
+                row["raw_return_5d"] = float(index) * 0.01
+            rows.append(row)
+        return pd.DataFrame(rows)
+
+    return {
+        "train": _split(pd.Timestamp("2020-01-02"), with_target=True),
+        "validation": _split(pd.Timestamp("2021-01-04"), with_target=True),
+        "test": _split(pd.Timestamp("2022-01-04"), with_target=False).assign(
+            raw_return_5d=0.0
+        ),
+    }
+
+
+def test_publish_fold_dataset_is_content_addressed_and_idempotent(tmp_path: Path) -> None:
+    from research_v2.datasets.storage import DatasetArtifactStore
+
+    store = DatasetArtifactStore(tmp_path / "datasets")
+    frames = _fold_frames()
+    versions = {"label_daily": {"2020-01": "v1"}}
+    factor_order = ("f00", "f01")
+    first = MODULE.publish_fold_dataset(store, "F01", frames, versions, factor_order)
+    second = MODULE.publish_fold_dataset(store, "F01", frames, versions, factor_order)
+    assert first == second
+    assert first  # non-empty content hash id
+
+
+def test_reconstruct_baseline_record_round_trip() -> None:
+    entry = {
+        "fold_id": "F01",
+        "selected_baseline_id": "B2",
+        "validation_scores": [
+            {
+                "baseline_id": "B2",
+                "mean_rank_ic": 0.02,
+                "valid_day_count": 240,
+                "invalid_day_count": 1,
+            }
+        ],
+        "unselected_reasons": [["B0", "LOWER_VALIDATION_RANKIC"]],
+    }
+    record = MODULE.reconstruct_baseline_record(entry)
+    assert record.fold_id == "F01"
+    assert record.selected_baseline_id == "B2"
+    assert record.validation_scores[0].invalid_day_count == 1
+    assert record.unselected_reasons == (("B0", "LOWER_VALIDATION_RANKIC"),)
+
+
+def test_issue_baseline_selection_evidence_signs_and_verifies(tmp_path: Path) -> None:
+    from research_v2.datasets.storage import DatasetArtifactStore
+    from research_v2.evaluation.selection_evidence import (
+        SelectionEvidenceStore,
+        SelectionEvidenceVerifier,
+    )
+
+    store = DatasetArtifactStore(tmp_path / "datasets")
+    frames = _fold_frames()
+    versions = {"label_daily": {"2020-01": "v1"}}
+    dataset_id = MODULE.publish_fold_dataset(
+        store, "F01", frames, versions, ("f00", "f01")
+    )
+    selection_store = SelectionEvidenceStore(tmp_path / "selections", signing_key=b"unit-key")
+    baseline_report = {
+        "selections": [
+            {
+                "fold_id": "F01",
+                "selected_baseline_id": "B2",
+                "validation_scores": [
+                    {
+                        "baseline_id": baseline_id,
+                        "mean_rank_ic": 0.02 if baseline_id == "B2" else 0.01,
+                        "valid_day_count": 240,
+                        "invalid_day_count": 2,
+                    }
+                    for baseline_id in ("B0", "B1", "B2", "B3")
+                ],
+                "unselected_reasons": [
+                    ["B0", "LOWER_VALIDATION_RANKIC"],
+                    ["B1", "LOWER_VALIDATION_RANKIC"],
+                    ["B3", "LOWER_VALIDATION_RANKIC"],
+                ],
+            }
+        ]
+    }
+    evidence_ids = MODULE.issue_baseline_selection_evidence(
+        baseline_report, {"F01": dataset_id}, selection_store
+    )
+    assert "F01" in evidence_ids
+    verifier = SelectionEvidenceVerifier(tmp_path / "selections", verification_key=b"unit-key")
+    loaded = verifier.load_baseline_selection(evidence_ids["F01"])
+    assert loaded.fold_id == "F01"
+    assert loaded.test_dataset_id == dataset_id
+    assert loaded.selected_baseline_id == "B2"

@@ -192,3 +192,35 @@ def test_save_baseline_oos_artifacts_requires_all_folds(tmp_path) -> None:
     )
     with pytest.raises(ValueError, match="missing"):
         driver.save_baseline_oos_artifacts(partial, tmp_path)
+
+
+def test_build_report_selections_carry_full_evidence_fields() -> None:
+    """The candidate evidence chain needs invalid_day_count + unselected_reasons."""
+    from research_v2.baselines.orchestration import BaselineSelectionRecord
+
+    record = BaselineSelectionRecord(
+        fold_id="F01",
+        selected_baseline_id="B2",
+        validation_scores=(
+            BaselineValidationScore(
+                baseline_id="B0", mean_rank_ic=0.01, valid_day_count=240, invalid_day_count=2
+            ),
+            BaselineValidationScore(
+                baseline_id="B2", mean_rank_ic=0.02, valid_day_count=241, invalid_day_count=1
+            ),
+        ),
+        unselected_reasons=(("B0", "lower validation RankIC"),),
+    )
+    from research_v2.evaluation.walk_forward import BaselineWalkForwardResult
+
+    result = BaselineWalkForwardResult(
+        fold_results={"F01": _fold_result("F01")},
+        selection_records=(record,),
+        evaluation=_evaluation(
+            _gate_report({"G1": GateStatus.PASS, "G4": GateStatus.NOT_APPLICABLE})
+        ),
+    )
+    report = driver.build_walk_forward_report(("F01",), result, {})
+    selection = report["selections"][0]
+    assert selection["validation_scores"][0]["invalid_day_count"] == 2
+    assert selection["unselected_reasons"] == [["B0", "lower validation RankIC"]]
