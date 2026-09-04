@@ -19,14 +19,15 @@ from pathlib import Path
 from typing import Any
 
 from walk_forward_common import (
+    WALK_FORWARD_FACTOR_IDS,
+    factor_members_for,
+    new_holder,
+)
+from walk_forward_common import (
     current_versions as _current_versions,
 )
 from walk_forward_common import (
     extract_dataset as _extract_dataset,
-)
-from walk_forward_common import (
-    factor_members_for,
-    new_holder,
 )
 from walk_forward_common import (
     load_calendar as _load_calendar,
@@ -38,23 +39,6 @@ from research_v2.datasets.splits import SplitResolver
 from research_v2.evaluation.walk_forward import (
     BaselineWalkForwardResult,
     run_walk_forward_baselines,
-)
-
-WALK_FORWARD_FACTOR_IDS: tuple[str, ...] = (
-    "yeslab_376",
-    "yeslab_377",
-    "yeslab_380",
-    "yeslab_381",
-    "yeslab_387",
-    "yeslab_388",
-    "yeslab_391",
-    "yeslab_396",
-    "yeslab_400",
-    "yeslab_405",
-    "yeslab_425",
-    "yeslab_432",
-    "yeslab_433",
-    "yeslab_442",
 )
 
 

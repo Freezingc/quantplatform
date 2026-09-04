@@ -29,6 +29,23 @@ from research_v2.datasets.splits import SplitResolver, annual_folds
 from research_v2.pit.calendar import TradingCalendar
 
 TARGET_DATABASE = "dfs://QuantResearchV2Test"
+
+WALK_FORWARD_FACTOR_IDS: tuple[str, ...] = (
+    "yeslab_376",
+    "yeslab_377",
+    "yeslab_380",
+    "yeslab_381",
+    "yeslab_387",
+    "yeslab_388",
+    "yeslab_391",
+    "yeslab_396",
+    "yeslab_400",
+    "yeslab_405",
+    "yeslab_425",
+    "yeslab_432",
+    "yeslab_433",
+    "yeslab_442",
+)
 FOLD_CACHE_ROOT = Path("/tmp/walk_forward_cache_v1")
 SPLIT_ROLE_REQUEST: dict[str, Literal["TRAIN", "VALIDATION", "TEST"]] = {
     "train": "TRAIN",

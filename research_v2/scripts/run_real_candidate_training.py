@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import json
+import os
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict
 from datetime import date
@@ -25,6 +26,14 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import torch
+from walk_forward_common import (
+    WALK_FORWARD_FACTOR_IDS,
+    current_versions,
+    extract_dataset,
+    factor_members_for,
+    load_calendar,
+    new_holder,
+)
 
 from research_v2.baselines.orchestration import (
     BaselineSelectionRecord,
@@ -32,10 +41,18 @@ from research_v2.baselines.orchestration import (
 )
 from research_v2.datasets.manifest import build_split_dataset_manifest
 from research_v2.datasets.preprocessing import FoldPreprocessor
+from research_v2.datasets.splits import SplitResolver
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.evaluation.model_evaluator import evaluate_frozen_oos
+from research_v2.evaluation.model_walk_forward import (
+    ModelOosFold,
+    evaluate_model_walk_forward,
+)
 from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
-from research_v2.evaluation.selection_evidence import SelectionEvidenceStore
+from research_v2.evaluation.selection_evidence import (
+    FrozenPredictionStore,
+    SelectionEvidenceStore,
+)
 from research_v2.inference.artifact_loader import load_inference_artifact
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -74,6 +91,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         default=",".join(ORDINARY_FOLDS),
         help="comma-separated subset of ordinary folds (default all six)",
     )
+    parser.add_argument("--baseline-report", type=Path, default=None)
+    parser.add_argument("--workspace", type=Path, default=None)
+    parser.add_argument("--max-configs", type=int, default=None)
+    parser.add_argument("--max-epochs", type=int, default=100)
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
@@ -729,6 +750,374 @@ def train_m2_smoke(workspace: Path) -> dict[str, Any]:
     }
 
 
+def m1_config_grid(max_configs: int | None = None) -> list[dict[str, float | int]]:
+    """E7-budget M1 search space (3x3x3 = 27 <= 30 configs)."""
+    grid: list[dict[str, float | int]] = [
+        {"hidden_dim": hidden, "num_blocks": blocks, "dropout": dropout}
+        for hidden in (64, 128, 256)
+        for blocks in (1, 2, 3)
+        for dropout in (0.0, 0.1, 0.2)
+    ]
+    return grid if max_configs is None else grid[:max_configs]
+
+
+def _existing_evidence_id(
+    store_root: Path,
+    verifier: SelectionEvidenceStore,
+    kind: str,
+    fold_id: str,
+    test_dataset_id: str,
+) -> str | None:
+    """Locate already-signed evidence for one fold (content-addressed idempotence)."""
+    directory = store_root / kind
+    if not directory.exists():
+        return None
+    for candidate in sorted(directory.glob("*.json")):
+        evidence_id = candidate.stem
+        try:
+            if kind == "baseline":
+                baseline_evidence = verifier.load_baseline_selection(evidence_id)
+                if (
+                    baseline_evidence.fold_id == fold_id
+                    and baseline_evidence.test_dataset_id == test_dataset_id
+                ):
+                    return evidence_id
+            else:
+                model_evidence = verifier.load_model_selection(evidence_id)
+                if (
+                    model_evidence.fold_id == fold_id
+                    and model_evidence.test_dataset_id == test_dataset_id
+                ):
+                    return evidence_id
+        except ValueError:
+            continue
+    return None
+
+
+def _train_cross_section_seed(
+    config_payload: Mapping[str, Any],
+    factor_order: tuple[str, ...],
+    train_batches: Mapping[date, TrainingBatch],
+    validation_batches: Mapping[date, TrainingBatch],
+    *,
+    seed: int,
+    checkpoint_store: CheckpointStore,
+    checkpoint_prefix: str,
+    train_dataset_id: str,
+    validation_dataset_id: str,
+    max_epochs: int,
+) -> tuple[torch.nn.Module, Path]:
+    config = ResidualMLPConfig(
+        raw_factor_count=len(factor_order),
+        hidden_dim=int(config_payload["hidden_dim"]),
+        num_blocks=int(config_payload["num_blocks"]),
+        dropout=float(config_payload["dropout"]),
+    )
+    model = ResidualMLP(config)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
+    run = run_validation_governed_training(
+        model,
+        optimizer,
+        train_batches=train_batches,
+        validation_batches=validation_batches,
+        train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id=train_dataset_id),
+        validation_view=DatasetView(
+            role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
+        ),
+        trainer_config=TrainerConfig(max_epochs=max_epochs, early_stopping_patience=10),
+        seed=seed,
+        checkpoint_store=checkpoint_store,
+        checkpoint_prefix=checkpoint_prefix,
+    )
+    return model, checkpoint_store._root / run.checkpoint_ids[-1] / "checkpoint.pt"
+
+
+def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
+    """Full real-data M1 pipeline: assembly -> search -> bundles -> signed evidence -> gates."""
+    secret = os.environ.get("QRV2_SELECTION_EVIDENCE_HMAC_KEY", "")
+    if not secret:
+        raise SystemExit(
+            "full runs require QRV2_SELECTION_EVIDENCE_HMAC_KEY (signed evidence chain)"
+        )
+    workspace: Path = args.workspace
+    dataset_store = DatasetArtifactStore(workspace / "datasets")
+    model_store = ModelArtifactBundleStore(workspace / "models")
+    checkpoint_store = CheckpointStore(workspace / "checkpoints")
+    selection_store = SelectionEvidenceStore(
+        workspace / "selections", signing_key=secret.encode("utf-8")
+    )
+    prediction_store = FrozenPredictionStore(
+        workspace / "predictions", signing_key=secret.encode("utf-8")
+    )
+    baseline_report = json.loads(Path(args.baseline_report).read_text(encoding="utf-8"))
+    baseline_predictions = load_baseline_predictions(Path(args.baseline_artifacts))
+
+    holder = new_holder()
+    calendar = load_calendar(holder)
+    resolver = SplitResolver(calendar)
+    versions = {
+        table: current_versions(holder, table)
+        for table in ("universe_daily", "factor_observation_clean", "label_daily")
+    }
+    factor_members = factor_members_for(WALK_FORWARD_FACTOR_IDS)
+    factor_order = tuple(member.feature_name for member in factor_members)
+
+    configs = m1_config_grid(args.max_configs)
+    max_epochs = int(args.max_epochs)
+    oos_folds: dict[str, ModelOosFold] = {}
+    fold_reports: list[dict[str, Any]] = []
+
+    for fold_id in ORDINARY_FOLDS:
+        train = extract_dataset(holder, resolver, fold_id, "train", factor_members, versions)
+        validation = extract_dataset(
+            holder, resolver, fold_id, "validation", factor_members, versions
+        )
+        test = extract_dataset(holder, resolver, fold_id, "test", factor_members, versions)
+        frames = {"train": train, "validation": validation, "test": test}
+        dataset_id = publish_fold_dataset(dataset_store, fold_id, frames, versions, factor_order)
+        train_dataset_id = f"{dataset_id}:train"
+        validation_dataset_id = f"{dataset_id}:validation"
+
+        entry = next(e for e in baseline_report["selections"] if e["fold_id"] == fold_id)
+        baseline_evidence_id = _existing_evidence_id(
+            workspace / "selections", selection_store, "baseline", fold_id, dataset_id
+        )
+        if baseline_evidence_id is None:
+            baseline_evidence = selection_store.write_baseline_selection(
+                record=reconstruct_baseline_record(entry),
+                test_dataset_id=dataset_id,
+            )
+            baseline_evidence_id = baseline_evidence.evidence_id
+
+        preprocessor = FoldPreprocessor(factor_order=factor_order)
+        preprocessor.fit(train.loc[:, list(factor_order)], role="TRAIN")
+        train_batches = build_static_training_batches(
+            _prepare_frame(train, preprocessor, factor_order), factor_order=factor_order
+        )
+        validation_batches = build_static_training_batches(
+            _prepare_frame(validation, preprocessor, factor_order), factor_order=factor_order
+        )
+
+        # Constrained config search: per config, three-seed validation ensemble RankIC.
+        search_results: list[dict[str, Any]] = []
+        for config_index, config_payload in enumerate(configs):
+            seed_validation_predictions: dict[int, pd.DataFrame] = {}
+            seed_rank_ic: dict[int, float] = {}
+            for seed in REQUIRED_SEEDS:
+                model, _ = _train_cross_section_seed(
+                    config_payload,
+                    factor_order,
+                    train_batches,
+                    validation_batches,
+                    seed=seed,
+                    checkpoint_store=checkpoint_store,
+                    checkpoint_prefix=f"m1-{fold_id.lower()}-c{config_index}-{seed}",
+                    train_dataset_id=train_dataset_id,
+                    validation_dataset_id=validation_dataset_id,
+                    max_epochs=max_epochs,
+                )
+                predictions = _predict_validation_percentiles(model, validation_batches)
+                seed_validation_predictions[seed] = predictions
+                seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+            ensemble = build_seed_ensemble(
+                seed_validation_predictions, validation_rank_ic=seed_rank_ic
+            )
+            ensemble_predictions = ensemble.predictions.rename(
+                columns={"ensemble_score": "percentile_rank"}
+            )
+            ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
+            search_results.append(
+                {
+                    "config": config_payload,
+                    "ensemble_validation_rank_ic": ensemble_rank_ic,
+                    "seed_validation_rank_ic": seed_rank_ic,
+                    "worst_seed": ensemble.worst_seed,
+                }
+            )
+            print(
+                f"  {fold_id} config {config_index + 1}/{len(configs)}: "
+                f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
+                flush=True,
+            )
+        best = max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])
+        best_config = best["config"]
+
+        # Final three-seed training on the selected config -> immutable bundle.
+        seed_checkpoints: dict[int, Path] = {}
+        seed_validation_predictions = {}
+        seed_rank_ic = {}
+        for seed in REQUIRED_SEEDS:
+            model, checkpoint_path = _train_cross_section_seed(
+                best_config,
+                factor_order,
+                train_batches,
+                validation_batches,
+                seed=seed,
+                checkpoint_store=checkpoint_store,
+                checkpoint_prefix=f"m1-{fold_id.lower()}-final-{seed}",
+                train_dataset_id=train_dataset_id,
+                validation_dataset_id=validation_dataset_id,
+                max_epochs=max_epochs,
+            )
+            seed_checkpoints[seed] = checkpoint_path
+            predictions = _predict_validation_percentiles(model, validation_batches)
+            seed_validation_predictions[seed] = predictions
+            seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+        ensemble = build_seed_ensemble(
+            seed_validation_predictions, validation_rank_ic=seed_rank_ic
+        )
+        final_config = ResidualMLPConfig(
+            raw_factor_count=len(factor_order),
+            hidden_dim=int(best_config["hidden_dim"]),
+            num_blocks=int(best_config["num_blocks"]),
+            dropout=float(best_config["dropout"]),
+        )
+        prototype = ResidualMLP(final_config)
+        model_id = f"m1-{fold_id.lower()}"
+        model_store.write(
+            model_id,
+            model_card={
+                "family": "RESIDUAL_MLP",
+                "dataset_id": dataset_id,
+                "model_status": "WALK_FORWARD_PASSED",
+                "model_code_version": "residual-mlp-1",
+            },
+            config=dict(best_config, raw_factor_count=len(factor_order)),
+            signature=asdict(prototype.artifact_signature()),
+            feature_order=factor_order,
+            preprocessing={"state_hash": preprocessor.state_hash},
+            seed_checkpoints=seed_checkpoints,
+            validation_predictions=ensemble.predictions.rename(
+                columns={"ensemble_score": "percentile_rank"}
+            ),
+        )
+
+        # Signed model selection evidence bound to the baseline evidence.
+        model_evidence_id = _existing_evidence_id(
+            workspace / "selections", selection_store, "model", fold_id, dataset_id
+        )
+        if model_evidence_id is None:
+            model_evidence = selection_store.write_model_selection(
+                fold_id=fold_id,
+                model_family="M1",
+                model_artifact_id=model_id,
+                model_bundle_digest=model_store.bundle_digest(model_id),
+                training_dataset_id=train_dataset_id,
+                validation_dataset_id=validation_dataset_id,
+                test_dataset_id=dataset_id,
+                baseline_selection_id=baseline_evidence_id,
+                validation_rank_ic=float(best["ensemble_validation_rank_ic"]),
+            )
+            model_evidence_id = model_evidence.evidence_id
+
+        # Frozen TEST predictions: candidate (verified bundle) + best_simple (baseline).
+        loaded = load_inference_artifact(
+            model_store,
+            model_id,
+            expected_dataset_id=dataset_id,
+            expected_feature_order=factor_order,
+            expected_preprocessor_hash=preprocessor.state_hash,
+            device=torch.device("cpu"),
+        )
+        test_batches = build_static_training_batches(
+            _prepare_frame(test.assign(raw_return_5d=0.0), preprocessor, factor_order),
+            factor_order=factor_order,
+        )
+        rows: list[dict[str, object]] = []
+        for signal_date in sorted(test_batches):
+            batch = test_batches[signal_date]
+            accumulated: torch.Tensor | None = None
+            for seed_model in loaded.models:
+                with torch.no_grad():
+                    scores = seed_model(batch.inputs)[0]
+                ranks = _percentile_rank_series(scores)
+                accumulated = ranks if accumulated is None else accumulated + ranks
+            assert accumulated is not None
+            mean_ranks = accumulated / len(loaded.models)
+            for stock_index, code in enumerate(batch.inputs.ts_codes[0]):
+                rows.append(
+                    {
+                        "signal_date": signal_date,
+                        "ts_code": code,
+                        "score": float(mean_ranks[stock_index]),
+                    }
+                )
+        candidate_scores = pd.DataFrame(rows)
+        candidate_artifact = prediction_store.write(
+            selection_id=model_evidence_id,
+            kind="candidate",
+            fold_id=fold_id,
+            dataset_id=dataset_id,
+            model_id=model_id,
+            scores=candidate_scores,
+            selections=selection_store,
+        )
+        baseline_scores = baseline_predictions[fold_id].loc[
+            :, ["signal_date", "ts_code", "score"]
+        ]
+        baseline_artifact = prediction_store.write(
+            selection_id=baseline_evidence_id,
+            kind="best_simple",
+            fold_id=fold_id,
+            dataset_id=dataset_id,
+            model_id=str(entry["selected_baseline_id"]),
+            scores=baseline_scores,
+            selections=selection_store,
+        )
+        oos_folds[fold_id] = ModelOosFold(
+            model_selection_id=model_evidence_id,
+            candidate_prediction_id=candidate_artifact.prediction_id,
+            best_simple_prediction_id=baseline_artifact.prediction_id,
+        )
+        fold_reports.append(
+            {
+                "fold_id": fold_id,
+                "dataset_id": dataset_id,
+                "model_id": model_id,
+                "best_config": best_config,
+                "search_results": search_results,
+                "baseline_selection_id": baseline_evidence_id,
+                "model_selection_id": model_evidence_id,
+            }
+        )
+        print(f"  {fold_id} complete: model={model_id}", flush=True)
+
+    result = evaluate_model_walk_forward(
+        oos_folds,
+        dataset_store=dataset_store,
+        model_store=model_store,
+        selection_root=workspace / "selections",
+        prediction_root=workspace / "predictions",
+        minimum_cross_section=30,
+    )
+    evaluation = result.evaluation
+    return {
+        "family": "M1",
+        "mode": "full",
+        "folds": fold_reports,
+        "oos": {
+            "valid_day_count": evaluation.summary.valid_day_count,
+            "mean_rank_ic": evaluation.summary.mean_rank_ic,
+            "icir": evaluation.summary.icir,
+            "hac_t_statistic": evaluation.hac.t_statistic,
+            "baseline_mean_rank_ic": evaluation.baseline_mean_rank_ic,
+            "delta_rank_ic": evaluation.delta_rank_ic,
+            "yearly_mean_rank_ic": {
+                str(year): value for year, value in evaluation.yearly_mean_rank_ic.items()
+            },
+            "gates": {
+                gate: {
+                    "status": gate_result.status.value,
+                    "observed_value": gate_result.observed_value,
+                    "threshold": gate_result.threshold,
+                }
+                for gate, gate_result in sorted(evaluation.gate_report.results.items())
+            },
+            "all_passed": evaluation.gate_report.all_passed,
+        },
+    }
+
+
 def main() -> None:
     args = parse_args()
     if args.smoke:
@@ -750,11 +1139,19 @@ def main() -> None:
     validate_family_order(args.family, prior_families_passed=())
     if args.baseline_artifacts is None:
         raise SystemExit("--baseline-artifacts is required for full runs")
-    load_baseline_predictions(args.baseline_artifacts)
-    raise SystemExit(
-        "full-run training wiring is gated on Task 1.6 baseline artifacts and "
-        "plan approval (Task 3.4); refusing to run"
-    )
+    if args.baseline_report is None:
+        raise SystemExit("--baseline-report is required for full runs")
+    if args.workspace is None:
+        raise SystemExit("--workspace is required for full runs")
+    load_baseline_predictions(Path(args.baseline_artifacts))
+    if args.family == "M1":
+        report = run_full_m1(args)
+    else:
+        raise SystemExit(f"family {args.family} full-run wiring lands in Task 4")
+    args.report.parent.mkdir(parents=True, exist_ok=True)
+    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps(report["oos"], ensure_ascii=False, indent=2))
+    print(f"full run complete; report={args.report}")
 
 
 if __name__ == '__main__':
