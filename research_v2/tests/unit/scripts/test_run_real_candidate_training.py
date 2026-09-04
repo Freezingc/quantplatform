@@ -125,3 +125,15 @@ def test_m2_smoke_pipeline_end_to_end(tmp_path: Path) -> None:
     assert set(oos["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
     assert oos["baseline_mean_rank_ic"] is not None
     assert set(report["seed_validation_rank_ic"]) == set(MODULE.REQUIRED_SEEDS)
+
+
+def test_m3_smoke_pipeline_end_to_end(tmp_path: Path) -> None:
+    """Task 4.3: M3 set-attention orchestration evidence on synthetic frames."""
+    report = MODULE.train_m3_smoke(tmp_path)
+    assert report["family"] == "M3"
+    assert report["mode"] == "smoke"
+    oos = report["oos"]
+    assert oos["valid_day_count"] == 8
+    assert set(oos["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
+    assert oos["baseline_mean_rank_ic"] is not None
+    assert set(report["seed_validation_rank_ic"]) == set(MODULE.REQUIRED_SEEDS)

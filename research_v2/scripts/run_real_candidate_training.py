@@ -30,6 +30,7 @@ from research_v2.evaluation.model_evaluator import evaluate_frozen_oos
 from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
 from research_v2.inference.artifact_loader import load_inference_artifact
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
+from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
 from research_v2.training.artifacts import CheckpointStore
 from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
@@ -220,15 +221,21 @@ def _prepare_frame(
     return pd.concat([base, transformed.values.reset_index(drop=True)], axis=1)
 
 
-def train_m1_smoke(workspace: Path) -> dict[str, Any]:
-    """End-to-end M1 orchestration on synthetic frames (not model evidence)."""
+def _train_cross_section_smoke(
+    workspace: Path,
+    *,
+    family: str,
+    family_name: str,
+    model_code_version: str,
+    config_factory: Any,
+    model_factory: Any,
+) -> dict[str, Any]:
+    """Shared end-to-end cross-section orchestration for M1/M3 smoke runs."""
     factor_count = SMOKE_FACTOR_COUNT
     frames = build_smoke_frames(factor_count)
     factor_order = tuple(f"f{index:02d}" for index in range(factor_count))
     preprocessor = FoldPreprocessor(factor_order=factor_order)
-    preprocessor.fit(
-        frames["train"].loc[:, list(factor_order)], role="TRAIN"
-    )
+    preprocessor.fit(frames["train"].loc[:, list(factor_order)], role="TRAIN")
     train_batches = build_static_training_batches(
         _prepare_frame(frames["train"], preprocessor, factor_order), factor_order=factor_order
     )
@@ -236,22 +243,15 @@ def train_m1_smoke(workspace: Path) -> dict[str, Any]:
         _prepare_frame(frames["validation"], preprocessor, factor_order),
         factor_order=factor_order,
     )
-    config = ResidualMLPConfig(
-        raw_factor_count=factor_count, hidden_dim=16, num_blocks=1, dropout=0.0
-    )
-    config_payload = {
-        "raw_factor_count": factor_count,
-        "hidden_dim": 16,
-        "num_blocks": 1,
-        "dropout": 0.0,
-    }
+    config = config_factory()
+    config_payload = asdict(config)
     checkpoint_store = CheckpointStore(workspace / "checkpoints")
     seed_checkpoints: dict[int, Path] = {}
     seed_validation_predictions: dict[int, pd.DataFrame] = {}
     seed_rank_ic: dict[int, float] = {}
-    prototype = ResidualMLP(config)
+    prototype = model_factory()
     for seed in REQUIRED_SEEDS:
-        model = ResidualMLP(config)
+        model = model_factory()
         optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
         run = run_validation_governed_training(
             model,
@@ -259,11 +259,13 @@ def train_m1_smoke(workspace: Path) -> dict[str, Any]:
             train_batches=train_batches,
             validation_batches=validation_batches,
             train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id="smoke-train"),
-            validation_view=DatasetView(role=DatasetRole.VALIDATION, dataset_id="smoke-validation"),
+            validation_view=DatasetView(
+                role=DatasetRole.VALIDATION, dataset_id="smoke-validation"
+            ),
             trainer_config=TrainerConfig(max_epochs=8, early_stopping_patience=8),
             seed=seed,
             checkpoint_store=checkpoint_store,
-            checkpoint_prefix=f"smoke-m1-{seed}",
+            checkpoint_prefix=f"smoke-{family.lower()}-{seed}",
         )
         seed_checkpoints[seed] = (
             workspace / "checkpoints" / run.checkpoint_ids[-1] / "checkpoint.pt"
@@ -276,14 +278,14 @@ def train_m1_smoke(workspace: Path) -> dict[str, Any]:
         )
     ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)
     bundle_store = ModelArtifactBundleStore(workspace / "models")
-    model_id = "smoke-m1"
+    model_id = f"smoke-{family.lower()}"
     bundle_store.write(
         model_id,
         model_card={
-            "family": "RESIDUAL_MLP",
+            "family": family_name,
             "dataset_id": "smoke-train",
             "model_status": "WALK_FORWARD_PASSED",
-            "model_code_version": "residual-mlp-1",
+            "model_code_version": model_code_version,
         },
         config=config_payload,
         signature=asdict(prototype.artifact_signature()),
@@ -333,7 +335,7 @@ def train_m1_smoke(workspace: Path) -> dict[str, Any]:
         minimum_cross_section=30,
     )
     return {
-        "family": "M1",
+        "family": family,
         "mode": "smoke",
         "seed_validation_rank_ic": seed_rank_ic,
         "worst_seed": ensemble.worst_seed,
@@ -350,6 +352,52 @@ def train_m1_smoke(workspace: Path) -> dict[str, Any]:
         },
         "note": "smoke orchestration evidence only; never model passing evidence",
     }
+
+
+def train_m1_smoke(workspace: Path) -> dict[str, Any]:
+    """End-to-end M1 (ResidualMLP) orchestration on synthetic frames."""
+    return _train_cross_section_smoke(
+        workspace,
+        family="M1",
+        family_name="RESIDUAL_MLP",
+        model_code_version="residual-mlp-1",
+        config_factory=lambda: ResidualMLPConfig(
+            raw_factor_count=SMOKE_FACTOR_COUNT, hidden_dim=16, num_blocks=1, dropout=0.0
+        ),
+        model_factory=lambda: ResidualMLP(
+            ResidualMLPConfig(
+                raw_factor_count=SMOKE_FACTOR_COUNT, hidden_dim=16, num_blocks=1, dropout=0.0
+            )
+        ),
+    )
+
+
+def train_m3_smoke(workspace: Path) -> dict[str, Any]:
+    """End-to-end M3 (SetAttention) orchestration on synthetic frames."""
+    return _train_cross_section_smoke(
+        workspace,
+        family="M3",
+        family_name="SET_ATTENTION",
+        model_code_version="set-attention-1",
+        config_factory=lambda: SetAttentionConfig(
+            raw_factor_count=SMOKE_FACTOR_COUNT,
+            hidden_dim=16,
+            num_heads=2,
+            inducing_points=4,
+            num_blocks=1,
+            dropout=0.0,
+        ),
+        model_factory=lambda: SetAttention(
+            SetAttentionConfig(
+                raw_factor_count=SMOKE_FACTOR_COUNT,
+                hidden_dim=16,
+                num_heads=2,
+                inducing_points=4,
+                num_blocks=1,
+                dropout=0.0,
+            )
+        ),
+    )
 
 
 SMOKE_TEMPORAL_HISTORY_LENGTH = 20
@@ -622,7 +670,7 @@ def main() -> None:
         elif args.family == "M2":
             report = train_m2_smoke(workspace)
         else:
-            raise SystemExit("M3 smoke wiring lands later in Task 4 of the candidate plan")
+            report = train_m3_smoke(workspace)
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
         print(json.dumps(report["oos"], ensure_ascii=False, indent=2))
