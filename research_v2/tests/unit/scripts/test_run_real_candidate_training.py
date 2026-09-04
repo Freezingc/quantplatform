@@ -99,3 +99,17 @@ def test_parse_args_smoke_mode_allows_missing_artifacts(tmp_path: Path) -> None:
     )
     assert args.smoke is True
     assert args.baseline_artifacts is None
+
+
+def test_m1_smoke_pipeline_end_to_end(tmp_path: Path) -> None:
+    """Task 3.1: orchestration evidence only - synthetic gates are not model evidence."""
+    report = MODULE.train_m1_smoke(tmp_path)
+    assert report["family"] == "M1"
+    assert report["mode"] == "smoke"
+    oos = report["oos"]
+    assert oos["valid_day_count"] == 8
+    assert set(oos["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
+    assert all(status in {"PASS", "FAIL", "NOT_APPLICABLE"} for status in oos["gates"].values())
+    assert oos["baseline_mean_rank_ic"] is not None
+    assert set(report["seed_validation_rank_ic"]) == set(MODULE.REQUIRED_SEEDS)
+    assert report["worst_seed"] in MODULE.REQUIRED_SEEDS
