@@ -30,12 +30,14 @@ from research_v2.evaluation.model_evaluator import evaluate_frozen_oos
 from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
 from research_v2.inference.artifact_loader import load_inference_artifact
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
+from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
 from research_v2.training.artifacts import CheckpointStore
-from research_v2.training.batches import TrainingBatch
+from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.runner import run_validation_governed_training
 from research_v2.training.static_batches import build_static_training_batches
+from research_v2.training.temporal_batches import build_temporal_training_batches
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
 ORDINARY_FOLDS: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06")
@@ -350,20 +352,283 @@ def train_m1_smoke(workspace: Path) -> dict[str, Any]:
     }
 
 
+SMOKE_TEMPORAL_HISTORY_LENGTH = 20
+SMOKE_TEMPORAL_TOTAL_DAYS = 30
+SMOKE_TEMPORAL_TRAIN_TARGET_INDICES = (15, 16, 17, 18, 19)
+SMOKE_TEMPORAL_VALIDATION_INDEX = 20
+SMOKE_TEMPORAL_TEST_INDICES = (21, 22, 23, 24, 25, 26, 27, 28)
+
+
+def _smoke_temporal_dates() -> tuple[date, ...]:
+    base = date(2024, 1, 1)
+    days: list[date] = []
+    current = base
+    while len(days) < SMOKE_TEMPORAL_TOTAL_DAYS:
+        if current.weekday() < 5:
+            days.append(current)
+        current = date.fromordinal(current.toordinal() + 1)
+    return tuple(days)
+
+
+def build_smoke_temporal_frames(factor_count: int) -> dict[str, Any]:
+    """Synthetic panel with causal history for the M2 temporal smoke run."""
+    alpha = np.random.default_rng(31).standard_normal(SMOKE_STOCK_COUNT)
+    noise = np.random.default_rng(32)
+    days = _smoke_temporal_dates()
+    train_days = tuple(days[i] for i in SMOKE_TEMPORAL_TRAIN_TARGET_INDICES)
+    validation_day = days[SMOKE_TEMPORAL_VALIDATION_INDEX]
+    test_days = tuple(days[i] for i in SMOKE_TEMPORAL_TEST_INDICES)
+
+    rows: list[dict[str, object]] = []
+    for day in days:
+        values = noise.standard_normal((SMOKE_STOCK_COUNT, factor_count)) * 0.1
+        values[:, 0] = alpha
+        is_target = day in train_days or day == validation_day
+        targets = alpha + noise.standard_normal(SMOKE_STOCK_COUNT) * 0.5
+        for index, code in enumerate(_smoke_codes()):
+            row: dict[str, object] = {
+                "signal_date": day,
+                "ts_code": code,
+                "raw_return_5d": float(targets[index]) if is_target else 0.0,
+                "label_valid": is_target,
+            }
+            for factor_index in range(factor_count):
+                row[f"f{factor_index:02d}"] = float(values[index, factor_index])
+            rows.append(row)
+    frame = pd.DataFrame(rows)
+
+    test_rows = frame.loc[frame["signal_date"].isin(test_days)].copy()
+    test_rows["raw_return_5d"] = 0.0
+    test_rows["label_valid"] = True
+
+    baseline_rows = []
+    for day in test_days:
+        for index, code in enumerate(_smoke_codes()):
+            baseline_rows.append(
+                {"signal_date": day, "ts_code": code, "score": float(alpha[index])}
+            )
+    test_generator = np.random.default_rng(34)
+    labels = test_rows.loc[:, ["signal_date", "ts_code"]].copy()
+    label_returns = np.concatenate(
+        [
+            alpha + test_generator.standard_normal(SMOKE_STOCK_COUNT) * 0.5
+            for _ in test_days
+        ]
+    )
+    labels["raw_return_5d"] = label_returns
+    labels["label_valid"] = True
+    return {
+        "train": frame.loc[frame["signal_date"].isin(train_days)].copy(),
+        "validation": frame.loc[frame["signal_date"] == validation_day].copy(),
+        "test": test_rows.reset_index(drop=True),
+        "history": frame,
+        "baseline_predictions": pd.DataFrame(baseline_rows),
+        "labels": labels,
+    }
+
+
+def _predict_temporal_validation_percentiles(
+    model: torch.nn.Module, validation_batches: Mapping[date, TemporalTrainingBatch]
+) -> pd.DataFrame:
+    model.eval()
+    rows: list[dict[str, object]] = []
+    for signal_date in sorted(validation_batches):
+        batch = validation_batches[signal_date]
+        with torch.no_grad():
+            scores = model(batch.inputs)[0]
+        ranks = _percentile_rank_series(scores)
+        for stock_index, code in enumerate(batch.inputs.ts_codes[0]):
+            rows.append(
+                {
+                    "signal_date": signal_date,
+                    "ts_code": code,
+                    "percentile_rank": float(ranks[stock_index]),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def train_m2_smoke(workspace: Path) -> dict[str, Any]:
+    """End-to-end M2 (TemporalGRU) orchestration on synthetic frames."""
+    factor_count = 6
+    frames = build_smoke_temporal_frames(factor_count)
+    factor_order = tuple(f"f{index:02d}" for index in range(factor_count))
+    preprocessor = FoldPreprocessor(factor_order=factor_order)
+    preprocessor.fit(frames["train"].loc[:, list(factor_order)], role="TRAIN")
+
+    def _prepare(frame: pd.DataFrame) -> pd.DataFrame:
+        return _prepare_frame(frame, preprocessor, factor_order)
+
+    history = frames["history"].copy()
+    for factor_name in factor_order:
+        history[factor_name] = preprocessor.transform(
+            history.loc[:, list(factor_order)]
+        ).values[factor_name].to_numpy()
+    train_with_history = pd.concat(
+        [
+            history.loc[
+                history["signal_date"] < frames["train"]["signal_date"].min()
+            ],
+            _prepare(frames["train"]),
+        ],
+        ignore_index=True,
+    )
+    train_batches = build_temporal_training_batches(
+        train_with_history,
+        factor_order=factor_order,
+        history_length=SMOKE_TEMPORAL_HISTORY_LENGTH,
+        minimum_valid_history_length=15,
+    )
+    validation_with_history = pd.concat(
+        [history.loc[history["signal_date"] < frames["validation"]["signal_date"].min()],
+         _prepare(frames["validation"])],
+        ignore_index=True,
+    )
+    validation_batches = build_temporal_training_batches(
+        validation_with_history,
+        factor_order=factor_order,
+        history_length=SMOKE_TEMPORAL_HISTORY_LENGTH,
+        minimum_valid_history_length=15,
+    )
+    config = TemporalGRUConfig(raw_factor_count=factor_count, hidden_dim=16, dropout=0.0)
+    config_payload = {"raw_factor_count": factor_count, "hidden_dim": 16, "dropout": 0.0}
+    checkpoint_store = CheckpointStore(workspace / "checkpoints")
+    seed_checkpoints: dict[int, Path] = {}
+    seed_validation_predictions: dict[int, pd.DataFrame] = {}
+    seed_rank_ic: dict[int, float] = {}
+    prototype = TemporalGRU(config)
+    for seed in REQUIRED_SEEDS:
+        model = TemporalGRU(config)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
+        run = run_validation_governed_training(
+            model,
+            optimizer,
+            train_batches=train_batches,
+            validation_batches=validation_batches,
+            train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id="smoke-train"),
+            validation_view=DatasetView(role=DatasetRole.VALIDATION, dataset_id="smoke-validation"),
+            trainer_config=TrainerConfig(max_epochs=8, early_stopping_patience=8),
+            seed=seed,
+            checkpoint_store=checkpoint_store,
+            checkpoint_prefix=f"smoke-m2-{seed}",
+        )
+        seed_checkpoints[seed] = (
+            workspace / "checkpoints" / run.checkpoint_ids[-1] / "checkpoint.pt"
+        )
+        seed_validation_predictions[seed] = _predict_temporal_validation_percentiles(
+            model, validation_batches
+        )
+        seed_rank_ic[seed] = _validation_rank_ic(
+            seed_validation_predictions[seed], frames["validation"]
+        )
+    ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)
+    bundle_store = ModelArtifactBundleStore(workspace / "models")
+    model_id = "smoke-m2"
+    bundle_store.write(
+        model_id,
+        model_card={
+            "family": "TEMPORAL_GRU",
+            "dataset_id": "smoke-train",
+            "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": "temporal-gru-1",
+        },
+        config=config_payload,
+        signature=asdict(prototype.artifact_signature()),
+        feature_order=factor_order,
+        preprocessing={"state_hash": preprocessor.state_hash},
+        seed_checkpoints=seed_checkpoints,
+        validation_predictions=ensemble.predictions.rename(
+            columns={"ensemble_score": "percentile_rank"}
+        ),
+    )
+    loaded = load_inference_artifact(
+        bundle_store,
+        model_id,
+        expected_dataset_id="smoke-train",
+        expected_feature_order=factor_order,
+        expected_preprocessor_hash=preprocessor.state_hash,
+        device=torch.device("cpu"),
+    )
+    test_dates = set(frames["test"]["signal_date"])
+    test_panel = pd.concat(
+        [
+            history.loc[~history["signal_date"].isin(test_dates)],
+            _prepare(frames["test"]),
+        ],
+        ignore_index=True,
+    )
+    test_batches = build_temporal_training_batches(
+        test_panel,
+        factor_order=factor_order,
+        history_length=SMOKE_TEMPORAL_HISTORY_LENGTH,
+        minimum_valid_history_length=15,
+    )
+    rows: list[dict[str, object]] = []
+    for signal_date in sorted(test_batches):
+        batch = test_batches[signal_date]
+        accumulated: torch.Tensor | None = None
+        for seed_model in loaded.models:
+            with torch.no_grad():
+                scores = seed_model(batch.inputs)[0]
+            ranks = _percentile_rank_series(scores)
+            accumulated = ranks if accumulated is None else accumulated + ranks
+        assert accumulated is not None
+        mean_ranks = accumulated / len(loaded.models)
+        for stock_index, code in enumerate(batch.inputs.ts_codes[0]):
+            rows.append(
+                {
+                    "signal_date": signal_date,
+                    "ts_code": code,
+                    "score": float(mean_ranks[stock_index]),
+                }
+            )
+    candidate_predictions = pd.DataFrame(rows)
+    evaluation = evaluate_frozen_oos(
+        candidate_predictions,
+        frames["labels"],
+        baseline_predictions=frames["baseline_predictions"],
+        role="TEST",
+        minimum_cross_section=30,
+    )
+    return {
+        "family": "M2",
+        "mode": "smoke",
+        "seed_validation_rank_ic": seed_rank_ic,
+        "worst_seed": ensemble.worst_seed,
+        "oos": {
+            "valid_day_count": evaluation.summary.valid_day_count,
+            "mean_rank_ic": evaluation.summary.mean_rank_ic,
+            "hac_t_statistic": evaluation.hac.t_statistic,
+            "baseline_mean_rank_ic": evaluation.baseline_mean_rank_ic,
+            "delta_rank_ic": evaluation.delta_rank_ic,
+            "gates": {
+                gate: result.status.value
+                for gate, result in evaluation.gate_report.results.items()
+            },
+        },
+        "note": "smoke orchestration evidence only; never model passing evidence",
+    }
+
+
 def main() -> None:
     args = parse_args()
-    if args.family != "M1":
-        validate_family_order(args.family, prior_families_passed=())
-        raise SystemExit(f"family {args.family} wiring lands in Task 4 of the candidate plan")
     if args.smoke:
-        workspace = args.report.parent / "smoke_workspace"
+        # Smoke mode verifies orchestration only; the E-plan execution order
+        # guard applies to real training runs, not to test harnesses.
+        workspace = args.report.parent / f"smoke_workspace_{args.family.lower()}"
         workspace.mkdir(parents=True, exist_ok=True)
-        report = train_m1_smoke(workspace)
+        if args.family == "M1":
+            report = train_m1_smoke(workspace)
+        elif args.family == "M2":
+            report = train_m2_smoke(workspace)
+        else:
+            raise SystemExit("M3 smoke wiring lands later in Task 4 of the candidate plan")
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
         print(json.dumps(report["oos"], ensure_ascii=False, indent=2))
         print(f"smoke complete; report={args.report}")
         return
+    validate_family_order(args.family, prior_families_passed=())
     if args.baseline_artifacts is None:
         raise SystemExit("--baseline-artifacts is required for full runs")
     load_baseline_predictions(args.baseline_artifacts)
