@@ -44,6 +44,11 @@
       **端到端活库 dry-run（2026-09-05）**：`main()` 胶合路径实测通过（2020-01/02 与年边界 2020-12：状态装配→预校验→计划渲染，版本 66f33a… 单一、行数 625,572/797,961/880,244）；演练暴露并修复下月边界日期字面量分隔符缺陷（`-`→`.`，已提取 `month_bounds()` + 回归测试，9 测试绿）。
       **装配源活库端到端验证（2026-09-05）**：`extract_dataset_factor_daily` 以真实数据完成 F01/test（2020 全年）：666,421 行 × 22 列（f00–f16 齐全），label_valid 0.9981，版本钉扎生效（66f33a…），f00 值与单查询探针逐位一致（000001.SZ 2020-01-02 = 0.940912），缺失以 NaN 保留；缓存键版本隔离，未触碰遗留链缓存。Task 1 全部工件活库验证闭环。
 
+- [ ] 1.7 **执行登记（裁决后）**：`publish_factor_daily_versions.py --months
+      2020-01..2025-12 --execute`（72 个月分区）；前置：dry-run 全部条目为
+      REGISTER 或 SKIP_CURRENT、无 RegistrationRefused；执行后以
+      `current_versions(holder, 'factor_daily')` 复核 72 分区指针齐全。
+
 ## Task 2: 冻结集常量接线
 
 **Files:**
@@ -55,14 +60,24 @@
 - [ ] 2.1 冻结 17 清单常量（含 `yeslab_443_reg30_max20_v1` 与物化键名映射核验）。
 - [ ] 2.2 `configs/models/*.yaml` 的 `raw_factor_count_min: 15` 与 17 因子兼容
       （17 ≥ 15，无需改 yaml；测试固化该事实，消除候选计划的既有张力条款）。
-- [ ] 2.3 遗留链复现性保护：criterion-303 复现命令仍指向旧常量路径（若 2 采用
-      模式选择方案）；提交前重跑一致性核验器确认。
+- [ ] 2.3 **集成机制（已定案）**：`run_real_walk_forward.py` 增加
+      `--factor-source legacy|frozen` 旗标，**默认 legacy**——legacy 路径逐位保持
+      criterion-303 复现契约（常量与装配源均不动）；frozen 路径切换为
+      `extract_dataset_factor_daily` + `FROZEN_FACTOR_SET_V1`（均在
+      `walk_forward_factor_daily.py`，walk_forward_common 零改动）。候选驱动
+      `run_real_candidate_training.py` 同理加同名旗标。
+- [ ] 2.4 遗留链复现性保护：criterion-303 复现命令（不带新旗标）行为逐位不变；
+      提交前重跑一致性核验器确认。
       **前置核验（2026-09-05）**：2020-01 分区实测冻结 17 ID 全部在库（含 `yeslab_443_reg30_max20_v1`，0 缺失、0 多余）；三份模型配置 `raw_factor_count_min: 15` ≤ 17，兼容无需改 yaml。
 
 ## Task 3: 冻结集基线 walk-forward（新信任根）
 
 **Files:** 复用 `scripts/run_real_walk_forward.py`（装配源切换后）
 - [ ] 3.1 全量运行 B0–B3 × F01–F06（缓存命中后装配 ~2 分钟；训练时长参照遗留链 ~15h）。
+      **路径隔离（硬约束）**：报告与折匹配工件写独立路径
+      `baseline_oos_report_frozen.json` / `baseline_oos_frozen/`（qrv2_research_artifacts
+      下）——遗留链 M1–M3 随时可能消费 `baseline_oos_report.json` / `baseline_oos/`，
+      两链产物在时间与空间上均不得互相覆盖。
 - [ ] 3.2 判定渲染：`summarize_real_walk_forward.py` →
       `docs/reports/<date>-frozen-set-baseline-walk-forward.md`（新命名，不占用
       criterion-303 名号；303 保留为遗留集证据）。
@@ -79,6 +94,9 @@
 
 - [ ] 5.1 以冻结集基线为 `--baseline-artifacts/--baseline-report` 输入，复用现有
       候选驱动与顺序守卫（`--prior-report` 证据链）重跑 M1→M2→M3。
+      **工作区隔离**：`--workspace` 用 `m1_frozen/m2_frozen/m3_frozen`，
+      报告用 `m{1,2,3}_report_frozen.json`——遗留链工作区 `m1/m2/m3` 在遗留链
+      存续期内不得触碰。
 - [ ] 5.2 判定归档 + 对比文档（复用两个渲染器）+ 主计划 10.2 更新。
 - [ ] 5.3 遗留链结果在对比文档中并列呈现并明确标注「遗留集管线验证」。
 
