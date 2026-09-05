@@ -330,7 +330,7 @@ git commit -m "feat(v2): materialize governed factor observations"
 - Create: `research_v2/src/research_v2/factors/quality.py`
 - Test: `research_v2/tests/unit/factors/test_quality.py`
 
-- [ ] **C6.1 固化结构质量指标**
+- [x] **C6.1 固化结构质量指标**
 
 按 `as_of_date, factor_id, factor_version, scope_id` 计算：universe member denominator、coverage、finite ratio、cross-sectional unique ratio、zero ratio、median/MAD、p01/p50/p99、每日 dispersion、stale share、duplicate/conflict rate、最长缺失连续天数、日期覆盖和证券覆盖。
 
@@ -670,3 +670,57 @@ C4.6 泄漏测试与 C4 属性测试覆盖。
 C6.2 是补三条 blocker 判定。二者都会改变 `FactorQualitySnapshot.metrics` 的内容，
 而该快照被 C6.2 筛查与准入一致性门消费，故落地时应同步核对
 `screen_factor_daily_coverage.py` 与 `verify_admission_consistency.py` 的字段依赖。
+
+## 勾选审计续四（2026-09-06 07:55）：C6.1 已补齐并勾选，C6.2 补完判定但仍不勾
+
+**先更正上一节的一个假设。**上节写「该快照被 C6.2 筛查与准入一致性门消费，故落地时应同步核对
+字段依赖」——**这是未经核实的假设，已被 grep 推翻**：`assess_factor_quality` 与
+`FactorQualitySnapshot` 在 `src/`、`scripts/`、`tests/`（除自身单测外）**没有任何消费者**。
+`screen_factor_daily_coverage.py` 自带一套 C6.2 阈值与逐日计数逻辑，**不调用本模块**。
+故扩展 `quality.py` 是**零下游风险**的；但这也暴露一个架构事实：
+**「C6.2 结构质量」现有两套并行实现**，一套（本模块）未被接线。
+
+**顺序约束（重要）**：这两套实现的合并**必须排在裁决 4 落地之后**。当前生效的那套
+（`screen_factor_daily_coverage.py`）正是前置门 `factor_coverage_screen` 所跑、
+并产出 **PASS 11 / ELIGIBILITY_FAIL 6** 分类的实现，而该分类是选项 (iii) 因子集的定义来源、
+也是本轮全部覆盖率测量的基准。在裁决期间替换它，会让已记录的判定失去可复现的出处。
+
+**C6.1 已补齐并勾选。**13 项点名指标此前只发出 5 项，现全部发出：
+新增 `zero_ratio`、`value_median`、`value_mad`、`value_p01/p50/p99`、
+`median_daily_dispersion`、`stale_share`、`duplicate_observation_rate`、`conflict_key_rate`、
+`longest_missing_date_streak`、`date_coverage`、`security_coverage`、`finite_ratio`。
+两处设计取舍已写进代码注释：**空日期不贡献 dispersion 样本**（记为 0 会把中位 dispersion 拉低、
+让有缺失的因子看起来比单纯平坦的因子更稳定）；**`finite_ratio` 与 `coverage` 不可合并**
+（前者描述源交付了什么、后者描述 universe 能用什么，一个因子可以完全有限却几乎不覆盖，
+也可以全覆盖而源交付的一半不可用）。
+`longest_missing_date_streak` 取**连续**空日而非计数——一天黑与一周黑是两种故障。
+**并按规格补上快照主键**：`FactorQualitySnapshot` 新增 `scope_id` 与 `as_of_date`，
+二者为**必填关键字参数**，空 `scope_id` 直接拒绝。字段名与类型对齐
+`verify_admission_consistency.py::ScreeningRecord.scope_id`（既有契约，非新造）。
+缺了这两项，快照只能与自身比较、无法被解释：同一因子在不同训练 scope、不同源版本下得分不同。
+`conflict_key_rate` **仅在真的测了的时候才发出**——0.0 与「未测」是两个不同的陈述，
+后者由 `unchecked_blockers` 指名。
+
+**C6.2 的判定部分已补完，但仍不勾。**5 条 BLOCKER 现已齐备：
+`PIT_VIOLATION`（`stale_days < 0` ⇔ `available_date > signal_date`）、
+`CONFLICT_KEY_IN_CLEAN`、`NONFINITE_CLEAN_VALUE`、`UNKNOWN_REGISTRY_VERSION`、
+`DUPLICATE_BUSINESS_KEY`（另含既有的 `DUPLICATE_UNIVERSE_KEY`）；
+3 条 ELIGIBILITY_FAIL 阈值与规格逐一相符（`LOW_COVERAGE`<0.70、`LOW_UNIQUE_RATIO`<1.00、
+`EXCESS_ZERO_DISPERSION`>0.20）。
+后两条 BLOCKER 需要调用方提供输入（隔离键集、registry 已知版本），
+**未提供时不静默跳过，而是记入 `FactorQualitySnapshot.unchecked_blockers`**——
+「因为没看所以通过」正是本计划反复防范的失效模式，且该遗漏应留在被归档的快照里。
+键比较两侧都规范化为 `(date, str)`：本仓库装配帧存 `datetime.date`、其它路径存
+`pandas.Timestamp`，而类型不匹配的失效方向是**静默的**（永不相交 → 报「无重叠」），
+已有专门测试覆盖跨类型命中。
+**顺带修正一处相关的正确性问题**：`is_usable` 原本只要求 `stale_days <= 上限`、
+**不要求 `>= 0`**，故一条 PIT 违规行会被算作可用、**虚增 coverage**，
+与新加的 blocker 自相矛盾。现两者一致，并有断言钉住（违规行不计入 `finite_value_count`）。
+**不勾的理由**：该条末句「ELIGIBILITY_FAIL 使因子不能进入该 fold 选因，但不删除历史记录」
+描述的是**下游效果**，需要一个消费该快照的选因环节才能验证；本模块目前无消费者，
+故只能验证到「分类正确、且纯函数不删除任何历史」为止。**接线之后应回来勾这一条。**
+
+**变异验证**：把 `is_usable` 的 `>= 0` 放宽 → PIT 测试的 coverage 断言失败（捕获）；
+`quality.py` 以 `git diff` 确认还原干净。
+**全量：1305 passed / 45 skipped**（本轮起点 1289），`ruff check src tests` 清、
+`mypy src` 156 文件清。
