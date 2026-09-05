@@ -137,3 +137,50 @@ def test_calibration_bounds_rejects_a_fold_without_both_roles() -> None:
 
     with pytest.raises(ValueError, match="train/test"):
         M.calibration_bounds(partial)
+
+
+def test_gate_from_widths_flattens_the_day_mapping_for_the_gate() -> None:
+    """assess_coverage reads only the values, so a flat width list is a valid input."""
+    captured: dict[str, object] = {}
+
+    def _stub(fold_id, role, years, daily_widths, **thresholds):
+        captured.update(
+            fold_id=fold_id, role=role, years=years, widths=daily_widths, **thresholds
+        )
+        return "verdict"
+
+    result = M.gate_from_widths(
+        _stub, [1402, 0, 1402], fold_id="F01", role="train", years=(2014,),
+        minimum_median_width=1000,
+    )
+
+    assert result == "verdict"
+    assert captured["fold_id"] == "F01"
+    assert captured["role"] == "train"
+    assert captured["years"] == (2014,)
+    assert captured["widths"] == {0: [1402, 0, 1402]}
+    assert captured["minimum_median_width"] == 1000
+
+
+def test_the_real_gate_admits_the_legacy_profile_and_rejects_the_frozen_one() -> None:
+    """The calibration claim, executable: one verdict function, both measured profiles.
+
+    A threshold chosen only from the defective side is a verdict written in advance,
+    not a gate. These are the measured F01 train profiles -- legacy 1,213 days at a
+    median of 1,402 plus the single empty 2017-10-09, frozen 1,205 days at a median
+    of 310 plus 15 days down to 2 stocks -- run through the same assess_coverage and
+    the same default constants that the pre-flight gate uses.
+    """
+    from verify_frozen_fold_coverage import assess_coverage
+
+    legacy = M.gate_from_widths(
+        assess_coverage, [1402] * 1213 + [0], fold_id="F01", role="train", years=(2014,)
+    )
+    frozen = M.gate_from_widths(
+        assess_coverage, [310] * 1205 + [2] * 15, fold_id="F01", role="train", years=(2014,)
+    )
+
+    assert legacy.passed, f"the accepted baseline must be admitted: {legacy.failures}"
+    assert not frozen.passed
+    assert any("below the calibrated floor" in failure for failure in frozen.failures)
+    assert any("fall below the cross-section floor" in failure for failure in frozen.failures)

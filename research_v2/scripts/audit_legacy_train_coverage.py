@@ -92,6 +92,31 @@ class FrameMeasurement:
     coverage: SegmentCoverage
     factor_count: int
     observed_years: tuple[int, ...]
+    widths: tuple[int, ...]
+
+
+SegmentMap = dict[tuple[str, str], SegmentCoverage]
+MeasurementMap = dict[tuple[str, str], FrameMeasurement]
+
+
+def gate_from_widths(
+    assess: Any,
+    widths: Sequence[int],
+    *,
+    fold_id: str,
+    role: str,
+    years: Sequence[int],
+    **thresholds: Any,
+) -> Any:
+    """Run the frozen coverage gate's own verdict function over measured widths.
+
+    ``assess_coverage`` flattens ``daily_widths.values()`` and never reads the day
+    keys, so a measured width list can be handed to it directly. This is what makes
+    the calibration checkable instead of asserted: the same gate that rejects the
+    frozen set must admit every segment of the baseline already accepted, and this
+    runs that claim on the real frames rather than on a synthetic fixture.
+    """
+    return assess(fold_id, role, years, {0: [int(width) for width in widths]}, **thresholds)
 
 
 def factor_columns(columns: Sequence[str]) -> tuple[str, ...]:
@@ -261,7 +286,12 @@ def measure_frame(path: Path, minimum_cross_section: int) -> FrameMeasurement:
         median_width=int(statistics.median(values)) if values else 0,
         min_width=values[0] if values else 0,
     )
-    return FrameMeasurement(coverage, len(factors), observed_years)
+    return FrameMeasurement(
+        coverage,
+        len(factors),
+        observed_years,
+        tuple(int(widths[day]) for day in sorted(widths, key=str)),
+    )
 
 
 def measure_source(
@@ -271,7 +301,7 @@ def measure_source(
     *,
     minimum_cross_section: int,
     require_complete: bool,
-) -> tuple[dict[tuple[str, str], SegmentCoverage], tuple[str, ...], int]:
+) -> tuple[SegmentMap, tuple[str, ...], int, MeasurementMap]:
     """Measure every cached segment of one factor source."""
     from dataclasses import replace
 
@@ -284,7 +314,8 @@ def measure_source(
         resolved, missing = partition_cache_paths(wanted, index)
     years_by_segment = {(fold, role): years for fold, role, years in _segments_for_source(source)}
 
-    results: dict[tuple[str, str], SegmentCoverage] = {}
+    results: SegmentMap = {}
+    measurements: MeasurementMap = {}
     factor_count = 0
     for (fold_id, role), path in sorted(resolved.items()):
         measurement = measure_frame(path, minimum_cross_section)
@@ -299,7 +330,8 @@ def measure_source(
         results[(fold_id, role)] = replace(
             measurement.coverage, fold_id=fold_id, role=role
         )
-    return results, missing, factor_count
+        measurements[(fold_id, role)] = measurement
+    return results, missing, factor_count, measurements
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -310,6 +342,11 @@ def main(argv: list[str] | None = None) -> int:
                         default=DEFAULT_MINIMUM_CROSS_SECTION)
     parser.add_argument("--cache-root", type=Path, default=None)
     parser.add_argument("--json", type=Path, default=None, help="also write the measurements here")
+    parser.add_argument(
+        "--apply-coverage-gate", action="store_true",
+        help="run verify_frozen_fold_coverage's verdict function over the measured "
+             "widths, to check the calibrated gate admits what it is calibrated on",
+    )
     args = parser.parse_args(argv)
 
     sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -325,7 +362,7 @@ def main(argv: list[str] | None = None) -> int:
         # calibrated against. Every other source is best-effort, because the frozen
         # chain has only been assembled for the folds proven so far.
         require_complete = source == REFERENCE_SOURCE
-        results, missing, factor_count = measure_source(
+        results, missing, factor_count, measurements = measure_source(
             holder, source, cache_root,
             minimum_cross_section=args.minimum_cross_section,
             require_complete=require_complete,
@@ -354,6 +391,10 @@ def main(argv: list[str] | None = None) -> int:
             "missing": list(missing),
             "train_test_ratio": {fold: round(ratio, 4) for fold, ratio in ratios.items()},
         }
+        if args.apply_coverage_gate:
+            payload[f"{source}_coverage_gate"] = apply_coverage_gate(
+                source, measurements, minimum_cross_section=args.minimum_cross_section
+            )
         try:
             bounds = calibration_bounds(tuple(results.values()))
         except ValueError as error:
@@ -371,6 +412,66 @@ def main(argv: list[str] | None = None) -> int:
         args.json.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
         print(f"\nwrote {args.json}")
     return 0
+
+
+def apply_coverage_gate(
+    source: str,
+    measurements: MeasurementMap,
+    *,
+    minimum_cross_section: int,
+) -> dict[str, Any]:
+    """Check the calibrated gate against the widths it was calibrated on.
+
+    A threshold chosen only from the defective side is not a gate, it is a verdict
+    written in advance. This runs ``verify_frozen_fold_coverage.assess_coverage`` --
+    the same function that rejects the frozen set -- over the measured widths of the
+    accepted baseline, and reports per segment whether it is admitted. If the
+    reference chain is not fully admitted, the calibration constants are wrong and
+    must be widened before the gate is used to block anything.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from verify_frozen_fold_coverage import (
+        DEFAULT_MAX_DAYS_BELOW_FLOOR,
+        DEFAULT_MINIMUM_MEDIAN_WIDTH,
+        assess_coverage,
+    )
+
+    years_by_segment = {
+        (fold_id, role): years for fold_id, role, years in _segments_for_source(source)
+    }
+    print("  coverage-gate verdict on the measured widths (same function, same constants):")
+    verdicts: dict[str, Any] = {}
+    admitted = 0
+    for (fold_id, role), measurement in sorted(measurements.items()):
+        assessment = gate_from_widths(
+            assess_coverage,
+            measurement.widths,
+            fold_id=fold_id,
+            role=role,
+            years=years_by_segment[(fold_id, role)],
+            minimum_cross_section=minimum_cross_section,
+            max_days_below_floor=DEFAULT_MAX_DAYS_BELOW_FLOOR,
+            minimum_median_width=DEFAULT_MINIMUM_MEDIAN_WIDTH,
+        )
+        admitted += bool(assessment.passed)
+        verdicts[f"{fold_id}/{role}"] = {
+            "passed": bool(assessment.passed),
+            "failures": list(assessment.failures),
+        }
+        print(f"    {fold_id}/{role:11} {'PASS' if assessment.passed else 'FAIL'}")
+        for failure in assessment.failures:
+            print(f"       FAIL: {failure}")
+    total = len(measurements)
+    print(f"  gate admits {admitted}/{total} measured {source} segments")
+    if admitted != total:
+        print(
+            "  CALIBRATION INVALID: the gate rejects part of the reference chain it "
+            "was calibrated on; widen the constants before using it to block a run"
+        )
+    verdicts["admitted"] = admitted
+    verdicts["total"] = total
+    verdicts["calibration_valid"] = admitted == total
+    return verdicts
 
 
 if __name__ == "__main__":

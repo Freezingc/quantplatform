@@ -12,8 +12,12 @@ coverage therefore equals the market's advancing breadth: on 2015-08-24 only 2 o
 All six TEST years pass G6 at 100% valid days, so a frozen baseline run would clear
 every existing gate and become the new trust root while carrying that defect. This
 script is the gate that makes it visible: it reports, per fold and role, the daily
-width of the complete-factor cross-section, and fails closed when a TRAIN segment
-loses too many days to the floor.
+width of the complete-factor cross-section, and fails closed on two calibrated
+criteria -- a decision role (train or validation) that loses too many days to the
+floor, and a decision role whose median cross-section is too narrow. Both constants
+are calibrated against the accepted legacy-14 baseline by
+``audit_legacy_train_coverage.py``; see the comments on the defaults for the measured
+numbers and for why the train/test width ratio is reported but deliberately not gated.
 
 Scope note: this reads ``factor_daily`` only. That is sound because the frozen table
 has exactly one row per ``(factor_id, signal_date, ts_code)`` (verified: zero
@@ -42,9 +46,40 @@ DEFAULT_MIN_VALID_DAY_SHARE = 0.95
 # A day-share threshold alone is far too weak here: 11 lost days inside a five-year
 # train segment of ~1,220 days is a 99.1% valid share and would pass a 0.95 gate, yet
 # those 11 days are precisely 2015's crash days. The hard gate is therefore the count
-# of days below the cross-section floor, defaulting to zero tolerance; the share is
-# still reported because it is what G6 uses and the contrast is informative.
-DEFAULT_MAX_DAYS_BELOW_FLOOR = 0
+# of days below the cross-section floor; the share is still reported because it is what
+# G6 uses and the contrast is informative.
+#
+# The allowance is 1, not 0, because the accepted criterion-303 baseline itself loses
+# exactly one train day in F01-F04 and that day's width is 0: yeslab_387 has no rows at
+# all on 2017-10-09 in factor_observation_clean while the other 13 factors are normal
+# (2,645-3,177 rows). A full-history scan of 2014-2025 -- 2,919 trading days x 14
+# factors, 40,866 (factor, date) cells -- finds exactly one absent cell, so it is a
+# single missing observation at source, not PIT gating and not a holiday-calendar
+# effect. Zero tolerance would therefore reject the trust root this gate is meant to
+# protect the successor of. Repair that cell and the allowance should return to 0.
+# Frozen-17 loses 15/15/4 days in F01/F02/F03, so it fails at either allowance.
+DEFAULT_MAX_DAYS_BELOW_FLOOR = 1
+# Calibrated 2026-09-06 by audit_legacy_train_coverage.py, which measures the same
+# quantity on the assembled frames the accepted baseline actually consumed:
+#   train median cross-section   legacy-14  1402 1615 1949 2464 2656 2794
+#                                frozen-17   310  343  419  513  600  673
+# The two sets do not overlap on any fold (a 4.2-4.8x gap), so an absolute floor is
+# usable and 1000 sits inside the measured gap with ~1.4x margin on both sides.
+#
+# The train/test width RATIO is deliberately NOT a criterion. Measured on the same two
+# sets it is 0.53-0.74 for legacy against 0.49-0.77 for frozen-17: the distributions
+# overlap almost completely, because a ratio near 0.5 is a property of the walk-forward
+# design (a five-year train window dominated by early years, scored against one recent
+# year over a universe that grew from ~2,700 to ~4,300 names) rather than of any factor
+# set. A ratio threshold low enough to fail frozen-17 would also fail the accepted
+# baseline, i.e. it would retroactively invalidate the trust root. asymmetry_note()
+# keeps reporting the ratio and keeps not gating it.
+DEFAULT_MINIMUM_MEDIAN_WIDTH = 1000
+# Roles whose cross-section width determines a modelling decision: train fits the
+# parameters, validation selects among B0-B3. TEST only scores, and a narrow test
+# cross-section is already governed by the >=30-per-day validity rule that G6 reads,
+# so the training-adequacy floor is not applied there.
+DECISION_ROLES: tuple[str, ...] = ("train", "validation")
 
 
 @dataclass(frozen=True)
@@ -71,6 +106,7 @@ def assess_coverage(
     minimum_cross_section: int = DEFAULT_MINIMUM_CROSS_SECTION,
     min_valid_day_share: float = DEFAULT_MIN_VALID_DAY_SHARE,
     max_days_below_floor: int = DEFAULT_MAX_DAYS_BELOW_FLOOR,
+    minimum_median_width: int = DEFAULT_MINIMUM_MEDIAN_WIDTH,
     enforce: bool = True,
 ) -> CoverageAssessment:
     """Pure verdict for one (fold, role) from its per-day complete-cross-section widths.
@@ -85,6 +121,8 @@ def assess_coverage(
         raise ValueError("min_valid_day_share must be in (0, 1]")
     if max_days_below_floor < 0:
         raise ValueError("max_days_below_floor cannot be negative")
+    if minimum_median_width < 0:
+        raise ValueError("minimum_median_width cannot be negative")
 
     widths = [int(width) for values in daily_widths.values() for width in values]
     days = len(widths)
@@ -115,8 +153,29 @@ def assess_coverage(
             notes.append(message)
     if enforce and share < min_valid_day_share:
         failures.append(f"valid day share {share:.3%} < {min_valid_day_share:.2%}")
-    if enforce and min_width == 0:
-        failures.append("at least one day has an empty complete-factor cross-section")
+    # An empty day is the extreme case of a day below the floor, so it is governed by
+    # the same calibrated allowance rather than by a separate zero-tolerance rule; it
+    # still gets its own message because "the model saw nothing at all on this date"
+    # is a different diagnosis from "the model saw 20 names on this date".
+    empty_days = sum(1 for width in widths if width == 0)
+    if empty_days > max_days_below_floor:
+        message = (
+            f"{empty_days} day(s) have an empty complete-factor cross-section "
+            f"(allowed {max_days_below_floor})"
+        )
+        if enforce:
+            failures.append(message)
+        else:
+            notes.append(message)
+    if role in DECISION_ROLES and minimum_median_width > 0 and median_width < minimum_median_width:
+        message = (
+            f"median cross-section {median_width} is below the calibrated floor of "
+            f"{minimum_median_width} for a {role} segment"
+        )
+        if enforce:
+            failures.append(message)
+        else:
+            notes.append(message)
 
     return CoverageAssessment(
         fold_id=fold_id, role=role, years=tuple(years), days=days,
@@ -201,7 +260,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--max-days-below-floor", type=int, default=DEFAULT_MAX_DAYS_BELOW_FLOOR,
         help="tolerated days under the cross-section floor for an enforced role "
-             "(default 0: any lost crash day fails)",
+             "(default 1: the accepted criterion-303 baseline loses exactly one, "
+             "2017-10-09, to a single missing factor cell; frozen-17 loses 15/15/4)",
+    )
+    parser.add_argument(
+        "--minimum-median-width", type=int, default=DEFAULT_MINIMUM_MEDIAN_WIDTH,
+        help="calibrated floor on the median complete-factor cross-section of a "
+             "decision role (train/validation); 0 disables the criterion",
     )
     parser.add_argument(
         "--roles", default="train,validation,test",
@@ -217,7 +282,10 @@ def main(argv: list[str] | None = None) -> int:
     factor_count = len(FROZEN_FACTOR_SET_V1)
     holder = new_holder()
     print(f"frozen factor count: {factor_count}; cross-section floor: "
-          f"{args.minimum_cross_section}; enforced roles: {sorted(enforced)}")
+          f"{args.minimum_cross_section}; enforced roles: {sorted(enforced)}; "
+          f"max days below floor: {args.max_days_below_floor}; "
+          f"minimum median width ({'/'.join(DECISION_ROLES)}): "
+          f"{args.minimum_median_width or 'disabled'}")
     print(f"{'fold':6} {'role':11} {'years':22} {'days':>5} {'<floor':>7} "
           f"{'valid share':>12} {'median':>7} {'min':>6}  verdict")
 
@@ -230,6 +298,7 @@ def main(argv: list[str] | None = None) -> int:
             minimum_cross_section=args.minimum_cross_section,
             min_valid_day_share=args.min_valid_day_share,
             max_days_below_floor=args.max_days_below_floor,
+            minimum_median_width=args.minimum_median_width,
             enforce=role in enforced,
         )
         assessments[(fold_id, role)] = assessment
@@ -245,7 +314,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"       NOTE: {extra}")
         failed |= not assessment.passed
 
-    print("\ntrain/test cross-section asymmetry (not gated; no measured threshold yet):")
+    print("\ntrain/test cross-section asymmetry (reported only -- see DECISION_ROLES "
+          "comment: the ratio does not separate frozen-17 from the accepted baseline):")
     for fold_id in sorted({key[0] for key in assessments}):
         train = assessments.get((fold_id, "train"))
         test = assessments.get((fold_id, "test"))

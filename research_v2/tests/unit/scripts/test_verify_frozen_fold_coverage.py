@@ -72,7 +72,13 @@ def test_day_share_alone_would_miss_the_defect() -> None:
     assert a.valid_day_share > 0.99, "expected the share gate to be far too weak here"
     assert not a.passed, "count-based gate must fail even though the share is 99%+"
     lenient = M.assess_coverage(
-        "F02", "train", tuple(five_year), five_year, max_days_below_floor=10**6
+        "F02",
+        "train",
+        tuple(five_year),
+        five_year,
+        max_days_below_floor=10**6,
+        # Relax the width criterion too, so this case isolates the day count alone.
+        minimum_median_width=0,
     )
     assert lenient.passed
 
@@ -83,8 +89,19 @@ def test_empty_segment_fails_closed() -> None:
     assert any("no trading days" in f for f in a.failures)
 
 
-def test_zero_width_day_fails() -> None:
-    a = M.assess_coverage("F01", "train", (2014,), {2014: [300, 0, 310]})
+def test_zero_width_days_fail_once_they_exceed_the_calibrated_allowance() -> None:
+    """An empty day is the extreme case of a day below the floor, not a separate rule.
+
+    One empty day is tolerated because the accepted criterion-303 baseline has exactly
+    one (2017-10-09, where yeslab_387 is absent at source). Two are not, and the
+    failure message still names the empty cross-section so the diagnostic survives.
+    """
+    # A realistic segment length, so the day-share criterion is not what decides this.
+    tolerated = M.assess_coverage("F01", "train", (2014,), {2014: [1402] * 1213 + [0]})
+    assert tolerated.days_below_floor == 1
+    assert tolerated.passed
+
+    a = M.assess_coverage("F01", "train", (2014,), {2014: [300, 0, 0, 310]})
     assert not a.passed
     assert any("empty complete-factor cross-section" in f for f in a.failures)
 
@@ -106,6 +123,90 @@ def test_thresholds_are_validated() -> None:
         M.assess_coverage("F01", "train", (2014,), {2014: [300]}, min_valid_day_share=0.0)
     with pytest.raises(ValueError):
         M.assess_coverage("F01", "train", (2014,), {2014: [300]}, max_days_below_floor=-1)
+    with pytest.raises(ValueError):
+        M.assess_coverage("F01", "train", (2014,), {2014: [300]}, minimum_median_width=-1)
+
+
+# --- calibrated criteria (measured 2026-09-06) --------------------------------
+#
+# A gate threshold cannot be chosen from the defective side alone: it has to admit the
+# baseline already accepted, otherwise adopting it retroactively invalidates the trust
+# root instead of protecting the next one. audit_legacy_train_coverage.py measured the
+# legacy-14 side from the assembled frames criterion-303 actually consumed:
+#   train median cross-section  1402 / 1615 / 1949 / 2464 / 2656 / 2794
+#   train days below floor           1 /   1 /   1 /   1 /   0 /   0
+#   worst single train day             0 (2017-10-09, yeslab_387 absent at source)
+# against frozen-17's
+#   train median cross-section   310 /  343 /  419 /  513 /  600 /  673
+#   train days below floor        15 /  15 /   4 /   0 /   0 /   0
+#   worst single train day         2
+# The widths do not overlap anywhere (4.2-4.8x per fold), which is what makes an
+# absolute floor usable. The train/test ratios DO overlap (0.53-0.74 against
+# 0.49-0.77), which is what makes the ratio unusable as a criterion.
+
+LEGACY_TRAIN_MEDIANS = (1402, 1615, 1949, 2464, 2656, 2794)
+FROZEN_TRAIN_MEDIANS = (310, 343, 419, 513, 600, 673)
+LEGACY_DAYS_BELOW_FLOOR = (1, 1, 1, 1, 0, 0)
+FROZEN_DAYS_BELOW_FLOOR = (15, 15, 4, 0, 0, 0)
+
+
+def test_width_floor_sits_inside_the_measured_separation_gap() -> None:
+    """Guard the constant against drifting out of the range the evidence supports."""
+    floor = M.DEFAULT_MINIMUM_MEDIAN_WIDTH
+    assert max(FROZEN_TRAIN_MEDIANS) < floor < min(LEGACY_TRAIN_MEDIANS)
+
+
+def test_day_allowance_is_the_measured_legacy_worst_case() -> None:
+    allowance = M.DEFAULT_MAX_DAYS_BELOW_FLOOR
+    assert allowance == max(LEGACY_DAYS_BELOW_FLOOR)
+    assert allowance < min(
+        count for count in FROZEN_DAYS_BELOW_FLOOR if count > 0
+    )
+
+
+def _segment(
+    median: int, days: int, *, below_floor: int, min_width: int = 2
+) -> dict[int, list[int]]:
+    """A width profile faithful to the measured summary of one train segment."""
+    widths = [median] * (days - below_floor) + [min_width] * below_floor
+    return {2019: widths}
+
+
+def test_calibrated_gate_admits_every_legacy_fold() -> None:
+    for index, median in enumerate(LEGACY_TRAIN_MEDIANS):
+        below = LEGACY_DAYS_BELOW_FLOOR[index]
+        # The legacy worst day is empty (width 0), not merely narrow.
+        profile = _segment(median, 1214 - index, below_floor=below, min_width=0)
+        a = M.assess_coverage(f"F0{index + 1}", "train", (2019,), profile)
+        assert a.passed, f"legacy F0{index + 1} must be admitted: {a.failures}"
+
+
+def test_calibrated_gate_rejects_the_frozen_folds_that_lose_days() -> None:
+    for index, median in enumerate(FROZEN_TRAIN_MEDIANS):
+        below = FROZEN_DAYS_BELOW_FLOOR[index]
+        profile = _segment(median, 1220 - index, below_floor=below)
+        a = M.assess_coverage(f"F0{index + 1}", "train", (2019,), profile)
+        if below:
+            assert not a.passed, f"frozen F0{index + 1} loses {below} days and must fail"
+        # Every frozen fold is below the width floor, including the ones that lose no day.
+        assert any("median" in failure for failure in a.failures), (
+            f"frozen F0{index + 1} median {median} is below the floor and must fail on it"
+        )
+
+
+def test_width_floor_applies_to_validation_but_not_to_test() -> None:
+    """Validation picks the winning baseline, so it is a decision role; test only scores.
+
+    Frozen test medians (599-908) sit below the floor, but a narrow TEST cross-section
+    is already governed by the >=30-per-day validity rule that G6 reads. Applying the
+    training-adequacy floor there would gate a quantity the evaluation already handles.
+    """
+    validation = M.assess_coverage("F01", "validation", (2019,), {2019: [523] * 244})
+    test = M.assess_coverage("F01", "test", (2020,), {2020: [599] * 243})
+
+    assert not validation.passed
+    assert any("median" in failure for failure in validation.failures)
+    assert test.passed
 
 
 def test_asymmetry_note_reports_the_measured_shift() -> None:
