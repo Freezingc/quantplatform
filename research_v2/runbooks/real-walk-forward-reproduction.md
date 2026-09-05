@@ -299,12 +299,23 @@ as a pipeline-reproducibility artifact.
    `universe_daily` members, never "stocks appearing in the factor table" — and reuses the
    historical reason-code vocabulary so output is directly comparable.
 
-   As of 2026-09-06 both windows give **PASS 11 / ELIGIBILITY_FAIL 6**, failing exactly
+   As of 2026-09-06 **all three** windows give **PASS 11 / ELIGIBILITY_FAIL 6**, failing exactly
    `yeslab_372, 375, 384, 389, 390, 406` (medians 0.37-0.50 against the 0.70 gate, minima
    down to 0.0025 on crash days), while all 17 show day ratio and minimum monthly day ratio
    of exactly 1.0000 with zero duplicate keys. Relative to the historical YesLab-based
    screen this adds `yeslab_375` (never screened before) and clears `yeslab_398` /
    `yeslab_464` (their source-side missing periods do not exist in `factor_daily`).
+
+   **The third window (2025) was added 2026-09-06 because the first two do not cover the
+   materialized period.** 2014-2019 is 1,464 trading days and 2020-2024 is 1,212, i.e.
+   2,676 of the 2,919 days in 2014-2025 — so 2025, which is F06's test year and part of
+   F05/F06's train and validation, had never been screened at all. Since this screen is
+   what *defines* the frozen set, an unscreened year left the set's own classification
+   unverified for it. Measured: all 17 factors on 243/243 days, `day_ratio 1.0000`,
+   `dups 0`, PASS 11/17 with the same six failures, so the classification is stable across
+   all three windows and the frozen 17 have **zero missing `(factor, date)` cells over the
+   whole of 2014-2025**. The windows are now the named constant `DEFAULT_SCREEN_WINDOWS`
+   so the coverage is asserted by a test rather than incidental to a default argument.
 
 **Single command** — `preflight_frozen_baseline.py` runs all of the above in dependency
 order and refuses to clear Task 3.1 unless each passes or carries a reasoned waiver:
@@ -320,11 +331,20 @@ order and refuses to clear Task 3.1 unless each passes or carries a reasoned wai
 Order is deliberate: data completeness first, because a missing year makes every later
 number meaningless, and the run stops there rather than reporting on incomplete data.
 Then governance, then per-factor coverage on the consumed source, then the per-fold joint
-cross-section. A waiver must name a real gate and carry a non-empty reason; a waiver on a
-gate that passes is reported as stale so waivers do not accumulate and silently mask a
-later failure of the same gate.
+cross-section, and then the report path. A waiver must name a real gate and carry a
+non-empty reason; a waiver on a gate that passes is reported as stale so waivers do not
+accumulate and silently mask a later failure of the same gate.
 
-**How the three gates differ** — they are complementary, not redundant:
+**Why the report path is a door and not an afterthought:** Task 3.1 writes its report at
+the *end* of a roughly fifteen-hour run, and that report now carries two blocks
+(`environment`, `assembly_coverage`) whose serialisation had never been exercised on real
+frozen data. `json.dumps` is where such a defect lands — a numpy scalar from a real frame
+raises `TypeError` where a hand-built fixture does not, and a zero-row segment makes
+`survival_ratio` NaN, which Python's json emits as the invalid literal `NaN` and would
+corrupt an archived trust root that is later compared byte-for-byte. Proving the report can
+be written costs seconds once the segments are cached, versus the whole run if it cannot.
+
+**How the gates differ** — they are complementary, not redundant:
 
 | Script | Unit of analysis | Question it answers |
 |---|---|---|
@@ -332,6 +352,32 @@ later failure of the same gate.
 | `verify_frozen_fold_coverage.py` | one (fold, role) segment, per day | Will the *joint* all-factor cross-section be wide enough to train and score on? |
 | `verify_admission_consistency.py` | the admitted set vs its screening history | Was anything with a recorded blocking failure admitted without a waiver? |
 | `audit_legacy_train_coverage.py` | the accepted baseline's own assembled frames | Are the coverage gate's constants calibrated so it admits what it was calibrated on? |
+| `verify_frozen_report_path.py` | the run's own output contract | Can the fifteen-hour run's report actually be serialised and archived? |
+
+**Which doors may carry a waiver.** Only the three that encode an adjudicated judgement are
+meaningfully waivable: `admission_consistency`, `factor_coverage_screen` and `fold_coverage`.
+A waiver there says "this defect is known, accounted for, and accepted by a named decision" —
+which is exactly what adjudication 4 will produce. The other two must never be waived:
+`backfill_completeness` failing means the data is incomplete, so every later number is
+meaningless (the run already stops there rather than reporting on incomplete data), and
+`report_path` failing means the run cannot archive its own evidence, so there would be
+nothing to adjudicate against. Waiving either would not accept a risk, it would discard the
+record.
+
+**Live five-door verdict (2026-09-06 06:04, `preflight_frozen_baseline_five_door_run.txt`):**
+`backfill_completeness` PASS, `admission_consistency` FAIL, `factor_coverage_screen` FAIL
+(now across all three windows), `fold_coverage` FAIL, `report_path` PASS →
+**REFUSED**, blocking on the three adjudicated doors with no waivers. That is the correct
+result until adjudication 4 lands: the two infrastructure doors pass, and the three
+judgement doors are detecting a defect that has been ruled on but not yet resolved.
+
+`verify_frozen_report_path.py` is also the tool that caught a wrong-key bug in
+`audit_legacy_train_coverage.py`: the frozen extractor scopes its fold cache key by the
+requested factor set (`scoped_cache_key`) while the legacy one does not (`fold_cache_key`),
+and a tool that picks the wrong function looks up keys that were never written — which is
+indistinguishable from an empty cache. `fold_cache_key_for(source)` is now the single
+authority, and any new tool that resolves cached frames must ask the source for its key
+function rather than choosing one.
 2. `published_version` must carry **144 monthly partitions** for `factor_daily`
    (2014-01 .. 2025-12). Register with the registration-only publisher (it never
    writes factor rows, and re-running is idempotent):
