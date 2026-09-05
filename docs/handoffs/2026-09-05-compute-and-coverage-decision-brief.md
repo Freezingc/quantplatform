@@ -344,6 +344,58 @@ B1 的「部分覆盖」能力在真实数据路径上成为死代码**——任
 要么给 B2/B3 补 NaN 支持（B3 是拆护栏、B2 需声明插补口径并写入证据），
 要么显式决定冻结集基线**不含 B2/B3**。
 证据：`/data/zhangyudong/qrv2_research_artifacts/adjudication4_options_quantified.txt`。
+
+### 治理层根因（2026-09-06 00:34）：项目自己的覆盖率门**早已判这 6 个因子不合格**
+
+这一节改变了裁决 4 的性质。要求本来就写在两处：设计规格第 295–296 行
+「**Train 覆盖率至少 80%**」「**任一年度覆盖率至少 60%**」；C 计划 C6.2
+「**`ELIGIBILITY_FAIL`：训练 scope coverage <70%** …」，C6.3 并要求
+「coverage 分母必须是同日 universe 成员」。
+
+**而该筛查确实实现过、也确实触发了**。`factor_quality_snapshot`（2,612 行、487 个因子）
+的 `SCREEN_TRAIN2020_2024_STRUCTURAL_COVERAGE_V1/_V2` 两个 scope 里：
+
+| 因子 | 准入表评级 | `decision_status` | median_cov | min_cov | p05_cov | reason_codes |
+|---|---|---|---|---|---|---|
+| `yeslab_372` (GP_003) | A / 9 分 | **STRUCTURAL_DQ_FAIL** | **0.4636** | **0.0288** | 0.1273 | `COVERAGE_GATE_FAIL`, `LOW_MEDIAN_SAMPLE_COVERAGE`, `LOW_P05_SAMPLE_COVERAGE` |
+| `yeslab_384` (GP_015) | A / 9 分 | **STRUCTURAL_DQ_FAIL** | **0.4922** | **0.1609** | 0.2818 | 同上 |
+| `yeslab_389` / `390` / `406` | A / S / S | **STRUCTURAL_DQ_FAIL** | 同型 | | | `COVERAGE_GATE_FAIL`（V1+V2） |
+| `yeslab_484`（dense 对照） | B / 8 分 | STRUCTURAL_DQ_**PASS** | **1.0018** | 1.0000 | 1.0005 | `COVERAGE_GATE_PASS` |
+
+六个因子在两个 coverage scope 里的 `eligibility_status` **全部是 `ELIGIBILITY_FAIL`**
+（`yeslab_375` 无 STRUCTURAL_COVERAGE 行，但在 ANNUAL_SUMMARY_PREFILTER_V1、
+DAILY_HAC_FDR_V1/V2、STRICT26_V1 四个 scope 均为 `ELIGIBILITY_FAIL`）。
+
+**两套独立方法得出同一结论**：他们的筛查（2020–2024、源 `factor_data8/9`）给出 GP_003
+median 0.4636 / min 0.0288；我从 `factor_daily` 重放数据独立测得 2020-01 覆盖率 49.7%、
+2020-01-23 最坏日 8.9%（243/2,731，当日仅 229 只上涨）。
+
+**决策为何没看见它**：`docs/handoffs/2026-09-03-admission-decision-sheet.md` 的列是
+「#、因子、名称、级、分、训练ICIR、验证ICIR、体制最低、最大边、监控要求、建议、决定」——
+**没有任何覆盖率列**。这 6 个因子以高等级被准入（`yeslab_406` S/12 分、`yeslab_390` S/11 分、
+`yeslab_389` A/10 分、`375`/`372`/`384` A/9 分）。而等级本身也不可能携带覆盖率：
+`factor_quality_grade`（20 列）的评分项是 `score_train_predictive`、`score_oos_validation`、
+`score_regime_robustness`、`score_uniqueness`——**无覆盖率项**；`factor_window_quality`（16 列）
+同样没有；全 schema 里唯一名为 `coverage` 的列是 `model_oos_rank_ic_daily.coverage`
+（迁移 013），那是**模型分数覆盖率**、不是因子覆盖率。覆盖率只存在于筛查 scope 的
+`metrics_json` 里，未进入评分与决策表。冻结契约 `factor_set_frozen_v1.json` 的
+`conflicts` 数组为**空**，未记录任何与之冲突的事实。
+
+**另外两道门也结构上抓不到**：09-01 公式重放审计只算「重叠区间上的 `max_abs_diff`」、
+从不度量覆盖率（GP_011/018/019/022/064 重叠仅 282–460 行仍 PASS）；
+G1–G6 不度量横截面宽度（六个冻结 test 年 G6 全为 100%）。
+
+**因此裁决 4 的 (iii) 不是一次新的因子质量判断，而是执行一道已经触发过、并被记录为
+`ELIGIBILITY_FAIL` / `COVERAGE_GATE_FAIL` 的门**——它只是从未被传导进评分项、决策表与冻结契约。
+**具体的治理修复**：给 `factor_quality_grade` 增加覆盖率评分项、给决策表增加覆盖率列，
+使 `COVERAGE_GATE_FAIL` 无法在缺少显式且留痕的 override 的情况下被准入。
+
+**一条如实说明的保留**：某个 screening scope 的 `ELIGIBILITY_FAIL` 含义是「在**该**筛查下不合格」；
+不排除别处存在成文 override——目前**没有找到任何 override 记录**，且冻结契约 `conflicts` 为空。
+另外 structural coverage 比值并非严格按 universe 归一（dense 对照 `yeslab_484` 为 1.0018，
+略高于 1），正是 C6.3 警告过的分母不精确问题；但这不影响结论——6 个因子的中位值为
+0.46–0.49，对照因子约 1.00，门槛是 0.70。
+证据：`/data/zhangyudong/qrv2_research_artifacts/governance_root_cause_coverage_gate.txt`。
 以下为发现时的初步测量，保留备查：
 `run_real_walk_forward.py:177-179` 对基线一律 `dropna(subset=全部因子列)`，而候选驱动
 **不做 dropna**（保留 NaN 交预处理器）。实测存活率：
