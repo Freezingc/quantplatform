@@ -254,6 +254,38 @@
       Task 5.1 的 `m{1,2,3}_frozen` 工作区同理置于 `frozen/` 子树下。
       同一机制也让 Task 2.4 的复现性核验可安全并行：用
       `--report /tmp/legacy_flagcheck/report.json` 即把工件隔离到 `/tmp/legacy_flagcheck/baseline_oos/`。
+
+- [ ] **3.1b 前置（阻塞项，2026-09-05 21:58 实测发现）：冻结 17 的覆盖率不齐，`dropna` 会把基线训练集削掉 65–88%**
+      **机制**：`run_real_walk_forward.py:177-179` 对 train/validation/test 一律
+      `dropna(subset=list(feature_order))`（注释写明「Baselines require finite features」），
+      即 B0–B3 只保留**全部因子都有限**的行；而 `run_real_candidate_training.py`
+      **不做 dropna**（冻结装配源保留 NaN，交 `FoldPreprocessor` 处理），候选用近 100% 的行。
+      **实测存活率对比（同为 dropna 口径）**：
+
+      | 口径 | 2014 | 2019 | 2020 |
+      |---|---|---|---|
+      | 遗留 14（已装配帧，F01） | train **80.1%**（整个 train 80.8%） | validation **96.1%** | test **94.8%** |
+      | 冻结 17（factor_daily 配对级） | 2014-01 **11.6%**、2014-06 **24.1%** | — | 2020-01 **34.6%** |
+
+      **根因已定位到具体因子**：17 个中有 **6 个只覆盖流动性universe的约一半**
+      （2020-01 覆盖率：`yeslab_372` 49.7%、`389` 50.8%、`390` 50.9%、`375` 62.8%、
+      `406` 64.5%、`384` 66.2%），其余 11 个为 96.9–100%。且这 6 个的缺失**高度相关**
+      （覆盖率连乘约 3.5%，而实测全 17 交集为 34.6%）——即是同一批股票算不出这 6 个因子，
+      属结构性子群而非随机缺失。
+      **后果**：冻结集新信任根将在 **12–35%** 的配对上拟合并评分，而冻结候选在近 100% 上；
+      G4（相对折匹配基线的 ΔRankIC）因此在**不同横截面**上比较，不构成折匹配证据；
+      且被选择性削弱的基线让 G4 **更容易通过**，信任根不保守。
+      **处置**：Task 3.1 的自动启动已被**主动拦停**（`/tmp/frozen_chain_hold.txt`），
+      未消耗任何训练时长；补齐、登记、144 分区校验与 F01/train 装配证明**不受影响、照常进行**
+      （它们在任何解决方案下都是前置）。
+      **需裁决的三条出路**（详见决策简报裁决 4）：(i) 改基线的缺失处理（不 dropna，
+      改为按基线各自能力处理 NaN——LightGBM 原生支持，ElasticNet 需插补）；
+      (ii) 让候选与基线**同口径**只在「全 17 齐全」子群上评价（G4 重新折匹配，但样本量降到 1/3–1/8）；
+      (iii) 复议冻结集本身——6 个半覆盖因子是否应留在以「流动性universe横截面排序」为目标的集合里
+      （属因子治理/准入议题，宜与「因子优化」线合并裁决）。
+      **注**：2017-06 实测 0%/avg 10.75、2018–2019 无行，是**测量当年正在写入或尚未物化**所致，
+      不是发现；完整 2014–2025 存活率表应在补齐结束后重测。
+      证据全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_coverage_vs_legacy_dropna.txt`。
 - [ ] 3.2 判定渲染：`summarize_real_walk_forward.py` →
       `docs/reports/<date>-frozen-set-baseline-walk-forward.md`（新命名，不占用
       criterion-303 名号；303 保留为遗留集证据）。
