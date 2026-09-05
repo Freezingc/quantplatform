@@ -405,11 +405,11 @@ git commit -m "feat(v2): cluster correlated factors within train scopes"
 - Create: `research_v2/tests/golden/data/expected_factor_observations.parquet`
 - Create: `research_v2/tests/golden/test_factor_materialization.py`
 
-- [ ] **C8.1 写 factor set 状态测试**
+- [x] **C8.1 写 factor set 状态测试**
 
 状态 `DRAFT → VALIDATED → FROZEN → RETIRED`。`FROZEN` 后成员/顺序/版本不可变；改变任何成员创建新 factor_set_id。一个 set 不得同时包含同一 factor 的两个版本。
 
-- [ ] **C8.2 实现 content-addressed factor set**
+- [x] **C8.2 实现 content-addressed factor set**
 
 factor_set_id 对排序后的 `(factor_id, factor_version, expected_direction)`、selection scope、规则版本和 registry definition hashes 做 SHA-256。member 表保存 deterministic feature order，训练/推理严格复用。
 
@@ -550,8 +550,31 @@ fundamental 的全部 8 列。
 `pytest tests/unit/factors tests/property/factors tests/leakage/test_factor_future_perturbation.py
 tests/golden/test_factor_materialization.py -q` → **167 passed，exit 0**，四个路径现全部存在。
 
-**C8.1 / C8.2 仍不勾**，因为逐条验收尚未核实：`tests/unit/factors/test_factor_sets.py` 只有 3 条测试
-（输入序不变的 set id 与 feature order、拒绝同一因子两个版本、迁移到 FROZEN 后不可重开），
-而 C8.1 还点名了 `RETIRED` 状态与「改变任何成员创建新 factor_set_id」，
-C8.2 还点名了 set id 的哈希输入须包含 selection scope、规则版本与 registry definition hashes——
-这些均**未见对应断言**，故不勾。**C8.5 不勾**：提交已完成，但「请求审查」是人工步骤。
+**C8.1 / C8.2 已于 2026-09-06 07:05 逐条核实并勾选。**上一节曾记「仍不勾，因为逐条验收尚未核实」，
+现补齐缺失的断言后核实完成：`tests/unit/factors/test_factor_sets.py` 由 3 条增至 **17 条**
+（参数化展开），新增覆盖：
+
+- **不得跳过 VALIDATED**：`DRAFT -> FROZEN` 直接迁移被 `FactorSetTransitionError` 拒绝
+  （实现的允许表为 `DRAFT→{VALIDATED,RETIRED}`、`VALIDATED→{FROZEN,RETIRED}`、
+  `FROZEN→{RETIRED}`、`RETIRED→{}`）。
+- **RETIRED 从每个前置状态均可达且为终态**：对 DRAFT/VALIDATED/FROZEN 三种起点参数化，
+  迁移到 RETIRED 后再向**任何**状态迁移均被拒。此前三条测试完全没有触及 RETIRED。
+- **FROZEN 后成员/顺序/版本逐字段不变**：`frozen.members == draft.members`、
+  `factor_set_id` 与 `content_hash` 均不变、`feature_order` 仍为 `[1, 2]`。
+- **改变任何成员都产生新 `factor_set_id`**：对 `factor_id`、`factor_version`、
+  `frozen_direction`、`definition_hash` 各改一项，以及删除一个成员、新增一个成员，
+  共 6 种变更参数化，全部得到不同 id。
+- **C8.2 点名的哈希输入逐项验证**：改 `selection_scope_id` 或 `rules_version` 都得到新 id；
+  并且**仅**改某成员的 `definition_hash`（成员、顺序、scope、rules 全同）也得到新 id——
+  否则因子可被就地重定义，而所有对旧 set id 签名的证据会静默指向新数据。
+  读源码确认哈希载荷为 `{members:[{definition_hash, factor_id, factor_version,
+  frozen_direction}], rules_version, selection_scope_id}` 经 `sort_keys` 后做 SHA-256，
+  成员先按 `(factor_id, factor_version)` 排序、`feature_order` 依该序从 1 编号——
+  **C8.2 要求的四类输入全部在内**。
+
+**与裁决 4 的关联**：「改变任何成员即新 id」正是选项 (iii)（17 → 11）所需的性质——
+重新裁决出的因子集是**新身份**而非对旧身份的修改，故对旧 `factor_set_id` 签名的证据
+仍可归属。这与本文书前述「应新发 `factor_set_frozen_v2.json` 而非就地改写 V1」的结论一致，
+且该性质现已有测试保障。
+
+**C8.5 仍不勾**：提交已完成，但「请求审查」是人工步骤，尚未发生。
