@@ -77,3 +77,13 @@ tail -5 /tmp/m1_full.log
 2. 信任根密钥只经环境变量 `QRV2_SELECTION_EVIDENCE_HMAC_KEY` 注入，文件权限 600，不入库。
 3. M2/M3 必须经 `--prior-report` 证据链启动，禁止绕过顺序守卫。
 4. 判定文档渲染器输出为证据的呈现形式；报告 JSON 才是判定源。
+
+## 6. 关联文书（2026-09-05 补充）
+
+- `docs/handoffs/2026-09-05-frozen-factor-set-training-decision.md`：冻结 17 因子集与
+  本链所用遗留 14 因子集的口径分岔备忘（选项 A/B/C 待裁决）。**本链产物定性为
+  遗留集管线验证，不作为正式业绩证据**；正式证据需在冻结集上重建基线后产生。
+- `docs/superpowers/plans/2026-09-05-frozen-set-baseline-reconstruction-plan.md`：
+  冻结集基线重建计划草案（含 `factor_daily` 登记式发布约束 Task 1.6 与 2026-09-05
+  只读探测实测证据）。
+- 裁决为 A 时：本链不中断，重建计划并行起步；两线在 Task 5（正式候选序列）合流。
