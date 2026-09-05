@@ -412,6 +412,19 @@
       证据：`coverage_gate_option_i_ge11of17.txt`。
       **回归**：默认路径在新增 `--minimum-factors` 后重跑，输出与已记录判定**逐字节一致**
       （`frozen_fold_coverage_gate_regression_check2.txt` 对 `..._regression_check.txt` diff 为空）。
+      **选项 (iii) 的一项此前未记录的下游成本（2026-09-06 05:00 核查，(i) 不触发）**：
+      本计划 Task 2.2 已核查 `raw_factor_count_min` **无任何代码消费点**，故 11 因子不会造成
+      运行期失败；但 Task 2.2 交付的守卫测试
+      `test_frozen_set_satisfies_every_model_yaml_factor_bound` 断言
+      `raw_factor_count_min ≤ frozen_count ≤ raw_factor_count_max`（三份 yaml 均为 min 15 / max 60），
+      11 < 15 → **该测试直接失败**；而若把三份 yaml 下限降到 ≤11，其**第二条**断言 `minimum > 14`
+      又失败，失败文案原文即「the documented legacy-14 tension would need re-adjudication」——
+      即选 (iii) 等于**重开 Task 2.2 已正式结案的契约条款**。且 yaml **必须**改，否则
+      「声明 min 15、实际训练 11 个因子」是一份不真实的配置声明。
+      **(i) 保留 17 因子，yaml 与守卫测试均无需改动。**
+      故 (i)/(iii) 的判别条件由两条增至三条：(a) B2/B3 的 NaN 契约、(b) 横截面内同质性、
+      **(c) (iii) 需重开一条已结案条款 + 改三份 yaml + 改写一个守卫测试，(i) 不需要**
+      （(c) 属治理成本而非技术风险）。
       **裁决 4 选项 (ii) 的代价已定量**：若候选与基线同口径只在「全 17 齐全」子群上评价，
       各折 train 段存活率为 F01 **19.5%**、F02 20.6%、F03 22.4%、F04 23.6%、F05 24.2%、
       F06 24.6%，即**只保留约 1/5–1/4 的训练行**（F01 train 由 2,204,564 行降到约 43 万行）。

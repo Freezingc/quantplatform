@@ -774,6 +774,28 @@ test 只评分，已由 G6 的「每日 ≥30」管辖）：**低于门槛天数
 **裁决 4 仍是解冻 Task 3.1 的唯一钥匙**，但现在它是一个**三者皆已实测**的选择：
 (ii) 被门排除；(i) 与 (iii) 覆盖率等价，差别在 B2/B3 是否要改、以及横截面是否同质。
 
+**补充：(iii) 还有一项此前未记录的下游成本，而 (i) 没有（2026-09-06 05:00 核查）**
+`configs/models/{residual_mlp,set_attention,temporal}.yaml` 三份都声明
+`raw_factor_count_min: 15`、`raw_factor_count_max: 60`。本计划 Task 2.2 已核查过：
+**`raw_factor_count_min` 在 `src/`、`scripts/` 中无任何代码消费点**（模型侧硬约束只有
+`models/base.py:20` 的 `raw_factor_count >= 1` 与 `models/temporal.py:23` 的 `<= 60`），
+故 11 因子**不会造成运行期失败**——这也正是遗留 14 因子链一直正常运行的原因。
+但有两处非运行期的后果，只落在 (iii) 上：
+1. **守卫测试会红**：`test_walk_forward_factor_daily.py::
+   test_frozen_set_satisfies_every_model_yaml_factor_bound` 断言
+   `raw_factor_count_min ≤ frozen_count ≤ raw_factor_count_max`。11 < 15 → 直接失败；
+   而若把三份 yaml 的下限降到 ≤11，该测试的**第二条**断言 `minimum > 14` 又会失败，
+   其失败文案原文即「the documented legacy-14 tension would need re-adjudication」。
+   该测试是 Task 2.2 专为「固化 17 与 yaml 边界兼容、并保留『遗留 14 才违反下限』这一
+   可解释对照」而写的，张力条款当时据此**正式结案**。故选 (iii) 等于**重开一条已结案的契约条款**。
+2. **yaml 必须改，否则声明为假**：下限虽无代码消费，但「声明 min 15、实际训练 11 个因子」
+   是一份**不真实的配置声明**。选 (iii) 就必须把三份 yaml 的下限降到 ≤11，并改写该守卫测试
+   使其钉住新因子集而非旧对照。
+**(i) 完全不触发这两条**：它保留 17 个因子，yaml 与守卫测试都无需改动。
+故 (i)/(iii) 的判别条件由两条增至三条：**(a) B2/B3 的 NaN 契约、(b) 横截面内同质性、
+(c) (iii) 需重开一条已结案的契约条款并改三份 yaml + 一个守卫测试，(i) 不需要。**
+注意 (c) 是**治理成本而非技术风险**——按 Task 2.2 的核查，它不会引起任何运行期失败。
+
 **第三套独立测量已交叉印证，且冻结报告现在自带该证据（2026-09-06 03:55）**
 `run_real_walk_forward.py` 为 frozen 源在报告里写入 `assembly_coverage`：每折每角色的装配行数、
 存活行数、存活率、天数、低于门槛 30 的天数、空日数、中位与最窄日宽度。度量对象是**基线真正训练所
