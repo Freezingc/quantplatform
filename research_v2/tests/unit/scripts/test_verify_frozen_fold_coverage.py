@@ -236,3 +236,80 @@ def test_fold_role_triples_skip_the_locked_final_fold() -> None:
     assert roles == {"train", "validation", "test"}
     f01_train = next(years for f, r, years in triples if f == "F01" and r == "train")
     assert f01_train == (2014, 2015, 2016, 2017, 2018)
+
+
+# --- measuring a candidate factor subset before it is chosen ------------------
+#
+# Adjudication 4's option (iii) keeps only the eleven factors that pass the C6.2
+# coverage screen. Whether that set clears the calibrated width floor was an inference
+# from survival percentages, not a measurement; these make it measurable without
+# wiring anything, so the choice can be made on evidence either way.
+
+FROZEN17 = (
+    "yeslab_96", "yeslab_206", "yeslab_357", "yeslab_372", "yeslab_375",
+    "yeslab_381", "yeslab_384", "yeslab_389", "yeslab_390", "yeslab_398",
+    "yeslab_405", "yeslab_406", "yeslab_425", "yeslab_443_reg30_max20_v1",
+    "yeslab_464", "yeslab_471", "yeslab_484",
+)
+
+
+def test_c62_pass_set_is_the_screened_eleven_and_excludes_the_six_defective() -> None:
+    assert len(M.C62_PASS_11) == 11
+    assert set(M.C62_PASS_11) <= set(FROZEN17)
+    defective = {"yeslab_372", "yeslab_375", "yeslab_384", "yeslab_389",
+                 "yeslab_390", "yeslab_406"}
+    assert not (set(M.C62_PASS_11) & defective)
+    assert set(FROZEN17) - set(M.C62_PASS_11) == defective
+
+
+def test_resolve_factor_set_returns_the_frozen_set_by_default() -> None:
+    assert M.resolve_factor_set("frozen17", FROZEN17) == FROZEN17
+
+
+def test_resolve_factor_set_returns_the_screened_subset() -> None:
+    resolved = M.resolve_factor_set("c62pass11", FROZEN17)
+
+    assert resolved == M.C62_PASS_11
+    assert len(resolved) == 11
+
+
+def test_resolve_factor_set_rejects_an_unknown_name() -> None:
+    with pytest.raises(ValueError, match="unknown factor set"):
+        M.resolve_factor_set("dense12", FROZEN17)
+
+
+def test_resolve_factor_set_fails_closed_when_the_subset_leaves_the_frozen_set() -> None:
+    """The frozen set is the authority; a stale subset must not be measured silently."""
+    shrunken = tuple(fid for fid in FROZEN17 if fid != "yeslab_484")
+
+    with pytest.raises(ValueError, match="not a subset"):
+        M.resolve_factor_set("c62pass11", shrunken)
+
+
+def test_build_width_query_restricts_to_the_named_factors_and_their_count() -> None:
+    script = M.build_width_query(2020, ("yeslab_96", "yeslab_206"), "T")
+
+    assert "factor_id in [`yeslab_96,`yeslab_206]" in script
+    assert "iif(c==2,1,0)" in script
+    assert "2020.01.01" in script and "2021.01.01" in script
+    assert "group by signal_date, ts_code" in script
+
+
+def test_build_width_query_uses_count_star_because_distinct_is_not_nestable() -> None:
+    """DolphinDB rejects count(distinct ...) inside a grouped select (RefId:S02032).
+
+    count(*) is only equivalent to the number of distinct factors present when the
+    table has no duplicate (factor, date, code) rows, which is verified separately:
+    zero duplicate groups in 2020-01, and the C6.2 screen reports dups==0 for all 17
+    factors over both 2014-2019 and 2020-2024.
+    """
+    script = M.build_width_query(2015, M.C62_PASS_11, "T")
+
+    assert "count(*)" in script
+    assert "distinct" not in script
+    assert "iif(c==11,1,0)" in script
+
+
+def test_build_width_query_rejects_an_empty_factor_set() -> None:
+    with pytest.raises(ValueError, match="cannot be empty"):
+        M.build_width_query(2020, (), "T")

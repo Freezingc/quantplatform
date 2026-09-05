@@ -29,6 +29,7 @@ legacy coverage is measured directly from its assembled frames instead.
 Usage:
   verify_frozen_fold_coverage.py                       # all six folds, all three roles
   verify_frozen_fold_coverage.py --min-valid-day-share 0.99
+  verify_frozen_fold_coverage.py --factor-set c62pass11  # measure a candidate subset
 """
 
 from __future__ import annotations
@@ -80,6 +81,71 @@ DEFAULT_MINIMUM_MEDIAN_WIDTH = 1000
 # cross-section is already governed by the >=30-per-day validity rule that G6 reads,
 # so the training-adequacy floor is not applied there.
 DECISION_ROLES: tuple[str, ...] = ("train", "validation")
+# The eleven frozen factors that pass the C6.2 coverage screen on factor_daily, i.e.
+# adjudication 4's option (iii). Provenance: coverage_screen_factor_daily_2014_2019.txt
+# and coverage_screen_factor_daily_2020_2024.txt, which independently judged the same
+# six factors ELIGIBILITY_FAIL (median 0.37-0.50 against the 0.70 gate) on two windows.
+# This is a MEASUREMENT input, not a wiring: nothing trains on it, and the frozen set
+# consumed by the walk-forward remains FROZEN_FACTOR_SET_V1 until adjudication 4 lands.
+C62_PASS_11: tuple[str, ...] = (
+    "yeslab_96",
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_381",
+    "yeslab_398",
+    "yeslab_405",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+)
+# ``None`` means "whatever FROZEN_FACTOR_SET_V1 currently is", so the default door
+# cannot drift from the wiring it is gating.
+FACTOR_SETS: dict[str, tuple[str, ...] | None] = {
+    "frozen17": None,
+    "c62pass11": C62_PASS_11,
+}
+
+
+def resolve_factor_set(name: str, frozen_set: Sequence[str]) -> tuple[str, ...]:
+    """Resolve a named measurement set, failing closed if it is not inside the frozen set.
+
+    The frozen set is the authority. A subset that has drifted out of it -- because the
+    frozen set changed, or because this constant went stale -- must not be measured
+    silently, or the resulting widths would describe a factor set nothing can train on.
+    """
+    if name not in FACTOR_SETS:
+        raise ValueError(f"unknown factor set {name!r}; choose from {sorted(FACTOR_SETS)}")
+    preset = FACTOR_SETS[name]
+    if preset is None:
+        return tuple(frozen_set)
+    if unknown := sorted(set(preset) - set(frozen_set)):
+        raise ValueError(
+            f"{name} is not a subset of the frozen set; unknown ids: {unknown}"
+        )
+    return preset
+
+
+def build_width_query(year: int, factor_ids: Sequence[str], table: str) -> str:
+    """Per-day count of stocks having every named factor, for one calendar year.
+
+    ``count(*)`` rather than ``count(distinct factor_id)`` because DolphinDB rejects a
+    nested aggregate inside a grouped select (RefId:S02032). The two are equivalent only
+    when the table has no duplicate ``(factor, date, code)`` rows, which is verified
+    rather than assumed: zero duplicate groups in 2020-01, and the C6.2 screen reports
+    ``dups==0`` for all 17 factors over both the 2014-2019 and 2020-2024 windows.
+    """
+    if not factor_ids:
+        raise ValueError("factor_ids cannot be empty")
+    listed = ",".join(f"`{factor_id}" for factor_id in factor_ids)
+    return (
+        f"p = select signal_date, ts_code, count(*) as c from {table} "
+        f"where signal_date >= {year}.01.01 and signal_date < {year + 1}.01.01 "
+        f"and factor_id in [{listed}] group by signal_date, ts_code\n"
+        f"select signal_date, sum(iif(c=={len(factor_ids)},1,0)) as complete "
+        f"from p group by signal_date"
+    )
 
 
 @dataclass(frozen=True)
@@ -229,22 +295,16 @@ def fold_role_years() -> list[tuple[str, str, tuple[int, ...]]]:
 
 
 def daily_complete_widths(
-    holder: dict[str, Any], years: Sequence[int], factor_count: int
+    holder: dict[str, Any], years: Sequence[int], factor_ids: Sequence[str]
 ) -> dict[int, list[int]]:
-    """Per-day count of stocks having all ``factor_count`` frozen factors."""
+    """Per-day count of stocks having every factor in ``factor_ids``."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from walk_forward_common import TARGET_DATABASE, query
 
     table = f"loadTable('{TARGET_DATABASE}','factor_daily')"
     widths: dict[int, list[int]] = {}
     for year in years:
-        script = (
-            f"p = select signal_date, ts_code, count(*) as c from {table} "
-            f"where signal_date >= {year}.01.01 and signal_date < {year + 1}.01.01 "
-            f"group by signal_date, ts_code\n"
-            f"select signal_date, sum(iif(c=={factor_count},1,0)) as complete "
-            f"from p group by signal_date"
-        )
+        script = build_width_query(year, factor_ids, table)
         ok, frame = query(holder, script)
         if not ok or frame is None or not len(frame):
             widths[year] = []
@@ -272,6 +332,12 @@ def main(argv: list[str] | None = None) -> int:
         "--roles", default="train,validation,test",
         help="comma-separated roles to enforce the gate on (others are reported only)",
     )
+    parser.add_argument(
+        "--factor-set", default="frozen17", choices=sorted(FACTOR_SETS),
+        help="which factor set to measure. frozen17 is the wiring the pre-flight door "
+             "gates; c62pass11 is the C6.2-screened subset, for measuring adjudication "
+             "4's option (iii) before choosing it. Measurement only, nothing is rewired.",
+    )
     args = parser.parse_args(argv)
     enforced = {role.strip() for role in args.roles.split(",") if role.strip()}
 
@@ -279,9 +345,9 @@ def main(argv: list[str] | None = None) -> int:
     from walk_forward_common import new_holder
     from walk_forward_factor_daily import FROZEN_FACTOR_SET_V1
 
-    factor_count = len(FROZEN_FACTOR_SET_V1)
+    factor_ids = resolve_factor_set(args.factor_set, FROZEN_FACTOR_SET_V1)
     holder = new_holder()
-    print(f"frozen factor count: {factor_count}; cross-section floor: "
+    print(f"factor set: {args.factor_set} ({len(factor_ids)} factors); cross-section floor: "
           f"{args.minimum_cross_section}; enforced roles: {sorted(enforced)}; "
           f"max days below floor: {args.max_days_below_floor}; "
           f"minimum median width ({'/'.join(DECISION_ROLES)}): "
@@ -292,7 +358,7 @@ def main(argv: list[str] | None = None) -> int:
     failed = False
     assessments: dict[tuple[str, str], CoverageAssessment] = {}
     for fold_id, role, years in fold_role_years():
-        widths = daily_complete_widths(holder, years, factor_count)
+        widths = daily_complete_widths(holder, years, factor_ids)
         assessment = assess_coverage(
             fold_id, role, years, widths,
             minimum_cross_section=args.minimum_cross_section,
