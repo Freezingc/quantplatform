@@ -245,13 +245,18 @@ def _segments_for_source(source: str) -> list[tuple[str, str, tuple[int, ...]]]:
 
 def _wanted_keys(holder: dict[str, Any], source: str) -> list[tuple[str, str, str]]:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from walk_forward_common import current_versions, fold_cache_key
-    from walk_forward_factor_daily import factor_source_plan
+    from walk_forward_common import current_versions, factor_members_for
+    from walk_forward_factor_daily import factor_source_plan, fold_cache_key_for
 
-    _, version_tables = factor_source_plan(source)
+    factor_ids, version_tables = factor_source_plan(source)
     versions = {table: current_versions(holder, table) for table in version_tables}
+    # Ask the source for its own key function. The frozen extractor scopes its cache key
+    # by the requested factor set; using the legacy key function here silently resolves
+    # to keys that were never written, which reads exactly like an empty cache.
+    key_fn = fold_cache_key_for(source)
+    members = factor_members_for(factor_ids)
     return [
-        (fold_id, role, fold_cache_key(fold_id, role, versions))
+        (fold_id, role, key_fn(fold_id, role, members, versions))
         for fold_id, role, _ in _segments_for_source(source)
     ]
 

@@ -120,6 +120,7 @@ __all__ = [
     "FROZEN_FACTOR_SET_V1",
     "FROZEN_VERSION_TABLES",
     "LEGACY_VERSION_TABLES",
+    "fold_cache_key_for",
     "scoped_cache_key",
 ]
 
@@ -151,6 +152,39 @@ def scoped_cache_key(
     return fold_cache_key(fold_id, role, {**versions, "factor_set": scope})
 
 
+CacheKeyFn = Callable[
+    [str, str, tuple[FactorInput, ...], Mapping[str, Mapping[str, str]]], str
+]
+
+
+def fold_cache_key_for(source: str) -> CacheKeyFn:
+    """Return the cache-key function that ``source``'s own extractor writes with.
+
+    Any tool that resolves a cached frame by recomputing its key must ask for the
+    source's function rather than picking one, because the two chains key differently:
+    the legacy extractor hashes ``(fold_id, role, versions)`` alone, while the frozen
+    extractor folds the requested factor set in as well (see :func:`scoped_cache_key`).
+    A wrong key is indistinguishable from an absent frame -- the calibration audit made
+    exactly that mistake and reported all eighteen frozen segments missing when three
+    were present, which then propagated into a documented claim that Task 3.1 would have
+    to cold-assemble every segment.
+
+    The factor set is part of the signature even though the legacy branch ignores it, so
+    one call shape serves both sources and a caller cannot pass the wrong arity.
+    """
+    if source == "legacy":
+        def legacy_key(
+            fold_id: str,
+            role: str,
+            _factor_members: tuple[FactorInput, ...],
+            versions: Mapping[str, Mapping[str, str]],
+        ) -> str:
+            return fold_cache_key(fold_id, role, versions)
+
+        return legacy_key
+    if source == "frozen":
+        return scoped_cache_key
+    raise ValueError(f"unknown factor source: {source}")
 def extract_dataset_factor_daily(
     holder: dict[str, Any],
     resolver: SplitResolver,

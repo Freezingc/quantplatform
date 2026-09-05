@@ -316,3 +316,29 @@ def test_frozen_set_satisfies_every_model_yaml_factor_bound() -> None:
             f"{config_path.name}: raw_factor_count_min dropped to {minimum}; the "
             "documented legacy-14 tension would need re-adjudication"
         )
+
+
+def test_cache_key_function_matches_what_each_extractor_actually_writes() -> None:
+    """A tool that resolves cached frames must ask the source for its own key function.
+
+    The two chains key their caches differently: the legacy extractor hashes
+    ``(fold_id, role, versions)``, while the frozen extractor additionally folds the
+    factor set in via ``scoped_cache_key`` so that shrinking FROZEN_FACTOR_SET_V1 cannot
+    be served a stale 17-factor frame. The calibration audit used the legacy function for
+    both and so reported all eighteen frozen segments missing when three were present on
+    disk -- a wrong key is indistinguishable from an absent frame unless the key function
+    comes from the same authority as the extractor that wrote it.
+    """
+    members = MODULE.factor_members_for(("yeslab_206", "yeslab_357"))
+
+    legacy_key = MODULE.fold_cache_key_for("legacy")("F01", "train", members, VERSIONS)
+    frozen_key = MODULE.fold_cache_key_for("frozen")("F01", "train", members, VERSIONS)
+
+    assert legacy_key == MODULE.fold_cache_key("F01", "train", VERSIONS)
+    assert frozen_key == MODULE.scoped_cache_key("F01", "train", members, VERSIONS)
+    assert legacy_key != frozen_key
+
+
+def test_cache_key_function_rejects_an_unknown_source() -> None:
+    with pytest.raises(ValueError, match="unknown factor source"):
+        MODULE.fold_cache_key_for("dense11")
