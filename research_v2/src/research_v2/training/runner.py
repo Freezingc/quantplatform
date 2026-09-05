@@ -63,6 +63,8 @@ def run_validation_governed_training(
                 "epoch": epoch,
                 "seed": seed,
                 "torch_version": environment.torch_version,
+                "torch_intraop_threads": environment.torch_intraop_threads,
+                "torch_interop_threads": environment.torch_interop_threads,
                 "train_dataset_id": train_view.dataset_id,
                 "validation_dataset_id": validation_view.dataset_id,
                 "validation_rank_ic": validation_rank_ic,

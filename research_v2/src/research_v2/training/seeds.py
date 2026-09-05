@@ -16,6 +16,15 @@ class ReproducibilityEnvironment:
     torch_version: str
     cuda_available: bool
     cuda_device_names: tuple[str, ...]
+    # Intra-op thread count is a numerics-affecting parameter: floating-point
+    # reductions are not associative, so the same seed/config/data yields different
+    # weights at different thread counts (measured: three distinct checkpoint
+    # digests at 1/4/8 threads). It defaults to half the host core count, i.e. it is
+    # a host property that was previously neither pinned nor recorded. Capturing it
+    # here makes every derived artifact self-describing; pinning it is a separate,
+    # adjudicated change so this addition cannot alter any result.
+    torch_intraop_threads: int
+    torch_interop_threads: int
 
 
 def configure_reproducibility(seed: int) -> ReproducibilityEnvironment:
@@ -43,4 +52,6 @@ def configure_reproducibility(seed: int) -> ReproducibilityEnvironment:
         torch_version=torch.__version__,
         cuda_available=cuda_available,
         cuda_device_names=device_names,
+        torch_intraop_threads=torch.get_num_threads(),
+        torch_interop_threads=torch.get_num_interop_threads(),
     )
