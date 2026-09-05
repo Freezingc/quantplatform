@@ -139,6 +139,21 @@
 
 **Files:** 复用 `scripts/run_real_walk_forward.py`（装配源切换后）
 - [ ] 3.1 全量运行 B0–B3 × F01–F06（缓存命中后装配 ~2 分钟；训练时长参照遗留链 ~15h）。
+      **冷装配成本已实测（2026-09-05 23:26）**：本项原文只给了「缓存命中后 ~2 分钟」，
+      但冻结路径的折缓存是**全冷**的（此前只跑过 F01/test 一段），故需另计冷启动成本。
+      按 `extract_dataset_factor_daily` 实际发出的查询逐条计时（4 个 (因子, 年) 样本，
+      平均 **2.78 s / 约 34.8 万行**）：18 个折/角色段共需
+      **714 次因子-年查询**（6 折 × 7 角色年 × 17 因子）+ 84 次 universe/label 查询
+      → **DB 拉取约 0.55 h + 0.07 h ≈ 0.6 小时**，其后才是 pandas 的 concat/pivot/merge
+      （端到端值由已挂载的 F01/train 装配证明作业实测给出）。
+      **关于 3.5 倍查询冗余的显式决定：不优化。** 实际存在的 (因子, 年) 组合只有
+      17 × 12 = **204** 个，而查询发出 714 次，因为相邻折的训练窗口互相重叠
+      （F01 train 2014–2018、F02 train 2015–2019…）。冗余代价 = 0.55 h 对比
+      204 × 2.78 s = 0.16 h，即**一次性多花约 24 分钟**；而装配结果会按
+      (折, 角色, 版本, 因子集) 缓存，此后不再重复。加一层原始 (因子, 年) 缓存能省下这
+      24 分钟，但要改动 `extract_dataset_factor_daily` 这个已活库验证的模块、并引入
+      第二层缓存及其失效语义。**结论：不值得，故不做**——记录在此以免被当成疏漏。
+      证据：`/data/zhangyudong/qrv2_research_artifacts/frozen_cold_assembly_cost.txt`。
       **路径隔离（硬约束）**：报告与折匹配工件写独立路径
       `baseline_oos_report_frozen.json` / `baseline_oos_frozen/`（qrv2_research_artifacts
       下）——遗留链 M1–M3 随时可能消费 `baseline_oos_report.json` / `baseline_oos/`，
