@@ -371,4 +371,24 @@ validation RankIC** 的输入，且 6 处中有 2 处产出**喂给 G1–G6 的�
 **未触碰 `run_real_walk_forward.py`**，故 Task 2.4 的逐位复现核验不受影响。
 **对 3.4 与裁决 2/3 的影响**：这 8 小时产物不可用（未签发报告、未产出 evidence），
 且**修复前重启必然同样崩溃**；修复对冻结集候选链（Task 5.x）同样必需，故非沉没成本。
+
+**同类缺陷排查（2026-09-06 04:05）：该缺陷类已根除，无第二处实例。**
+逐个核对所有按位置索引 `batch.inputs.ts_codes` 的消费方：
+`training/validation.py:70→77`（位置取自 `nonzero(stock_mask)`）、
+`training/losses.py:66→80`（同）、`models/base.py:predictions_to_frame`（同）——
+**三者都遵守 mask**；`inference/builder.py:100/103、263/266` 构造的是全 1 mask（该路径不 padding）；
+修复后的驱动 6 处全部委托 `predictions_to_frame`。全仓已无第二处手搓 `argsort().argsort()` 排名
+（唯一的 `np.argsort` 在 `monitoring/score_health.py:235`，作用于已过滤的 `finite_scores`，与 padding 无关）。
+`temporal_batches.py:157` 用同一套 `+ ("",) * (width - count)` padding 契约，其消费方现同样委托库函数。
+**生产路径本来就是正确范例**：`inference/predictor.py` 正是 `predictions_to_frame` +
+`combine_seed_percentile_ranks`（按键 merge、`validate="one_to_one"`），
+即本次修复是让候选驱动**向项目既有契约收敛**，而非另造一套。
+**一处并存的第二套实现，经核对数值等价、故不重构**：驱动的 `_validation_rank_ic` 与库的
+`evaluate_validation_batches` 都算「验证集 RankIC」。差异是前者用 `percentile_rank`、后者用
+`raw_score`；但 `percentile_rank` 是日内 `rank(method="average", pct=True)`，为 `raw_score` 的
+**保序且保并列**变换，故 Spearman 逐日相同。标签来源亦等价：库取批次内 `target_raw`
+（已过 `label_valid` 与有限值过滤），驱动取原验证帧并按键 inner join，而批次键集正是该帧的
+有效标签子集，故 join 后键集一致。`minimum_cross_section` 两侧均为 30。
+**不重构的理由**：它会在可能重启 M1 之前改动 config 选择路径的来源，而等价性论证已成立；
+记录在此以便后续如需统一时有据可依。
 勾选仅改动 `- [ ]` → `- [x]`，已用 diff 核验**除复选框外零字符变化**。
