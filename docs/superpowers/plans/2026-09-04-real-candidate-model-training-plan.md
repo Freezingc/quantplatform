@@ -31,6 +31,7 @@ E 计划：[`2026-08-01-quant-research-v2-e-models-evaluation-plan.md`](2026-08-
   1) 「warmup 加 cosine decay」未实现——驱动采用固定学习率（M1 默认 0.003，M2/M3 按配置网格）配合 validation RankIC 早停（patience 10）；
   2) 「日期按月度块打乱」实现为 `DateBalancedSampler` 的逐 epoch 确定性全日期哈希置换（保日期完整、日期等权，混洗强度高于月度块，意图保持）；
   3) 「混合精度」未启用——训练按已决策的 CPU fp32 路径执行。
+  4) 损失权重固定为规格规范默认值（`LossWeights` ic=0.60 / pair=0.30 / huber=0.10，和为 1 硬校验；IC Loss 为分数与 return_rank 的 Pearson 相关——均与规格第 455-459 行一致），未做「少量离散候选由 Validation 选择」的权重搜索：E7 预算全部用于架构网格；未来若调权重必须走 Validation 离散候选机制（防 test 调参红线）；
   以上均为既有已测试契约（1089 测试覆盖），本轮运行前不变更；若候选未过 G1，学习率调度是下一轮经批准再评估的首选杠杆。
 - 门控：G1 mean RankIC ≥0.030、G2 HAC t ≥2.0、G3 正年占比 ≥0.70、
   G4 候选减 fold-matched 基线 ΔRankIC ≥0.005、G5 最大年正贡献占比 ≤0.50、
