@@ -338,15 +338,15 @@ git commit -m "feat(v2): materialize governed factor observations"
 
 BLOCKER：PIT 违规、冲突键进入 clean、非有限值进入 value、未知 registry 版本、业务键重复。`ELIGIBILITY_FAIL`：训练 scope coverage <70%、median daily unique ratio <1%、超过 20% 日期横截面 dispersion=0。后者使因子不能进入该 fold 选因，但不删除历史记录。
 
-- [ ] **C6.3 写 denominator 与缺失测试**
+- [x] **C6.3 写 denominator 与缺失测试**
 
 coverage 分母必须是同日 universe 成员，不是“因子表中出现过的股票”；空日期返回 0 coverage 和明确状态，不返回 NaN 后被误当 PASS。基本面 stale >180 的值视为缺失。
 
-- [ ] **C6.4 实现无标签质量报告**
+- [x] **C6.4 实现无标签质量报告**
 
 报告不读取 `label_daily`，因此可用于 2026 SHADOW 运维；predictive IC 字段在本模块不存在，防止全期偷看标签。
 
-- [ ] **C6.5 运行测试并提交**
+- [x] **C6.5 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/factors/test_quality.py -q`
 
@@ -625,3 +625,48 @@ C4.6 泄漏测试与 C4 属性测试覆盖。
 而行数估算需要 universe 的逐日计数；这属于「元数据查询是否算读取值」的解释问题。
 在没有该口径的情况下实现，等于把一个未定语义写进 CLI 契约。**建议先定口径再实现**，
 或按本项目既有做法（`omp_num_threads` 未设置即记 `null` 而非编造）输出 `null` 并注明所需输入。
+
+## 勾选审计续三（2026-09-06 07:40）：C6 逐款核验，勾 3 项、2 项带明确缺口不勾
+
+**已勾：C6.3 / C6.4 / C6.5。**
+
+- **C6.4「实现无标签质量报告」——已满足，且此前无测试钉住。** `quality.py` 全模块
+  **无 `label`/`raw_return` 字样**，其 docstring 明写「using only universe and factor
+  observations」，实现上在 merge 前**显式投影**到 `signal_date/ts_code/value/stale_days`，
+  故任何额外列（含标签）都被丢弃；模块内也**不存在 predictive IC 字段**。
+  新增两条测试把它钉住：一条断言快照对标签列的**存在与取值完全不敏感**
+  （变体含完全正相关、完全反相关、`label_valid` 全假、以及**非有限标签** nan/inf），
+  另一条断言**指标词汇表本身**不含 label/return/rank_ic/icir/outcome。
+  **两次变异验证**：把标签代入有限性检查、把标签代入参与指标的 `value` 投影，
+  两次都被捕获；`quality.py` 均以 `git diff --quiet` 确认还原干净。
+  **第一次变异最初未被捕获**——因为原始变体的标签值全是有限的，只能触发指标路径、
+  触发不了有限性检查路径；补入非有限标签变体后才捕获。这条教训已写进测试注释。
+- **C6.3「写 denominator 与缺失测试」——三款齐备。** 分母为同日 universe 成员（既有测试）；
+  基本面 stale >180 视为缺失（既有测试，`is_usable` 要求 `stale_days <= maximum_staleness_calendar_days`）；
+  **空集**此前无测试，现补：无观测与空 universe 两条路径都必须给出 `coverage == 0.0`、
+  `finite_value_count == 0`、状态非 PASS、含 `LOW_COVERAGE`，且**没有任何指标为 NaN**。
+  NaN 才是危险结果——它既不低于也不高于阈值，基于比较的门会把它当作通过，
+  从而准入一个从未被观测到的因子。
+- **C6.5「运行测试并提交」**点名的五类（分母、阈值、空集、stale、无标签依赖）现已全部有测试且通过；
+  `pytest tests/unit/factors/test_quality.py -q` → **6 passed**。
+
+**未勾：C6.1 / C6.2，缺口已量化。**
+
+- **C6.1「固化结构质量指标」——约 13 项点名指标中只发出 5 项。**
+  实际 `metrics` 为 `universe_member_count`、`finite_value_count`、`coverage`、
+  `median_daily_unique_ratio`、`zero_dispersion_date_share`。
+  **缺失**：zero ratio、median/MAD（内部为判 dispersion 而算，但**未发出**）、p01/p50/p99、
+  每日 dispersion（只发出零 dispersion 日**占比**）、stale share、duplicate/conflict **rate**
+  （现为布尔 blocker，无比率）、最长缺失连续天数、日期覆盖、证券覆盖。
+- **C6.2「区分 blocker 与 eligibility flag」——eligibility 半完全相符，blocker 半缺 3 条。**
+  `ELIGIBILITY_FAIL` 三条与规格**逐一相符**：`LOW_COVERAGE`(<0.70)、`LOW_UNIQUE_RATIO`(<1.00)、
+  `EXCESS_ZERO_DISPERSION`(>0.20)，默认值即规格值。
+  `BLOCKER` 已实现三条：`DUPLICATE_UNIVERSE_KEY`、`DUPLICATE_BUSINESS_KEY`、`NONFINITE_CLEAN_VALUE`；
+  **缺失三条**：PIT 违规、冲突键进入 clean、未知 registry 版本。
+  （其中「冲突键进入 clean」在上游 `deduplicate_factor_observations` 已把冲突整组隔离，
+  故本层或属防御性重复——但那正是需要断言的不变量，不应靠「上游大概做了」。）
+
+**这两项是 C 计划剩余离线工作中最实质的缺口**，且都不需要活库：C6.1 是补发指标，
+C6.2 是补三条 blocker 判定。二者都会改变 `FactorQualitySnapshot.metrics` 的内容，
+而该快照被 C6.2 筛查与准入一致性门消费，故落地时应同步核对
+`screen_factor_daily_coverage.py` 与 `verify_admission_consistency.py` 的字段依赖。
