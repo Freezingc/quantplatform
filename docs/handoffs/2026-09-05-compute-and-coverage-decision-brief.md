@@ -699,6 +699,26 @@ test 只评分，已由 G6 的「每日 ≥30」管辖）：**低于门槛天数
 则会继续 FAIL。**但这是推算、不是实测**——裁决落地后应重跑覆盖率门确认，而不是假定。
 若最终选择保留 17 因子并接受窄横截面，则需按前置门的豁免机制给出**点名到 `fold_coverage` 门、
 理由非空**的 `--waiver-reason`。
+
+**第三套独立测量已交叉印证，且冻结报告现在自带该证据（2026-09-06 03:55）**
+`run_real_walk_forward.py` 为 frozen 源在报告里写入 `assembly_coverage`：每折每角色的装配行数、
+存活行数、存活率、天数、低于门槛 30 的天数、空日数、中位与最窄日宽度。度量对象是**基线真正训练所
+经过的那份装配帧**（universe∩label 连接之后、`dropna` 之前），比数 `factor_daily` 行更权威。
+G1–G6 看不到它，因为它们只读 TEST 证据。实现收进 `research_v2/datasets/coverage.py`，
+驱动、覆盖率门、标定审计三者共用一份实现，不会再漂移。
+用已缓存的冻结 F01 帧实测，与 `factor_daily` 口径的门**互相印证**：train 中位宽度 **309 对 310**、
+低于门槛天数 **15 对 15**、最窄日 **2 对 2**、test 三项 **599/243/121 全等**；
+train 天数 **1,214 对 1,220**（universe∩label 连接少 6 天）。
+存活率实测 **19.72%**，与本简报为裁决 4 选项 (ii) 估算的 **19.5%** 独立吻合。
+**为何现在做**：Task 3.1 约需 15 小时，若等它跑完再加这块证据就必须重跑，故必须在解冻前落地。
+同时冻结报告新增 `environment` 块（factor source/ids、库版本、`host_cpu_count`、
+`OMP_NUM_THREADS`（未设置即记 `null`，不编造）、torch 运行时字段），由**只观测不配置**的
+`describe_runtime_environment()` 产出——`configure_reproducibility` 会 seed 全部 RNG 并开启
+确定性算法，用它描述运行时会扰动被描述的运行本身，而本路径 B2/B3 拟合对 seed 敏感；
+其 `seed` 为 `-1`（`UNSEEDED`），seeding 入口拒绝该值，故观测记录永不会被误读为 seeded 运行。
+**legacy 源两个块都不写**，以保 Task 2.4 的逐位复现契约（其 `--factor-source` 默认为 legacy）。
+**实测到的两个值直接支撑裁决 2**：`torch_intraop_threads: 52`（= 104 核的一半，即无人声明的
+宿主属性）与 `cuda_available: true`（而驱动硬编码 `device=cpu`）。
 证据全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_coverage_vs_legacy_dropna.txt`。
 注：早先 2017-06 实测 0%、2018–2019 无行，是测量时该年正在写入/尚未物化所致，**不是发现**；
 完整 2014–2025 存活率表已在补齐结束后重测，见上文与 `frozen_survival_2014_2025.txt`。

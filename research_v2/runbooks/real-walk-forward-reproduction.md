@@ -359,6 +359,39 @@ the driver without `--factor-source` and compares against the archived criterion
 report. Pinning device or threads remains a separate, adjudicated change, because unlike
 recording it would alter results.
 
+**The frozen report also carries an `assembly_coverage` block.** Per fold and role it
+records the rows as assembled, the rows that survived the `dropna`, the survival ratio,
+the day count, how many days fell under the evaluation's cross-section floor of 30, how
+many were empty, and the median and minimum daily width:
+
+```json
+"assembly_coverage": {"minimum_cross_section": 30, "folds": {"F01": {"train": {
+  "rows": 2204564, "complete_rows": 434707, "survival_ratio": 0.1972, "days": 1214,
+  "days_below_floor": 15, "empty_days": 0, "median_width": 309, "min_width": 2}}}}
+```
+
+This is measured on the **assembled** frame — after the universe and label joins, before
+the `dropna` the baselines train through — which is strictly more authoritative than
+counting `factor_daily` rows, and it is the quantity adjudication 4 is about. G1-G6
+cannot see it, because they are computed only from TEST-period evidence. The measurement
+lives in `research_v2/datasets/coverage.py` so the runner, `verify_frozen_fold_coverage.py`
+and `audit_legacy_train_coverage.py` share one implementation.
+
+**Cross-check of the two instruments (2026-09-06, the cached frozen F01 frames).** They
+agree closely, which validates both, and the small differences are the expected joins:
+
+| quantity | assembled frame | `factor_daily` gate |
+|---|---|---|
+| F01 train median width | **309** | 310 |
+| F01 train days below floor | **15** | 15 |
+| F01 train minimum width | **2** | 2 |
+| F01 train days | **1,214** | 1,220 |
+| F01 test median / days / min | **599 / 243 / 121** | 599 / 243 / 121 |
+
+Six fewer train days is the universe∩label join removing dates. The measured survival of
+**19.72%** also independently confirms the 19.5% this runbook and the plan costed for
+adjudication-4 option (ii).
+
 ### Verdict, consistency and candidate gate for the frozen root
 
 ```bash
