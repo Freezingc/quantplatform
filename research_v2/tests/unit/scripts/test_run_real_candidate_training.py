@@ -10,10 +10,14 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
 import pytest
+import torch
+
+from research_v2.training.static_batches import build_static_training_batches
 
 SCRIPT_PATH = (
     Path(__file__).resolve().parents[3] / "scripts" / "run_real_candidate_training.py"
@@ -324,3 +328,96 @@ def test_parse_args_collects_prior_reports(tmp_path: Path) -> None:
         ]
     )
     assert args.prior_report == [f"M1={tmp_path / 'm1.json'}"]
+
+
+# --- padding-mask regression -------------------------------------------------
+#
+# Every smoke fixture in this file gives each signal date the same number of
+# stocks, so ``build_static_training_batches`` never pads and the padding bug
+# below is invisible. Real segments are ragged: the F01/2019 validation segment
+# runs 2,366 to 2,469 stocks per day, so every narrower day is padded to 2,469
+# with empty security keys. The 2026-09-05 full M1 run trained for seven hours
+# fifty-eight minutes and then died on exactly this:
+#   ValueError: seed predictions contain duplicate business keys
+
+RAGGED_FACTOR_ORDER = ("f00", "f01")
+RAGGED_WIDTHS = {date(2019, 1, 2): 40, date(2019, 1, 3): 31}
+
+
+def _ragged_batches():
+    """Two dates of unequal width, so the narrower one carries nine padding slots."""
+    rows: list[dict[str, object]] = []
+    for day, count in RAGGED_WIDTHS.items():
+        for index in range(count):
+            rows.append(
+                {
+                    "signal_date": day,
+                    "ts_code": f"{index:06d}.SZ",
+                    "raw_return_5d": float(index) / 100.0,
+                    "label_valid": True,
+                    "f00": float(index) + 1.0,
+                    "f01": -1.0,
+                }
+            )
+    return build_static_training_batches(
+        pd.DataFrame(rows), factor_order=RAGGED_FACTOR_ORDER
+    )
+
+
+class _StubScorer:
+    """Return ``[date, stock]`` scores with padding masked to zero, as every model does."""
+
+    def __init__(self, sign: float = 1.0) -> None:
+        self._sign = sign
+
+    def eval(self) -> _StubScorer:
+        return self
+
+    def __call__(self, batch) -> torch.Tensor:
+        scores = batch.features[:, :, 0] * self._sign
+        return torch.Tensor.masked_fill(scores, ~batch.stock_mask, 0.0)
+
+
+def test_ragged_fixture_really_is_padded() -> None:
+    """Guard the guard: if this stops padding, the two tests below prove nothing."""
+    batches = _ragged_batches()
+    narrow = batches[date(2019, 1, 3)].inputs
+
+    assert narrow.ts_codes[0].count("") == 9
+    assert int(narrow.stock_mask[0].sum()) == 31
+
+
+def test_predict_validation_percentiles_drops_padding_and_ranks_within_the_date() -> None:
+    batches = _ragged_batches()
+
+    result = MODULE._predict_validation_percentiles(_StubScorer(), batches)
+
+    keys = ["signal_date", "ts_code"]
+    assert not result.duplicated(keys).any(), "padding slots leaked out as duplicate keys"
+    assert "" not in set(result["ts_code"]), "padding slots leaked out as empty ts_codes"
+    assert len(result) == sum(RAGGED_WIDTHS.values())
+    narrow = result.loc[result["signal_date"] == date(2019, 1, 3), "percentile_rank"]
+    # Ranks must be within-date over the 31 valid stocks, not over the padded width
+    # of 40. Ranking across padding shifts every real stock by a date-varying
+    # amount, which is what corrupted the validation RankIC that selects the config.
+    assert sorted(narrow) == pytest.approx([step / 31 for step in range(1, 32)])
+
+
+def test_mean_seed_percentile_scores_averages_on_business_keys_not_positions() -> None:
+    """Seeds order their own rows by score, so averaging must join on keys.
+
+    Two scorers with opposite signs reverse each other's ordering. Key-aligned
+    averaging gives every stock the same mean, (n+1)/2n; positional averaging
+    would instead produce a ramp from 1/n to 1.
+    """
+    batch = _ragged_batches()[date(2019, 1, 3)]
+
+    result = MODULE._mean_seed_percentile_scores(
+        [_StubScorer(1.0), _StubScorer(-1.0)], batch
+    )
+
+    keys = ["signal_date", "ts_code"]
+    assert not result.duplicated(keys).any()
+    assert "" not in set(result["ts_code"])
+    assert len(result) == 31
+    assert list(result["score"]) == pytest.approx([32 / 62] * 31)
