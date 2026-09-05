@@ -374,6 +374,29 @@
       既被方向选择、又随广度变薄的因子上——这进一步强化裁决 4 的 (iii)：
       问题不只是「这 6 个能不能用」，还有「它们是否携带 6 个独立信号」。
       证据：`/data/zhangyudong/qrv2_research_artifacts/frozen_internal_redundancy.txt`。
+
+      **随之关闭的一个静默失效隐患（2026-09-05 22:38，已实现并测试）**：既然 (iii) 可能
+      **改动冻结清单本身**，就必须先确认改清单不会读到旧缓存。实测发现
+      `walk_forward_common.fold_cache_key(fold_id, role, versions)` **只哈希
+      (折, 角色, 版本映射)，不含因子清单**——因子集是模块常量而非键的一部分。
+      因此一旦 `FROZEN_FACTOR_SET_V1` 被改（例如删掉那 6 个方向选择因子），
+      **缓存键完全不变**，旧的 17 因子帧会被静默复用、列数与列义都不对且不报错——
+      与「未登记月份被静默丢弃」属同一失效类。
+      **修复（`walk_forward_common` 零改动，符合 Task 2.3 定案）**：在
+      `walk_forward_factor_daily.py` 内新增 `scoped_cache_key()`，把
+      `{factor_id: "<factor_version>:<feature_name>"}` 作为一个额外的伪表项并入版本映射后
+      再交给 `fold_cache_key`。这样既让键对因子清单（含顺序与 f00..f16 赋值）敏感，
+      又保持与遗留键的不相交（遗留映射名为 `factor_observation_clean`）。
+      **遗留路径逐位不受影响**：新增测试 `test_legacy_fold_cache_key_formula_is_pinned`
+      把 `fold_cache_key` 的 payload 公式钉死（`json.dumps({"fold_id","role","versions"},
+      sort_keys=True)` 后 sha256），任何对该共享函数的改动都会立刻失败，
+      从而保护 criterion-303 复现契约与 2.9 GB 温热遗留缓存不被孤立。
+      新增测试 `test_cache_key_is_scoped_to_the_factor_set` 验证：同版本、窄因子集
+      **必须重新查询**而非复用宽缓存，且窄集自身随后命中自己的缓存条目。
+      代价：既有的冻结路径缓存条目（如 09-05 13:05 写入的 F01/test，73 MB）在新键下成为
+      孤儿文件，仅占磁盘、无正确性影响；冻结路径此前几乎未跑，重算成本可忽略。
+      `tests` 全量 **1133 passed / 45 skipped**（较修复前 +2），ruff 清、mypy 仅剩既有
+      dolphindb stub 报错。
       **后果**：冻结集新信任根将在 **12–35%** 的配对上拟合并评分，而冻结候选在近 100% 上；
       G4（相对折匹配基线的 ΔRankIC）因此在**不同横截面**上比较，不构成折匹配证据；
       且被选择性削弱的基线让 G4 **更容易通过**，信任根不保守。

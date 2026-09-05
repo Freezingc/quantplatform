@@ -205,6 +205,79 @@ def test_frozen_constant_matches_frozen_contract_json() -> None:
     assert len(MODULE.FROZEN_FACTOR_SET_V1) == contract["count"] == 17
 
 
+def test_cache_key_is_scoped_to_the_factor_set(tmp_path: Path) -> None:
+    """A different factor set must never be served a stale cached frame.
+
+    ``fold_cache_key`` hashes only ``(fold_id, role, versions)``. Since the frozen
+    factor set is a constant rather than part of that payload, shrinking
+    FROZEN_FACTOR_SET_V1 (adjudication 4 option iii, which the coverage and
+    redundancy findings make the leading candidate) would reuse the 17-factor cache
+    under an identical key and silently hand the driver the wrong columns -- the same
+    class of silent failure as an unregistered month. The extractor therefore scopes
+    its own cache key by the requested factor set.
+    """
+    full = MODULE.factor_members_for(("yeslab_206", "yeslab_357"))
+    narrow = MODULE.factor_members_for(("yeslab_206",))
+    calls: list[str] = []
+
+    def counting_query(holder, script):
+        calls.append(script)
+        return _fake_query(holder, script)
+
+    first = MODULE.extract_dataset_factor_daily(
+        {}, _Resolver(), "F03", "train", full, VERSIONS,
+        query_fn=counting_query, cache_root=tmp_path,
+    )
+    after_full = len(calls)
+    wide_columns = [c for c in first.columns if c.startswith("f")]
+
+    second = MODULE.extract_dataset_factor_daily(
+        {}, _Resolver(), "F03", "train", narrow, VERSIONS,
+        query_fn=counting_query, cache_root=tmp_path,
+    )
+    assert len(calls) > after_full, "narrower factor set was served the wider cache"
+    narrow_columns = [c for c in second.columns if c.startswith("f")]
+    assert wide_columns == ["f00", "f01"]
+    assert narrow_columns == ["f00"]
+
+    # Repeating the narrow request must now hit its own cache entry.
+    after_narrow = len(calls)
+    third = MODULE.extract_dataset_factor_daily(
+        {}, _Resolver(), "F03", "train", narrow, VERSIONS,
+        query_fn=counting_query, cache_root=tmp_path,
+    )
+    assert len(calls) == after_narrow
+    pd.testing.assert_frame_equal(second, third)
+
+
+def test_legacy_fold_cache_key_formula_is_pinned() -> None:
+    """The shared key formula must not change: legacy keys are a live cache and part
+    of the criterion-303 reproduction contract. Pinning it here means any future edit
+    to ``walk_forward_common.fold_cache_key`` fails loudly instead of silently
+    orphaning 2.9 GB of warm legacy fold cache and forcing full re-extraction."""
+    import hashlib
+    import json
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+    import walk_forward_common as common
+
+    versions = {
+        "universe_daily": {"2020-01": "u1"},
+        "factor_observation_clean": {"2020-01": "f1"},
+        "label_daily": {"2020-01": "l1"},
+    }
+    payload = json.dumps(
+        {"fold_id": "F01", "role": "train",
+         "versions": {k: dict(v) for k, v in versions.items()}},
+        sort_keys=True,
+        ensure_ascii=True,
+    )
+    assert common.fold_cache_key("F01", "train", versions) == hashlib.sha256(
+        payload.encode("utf-8")
+    ).hexdigest()
+
+
 def test_frozen_feature_names_are_unique() -> None:
     members = MODULE.factor_members_for(MODULE.FROZEN_FACTOR_SET_V1)
     names = [member.feature_name for member in members]

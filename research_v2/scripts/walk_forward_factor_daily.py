@@ -16,7 +16,7 @@ entries.
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import date
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -120,7 +120,35 @@ __all__ = [
     "FROZEN_FACTOR_SET_V1",
     "FROZEN_VERSION_TABLES",
     "LEGACY_VERSION_TABLES",
+    "scoped_cache_key",
 ]
+
+
+def scoped_cache_key(
+    fold_id: str,
+    role: str,
+    factor_members: tuple[FactorInput, ...],
+    versions: Mapping[str, Mapping[str, str]],
+) -> str:
+    """Fold cache key that additionally binds the requested factor set.
+
+    ``fold_cache_key`` hashes only ``(fold_id, role, versions)``. The frozen factor
+    set is a module constant rather than part of that payload, so if
+    ``FROZEN_FACTOR_SET_V1`` were ever changed -- for instance shrunk to drop the six
+    direction-selected factors -- the key would be unchanged and a stale 17-factor
+    frame would be served silently, with the wrong columns and no error. That is the
+    same failure class as an unregistered month, so it is closed here.
+
+    The scope is folded in as one extra pseudo-table entry, which keeps
+    ``walk_forward_common`` untouched (plan Task 2.3 requires zero changes there) and
+    preserves disjointness from legacy keys, whose mapping names
+    ``factor_observation_clean`` instead of ``factor_daily``.
+    """
+    scope = {
+        str(member.factor_id): f"{member.factor_version}:{member.feature_name}"
+        for member in factor_members
+    }
+    return fold_cache_key(fold_id, role, {**versions, "factor_set": scope})
 
 
 def extract_dataset_factor_daily(
@@ -135,7 +163,8 @@ def extract_dataset_factor_daily(
     cache_root: Path = FOLD_CACHE_ROOT,
 ) -> pd.DataFrame:
     """Assemble one fold split from universe_daily x factor_daily x label_daily."""
-    cache_path = cache_root / f"{fold_cache_key(fold_id, role, versions)}.parquet"
+    cache_key = scoped_cache_key(fold_id, role, factor_members, versions)
+    cache_path = cache_root / f"{cache_key}.parquet"
     if cache_path.exists():
         cached = pd.read_parquet(cache_path)
         expected = {"signal_date", "ts_code", "raw_return_5d", "label_valid"}
