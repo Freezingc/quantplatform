@@ -173,6 +173,40 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       资源现状：4×RTX 4090 利用率 0%；104 核中本进程仅实现 ~4.3 核有效占用
       （进程 232 线程、torch 默认 intra-op 52 线程——逐日小 batch 下线程同步开销主导，
       非算力饱和）。
+      **设备/线程实测基准（2026-09-05 19:01，独立进程只读探针 `/tmp/bench_device.py`，
+      复用驱动自身 `_prepare_frame`/`build_static_training_batches`/`_m1_model_factory` 与
+      `run_validation_governed_training`，跑 1 个 epoch；数据取 M1 已发布的 F01 数据集
+      `split=train/year=2014`（395,643 行 / 245 日）+ `validation/year=2019` 子集
+      （152,921 行 / 60 日）；模型 = config0 `hidden 64/blocks 1/dropout 0.0`，10,369 参数）**：
+
+      | 设备 / 线程 | 单 epoch 秒 | ms/train 日 | checkpoint sha256（前 8 位） |
+      |---|---|---|---|
+      | CPU threads=1 | 81.76 | 333.7 | `1b1f74b7` |
+      | CPU threads=4 | 81.80 | 333.9 | `d72bc345` |
+      | CPU threads=8 | 81.56 | 332.9 | `38f78b86` |
+      | **CUDA:1（RTX 4090）** | **238.62** | **973.9** | `9735f01b` |
+
+      交叉校验：在跑的 M1 稳态 epoch = 6.77 min = 406 s / ~1220 train 日 = **333 ms/日**，
+      与 CPU 基准逐位吻合（两个测量互相印证）。四条结论：
+      1) **GPU 比 CPU 慢 2.9 倍**——10,369 参数 + 逐日 ~1600 行 batch 属**派发/启动开销受限**，
+         不是 FLOP 受限；「启用 4 张 4090」对 M1 是**反向优化**，不能作为提速杠杆。
+      2) **线程数对速度中性**（1/4/8 线程 81.56–81.80 s，差异 <0.3%）→ 单次拟合无法靠多线程加速，
+         但**可同时并发约 100 个拟合、每个 1 线程而单次拟合不减速**（104 核主机）。
+         据此 M1 的 504 次拟合 ≈ 504 × 2.03 h / 100 ≈ **10 小时**，对比串行的 42.6 天 ≈ **100 倍**；
+         前提是并发化必须保持并列（tie）时的 canonical 选择顺序不变（E 计划已有
+         `sha256(model_family|fold|config_json)` 排序约定可复用）。
+      3) **线程数改变数值结果**：同 seed/config/数据在 threads=1/4/8 下产生 **3 个不同的
+         checkpoint sha256**。而 torch 训练路径**既不钉住也不记录**线程数
+         （全仓仅 `baselines/lgbm_ranker.py:374` 钉了 `num_threads: 1`；
+         `training/seeds.py::configure_reproducibility` 记录 seed/torch_version/cuda 设备名，
+         不含线程数；checkpoint manifest 亦不含）→ **候选模型数值当前依赖一个未钉住、
+         未记录的主机属性**（`torch.get_num_threads()` 在本机 = 核数/2 = 52）。
+         这是 E3.5/主计划 §4.3 可复现性契约的实质缺口：同一命令在不同核数主机上会给出不同结果。
+         任何并发化改造**必须同时显式钉住线程数并写入证据**，否则会把该缺口放大 100 倍。
+      4) **M2（GRU/TCN）与 M3（set-attention）未做基准**：其逐日计算量更大，且 E 计划本就为
+         注意力模型设计了「不同日期打包只用于 GPU 并行」，故 GPU 结论对这两个家族**可能相反**，
+         需另行实测后再定。
+      证据全文：`/data/zhangyudong/qrv2_research_artifacts/device_thread_benchmark.txt`。
       附带运维风险：config 搜索循环**无折/配置级续跑**（`_existing_evidence_id` 仅在
       baseline/model 证据写入处去重，不跳过搜索），任何中断都从 F01/config0/seed1 重来；
       在数十小时的运行长度下该风险被显著放大。
