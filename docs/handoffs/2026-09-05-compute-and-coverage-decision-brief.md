@@ -286,6 +286,64 @@ train/test 中位宽度比 **0.49–0.77**（早期折训练横截面只有评�
 **选项 (ii) 的代价已定量**：同口径子群评价只保留 **19.5%–24.6%** 的训练行
 （F01 train 由 2,204,564 行降至约 43 万行）。
 证据：`frozen_survival_2014_2025.txt`、`frozen_fold_coverage_gate.txt`。
+
+**裁决 4 已可执行化（2026-09-06 00:25，读基线源码 + 阈值曲线实测）**
+
+**(1) 四个基线对缺失值的真实要求（代码级）**：
+- **B0 `SingleFactorBaseline`**（`single_factor.py:29-40`）：`predict` 只取被选中的那一个因子列，
+  `pd.to_numeric(errors="coerce")` 后 inf→nan，**不调用 `_finite_matrix`** → **容忍 NaN**。
+- **B1 `EqualWeightBaseline`**（`equal_weight.py:85-102`、`rank_ensemble.py:12-32`）：
+  契约原文「Missing values are **omitted** from a row's equal-weight score, but a row must
+  retain the configured minimum fraction of valid factors」，`minimum_factor_coverage=0.60`
+  → 17 因子时需 **≥11 个有效**。即**设计上就容忍缺失，且是「剔除」而非「插补」**。
+- **B2 `LinearBaselineCandidate`**（`linear.py:80`→`:240 _finite_matrix`）：任一 NaN 即
+  `raise ValueError("baseline feature values must be finite")` → **硬要求全齐**。
+- **B3 `LGBMRankerCandidate`**（`lgbm_ranker.py:106/121/164`→`:294`）：同样 `_finite_matrix`
+  → **硬要求全齐**，尽管 LightGBM 本身原生支持 NaN；**这是比库更严的自设护栏**。
+
+**结论：`run_real_walk_forward.py:177-179` 的一律 `dropna` 是为 B2/B3 而设，但它同时使
+B1 的「部分覆盖」能力在真实数据路径上成为死代码**——任何非 100% 齐全的行在 B1 看到之前
+就已被删除，故 `minimum_factor_coverage=0.60` 永远不可能生效。
+
+**(2) 阈值存活率曲线（同一 `dropna` 改成「每行至少 k 个因子」）**：
+
+| 阈值 | 2015-06（股灾月） | 2020-01 | 2025-06 |
+|---|---|---|---|
+| ≥11 / 17（**B1 自己的下限**） | **84.4%** | **98.5%** | **99.2%** |
+| ≥13 / 17 | 57.0% | 78.5% | 76.0% |
+| ≥15 / 17 | 24.9% | 35.9% | 29.4% |
+| **=17（现行 dropna）** | **19.8%** | **34.6%** | **28.2%** |
+
+**(3) 若删掉那 6 个「负底数幂」因子、只用 11 个 dense 因子**：
+
+| 月份 | universe | 全 11 dense | 存活率 | 全 17 对照 |
+|---|---|---|---|---|
+| 2015-06 | 31,290 | 22,372 | **71.5%** | 19.8% |
+| 2015-08（崩盘） | 30,477 | 13,801 | **45.3%** | 9.3% |
+| 2016-01（熔断） | 33,273 | 25,782 | **77.5%** | 11.8% |
+| 2020-01 | 43,599 | 42,263 | **96.9%** | 34.6% |
+| 2025-06 | 76,876 | 75,762 | **98.6%** | 28.2% |
+
+即 **9–35% → 45–99%**，平静月份达 97–99%，与遗留 14 的 80.8/96.1/94.8% 相当甚至更好；
+最坏的 2015-08 仍有 45.3%（对照全 17 的 9.3%）。
+
+**(4) 更正我此前对选项 (i) 的表述**：我先前写「(i) 会为公式本就未定义的值造数」——
+**对 B0/B1 是错的**。B1 是把缺失因子从该行等权得分中**剔除**，并不插补；
+只有 **B2（ElasticNet）确实需要插补**，而 **B3 的阻拦只是比 LightGBM 更严的自设护栏**。
+
+**(5) 两条路收敛到几乎同一批行**：B1 的「≥11/17」保留 84.4%/98.5%/99.2%，
+与「全 11 dense」的 71.5%/96.9%/98.6% 在平静月份几乎重合——不是巧合：
+缺因子的行缺的正是那 6 个稀疏因子，所以「≥11/17」在实践中就等于「11 个 dense 全在」。
+**故 (i-a) 与 (iii-minimal) 选出近乎相同的行集**；(iii-minimal) 更干净，
+因为它把因子集显式化、不依赖覆盖率启发式，并消除了「同一横截面内有些行按 11 个因子平均、
+有些按 17 个平均」的异质性。
+
+**(6) 选项 (i) 必须回答的代价**：B0–B3 的胜者由 validation RankIC 选出。
+若 B0/B1 跑在 ≥11 行集（84–99%）而 B2/B3 跑在 =17 行集（20–35%），
+四者就在**不同样本**上拟合并评分，选拔不再同口径。所以 (i) 不是免费的：
+要么给 B2/B3 补 NaN 支持（B3 是拆护栏、B2 需声明插补口径并写入证据），
+要么显式决定冻结集基线**不含 B2/B3**。
+证据：`/data/zhangyudong/qrv2_research_artifacts/adjudication4_options_quantified.txt`。
 以下为发现时的初步测量，保留备查：
 `run_real_walk_forward.py:177-179` 对基线一律 `dropna(subset=全部因子列)`，而候选驱动
 **不做 dropna**（保留 NaN 交预处理器）。实测存活率：
@@ -427,8 +485,8 @@ numpy 对「负底数 ^ 非整数指数」返回 NaN，各计算器末尾又 `.r
 使这一类缺陷不再能静默通过。
 证据：`/data/zhangyudong/qrv2_research_artifacts/frozen_g6_safe_train_side_damage.txt`。
 证据全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_coverage_vs_legacy_dropna.txt`。
-注：2017-06 实测 0%、2018–2019 无行，是测量时该年正在写入/尚未物化所致，**不是发现**；
-完整 2014–2025 存活率表待补齐结束后重测。
+注：早先 2017-06 实测 0%、2018–2019 无行，是测量时该年正在写入/尚未物化所致，**不是发现**；
+完整 2014–2025 存活率表已在补齐结束后重测，见上文与 `frozen_survival_2014_2025.txt`。
 
 ## 5. 复核命令
 
