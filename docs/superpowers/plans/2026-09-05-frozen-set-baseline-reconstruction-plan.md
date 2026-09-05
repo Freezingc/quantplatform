@@ -347,6 +347,21 @@
       要么把容忍度显式设为 1 并写明理由。
       证据：`train_coverage_calibration_and_2017_hole.txt`、`legacy_train_coverage_calibration.{txt,json}`；
       工具：`research_v2/scripts/audit_legacy_train_coverage.py`（9 测试）。
+      **覆盖率门已按标定落地并闭环验证（2026-09-06 03:10）**：`verify_frozen_fold_coverage.py`
+      新增第二条判据「**决策角色（train/validation）中位横截面 ≥ 1000**」，并把「低于门槛天数」
+      容忍度由 **0 改为标定值 1**（理由与恢复条件见该脚本 `DEFAULT_MAX_DAYS_BELOW_FLOOR` 注释）。
+      `test` 角色**不适用**宽度下限——它只评分，其横截面已由 G6 读取的「每日 ≥30」有效性规则管辖。
+      **实跑新判定**（`frozen_fold_coverage_gate_calibrated.txt`）：冻结侧 **6 个 train 段全部 FAIL、
+      6 个 validation 段全部 FAIL、6 个 test 段全部 PASS**，总判定 `COVERAGE GATE: FAIL`。
+      与标定前对比：此前只有 F01/F02/F03 的 train 段 FAIL（各因丢 15/15/4 天），而
+      **F04–F06 的 train 段与全部 validation 段是 PASS 的**——即缺陷只被部分捕获。
+      现在两条判据覆盖到每一个决策角色段（F04–F06 train 丢 0 天但中位宽度 513/600/673 < 1000）。
+      **闭环验证（关键）**：`audit_legacy_train_coverage.py --apply-coverage-gate` 用**同一判定函数、
+      同一默认常量**跑真实遗留帧，结果 **`gate admits 18/18 measured legacy segments`**、
+      无 `CALIBRATION INVALID`。故该门**放行已被接受的基线、拒绝有缺陷的候选集**，
+      是合法门控而非预先写好的结论。单测 `test_the_real_gate_admits_the_legacy_profile_and_rejects_the_frozen_one`
+      把这一条写成了可执行断言。
+      证据：`preflight_frozen_baseline_calibrated_run.txt`、`legacy_train_coverage_calibration.{txt,json}`。
       **裁决 4 选项 (ii) 的代价已定量**：若候选与基线同口径只在「全 17 齐全」子群上评价，
       各折 train 段存活率为 F01 **19.5%**、F02 20.6%、F03 22.4%、F04 23.6%、F05 24.2%、
       F06 24.6%，即**只保留约 1/5–1/4 的训练行**（F01 train 由 2,204,564 行降到约 43 万行）。

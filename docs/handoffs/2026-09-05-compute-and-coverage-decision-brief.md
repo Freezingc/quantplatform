@@ -679,6 +679,26 @@ universe，故已被接受的 criterion-303 基线在 **F01–F04 四折的训�
 冷装配全部 18 段**（每段约 2 分钟）。
 证据：`/data/zhangyudong/qrv2_research_artifacts/train_coverage_calibration_and_2017_hole.txt`、
 `legacy_train_coverage_calibration.{txt,json}`。
+证据：`/data/zhangyudong/qrv2_research_artifacts/train_coverage_calibration_and_2017_hole.txt`、
+`legacy_train_coverage_calibration.{txt,json}`。
+
+**门已按标定落地并闭环验证（2026-09-06 03:10）——简报那条「无论选哪条都该做」的建议已完成。**
+`verify_frozen_fold_coverage.py` 现有两条**标定过的**判据，作用于**决策角色**（train/validation；
+test 只评分，已由 G6 的「每日 ≥30」管辖）：**低于门槛天数 ≤ 1**、**中位横截面 ≥ 1000**。
+**冻结侧实跑新判定**：6 个 train 段**全部 FAIL**、6 个 validation 段**全部 FAIL**、6 个 test 段全部 PASS。
+标定前只有 F01/F02/F03 的 train 段 FAIL，**F04–F06 train 与全部 validation 段都是 PASS**——
+即缺陷此前只被部分捕获；现在每个决策角色段都被捕获（F04–F06 train 丢 0 天，但中位宽度
+513/600/673 低于 1000）。总判定仍为 `COVERAGE GATE: FAIL`，前置门仍 **REFUSED**，
+**裁决 4 仍是解冻 Task 3.1 的唯一钥匙**。
+**闭环验证**：`audit_legacy_train_coverage.py --apply-coverage-gate` 以**同一判定函数、同一默认常量**
+跑真实遗留帧 → **`gate admits 18/18 measured legacy segments`**，无 `CALIBRATION INVALID`。
+这条很重要：它证明该门**放行已被接受的基线、拒绝有缺陷的候选集**，而不是把结论预先写进阈值。
+已写成可执行断言（`test_the_real_gate_admits_the_legacy_profile_and_rejects_the_frozen_one`）。
+**对裁决 4 各选项的含义**：无论选 (i)/(ii)/(iii)，这道门都会留在前置门里。选项 (iii)（11 个 dense 因子）
+按已测存活率 45.3–98.6% 推算，其决策角色中位宽度很可能落到 1000 以上从而通过；(i)/(ii) 保留 17 因子
+则会继续 FAIL。**但这是推算、不是实测**——裁决落地后应重跑覆盖率门确认，而不是假定。
+若最终选择保留 17 因子并接受窄横截面，则需按前置门的豁免机制给出**点名到 `fold_coverage` 门、
+理由非空**的 `--waiver-reason`。
 证据全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_coverage_vs_legacy_dropna.txt`。
 注：早先 2017-06 实测 0%、2018–2019 无行，是测量时该年正在写入/尚未物化所致，**不是发现**；
 完整 2014–2025 存活率表已在补齐结束后重测，见上文与 `frozen_survival_2014_2025.txt`。

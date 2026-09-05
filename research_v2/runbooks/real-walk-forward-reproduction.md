@@ -157,10 +157,55 @@ as a pipeline-reproducibility artifact.
 
    It reports, per fold and role, the daily width of the complete-factor cross-section
    against the `minimum_cross_section` floor of 30, plus the train/test median-width
-   ratio. The hard gate counts days below the floor with **zero tolerance by default**;
-   a day-share threshold is deliberately not the gate, because 11 lost crash days inside
-   a five-year train segment is a 99.1% valid share and would pass the same 0.95
-   threshold G6 uses.
+   ratio. It fails a **decision role** (`train` or `validation` — the roles whose
+   cross-section determines a modelling decision; `test` only scores and is already
+   governed by the ≥30-per-day validity rule that G6 reads) on two calibrated criteria:
+
+   1. **days below the floor**, allowance **1**. A day-share threshold is deliberately
+      not the gate, because 11 lost crash days inside a five-year train segment is a
+      99.1% valid share and would pass the same 0.95 threshold G6 uses. The allowance is
+      1 rather than 0 because the *accepted* criterion-303 baseline itself loses exactly
+      one train day in F01–F04, and that day's width is 0: `yeslab_387` has no rows at
+      all on **2017-10-09** in `factor_observation_clean` while the other 13 factors are
+      normal (2,645–3,177 rows). A full-history scan of 2014–2025 — 2,919 trading days ×
+      14 factors, **40,866 (factor, date) cells — finds exactly one absent cell**, so it
+      is a single missing observation at source, not PIT `available_date` gating (that
+      would suppress every factor equally) and not a holiday-calendar effect (the
+      2016/2018/2019/2020 post-holiday first days are all complete). Repair that cell and
+      the allowance should return to 0.
+   2. **median cross-section width ≥ 1000** for a decision role.
+
+   **Both constants are calibrated, not chosen.** A threshold taken only from the
+   defective side is a verdict written in advance, not a gate: it has to admit the
+   baseline already accepted, otherwise adopting it retroactively invalidates the trust
+   root. `audit_legacy_train_coverage.py` measures the same quantity on the assembled
+   frames criterion-303 actually consumed (`/tmp/walk_forward_cache_v1`, located by
+   recomputing `fold_cache_key` from the currently published versions — no re-query, no
+   re-assembly):
+
+   | criterion | legacy-14 (accepted) | frozen-17 | separates? |
+   |---|---|---|---|
+   | train median cross-section | 1402 / 1615 / 1949 / 2464 / 2656 / 2794 | 310 / 343 / 419 / 513 / 600 / 673 | **yes**, 4.2–4.8× per fold, no overlap |
+   | train days below floor | 1 / 1 / 1 / 1 / 0 / 0 | 15 / 15 / 4 / 0 / 0 / 0 | yes, but legacy is not 0 |
+   | train/test median ratio | 0.53 / 0.58 / 0.60 / 0.69 / 0.70 / 0.74 | 0.52 / 0.49 / 0.60 / 0.66 / 0.77 / 0.74 | **no** — overlaps |
+
+   The ratio is therefore **reported and deliberately not gated**: ≈0.5 is a property of
+   the walk-forward design (a five-year train window dominated by early years, scored
+   against one recent year over a universe that grew from ~2,700 to ~4,300 names), not of
+   the frozen factor set, and any ratio threshold low enough to fail frozen-17 would also
+   fail the accepted baseline. Re-verify the calibration any time a constant changes:
+
+   ```bash
+   /data/zhangyudong/.conda/envs/quantyd/bin/python \
+     scripts/audit_legacy_train_coverage.py --sources legacy --apply-coverage-gate
+   ```
+
+   Expected: `gate admits 18/18 measured legacy segments` and no `CALIBRATION INVALID`
+   line. That runs `verify_frozen_fold_coverage.assess_coverage` — the same function, the
+   same default constants — over the reference widths, so a constant that would reject
+   the accepted baseline is caught before it is used to block a run. Measured 2026-09-06:
+   **18/18 admitted**, while the frozen side fails **12 of 18** segments (all 6 train and
+   all 6 validation; the 6 test segments pass, correctly).
 
    Why it exists: six of the frozen 17 compute `base ** exponent` where the base can be
    negative (`pct_chg`, or `tanh` of a 20-day change in volume/turnover), which is
@@ -245,6 +290,7 @@ later failure of the same gate.
 | `screen_factor_daily_coverage.py` | one factor, over a window | Is this factor's own coverage admissible under C6.2 on the source we consume? |
 | `verify_frozen_fold_coverage.py` | one (fold, role) segment, per day | Will the *joint* all-factor cross-section be wide enough to train and score on? |
 | `verify_admission_consistency.py` | the admitted set vs its screening history | Was anything with a recorded blocking failure admitted without a waiver? |
+| `audit_legacy_train_coverage.py` | the accepted baseline's own assembled frames | Are the coverage gate's constants calibrated so it admits what it was calibrated on? |
 2. `published_version` must carry **144 monthly partitions** for `factor_daily`
    (2014-01 .. 2025-12). Register with the registration-only publisher (it never
    writes factor rows, and re-running is idempotent):
