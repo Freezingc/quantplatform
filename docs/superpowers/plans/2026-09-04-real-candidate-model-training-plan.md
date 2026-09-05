@@ -191,8 +191,14 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       1) **GPU 比 CPU 慢 2.9 倍**——10,369 参数 + 逐日 ~1600 行 batch 属**派发/启动开销受限**，
          不是 FLOP 受限；「启用 4 张 4090」对 M1 是**反向优化**，不能作为提速杠杆。
       2) **线程数对速度中性**（1/4/8 线程 81.56–81.80 s，差异 <0.3%）→ 单次拟合无法靠多线程加速，
-         但**可同时并发约 100 个拟合、每个 1 线程而单次拟合不减速**（104 核主机）。
-         据此 M1 的 504 次拟合 ≈ 504 × 2.03 h / 100 ≈ **10 小时**，对比串行的 42.6 天 ≈ **100 倍**；
+         但**可多路并发、每路 1 线程**（104 核主机）。并发扩展性已实测标定（solo/16 路/48 路
+         同一工作量对照，`OMP_NUM_THREADS=1`、独立 checkpoint 目录、0 失败）：
+         单次拟合降级 **16 路 1.14×、48 路 1.30×** → 有效吞吐 **16 路 14.0×、48 路 37.0×**；
+         按降级趋势外推 ~96 路约 1.5× 降级 → 有效约 **64×**。
+         据此 M1 的 504 次拟合 ≈ 504 × 2.12 h / 37 ≈ **29 小时**（48 路），对比串行 44.6 天。
+         **并发上限的约束是内存而非核数**：单进程 RSS ≈ 3.4 GB（一折全帧），worker 约需 3 GB，
+         473 GB 可用 → 内存约容 150 路、核数约 100 路，故 **48–64 路为稳妥工作点**
+         （48 路全帧约 145 GB）。
          前提是并发化必须保持并列（tie）时的 canonical 选择顺序不变（E 计划已有
          `sha256(model_family|fold|config_json)` 排序约定可复用）。
       3) **线程数改变数值结果**：同 seed/config/数据在 threads=1/4/8 下产生 **3 个不同的
@@ -221,7 +227,14 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
          M3 = 306 拟合 × 2.63 h ≈ **33.5 天**；合计 **1260 拟合 ≈ 5,700 h ≈ 238 天**。
          自校验：推算的 M1 单 epoch 6.8 min 与在跑 M1 实测 6.77 min 吻合；且为**下界**
          （F02–F06 的 train 窗口年份更晚、行数比 F01 的 2014–2018 多约 40%）。
-         并发化后：48 路 ≈ 4.9 天、100 路 ≈ 2.4 天。
+         并发化后（按实测降级标定，非零降级假设）：48 路 ≈ **6.5 天**、外推 ~96 路 ≈ **3.7 天**。
+         单拟合时长已由在跑 M1 实测确认：fit#1 的 epoch-1 检查点（17:48:17）到 seed 20260802 的
+         epoch-1 检查点（19:55:40）相隔 127.4 min = fit#1 的 epochs 2–18 加 fit#2 的 epoch 1
+         = 18 个 epoch 当量 → **单次拟合 2.12 h**（推算值 2.03 h，偏差 4%）；据此
+         M1 = 504 × 2.12 h = **1,070 h ≈ 44.6 天**、全链 **≈ 5,745 h ≈ 239 天**。
+         注：6.77 min/epoch 取自无背景负载窗口，127.4 min 窗口后半段叠加了本线程自己的
+         dry-run 与基准（约 0.7–1.7 核），故 2.12 h 略偏保守，诚实区间为 **2.03–2.12 h/拟合**。
+         并发扩展性证据：`/data/zhangyudong/qrv2_research_artifacts/concurrency_scaling_benchmark.txt`。
       证据全文：`/data/zhangyudong/qrv2_research_artifacts/device_thread_benchmark.txt`（M1 线程/设备）、
       `/data/zhangyudong/qrv2_research_artifacts/family_device_benchmark.txt`（分家族矩阵与全链推算）；
       决策简报：`docs/handoffs/2026-09-05-compute-and-coverage-decision-brief.md`。

@@ -157,7 +157,13 @@
       `Dry-run only. Re-run with --apply to write.`；单年耗时 **约 27 分钟**
       （含自 2013-12 起的 Tushare 回溯抓取，日志可见「将开始日期从2014.01.01预处理为2013.12.03」）。
       据此六年补齐成本由 ~7 小时下修为 **约 3–5 小时**，可与遗留链并行。
-      日志全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_materialization_2014_dryrun.log`。
+      **最高风险年 2015 亦已通过（2026-09-05 20:08）**：17/17 因子、4,756,740 行、
+      **约 21.5 分钟**（19:46:58 → 20:08:31），末行同为 `Dry-run only.`；2015 含 6 月股灾与
+      大面积停牌，是 universe/流动性筛选最异常的一年，通过它基本排除「早年数据不可重放」风险。
+      两年实测单年 **21–27 分钟** → 六年补齐成本再下修为 **约 2.2–2.7 小时**；
+      两年合计 10,040,993 行（2014 = 2020 年量的 57%、2015 = 51%），
+      外推六年新增约 **4,200–4,600 万行**。
+      日志全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_materialization_201{4,5}_dryrun.log`。
       **窗口约定已反推并逐位验证**：`data_version = sha256(watermark + str(start) + str(end))`，
       取 `--start YYYY-01-01 --end YYYY-12-31` 可复现现存**全部 6 个**已登记版本
       （2020=`66f33abd…`、2021=`c895e796…`、2022=`70c7c07a…`、2023=`715af5a1…`、
