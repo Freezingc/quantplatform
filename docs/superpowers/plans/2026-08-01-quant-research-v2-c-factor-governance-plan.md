@@ -578,3 +578,50 @@ tests/golden/test_factor_materialization.py -q` → **167 passed，exit 0**，�
 且该性质现已有测试保障。
 
 **C8.5 仍不勾**：提交已完成，但「请求审查」是人工步骤，尚未发生。
+
+## 勾选审计续二（2026-09-06 07:25）：三条逐款核验的结论，其中两条不支持勾选
+
+**(1) C3.1 不勾——一句已满足但此前无测试，一句未实现。**
+该条要求「浮点相等使用 canonical binary/decimal value，**不用宽松 `isclose` 把真实冲突吞掉**；
+源如果声明量化精度，则先按该精度规范化再比较」。
+**前半句已满足**：`deduplication.py` 用 `nunique(dropna=True)` 判 distinct，是精确相等。
+但**此前没有任何测试钉住它**——`test_deduplication.py` 只有 3 条测试，无一条涉及浮点精度，
+故日后有人为「合并近似重复」而加入容差，全部现有测试仍会绿。现补 4 条：
+相差一个 ULP 的两值必须判为 CONFLICT 而非 IDENTICAL_COLLAPSE；
+相差 1e-6 的两值（**在 `np.isclose` 默认 `rtol=1e-5` 之内**）必须判为 CONFLICT；
+发布值必须与观测值**逐位相同**（用 `float.hex()` 比较，因为 `0.1+0.2` 这类值用十进制断言会被放过）；
+隔离区必须保留全部原始候选行、值不失真（C3.2 的契约；聚合出的 `distinct_values_json` 属物化器层，
+其全精度保留已由因子黄金样本的冲突案例钉住）。
+**后半句未实现**：全仓 `grep -rn "quantiz|precision|round("` 在
+`deduplication.py`、`source_reader.py`、`contracts/factor.py` 中**零命中**，
+且 `FactorDefinition` **没有任何声明量化精度的字段**——即该能力不存在，
+子句在「无源声明精度」的意义下空满足。**这是设计取舍还是缺口，应由 C 计划的 owner 判定，不代为决定**，
+故 C3.1 保持未勾并记录在此。
+
+**变异验证（并证明新测试与黄金样本非冗余）**：把判重用的 `_finite_numeric` 改为 `.round(5)`
+（模拟「加了个容差」），结果**恰好那 3 条容差敏感测试失败**；
+而**因子黄金样本在该变异下通过**——因为它的冲突案例两值相差 0.5，五位小数容差对它不可见。
+即新单测覆盖了黄金样本**确实覆盖不到**的尺度。逐位相同那条在变异下通过是正确的：
+变异只作用于判重列、不改发布值，它钉的是另一件事。变异后 `deduplication.py` 以
+`git diff --quiet` 确认还原干净。
+
+**(2) C4.5 仍不勾——未覆盖的那半需要尚不存在的管线。**
+该条末句要求「source watermark 的捕获时间不晚于 run publish」。实测：
+`SourceBatch.extracted_at` 由四个源适配器产生（`sources/yeslab.py:104/174/251`、
+`sources/tushare.py:202`，均为 `pd.Timestamp.now(tz="UTC")`），并被 `pit/security_profile.py:97`
+向下传递；但**全仓没有任何一处把它与 publish 时刻比较**，也没有测试断言该顺序
+（`grep -rn "extracted_at" src/ tests/` 的全部命中都只是产生或透传）。
+而 publish 路径（`db/publish.py` 写 `[now()] as published_at`）**并不接收** `extracted_at`，
+故强制该不变量需要新增贯穿发布路径的管线——那是对核心发布路径的侵入式改动，
+且该不变量在正常操作下平凡成立（先抽取后发布），只有时钟偏移或「用旧 staged batch 在新抽取之后重发布」
+才会违反。**判断：本轮不做**，如实记录以免 C4.5 被误勾。前三款（`observation_date <= available_date
+<= signal_date`、technical 三者相等、fundamental `available_date > ann_date`）已由
+C4.6 泄漏测试与 C4 属性测试覆盖。
+
+**(3) C5.3 确认为真缺，但本轮不做，理由是口径未定。**
+`cli/materialize.py` 的 `_PLANS` 只有 `security-master`/`market`/`universe`/`labels`，**没有 `factors`**；
+`cli/app.py` 也未注册 `factor` 子命令（现有 11 个子应用中无它）。故计划点名的四条命令均不存在。
+不做的理由不是工作量，而是**规格内部有一处需先定口径**：dry-run 要求「输出估算行数」同时「禁止读取值」，
+而行数估算需要 universe 的逐日计数；这属于「元数据查询是否算读取值」的解释问题。
+在没有该口径的情况下实现，等于把一个未定语义写进 CLI 契约。**建议先定口径再实现**，
+或按本项目既有做法（`omp_num_threads` 未设置即记 `null` 而非编造）输出 `null` 并注明所需输入。
