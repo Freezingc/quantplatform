@@ -97,14 +97,42 @@
       （模型侧硬约束是 `models/base.py:20` 的 `raw_factor_count >= 1`），故候选计划记录的
       「15 vs 14」张力纯属声明式文书层面、不会造成运行期失败——这也解释了遗留 14 因子链
       为何一直正常运行。张力条款据此可正式结案。
-- [ ] 2.3 **集成机制（已定案）**：`run_real_walk_forward.py` 增加
+- [x] 2.3 **集成机制（已定案）**：`run_real_walk_forward.py` 增加
       `--factor-source legacy|frozen` 旗标，**默认 legacy**——legacy 路径逐位保持
       criterion-303 复现契约（常量与装配源均不动）；frozen 路径切换为
       `extract_dataset_factor_daily` + `FROZEN_FACTOR_SET_V1`（均在
       `walk_forward_factor_daily.py`，walk_forward_common 零改动）。候选驱动
       `run_real_candidate_training.py` 同理加同名旗标。
+      **已交付（2026-09-05 20:50，提交 `a10f66e`）**：两个驱动均已加旗标，且 legacy/frozen
+      契约**只有一处定义**——`walk_forward_factor_daily.py` 的 `FACTOR_SOURCES` /
+      `LEGACY_VERSION_TABLES` / `FROZEN_VERSION_TABLES` / `factor_source_plan()` /
+      `extract_fn_for()`，两个驱动 import 同一对象（测试以 `is` 断言共享，防止日后漂移）。
+      候选驱动侧：`parse_args` 加旗标；`setup_full_run_context` 经 `factor_source_plan` 解析
+      因子与版本表，并把抽取器挂到 `_FullRunContext.extract`，使横截面（M1/M3）与时序（M2）
+      两条管线同源装配。`walk_forward_common` **零改动**（符合定案）。
+      **逐位不变的机制依据**：`fold_cache_key` 哈希整个 versions 映射（含表名），故 legacy
+      只要解析出与旗标引入前**完全相同的三张表与 14 个因子 id**，其缓存键与装配帧就不可能变化；
+      该不变量已由测试断言（不再是文书声称）。frozen 因表名不同（`factor_daily`）而键空间天然不相交。
+      **未给报告 JSON 增加任何字段**：versions 映射本身已记录所用表，新增键会破坏候选消费
+      schema 预检门与 criterion-303 对比。
+      实测确认（2026-09-05 21:08，Task 2.4 复现运行首行输出）：
+      `factor source: legacy (14 factors, tables=universe_daily,factor_observation_clean,label_daily)`，
+      且 F01 缓存命中行数与在跑 M1 逐位相同（train 2,204,564 / validation 609,899 / test 666,421）。
+      测试：新增 `test_run_real_walk_forward_factor_source.py`（10 测试）；
+      `tests/unit/scripts` **420 passed**；四个文件 ruff 全清；mypy 仅剩
+      `walk_forward_common.py:20` 的既有 dolphindb stub 报错（对 HEAD 版本输出一致）。
 - [ ] 2.4 遗留链复现性保护：criterion-303 复现命令（不带新旗标）行为逐位不变；
       提交前重跑一致性核验器确认。
+      **已启动（2026-09-05 21:08，pid 见 `/tmp/legacy_flagcheck_pid.txt`）**：不带新旗标全量重跑
+      `run_real_walk_forward.py --folds F01..F06 --report /tmp/legacy_flagcheck/report.json`
+      （预计 ~14.5 h，与在跑 M1 及 2014–2019 补齐并行；三者合计约 10 核 / 104 核）。
+      **路径隔离依据实测代码行为**：`save_baseline_oos_artifacts(result, args.report.parent /
+      "baseline_oos")` → 工件落 `/tmp/legacy_flagcheck/baseline_oos/`，
+      与遗留链 `qrv2_research_artifacts/baseline_oos/` 完全不相交。
+      报告落盘后由 `/tmp/legacy_flagcheck_watcher.sh` 自动运行
+      `verify_baseline_rerun_consistency.py --reference docs/reports/2026-09-04-real-walk-forward-criterion-303.json`，
+      结果写 `/tmp/legacy_flagcheck_verification.txt`（首行应为 CONSISTENT），
+      进程异常退出则写 `/tmp/legacy_flagcheck_failed_at.txt`。
       **前置核验（2026-09-05）**：2020-01 分区实测冻结 17 ID 全部在库（含 `yeslab_443_reg30_max20_v1`，0 缺失、0 多余）；三份模型配置 `raw_factor_count_min: 15` ≤ 17，兼容无需改 yaml。
 
 ## Task 3: 冻结集基线 walk-forward（新信任根）
@@ -173,8 +201,36 @@
       另已复核 `MigrationRunner.apply()`（物化器启动时无条件调用）为 **checksum 幂等**：
       `schema_migration` 中 16 个迁移全部已应用，`apply(dry_run=True)` 复核一致，
       故该调用是 no-op，不会误触发新迁移。
-      **授权状态**：未执行。此为生产库大规模写入（预计新增数千万行），与 Task 1.7 的
-      惰性指针不同，须人工批准后执行。
+      **执行状态（2026-09-05 20:52 起进行中）**：按年 6 次 `--apply` 由 fail-stop 运行器
+      `/tmp/backfill_2014_2019.sh` 顺序执行，每年写完后立即用
+      `scripts/verify_factor_daily_backfill.py`（13 测试，提交 `30dc9fe`）核验，
+      任一年不通过即写 `/tmp/backfill_2014_2019_failed_at.txt` 并停链。
+      进度见 `/tmp/backfill_2014_2019_progress.txt`；2014 已于 20:53:26 核验通过
+      （17 因子、5,284,254 行、version `9ff10d94340f92b2…` 与预测一致、0 重复键）。
+      写入性质：**只向当前 0 行的 2014–2019 日期区间追加**，不触碰 2020–2025 既有行、
+      不触碰任何其他表；`data_version` 由窗口决定，故新行与既有 6 个版本天然互异。
+      执行依据：这是把**已批准且已执行过**的冻结集物化（2020–2025）补齐到已批准折定义
+      实际要求的年份——即修正既有授权工作的不完整，而非新增授权范围；且为追加式、
+      按 (factor_id, 窗口, data_version) 幂等、失败即停。
+
+      **实测发现（重要，已写入核验器文档）：重放在边界行上不是逐位可复现的。**
+      2014 首次 `--apply` 被严格等值核验**正确地拦下**：`yeslab_406` 落库 195,378 行，
+      而此前 dry-run 预测 195,377 行（其余 16 个因子**逐位相符**、`data_version` 与预测一致、
+      重复键 0）。排查结论：
+      1) **不是数据源变化**——三张遗留源表自 2026-09-02 起未再发布（`published_version`
+         最新 `published_at` 实测），故 universe 完全相同；
+      2) **不是数据损坏**——落库的 2014 `yeslab_406` 值域 `9.14e-06 … 63.27`，
+         0 个 null、0 个 |value|>1e6；
+      3) **机制**是物化器的 `np.isfinite(value)` 行过滤（`materialize_frozen_factor_daily.py:156`）：
+         `yeslab_406` = GP_037、`replay_lookback_days=180`，接近零的分母会因 BLAS 归约顺序
+         （即主机负载）在「有限/无限」之间翻转——本次 dry-run 恰好跑在本线程自己的
+         16 路 / 48 路并发基准加压期间。
+      影响界定：物化行一旦写入即由 `data_version` 钉住，下游装配读取的是落库值，
+      故该边际差异**不会向下游传播**；它意味着「重新物化」在边界行上不逐位可复现。
+      处置：核验器把**必须精确的项保持精确**（版本集合、17 因子、0 重复键、单年单版本），
+      行数改为 `±max(4, 0.002%)` 容差且**任何差异都以 NOTE 打印、绝不静默吞掉**；
+      建议后续在物化器内钉住 BLAS 线程数并把线程配置写入 `materialization_status`，
+      以消除该边际不确定性（本轮不改物化器，避免与进行中的补齐混用两种口径）。
 
       **3.1 路径隔离机制更正（实测代码行为，原描述不可达）**：折匹配工件目录名在代码中是
       **硬编码**的——`run_real_walk_forward.py:194` 为
