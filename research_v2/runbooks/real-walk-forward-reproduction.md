@@ -91,6 +91,33 @@ published versions were consumed; if a report predates that field, capture the
 `published_version` rows externally during the run and archive them alongside
 (see `docs/reports/2026-09-02-real-walk-forward-data-versions.json`).
 
+## Re-run consistency and candidate pre-gates
+
+A baseline re-run must reproduce the archived criterion-303 evidence before it
+may replace the trust root consumed by candidate training:
+
+```bash
+/data/zhangyudong/.conda/envs/quantyd/bin/python \
+  scripts/verify_baseline_rerun_consistency.py \
+  --report /data/zhangyudong/qrv2_research_artifacts/baseline_oos_report.json \
+  --reference docs/reports/2026-09-04-real-walk-forward-criterion-303.json
+```
+
+Consistency alone is not sufficient for candidate consumption: the M1-M3
+driver additionally requires the extended selection fields
+(`invalid_day_count`, `unselected_reasons`), the fold-matched baseline
+prediction artifacts, and the data-version snapshot. The schema gate checks
+all of it fail-closed, including a `reconstruct_baseline_record` round-trip:
+
+```bash
+/data/zhangyudong/.conda/envs/quantyd/bin/python \
+  scripts/verify_baseline_report_candidate_schema.py \
+  --report /data/zhangyudong/qrv2_research_artifacts/baseline_oos_report.json
+```
+
+Only after both checks pass may `run_real_candidate_training.py --family M1`
+start (the E-plan order guard then chains M2/M3 through `--prior-report`).
+
 ## Failure modes
 
 | Symptom | Meaning | Response |
