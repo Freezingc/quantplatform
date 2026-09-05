@@ -16,7 +16,7 @@ entries.
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -29,6 +29,8 @@ from walk_forward_common import (  # noqa: E402
     FOLD_CACHE_ROOT,
     SPLIT_ROLE_REQUEST,
     TARGET_DATABASE,
+    WALK_FORWARD_FACTOR_IDS,
+    extract_dataset,
     factor_members_for,
     filter_current,
     fold_cache_key,
@@ -64,7 +66,61 @@ FROZEN_FACTOR_SET_V1: tuple[str, ...] = (
     "yeslab_96",
 )
 
-__all__ = ["extract_dataset_factor_daily", "factor_members_for", "FROZEN_FACTOR_SET_V1"]
+# Factor source switch (reconstruction plan Task 2.3). Both real-data drivers
+# (run_real_walk_forward.py and run_real_candidate_training.py) resolve their
+# factor ids, version tables and fold extractor through these helpers so the
+# legacy/frozen contract has exactly one definition.
+FACTOR_SOURCES: tuple[str, ...] = ("legacy", "frozen")
+LEGACY_VERSION_TABLES: tuple[str, ...] = (
+    "universe_daily",
+    "factor_observation_clean",
+    "label_daily",
+)
+FROZEN_VERSION_TABLES: tuple[str, ...] = (
+    "universe_daily",
+    "factor_daily",
+    "label_daily",
+)
+
+
+def factor_source_plan(source: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Return ``(factor_ids, version_tables)`` for a factor source.
+
+    ``legacy`` reproduces the exact pre-flag contract that produced the
+    criterion-303 evidence: the same 14 factor ids and the same three version
+    tables. Because ``fold_cache_key`` hashes the whole versions mapping (table
+    names included), keeping that mapping identical is precisely what makes the
+    legacy path bit-identical and keeps its existing fold cache hits valid.
+    ``frozen`` switches to the frozen 17 ids backed by ``factor_daily``; its
+    mapping differs by table name, so its cache keys are disjoint from legacy and
+    both chains may share one ``FOLD_CACHE_ROOT``.
+    """
+    if source == "legacy":
+        return WALK_FORWARD_FACTOR_IDS, LEGACY_VERSION_TABLES
+    if source == "frozen":
+        return FROZEN_FACTOR_SET_V1, FROZEN_VERSION_TABLES
+    raise ValueError(f"unknown factor source: {source}")
+
+
+def extract_fn_for(source: str) -> Callable[..., Any]:
+    """Return the fold extractor bound to a factor source."""
+    if source == "legacy":
+        return extract_dataset
+    if source == "frozen":
+        return extract_dataset_factor_daily
+    raise ValueError(f"unknown factor source: {source}")
+
+
+__all__ = [
+    "extract_dataset_factor_daily",
+    "extract_fn_for",
+    "factor_members_for",
+    "factor_source_plan",
+    "FACTOR_SOURCES",
+    "FROZEN_FACTOR_SET_V1",
+    "FROZEN_VERSION_TABLES",
+    "LEGACY_VERSION_TABLES",
+]
 
 
 def extract_dataset_factor_daily(

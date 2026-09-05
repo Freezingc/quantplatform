@@ -10,6 +10,7 @@ key-disjoint from legacy so the two chains can share one cache root.
 
 from __future__ import annotations
 
+import dataclasses
 import importlib.util
 import sys
 from pathlib import Path
@@ -27,18 +28,17 @@ import walk_forward_common as COMMON  # noqa: E402
 import walk_forward_factor_daily as FROZEN  # noqa: E402
 
 
-def _load_driver():
-    spec = importlib.util.spec_from_file_location(
-        "rwf_factor_source", SCRIPTS / "run_real_walk_forward.py"
-    )
+def _load(name: str, filename: str):
+    spec = importlib.util.spec_from_file_location(name, SCRIPTS / filename)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
-    sys.modules["rwf_factor_source"] = module
+    sys.modules[name] = module
     spec.loader.exec_module(module)
     return module
 
 
-DRIVER = _load_driver()
+DRIVER = _load("rwf_factor_source", "run_real_walk_forward.py")
+CANDIDATE = _load("rct_factor_source", "run_real_candidate_training.py")
 
 LEGACY_TABLES = ("universe_daily", "factor_observation_clean", "label_daily")
 FROZEN_TABLES = ("universe_daily", "factor_daily", "label_daily")
@@ -112,3 +112,34 @@ def test_extractor_selection_matches_the_source() -> None:
     assert DRIVER.extract_fn_for("frozen") is FROZEN.extract_dataset_factor_daily
     with pytest.raises(ValueError):
         DRIVER.extract_fn_for("legacy ")
+
+
+def test_candidate_cli_exposes_factor_source_defaulting_to_legacy() -> None:
+    args = CANDIDATE.parse_args(["--family", "M1", "--report", "/tmp/x.json"])
+    assert args.factor_source == "legacy"
+    with pytest.raises(SystemExit):
+        CANDIDATE.parse_args(
+            ["--family", "M1", "--report", "/tmp/x.json", "--factor-source", "bogus"]
+        )
+    frozen = CANDIDATE.parse_args(
+        ["--family", "M1", "--report", "/tmp/x.json", "--factor-source", "frozen"]
+    )
+    assert frozen.factor_source == "frozen"
+
+
+def test_both_drivers_share_one_factor_source_contract() -> None:
+    """Task 2.3 requires the same flag on both drivers; sharing the helpers by
+    identity is what prevents the two from drifting apart."""
+    assert CANDIDATE.factor_source_plan is DRIVER.factor_source_plan
+    assert CANDIDATE.extract_fn_for is DRIVER.extract_fn_for
+    assert CANDIDATE.FACTOR_SOURCES is DRIVER.FACTOR_SOURCES
+    assert CANDIDATE.factor_source_plan("frozen") == DRIVER.factor_source_plan("frozen")
+    assert CANDIDATE.factor_source_plan("legacy") == DRIVER.factor_source_plan("legacy")
+
+
+def test_full_run_context_carries_the_extractor() -> None:
+    """The extractor must travel with the context so both the cross-sectional
+    (M1/M3) and temporal (M2) pipelines assemble from the same source."""
+    names = {field.name for field in dataclasses.fields(CANDIDATE._FullRunContext)}
+    assert "extract" in names
+    assert {"versions", "factor_members", "factor_order"} <= names

@@ -24,18 +24,19 @@ from pathlib import Path
 from typing import Any
 
 from walk_forward_common import (
-    WALK_FORWARD_FACTOR_IDS,
+    current_versions as _current_versions,
+)
+from walk_forward_common import (
     factor_members_for,
     new_holder,
 )
 from walk_forward_common import (
-    current_versions as _current_versions,
-)
-from walk_forward_common import (
-    extract_dataset as _extract_dataset,
-)
-from walk_forward_common import (
     load_calendar as _load_calendar,
+)
+from walk_forward_factor_daily import (
+    FACTOR_SOURCES,
+    extract_fn_for,
+    factor_source_plan,
 )
 
 from research_v2.baselines.base import BaselineDataset
@@ -131,51 +132,6 @@ def _constant_loader(dataset: BaselineDataset) -> Callable[[], BaselineDataset]:
         return dataset
 
     return loader
-
-
-FACTOR_SOURCES: tuple[str, ...] = ("legacy", "frozen")
-LEGACY_VERSION_TABLES: tuple[str, ...] = (
-    "universe_daily",
-    "factor_observation_clean",
-    "label_daily",
-)
-FROZEN_VERSION_TABLES: tuple[str, ...] = (
-    "universe_daily",
-    "factor_daily",
-    "label_daily",
-)
-
-
-def factor_source_plan(source: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Return ``(factor_ids, version_tables)`` for a factor source.
-
-    ``legacy`` reproduces the exact pre-flag contract that produced the
-    criterion-303 evidence: the same 14 factor ids and the same three version
-    tables. Because ``fold_cache_key`` hashes the whole versions mapping (table
-    names included), keeping that mapping identical is precisely what makes the
-    legacy path bit-identical and keeps its fold cache hits valid.
-    ``frozen`` switches to the frozen 17 ids backed by ``factor_daily``; its
-    mapping differs by table name, so its cache keys are disjoint from legacy.
-    """
-    if source == "legacy":
-        return WALK_FORWARD_FACTOR_IDS, LEGACY_VERSION_TABLES
-    if source == "frozen":
-        # Lazy import: the legacy path must not gain a dependency or import cost.
-        from walk_forward_factor_daily import FROZEN_FACTOR_SET_V1
-
-        return FROZEN_FACTOR_SET_V1, FROZEN_VERSION_TABLES
-    raise ValueError(f"unknown factor source: {source}")
-
-
-def extract_fn_for(source: str) -> Callable[..., Any]:
-    """Return the fold extractor bound to a factor source (frozen imported lazily)."""
-    if source == "legacy":
-        return _extract_dataset
-    if source == "frozen":
-        from walk_forward_factor_daily import extract_dataset_factor_daily
-
-        return extract_dataset_factor_daily
-    raise ValueError(f"unknown factor source: {source}")
 
 
 def build_arg_parser() -> argparse.ArgumentParser:

@@ -17,7 +17,7 @@ import argparse
 import contextlib
 import json
 import os
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
@@ -27,12 +27,15 @@ import numpy as np
 import pandas as pd
 import torch
 from walk_forward_common import (
-    WALK_FORWARD_FACTOR_IDS,
     current_versions,
-    extract_dataset,
     factor_members_for,
     load_calendar,
     new_holder,
+)
+from walk_forward_factor_daily import (
+    FACTOR_SOURCES,
+    extract_fn_for,
+    factor_source_plan,
 )
 
 from research_v2.baselines.orchestration import (
@@ -100,6 +103,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workspace", type=Path, default=None)
     parser.add_argument("--max-configs", type=int, default=None)
     parser.add_argument("--max-epochs", type=int, default=100)
+    parser.add_argument(
+        "--factor-source",
+        choices=FACTOR_SOURCES,
+        default="legacy",
+        help=(
+            "legacy: factor_observation_clean + the 14 walk-forward ids "
+            "(bit-identical to the criterion-303 contract); frozen: factor_daily "
+            "+ FROZEN_FACTOR_SET_V1. Must match the baseline report's source."
+        ),
+    )
     parser.add_argument(
         "--prior-report",
         action="append",
@@ -891,6 +904,7 @@ class _FullRunContext:
     versions: dict[str, dict[str, str]]
     factor_members: tuple[Any, ...]
     factor_order: tuple[str, ...]
+    extract: Callable[..., Any]
 
 
 def setup_full_run_context(args: argparse.Namespace) -> _FullRunContext:
@@ -904,12 +918,15 @@ def setup_full_run_context(args: argparse.Namespace) -> _FullRunContext:
     holder = new_holder()
     calendar = load_calendar(holder)
     resolver = SplitResolver(calendar)
-    versions = {
-        table: current_versions(holder, table)
-        for table in ("universe_daily", "factor_observation_clean", "label_daily")
-    }
-    factor_members = factor_members_for(WALK_FORWARD_FACTOR_IDS)
+    factor_ids, version_tables = factor_source_plan(args.factor_source)
+    versions = {table: current_versions(holder, table) for table in version_tables}
+    factor_members = factor_members_for(factor_ids)
     factor_order = tuple(member.feature_name for member in factor_members)
+    print(
+        f"factor source: {args.factor_source} "
+        f"({len(factor_ids)} factors, tables={','.join(version_tables)})",
+        flush=True,
+    )
     return _FullRunContext(
         workspace=workspace,
         dataset_store=DatasetArtifactStore(workspace / "datasets"),
@@ -928,6 +945,7 @@ def setup_full_run_context(args: argparse.Namespace) -> _FullRunContext:
         versions=versions,
         factor_members=factor_members,
         factor_order=factor_order,
+        extract=extract_fn_for(args.factor_source),
     )
 
 
@@ -959,17 +977,16 @@ def _run_full_cross_section(
     versions = context.versions
     factor_members = context.factor_members
     factor_order = context.factor_order
+    extract = context.extract
 
     max_epochs = int(args.max_epochs)
     oos_folds: dict[str, ModelOosFold] = {}
     fold_reports: list[dict[str, Any]] = []
 
     for fold_id in ORDINARY_FOLDS:
-        train = extract_dataset(holder, resolver, fold_id, "train", factor_members, versions)
-        validation = extract_dataset(
-            holder, resolver, fold_id, "validation", factor_members, versions
-        )
-        test = extract_dataset(holder, resolver, fold_id, "test", factor_members, versions)
+        train = extract(holder, resolver, fold_id, "train", factor_members, versions)
+        validation = extract(holder, resolver, fold_id, "validation", factor_members, versions)
+        test = extract(holder, resolver, fold_id, "test", factor_members, versions)
         frames = {"train": train, "validation": validation, "test": test}
         dataset_id = publish_fold_dataset(dataset_store, fold_id, frames, versions, factor_order)
         train_dataset_id = f"{dataset_id}:train"
@@ -1345,6 +1362,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
     versions = context.versions
     factor_members = context.factor_members
     factor_order = context.factor_order
+    extract = context.extract
 
     configs = m2_config_grid(args.max_configs)
     max_epochs = int(args.max_epochs)
@@ -1352,11 +1370,9 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
     fold_reports: list[dict[str, Any]] = []
 
     for fold_id in ORDINARY_FOLDS:
-        train = extract_dataset(holder, resolver, fold_id, "train", factor_members, versions)
-        validation = extract_dataset(
-            holder, resolver, fold_id, "validation", factor_members, versions
-        )
-        test = extract_dataset(holder, resolver, fold_id, "test", factor_members, versions)
+        train = extract(holder, resolver, fold_id, "train", factor_members, versions)
+        validation = extract(holder, resolver, fold_id, "validation", factor_members, versions)
+        test = extract(holder, resolver, fold_id, "test", factor_members, versions)
         frames = {"train": train, "validation": validation, "test": test}
         dataset_id = publish_fold_dataset(dataset_store, fold_id, frames, versions, factor_order)
         train_dataset_id = f"{dataset_id}:train"
