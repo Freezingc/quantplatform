@@ -8,6 +8,7 @@ fail-closed. Actual training wiring lands in Tasks 3-4.
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -254,3 +255,72 @@ def test_config_grids_respect_e7_budget() -> None:
     assert len(MODULE.m3_config_grid()) == 16 <= 30
     m2_families = {config["family"] for config in MODULE.m2_config_grid()}
     assert m2_families == {"GRU", "TCN"}
+
+
+def _passed_family_report(family: str, *, mode: str = "full", all_passed: bool = True) -> dict:
+    return {
+        "family": family,
+        "mode": mode,
+        "folds": [],
+        "oos": {"all_passed": all_passed, "gates": {}},
+    }
+
+
+def test_prior_families_from_reports_accepts_passed_full_run(tmp_path: Path) -> None:
+    path = tmp_path / "m1_report.json"
+    path.write_text(json.dumps(_passed_family_report("M1")), encoding="utf-8")
+    assert MODULE.prior_families_from_reports([f"M1={path}"]) == ("M1",)
+
+
+def test_prior_families_from_reports_rejects_failed_gates(tmp_path: Path) -> None:
+    path = tmp_path / "m1_report.json"
+    path.write_text(
+        json.dumps(_passed_family_report("M1", all_passed=False)), encoding="utf-8"
+    )
+    with pytest.raises(SystemExit, match="all walk-forward gates"):
+        MODULE.prior_families_from_reports([f"M1={path}"])
+
+
+def test_prior_families_from_reports_rejects_smoke_mode(tmp_path: Path) -> None:
+    path = tmp_path / "m1_report.json"
+    path.write_text(
+        json.dumps(_passed_family_report("M1", mode="smoke")), encoding="utf-8"
+    )
+    with pytest.raises(SystemExit, match="not a full run"):
+        MODULE.prior_families_from_reports([f"M1={path}"])
+
+
+def test_prior_families_from_reports_rejects_family_mismatch(tmp_path: Path) -> None:
+    path = tmp_path / "m1_report.json"
+    path.write_text(json.dumps(_passed_family_report("M1")), encoding="utf-8")
+    with pytest.raises(SystemExit, match="family mismatch"):
+        MODULE.prior_families_from_reports([f"M2={path}"])
+
+
+def test_prior_families_from_reports_rejects_missing_file(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="does not exist"):
+        MODULE.prior_families_from_reports([f"M1={tmp_path / 'absent.json'}"])
+
+
+def test_prior_families_from_reports_rejects_bad_format(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="FAMILY=PATH"):
+        MODULE.prior_families_from_reports(["M1"])
+
+
+def test_prior_families_from_reports_rejects_unknown_family(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="unknown family"):
+        MODULE.prior_families_from_reports([f"M4={tmp_path / 'x.json'}"])
+
+
+def test_parse_args_collects_prior_reports(tmp_path: Path) -> None:
+    args = MODULE.parse_args(
+        [
+            "--family",
+            "M2",
+            "--report",
+            str(tmp_path / "m2.json"),
+            "--prior-report",
+            f"M1={tmp_path / 'm1.json'}",
+        ]
+    )
+    assert args.prior_report == [f"M1={tmp_path / 'm1.json'}"]

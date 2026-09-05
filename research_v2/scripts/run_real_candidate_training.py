@@ -100,6 +100,15 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workspace", type=Path, default=None)
     parser.add_argument("--max-configs", type=int, default=None)
     parser.add_argument("--max-epochs", type=int, default=100)
+    parser.add_argument(
+        "--prior-report",
+        action="append",
+        default=[],
+        help=(
+            "FAMILY=PATH evidence that a prior family passed full walk-forward "
+            "(repeatable; enforces the E-plan execution order)"
+        ),
+    )
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
@@ -133,6 +142,40 @@ def validate_family_order(
             f"family {family} requires prior passed families {missing} "
             f"(E-plan execution order M1 -> M2 -> M3)"
         )
+
+
+def prior_families_from_reports(entries: Sequence[str]) -> tuple[str, ...]:
+    """Resolve passed prior families from full-run reports, fail-closed.
+
+    Every entry must be ``FAMILY=PATH`` where the report at PATH is a
+    full-mode run of FAMILY with ``oos.all_passed`` true; anything else is
+    refused so a later family can never start on unverified evidence.
+    """
+    passed: list[str] = []
+    for entry in entries:
+        family, separator, raw_path = entry.partition("=")
+        if not separator or not raw_path:
+            raise SystemExit(f"--prior-report expects FAMILY=PATH, got: {entry}")
+        family = family.strip().upper()
+        if family not in MODEL_FAMILIES:
+            raise SystemExit(f"--prior-report references unknown family: {family}")
+        report_path = Path(raw_path)
+        if not report_path.exists():
+            raise SystemExit(f"--prior-report path does not exist: {report_path}")
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        if report.get("family") != family:
+            raise SystemExit(
+                f"--prior-report family mismatch for {family}: {report_path}"
+            )
+        if report.get("mode") != "full":
+            raise SystemExit(f"--prior-report for {family} is not a full run: {report_path}")
+        oos = report.get("oos")
+        if not isinstance(oos, dict) or oos.get("all_passed") is not True:
+            raise SystemExit(
+                f"--prior-report for {family} did not pass all walk-forward gates: {report_path}"
+            )
+        passed.append(family)
+    return tuple(passed)
 
 SMOKE_FACTOR_COUNT = 15
 SMOKE_STOCK_COUNT = 40
@@ -1596,7 +1639,10 @@ def main() -> None:
         print(json.dumps(report["oos"], ensure_ascii=False, indent=2))
         print(f"smoke complete; report={args.report}")
         return
-    validate_family_order(args.family, prior_families_passed=())
+    validate_family_order(
+        args.family,
+        prior_families_passed=prior_families_from_reports(args.prior_report),
+    )
     if args.baseline_artifacts is None:
         raise SystemExit("--baseline-artifacts is required for full runs")
     if args.baseline_report is None:
