@@ -19,8 +19,8 @@ run_real_walk_forward.py (pid 406300, 03:05 启动, 预计 ~18:40)
   └─ orchestrator /tmp/baseline_to_m1_orchestrator.sh (pid 801189)
        等 done → 读核验结果（10 分钟未出则自行补跑核验器）→ schema 预检（含深检）
        → 双过: 启动 M1 (/tmp/run_m1_full.sh) + M1 watcher；否则 HOLD
-  └─ orchestrator /tmp/family_chain_orchestrator.sh (pid 802703)
-       等 m1_report → 渲染判定文档 → all_passed? 启动 M2 → 同前 → M3 → chain_complete
+  └─ orchestrator /tmp/family_chain_orchestrator.sh (pid 810759)
+       等 m1_report → 渲染判定文档+对比文档 → all_passed? 启动 M2 → 同前 → M3 → chain_complete
 ```
 
 ## 2. 标记文件地图（/tmp）
@@ -37,6 +37,8 @@ run_real_walk_forward.py (pid 406300, 03:05 启动, 预计 ~18:40)
 | `m1_gate_summary.txt` | M1 门控摘要（watcher 写） |
 | `chain_hold.txt` | 某家族失败或进程死亡，链停止 |
 | `chain_complete.txt` | M1/M2/M3 全部通过，可进 Task 5 汇总 |
+
+对比文档 `docs/reports/<date>-real-candidate-models-comparison.md` 由链式编排器在每个家族阶段结束时自动渲染（含 HOLD 时的未运行状态记录）。
 
 M2/M3 同构（前缀 `m2_` / `m3_`）。
 
@@ -62,7 +64,7 @@ M2/M3 同构（前缀 `m2_` / `m3_`）。
 
 ```bash
 # 链上进程是否存活
-for pid in 406300 407725 801189 802703; do ps -o pid,etime,cmd -p $pid | tail -1; done
+for pid in 406300 407725 801189 810759; do ps -o pid,etime,cmd -p $pid | tail -1; done
 # 训练心跳（CPU 时间应持续增长）
 awk '{print $14+$15}' /proc/406300/stat
 # M1 进度（落盘后）
