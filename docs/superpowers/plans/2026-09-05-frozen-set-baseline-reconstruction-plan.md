@@ -36,6 +36,7 @@
       `universe_id='cn_liquid_a'`。
 - [ ] 1.4 确定性测试：同版本快照两次装配逐位一致；缓存键与旧路径不相交。
 - [ ] 1.5 运行测试并提交。
+- [ ] 1.6 **登记而非重发布**：物化器采用直写 `factor_daily`（绕过 staging），而 `V2BatchPublisher` 语义为「追加数据行 + 原子推进指针」——对已在库数据重走 StagedBatch 会重复追加造成重复键。因此 Task 1 的发布路径必须是**登记式**：先对既有区域做 fail-closed 预校验（0 重复业务键、行数与物化清单一致、data_version 单一性按月分区核验），再仅写 `published_version` 指针（object_name='factor_daily'，逻辑月分区 → 物化 run 的 data_version），保持「指针最后原子推进」不变量。
 
 ## Task 2: 冻结集常量接线
 
