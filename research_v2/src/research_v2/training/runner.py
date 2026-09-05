@@ -49,6 +49,11 @@ def run_validation_governed_training(
     )
     trainer = Trainer(train_view, validation_view, trainer_config)
     checkpoint_ids: list[str] = []
+    # Device is numerics-affecting (measured: cpu and cuda digests differ for the same
+    # seed/config/data), and the loop already derives it from the model's parameters,
+    # so record the same value the loop will actually train on.
+    first_parameter = next(model.parameters(), None)
+    model_device = str(first_parameter.device) if first_parameter is not None else "cpu"
 
     def validation_epoch(_: int) -> float:
         return evaluate_validation_batches(model, validation_batches).summary.mean_rank_ic
@@ -65,6 +70,7 @@ def run_validation_governed_training(
                 "torch_version": environment.torch_version,
                 "torch_intraop_threads": environment.torch_intraop_threads,
                 "torch_interop_threads": environment.torch_interop_threads,
+                "model_device": model_device,
                 "train_dataset_id": train_view.dataset_id,
                 "validation_dataset_id": validation_view.dataset_id,
                 "validation_rank_ic": validation_rank_ic,

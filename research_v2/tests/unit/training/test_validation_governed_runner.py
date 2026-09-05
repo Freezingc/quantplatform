@@ -86,3 +86,34 @@ def test_checkpoint_metadata_records_the_thread_configuration(tmp_path: object) 
     assert metadata["torch_version"] == torch.__version__
     assert metadata["seed"] == 20260801
     assert metadata["epoch"] == 1
+
+
+def test_checkpoint_metadata_records_the_device_that_produced_it(tmp_path: object) -> None:
+    """Device is numerics-affecting too: measured checkpoint digests differ cpu vs cuda.
+
+    The drivers currently hardcode cpu, but the device question is live (the temporal
+    family is 1.57-1.75x faster on GPU while both cross-sectional families are slower),
+    so a checkpoint that does not say which device produced it cannot be interpreted
+    or reproduced later.
+    """
+    root = Path(tmp_path) / "checkpoints"  # type: ignore[operator]
+    train_date = date(2020, 1, 2)
+    validation_date = date(2021, 1, 4)
+    model = ResidualMLP(ResidualMLPConfig(raw_factor_count=15, hidden_dim=16, num_blocks=1))
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.01)
+
+    result = run_validation_governed_training(
+        model,
+        optimizer,
+        train_batches={train_date: _batch(train_date)},
+        validation_batches={validation_date: _batch(validation_date)},
+        train_view=DatasetView(DatasetRole.TRAIN, "train-manifest"),
+        validation_view=DatasetView(DatasetRole.VALIDATION, "validation-manifest"),
+        trainer_config=TrainerConfig(max_epochs=1, early_stopping_patience=1),
+        seed=20260801,
+        checkpoint_store=CheckpointStore(root),
+        checkpoint_prefix="F01-M1",
+    )
+
+    manifest = json.loads((root / result.checkpoint_ids[0] / "manifest.json").read_text())
+    assert manifest["metadata"]["model_device"] == "cpu"
