@@ -174,6 +174,30 @@ as a pipeline-reproducibility artifact.
 
    The gate also detects incomplete materialization: a year with no rows shows up as
    ~244 days at width 0 for every fold whose train window includes it.
+4. **Admission consistency** — confirm no admitted factor carries an unwaived blocking
+   screening failure before building a trust root on the set:
+
+   ```bash
+   /data/zhangyudong/.conda/envs/quantyd/bin/python scripts/verify_admission_consistency.py
+   ```
+
+   It cross-checks the contract's factor list against `factor_quality_snapshot` and fails
+   closed on any non-PASS status in a `STRUCTURAL_COVERAGE` scope that has no explicit
+   `--override <factor_id>`. Declaring a conflict in the contract is not a waiver; only a
+   named override is, and an override matching nothing is reported so waivers do not rot.
+
+   As of 2026-09-06 this reports FAIL on the frozen v1 set: seven admitted factors carry
+   blocking structural-coverage failures in two distinct modes. Five (`yeslab_372/384/389/
+   390/406`) plus the never-screened `yeslab_375` have low per-day coverage intrinsic to
+   their formulas (`base ** exponent` with a sign-capable base). Two (`yeslab_398/464`)
+   failed on missing periods in the YesLab source but measure 1212/1212 days and 60/60
+   months on `factor_daily`, so the sanctioned replay source healed them and they need a
+   re-screen rather than removal. Read a FAIL here as "the set needs an adjudicated
+   decision", not as a broken tool.
+
+   Note the screen ran against the YesLab source tables while this pipeline consumes
+   `factor_daily`; that mismatch is why it both missed a real defect and reported two
+   that do not apply. Re-screening against `factor_daily` is the correct basis.
 2. `published_version` must carry **144 monthly partitions** for `factor_daily`
    (2014-01 .. 2025-12). Register with the registration-only publisher (it never
    writes factor rows, and re-running is idempotent):
