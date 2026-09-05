@@ -201,7 +201,7 @@ def test_frozen_constant_matches_frozen_contract_json() -> None:
             encoding="utf-8"
         )
     )
-    assert MODULE.FROZEN_FACTOR_SET_V1 == tuple(contract["factors"])
+    assert tuple(contract["factors"]) == MODULE.FROZEN_FACTOR_SET_V1
     assert len(MODULE.FROZEN_FACTOR_SET_V1) == contract["count"] == 17
 
 
@@ -210,3 +210,36 @@ def test_frozen_feature_names_are_unique() -> None:
     names = [member.feature_name for member in members]
     assert len(set(names)) == 17
     assert names[0] == "f00" and names[-1] == "f16"
+
+
+def test_frozen_set_satisfies_every_model_yaml_factor_bound() -> None:
+    """Reconstruction plan Task 2.2: lock the frozen-17 / yaml bound compatibility.
+
+    The candidate plan recorded a contract tension because ``raw_factor_count_min``
+    is 15 in every ``configs/models/*.yaml`` while the legacy walk-forward set had
+    14 factors. The frozen set has 17, so no yaml needs changing; this test pins
+    that fact so a future yaml bound raise (or a frozen-set shrink) fails loudly
+    instead of silently re-opening the tension.
+    """
+    import yaml
+
+    research_root = Path(__file__).resolve().parents[3]
+    configs = sorted((research_root / "configs" / "models").glob("*.yaml"))
+    assert configs, "expected model yaml configs to exist"
+
+    frozen_count = len(MODULE.FROZEN_FACTOR_SET_V1)
+    assert frozen_count == 17
+    for config_path in configs:
+        payload = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+        minimum = payload["raw_factor_count_min"]
+        maximum = payload["raw_factor_count_max"]
+        assert minimum <= frozen_count <= maximum, (
+            f"{config_path.name}: frozen factor count {frozen_count} outside "
+            f"[{minimum}, {maximum}]"
+        )
+        # The legacy 14-factor set is what violated the declared minimum; record
+        # the contrast so the retired tension clause stays explainable.
+        assert minimum > 14, (
+            f"{config_path.name}: raw_factor_count_min dropped to {minimum}; the "
+            "documented legacy-14 tension would need re-adjudication"
+        )
