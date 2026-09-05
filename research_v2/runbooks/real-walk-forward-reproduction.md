@@ -167,6 +167,24 @@ as a pipeline-reproducibility artifact.
    reproduces the recorded verdict byte-identically, so the `factor_id` filter the option
    adds changed nothing.
 
+   `--minimum-factors N` switches the completeness predicate from "every named factor" to
+   "at least N of them", which measures adjudication 4's option (i): B1 already tolerates
+   partial coverage by design (`minimum_factor_coverage=0.60`, i.e. ≥11 of 17, omitting
+   rather than imputing missing factors), so under that option the trained-on
+   cross-section is pairs with at least 11 of the 17. The query stays restricted to the
+   named set either way, or "at least 11" would count unrelated factors. Measured
+   2026-09-06, `--factor-set frozen17 --minimum-factors 11` also returns
+   `COVERAGE GATE: PASS` on all 18 segments, with train medians
+   1624/1796/2144/2529/2699/2847 and zero days below the floor. Option (ii) needs no
+   separate measurement: it restricts training *and* evaluation to the all-17-complete
+   subgroup, so its cross-section is exactly the `frozen17` row above.
+
+   Coverage therefore no longer separates options (i) and (iii) — both pass, (i) slightly
+   wider. What separates them is the B2/B3 NaN contract (`_finite_matrix` raises on any
+   NaN, so (i) needs imputation or must drop those baselines, while (iii) needs no
+   baseline change) and within-cross-section homogeneity (under (i), B1's equal-weight
+   rank ensemble averages different factor subsets inside one date).
+
    It reports, per fold and role, the daily width of the complete-factor cross-section
    against the `minimum_cross_section` floor of 30, plus the train/test median-width
    ratio. It fails a **decision role** (`train` or `validation` — the roles whose
