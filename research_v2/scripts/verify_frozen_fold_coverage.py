@@ -127,7 +127,12 @@ def resolve_factor_set(name: str, frozen_set: Sequence[str]) -> tuple[str, ...]:
     return preset
 
 
-def build_width_query(year: int, factor_ids: Sequence[str], table: str) -> str:
+def build_width_query(
+    year: int,
+    factor_ids: Sequence[str],
+    table: str,
+    minimum_factors: int | None = None,
+) -> str:
     """Per-day count of stocks having every named factor, for one calendar year.
 
     ``count(*)`` rather than ``count(distinct factor_id)`` because DolphinDB rejects a
@@ -135,15 +140,31 @@ def build_width_query(year: int, factor_ids: Sequence[str], table: str) -> str:
     when the table has no duplicate ``(factor, date, code)`` rows, which is verified
     rather than assumed: zero duplicate groups in 2020-01, and the C6.2 screen reports
     ``dups==0`` for all 17 factors over both the 2014-2019 and 2020-2024 windows.
+
+    ``minimum_factors`` switches the completeness predicate from "every named factor"
+    to "at least this many of them", which is what adjudication 4's option (i) needs:
+    B1 already tolerates partial coverage by design (``minimum_factor_coverage=0.60``
+    means >=11 of 17, and it omits missing factors rather than imputing them), so under
+    that option the trained-on cross-section is pairs with at least 11 of the 17, not
+    pairs with all 17 and not pairs with all of some 11-factor subset. The query stays
+    restricted to the named set either way, or "at least 11" would count other factors.
     """
     if not factor_ids:
         raise ValueError("factor_ids cannot be empty")
+    required = len(factor_ids) if minimum_factors is None else minimum_factors
+    if required < 1:
+        raise ValueError("minimum_factors must be at least 1")
+    if required > len(factor_ids):
+        raise ValueError(
+            f"minimum_factors {required} cannot exceed the {len(factor_ids)} named factors"
+        )
+    predicate = f"c=={required}" if minimum_factors is None else f"c>={required}"
     listed = ",".join(f"`{factor_id}" for factor_id in factor_ids)
     return (
         f"p = select signal_date, ts_code, count(*) as c from {table} "
         f"where signal_date >= {year}.01.01 and signal_date < {year + 1}.01.01 "
         f"and factor_id in [{listed}] group by signal_date, ts_code\n"
-        f"select signal_date, sum(iif(c=={len(factor_ids)},1,0)) as complete "
+        f"select signal_date, sum(iif({predicate},1,0)) as complete "
         f"from p group by signal_date"
     )
 
@@ -295,16 +316,19 @@ def fold_role_years() -> list[tuple[str, str, tuple[int, ...]]]:
 
 
 def daily_complete_widths(
-    holder: dict[str, Any], years: Sequence[int], factor_ids: Sequence[str]
+    holder: dict[str, Any],
+    years: Sequence[int],
+    factor_ids: Sequence[str],
+    minimum_factors: int | None = None,
 ) -> dict[int, list[int]]:
-    """Per-day count of stocks having every factor in ``factor_ids``."""
+    """Per-day count of stocks having every (or at least ``minimum_factors``) factor."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from walk_forward_common import TARGET_DATABASE, query
 
     table = f"loadTable('{TARGET_DATABASE}','factor_daily')"
     widths: dict[int, list[int]] = {}
     for year in years:
-        script = build_width_query(year, factor_ids, table)
+        script = build_width_query(year, factor_ids, table, minimum_factors)
         ok, frame = query(holder, script)
         if not ok or frame is None or not len(frame):
             widths[year] = []
@@ -338,6 +362,11 @@ def main(argv: list[str] | None = None) -> int:
              "gates; c62pass11 is the C6.2-screened subset, for measuring adjudication "
              "4's option (iii) before choosing it. Measurement only, nothing is rewired.",
     )
+    parser.add_argument(
+        "--minimum-factors", type=int, default=None,
+        help="require at least this many of the named factors instead of all of them "
+             "(adjudication 4's option (i): B1's own >=11-of-17 partial-coverage rule)",
+    )
     args = parser.parse_args(argv)
     enforced = {role.strip() for role in args.roles.split(",") if role.strip()}
 
@@ -347,18 +376,23 @@ def main(argv: list[str] | None = None) -> int:
 
     factor_ids = resolve_factor_set(args.factor_set, FROZEN_FACTOR_SET_V1)
     holder = new_holder()
+    completeness = (
+        f"all {len(factor_ids)}"
+        if args.minimum_factors is None
+        else f">={args.minimum_factors} of {len(factor_ids)}"
+    )
     print(f"factor set: {args.factor_set} ({len(factor_ids)} factors); cross-section floor: "
           f"{args.minimum_cross_section}; enforced roles: {sorted(enforced)}; "
           f"max days below floor: {args.max_days_below_floor}; "
           f"minimum median width ({'/'.join(DECISION_ROLES)}): "
-          f"{args.minimum_median_width or 'disabled'}")
+          f"{args.minimum_median_width or 'disabled'}; completeness: {completeness}")
     print(f"{'fold':6} {'role':11} {'years':22} {'days':>5} {'<floor':>7} "
           f"{'valid share':>12} {'median':>7} {'min':>6}  verdict")
 
     failed = False
     assessments: dict[tuple[str, str], CoverageAssessment] = {}
     for fold_id, role, years in fold_role_years():
-        widths = daily_complete_widths(holder, years, factor_ids)
+        widths = daily_complete_widths(holder, years, factor_ids, args.minimum_factors)
         assessment = assess_coverage(
             fold_id, role, years, widths,
             minimum_cross_section=args.minimum_cross_section,

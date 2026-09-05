@@ -313,3 +313,46 @@ def test_build_width_query_uses_count_star_because_distinct_is_not_nestable() ->
 def test_build_width_query_rejects_an_empty_factor_set() -> None:
     with pytest.raises(ValueError, match="cannot be empty"):
         M.build_width_query(2020, (), "T")
+
+
+# --- "at least N of the set" semantics (adjudication 4's option (i)) -----------
+#
+# B1 EqualWeightBaseline already tolerates partial coverage by design: its
+# minimum_factor_coverage=0.60 means a row needs >=11 of the 17 frozen factors, and it
+# omits missing factors rather than imputing them. Option (i) adopts that rule for the
+# whole baseline set, so its cross-section is "pairs with at least 11 of 17", not "pairs
+# with all 17" and not "pairs with all of some 11-factor subset". Measuring it needs a
+# different completeness predicate, and the plan only had sampled-month survival
+# percentages for it (84.4% / 98.5% / 99.2%), never per-fold widths.
+
+
+def test_build_width_query_defaults_to_requiring_every_named_factor() -> None:
+    script = M.build_width_query(2020, M.C62_PASS_11, "T")
+
+    assert "iif(c==11,1,0)" in script
+    assert ">=" not in script.split("iif(")[1].split(")")[0]
+
+
+def test_build_width_query_supports_an_at_least_predicate() -> None:
+    script = M.build_width_query(2020, FROZEN17, "T", minimum_factors=11)
+
+    assert "iif(c>=11,1,0)" in script
+    # Still restricted to the named set, or "at least 11" would count other factors.
+    assert "factor_id in [`yeslab_96" in script
+    assert "`yeslab_484]" in script
+
+
+def test_build_width_query_rejects_an_unusable_at_least_threshold() -> None:
+    with pytest.raises(ValueError, match="cannot exceed"):
+        M.build_width_query(2020, FROZEN17, "T", minimum_factors=18)
+    with pytest.raises(ValueError, match="at least 1"):
+        M.build_width_query(2020, FROZEN17, "T", minimum_factors=0)
+
+
+def test_at_least_the_full_count_is_the_same_predicate_as_the_default() -> None:
+    """Requiring >=17 of 17 must not silently differ from requiring all 17."""
+    explicit = M.build_width_query(2020, FROZEN17, "T", minimum_factors=17)
+    default = M.build_width_query(2020, FROZEN17, "T")
+
+    assert "iif(c>=17,1,0)" in explicit
+    assert "iif(c==17,1,0)" in default
