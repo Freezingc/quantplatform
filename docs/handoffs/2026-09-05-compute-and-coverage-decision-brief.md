@@ -435,6 +435,52 @@ G1–G6 不度量横截面宽度（六个冻结 test 年 G6 全为 100%）。
    (c) `ELIGIBILITY_FAIL` 未传导进评分、决策表与契约 `conflicts`，
    这正是新增校验器所要门的环节。
    证据：`/data/zhangyudong/qrv2_research_artifacts/frozen17_refined_classification.txt`。
+
+### 治理缺口 (b) 已用工具关闭（2026-09-06 00:55）：在**正确的源**上重跑 C6.2 结构覆盖率筛查
+
+新增 `research_v2/scripts/screen_factor_daily_coverage.py`（10 测试），在**冻结链实际消费的
+`factor_daily`** 上重算 C6.2 全套指标，并按 C6.3 要求以**同日 `universe_daily`
+（`is_member=1`）成员数**为分母（不是"因子表里出现过的股票"）。沿用原筛查的判据与
+reason_code 词汇以便直接对照：median ≥0.70、p05 ≥0.30、`minimum_monthly_day_ratio` ≥0.90、
+重复业务键 =0。
+
+**两个窗口给出完全相同的答案——PASS 11 / ELIGIBILITY_FAIL 6，且失败的是同 6 个**：
+
+| 因子 | 2014–2019 median | 2020–2024 median | 2014–2019 min | 判定 |
+|---|---|---|---|---|
+| `yeslab_372` | 0.4759 | 0.4555 | **0.0025** | **FAIL** |
+| `yeslab_375` | **0.3705** | 0.4627 | 0.0391 | **FAIL** |
+| `yeslab_384` | 0.4849 | 0.4873 | 0.0707 | **FAIL** |
+| `yeslab_389` | 0.4988 | 0.4775 | **0.0034** | **FAIL** |
+| `yeslab_390` | 0.4872 | 0.4786 | **0.0031** | **FAIL** |
+| `yeslab_406` | 0.4501 | 0.4666 | 0.0512 | **FAIL** |
+| 其余 11 个 | 0.8614–0.9986 | 0.9613–1.0000 | 0.4443–0.9905 | **PASS** |
+
+两个窗口全部 17 个因子的 `day_ratio` 与 `minimum_monthly_day_ratio` 均为 **1.0000**、
+重复键 **0**（2014–2019 共 1,464 个交易日、2020–2024 共 1,212 个），
+说明补齐后的数据在**结构完整性**上没有缺口——问题纯粹是**逐日横截面宽度**。
+
+**这次重跑同时修正了历史筛查的两类错误**：
+- **补上漏报**：`yeslab_375` 历史上从未被结构性筛查，本次在两个窗口均 FAIL
+  （2014–2019 median 仅 **0.3705**，是 6 个里最差的）；
+- **清除误报**：`yeslab_398`、`yeslab_464` 历史 FAIL 于 `MISSING_MONTH_OR_LOW_MONTHLY_COVERAGE`
+  （源表 1159/1185 日），本次在 `factor_daily` 上 **PASS**（1212/1212 日、median 0.9967、
+  `min_monthly` 1.0000），证实规范重放源已修复该缺口；
+- **两个从未被筛查的修复变体也 PASS**：`yeslab_206`（0.8614 / 0.9842）、
+  `yeslab_443_reg30_max20_v1`（0.8864 / 0.9872）。
+
+**三条独立证据链收敛到同一个划分**（这是本结论最强的地方）：
+1. **公式层**：读 `数据库/factor_calculators/*.py`，6 个失败因子正是全部
+   `base ** exponent` 且底数可为负的那 6 个（`pct_chg`，或 `tanh(Δ20(vol|turnover))`）；
+2. **数值层**：逐日覆盖率 = 市场上涨广度（2020-01-23 上涨 229 只 vs `yeslab_372` 落库 243 行）；
+3. **治理层**：C6.2 筛查在正确源上、两个窗口，独立判定同 6 个 FAIL。
+
+**且 PASS 的 11 个恰好等于此前测「全 11 dense 存活率」所用的集合**
+（206、357、381、398、405、425、443_reg30_max20_v1、464、471、484、96），
+其存活率实测 45.3%–98.6%。也就是说**选项 (iii) 的最小形态现在有了一个由项目自身判据
+（C6.2/C6.3）导出的、而非临时挑选的因子集合**。
+证据：`coverage_screen_factor_daily_2014_2019.{txt,json}`、
+`coverage_screen_factor_daily_2020_2024.{txt,json}`（均在 qrv2_research_artifacts）。
 以下为发现时的初步测量，保留备查：
 `run_real_walk_forward.py:177-179` 对基线一律 `dropna(subset=全部因子列)`，而候选驱动
 **不做 dropna**（保留 NaN 交预处理器）。实测存活率：
