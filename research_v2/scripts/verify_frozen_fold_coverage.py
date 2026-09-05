@@ -134,8 +134,16 @@ def asymmetry_note(
     The frozen set is fitted on a materially narrower cross-section than it is scored
     on (median 211-360 stocks in train years 2014-2017 versus 599-908 in test years
     2020-2025), and the narrower side is the more direction-selected of the two. This
-    is reported rather than gated because no measured threshold exists yet for what
-    ratio is acceptable; the number is what makes the shift visible.
+    is reported rather than gated, and the threshold question is now closed: measuring
+    the accepted legacy-14 baseline with the same instrument gives ratios of
+    0.53/0.58/0.60/0.69/0.70/0.74 against this set's 0.52/0.49/0.60/0.66/0.77/0.74
+    (``audit_legacy_train_coverage.py``, 2026-09-06). The two distributions overlap
+    almost completely, so a ratio near 0.5 is a property of the walk-forward design --
+    a five-year train window dominated by early years, scored against one recent year
+    over a universe that grew from ~2,700 to ~4,300 names -- not of the frozen factor
+    set. Any threshold low enough to fail this set would also fail the accepted
+    baseline. Gate on the absolute train width instead, where the two do not overlap
+    (legacy 1402-2794 versus frozen 310-673, a 4.2-4.8x gap on every fold).
     """
     if test.median_width <= 0 or train.median_width <= 0:
         return None

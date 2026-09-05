@@ -342,6 +342,33 @@ hidden_dim(2) × num_heads(2) × inducing_points(2) × num_blocks(2) = **16 组�
 **反而更慢**（2.0–2.9 倍），仅对 M2 快 1.57–1.75 倍；线程数对速度中性但改变数值。
 详见 Task 3.4 的实测记录与 `docs/handoffs/2026-09-05-compute-and-coverage-decision-brief.md`。
 
-仍开放：**3.4**（M1 全量运行中，2026-09-05 17:35 启动，已完成 config0 的 3 个 seed 中
-前 2 个、第 3 个进行到 epoch 11）、**3.5 / 4.2 / 4.4 / 5.1 / 5.2 / 5.3**。
+仍开放：**3.4**（M1 全量运行**已于 2026-09-06 01:34:05 崩溃**，见下）、**3.5 / 4.2 / 4.4 /
+5.1 / 5.2 / 5.3**。
+
+**3.4 的 M1 全量运行崩溃与根因修复（2026-09-06 02:35，commit `0cbbc88`）**
+进程 1137022 于 17:35 启动、**01:34:05 退出（7h58m）**，watcher 写 `/tmp/m1_full_failed_at.txt`；
+错误 `ValueError: seed predictions contain duplicate business keys`（`training/ensemble.py:56`）。
+先前记录的「13 个 checkpoint = 13/504 次拟合」是**误读**：13 个 checkpoint 全部属于
+**F01 config0 的第一次拟合**（seed 20260801 epoch 1/8；20260802 epoch 1/2/3/5/6；
+20260803 epoch 1/2/7/8/10/11），即三个 seed 均已早停完成，随后在**合并阶段**崩溃。
+**根因**：驱动内 **6 处**直接遍历 `batch.inputs.ts_codes[0]` 而**无视 `stock_mask`**；
+`build_static_training_batches` 把窄于「该段最宽横截面」的每个日期用**空证券码**补齐
+（`codes = tuple(...) + ("",) * (width - count)`），真实段参差（F01/2019 validation 每日
+2,366–2,469 只），故每个较窄日吐出多行 `ts_code=""` → `(signal_date,"")` 重复。
+`FeatureBatch.__post_init__` 本身就强制该 padding 契约（有效位唯一非空、padding 位必须空串），
+是**消费方未遵守**。smoke 夹具每日股票数恒定、从不 padding，故既有测试测不出来。
+**更严重的一半**：`_percentile_rank_series` 在 `width`（含 padding）而非有效数上排名，
+`width - count` 逐日不同 → 百分位被逐日变化的量扭曲；这些百分位正是**选 config 的
+validation RankIC** 的输入，且 6 处中有 2 处产出**喂给 G1–G6 的冻结 TEST 预测**。
+**修复**：6 处全部改为委托 `predictions_to_frame`（`models/base.py`，inference 预测器与
+`training/validation.py` 已在用的同一契约：只保留 `stock_mask` 位、拒绝有效位非有限分数、
+日内 `rank(method="average", pct=True)`）；多 seed 平均改为**按业务键 join** 且
+`validate="one_to_one"`（该函数按分数排序，两个 seed 行序一般不同，位置相加会混股票）；
+`_percentile_rank_series` 无调用者，删除。新增 3 项**参差夹具**回归测试（两日 40/31 只、
+9 个 padding 槽；断言 padding 被丢弃、排名在日内有效股票上、seed 平均按键对齐而非按位置）。
+**验证**：全量 **1190 passed / 45 skipped**（原 1178/45，+12 = 本项 3 + 标定工具 9）；
+`ruff check src tests` 清（并修掉 commit `05d04fa` 遗留的 F401，见 `4022727`）、`mypy src` 155 文件清。
+**未触碰 `run_real_walk_forward.py`**，故 Task 2.4 的逐位复现核验不受影响。
+**对 3.4 与裁决 2/3 的影响**：这 8 小时产物不可用（未签发报告、未产出 evidence），
+且**修复前重启必然同样崩溃**；修复对冻结集候选链（Task 5.x）同样必需，故非沉没成本。
 勾选仅改动 `- [ ]` → `- [x]`，已用 diff 核验**除复选框外零字符变化**。
