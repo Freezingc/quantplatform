@@ -62,20 +62,20 @@ E 计划：[`2026-08-01-quant-research-v2-e-models-evaluation-plan.md`](2026-08-
   返回 `{fold_id: 文件路径}`；主流程在写报告 JSON 前调用，并把路径映射写入
   `report["baseline_oos_artifacts"]`。
 
-- [ ] **1.1 写失败测试**（`test_run_real_walk_forward_report.py` 追加）：
+- [x] **1.1 写失败测试**（`test_run_real_walk_forward_report.py` 追加）：
   用既有 `_result()` 构造器生成 `BaselineWalkForwardResult`（需先给
   `BaselineFoldResult.test_evaluation` 造最小 `PredictionFrame`），
   断言 `save_baseline_oos_artifacts` 在 `tmp_path` 生成 6 个折文件且
   列集合为 `{signal_date, ts_code, score, dataset_id}`。
-- [ ] **1.2 运行确认失败**：`pytest tests/unit/scripts/test_run_real_walk_forward_report.py -q` → FAIL（函数不存在）。
-- [ ] **1.3 实现** `save_baseline_oos_artifacts`（纯函数：遍历
+- [x] **1.2 运行确认失败**：`pytest tests/unit/scripts/test_run_real_walk_forward_report.py -q` → FAIL（函数不存在）。
+- [x] **1.3 实现** `save_baseline_oos_artifacts`（纯函数：遍历
   `result.fold_results`，取 `test_evaluation.predictions.frame`，
   `to_parquet(index=False)`；缺失任一普通折即抛 `ValueError`）。
-- [ ] **1.4 接入主流程**：`main()` 中 `report = build_walk_forward_report(...)`
+- [x] **1.4 接入主流程**：`main()` 中 `report = build_walk_forward_report(...)`
   之后、写文件之前调用；`report["baseline_oos_artifacts"] = paths`。
-- [ ] **1.5 测试通过 + ruff + `MYPYPATH=src mypy scripts/run_real_walk_forward.py`
+- [x] **1.5 测试通过 + ruff + `MYPYPATH=src mypy scripts/run_real_walk_forward.py`
   无新增错误**，提交。
-- [ ] **1.6 重跑基线生成工件**（约 17 小时；可与后续任务并行启动）：
+- [x] **1.6 重跑基线生成工件**（约 17 小时；可与后续任务并行启动）：
 
 ```bash
 cd research_v2
@@ -105,15 +105,15 @@ Expected：报告 JSON 含 `baseline_oos_artifacts` 六个路径；数值与
   → `dict[str, CandidateFoldDatasets]`（train/validation/test 三帧，列与基线驱动一致）；
   `load_baseline_predictions(paths: Mapping[str, str]) -> Mapping[str, pd.DataFrame]`。
 
-- [ ] **2.1 失败测试**：CLI 参数契约（`--family {M1,M2,M3}`、`--smoke`、
+- [x] **2.1 失败测试**：CLI 参数契约（`--family {M1,M2,M3}`、`--smoke`、
   `--fold-subset`、`--baseline-artifacts <dir>`、`--report <path>`）；
   家族顺序守卫（`--family M2` 且 `--require-order` 时拒绝，除非提供
   `--prior-families-evidence`）；`load_baseline_predictions` 缺折即抛错。
-- [ ] **2.2 运行确认失败** → **2.3 最小实现**（复用 `run_real_walk_forward.py`
+- [x] **2.2 运行确认失败** → **2.3 最小实现**（复用 `run_real_walk_forward.py`
   的 `_connect/_query/_current_versions/_extract_dataset/fold_cache_key`，
   抽为共享模块 `scripts/walk_forward_common.py` 供两个驱动 import，
   避免复制；基线驱动同步改为从该模块导入并全量回归）。
-- [ ] **2.4 测试通过 + ruff/mypy** → **2.5 提交**。
+- [x] **2.4 测试通过 + ruff/mypy** → **2.5 提交**。
 
 ---
 
@@ -129,14 +129,14 @@ Expected：报告 JSON 含 `baseline_oos_artifacts` 六个路径；数值与
 - Produces: 每折选择记录 + 冻结 bundle + TEST 预测；
   `evaluate_model_walk_forward` 输入齐全后输出 `ModelWalkForwardResult`。
 
-- [ ] **3.1 失败测试（合成 smoke）**：`--family M1 --smoke` 在合成小帧上走通
+- [x] **3.1 失败测试（合成 smoke）**：`--family M1 --smoke` 在合成小帧上走通
   搜索→选择→TEST 评价→报告 JSON（只验证编排，不作为业绩证据；参照
   `tests/integration/models/test_model_walk_forward.py` 的构造方式）。
-- [ ] **3.2 实现 M1 分支**：日期均衡 sampler + `TorchDateTrainingLoop`，
+- [x] **3.2 实现 M1 分支**：日期均衡 sampler + `TorchDateTrainingLoop`，
   验证集早停选择，`CheckpointStore` + `ModelArtifactBundleStore` 落盘到
   `/data/zhangyudong/qrv2_research_artifacts/m1/`；TEST 预测仅在
   选择记录写入后生成（与基线驱动同一 fail-closed 顺序）。
-- [ ] **3.3 报告生成**：`build_candidate_report(result, baseline_frames)` —
+- [x] **3.3 报告生成**：`build_candidate_report(result, baseline_frames)` —
   G1–G6（含 G4 Δ）+ 相对 B0/B1/B2/B3 各自增量 + 参数量 + 训练时长 +
   最差 seed + 因子集与数据版本记录；判定 `WALK_FORWARD_PASSED` / `FAILED`。
 - [ ] **3.4 全量运行**（1–2 卡，预计 6–24 小时）：
@@ -256,11 +256,11 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
 `TemporalTrainingBatch` + history_length=20 契约，横截面家族走
 `FeatureBatch`）。
 
-- [ ] **4.1 M2 分支 + 合成 smoke**（GRU/TCN 双家族内选择，4×2×3×2=48 组合
+- [x] **4.1 M2 分支 + 合成 smoke**（GRU/TCN 双家族内选择，4×2×3×2=48 组合
   超出 30 预算 → 按 E7「受限搜索」先以验证集 RankIC 粗筛到 ≤30 再精评；
   粗筛规则写入报告）。
 - [ ] **4.2 M2 全量运行 + 判定归档**（同 3.4/3.5）。
-- [ ] **4.3 M3 分支 + 合成 smoke**（32 组合 ≤30 不成立时同 4.1 粗筛规则）。
+- [x] **4.3 M3 分支 + 合成 smoke**（32 组合 ≤30 不成立时同 4.1 粗筛规则）。
 - [ ] **4.4 M3 全量运行 + 判定归档**。
 
 ---
@@ -292,3 +292,56 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
   `build_candidate_report` 在任务间签名一致。
 - 已知决策依赖：因子集冻结（人工准入决策）与 `raw_factor_count_min` 调整
   （若仍 14 因子）为执行前置，已在 Global Constraints 标注。
+
+## 勾选审计与实测偏差记录（2026-09-06 00:30）
+
+本计划 21 个复选框此前**全部未勾选**，而 Task 1–3.3 与 4.1/4.3 的交付物其实早已存在并在
+生产使用（M1 全量正在运行）。本次逐项对照当前仓库状态核验后勾选 14 项，并记录三处
+**实现与计划文本的偏差**——偏差本身不是缺陷，但计划文本若不更正就会误导后续执行。
+
+**勾选依据**：
+- 1.1/1.2：`tests/unit/scripts/test_run_real_walk_forward_report.py`（6 测试），含
+  `test_save_baseline_oos_artifacts_writes_per_fold_parquet:167`、
+  `test_save_baseline_oos_artifacts_requires_all_folds:183`（后者固化「必须六折齐全」）。
+- 1.3：`scripts/run_real_walk_forward.py:51 def save_baseline_oos_artifacts`。
+- 1.4：同文件 `main()` 中 `:194` 调用，工件根为 `args.report.parent / "baseline_oos"`。
+- 1.5：上述测试与 `test_run_real_candidate_training.py` 合计 **30 passed**；ruff 清；
+  mypy 仅剩 `walk_forward_common.py:20` 既有 dolphindb stub 报错。
+- 1.6：`/data/zhangyudong/qrv2_research_artifacts/baseline_oos/F01..F06.parquet` 与
+  `baseline_oos_report.json` 均在；`/tmp/baseline_rerun_verification.txt` 首行
+  `CONSISTENT: re-run reproduces the criterion-303 evidence exactly`；
+  `/tmp/baseline_schema_gate.txt` 首行 `SCHEMA PASS`。
+- 2.1–2.5：`run_real_candidate_training.py::parse_args` 含 `--family/--smoke/--report/
+  --baseline-artifacts/--baseline-report/--workspace/--max-configs/--max-epochs/
+  --prior-report`；`tests/unit/scripts/test_run_real_candidate_training.py` 覆盖 smoke 路径。
+- 3.1：`train_m1_smoke`（`:447`）。3.2：`run_full_m1`（`:1281`）→ `_run_full_cross_section`
+  （`:952`），搜索空间 `m1_config_grid`（`:814`，3×3×3 = 27 ≤ E7 预算 30）。
+- 4.1：`run_full_m2`（`:1349`）+ `m2_config_grid`（`:1305`）+ `train_m2_smoke`（`:652`）。
+- 4.3：`run_full_m3`（`:1293`）+ `m3_config_grid`（`:1257`）+ `train_m3_smoke`（`:465`）。
+
+**偏差 1（3.3）**：计划要求 `build_candidate_report(result, baseline_frames)`，
+实现中**没有这个具名函数**——报告在 `_run_full_cross_section` 的返回字典里内联构造。
+字段与计划一致（`family`/`mode`/`folds`/`oos`，其中 `oos` 含 `valid_day_count`、
+`mean_rank_ic`、`icir`、`hac_t_statistic`、`baseline_mean_rank_ic`、`delta_rank_ic`、
+`yearly_mean_rank_ic`、`gates`）。**本计划 Self-Review 中「`build_candidate_report`
+在任务间签名一致」一句因此不成立，应予更正。**
+
+**偏差 2（4.1）**：计划文本写「4×2×3×2=48 组合」，实现的 `m2_config_grid` 是
+family(2) × hidden_dim(2) × dropout(3) × learning_rate(2) = **24 组合**（其 docstring
+明写「24 <= 30」）。48 会超出 E7 的 ≤30 预算，故 24 是符合预算的正确实现，
+**计划文本的算式有误**。
+
+**偏差 3（4.3）**：计划文本写「32 组合 ≤30 不成立时同 4.1 粗筛规则」，实现的
+`m3_config_grid` 固定 `dropout=0.1`、`learning_rate=0.0003`，只搜索
+hidden_dim(2) × num_heads(2) × inducing_points(2) × num_blocks(2) = **16 组合**，
+其 docstring 已说明这是为符合 E7 预算的既定缩减。
+
+**偏差 4（3.4，已另行详记）**：计划写「1–2 卡，预计 6–24 小时」，实测驱动硬编码
+`device=cpu`、稳态 **6.77 min/epoch**、**2.03–2.12 h/拟合**、M1 共 **504 次拟合**
+→ **42.7–44.6 天**；M1→M3 全链 **≈239 天（下界）**。GPU 经 5 个格点实测对 M1/M3
+**反而更慢**（2.0–2.9 倍），仅对 M2 快 1.57–1.75 倍；线程数对速度中性但改变数值。
+详见 Task 3.4 的实测记录与 `docs/handoffs/2026-09-05-compute-and-coverage-decision-brief.md`。
+
+仍开放：**3.4**（M1 全量运行中，2026-09-05 17:35 启动，已完成 config0 的 3 个 seed 中
+前 2 个、第 3 个进行到 epoch 11）、**3.5 / 4.2 / 4.4 / 5.1 / 5.2 / 5.3**。
+勾选仅改动 `- [ ]` → `- [x]`，已用 diff 核验**除复选框外零字符变化**。

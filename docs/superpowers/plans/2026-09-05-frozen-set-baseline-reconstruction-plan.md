@@ -33,14 +33,14 @@
   data_version——物化器目前未登记，需补登记步骤，沿用 A 计划 staging/publish 契约）。
 - Produces: 与现有 `extract_dataset` 同契约的折数据帧（factor 列序由冻结清单决定）。
 
-- [ ] 1.1 失败测试：无 published_version 登记或缺分区 → 装配 fail-closed 拒绝。
-- [ ] 1.2 失败测试：行级 data_version 与登记版本不符 → 拒绝（防未登记数据混入）。
-- [ ] 1.3 实现装配源 + 版本过滤（复用 `filter_current` 模式）；宇宙按日对齐
+- [x] 1.1 失败测试：无 published_version 登记或缺分区 → 装配 fail-closed 拒绝。
+- [x] 1.2 失败测试：行级 data_version 与登记版本不符 → 拒绝（防未登记数据混入）。
+- [x] 1.3 实现装配源 + 版本过滤（复用 `filter_current` 模式）；宇宙按日对齐
       `universe_id='cn_liquid_a'`。
-- [ ] 1.4 确定性测试：同版本快照两次装配逐位一致；缓存键与旧路径不相交。
-- [ ] 1.5 运行测试并提交。
+- [x] 1.4 确定性测试：同版本快照两次装配逐位一致；缓存键与旧路径不相交。
+- [x] 1.5 运行测试并提交。
       **装配源已就绪（2026-09-05）**：`scripts/walk_forward_factor_daily.py`（4 测试：真实构建器参与、版本钉扎剔除陈旧行、缺版本键 fail-closed、缓存按版本隔离且可复用；`available_date := signal_date` 满足构建器门控）；驱动集成（装配源切换）归 Task 2，涉及共享文件，待裁决/遗留链完成后执行。
-- [ ] 1.6 **登记而非重发布**：物化器采用直写 `factor_daily`（绕过 staging），而 `V2BatchPublisher` 语义为「追加数据行 + 原子推进指针」——对已在库数据重走 StagedBatch 会重复追加造成重复键。因此 Task 1 的发布路径必须是**登记式**：先对既有区域做 fail-closed 预校验（0 重复业务键、行数与物化清单一致、data_version 单一性按月分区核验），再仅写 `published_version` 指针（object_name='factor_daily'，逻辑月分区 → 物化 run 的 data_version），保持「指针最后原子推进」不变量。
+- [x] 1.6 **登记而非重发布**：物化器采用直写 `factor_daily`（绕过 staging），而 `V2BatchPublisher` 语义为「追加数据行 + 原子推进指针」——对已在库数据重走 StagedBatch 会重复追加造成重复键。因此 Task 1 的发布路径必须是**登记式**：先对既有区域做 fail-closed 预校验（0 重复业务键、行数与物化清单一致、data_version 单一性按月分区核验），再仅写 `published_version` 指针（object_name='factor_daily'，逻辑月分区 → 物化 run 的 data_version），保持「指针最后原子推进」不变量。
       **实测基线（2026-09-05 只读探测）**：`published_version` 中 factor_daily 登记 0 行；分区采样（2020-01 / 2022-06 / 2025-12）各月 data_version 单一，且跨月版本互异（如 2020-01=66f33a…, 2022-06=70c7c0…, 2025-12=7f0636…）——登记必须按月分区粒度逐月映射，预校验的行数对账以 `factor_daily_materialization/materialization_status.md` 各因子×年份表为准。
       **工具已就绪（2026-09-05）**：`scripts/publish_factor_daily_versions.py`（8 测试：单版本/非空/17 因子覆盖/零重复键 fail-closed、幂等跳过、按月独立指针链、指针脚本仅写 published_version）；默认 dry-run，`--execute` 待裁决后启用。
       **全部查询模式实库验证（2026-09-05）**：月分区 data_version 分组、distinct factor_id、重复业务键子查询（`group by ... having count(*)>1`，2020-01 实测 0 重复）、指针查询（`top 1 ... order by published_at desc`，未登记返回空）四种 DolphinDB 语法均在生产库实测通过。
@@ -85,7 +85,7 @@
   保持遗留链可复现为前提）
 - Test: 常量测试 + `raw_factor_count_min` 兼容性核验
 
-- [ ] 2.1 冻结 17 清单常量（含 `yeslab_443_reg30_max20_v1` 与物化键名映射核验）。
+- [x] 2.1 冻结 17 清单常量（含 `yeslab_443_reg30_max20_v1` 与物化键名映射核验）。
 - [x] 2.2 `configs/models/*.yaml` 的 `raw_factor_count_min: 15` 与 17 因子兼容
       （17 ≥ 15，无需改 yaml；测试固化该事实，消除候选计划的既有张力条款）。
       **已交付（2026-09-05）**：`tests/unit/scripts/test_walk_forward_factor_daily.py::
@@ -585,7 +585,7 @@
 
 - [ ] 4.1 `verify_baseline_rerun_consistency.py --reference` 指向新冻结集基线报告
       （新信任根）；候选消费 schema 预检门无需改动（同报告 schema）。
-- [ ] 4.2 复现 runbook 增补「冻结集基线」章节与命令。
+- [x] 4.2 复现 runbook 增补「冻结集基线」章节与命令。
 
 ## Task 5: 正式候选序列（M1→M2→M3）
 
@@ -605,3 +605,24 @@
   criterion-303 归档不动。
 - 已知开放项：体制感知加权（09-03 交接 §4，D3=a）在基线重建后的模型阶段处理，
   先经 OOS 验证再固化，不在本计划前置内。
+
+## 勾选审计（2026-09-06 00:30）
+
+本计划的复选框此前长期落后于实际交付（Task 1 与 2.1 早已交付却未勾选）。本次逐项对照
+**当前仓库状态**核验后勾选，未凭记忆或凭提交说明。每项证据如下：
+
+| 项 | 勾选依据（可复核） |
+|---|---|
+| 1.1 | `tests/unit/scripts/test_walk_forward_factor_daily.py:151` `test_missing_factor_daily_version_key_fails_closed` |
+| 1.2 | 同文件 `:128` `test_rows_with_unregistered_versions_are_dropped` |
+| 1.3 | `scripts/walk_forward_factor_daily.py::extract_dataset_factor_daily`；活库端到端证据 `frozen_f01_train_assembly_proof.txt`（F01/train **2,204,564 行**、2014–2018 五年齐全、`f00`–`f16`、`label_valid` 0.9827、546.5 s） |
+| 1.4 | 同测试文件 `:167` `test_cache_is_isolated_by_versions_and_reused`、`:208` `test_cache_key_is_scoped_to_the_factor_set`、`:253` `test_legacy_fold_cache_key_formula_is_pinned`，以及 `test_run_real_walk_forward_factor_source.py::test_frozen_and_legacy_cache_keys_are_disjoint` |
+| 1.5 | 上述 5 个测试文件合计 **51 passed**；全量 `tests` **1143 passed / 45 skipped** |
+| 1.6 | `scripts/publish_factor_daily_versions.py`（8 测试）；已对 2020–2025 与 2014–2019 各执行一次，`published_version` 中 factor_daily 现 **144 分区**、12 个按年互异版本 |
+| 2.1 | `walk_forward_factor_daily.py::FROZEN_FACTOR_SET_V1`；测试 `:195` `test_frozen_constant_matches_frozen_contract_json`（对 `factor_set_frozen_v1.json` 逐项与 count=17 断言）、`:281` `test_frozen_feature_names_are_unique` |
+| 4.2 | `research_v2/runbooks/real-walk-forward-reproduction.md` 已由 136 行扩至 256+ 行，新增「Frozen-set baseline (the new trust root)」章节（前置条件、静默丢弃告警、子目录隔离、判定/核验/schema 命令、覆盖率门为第 3 步、重放边际不可复现告警）；提交 `4f8fb18`、`e986e2e` |
+
+仍开放且**不应**勾选的项及其原因：**2.4**（复现重跑在跑，约 14.5 h，判定未出）、
+**3.1**（按 3.1b 主动拦停）、**3.1b**（待裁决 4）、**3.2 / 3.3**（依赖 3.1）、
+**4.1**（`--reference` 需指向尚不存在的冻结集基线报告）、**5.1 / 5.2 / 5.3**（依赖 3.1 与裁决 2）。
+勾选仅改动 `- [ ]` → `- [x]`，已用 diff 核验**两文件除复选框外零字符变化**。
