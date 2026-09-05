@@ -198,6 +198,35 @@ as a pipeline-reproducibility artifact.
    Note the screen ran against the YesLab source tables while this pipeline consumes
    `factor_daily`; that mismatch is why it both missed a real defect and reported two
    that do not apply. Re-screening against `factor_daily` is the correct basis.
+5. **Per-factor coverage screen on the consumed source** — the authoritative per-factor
+   evidence, and the fix for the source mismatch noted in step 4:
+
+   ```bash
+   /data/zhangyudong/.conda/envs/quantyd/bin/python scripts/screen_factor_daily_coverage.py \
+     --start 2014-01-01 --end 2019-12-31     # the early folds' train span
+   /data/zhangyudong/.conda/envs/quantyd/bin/python scripts/screen_factor_daily_coverage.py \
+     --start 2020-01-01 --end 2024-12-31     # the historical screen's window, for comparison
+   ```
+
+   It recomputes the C6.2 metric set (day ratio, minimum monthly day ratio, median / p05 /
+   minimum per-day coverage, duplicate business keys) with the C6.3 denominator — same-day
+   `universe_daily` members, never "stocks appearing in the factor table" — and reuses the
+   historical reason-code vocabulary so output is directly comparable.
+
+   As of 2026-09-06 both windows give **PASS 11 / ELIGIBILITY_FAIL 6**, failing exactly
+   `yeslab_372, 375, 384, 389, 390, 406` (medians 0.37-0.50 against the 0.70 gate, minima
+   down to 0.0025 on crash days), while all 17 show day ratio and minimum monthly day ratio
+   of exactly 1.0000 with zero duplicate keys. Relative to the historical YesLab-based
+   screen this adds `yeslab_375` (never screened before) and clears `yeslab_398` /
+   `yeslab_464` (their source-side missing periods do not exist in `factor_daily`).
+
+**How the three gates differ** — they are complementary, not redundant:
+
+| Script | Unit of analysis | Question it answers |
+|---|---|---|
+| `screen_factor_daily_coverage.py` | one factor, over a window | Is this factor's own coverage admissible under C6.2 on the source we consume? |
+| `verify_frozen_fold_coverage.py` | one (fold, role) segment, per day | Will the *joint* all-factor cross-section be wide enough to train and score on? |
+| `verify_admission_consistency.py` | the admitted set vs its screening history | Was anything with a recorded blocking failure admitted without a waiver? |
 2. `published_version` must carry **144 monthly partitions** for `factor_daily`
    (2014-01 .. 2025-12). Register with the registration-only publisher (it never
    writes factor rows, and re-running is idempotent):
