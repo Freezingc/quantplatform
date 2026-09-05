@@ -194,7 +194,7 @@ class DedupResult:
 
 quarantine 保存所有原始候选、source row ids、distinct values 和 reason；不选择 first/last。
 
-- [ ] **C3.3 增加顺序/分块性质测试**
+- [x] **C3.3 增加顺序/分块性质测试**
 
 Hypothesis 验证输入 permutation、chunk 切分、DataFrame index 不影响 clean/quarantine；重复加入完全相同行不改变业务输出；冲突加入后 clean 必然移除该 key。
 
@@ -248,7 +248,7 @@ def test_fundamental_is_available_next_trading_day(calendar):
 
 对每行断言：`observation_date <= available_date <= signal_date`；technical 三者相等；fundamental `available_date > ann_date`（按交易日规则）；source watermark 的捕获时间不晚于 run publish。
 
-- [ ] **C4.6 写未来扰动测试**
+- [x] **C4.6 写未来扰动测试**
 
 添加/修改未来公告、未来修订或未来技术值，不得改变此前任何 signal date 的 clean factor record/hash。删除未来 universe 日期不改变过去展开。
 
@@ -440,3 +440,59 @@ git commit -m "feat(v2): freeze content-addressed factor sets"
 - [ ] 修改未来公告/值不改变任何过去 factor observation。
 - [ ] 结构质量不读取标签；相似度与代表选择严格绑定训练 scope。
 - [ ] factor set content-addressed、顺序固定、冻结后不可变，可被 D/E/F 精确复用。
+
+## 勾选审计（2026-09-06 06:45）
+
+本次只勾选**本轮真正交付并验证**的两项（C3.3、C4.6），已用 diff 核验**除复选框外零字符变化**
+（2 增 2 删）。其余项**未勾选**，因为逐项验收尚未完成；下面记录已核到的现状，供后续接续。
+
+**实现层：C1–C8 的点名模块全部存在，且相关测试通过。**
+`pytest tests/unit/factors tests/unit/quality tests/unit/pit tests/unit/sources
+tests/unit/registry tests/unit/materializers -q` → **232 passed**。逐项核到的证据：
+C1 `configs/factors/source_catalog.yaml` + `contracts/factor.py`（`definition_hash` 在 :78）
++ `factors/registry.py`（`ImmutableDefinitionError`、`FactorRegistry`）；
+C2 `factors/source_reader.py`；C3 `factors/deduplication.py`（`DedupResult` 含
+clean/quarantine/statistics，与 C3.2 的契约逐字段相符）；C4 `factors/availability.py`；
+C5 `factors/materializer.py` + `configs/factors/quality_rules.yaml`；C6 `factors/quality.py`；
+C7 `factors/similarity.py`（docstring 明写「only within the explicit training scope」，
+先按 `[start_date, end_date]` 过滤 → C7.1）与 **`datasets/selection.py:177
+select_cluster_representatives`**（对 `status==PASS 且 median_daily_abs_spearman ≥ 阈值`
+的因子对做**带路径减半的并查集** → 即 C7.3 的阈值图连通分量、C7.4 的代表选择；
+注意它在 `datasets/` 而非 `factors/`，按模块名找不到）；
+C8 `factors/factor_sets.py`（`FactorSetStatus`、content-addressed 摘要、状态迁移）。
+
+**验证层：计划点名的 7 个产物中，3 个此前确实不存在，本轮已补齐；4 个仍缺。**
+
+| 点名产物 | 对应项 | 本轮前 | 现状 |
+|---|---|---|---|
+| `tests/property/factors/test_deduplication_invariants.py` | C3.3 | **不存在**（连 `tests/property/factors/` 目录都没有） | **已建，7 条属性全绿** |
+| `tests/leakage/test_factor_future_perturbation.py` | C4.6 | **不存在**（`tests/leakage/` 有 4 个文件，无因子可用日） | **已建，6 条全绿，并经两次变异验证非空** |
+| `tests/property/factors/test_availability_invariants.py` | C4.x | **不存在** | **已建，6 条全绿** |
+| `src/research_v2/cli/factors.py` | C5.3 | 不存在 | **仍缺**；`cli/materialize.py` 有 `dry_run` 与 `emit_plan`，但是否覆盖因子物化尚未核定 |
+| `tests/golden/test_factor_materialization.py` 及 `data/expected_factor_observations.parquet`、`data/factors_50x60.parquet` | C8.3 | 不存在（golden 有 dataset/market/labels/models/compatibility，无因子物化） | **仍缺** |
+| `tests/integration/factors/test_factor_publish.py` | C5.5 | 不存在（`tests/integration/factors/` 整个目录不存在） | **仍缺**，需 `QRV2_INTEGRATION=1` 与活库 |
+| `tests/integration/factors/test_factor_registry_import.py` | C1.6 的集成半 | 同上 | **仍缺**，同上 |
+
+**本轮顺带查出一个实现层真实缺陷并已修**（commit `b57373d`）：
+`expand_fundamental_events` 在**没有任何事件版本符合 staleness 条件**时，
+由空 `rows` 构造出的 `pd.DataFrame([])` **没有列**，尾部 `sort_values(["signal_date","ts_code"])`
+随即抛 `KeyError: 'signal_date'`。最小复现：事件公告日 2025-11-03、universe 只有 2025-03-03
+一个信号日。**这在生产中可达**——早于首次公告的早期折、新上市证券、或 staleness 上限紧到
+全部过期时都会发生；而调用方是**跨因子跨折拼接**展开结果的，故一个空结果会中断整次物化。
+报错指向一个列名，与真实原因（无符合条件记录）无关，诊断成本很高。
+现返回带同样 8 列、同样 dtype 的空帧，两条到达空结果的路径（尚未可用 / 已可用但过期 182>180 天）
+均有单测。**该缺陷是新的属性测试发现的**——随机日期组合会到达三个手写单测样例从未覆盖的情形。
+
+**变异验证（证明新测试非装饰）**：把 `available_date <= signal_date` 换成全局最大值 → 6 条泄漏
+测试中 **4 条失败**（另 2 条针对 universe 截断与 technical 路径，本就不应受此变异影响）；
+把 technical 的 `available_date/signal_date` 都赋成最大 observation_date → technical 那条失败，
+且触发的是新加的**空作用域守卫**（`_digest` 原本对空作用域返回哨兵哈希，两侧皆空即相等、
+会静默通过；现改为抛错）。两次变异后 `availability.py` 均以 `git diff --quiet` 确认还原干净。
+
+**未勾选的原因，逐项说明**：C4.5 只完成了一半——本计划要求的
+「`observation_date <= available_date <= signal_date`、technical 三者相等、fundamental
+`available_date > ann_date`」已由属性测试与泄漏测试覆盖，但**「source watermark 的捕获时间
+不晚于 run publish」属物化/发布路径，本轮未覆盖**，故 C4.5 不勾。C3.5 / C4.7 是「运行测试并提交」，
+其点名命令涉及的文件现已齐备（C4.7 的三个文件全部存在并通过），但 C4.5 未完整，故一并暂不勾。
+C1.1–C1.5、C2.x、C3.1/C3.2/C3.4、C4.1–C4.4、C5.x、C6.x、C7.x、C8.x 的**逐条验收标准**
+（而非仅模块存在）尚未逐项核对，故不勾。
