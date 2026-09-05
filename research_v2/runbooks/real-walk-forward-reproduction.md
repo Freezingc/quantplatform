@@ -155,6 +155,18 @@ as a pipeline-reproducibility artifact.
    /data/zhangyudong/.conda/envs/quantyd/bin/python scripts/verify_frozen_fold_coverage.py
    ```
 
+   `--factor-set` selects what is measured: `frozen17` (the default, and the wiring the
+   pre-flight door gates) or `c62pass11`, the subset that passes the C6.2 coverage screen.
+   The latter exists so a candidate factor set can be measured against the gate *before*
+   it is chosen — it is a measurement input only, nothing trains on it and the
+   walk-forward still consumes `FROZEN_FACTOR_SET_V1`. `resolve_factor_set` fails closed
+   if the subset has drifted outside the frozen set. Measured 2026-09-06, `c62pass11`
+   returns `COVERAGE GATE: PASS` on all 18 segments with train medians
+   1446/1674/2029/2494/2651/2737 and zero days below the floor in every fold, against
+   `frozen17`'s 310/343/419/513/600/673 and 15/15/4/0/0/0. Re-running the default set
+   reproduces the recorded verdict byte-identically, so the `factor_id` filter the option
+   adds changed nothing.
+
    It reports, per fold and role, the daily width of the complete-factor cross-section
    against the `minimum_cross_section` floor of 30, plus the train/test median-width
    ratio. It fails a **decision role** (`train` or `validation` — the roles whose

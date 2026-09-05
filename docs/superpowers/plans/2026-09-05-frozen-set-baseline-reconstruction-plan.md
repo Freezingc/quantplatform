@@ -378,6 +378,24 @@
       是合法门控而非预先写好的结论。单测 `test_the_real_gate_admits_the_legacy_profile_and_rejects_the_frozen_one`
       把这一条写成了可执行断言。
       证据：`preflight_frozen_baseline_calibrated_run.txt`、`legacy_train_coverage_calibration.{txt,json}`。
+      **裁决 4 选项 (iii) 已实测（2026-09-06 04:22）：`COVERAGE GATE: PASS`，18/18 段全过，exit 0。**
+      覆盖率门新增 `--factor-set {frozen17,c62pass11}`（后者为 C6.2 筛查 PASS 的 11 个），
+      **在裁决前实测**而非按存活率推算；`c62pass11` 只是测量输入，walk-forward 仍消费
+      `FROZEN_FACTOR_SET_V1`，未改任何接线。`resolve_factor_set` 在子集漂出冻结集时 fail-closed。
+      train 中位横截面：**1446 / 1674 / 2029 / 2494 / 2651 / 2737**（对冻结 17 的
+      310 / 343 / 419 / 513 / 600 / 673），逐折与**已接受的遗留 14**（1402 / 1615 / 1949 / 2464 /
+      2656 / 2794）相差 **−2.0% 到 +4.1%**；低于门槛天数由 **15/15/4/0/0/0 归零为 0/0/0/0/0/0**；
+      最窄 train 日由 **2 只升到 643 只**——即「损害全在 TRAIN 侧、模型从不在崩盘日学习」被直接修掉，
+      且比遗留基线更干净（遗留侧 F01–F04 各有 1 天，源于 `yeslab_387` @ 2017-10-09 的单元缺失）。
+      跨仪器比较的容差已独立标定：冻结 F01 train 装配帧中位 **309** 对 `factor_daily` **310**（0.3%）、
+      test **599 对 599**。**若裁决 4 选 (iii)，本门的「容忍 1 天」应当收回为 0。**
+      **回归核验**：加 `factor_id in [...]` 过滤后重跑默认 `frozen17`，输出与已记录判定**逐字节一致**
+      （仅表头措辞不同）；这同时证明 `factor_daily` 在**全部 12 年**恰好只含冻结 17、重复业务键为 0
+      （此前只抽查过 2020-01）。查询用 `count(*)` 而非 `count(distinct factor_id)`，因 DolphinDB
+      拒绝分组内嵌套聚合（RefId:S02032）；二者等价的前提（无重复业务键）已被上述核验证实。
+      证据：`coverage_gate_c62pass11.txt`、`frozen_fold_coverage_gate_regression_check.txt`。
+      **仍未实测**：选项 (i)（B1 的「≥11/17」放宽，需先改缺失值策略）与 (ii)（同口径子群评价；
+      其 train 中位必然与 17 因子同量级，几乎确定 FAIL）。
       **裁决 4 选项 (ii) 的代价已定量**：若候选与基线同口径只在「全 17 齐全」子群上评价，
       各折 train 段存活率为 F01 **19.5%**、F02 20.6%、F03 22.4%、F04 23.6%、F05 24.2%、
       F06 24.6%，即**只保留约 1/5–1/4 的训练行**（F01 train 由 2,204,564 行降到约 43 万行）。
