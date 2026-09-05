@@ -121,6 +121,17 @@ def pointer_script(entry: PlanEntry, *, object_name: str, target_database: str) 
     )
 
 
+def month_bounds(month: str) -> str:
+    """DolphinDB date-literal bounds [month start, next month start) with year rollover."""
+    year, mon = month[:4], month[5:]
+    next_year = int(year) + (1 if mon == "12" else 0)
+    next_mon = (int(mon) % 12) + 1
+    return (
+        f"signal_date >= {year}.{mon}.01 "
+        f"and signal_date < {next_year:04d}.{next_mon:02d}.01"
+    )
+
+
 def parse_month_range(spec: str) -> list[str]:
     """Expand 'YYYY-MM..YYYY-MM' (inclusive) into the month list."""
     start, separator, end = spec.partition("..")
@@ -155,9 +166,7 @@ def main() -> None:
     holder = new_holder()
     states: dict[str, dict[str, Any]] = {}
     for month in months:
-        year, mon = month[:4], month[5:]
-        next_month = f"{int(year) + (1 if mon == '12' else 0):04d}-{(int(mon) % 12) + 1:02d}"
-        bounds = f"signal_date >= {year}.{mon}.01 and signal_date < {next_month}.01"
+        bounds = month_bounds(month)
         ok, frame = query(
             holder,
             f"select data_version, count(*) as n from loadTable('{TARGET_DATABASE}','{OBJECT_NAME}') "

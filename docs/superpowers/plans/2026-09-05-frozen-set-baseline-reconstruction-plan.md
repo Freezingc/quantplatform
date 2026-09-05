@@ -41,6 +41,7 @@
       **实测基线（2026-09-05 只读探测）**：`published_version` 中 factor_daily 登记 0 行；分区采样（2020-01 / 2022-06 / 2025-12）各月 data_version 单一，且跨月版本互异（如 2020-01=66f33a…, 2022-06=70c7c0…, 2025-12=7f0636…）——登记必须按月分区粒度逐月映射，预校验的行数对账以 `factor_daily_materialization/materialization_status.md` 各因子×年份表为准。
       **工具已就绪（2026-09-05）**：`scripts/publish_factor_daily_versions.py`（8 测试：单版本/非空/17 因子覆盖/零重复键 fail-closed、幂等跳过、按月独立指针链、指针脚本仅写 published_version）；默认 dry-run，`--execute` 待裁决后启用。
       **全部查询模式实库验证（2026-09-05）**：月分区 data_version 分组、distinct factor_id、重复业务键子查询（`group by ... having count(*)>1`，2020-01 实测 0 重复）、指针查询（`top 1 ... order by published_at desc`，未登记返回空）四种 DolphinDB 语法均在生产库实测通过。
+      **端到端活库 dry-run（2026-09-05）**：`main()` 胶合路径实测通过（2020-01/02 与年边界 2020-12：状态装配→预校验→计划渲染，版本 66f33a… 单一、行数 625,572/797,961/880,244）；演练暴露并修复下月边界日期字面量分隔符缺陷（`-`→`.`，已提取 `month_bounds()` + 回归测试，9 测试绿）。
 
 ## Task 2: 冻结集常量接线
 

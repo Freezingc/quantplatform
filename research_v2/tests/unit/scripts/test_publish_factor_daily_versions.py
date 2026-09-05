@@ -111,3 +111,14 @@ class TestPointerScript:
         assert "'v1'" in script
         # registration must never write data rows into the target table
         assert "factor_daily`)" not in script.replace("object_name", "")
+
+
+def test_month_bounds_render_dolphindb_date_literals() -> None:
+    assert (
+        MODULE.month_bounds("2020-01")
+        == "signal_date >= 2020.01.01 and signal_date < 2020.02.01"
+    )
+    assert (
+        MODULE.month_bounds("2020-12")
+        == "signal_date >= 2020.12.01 and signal_date < 2021.01.01"
+    )
