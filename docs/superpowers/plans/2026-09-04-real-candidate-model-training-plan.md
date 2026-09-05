@@ -149,6 +149,26 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
   > /data/zhangyudong/qrv2_research_artifacts/m1.log 2>&1' &
 ```
 
+      **实测吞吐与本项估算的偏差（2026-09-05 18:17，M1 全量运行中只读观测，未变更任何运行参数）**：
+      本项估算「1–2 卡，6–24 小时」以 GPU 为前提，但驱动在 4 处硬编码
+      `device=torch.device("cpu")`（`run_real_candidate_training.py:382/738/1115/1527`），
+      实际按 Global Constraints 已裁决的「CPU fp32」路径执行 → 估算前提与实现口径不一致。
+      拟合总量：每折 27 configs × 3 seeds（`REQUIRED_SEEDS`）+ 3 次最终拟合 = 84，
+      × F01–F06 = **504 次拟合**（M1 单家族）。`--max-epochs` 默认 100（启动脚本未覆盖），
+      早停 patience=10 → 每次拟合**至少** 11 个 epoch。
+      实测（F01/config0/seed 20260801）：17:35:17 启动 → 17:48:17 落 epoch-1 检查点
+      （含数据装配与 batch 构建）；至 18:17:21 无第二个检查点（epoch 2 起未再改进），
+      故稳态单 epoch > 2.65 分钟 → 单次拟合 ≥ 29 分钟 → **M1 ≥ 504 × 29 min ≈ 244 小时 ≈ 10 天（下界）**；
+      若部分 config 在更晚 epoch 才改进，实际更长。M2/M3（GRU/TCN，CPU 上更贵）不低于此量级。
+      资源现状：4×RTX 4090 利用率 0%；104 核中本进程仅实现 ~4.3 核有效占用
+      （进程 232 线程、torch 默认 intra-op 52 线程——逐日小 batch 下线程同步开销主导，
+      非算力饱和）。
+      附带运维风险：config 搜索循环**无折/配置级续跑**（`_existing_evidence_id` 仅在
+      baseline/model 证据写入处去重，不跳过搜索），任何中断都从 F01/config0/seed1 重来；
+      在数十小时的运行长度下该风险被显著放大。
+      处置：**未做任何变更**（不改 device、不改线程数、不改 max_epochs、不打断运行中的链）——
+      以上任一项都会改变数值口径或已裁决偏差，属人工裁决项；本节仅记录实测事实供裁决。
+
 - [ ] **3.5 判定归档**：通过则渲染判定文档到
   `docs/reports/<date>-m1-real-candidate-walk-forward.md`（复用判定器模式），
   更新主计划 10.2；失败则归档失败报告并分析（不得用 2026 数据补救）。
