@@ -1,0 +1,8 @@
+{
+  "expected_factor_observations.parquet": "9e2529b756a5678539a2da3e4101a1625a631e228f7300614ad18d62c6a25980",
+  "expected_factor_quarantine.parquet": "95681f29c6610f1da25c4c14aed2e7dc2ada5391824e0d3275a0ba359cdbacfc",
+  "expected_fundamental_expansion.parquet": "f6836d3589271e1d730760d5a8e5bb434fcb1b4371ac580d97721c7d2a8229da",
+  "factors_50x60.parquet": "11d593be372a410aa55ad1e994f05207d9b8cf2a3310110943c609445382f683",
+  "fundamental_events_50x60.parquet": "6cc32a666612798212ca2bae936c5bb8ae73f2fb35acc5473b6b27ac29f27ad3",
+  "universe_50x60.parquet": "7485654a248a07407ba3a009160decbe179f6d12f1bdf2224d29fc28ec701851"
+}

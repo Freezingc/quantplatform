@@ -413,11 +413,11 @@ git commit -m "feat(v2): cluster correlated factors within train scopes"
 
 factor_set_id 对排序后的 `(factor_id, factor_version, expected_direction)`、selection scope、规则版本和 registry definition hashes 做 SHA-256。member 表保存 deterministic feature order，训练/推理严格复用。
 
-- [ ] **C8.3 扩充 B 计划黄金样本**
+- [x] **C8.3 扩充 B 计划黄金样本**
 
 为同一 50×60 universe 增加至少：日频技术缺失、基本面周五公告、180 日 stale、修订公告、完全重复、single-nonnull、冲突、完全相同/符号相反因子。预期值由独立审计逻辑生成并逐案写 README。
 
-- [ ] **C8.4 运行完整 C 计划验证**
+- [x] **C8.4 运行完整 C 计划验证**
 
 Run: `cd research_v2 && pytest tests/unit/factors tests/property/factors tests/leakage/test_factor_future_perturbation.py tests/golden/test_factor_materialization.py -q`
 
@@ -469,7 +469,7 @@ C8 `factors/factor_sets.py`（`FactorSetStatus`、content-addressed 摘要、状
 | `tests/leakage/test_factor_future_perturbation.py` | C4.6 | **不存在**（`tests/leakage/` 有 4 个文件，无因子可用日） | **已建，6 条全绿，并经两次变异验证非空** |
 | `tests/property/factors/test_availability_invariants.py` | C4.x | **不存在** | **已建，6 条全绿** |
 | `src/research_v2/cli/factors.py` | C5.3 | 不存在 | **仍缺**；`cli/materialize.py` 有 `dry_run` 与 `emit_plan`，但是否覆盖因子物化尚未核定 |
-| `tests/golden/test_factor_materialization.py` 及 `data/expected_factor_observations.parquet`、`data/factors_50x60.parquet` | C8.3 | 不存在（golden 有 dataset/market/labels/models/compatibility，无因子物化） | **仍缺** |
+| `tests/golden/test_factor_materialization.py` 及 `data/expected_factor_observations.parquet`、`data/factors_50x60.parquet` | C8.3 | 不存在（golden 有 dataset/market/labels/models/compatibility，无因子物化） | **已建（见下节），C8.3/C8.4 已勾** |
 | `tests/integration/factors/test_factor_publish.py` | C5.5 | 不存在（`tests/integration/factors/` 整个目录不存在） | **仍缺**，需 `QRV2_INTEGRATION=1` 与活库 |
 | `tests/integration/factors/test_factor_registry_import.py` | C1.6 的集成半 | 同上 | **仍缺**，同上 |
 
@@ -496,3 +496,62 @@ C8 `factors/factor_sets.py`（`FactorSetStatus`、content-addressed 摘要、状
 其点名命令涉及的文件现已齐备（C4.7 的三个文件全部存在并通过），但 C4.5 未完整，故一并暂不勾。
 C1.1–C1.5、C2.x、C3.1/C3.2/C3.4、C4.1–C4.4、C5.x、C6.x、C7.x、C8.x 的**逐条验收标准**
 （而非仅模块存在）尚未逐项核对，故不勾。
+
+## 勾选审计续（2026-09-06 07:10）：C8.3 与 C8.4 已交付并验证
+
+**C8.3 已交付**：`scripts/compute_factor_golden_expected.py`（生成器 + **独立参考实现**）、
+`tests/golden/test_factor_materialization.py`（6 测试）、`tests/golden/README_factor_cases.md`（逐案说明），
+以及 6 个夹具：`factors_50x60.parquet`（18,000 行技术源抽取）、`fundamental_events_50x60.parquet`、
+`universe_50x60.parquet`、`expected_factor_observations.parquet`（17,900 行）、
+`expected_factor_quarantine.parquet`（25 行）、`expected_fundamental_expansion.parquet`（1,400 行）。
+**计划只点名了两个数据文件，但一个文件装不下两种源 schema**（技术因子是
+`ts_code/trade_date/factor_name/value` 的 YesLab 抽取形态，基本面事件是
+`report_period/ann_date/raw_value/source_revision_id`），故拆为三个输入夹具；计划用词为「至少」，属扩充而非偏离。
+
+**「独立审计逻辑」是硬要求，已严格满足**：生成器内的参考实现**不 import `research_v2.factors` 的任何东西**——
+去重是 dict-of-groups 手写循环、可用日是按 C4 规格转述的逐行扫描。用实现自身跑出结果再快照会使黄金测试
+**循环论证**（它只会钉住代码当下的行为，缺陷一并钉住），这与 B 计划 `compute_pit_golden_expected.py` 的
+既有做法一致。**之所以能独立**：三种去重类别中存活值都是无歧义的（全同组只有一个值、single-nonnull 组只有一个
+有限值、冲突组不发布任何值），故参考实现**无需复刻** `source_row_id` 的哈希 tie-break。
+
+**八类案例逐一在夹具中核实成立**（由 `test_the_eight_required_cases_are_each_present_in_the_expectation` 断言，
+该测试的作用是守卫夹具本身——某个案例若悄悄消失，上面几条黄金比对会一起变弱而无人察觉）：
+
+| # | 案例 | 实测证据 |
+|---|---|---|
+| 1 | 日频技术缺失 | `yeslab_901` clean **2975 = 3000 − 25**，缺失格**未被 ffill** |
+| 2 | 基本面周五公告 | `ann_date 2025-01-03`(周五) → `available_date 2025-01-06`(次周一) |
+| 3 | 180 日 stale | 9 月块 **0 行**（`assert not (signal_date >= 2025-09-01).any()`） |
+| 4 | 修订公告 | r1 覆盖 01-06..01-17（**500 行**）、r2 覆盖 01-20..02-12（**900 行**），且 `max(r1 日) < min(r2 日)` |
+| 5 | 完全重复 | `IDENTICAL_COLLAPSE` **25** |
+| 6 | single-nonnull | `SINGLE_NONNULL` **25** |
+| 7 | 冲突 | `CONFLICT_QUARANTINE` **25**，且冲突键与 `yeslab_904` 已发布键**交集为空** |
+| 8 | 完全相同/符号相反 | `yeslab_906`=副本、`yeslab_905`=镜像，对 `yeslab_901` 的 `median_daily_abs_spearman` 均 ≈1.0 且 ≥0.90 |
+
+**60 个信号日取「1 月 30 个 + 9 月 30 个」两块而非连续 60 天**，是刻意的：连续 60 天（约 84 个自然日）
+**够不到 180 日 staleness 上限**，案例 3 就只能靠调低阈值来迁就夹具——那会把被测的门槛本身改掉。
+
+**案例 4 曾一度静默失效，已修正**：修订公告原定 2025-02-14（可用 02-17、失效 08-16），
+而信号日只在 1 月与 9 月，**该窗口内一个信号日都没有**，于是 r2 永不被发布、案例 4 形同不存在。
+生成器首次运行即输出 `fundamental revisions seen: ['r1']` 暴露了这一点；把修订公告移到
+2025-01-17（同为周五，可用 01-20）后变为 `['r1','r2']`。**这也是「逐案断言夹具」那条守卫测试的价值所在。**
+
+**夹具摘要已钉住**：`data/approved_factor_golden_digests.json` 记录 6 个夹具的 SHA-256，
+`test_the_fixtures_are_the_approved_ones` 逐一比对。否则「用有缺陷的实现重跑生成器」会同时移动期望值，
+测试两头都过。已实测**重新生成字节稳定**（`expected_factor_observations.parquet` 前后同为 `9e2529b7…`）。
+
+**只比对业务字段**：`created_at` 是墙钟时间戳、`record_hash` 由它派生，二者均不可复现，故排除——
+与 B 计划市场黄金测试排除自身非确定字段的做法一致。比对列为
+clean `signal_date/ts_code/factor_id/factor_version/value/dedup_resolution`、
+quarantine `observation_date/ts_code/factor_id/factor_version/reason/distinct_values_json`、
+fundamental 的全部 8 列。
+
+**C8.4 已按其点名命令验证**：
+`pytest tests/unit/factors tests/property/factors tests/leakage/test_factor_future_perturbation.py
+tests/golden/test_factor_materialization.py -q` → **167 passed，exit 0**，四个路径现全部存在。
+
+**C8.1 / C8.2 仍不勾**，因为逐条验收尚未核实：`tests/unit/factors/test_factor_sets.py` 只有 3 条测试
+（输入序不变的 set id 与 feature order、拒绝同一因子两个版本、迁移到 FROZEN 后不可重开），
+而 C8.1 还点名了 `RETIRED` 状态与「改变任何成员创建新 factor_set_id」，
+C8.2 还点名了 set id 的哈希输入须包含 selection scope、规则版本与 registry definition hashes——
+这些均**未见对应断言**，故不勾。**C8.5 不勾**：提交已完成，但「请求审查」是人工步骤。
