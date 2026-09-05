@@ -4,6 +4,10 @@
   completion criterion 303 requires ("2014-2025 F01-F06 OOS 评价可复现，B0-B3 齐全").
 - Driver: `research_v2/scripts/run_real_walk_forward.py`
 - Verdict renderer: `research_v2/scripts/summarize_real_walk_forward.py`
+- Factor source: `--factor-source legacy|frozen`, **default `legacy`**. Everything in
+  this runbook up to the "Frozen-set baseline" section describes the legacy path
+  (`factor_observation_clean` + the 14 `WALK_FORWARD_FACTOR_IDS`), which is the
+  criterion-303 evidence and stays bit-identical when the flag is omitted.
 - Applies to: `dfs://QuantResearchV2Test` (V2Test seam). The same procedure applies
   to `dfs://QuantResearchV2` once production materialization exists, by changing
   `TARGET_DATABASE` in the driver.
@@ -39,6 +43,8 @@ G1-G6 gates evaluated on the concatenated OOS predictions.
 - The run is CPU-bound (ElasticNet grid and LightGBM grid on millions of rows);
   it uses all cores and roughly 10-16 GB RSS. Expect hours, not minutes: the
   reference 2026-09-02 six-fold run exceeded 10 hours wall time.
+  Measured 2026-09-05: a full six-fold re-run with a warm fold cache took
+  **14 h 29 m** and reproduced the criterion-303 evidence exactly.
 - `ConvergenceWarning` and `LinAlgWarning` lines from sklearn/scipy are expected
   output of the B2 grid on raw factor scales; they are diagnostics, not failures.
 
@@ -118,6 +124,123 @@ all of it fail-closed, including a `reconstruct_baseline_record` round-trip:
 Only after both checks pass may `run_real_candidate_training.py --family M1`
 start (the E-plan order guard then chains M2/M3 through `--prior-report`).
 
+## Frozen-set baseline (the new trust root)
+
+The frozen factor set (17 ids, `factor_set_frozen_v1.json`, frozen 2026-09-03) is the
+admitted set for formal model training. Its factor values live in `factor_daily`
+(isolated canonical replay), **not** in `factor_observation_clean`. Running the
+baseline on it produces the trust root that formal candidates must be measured
+against; criterion-303 remains the *legacy 14-factor* evidence and is not superseded
+as a pipeline-reproducibility artifact.
+
+### Prerequisites (both are fail-closed, and one fails silently — read this)
+
+1. `factor_daily` must be **materialized for every year the folds need**. The approved
+   folds (`datasets/splits.py::annual_folds`) start training in **2014**
+   (F01 train = 2014-2018 ... F06 train = 2019-2023), so 2020-2025 alone is **not**
+   enough. Verify coverage:
+
+   ```bash
+   /data/zhangyudong/.conda/envs/quantyd/bin/python \
+     scripts/verify_factor_daily_backfill.py --years 2014..2025
+   ```
+
+   Expected: every year reports `factors=17`, one `data_version`, `duplicates=0`,
+   and `PASS`. The verifier recomputes each year's expected `data_version` from the
+   materializer's window convention, so a wrong or mixed window fails loudly.
+2. `published_version` must carry **144 monthly partitions** for `factor_daily`
+   (2014-01 .. 2025-12). Register with the registration-only publisher (it never
+   writes factor rows, and re-running is idempotent):
+
+   ```bash
+   /data/zhangyudong/.conda/envs/quantyd/bin/python \
+     scripts/publish_factor_daily_versions.py --months 2014-01..2025-12          # dry run
+   /data/zhangyudong/.conda/envs/quantyd/bin/python \
+     scripts/publish_factor_daily_versions.py --months 2014-01..2025-12 --execute
+   ```
+
+   **Silent-failure warning:** assembly filters rows through `filter_current`, which
+   *drops* any signal date whose month has no registered version. A missing year
+   therefore yields an empty or partial TRAIN frame with **no error**. Always confirm
+   the assembly log line `<fold>: train=... validation=... test=...` shows plausible
+   magnitudes (F01 train is on the order of 2 million rows) before trusting a run.
+
+### Path isolation is by subdirectory, not by filename
+
+`save_baseline_oos_artifacts` writes to `args.report.parent / "baseline_oos"` — the
+directory **name is hardcoded**. So a frozen report placed beside the legacy one
+would overwrite `qrv2_research_artifacts/baseline_oos/F01..F06.parquet`, which the
+legacy M2/M3 consume via `--baseline-artifacts`, silently feeding frozen baseline
+predictions to legacy candidates and corrupting their G4 delta. Put the frozen report
+in its own subdirectory:
+
+```bash
+cd research_v2
+mkdir -p /data/zhangyudong/qrv2_research_artifacts/frozen
+setsid nohup /data/zhangyudong/.conda/envs/quantyd/bin/python \
+  scripts/run_real_walk_forward.py \
+  --factor-source frozen \
+  --folds F01,F02,F03,F04,F05,F06 \
+  --report /data/zhangyudong/qrv2_research_artifacts/frozen/baseline_oos_report.json \
+  > /tmp/frozen_baseline.log 2>&1 &
+```
+
+Artifacts then land in `/data/zhangyudong/qrv2_research_artifacts/frozen/baseline_oos/`,
+disjoint from the legacy chain by construction. The same rule applies to frozen
+candidate workspaces: keep them under `frozen/` (e.g. `frozen/m1`,
+`frozen/m1_report.json`).
+
+The first log line states the resolved source and must read
+`factor source: frozen (17 factors, tables=universe_daily,factor_daily,label_daily)`.
+On the legacy path it must read `legacy (14 factors, ...factor_observation_clean...)`.
+That line is the cheap check that the intended source was actually used.
+
+### Verdict, consistency and candidate gate for the frozen root
+
+```bash
+# Task 3.2 verdict (a new name; criterion-303 keeps its own)
+/data/zhangyudong/.conda/envs/quantyd/bin/python scripts/summarize_real_walk_forward.py \
+  --report /data/zhangyudong/qrv2_research_artifacts/frozen/baseline_oos_report.json \
+  --out docs/reports/<date>-frozen-set-baseline-walk-forward.md
+
+# Task 4.1: for FROZEN re-runs the reference is the frozen baseline report, not 303
+/data/zhangyudong/.conda/envs/quantyd/bin/python scripts/verify_baseline_rerun_consistency.py \
+  --report <frozen re-run report> \
+  --reference /data/zhangyudong/qrv2_research_artifacts/frozen/baseline_oos_report.json
+
+# Task 3.3 candidate-consumption schema gate (same gate as legacy; same schema)
+/data/zhangyudong/.conda/envs/quantyd/bin/python \
+  scripts/verify_baseline_report_candidate_schema.py \
+  --report /data/zhangyudong/qrv2_research_artifacts/frozen/baseline_oos_report.json
+```
+
+Frozen candidates then start with
+`run_real_candidate_training.py --family M1 --factor-source frozen
+--baseline-artifacts .../frozen/baseline_oos --baseline-report .../frozen/baseline_oos_report.json
+--workspace .../frozen/m1 --report .../frozen/m1_report.json`.
+**The `--factor-source` of a candidate run must match the baseline report it consumes**;
+a frozen candidate measured against a legacy baseline (or vice versa) makes G4
+meaningless because the two are not fold-matched on the same factor set.
+
+### Known reproducibility caveat on re-materialization
+
+Materialized `factor_daily` rows are pinned by `data_version` once written, so
+downstream assembly is deterministic. **Re-materializing** the same window is not
+bit-reproducible at the margin: the materializer keeps a row only when
+`np.isfinite(value)` holds, and for GP-style factors with long replay lookbacks
+(e.g. `yeslab_406` / GP_037, `replay_lookback_days=180`) a near-zero denominator can
+flip a marginal cell between finite and infinite depending on BLAS reduction order,
+i.e. on host load. Observed once: a year stored one row more than its own earlier
+dry-run predicted, with the other 16 factors exact, the `data_version` exact, and
+zero duplicate keys. The next year showed the same effect in **both** directions at
+once (`yeslab_372` +1 row, `yeslab_389` -1 row) with the year total **identical** to
+its prediction — i.e. marginal cells flip finiteness symmetrically with no systematic
+bias, rather than rows being gained or lost. Both years' stored `data_version` values
+equalled the values predicted from the window convention before the write.
+`verify_factor_daily_backfill.py` therefore keeps the version,
+factor-set and duplicate-key gates exact and compares row counts within
+`+/-max(4, 0.002%)`, printing any delta rather than swallowing it.
+
 ## Failure modes
 
 | Symptom | Meaning | Response |
@@ -125,6 +248,8 @@ start (the E-plan order guard then chains M2/M3 through `--prior-report`).
 | `PermissionError` / missing published version | A partition lacks a published version row | Fail closed by design; publish or backfill the missing partition first |
 | DolphinDB memory errors during extraction | Segment too large for one query | Re-run after lowering extraction chunk size in the dataset builder; do not silently sample |
 | Fold set rejected | Not all of F01-F06 requested | Request the full ordinary fold set; single-fold runs are not a criterion-303 evidence |
+| Frozen path: a fold's `train=` count is 0 or far below ~2-3 million | A train year is not materialized or not registered in `factor_daily`; `filter_current` drops unregistered months silently | Stop. Run `verify_factor_daily_backfill.py --years 2014..2025` and re-check the 144 `published_version` partitions; never evaluate on a partial train segment |
+| Frozen path produced results but G4 looks meaningless | Candidate `--factor-source` did not match the baseline report's factor set | Re-run with matching sources; a cross-source delta is not fold-matched evidence |
 | Any gate FAIL | Baseline OOS evidence insufficient | Record the gate table in the report; do not claim criterion 303; investigate before any candidate evaluation |
 
 ## Interpretation rules

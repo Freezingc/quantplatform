@@ -87,3 +87,49 @@ tail -5 /tmp/m1_full.log
   冻结集基线重建计划草案（含 `factor_daily` 登记式发布约束 Task 1.6 与 2026-09-05
   只读探测实测证据）。
 - 裁决为 A 时：本链不中断，重建计划并行起步；两线在 Task 5（正式候选序列）合流。
+
+## 7. 并行作业与新标记文件（2026-09-05 21:00 起）
+
+本节作业与第 1 节的遗留链**并行**运行，互不写入对方路径。三者合计约 50–60 核 / 104 核。
+
+```
+backfill_2014_2019.sh (顺序 6 年 --apply, 每年写后核验, 任一年失败即停)
+  └─ 完成 → frozen_chain_orchestrator.sh
+       └─ 登记 2014-01..2019-12 指针 (dry-run 必须 72/72 REGISTER、0 拒绝) → --execute
+            → 校验 factor_daily 达 144 分区且三张遗留表仍各 151 分区
+            → 装配 F01/train (2014–2018) 走冻结路径, 断言 5 年齐全 + 17 因子列
+            → 全部通过 → run_frozen_baseline.sh (Task 3.1 新信任根) + watcher
+                 └─ 报告落盘 → 渲染判定文档 + 候选消费 schema 预检
+legacy_flagcheck (Task 2.4, 独立): run_real_walk_forward.py 不带新旗标全量重跑
+  └─ watcher → verify_baseline_rerun_consistency.py 对 criterion-303 比对
+```
+
+| 文件（/tmp） | 含义 |
+|---|---|
+| `backfill_2014_2019.log` / `_progress.txt` | 补齐日志 / 每年核验通过记录（`YYYY OK <时间>`） |
+| `backfill_2014_2019_done_at.txt` / `_failed_at.txt` | 六年全部完成 / 某年失败停链 |
+| `frozen_unblock.log` / `_done_at.txt` / `_hold.txt` | 登记+分区校验+F01 装配证明的进度 / 完成 / HOLD |
+| `frozen_registration_2014_2019_{dryrun,execute}.log` | 新 72 指针的 dry-run 与执行输出（副本存 artifacts） |
+| `frozen_partition_check.txt` | 144 分区 + 遗留表 151 分区不变的断言输出 |
+| `frozen_chain_orchestrator.log` / `frozen_chain_hold.txt` | 冻结链编排进度 / HOLD |
+| `frozen_baseline.log` / `_pid.txt` / `_done_at.txt` / `_failed_at.txt` | Task 3.1 运行日志与状态 |
+| `frozen_baseline_verdict_render.txt` / `_schema_gate.txt` | Task 3.2 判定渲染 / Task 3.3 schema 门结果 |
+| `legacy_flagcheck.log` / `_pid.txt` / `_verification.txt` / `_failed_at.txt` | Task 2.4 复现重跑与核验结果（首行应为 CONSISTENT） |
+| `m1_fit_cadence.log` | 只读探针：M1 检查点出现时间与驱动日志增量（用于测单拟合时长） |
+
+**产物路径（git 树外，`/data/zhangyudong/qrv2_research_artifacts/`）**：
+冻结集一律在 `frozen/` 子树下——`frozen/baseline_oos_report.json` 与
+`frozen/baseline_oos/`。**这不是命名偏好而是硬约束**：`save_baseline_oos_artifacts`
+写的是 `args.report.parent / "baseline_oos"`（目录名硬编码），若把冻结集报告与遗留报告
+放在同一父目录，冻结集工件会覆盖遗留链 M2/M3 消费的 `baseline_oos/F0*.parquet`。
+
+**人工恢复**：编排器均为 `setsid` bash 循环，机器重启不会自恢复。按标记文件定位后：
+补齐未完成 → 重跑 `bash /tmp/backfill_2014_2019.sh`（物化器按
+(factor_id, 窗口, data_version) 幂等，已完成年份会被 skip，核验器照常复核）；
+登记未完成 → 先 dry-run 后 `--execute`（幂等，重跑为 SKIP_CURRENT）；
+Task 3.1 未完成 → `bash /tmp/run_frozen_baseline.sh` 再
+`setsid bash /tmp/frozen_baseline_watcher.sh &`；
+Task 2.4 未完成 → 重跑 `run_real_walk_forward.py`（不带 `--factor-source`）到
+`/tmp/legacy_flagcheck/report.json`，再手动运行一致性核验器。
+复核命令与口径详见 `research_v2/runbooks/real-walk-forward-reproduction.md`
+（已增补「Frozen-set baseline (the new trust root)」章节）。
