@@ -190,3 +190,23 @@ def test_cache_is_isolated_by_versions_and_reused(tmp_path: Path) -> None:
         query_fn=counting_query, cache_root=tmp_path,
     )
     assert len(calls) > queries_first  # different version -> different cache key -> re-query
+
+
+def test_frozen_constant_matches_frozen_contract_json() -> None:
+    import json
+
+    research_root = Path(__file__).resolve().parents[3]
+    contract = json.loads(
+        (research_root / "artifacts/diagnostics/factor_set_frozen_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert MODULE.FROZEN_FACTOR_SET_V1 == tuple(contract["factors"])
+    assert len(MODULE.FROZEN_FACTOR_SET_V1) == contract["count"] == 17
+
+
+def test_frozen_feature_names_are_unique() -> None:
+    members = MODULE.factor_members_for(MODULE.FROZEN_FACTOR_SET_V1)
+    names = [member.feature_name for member in members]
+    assert len(set(names)) == 17
+    assert names[0] == "f00" and names[-1] == "f16"

@@ -42,7 +42,29 @@ from research_v2.datasets.builder import (  # noqa: E402
 )
 from research_v2.datasets.splits import SplitResolver, annual_folds  # noqa: E402
 
-__all__ = ["extract_dataset_factor_daily", "factor_members_for"]
+# Frozen factor set v1 (2026-09-03 admission decision; factor_set_frozen_v1.json).
+# Order is canonical: it fixes feature_name assignments (f00..f16).
+FROZEN_FACTOR_SET_V1: tuple[str, ...] = (
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_372",
+    "yeslab_375",
+    "yeslab_381",
+    "yeslab_384",
+    "yeslab_389",
+    "yeslab_390",
+    "yeslab_398",
+    "yeslab_405",
+    "yeslab_406",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+    "yeslab_96",
+)
+
+__all__ = ["extract_dataset_factor_daily", "factor_members_for", "FROZEN_FACTOR_SET_V1"]
 
 
 def extract_dataset_factor_daily(
