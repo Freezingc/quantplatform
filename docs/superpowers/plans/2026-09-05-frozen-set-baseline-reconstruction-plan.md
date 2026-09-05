@@ -48,6 +48,16 @@
       2020-01..2025-12 --execute`（72 个月分区）；前置：dry-run 全部条目为
       REGISTER 或 SKIP_CURRENT、无 RegistrationRefused；执行后以
       `current_versions(holder, 'factor_daily')` 复核 72 分区指针齐全。
+      **前置已满足（2026-09-05 18:05 全量只读 dry-run）**：`--months 2020-01..2025-12`
+      实测 72/72 个月分区全部 `REGISTER`、0 `SKIP_CURRENT`、0 `RegistrationRefused`
+      （即每月均通过单一 data_version、非空、17 因子全覆盖、0 重复业务键四项 fail-closed
+      预校验）；6 个 data_version 按年互异（2020=66f33a…、2021=c895e7…、2022=70c7c0…、
+      2023=715af5…、2024=e6bfa6…、2025=7f0636…），与 1.6 节只读探测的三点采样一致；
+      行数合计 **68,363,458**，与 `factor_daily_materialization/materialization_status.md`
+      的总行数逐位相符（行数对账通过）。证据全文（含逐月明细）：
+      `/data/zhangyudong/qrv2_research_artifacts/frozen_factor_daily_registration_dryrun.txt`。
+      dry-run 未写任何指针，`published_version` 中 factor_daily 登记仍为 0 行；
+      `--execute` 属生产库写入，按本计划「裁决后」条款待人工批准（选项 A/B/C）后执行。
 
 ## Task 2: 冻结集常量接线
 
