@@ -165,6 +165,42 @@ def test_describe_run_environment_records_the_factor_set_and_the_live_runtime() 
     assert environment["torch"]["torch_intraop_threads"] >= 1
 
 
+def test_build_report_omits_assembly_coverage_unless_supplied() -> None:
+    """Same contract as the environment block: the legacy report must not grow a key."""
+    gate_report = _gate_report({"G1": GateStatus.PASS})
+
+    bare = driver.build_walk_forward_report(("F01",), _result(gate_report), {})
+
+    assert "assembly_coverage" not in bare
+
+
+def test_build_report_carries_the_supplied_assembly_coverage_verbatim() -> None:
+    gate_report = _gate_report({"G1": GateStatus.PASS})
+    coverage = {
+        "minimum_cross_section": 30,
+        "folds": {
+            "F01": {
+                "train": {
+                    "rows": 2204564,
+                    "complete_rows": 431894,
+                    "survival_ratio": 0.1959,
+                    "days": 1220,
+                    "days_below_floor": 15,
+                    "empty_days": 0,
+                    "median_width": 310,
+                    "min_width": 2,
+                }
+            }
+        },
+    }
+
+    report = driver.build_walk_forward_report(
+        ("F01",), _result(gate_report), {}, assembly_coverage=coverage
+    )
+
+    assert report["assembly_coverage"] == coverage
+
+
 _FOLD_IDS = ("F01", "F02", "F03", "F04", "F05", "F06")
 
 

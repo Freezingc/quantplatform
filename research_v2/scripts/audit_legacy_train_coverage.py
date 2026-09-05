@@ -40,17 +40,17 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
-import statistics
 import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 import pandas as pd
 
-FEATURE_COLUMN = re.compile(r"^f\d{2}$")
+from research_v2.datasets.coverage import daily_complete_widths, summarize_widths
+from research_v2.datasets.coverage import factor_columns as _library_factor_columns
+
 ROLES: tuple[str, ...] = ("train", "validation", "test")
 # Same floor the evaluation path uses (``evaluate_frozen_oos(minimum_cross_section=30)``),
 # so a day counted as lost here is a day the baseline genuinely could not be fitted on.
@@ -121,24 +121,21 @@ def gate_from_widths(
 
 def factor_columns(columns: Sequence[str]) -> tuple[str, ...]:
     """The ``fNN`` feature columns the runner passes to ``dropna(subset=...)``."""
-    found = tuple(str(column) for column in columns if FEATURE_COLUMN.match(str(column)))
-    if not found:
-        raise ValueError("frame has no fNN feature columns; not an assembled walk-forward frame")
-    return found
+    return _library_factor_columns(columns)
 
 
 def daily_widths_after_dropna(frame: pd.DataFrame, factors: Sequence[str]) -> dict[Any, int]:
     """Per-day surviving row count, applying exactly the runner's ``dropna``.
 
-    A day whose every row is dropped is reported as width 0 rather than omitted.
-    Grouping the post-dropna frame alone would erase it from the calendar, which
-    is precisely how the frozen train segment lost 2015-08-24 (2 stocks of 1,466)
-    and the two 2016 circuit-breaker days without any gate noticing.
+    Delegates to :mod:`research_v2.datasets.coverage`, which owns this measurement so
+    the runner, the coverage gate and this audit cannot drift apart. Kept as a named
+    wrapper because the property it guarantees is the one that matters here: a day
+    whose every row is dropped is reported as width 0 rather than omitted, since
+    grouping the post-dropna frame alone would erase it from the calendar -- which is
+    precisely how the frozen train segment lost 2015-08-24 (2 stocks of 1,466) and the
+    two 2016 circuit-breaker days without any gate noticing.
     """
-    calendar = [pd.Timestamp(cast(Any, day)) for day in frame["signal_date"].unique()]
-    counts = frame.dropna(subset=list(factors)).groupby("signal_date").size()
-    lookup = {pd.Timestamp(cast(Any, day)): int(value) for day, value in counts.items()}
-    return {day: lookup.get(day, 0) for day in calendar}
+    return daily_complete_widths(frame, factors)
 
 
 def years_consistent(
@@ -274,17 +271,19 @@ def measure_frame(path: Path, minimum_cross_section: int) -> FrameMeasurement:
         dates = pd.DatetimeIndex(frame["signal_date"])
         observed_years = tuple(sorted(set(int(year) for year in dates.year)))
         widths = daily_widths_after_dropna(frame, factors)
+        rows = int(len(frame))
     finally:
         del frame
-    values = sorted(widths.values())
-    below = sum(1 for width in values if width < minimum_cross_section)
+    summary = summarize_widths(
+        widths, rows=rows, minimum_cross_section=minimum_cross_section
+    )
     coverage = SegmentCoverage(
         fold_id="",
         role="",
-        days=len(values),
-        days_below_floor=below,
-        median_width=int(statistics.median(values)) if values else 0,
-        min_width=values[0] if values else 0,
+        days=summary.days,
+        days_below_floor=summary.days_below_floor,
+        median_width=summary.median_width,
+        min_width=summary.min_width,
     )
     return FrameMeasurement(
         coverage,

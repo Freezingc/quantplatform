@@ -42,6 +42,10 @@ from walk_forward_factor_daily import (
 
 from research_v2.baselines.base import BaselineDataset
 from research_v2.baselines.orchestration import BaselineFold
+from research_v2.datasets.coverage import (
+    DEFAULT_MINIMUM_CROSS_SECTION,
+    summarize_frame_coverage,
+)
 from research_v2.datasets.splits import SplitResolver
 from research_v2.evaluation.walk_forward import (
     BaselineWalkForwardResult,
@@ -80,6 +84,7 @@ def build_walk_forward_report(
     versions: Mapping[str, Mapping[str, str]],
     *,
     environment: Mapping[str, object] | None = None,
+    assembly_coverage: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """Serialize the walk-forward result for archival.
 
@@ -136,6 +141,8 @@ def build_walk_forward_report(
     }
     if environment is not None:
         report["environment"] = dict(environment)
+    if assembly_coverage is not None:
+        report["assembly_coverage"] = dict(assembly_coverage)
     return report
 
 
@@ -221,12 +228,28 @@ def main() -> None:
 
     feature_order = tuple(member.feature_name for member in factor_members)
     folds: dict[str, BaselineFold] = {}
+    # The legacy source is under a bit-identical reproduction contract, so neither the
+    # environment nor the coverage block may appear in its report; see
+    # build_walk_forward_report. Recording both is observation only and costs one
+    # groupby per segment against a multi-hour run.
+    self_describe = args.factor_source != "legacy"
+    coverage_by_fold: dict[str, dict[str, Any]] = {}
     for fold_id in fold_ids:
         print(f"assembling datasets for {fold_id}", flush=True)
         train = extract(holder, resolver, fold_id, "train", factor_members, versions)
         validation = extract(holder, resolver, fold_id, "validation", factor_members, versions)
         test = extract(holder, resolver, fold_id, "test", factor_members, versions)
         dataset_id = f"real-{fold_id.lower()}-v1"
+        if self_describe:
+            # Measured BEFORE the dropna below, on the frame as assembled, so the
+            # report records what the baselines were actually fitted on: how many rows
+            # survived, how many days fell under the evaluation's cross-section floor,
+            # and how wide the median day was. This is the quantity adjudication 4 is
+            # about, and G1-G6 cannot see it because they read TEST evidence only.
+            coverage_by_fold[fold_id] = {
+                role: summarize_frame_coverage(frame, feature_order).to_json()
+                for role, frame in (("train", train), ("validation", validation), ("test", test))
+            }
         # Baselines require finite features: keep only complete-coverage rows.
         train = train.dropna(subset=list(feature_order)).copy()
         validation = validation.dropna(subset=list(feature_order)).copy()
@@ -268,7 +291,25 @@ def main() -> None:
         if args.factor_source == "legacy"
         else describe_run_environment(args.factor_source, factor_ids)
     )
-    report = build_walk_forward_report(fold_ids, result, versions, environment=environment)
+    assembly_coverage = (
+        None
+        if not self_describe
+        else {
+            "minimum_cross_section": DEFAULT_MINIMUM_CROSS_SECTION,
+            "measured_on": (
+                "assembled frames, after the universe and label joins and before the "
+                "dropna the baselines train through"
+            ),
+            "folds": coverage_by_fold,
+        }
+    )
+    report = build_walk_forward_report(
+        fold_ids,
+        result,
+        versions,
+        environment=environment,
+        assembly_coverage=assembly_coverage,
+    )
     artifact_paths = save_baseline_oos_artifacts(result, args.report.parent / "baseline_oos")
     report["baseline_oos_artifacts"] = artifact_paths
     args.report.parent.mkdir(parents=True, exist_ok=True)
