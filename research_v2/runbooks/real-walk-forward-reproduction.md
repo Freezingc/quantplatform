@@ -220,6 +220,24 @@ as a pipeline-reproducibility artifact.
    screen this adds `yeslab_375` (never screened before) and clears `yeslab_398` /
    `yeslab_464` (their source-side missing periods do not exist in `factor_daily`).
 
+**Single command** — `preflight_frozen_baseline.py` runs all of the above in dependency
+order and refuses to clear Task 3.1 unless each passes or carries a reasoned waiver:
+
+```bash
+/data/zhangyudong/.conda/envs/quantyd/bin/python scripts/preflight_frozen_baseline.py
+# only with an accountable decision reference:
+/data/zhangyudong/.conda/envs/quantyd/bin/python scripts/preflight_frozen_baseline.py \
+  --waive admission_consistency --waive factor_coverage_screen --waive fold_coverage \
+  --waiver-reason "<decision doc + date + which option was chosen>"
+```
+
+Order is deliberate: data completeness first, because a missing year makes every later
+number meaningless, and the run stops there rather than reporting on incomplete data.
+Then governance, then per-factor coverage on the consumed source, then the per-fold joint
+cross-section. A waiver must name a real gate and carry a non-empty reason; a waiver on a
+gate that passes is reported as stale so waivers do not accumulate and silently mask a
+later failure of the same gate.
+
 **How the three gates differ** — they are complementary, not redundant:
 
 | Script | Unit of analysis | Question it answers |
