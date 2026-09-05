@@ -207,6 +207,17 @@ as a pipeline-reproducibility artifact.
    **18/18 admitted**, while the frozen side fails **12 of 18** segments (all 6 train and
    all 6 validation; the 6 test segments pass, correctly).
 
+   The constants are also pinned by unit tests, and that is deliberate:
+   `test_width_floor_sits_inside_the_measured_separation_gap` fails if the floor moves
+   outside the measured 673–1402 gap, `test_day_allowance_is_the_measured_legacy_worst_case`
+   fails if the allowance stops matching the reference worst case, and
+   `test_the_real_gate_admits_the_legacy_profile_and_rejects_the_frozen_one` runs both
+   measured profiles through the real verdict function. **Do not add a pre-flight door for
+   this.** The audit reads `/tmp/walk_forward_cache_v1`, so a door built on it would block
+   Task 3.1 whenever the ephemeral reference cache had been cleared — a failure with no
+   bearing on the frozen data. The constants can only change via a code edit, and any edit
+   that invalidates them turns the test suite red, which is both durable and non-fragile.
+
    Why it exists: six of the frozen 17 compute `base ** exponent` where the base can be
    negative (`pct_chg`, or `tanh` of a 20-day change in volume/turnover), which is
    undefined for falling stocks. Their coverage therefore equals the market's advancing
