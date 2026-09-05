@@ -37,6 +37,7 @@
 - [ ] 1.4 确定性测试：同版本快照两次装配逐位一致；缓存键与旧路径不相交。
 - [ ] 1.5 运行测试并提交。
 - [ ] 1.6 **登记而非重发布**：物化器采用直写 `factor_daily`（绕过 staging），而 `V2BatchPublisher` 语义为「追加数据行 + 原子推进指针」——对已在库数据重走 StagedBatch 会重复追加造成重复键。因此 Task 1 的发布路径必须是**登记式**：先对既有区域做 fail-closed 预校验（0 重复业务键、行数与物化清单一致、data_version 单一性按月分区核验），再仅写 `published_version` 指针（object_name='factor_daily'，逻辑月分区 → 物化 run 的 data_version），保持「指针最后原子推进」不变量。
+      **实测基线（2026-09-05 只读探测）**：`published_version` 中 factor_daily 登记 0 行；分区采样（2020-01 / 2022-06 / 2025-12）各月 data_version 单一，且跨月版本互异（如 2020-01=66f33a…, 2022-06=70c7c0…, 2025-12=7f0636…）——登记必须按月分区粒度逐月映射，预校验的行数对账以 `factor_daily_materialization/materialization_status.md` 各因子×年份表为准。
 
 ## Task 2: 冻结集常量接线
 
