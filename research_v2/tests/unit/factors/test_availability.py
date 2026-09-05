@@ -93,3 +93,68 @@ def test_fundamental_event_prefers_latest_report_period_before_revision() -> Non
     assert result.loc[0, "report_period"] == date(2024, 12, 31)
     assert result.loc[0, "raw_value"] == 2.0
     assert result.loc[0, "source_revision_id"] == "a-later-period"
+
+
+EXPANSION_COLUMNS = [
+    "signal_date",
+    "ts_code",
+    "raw_value",
+    "report_period",
+    "ann_date",
+    "available_date",
+    "source_revision_id",
+    "stale_days",
+]
+
+
+def test_expansion_before_any_announcement_is_available_returns_empty_not_key_error() -> None:
+    """Nothing qualifies, and that is a normal outcome rather than an error.
+
+    Reachable in production, not a corner case to tolerate: an early fold that precedes the
+    first announcement, a newly listed security, or a staleness bound tight enough that every
+    version has expired. The previous behaviour was ``KeyError: 'signal_date'`` raised by the
+    trailing ``sort_values`` on a frame built from an empty row list -- which named a column
+    and so pointed nowhere near the actual cause.
+    """
+    calendar = _calendar()
+    events = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "report_period": [date(2025, 6, 30)],
+            "ann_date": [date(2025, 9, 26)],  # available 2025-09-29
+            "raw_value": [2.0],
+            "source_revision_id": ["r1"],
+        }
+    )
+    universe = pd.DataFrame(
+        {"signal_date": [date(2025, 3, 31)], "ts_code": ["000001.SZ"]}
+    )
+
+    result = expand_fundamental_events(events, universe, calendar)
+
+    assert result.empty
+    assert list(result.columns) == EXPANSION_COLUMNS
+
+
+def test_expansion_where_every_version_has_expired_returns_empty_not_key_error() -> None:
+    """The second route to an empty result: available, but stale beyond the bound."""
+    calendar = _calendar()
+    events = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ"],
+            "report_period": [date(2024, 12, 31)],
+            "ann_date": [date(2025, 3, 28)],  # available 2025-03-31
+            "raw_value": [1.0],
+            "source_revision_id": ["r1"],
+        }
+    )
+    universe = pd.DataFrame(
+        {"signal_date": [date(2025, 9, 29)], "ts_code": ["000001.SZ"]}
+    )
+
+    result = expand_fundamental_events(events, universe, calendar)
+
+    # 2025-03-31 to 2025-09-29 is 182 calendar days, past the 180-day bound.
+    assert (date(2025, 9, 29) - date(2025, 3, 31)).days == 182
+    assert result.empty
+    assert list(result.columns) == EXPANSION_COLUMNS

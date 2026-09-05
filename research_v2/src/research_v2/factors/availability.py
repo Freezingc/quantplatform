@@ -18,6 +18,44 @@ def _as_date(value: Any) -> date:
     return pd.Timestamp(value).date()
 
 
+EXPANSION_COLUMNS: tuple[str, ...] = (
+    "signal_date",
+    "ts_code",
+    "raw_value",
+    "report_period",
+    "ann_date",
+    "available_date",
+    "source_revision_id",
+    "stale_days",
+)
+
+
+def _empty_expansion() -> pd.DataFrame:
+    """An expansion in which nothing qualified, with the same columns as a non-empty one.
+
+    Building the frame from an empty row list yields a frame with *no* columns, so the
+    trailing ``sort_values`` raised ``KeyError: 'signal_date'`` -- naming a column and so
+    pointing nowhere near the actual cause, which is simply that no version was available
+    within the staleness bound. That is an ordinary outcome, not an error: it happens for an
+    early fold preceding the first announcement, for a newly listed security, and whenever a
+    bound is tight enough that every version has expired. Callers concatenate expansions
+    across factors and folds, so one empty result must not abort the whole materialization.
+    """
+    dtypes: dict[str, str] = {
+        "signal_date": "object",
+        "ts_code": "str",
+        "raw_value": "float64",
+        "report_period": "object",
+        "ann_date": "object",
+        "available_date": "object",
+        "source_revision_id": "str",
+        "stale_days": "int64",
+    }
+    return pd.DataFrame(
+        {name: pd.Series(dtype=dtypes[name]) for name in EXPANSION_COLUMNS}
+    )
+
+
 def assign_fundamental_available_date(ann_date: date, calendar: TradingCalendar) -> date:
     """Make an announcement usable only from the next open-market day."""
     if ann_date in calendar.dates:
@@ -95,4 +133,6 @@ def expand_fundamental_events(
                 "stale_days": stale_days,
             }
         )
+    if not rows:
+        return _empty_expansion()
     return pd.DataFrame(rows).sort_values(["signal_date", "ts_code"], ignore_index=True)
