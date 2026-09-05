@@ -26,6 +26,7 @@ E 计划：[`2026-08-01-quant-research-v2-e-models-evaluation-plan.md`](2026-08-
 
 - 执行顺序 M1 → M2 → M3 不可跳跃（E 计划第 16 行）；M4 不在本计划（E9 未授权）。
 - 搜索预算：每家族 ≤30 configs × 3 seeds × F01–F06（E7/E9.6 同预算）。
+- **规格偏差记录（种子数）**：设计规格 §训练规范要求「初筛至少 3 个种子，最终候选 5 个种子」（2026-08-01-quant-research-v2-design.md 第 469 行）；本计划统一采用 3 种子契约（`REQUIRED_SEEDS`），理由：种子集是训练→bundle→推理→监控的单一 fail-closed 契约（`model_bundle` 落盘校验、`inference/predictor` 与 `artifact_loader` 的集合相等检查、`score_health` 逐种子一致性均按 `REQUIRED_SEEDS` 硬校验），仅最终阶段改 5 种子将造成双层契约并波及 F 计划推理/监控路径，全链改 5 种子则使搜索预算增加约 67%，超出 E7 预算。该偏差为已决策项，待下一轮设计修订时一并裁决（扩契约或修订规格），本轮不擅自变更。
 - 门控：G1 mean RankIC ≥0.030、G2 HAC t ≥2.0、G3 正年占比 ≥0.70、
   G4 候选减 fold-matched 基线 ΔRankIC ≥0.005、G5 最大年正贡献占比 ≤0.50、
   G6 有效得分日占比 ≥0.95；任何缺 fold、缺 seed、score collapse、年度集中均失败。
