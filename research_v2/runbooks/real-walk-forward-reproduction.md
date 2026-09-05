@@ -148,6 +148,32 @@ as a pipeline-reproducibility artifact.
    Expected: every year reports `factors=17`, one `data_version`, `duplicates=0`,
    and `PASS`. The verifier recomputes each year's expected `data_version` from the
    materializer's window convention, so a wrong or mixed window fails loudly.
+3. **Coverage gate** — G1-G6 do not measure how much of each day's cross-section
+   survives assembly, so run this before accepting a frozen baseline as a trust root:
+
+   ```bash
+   /data/zhangyudong/.conda/envs/quantyd/bin/python scripts/verify_frozen_fold_coverage.py
+   ```
+
+   It reports, per fold and role, the daily width of the complete-factor cross-section
+   against the `minimum_cross_section` floor of 30, plus the train/test median-width
+   ratio. The hard gate counts days below the floor with **zero tolerance by default**;
+   a day-share threshold is deliberately not the gate, because 11 lost crash days inside
+   a five-year train segment is a 99.1% valid share and would pass the same 0.95
+   threshold G6 uses.
+
+   Why it exists: six of the frozen 17 compute `base ** exponent` where the base can be
+   negative (`pct_chg`, or `tanh` of a 20-day change in volume/turnover), which is
+   undefined for falling stocks. Their coverage therefore equals the market's advancing
+   breadth — on 2015-08-24 only 2 of 1,466 liquid-universe stocks had all 17 factors,
+   and on the two circuit-breaker days 2016-01-04/01-07 only 3 and 4. All six TEST years
+   still pass G6 at 100% valid days, so **without this gate the defect is invisible**:
+   a frozen baseline would clear G1-G6 and become the trust root while the model had
+   never seen a crash day, fitted on a cross-section 35-56% narrower than the one it is
+   scored on.
+
+   The gate also detects incomplete materialization: a year with no rows shows up as
+   ~244 days at width 0 for every fold whose train window includes it.
 2. `published_version` must carry **144 monthly partitions** for `factor_daily`
    (2014-01 .. 2025-12). Register with the registration-only publisher (it never
    writes factor rows, and re-running is idempotent):
