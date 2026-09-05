@@ -8,6 +8,11 @@ evaluation with G1-G6 gates.
 
 Usage:
   run_real_walk_forward.py --folds F01,F02,F03,F04,F05,F06 --report <path>
+
+The factor value source is switchable (reconstruction plan Task 2.3):
+  run_real_walk_forward.py --factor-source frozen --report <path>
+``legacy`` (the default) is bit-identical to the criterion-303 reproduction
+contract; ``frozen`` uses ``factor_daily`` with FROZEN_FACTOR_SET_V1.
 """
 
 from __future__ import annotations
@@ -128,31 +133,89 @@ def _constant_loader(dataset: BaselineDataset) -> Callable[[], BaselineDataset]:
     return loader
 
 
-def main() -> None:
+FACTOR_SOURCES: tuple[str, ...] = ("legacy", "frozen")
+LEGACY_VERSION_TABLES: tuple[str, ...] = (
+    "universe_daily",
+    "factor_observation_clean",
+    "label_daily",
+)
+FROZEN_VERSION_TABLES: tuple[str, ...] = (
+    "universe_daily",
+    "factor_daily",
+    "label_daily",
+)
+
+
+def factor_source_plan(source: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Return ``(factor_ids, version_tables)`` for a factor source.
+
+    ``legacy`` reproduces the exact pre-flag contract that produced the
+    criterion-303 evidence: the same 14 factor ids and the same three version
+    tables. Because ``fold_cache_key`` hashes the whole versions mapping (table
+    names included), keeping that mapping identical is precisely what makes the
+    legacy path bit-identical and keeps its fold cache hits valid.
+    ``frozen`` switches to the frozen 17 ids backed by ``factor_daily``; its
+    mapping differs by table name, so its cache keys are disjoint from legacy.
+    """
+    if source == "legacy":
+        return WALK_FORWARD_FACTOR_IDS, LEGACY_VERSION_TABLES
+    if source == "frozen":
+        # Lazy import: the legacy path must not gain a dependency or import cost.
+        from walk_forward_factor_daily import FROZEN_FACTOR_SET_V1
+
+        return FROZEN_FACTOR_SET_V1, FROZEN_VERSION_TABLES
+    raise ValueError(f"unknown factor source: {source}")
+
+
+def extract_fn_for(source: str) -> Callable[..., Any]:
+    """Return the fold extractor bound to a factor source (frozen imported lazily)."""
+    if source == "legacy":
+        return _extract_dataset
+    if source == "frozen":
+        from walk_forward_factor_daily import extract_dataset_factor_daily
+
+        return extract_dataset_factor_daily
+    raise ValueError(f"unknown factor source: {source}")
+
+
+def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--folds", default="F01,F02,F03,F04,F05,F06")
     parser.add_argument("--report", type=Path, required=True)
-    args = parser.parse_args()
+    parser.add_argument(
+        "--factor-source",
+        choices=FACTOR_SOURCES,
+        default="legacy",
+        help="legacy: factor_observation_clean + the 14 walk-forward ids "
+        "(bit-identical to criterion-303); frozen: factor_daily + FROZEN_FACTOR_SET_V1",
+    )
+    return parser
+
+
+def main() -> None:
+    args = build_arg_parser().parse_args()
     fold_ids = tuple(value.strip().upper() for value in args.folds.split(",") if value.strip())
 
     holder: dict[str, Any] = new_holder()
     calendar = _load_calendar(holder)
     resolver = SplitResolver(calendar)
-    factor_members = factor_members_for(WALK_FORWARD_FACTOR_IDS)
-    versions = {
-        table: _current_versions(holder, table)
-        for table in ("universe_daily", "factor_observation_clean", "label_daily")
-    }
+    factor_ids, version_tables = factor_source_plan(args.factor_source)
+    extract = extract_fn_for(args.factor_source)
+    factor_members = factor_members_for(factor_ids)
+    versions = {table: _current_versions(holder, table) for table in version_tables}
+    print(
+        f"factor source: {args.factor_source} "
+        f"({len(factor_ids)} factors, tables={','.join(version_tables)})",
+        flush=True,
+    )
 
     feature_order = tuple(member.feature_name for member in factor_members)
     folds: dict[str, BaselineFold] = {}
     for fold_id in fold_ids:
         print(f"assembling datasets for {fold_id}", flush=True)
-        train = _extract_dataset(holder, resolver, fold_id, "train", factor_members, versions)
-        validation = _extract_dataset(
-            holder, resolver, fold_id, "validation", factor_members, versions
-        )
-        test = _extract_dataset(holder, resolver, fold_id, "test", factor_members, versions)
+        train = extract(holder, resolver, fold_id, "train", factor_members, versions)
+        validation = extract(holder, resolver, fold_id, "validation", factor_members, versions)
+        test = extract(holder, resolver, fold_id, "test", factor_members, versions)
         dataset_id = f"real-{fold_id.lower()}-v1"
         # Baselines require finite features: keep only complete-coverage rows.
         train = train.dropna(subset=list(feature_order)).copy()
