@@ -134,7 +134,7 @@
       结果写 `/tmp/legacy_flagcheck_verification.txt`（首行应为 CONSISTENT），
       进程异常退出则写 `/tmp/legacy_flagcheck_failed_at.txt`。
       **前置核验（2026-09-05）**：2020-01 分区实测冻结 17 ID 全部在库（含 `yeslab_443_reg30_max20_v1`，0 缺失、0 多余）；三份模型配置 `raw_factor_count_min: 15` ≤ 17，兼容无需改 yaml。
-      **核验器本身已预先干跑通过（2026-09-06 04:20）**：归档的参考报告**不含** `baseline_oos_artifacts`
+      **核验器本身已预先干跑通过（2026-09-06 03:53）**：归档的参考报告**不含** `baseline_oos_artifacts`
       键（该键由 `main()` 在写盘后补上，见 `run_real_walk_forward.py`），故拿参考报告自比会得到
       `INCONSISTENT: report has no baseline_oos_artifacts mapping`——那是**假信号**，重跑报告一定带该键。
       忠实干跑方式：复制参考报告、补上指向真实遗留工件
@@ -148,7 +148,7 @@
       2.4 的命令不带它 → 报告内容不变；且 `compare_reports` 是**字段白名单**式比较
       （folds/selections/oos/gates + 工件），即便多出顶层键也不影响判定。
       进程内代码在启动时已载入，本轮的文件修改对在跑进程无影响。
-      **状态（04:20）**：pid 1340873 存活 **6h50m**，无 `/tmp/legacy_flagcheck_failed_at.txt`，
+      **状态（03:55）**：pid 1340873 存活 **6h47m**，无 `/tmp/legacy_flagcheck_failed_at.txt`，
       报告目录仍空（尚在拟合阶段），预计 ~14.5h 即 **~11:38** 落盘，watcher 自动跑核验器。
 
 ## Task 3: 冻结集基线 walk-forward（新信任根）

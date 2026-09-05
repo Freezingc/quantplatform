@@ -372,7 +372,7 @@ validation RankIC** 的输入，且 6 处中有 2 处产出**喂给 G1–G6 的�
 **对 3.4 与裁决 2/3 的影响**：这 8 小时产物不可用（未签发报告、未产出 evidence），
 且**修复前重启必然同样崩溃**；修复对冻结集候选链（Task 5.x）同样必需，故非沉没成本。
 
-**同类缺陷排查（2026-09-06 04:05）：该缺陷类已根除，无第二处实例。**
+**同类缺陷排查（2026-09-06 03:50）：该缺陷类已根除，无第二处实例。**
 逐个核对所有按位置索引 `batch.inputs.ts_codes` 的消费方：
 `training/validation.py:70→77`（位置取自 `nonzero(stock_mask)`）、
 `training/losses.py:66→80`（同）、`models/base.py:predictions_to_frame`（同）——
