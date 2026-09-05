@@ -286,6 +286,19 @@
       **注**：2017-06 实测 0%/avg 10.75、2018–2019 无行，是**测量当年正在写入或尚未物化**所致，
       不是发现；完整 2014–2025 存活率表应在补齐结束后重测。
       证据全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_coverage_vs_legacy_dropna.txt`。
+
+      **同类假设已排查并排除（2026-09-05 22:05）：`frozen_directions` 全 +1 是正确的。**
+      `run_real_walk_forward.py:200` 硬编码 `frozen_directions={name: 1 for name in feature_order}`，
+      而冻结契约 JSON（`factor_set_frozen_v1.json`）不含方向/IC 符号字段，故需独立核验。
+      方向的消费面已定位：只影响 **B0 `SingleFactorBaseline`** 与 **B1 `EqualWeightBaseline`**
+      （`directional_rank_scores`）；**B2 线性与 B3 LightGBM 自行学习符号，不受影响**。
+      实测 `factor_window_quality.signed_mean_rank_ic`：冻结集**可测的 15/17 个因子全部为正**
+      （区间 +0.0508 … +0.0967，无一为负），遗留集可测的 7/14 个亦全部为正
+      （+0.0593 … +0.0841）。故全 +1 与实测 IC 符号一致，B1 的等权合成**不存在正负自相抵消**，
+      该约定（与已被接受的 criterion-303 基线共用）无需变更。
+      残留说明：`factor_window_quality` 仅覆盖 32 个因子，冻结集缺 `yeslab_206` 与
+      `yeslab_443_reg30_max20_v1` 两行质量记录，二者的方向未经该表核验；
+      该表共 352 行、`as_of_date=2026-09-03`，属部分覆盖的质量评估工件而非全量真值来源。
 - [ ] 3.2 判定渲染：`summarize_real_walk_forward.py` →
       `docs/reports/<date>-frozen-set-baseline-walk-forward.md`（新命名，不占用
       criterion-303 名号；303 保留为遗留集证据）。
