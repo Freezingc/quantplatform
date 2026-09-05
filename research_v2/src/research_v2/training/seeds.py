@@ -27,6 +27,14 @@ class ReproducibilityEnvironment:
     torch_interop_threads: int
 
 
+UNSEEDED = -1
+"""Marker for a runtime that was *observed* rather than configured.
+
+``configure_reproducibility`` rejects negative seeds, so a ``ReproducibilityEnvironment``
+carrying this value can never be mistaken for the record of a seeded run.
+"""
+
+
 def configure_reproducibility(seed: int) -> ReproducibilityEnvironment:
     """Seed every supported RNG and fail instead of silently allowing nondeterministic ops."""
     if seed < 0:
@@ -36,12 +44,36 @@ def configure_reproducibility(seed: int) -> ReproducibilityEnvironment:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    cuda_available = torch.cuda.is_available()
-    if cuda_available:
+    if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
     torch.use_deterministic_algorithms(True, warn_only=False)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
+    return _capture(seed)
+
+
+def describe_runtime_environment() -> ReproducibilityEnvironment:
+    """Report the numerics-affecting runtime while changing nothing.
+
+    A trust root has to self-describe the runtime that produced it: the intra-op thread
+    count changes checkpoint digests (floating-point reductions are not associative) and
+    defaults to half the host core count, i.e. it is a host property rather than a
+    declared one, and the device is numerics-affecting too. But :func:`configure_reproducibility`
+    seeds every RNG and flips torch into deterministic-algorithm mode, so calling it just
+    to describe the runtime would perturb the run being described -- and in the baseline
+    walk-forward path, whose B2/B3 fits are seed-sensitive, it would change the reported
+    metrics of an artifact that is under a bit-identical reproduction contract.
+
+    This reads the same fields and touches no global state. The returned ``seed`` is
+    :data:`UNSEEDED`, which the seeding entry point rejects, so an observed environment
+    can never be read back as a seeded one.
+    """
+    return _capture(UNSEEDED)
+
+
+def _capture(seed: int) -> ReproducibilityEnvironment:
+    """Read the live runtime fields; pure observation, no global state changes."""
+    cuda_available = torch.cuda.is_available()
     device_names = (
         tuple(torch.cuda.get_device_name(index) for index in range(torch.cuda.device_count()))
         if cuda_available

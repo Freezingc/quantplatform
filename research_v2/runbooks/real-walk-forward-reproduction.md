@@ -338,6 +338,27 @@ The first log line states the resolved source and must read
 On the legacy path it must read `legacy (14 factors, ...factor_observation_clean...)`.
 That line is the cheap check that the intended source was actually used.
 
+**The frozen report also carries an `environment` block; the legacy one deliberately
+does not.** Both sources write the same report shape, and before this the file itself
+recorded nothing about which factor set produced it — only the transient log line did —
+nor about the runtime, even though thread count is numerics-affecting (floating-point
+reductions are not associative) and defaults to half the host core count, i.e. to a host
+property nobody declared. `describe_run_environment` therefore records the factor source,
+the factor ids, the library versions, `host_cpu_count`, `OMP_NUM_THREADS` (`null` when it
+was never set, rather than an invented value) and the torch runtime fields, via
+`describe_runtime_environment()`. That function **observes without configuring**:
+`configure_reproducibility` seeds every RNG and enables deterministic algorithms, so
+using it to describe the runtime would perturb the run being described, and in this path
+— whose B2/B3 fits are seed-sensitive — would change the reported metrics of an artifact
+that is under a bit-identical reproduction contract. Its `seed` field reads `-1`
+(`UNSEEDED`), which the seeding entry point rejects, so an observed environment can never
+be read back as a seeded one.
+
+The legacy source emits no `environment` key for exactly that contract: Task 2.4 re-runs
+the driver without `--factor-source` and compares against the archived criterion-303
+report. Pinning device or threads remains a separate, adjudicated change, because unlike
+recording it would alter results.
+
 ### Verdict, consistency and candidate gate for the frozen root
 
 ```bash

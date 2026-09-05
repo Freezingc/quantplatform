@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections.abc import Callable, Mapping, Sequence
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -77,12 +78,20 @@ def build_walk_forward_report(
     fold_ids: Sequence[str],
     result: BaselineWalkForwardResult,
     versions: Mapping[str, Mapping[str, str]],
+    *,
+    environment: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """Serialize the walk-forward result for archival.
 
     Note: GateReport.all_passed is a property; calling it raises TypeError.
+
+    ``environment`` is emitted verbatim and only when supplied. The legacy source is
+    under a bit-identical reproduction contract (Task 2.4 re-runs the driver without
+    the factor-source flag and compares against the archived criterion-303 report), so
+    the key must not appear there; the frozen trust root is the one that has to
+    self-describe. See :func:`describe_run_environment`.
     """
-    return {
+    report: dict[str, object] = {
         "folds": list(fold_ids),
         "data_versions": {
             table: dict(sorted(partitions.items())) for table, partitions in versions.items()
@@ -124,6 +133,51 @@ def build_walk_forward_report(
             },
             "all_passed": result.evaluation.gate_report.all_passed,
         },
+    }
+    if environment is not None:
+        report["environment"] = dict(environment)
+    return report
+
+
+def describe_run_environment(
+    factor_source: str, factor_ids: Sequence[str]
+) -> dict[str, object]:
+    """Self-describe a trust-root run: what it consumed, and on what runtime.
+
+    The archived criterion-303 report records ``data_versions`` but nothing about the
+    factor set or the runtime, so it cannot answer "which factor set produced these
+    numbers?" or "were they fitted at the same thread count?". Both matter once a
+    second factor source exists: ``legacy`` and ``frozen`` write reports with the same
+    shape and nothing in the file distinguishes them, and thread count is
+    numerics-affecting (floating-point reductions are not associative) while defaulting
+    to half the host core count, i.e. to a host property nobody declared.
+
+    Recording is observation only. Pinning device or threads is a separate, adjudicated
+    change because it would alter results, so this reads the live values and reports
+    ``OMP_NUM_THREADS`` as ``None`` when it was never set rather than inventing one.
+    """
+    import importlib.metadata as metadata
+    import os
+    import platform
+    import sys
+
+    from research_v2.training.seeds import describe_runtime_environment
+
+    libraries: dict[str, str | None] = {}
+    for distribution in ("numpy", "pandas", "pyarrow", "scikit-learn", "lightgbm", "torch"):
+        try:
+            libraries[distribution] = metadata.version(distribution)
+        except metadata.PackageNotFoundError:  # pragma: no cover - all six are dependencies
+            libraries[distribution] = None
+    return {
+        "factor_source": factor_source,
+        "factor_ids": list(factor_ids),
+        "python_version": sys.version.split()[0],
+        "platform": platform.platform(),
+        "host_cpu_count": os.cpu_count(),
+        "omp_num_threads": os.environ.get("OMP_NUM_THREADS"),
+        "library_versions": libraries,
+        "torch": asdict(describe_runtime_environment()),
     }
 
 
@@ -209,7 +263,12 @@ def main() -> None:
     print("running walk-forward baselines", flush=True)
     result = run_walk_forward_baselines(folds, minimum_cross_section=30)
 
-    report = build_walk_forward_report(fold_ids, result, versions)
+    environment = (
+        None
+        if args.factor_source == "legacy"
+        else describe_run_environment(args.factor_source, factor_ids)
+    )
+    report = build_walk_forward_report(fold_ids, result, versions, environment=environment)
     artifact_paths = save_baseline_oos_artifacts(result, args.report.parent / "baseline_oos")
     report["baseline_oos_artifacts"] = artifact_paths
     args.report.parent.mkdir(parents=True, exist_ok=True)

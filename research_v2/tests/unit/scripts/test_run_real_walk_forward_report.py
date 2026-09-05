@@ -116,6 +116,55 @@ def test_build_report_structure() -> None:
     assert report["oos"]["hac_t_statistic"] == 2.1
 
 
+def test_build_report_omits_environment_unless_one_is_supplied() -> None:
+    """The legacy path is under a bit-identical contract, so the key must not appear.
+
+    criterion-303 is reproduced by re-running the driver without the factor-source
+    flag and comparing against the archived report. Emitting an environment block
+    unconditionally would add a key to that output; the frozen trust root is the one
+    that needs to self-describe, so the caller supplies it explicitly.
+    """
+    gate_report = _gate_report({"G1": GateStatus.PASS})
+
+    bare = driver.build_walk_forward_report(("F01",), _result(gate_report), {})
+
+    assert "environment" not in bare
+
+
+def test_build_report_carries_the_supplied_environment_verbatim() -> None:
+    gate_report = _gate_report({"G1": GateStatus.PASS})
+    environment = {
+        "seed": -1,
+        "torch_version": "2.6.0",
+        "cuda_available": False,
+        "torch_intraop_threads": 52,
+        "torch_interop_threads": 1,
+        "model_device": "cpu",
+    }
+
+    report = driver.build_walk_forward_report(
+        ("F01",), _result(gate_report), {}, environment=environment
+    )
+
+    assert report["environment"] == environment
+
+
+def test_describe_run_environment_records_the_factor_set_and_the_live_runtime() -> None:
+    """Two factor sources now write same-shaped reports; the file must say which one."""
+    from research_v2.training.seeds import UNSEEDED
+
+    environment = driver.describe_run_environment("frozen", ("yeslab_96", "yeslab_206"))
+
+    assert environment["factor_source"] == "frozen"
+    assert environment["factor_ids"] == ["yeslab_96", "yeslab_206"]
+    assert environment["library_versions"]["numpy"]
+    assert environment["library_versions"]["lightgbm"]
+    assert environment["host_cpu_count"] >= 1
+    # Observed, never seeded: configuring would perturb the run being described.
+    assert environment["torch"]["seed"] == UNSEEDED
+    assert environment["torch"]["torch_intraop_threads"] >= 1
+
+
 _FOLD_IDS = ("F01", "F02", "F03", "F04", "F05", "F06")
 
 
