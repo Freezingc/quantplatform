@@ -333,6 +333,30 @@
       证据：`frozen_survival_2014_2025.txt`、`frozen_fold_coverage_gate.txt`
       （后者含上述一致性校验，并记录了包装脚本把 `$?` 取到空 `echo` 的小缺陷——
       权威判定以验证器自身输出的 `COVERAGE GATE: FAIL` 为准）。
+
+      **裁决 4 已可执行化（2026-09-06 00:25）**：读基线源码确认四个基线对缺失值的真实要求不同——
+      **B0 容忍 NaN**（`single_factor.py:29-40`，只取被选中的单列、`to_numeric(errors="coerce")`、
+      不调用 `_finite_matrix`）；**B1 设计上就容忍且是「剔除」而非「插补」**
+      （`equal_weight.py:85-102`、`rank_ensemble.py:12-32`，`minimum_factor_coverage=0.60`
+      → 17 因子需 ≥11 个有效）；**B2 与 B3 硬要求全齐**（`linear.py:240`、
+      `lgbm_ranker.py:294` 的 `_finite_matrix` 对任一 NaN 直接 `raise`；B3 属**比 LightGBM
+      本身更严的自设护栏**，该库原生支持 NaN）。
+      **故 3.1 的一律 `dropna` 是为 B2/B3 而设，却使 B1 的部分覆盖能力在真实数据路径上成为死代码**
+      （非 100% 齐全的行在 B1 看到之前已删，`minimum_factor_coverage` 永不生效）。
+      实测阈值曲线：把「全 17」放宽到 B1 自己的下限「≥11/17」，存活率由
+      19.8%/34.6%/28.2% 升到 **84.4%/98.5%/99.2%**（2015-06 股灾月 / 2020-01 / 2025-06）；
+      而**只用 11 个 dense 因子**（删掉 6 个负底数幂因子）的存活率为
+      2015-06 **71.5%**、2015-08 **45.3%**、2016-01 **77.5%**、2020-01 **96.9%**、
+      2025-06 **98.6%**——即 **9–35% → 45–99%**，平静月份与遗留 14 的 80.8/96.1/94.8% 相当或更好。
+      **两条路收敛**：「≥11/17」与「全 11 dense」在平静月份几乎重合（缺的行缺的正是那 6 个），
+      故 (i-a) 与 (iii-minimal) 选出近乎相同行集；(iii-minimal) 更干净（因子集显式化、
+      消除同一横截面内 11 因子/17 因子混合平均的异质性）。
+      **更正本计划先前对 (i) 的表述**：曾写「(i) 会为公式未定义的值造数」——对 B0/B1 不成立
+      （B1 是剔除不是插补），只有 B2 确需插补。
+      **(i) 的代价**：B0–B3 胜者由 validation RankIC 选出，若 B0/B1 跑 ≥11 行集（84–99%）
+      而 B2/B3 跑 =17 行集（20–35%），则四者不同样本、选拔不同口径；故 (i) 需同时决定
+      「给 B2/B3 补 NaN 支持（B3 拆护栏、B2 声明插补口径并写入证据）」或「冻结集基线不含 B2/B3」。
+      证据：`/data/zhangyudong/qrv2_research_artifacts/adjudication4_options_quantified.txt`。
       **机制**：`run_real_walk_forward.py:177-179` 对 train/validation/test 一律
       `dropna(subset=list(feature_order))`（注释写明「Baselines require finite features」），
       即 B0–B3 只保留**全部因子都有限**的行；而 `run_real_candidate_training.py`
