@@ -134,8 +134,58 @@ def test_run_gates_executes_in_order_and_takes_the_worst_screen_window() -> None
     assert by_name["backfill_completeness"].exit_code == 0
     scripts = [argv[0] for argv in calls]
     assert scripts[0] == "verify_factor_daily_backfill.py"
-    assert scripts.count("screen_factor_daily_coverage.py") == 2
-    assert scripts[-1] == "verify_frozen_fold_coverage.py"
+    assert scripts.count("screen_factor_daily_coverage.py") == len(M.DEFAULT_SCREEN_WINDOWS)
+    assert scripts[-2] == "verify_frozen_fold_coverage.py"
+    assert scripts[-1] == "verify_frozen_report_path.py"
+
+
+def test_screen_windows_cover_the_whole_materialized_period() -> None:
+    """2025 used to be unscreened: the two prior windows cover 2,676 of 2,919 trading days.
+
+    Measured 2026-09-06, screening 2025 gives 243/243 days for all 17 factors with
+    PASS 11/17 and the same six ELIGIBILITY_FAIL, so the classification is stable across
+    all three windows -- but only if the pre-flight actually runs the third one. Without
+    it the door would keep certifying a factor set whose most recent year was never
+    measured, which is how the frozen set's own defect stayed invisible for so long.
+    """
+    assert M.DEFAULT_SCREEN_WINDOWS == (
+        ("2014-01-01", "2019-12-31"),
+        ("2020-01-01", "2024-12-31"),
+        ("2025-01-01", "2025-12-31"),
+    )
+
+
+def test_a_failure_in_the_2025_screen_window_refuses_the_run() -> None:
+    calls: list[list[str]] = []
+
+    def runner(argv: list[str]) -> int:
+        calls.append(argv)
+        if argv[0] == "screen_factor_daily_coverage.py" and argv[2] == "2025-01-01":
+            return 1
+        return 0
+
+    results = M.run_gates(runner=runner)
+
+    assert {r.name: r for r in results}["factor_coverage_screen"].exit_code == 1
+
+
+def test_report_path_door_runs_last_and_its_failure_refuses_the_run() -> None:
+    """Task 3.1 writes its report at the end of a ~15h run, so prove that works first.
+
+    The environment and assembly_coverage blocks had never executed on the real frozen
+    path. A numpy scalar or a NaN survival ratio would raise at serialisation time,
+    after the whole run had been paid for.
+    """
+    calls: list[list[str]] = []
+
+    def runner(argv: list[str]) -> int:
+        calls.append(argv)
+        return 1 if argv[0] == "verify_frozen_report_path.py" else 0
+
+    results = M.run_gates(runner=runner)
+
+    assert {r.name: r for r in results}["report_path"].exit_code == 1
+    assert calls[-1][0] == "verify_frozen_report_path.py"
 
 
 def test_main_rejects_a_waive_without_a_reason() -> None:

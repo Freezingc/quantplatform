@@ -8,7 +8,9 @@ the run unless each passes or carries an explicit, reasoned waiver.
 
 Order matters: data completeness first (a missing year would make every later number
 meaningless), then governance, then per-factor coverage on the consumed source, then the
-per-fold joint cross-section that the baselines actually train and score on.
+per-fold joint cross-section that the baselines actually train and score on, and finally
+proof that the run's own report can be serialised -- the report is written at the very end
+of a roughly fifteen-hour run, so a defect there is paid for in full before it is seen.
 
 Usage:
   preflight_frozen_baseline.py
@@ -28,6 +30,20 @@ GATE_ORDER: tuple[str, ...] = (
     "admission_consistency",
     "factor_coverage_screen",
     "fold_coverage",
+    "report_path",
+)
+
+# The C6.2 screen must cover every materialized year. The first two windows span
+# 1,464 + 1,212 = 2,676 trading days while 2014-2025 holds 2,919, i.e. 2025 was never
+# screened at all -- and the frozen factor set is *defined* by this screen, so an
+# unscreened year means the set's own classification was unverified for it. Measured
+# 2026-09-06: all 17 factors present on 243/243 days, day_ratio 1.0000, dups 0,
+# PASS 11/17 with the same six ELIGIBILITY_FAIL, so the classification is stable across
+# all three windows.
+DEFAULT_SCREEN_WINDOWS: tuple[tuple[str, str], ...] = (
+    ("2014-01-01", "2019-12-31"),
+    ("2020-01-01", "2024-12-31"),
+    ("2025-01-01", "2025-12-31"),
 )
 
 
@@ -129,13 +145,10 @@ def _run(argv_prefix: list[str]) -> int:
 def run_gates(
     *,
     years: str = "2014..2025",
-    screen_windows: tuple[tuple[str, str], ...] = (
-        ("2014-01-01", "2019-12-31"),
-        ("2020-01-01", "2024-12-31"),
-    ),
+    screen_windows: tuple[tuple[str, str], ...] = DEFAULT_SCREEN_WINDOWS,
     runner: Callable[[list[str]], int] = _run,
 ) -> tuple[GateResult, ...]:
-    """Execute the four gates in order, stopping early only on a data-completeness failure."""
+    """Execute the five gates in order, stopping early only on a data-completeness failure."""
     results: list[GateResult] = []
 
     code = runner(["verify_factor_daily_backfill.py", "--years", years])
@@ -158,6 +171,9 @@ def run_gates(
 
     code = runner(["verify_frozen_fold_coverage.py"])
     results.append(GateResult("fold_coverage", code, False, ""))
+
+    code = runner(["verify_frozen_report_path.py"])
+    results.append(GateResult("report_path", code, False, ""))
     return tuple(results)
 
 
