@@ -203,10 +203,28 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
          未记录的主机属性**（`torch.get_num_threads()` 在本机 = 核数/2 = 52）。
          这是 E3.5/主计划 §4.3 可复现性契约的实质缺口：同一命令在不同核数主机上会给出不同结果。
          任何并发化改造**必须同时显式钉住线程数并写入证据**，否则会把该缺口放大 100 倍。
-      4) **M2（GRU/TCN）与 M3（set-attention）未做基准**：其逐日计算量更大，且 E 计划本就为
-         注意力模型设计了「不同日期打包只用于 GPU 并行」，故 GPU 结论对这两个家族**可能相反**，
-         需另行实测后再定。
-      证据全文：`/data/zhangyudong/qrv2_research_artifacts/device_thread_benchmark.txt`。
+      4) **分家族基准已补齐（2026-09-05 19:38，threads=1，同一探针方法）**——GPU 结论**依家族相反**：
+         M1 最小格（10,369 参数）CPU 333.7 vs CUDA 973.9 ms/日（慢 2.92×）；
+         M1 最大格（403,969 参数）388.2 vs 777.5（慢 2.00×）；
+         M3 SetAttention 最大格（418,177 参数）430.6 vs 899.3（慢 2.09×）；
+         M2 TemporalGRU（60,801 参数）1301.3 vs 828.7（**快 1.57×**）；
+         M2 TemporalTCN（54,913 参数）1518.7 vs 866.9（**快 1.75×**）。
+         **决定性推论**：M1 参数量增 **39 倍**（10,369→403,969），CPU 每日成本只增 **1.16 倍**
+         （333.7→388.2 ms）→ 成本几乎全是**逐日派发/Python 开销**，与模型 FLOPs 基本无关；
+         故「换更快设备」不是杠杆，**并发才是**。只有时序家族（对 20 日历史做循环/卷积）在 GPU 获益。
+         另：每个家族 CPU 与 CUDA 的 checkpoint sha256 **均不同**（M1 最大格
+         `42a20ea5d079e7c8` vs `bd5b7628a7f188f0`；M3 `0b03c21dc85b083a` vs `539859815385cec2`；
+         M2 GRU `b786aa50a9fd3f34` vs `64a35584e8ef76ac`；M2 TCN `2159a6e5ecd31faf` vs `1684f87eebbd8e43`）
+         → **device 与线程数同属影响数值的参数，必须一并钉住并写入证据**。
+      5) **全链串行成本推算**（F01 train ~1220 日、每拟合最少 18 epoch）：
+         M1 = 504 拟合 × 2.04 h ≈ **42.7 天**；M2 = 450 拟合 × 8.60 h ≈ **161.3 天**；
+         M3 = 306 拟合 × 2.63 h ≈ **33.5 天**；合计 **1260 拟合 ≈ 5,700 h ≈ 238 天**。
+         自校验：推算的 M1 单 epoch 6.8 min 与在跑 M1 实测 6.77 min 吻合；且为**下界**
+         （F02–F06 的 train 窗口年份更晚、行数比 F01 的 2014–2018 多约 40%）。
+         并发化后：48 路 ≈ 4.9 天、100 路 ≈ 2.4 天。
+      证据全文：`/data/zhangyudong/qrv2_research_artifacts/device_thread_benchmark.txt`（M1 线程/设备）、
+      `/data/zhangyudong/qrv2_research_artifacts/family_device_benchmark.txt`（分家族矩阵与全链推算）；
+      决策简报：`docs/handoffs/2026-09-05-compute-and-coverage-decision-brief.md`。
       附带运维风险：config 搜索循环**无折/配置级续跑**（`_existing_evidence_id` 仅在
       baseline/model 证据写入处去重，不跳过搜索），任何中断都从 F01/config0/seed1 重来；
       在数十小时的运行长度下该风险被显著放大。

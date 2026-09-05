@@ -150,6 +150,23 @@
       `full_run2.log` 09-04 04:27，含跳过与 2022 回填）→ 2014–2019 同量级 **约 7 小时**；
       数据源为 Tushare（`QRV2_TUSHARE_TOKEN` 在仓库根 `.env`），本地 `artifacts/tushare_cache`
       已 3.6 GB / 9999 文件且含 2015 年切片（如 `adj_factor_20151214.json`），部分可命中缓存。
+      **可行性已实测（2026-09-05 19:39，只读 dry-run，未写任何行）**：
+      `materialize_frozen_factor_daily.py --start 2014-01-01 --end 2014-12-31`（不带 `--apply`）
+      → **17/17 因子全部成功重放**，合计 **5,284,253 行** universe 对齐值（约为 2020 年
+      9,240,414 行的 57%，符合早年股票数较少的预期），末行输出
+      `Dry-run only. Re-run with --apply to write.`；单年耗时 **约 27 分钟**
+      （含自 2013-12 起的 Tushare 回溯抓取，日志可见「将开始日期从2014.01.01预处理为2013.12.03」）。
+      据此六年补齐成本由 ~7 小时下修为 **约 3–5 小时**，可与遗留链并行。
+      日志全文：`/data/zhangyudong/qrv2_research_artifacts/frozen_materialization_2014_dryrun.log`。
+      **窗口约定已反推并逐位验证**：`data_version = sha256(watermark + str(start) + str(end))`，
+      取 `--start YYYY-01-01 --end YYYY-12-31` 可复现现存**全部 6 个**已登记版本
+      （2020=`66f33abd…`、2021=`c895e796…`、2022=`70c7c07a…`、2023=`715af5a1…`、
+      2024=`e6bfa67f…`、2025=`7f0636bc…`，全部 MATCH）。故补齐后各年版本可**预先断言**：
+      2014=`9ff10d94…`、2015=`87be9819…`、2016=`e3c73e6c…`、2017=`157c0723…`、
+      2018=`e8b46248…`、2019=`ac1d53e9…`；执行后只需做等值校验即可判定成功。
+      另已复核 `MigrationRunner.apply()`（物化器启动时无条件调用）为 **checksum 幂等**：
+      `schema_migration` 中 16 个迁移全部已应用，`apply(dry_run=True)` 复核一致，
+      故该调用是 no-op，不会误触发新迁移。
       **授权状态**：未执行。此为生产库大规模写入（预计新增数千万行），与 Task 1.7 的
       惰性指针不同，须人工批准后执行。
 
