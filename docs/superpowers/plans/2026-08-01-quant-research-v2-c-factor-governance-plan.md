@@ -5731,3 +5731,83 @@ Task 3.1 当前被三道门 REFUSED，而**唯一被认可的通过方式就是�
 - **裁决 2/3/4 与决定 A–N 全部仍开放**；**前置门当前仍是 `REFUSED`，本轮没有放行任何东西。**
 - 证据：`mutation_backfill_first_door_14_of_14.txt`（含 14 个变异对照与还原核对）、
   探针脚本 `probe_backfill.py`（构造出区分五个存活者的五个输入）。
+
+## 勾选审计续四十九（2026-09-07 06:35）：最后一道门（报告可序列化）——15 个变异 **9 个存活（六者最差）**，已杀 5 个；**剩 4 个杀不掉，原因写在下面而不是被掩盖**
+
+### 一、根因是结构性的：8 条既有测试把两个纯函数测得很好，而 `main()` 一条都没碰到
+
+`report_block_problems` 与 `coverage_completeness_problems` 是纯函数，
+**针对它们的 6 个变异（S-A 空因子集、S-C 只查一个块、S-D 缺 `survival_ratio`、
+S-E 非有限 `survival_ratio`、S-F 整折无覆盖、S-G 缺某个 role）全部被杀**。
+**而 9 个存活者里 7 个都在 `main()` 内部**——与上一轮第一道门的 R-L 同一形状，但范围大得多。
+
+### 二、已杀的 5 个（4 条新测试，8 → 12）
+
+| | 变异 | 为什么它能被杀 |
+|---|---|---|
+| **S-B** | 逐块检查里去掉 `allow_nan=False` | **`survival_ratio` 那一支另有 `math.isfinite` 检查，故 NaN 放在那里会被抓两次、去掉 `allow_nan` 也看不出来**。要区分必须把 NaN 放在**别的字段**：`environment = {"factor_ids": [...], "some_metric": float("nan")}` ⇒ 原实现报 `environment is not JSON serialisable`，变异后静默通过。**这正是这道门存在的理由**——`allow_nan=False` 掉了就会写出裸 `NaN`，**那不是合法 JSON，事后无法与参考件逐字节比对**，而这个代价要在约 15 小时运行**结束时**才付 |
+| **S-H / S-I** | `REQUIRED_ROLES` 去掉 `train` / `DEFAULT_ROLES` 去掉 `validation` | 两个常量此前**无任何断言**。前者是未知 `--roles` 的校验基准、也是完整性检查的默认；后者是**不带 `--roles` 时前置门实际测量的范围**，去掉 `validation` 就等于**不再检查那个在 B0–B3 之间做选择的段** |
+| **S-J / S-K** | 未知 role 被接受 / 空 role 列表被接受 | 两道 `SystemExit` 守卫**在导入任何协作者之前**触发，故只需 argv 即可测；断言守卫抛出**同时钉住了"它必须先于数据库连接发生"**——一个 role 名字打错不该以一次连库为代价才发现 |
+
+### 三、**杀不掉的 4 个**：`main()` 没有可注入的缝
+
+| | 变异 | 后果（若真发生） |
+|---|---|---|
+| **S-L** | `return 1 if problems else 0` → `return 0` | **第五道门永远报 PASS**，前置门据此认为"报告能落盘" |
+| **S-M** | `main()` 不再调用 `coverage_completeness_problems` | **少测一个 (fold, role) 也不会被发现**——即"静默跳过"正是该函数要防的事 |
+| **S-N** | **被归档的那份 payload** 的 `json.dumps` 去掉 `allow_nan=False` | **这道门存在的核心性质失效**：零行段的 survival ratio 会写成裸 `NaN`，产出非法 JSON、事后无法逐字节比对 |
+| **S-O** | 打印的判定恒为 `"PASS"` | 报告与退出码可以互相矛盾 |
+
+**为什么杀不掉**：这四处都在 `main()` 里、且在它**于函数体内部导入八个协作者之后**——
+`new_holder`、`load_calendar`、`SplitResolver`、`factor_source_plan`、`factor_members_for`、
+`current_versions`、`extract_fn_for`、`summarize_frame_coverage`。
+**没有任何一个是从模块级名字取的，故 monkeypatch 无从下手。**
+
+**对照上一轮**：`verify_factor_daily_backfill.main()` 之所以可测，
+是因为它把取数委托给**模块级**的 `collect_year_state`，patch 那一个名字就够了；
+**本脚本把工作全部内联在 `main()` 里，故连一个可替换的接缝都没有。**
+**这不是测试写得不够，是被测代码没有留出缝。**
+
+**要杀掉这四个，需要先把接缝抽出来**（例如把"构造 payload → 序列化 → 汇总 problems → 返回"
+提成一个纯函数，`main()` 只负责取数与打印）。**那是一次对门的结构性重构，不是加测试**，
+**故本轮不做、只登记**：它是**前置门这条链上目前唯一已知的覆盖缺口**，
+而且**缺口的位置和补法都已具体到函数级**。
+
+**S-N 是四个里最要紧的一个**，故需说明它**并非全无防护**：
+`report_block_problems` 里那层 `allow_nan=False` 已被本轮 S-B 的测试钉住，
+即**同样的 NaN 会在更早一处被抓住**；未被覆盖的是"**最终被归档的那份文本**"这一层。
+**两层防护里已钉住一层**，这与"完全没有防护"不同，也与"已经安全"不同。
+
+### 四、前置门这条链的变异测试至此全部做完
+
+| 门 / 脚本 | 变异 | 初次存活 | 真洞 | 补测 | 现状 |
+|---|---|---|---|---|---|
+| `verify_frozen_fold_coverage.py`（宽度） | 12 | 5 | 3 | 3 | 全杀 |
+| `verify_admission_consistency.py`（门 2） | 14 | 2 | 2 | 2 | 全杀 |
+| `screen_factor_daily_coverage.py`（C6.2） | 15 | 7 | 6 | 5 | 全杀 |
+| `preflight_frozen_baseline.py`（豁免聚合） | 16 | 2 | 1 | 1 | 15 杀 + 1 已证等价 |
+| `verify_factor_daily_backfill.py`（第一道） | 14 | 5 | 5 | 5 | 全杀 |
+| **`verify_frozen_report_path.py`（第五道）** | **15** | **9** | **5** | **4** | **11 杀 + 4 因无接缝而未杀** |
+| **合计** | **86** | **30** | **22** | **20** | **82 杀 / 1 等价 / 4 未杀（已定位）** |
+
+**故续四十三那句限定现在可以收窄，但只能收窄到这里**：
+**前置门这条链（6 个脚本）已全部做过变异测试，86 个变异里 82 个被杀、1 个已证等价、
+4 个因被测代码无接缝而未杀且已定位到函数级。**
+**而"全套件断言强度"仍未被证明**——其余约 1,530 个测试函数未审、未立项、未估工。
+
+### 五、门槛（全部重测）
+
+- `pytest tests -q` → **1613 passed / 45 skipped**（101.05s）＝续四十八的 1609 **+4**
+- `ruff check src tests` → **All checks passed!**；`mypy src` → **158 文件清**
+- **本轮只加测试，未改任何 `src/` 或 `scripts/` 实现**
+  （15 个变异全部还原并核对；`git diff --stat -- scripts/ src/` **为空**）
+- **如实记录一次自己的工具失误**：中途用一个自动重排脚本处理超长注释行，
+  **它把跨行注释的续行留下了不带 `#` 的孤行，导致整个测试文件语法错误、套件收集中断**
+  （`SyntaxError: invalid syntax`）。**已重建该注释块修复**；
+  **教训与续四十六同类：修改文件的辅助脚本自己也需要被验证**，
+  尤其是"批量重排"这种看似纯格式的操作。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何门阈值、role 常量、契约、schema 或 `dropna` 口径**——
+  **`REQUIRED_ROLES` 与 `DEFAULT_ROLES` 一个都没动，只是被钉住了。**
+- **裁决 2/3/4 与决定 A–N 全部仍开放**；**前置门当前仍是 `REFUSED`，本轮没有放行任何东西。**
+- 证据：`mutation_report_path_11_of_15_four_unreachable.txt`（含 15 个变异对照、4 个存活者名单与还原核对）。
