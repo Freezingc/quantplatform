@@ -342,3 +342,125 @@ def test_a_fundamental_record_with_no_announcement_date_raises_not_quarantined()
 
     with pytest.raises(TypeError, match="NaT"):
         expand_fundamental_events(events, universe, calendar)
+
+
+# --- C4.2's delisting case, which the module satisfies only implicitly ---------------------------
+
+
+def _calendar_april() -> TradingCalendar:
+    return TradingCalendar.from_dates(
+        [
+            date(2025, 3, 28),
+            date(2025, 3, 31),
+            date(2025, 4, 1),
+            date(2025, 4, 2),
+            date(2025, 4, 3),
+        ]
+    )
+
+
+def _fy2024_event(ts_code: str) -> dict[str, object]:
+    """One FY2024 announcement, available from 2025-03-31 and fresh for 180 days after."""
+    return {
+        "ts_code": ts_code,
+        "report_period": date(2024, 12, 31),
+        "ann_date": date(2025, 3, 28),
+        "raw_value": 2.0,
+        "source_revision_id": f"fy2024-{ts_code}",
+    }
+
+
+def test_a_delisted_security_stops_expanding_while_its_value_is_still_fresh() -> None:
+    """C4.2's 退市 case: membership, not staleness, decides when a value stops being published.
+
+    The module has no ``delist`` logic at all -- it holds because rows are emitted only for
+    (signal_date, ts_code) pairs the universe actually contains, which is the right design: the
+    universe owns membership, so availability should not decide it a second time. But implicit and
+    untested means unguarded, and the failure mode is concrete. If staleness were ever made the
+    only gate -- a plausible "simplification" -- a delisted security would keep publishing its last
+    announced fundamental for up to 180 more days, which is exactly a look-ahead-free but
+    investability-blind factor value on a security that can no longer be traded.
+
+    The control security is what makes this a test of the mechanism rather than of the window: it
+    carries the identical event and *is* in the universe on 2025-04-03, so it proves the value was
+    still fresh on the date the delisted one went silent. Without it, "no row" would be equally
+    consistent with the staleness bound having closed.
+    """
+    calendar = _calendar_april()
+    events = pd.DataFrame([_fy2024_event("000001.SZ"), _fy2024_event("000002.SZ")])
+    universe = pd.DataFrame(
+        [
+            # 000001.SZ delists after 2025-04-02; 000002.SZ stays listed throughout
+            {"signal_date": day, "ts_code": "000001.SZ"}
+            for day in (date(2025, 3, 31), date(2025, 4, 1), date(2025, 4, 2))
+        ]
+        + [{"signal_date": day, "ts_code": "000002.SZ"} for day in calendar.dates[1:]]
+    )
+
+    result = expand_fundamental_events(events, universe, calendar)
+
+    delisted = result.loc[result["ts_code"] == "000001.SZ", "signal_date"].tolist()
+    assert delisted == [date(2025, 3, 31), date(2025, 4, 1), date(2025, 4, 2)]
+    assert date(2025, 4, 3) not in delisted
+
+    control = result.loc[result["ts_code"] == "000002.SZ"]
+    assert date(2025, 4, 3) in control["signal_date"].tolist(), (
+        "the control proves the staleness window was still open on 2025-04-03"
+    )
+    assert int(control.loc[control["signal_date"] == date(2025, 4, 3), "stale_days"].iloc[0]) == 3
+    assert float(control["raw_value"].iloc[0]) == 2.0
+
+
+def test_a_suspended_security_gaps_and_then_resumes_without_losing_the_value() -> None:
+    """Membership can be non-contiguous; the value must reappear, not be treated as expired.
+
+    A suspension is the same mechanism as a delisting except that membership returns. If the
+    expansion carried any notion of "consecutive days since available", a gap would either extend
+    staleness across it or drop the security permanently. Neither is right: staleness is measured
+    from the available date in calendar days, so the value simply reappears with a larger
+    stale_days, and a gap long enough to cross the bound expires it on the ordinary rule.
+
+    The gap deliberately spans a **revision**, which is what makes the staleness assertion mean
+    something. With a single event the available date never changes, so measuring staleness from
+    the previous published row and measuring it from the winning version's own available date give
+    the same number and the two are indistinguishable -- a first version of this test used one
+    event, claimed in its docstring to pin "measured from the available date, not from the last
+    published row", and did not. Across a revision the winner on 2025-04-03 is the later version
+    (available 04-02, so stale 1), while the previous row carries the earlier version's available
+    date (03-31, which would give stale 3). Same report period, so this stays inside C4.4's
+    same-period revision semantics and does not depend on the unresolved cross-period question.
+    """
+    calendar = _calendar_april()
+    events = pd.DataFrame(
+        [
+            _fy2024_event("000001.SZ"),
+            {
+                # a revision of the same report period, announced 2025-04-01 -> available 04-02
+                "ts_code": "000001.SZ",
+                "report_period": date(2024, 12, 31),
+                "ann_date": date(2025, 4, 1),
+                "raw_value": 3.0,
+                "source_revision_id": "fy2024-revised",
+            },
+        ]
+    )
+    universe = pd.DataFrame(
+        [
+            {"signal_date": date(2025, 3, 31), "ts_code": "000001.SZ"},
+            # absent 2025-04-01 and 2025-04-02 (suspended)
+            {"signal_date": date(2025, 4, 3), "ts_code": "000001.SZ"},
+        ]
+    )
+
+    result = expand_fundamental_events(events, universe, calendar)
+
+    assert result["signal_date"].tolist() == [date(2025, 3, 31), date(2025, 4, 3)]
+    assert result["stale_days"].tolist() == [0, 1], (
+        "staleness is measured from the winning version's own available date (04-02), "
+        "not from the previous published row's (03-31, which would give 3)"
+    )
+    assert result["raw_value"].tolist() == [2.0, 3.0]
+    assert result["source_revision_id"].tolist() == [
+        "fy2024-000001.SZ",
+        "fy2024-revised",
+    ], "before the revision the original is published; after it, the revision"
