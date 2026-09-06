@@ -175,6 +175,22 @@ def main(argv=None) -> int:
             "source_watermark_id": watermark,
             "record_hash": "",
         })
+        # NOTE: this is an IDENTITY stamp, not a content hash, and it differs from both other
+        # record_hash conventions in the repository. The input is only
+        # factor_id|signal_date|ts_code|data_version -- `value` is NOT included -- so two rows with
+        # the same business key and the same data_version hash identically whatever their values,
+        # while a version bump with identical values hashes differently. It is therefore
+        # sensitive in
+        # the opposite direction to what the column name suggests, and it cannot be used to verify
+        # that factor_daily's contents are unchanged. It is also MD5 where every other path uses
+        # SHA-256, so hashes are not comparable across tables.
+        # materializers/market.py excludes run_id/data_version/created_at and so IS a reproducible
+        # content hash; factors/materializer.py includes them and so is reproducible by neither.
+        # Recorded as decision N in
+        # docs/handoffs/2026-09-06-c-plan-audit-decision-list.md §3h. Option N-i would replace this
+        # with market's convention, and it is cheapest bundled with adjudication 4, which
+        # re-materializes factor_daily anyway; it is not done here because that changes a stored
+        # column of the frozen trust root.
         _dates = rec_rows["signal_date"].astype(str).to_numpy()
         _codes = rec_rows["ts_code"].to_numpy()
         _md5 = hashlib.md5

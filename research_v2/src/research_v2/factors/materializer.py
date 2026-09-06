@@ -182,6 +182,24 @@ def _record_hashes(
     *,
     strategy: Literal["canonical", "fast"],
 ) -> pd.Series:
+    """Hash each row of ``frame`` -- every column, including the run-lineage ones.
+
+    Unlike ``materializers.market._hash_record``, this does **not** exclude ``run_id``,
+    ``data_version`` or ``created_at``. Callers stamp ``created_at`` from the wall clock and
+    ``run_id`` from ``uuid4()`` *before* calling this, so the resulting ``record_hash`` differs
+    between two runs over identical source data and cannot be used to test rebuild determinism.
+    That is why ``tests/golden`` excludes the column and why
+    ``rehearse_full_range_pipeline.py``'s ``market_stable_rebuild`` gate has no factor-path
+    counterpart: the gate is not missing, it is unreachable from here.
+
+    The two strategies also disagree with each other -- ``canonical`` is SHA-256 over sorted JSON of
+    the row, ``fast`` is SHA-256 of ``hash_pandas_object``'s 64-bit digest -- so a hash is only
+    comparable with hashes produced by the same strategy. A third convention exists in
+    ``scripts/materialize_frozen_factor_daily.py`` (MD5 over the business key and ``data_version``,
+    with no ``value`` in the input at all, so it cannot detect a content change). Recorded as
+    decision N; not unified here because doing so changes stored values in
+    ``factor_observation_clean`` and ``factor_quarantine``.
+    """
     if strategy == "canonical":
         return frame.apply(_record_hash, axis=1)
     if strategy != "fast":

@@ -20,6 +20,23 @@ from research_v2.pit.market import (
 )
 from research_v2.runs.context import RunContext
 
+# Columns excluded from ``record_hash`` so that the hash is a hash of the *content* rather than of
+# the act of writing it: ``run_id`` is a fresh uuid4 and ``created_at`` a fresh wall-clock
+# reading on every run, so including either would make the hash differ between two builds of
+# identical data.
+# Excluding them is what makes ``rehearse_full_range_pipeline.py``'s ``market_stable_rebuild`` gate
+# meaningful -- it rebuilds the batch and asserts the hashes are equal -- and it is pinned by
+# ``test_market_batch_record_hashes_are_wall_clock_independent``.
+#
+# NOTE: ``record_hash`` does not mean the same thing everywhere in this repository, and this is the
+# strongest of three conventions. ``research_v2.factors.materializer._record_hashes`` hashes the
+# whole row *including* these three columns, so its hash changes on every run; and
+# ``scripts/materialize_frozen_factor_daily.py`` writes an MD5 over
+# ``factor_id|signal_date|ts_code|data_version`` only, which omits ``value`` and therefore cannot
+# detect a change of content at all. Never compare a ``record_hash`` across tables, and do not
+# assume this path's guarantees hold elsewhere. Recorded as decision N in
+# ``docs/handoffs/2026-09-06-c-plan-audit-decision-list.md`` §3h; nothing is unified here because
+# changing any of the three alters stored values in a materialized table.
 _RUN_LINEAGE_COLUMNS = frozenset({"run_id", "data_version", "created_at"})
 
 
