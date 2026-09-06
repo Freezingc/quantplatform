@@ -409,6 +409,12 @@ def test_mean_seed_percentile_scores_averages_on_business_keys_not_positions() -
     Two scorers with opposite signs reverse each other's ordering. Key-aligned
     averaging gives every stock the same mean, (n+1)/2n; positional averaging
     would instead produce a ramp from 1/n to 1.
+
+    That discriminating power is borrowed, not intrinsic: the two orderings differ
+    only because ``predictions_to_frame`` sorts each date by descending score, which
+    is pinned separately in ``tests/unit/models/test_model_batch_contracts.py``.
+    Probed -- delete that sort and this test passes whether the merge is key-aligned
+    or positional, i.e. it silently stops testing anything.
     """
     batch = _ragged_batches()[date(2019, 1, 3)]
 
@@ -421,3 +427,29 @@ def test_mean_seed_percentile_scores_averages_on_business_keys_not_positions() -
     assert "" not in set(result["ts_code"])
     assert len(result) == 31
     assert list(result["score"]) == pytest.approx([32 / 62] * 31)
+
+
+def test_percentile_frame_is_date_ordered_whatever_order_the_mapping_iterates() -> None:
+    """``Mapping`` promises no iteration order, so the driver has to impose one.
+
+    Nothing downstream would notice today: both batch builders iterate their dates
+    through ``sorted(...)``, ``_temporal_panel_batches`` only filters that dict, and
+    ``FrozenPredictionStore._normalize_scores`` re-sorts on business keys before the
+    artifact is hashed. What is pinned here is the documented contract itself -- the
+    frame comes out date-ordered because ``_percentile_frame`` says so, not because
+    a caller happened to hand in a sorted dict.
+    """
+    batches = _ragged_batches()
+    unordered = {
+        date(2019, 1, 3): batches[date(2019, 1, 3)],
+        date(2019, 1, 2): batches[date(2019, 1, 2)],
+    }
+    # Guard the guard: the mapping really does iterate out of date order.
+    assert list(unordered) != sorted(unordered)
+
+    result = MODULE._percentile_frame(_StubScorer(), unordered)
+
+    dates = list(result["signal_date"])
+    assert dates == sorted(dates), "dates were concatenated in mapping order"
+    assert dates.count(date(2019, 1, 2)) == RAGGED_WIDTHS[date(2019, 1, 2)]
+    assert dates.count(date(2019, 1, 3)) == RAGGED_WIDTHS[date(2019, 1, 3)]

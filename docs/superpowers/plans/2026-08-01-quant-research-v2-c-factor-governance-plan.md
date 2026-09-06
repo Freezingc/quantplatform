@@ -6008,3 +6008,169 @@ T-I 需要一个**键序被打乱的 `Mapping`**（现有夹具按日期插入�
   故"4 杀 8 存活"与"T-A killed"这两条**可由该脚本原样重跑复现，但没有留存的日志文件**。
   **这与本 session 其他各轮都附了 `mutation_*.txt` 的做法不一致，是本轮的一处欠缺**；
   下一轮若继续做链 2 的补测，应连带把这次运行重跑并归档。
+
+## 勾选审计续五十二（2026-09-07 01:58）：链 2 补测——上一轮 4 条"真而未钉/未核实"**全部钉住**，12 个变异从 4 杀 8 存活变成 **8 杀 4 存活**；过程中查出上一轮那个"已杀"的 T-F 是**假杀**（死于 `KeyError` 而非被测语义），换忠实变异后**结论仍成立——但只在"按分数排序"那一行还在的前提下成立，而那一行当时没被钉**
+
+> **一处时钟更正**：续四十九/五十/五十一三个标题里的时间（06:35、07:20、08:05）与它们各自的提交时间
+> （`98c3bb6` 00:39、`53fd964` 00:48、`38559c1` 01:11，均为 +0800）对不上，偏移还不固定。
+> **本节起标题时间取机器实际本地时间**，以便与 `git log` 交叉核对。
+
+### 一、这轮做了什么
+
+续五十一把 T-B 与 T-I 登记为"真而未钉"、把 T-D 与 T-E 登记为"未核实"，并说明了为什么当轮不补测试
+（两个夹具都需要先读懂参差夹具的构造方式，且必须自带"夹具自证"，否则可能重复旧夹具的错）。
+本轮就是把这件事做完，外加把两条"未核实"变成实测：
+
+1. **4 条新测试**，每条都带一条**夹具自证**断言（不是单独的控制测试，而是同一测试内的前置断言，
+   这样夹具一旦退化，测试会**因为自证失败而失败**，不会静默变成空测）：
+   - `tests/unit/models/test_model_batch_contracts.py`
+     - `test_predictions_to_frame_keeps_tied_scores_at_their_average_rank`（钉 **T-B**）
+     - `test_predictions_to_frame_refuses_scores_whose_shape_disagrees_with_the_mask`（钉 **T-D**）
+     - `test_predictions_to_frame_orders_each_date_by_descending_score`（钉 **T-E**）
+   - `tests/unit/scripts/test_run_real_candidate_training.py`
+     - `test_percentile_frame_is_date_ordered_whatever_order_the_mapping_iterates`（钉 **T-I**）
+2. **两条探针实测**（T-D、T-E），把上一轮"读代码推断"的证据等级提到与续三十七/四十六/四十九同级。
+3. **查出 harness 里 T-F 变异不忠实**，改成忠实变异（见第四节）。
+4. **全量 harness 重跑并归档日志**——补上续五十一自己登记的那处欠缺（上一轮 stdout 未留存）。
+
+### 二、T-B 与 T-I：钉住了，但两条的"为什么值得钉"强弱不同，要分清
+
+| | 变异 | 新钉子 | 夹具自证 | 定性 |
+|---|---|---|---|---|
+| **T-B** | 百分位 `rank(method="average")` → `"first"` | 4 只股票、分数 `[1,2,2,3]`，断言并列的 b/c **同为 0.625**（2/4 与 3/4 的平均） | `frame["raw_score"].duplicated().any()` 为真 | **真缺陷**：并列时按位置定序，等于把"同一日期内的行序"（即 `ts_code` 序）注入到**用来选出优胜配置的那个分数**里；而 `static_batches.py:123-126` 的训练目标秩明确用 `average`，理由就写在它的注释里（"与评价的 Spearman 秩一致"）。**真实模型确实会产出精确并列**：塌缩的输出头或死掉的 ReLU 单元会让大量股票在 float32 下同分 |
+| **T-I** | `_percentile_frame` 遍历 `sorted(batches)` → `batches` | 用参差夹具构造一个**键序被打乱**的 dict（先 01-03 后 01-02），断言输出行序仍按日期 | `list(unordered) != sorted(unordered)` | **防御性、当前不可达**（这一条是对续五十一"真而未钉"的**下调**，见下） |
+
+**T-I 需要如实下调定性**。续五十一说"若调用方传入未按日期插入的映射，输出行序就跟着变"——这句是对的，
+但本轮把所有调用方与所有消费方都核实了一遍，**当前没有任何一处会观察到这个行序**：
+
+- 两个批构造器都按日期序建 dict：`static_batches.py:79` 是 `groupby("signal_date", sort=True)`，
+  `temporal_batches.py:92` 是 `all_dates = sorted(normalized["signal_date"].unique())`；
+  `_temporal_panel_batches`（驱动 1320-1331 行）只是**过滤**那个 dict，不改变序。
+- 下游全部按业务键合并或重排：`_validation_rank_ic` → `compute_daily_rank_ic`（merge on keys）、
+  `combine_seed_percentile_ranks`（`ensemble.py:70-78`，merge on keys 且末尾 `sort_values(keys)`）、
+  `FrozenPredictionStore._normalize_scores`（`selection_evidence.py:456`，**在写入并哈希之前**就按
+  `["signal_date","ts_code"]` 重排）。
+
+**故 T-I 的钉子钉的是"文档化契约本身"**（`_percentile_frame` 的 docstring 承诺 in date order），
+价值在于**将来某个调用方传入非日期序映射时不会静默改变输出行序**，而**不是**它今天挡下了一个活缺陷。
+这条与续五十一的表述有强弱差别，按本轮的核实结果记。
+
+### 三、T-D 与 T-E：探针实测的结论**与上一轮的推断不同**
+
+**T-D（去掉 `scores.shape != stock_mask.shape` 检查）——上一轮写"未核实：下游大概也会抛"。实测：不抛，而且是静默给出错数。**
+
+探针用 `stock_mask` 为 `(1,3)`（`[True, True, False]`，即两只真股票 + 一个 padding 槽）的批，
+喂两种形状不符的 scores：
+
+| scores 形状 | 有守卫 | 去掉守卫 |
+|---|---|---|
+| `(2,3)`——**多一个日期行** | `ValueError: scores must have shape [date, stock]` | **NO ERROR**，返回 `['a','b'] [9.0, 8.0] [1.0, 0.5]` |
+| `(1,4)`——**多一个股票列** | 同上 `ValueError` | **NO ERROR**，静默取前两列 |
+
+多一个日期行那一格是关键：`date_index` 0 会读到**模型放进第 0 行的任何数字**（探针里是 `9.0, 8.0`），
+把它们当作 2025-01-02 这一天的分数排出百分位，**返回的帧长得完全合法**——列齐、键齐、秩在 (0,1] 内。
+**这不是"换个异常类型"，是 fail-open**：错误被排成了看起来正确的百分位秩，
+再往下就是用它去算选优的 validation RankIC。**故 T-D 是真守卫，本轮已钉。**
+
+**T-E（去掉按分数排序）——上一轮写"未核实：行序可能无关"。实测：行序确实无关，但它是 T-F 那条钉子成立的前提。**
+
+先说"无关"这一半：如第二节所列，所有消费方都按键合并或重排，**单删排序，全量套件存活**（28 passed）。
+
+再说要紧的那一半。`_mean_seed_percentile_scores` 的 docstring 自己写着：
+"`predictions_to_frame` sorts each date by score, so two seeds generally emit their rows in different
+orders and averaging the columns positionally would blend different stocks"——
+**那条"按业务键而非按位置平均"的回归测试之所以能区分对错，全靠这个排序**。
+探针把 T-E 与**忠实的**按位置平均变异（见第四节）**组合**起来跑：
+
+| 组合 | 结果 |
+|---|---|
+| 忠实 T-F 单独（排序还在） | **killed**——`comparison failed. Mismatched elements: 30 / 31`，正是"斜坡 vs 常数 32/62" |
+| **T-E + 忠实 T-F**（排序删掉） | **SURVIVED**——28 passed |
+
+**即：删掉排序会把那条回归测试静默变成同义反复**——两个 seed 的行序变得相同，
+按位置平均与按键平均给出同一个答案，测试再也分不出对错。
+**"未被观察的行序"与"不重要的行序"是两回事**：它是另一条钉子的**前提**，
+而**前提没被钉，等于那条钉子可以被无声撤走**。故 T-E 本轮已钉；
+钉上之后重测该组合，**从 SURVIVED 变 killed**（1 failed, 32 passed）。
+
+（同一处依赖也写进了那条回归测试的 docstring，注明它的鉴别力是"借来的"，并指向排序钉子。）
+
+### 四、上一轮的一处**证据缺陷**：T-F 那个变异不忠实——"被杀"与"因为该杀的原因被杀"是两件事
+
+harness 里 T-F 原来是把 `on=keys, validate="one_to_one"` 换成 `left_index=True, right_index=True`。
+这确实**意图**表达"按位置平均"，但它同时**保留了两套键列**：pandas 会把它们后缀成
+`signal_date_x / ts_code_x / signal_date_y / ts_code_y`，于是函数自己那句
+`merged.loc[:, [*keys, "score"]]` 抛 `KeyError: "['signal_date', 'ts_code'] not in index"`。
+**变异体死了，但死因与被测语义无关**——它还没来得及"把不同股票混在一起平均"，就先因为列名崩了。
+
+本轮换成忠实的按位置变异：保留 0 号帧的键，其它 seed 只按**行位置**取秩列
+（`pd.concat([merged, column], axis=1)`），不崩、且真的会把不同股票混在一起。实测：
+
+| 变异 | 结果 | 死因 |
+|---|---|---|
+| harness 原 T-F（index merge） | killed | `KeyError: "['signal_date', 'ts_code'] not in index"`——**附带原因** |
+| 忠实 T-F（按行位置取秩列） | killed | `comparison failed. Mismatched elements: 30 / 31`——**正是被测语义**（斜坡 vs 常数 32/62） |
+
+**故续五十一那句"`0cbbc88` 的另一半已被钉住"结论不变**，而且现在有了**正确死因**的证据。
+**但本轮同时查出它的成立条件**：忠实 T-F 之所以被杀，靠的是两个 seed 的行序不同；
+行序不同靠的是排序那一行——**而那一行当时没被钉**（第三节）。
+harness 里的 T-F 定义已改为忠实版本，本轮归档的日志用的是改后的定义。
+
+**这条教训与 `cf04c46` 那轮"harness 双向污染结果"是同一类**：变异测试的**输出本身**也需要被审。
+**"杀了"必须追问"因为什么杀的"**，否则一个因附带原因崩掉的变异体会让审计**高估**测试的鉴别力。
+本轮的做法是：对每一个声称"已杀"的关键变异，**核对失败信息里的死因**，而不是只看 returncode。
+
+### 五、门槛与证据（全部实测，含本轮归档的日志）
+
+- **全量 harness 重跑**（范围 `tests/unit/models tests/unit/training tests/property
+  tests/unit/scripts/test_run_real_candidate_training.py`）：**基线 120 passed**
+  （上一轮 116 + 本轮 4 条新测试），**12 个变异：8 杀 4 存活**——
+  **杀**：T-A、**T-B**、T-C、**T-D**、**T-E**、T-F（**忠实版**）、T-H、**T-I**（加粗为本轮新增的 4 条）；
+  **存活**：**T-G、T-J、T-K、T-L**——**正是上一轮已定性的那四条**（T-J 经核实是**正确的不对称**、
+  T-G 按上游契约不可达、T-K/T-L 只是换异常类型与文案），**本轮没有新增存活**。
+  两个被改文件**还原后逐字节相同**，还原后复跑仍 **120 passed**。
+  **stdout 已归档**：`mutation_candidate_scoring_after_fixtures.txt`——**补上续五十一自己登记的那处欠缺**。
+- **定向杀验证**（每条钉子单独跑，避免 13 分钟的全量把细节压成一行）：四条各
+  **control PASS → mutated killed → restored PASS**；组合验证
+  **T-E + 忠实 T-F = killed**（钉排序之前是 SURVIVED）、**忠实 T-F 单独 = killed（死因正确：
+  `Mismatched elements: 30 / 31`）**、**harness 原 T-F = killed（死因是 `KeyError`）**、
+  还原后 **33 passed**、两文件逐字节还原。
+  证据：`mutation_candidate_scoring_targeted_and_probes.txt`（含两次探针的原始输出）。
+- **全量门槛**：`pytest tests -q` → **1621 passed / 45 skipped**（续五十实测的 1617 + 本轮 4 条，
+  **skipped 数未变**）；`ruff check src tests` 清；`mypy src` **158 文件清**。
+- **本轮只改测试**：`git diff --stat` 对 `research_v2/src`、`research_v2/scripts` **为空**；
+  改动是 `tests/unit/models/test_model_batch_contracts.py`（+3 测试）与
+  `tests/unit/scripts/test_run_real_candidate_training.py`（+1 测试、+1 处 docstring 说明依赖来源）。
+  **未改任何契约、schema、门阈值或 `dropna` 口径。**
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`（工作树里那两个文件仍是另一个对话的改动，
+  本轮全程未触碰）；**未释放** `/tmp/frozen_chain_hold.txt`；**链 2 仍未重启**（前置见 §0d 批 2：
+  清理 13 个陈旧检查点、指针并列守卫、续跑键含契约版本）。
+- **裁决 2/3/4 与决定 A–N 全部仍开放。**
+- 归档到 `/data/zhangyudong/qrv2_research_artifacts/`：
+  `mutation_candidate_scoring_after_fixtures.txt`（全量 12 变异日志）、
+  `mutation_candidate_scoring_targeted_and_probes.txt`（定向 + 两次探针原始输出）、
+  `mutate_candidate_scoring.py`（**T-F 已改为忠实版**）、`mutate_candidate_scoring_targeted.py`、
+  `probe_candidate_scoring_shape_and_sort.py`、`probe_candidate_scoring_faithful_positional.py`。
+
+### 六、本轮暴露出的**方法论修正**，以及下一轮的候选
+
+**方法论修正（比任何单条钉子都重要）**：变异测试的 `killed` 是一个**需要被审的输出**，不是一个结论。
+本轮之前，harness 只读 `returncode`；从本轮起，**对关键变异必须核对失败信息里的死因**
+（`FAILED` 的测试节点 + 首行错误类型），因为一个因附带原因崩掉的变异体会让审计**高估**自己的测试鉴别力——
+T-F 就是实例。同理，**"存活"也需要区分三种**：不可达（T-G）、只换文案（T-K/T-L）、
+以及**正确但没人钉**（T-J）——第三种的处置方式是**钉它**，而不是把它记成"没问题"。
+
+**下一轮候选（按本轮结果排序，非承诺）**：
+
+1. **钉 T-J**（`_percentile_frame` 里那处唯一的 `model.eval()`）。**这是链 2 剩下四条存活里唯一
+   "一旦弄反就是真缺陷"的一条**：续五十一已核实这个不对称是**正确的**（`_percentile_frame` 的调用方
+   拿到的是训练环出来的 train-mode 模型，而 `_mean_seed_percentile_scores` 拿到的是
+   `artifact_loader.py:111` 已 `eval()` 过的模型），而 **M2/M3 确实用 `nn.Dropout(0.1)`**，
+   故若把它弄反，喂给 G1–G6 的冻结 TEST 预测就变成随机的。**正确的行为没被钉，和错误的行为没被钉，
+   风险是一样的**——它可以在任何一次"看起来无害的重构"里被移走。
+2. **T-G/T-K/T-L 的处置**：按上一轮的定性它们是"不可达 / 只换文案"，
+   **本轮没有推翻也没有实测**（只做了代码推断）；若要把它们提到探针级证据，
+   需要构造"同一日期内同一 ts_code 出现两次"的输入（`FeatureBatch.__post_init__` 禁止），
+   即需要先确认这个禁止是否真的在所有构造路径上成立。
+3. **链 2 之外**：本 session 仍有约 1,530 个测试函数在已审计的两条链之外未做变异测量，
+   按续五十的收口方式，下一条链应挑**门阈值最集中**的那一段（而非测试最多的那一段）。
