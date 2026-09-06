@@ -63,7 +63,7 @@ research_v2/tests/integration/factors/test_factor_registry_import.py
 - Test: `research_v2/tests/unit/factors/test_registry.py`
 - Test: `research_v2/tests/integration/factors/test_factor_registry_import.py`
 
-- [ ] **C1.1 根据 Phase 0 清单逐因子建立 catalog**
+- [x] **C1.1 根据 Phase 0 清单逐因子建立 catalog**
 
 每个现有因子必须有唯一条目，不能用运行时 `GP_*` 通配符自动接纳新列。每条 YAML 记录必须包含 `factor_id`、`factor_version`、`display_name`、`source_database`、`source_table`、`source_value_column`、`source_date_column`、`source_code_column`、`factor_type`、`frequency`、`expected_direction`、`availability_policy`、`max_staleness_calendar_days`、`unit` 和 `owner`。
 
@@ -1141,4 +1141,136 @@ dry-run 会判 MAPPED（列确实存在、类型也对），而取数路径**照
 **并非在某个宽表源上验证过**。若日后接入宽表源，该款需重新核验。
 
 **全量：1381 passed / 45 skipped**（本节起点 1340，+41 新测试），
+`ruff check src tests` 清、`mypy src` 157 文件清。
+
+## 勾选审计续十（2026-09-06 09:45）：C1.1 已勾并实测可复现；C1.4 有一款根本没实现，且实现了也拦不住任何东西
+
+### C1.1 已勾选——并顺带证明了一件此前无人验证过的事
+
+C1.1 的实体产物（`configs/factors/source_catalog.yaml`，487 条）早已存在，但**从未被验证过**。
+本轮补两类证据：
+
+**(1) 离线一致性**（`tests/unit/factors/test_source_catalog_conformance.py`，13 测试，全部针对**真实 YAML**而非 fixture）：
+15 个必填字段在 487 条上**逐条齐备且非空**（仅查 key 存在会让 `owner: null` 蒙过，故单独一条测空值）、
+factor_id 唯一且形如 `yeslab_<n>`、`source_database` 恒为 `dfs://YesLab`、
+值/日期/证券列恒为 `value`/`trade_date`/`ts_code`、`source_table` 全在冻结的 11 张表内、
+`_ALLOWED_TABLES` 是闭集、无任何条目在 4 个字段里含通配符 `* ? [ ]`、
+TECHNICAL 因子 staleness 一律为 0 且 policy 一律 `SAME_DAY_CLOSE`（**任何非零值都等于允许 ffill**，
+正是完成标准第 3 条禁止的）。
+**用真实文件而非 fixture 是刻意的**：要断言的性质是"管线实际加载的那个产物合格"，
+合成 catalog 可以全部满足而真实的那个不满足。
+
+**(2) 可复现性（新，需要连库；这是离线测试结构上到不了的一条边）**：
+新增 `scripts/verify_factor_catalog_reproducibility.py`，从**活的** `factor_metadata` 重跑生成器
+`build_yeslab_catalog_document`，与已提交的 YAML 比对三项：snapshot hash、逐条条目、双向差集。
+**2026-09-06 09:35 实跑结果：**
+
+```
+metadata rows        : 487
+stored snapshot hash : afb9cc396189e47bb4963d8df65674867905606371ebec9f6998e8e2c69ce3f6
+rebuilt snapshot hash: afb9cc396189e47bb4963d8df65674867905606371ebec9f6998e8e2c69ce3f6
+catalog entries      : 487 stored / 487 rebuilt
+only in source       : 0     only in catalog : 0     entries differing : 0
+CATALOG_REPRODUCIBLE
+```
+
+即：**已提交的 catalog 是那份冻结 metadata snapshot 的逐字节展开**，没有因子被漏登记，
+也没有条目被手工改离生成器的输出。离线复演（`--offline-metadata` 读回保存的 parquet）
+产出与实跑**逐字节相同**的报告；快照已存
+`/data/zhangyudong/qrv2_research_artifacts/factor_metadata_frozen_snapshot.parquet`。
+**为什么这条边必须由脚本而不是单测覆盖**：单测只读 YAML，能证明"catalog 描述得对"，
+**不能证明"catalog 描述全了"**——源里新增一个因子而从未登记，只读 YAML 的测试永远看不见。
+verifier 自身有 8 条测试**证明它会失败**（源多一个因子 / 源少一个因子 / 手工改一条 owner /
+只查 metadata 不碰因子表），否则 `CATALOG_REPRODUCIBLE` 毫无意义。
+其中"手工改 owner"一例暴露了一个非显然的事实：**snapshot hash 覆盖的是 metadata 而非条目**，
+故改条目时 hash 仍然匹配——这正是逐条比对必须与 hash 比对并存的理由。
+
+**(3) 补上一处 C1.1 明文要求但生成器并不执行的防护。**
+「不能用运行时 `GP_*` 通配符自动接纳新列」此前**只由事后的一致性测试保证**：
+`build_yeslab_catalog` 遇到名为 `GP_*` 的 metadata 行会**照字面收下**，生成一条
+`display_name: "GP_*"` 的条目——它不展开通配符，但会往 catalog 里放进一个**不描述任何单一因子**的名字，
+而读路径是 `where factor_name in [...]`，于是它要么选不到东西、要么选中某个无人定义过的字面量。
+已在生成器里加拒绝（`CatalogBuildError`），并测 `GP_*`/`Alpha?`/`Alpha[1-9]`/`*` 四种形态。
+**加防护后重跑可复现性检查：hash 与 487 条条目完全不变**（活 metadata 里没有通配符名），
+即这次收紧只影响**下一次**重新生成，不影响已冻结的产物。
+
+**留档的边界**：C1.1 还要求「在**人审**后保存 snapshot hash」。人审是流程步骤，代码无从验证；
+**我能验证的是它的产物**——所记录的 hash 可从源重算出来且一致，故按"人审通过并记录了 hash"接受。
+
+### C1.4 仍不勾：状态机部分已补测，但关键一款**根本没有实现**
+
+**已实现的部分此前几乎没有测试。**`FactorRegistry.transition` 的四状态机
+（DRAFT→VALIDATED→ACTIVE→RETIRED）在 `test_registry.py` 里**只被一条 happy path 顺带走过**，
+没有任何一条测试断言非法迁移被拒。本轮补 20 条：迁移**只能向前**（11 个非法组合逐一参数化，
+含"迁移到当前状态"——那不是 no-op，而是调用方以为自己身在别处）、
+**被拒的迁移必须让条目留在原状态**、RETIRED 是**终态**（四个状态全部拒绝）、
+DRAFT/VALIDATED/ACTIVE 都可直接退役（逃生门不必走完生命周期）、
+新注册一律从 DRAFT 起、未注册因子迁移报 KeyError、
+**新版本与旧版本并存且各有自己的生命周期**（C1.4 规定的补救方式是新版本而非改旧的）。
+辅助函数 `_registry_at` **自带一条断言**确认自己真的走到了目标状态——
+因为它第一版写错了（要 DRAFT 却走到了 ACTIVE），**实现是对的、测试辅助是错的**，
+这类错误会让"非法迁移被拒"的测试以错误的理由通过。
+
+**另一处与规格的偏差已钉住并留档**：规格说「定义字段在 **VALIDATED 后**不可修改」，
+实现是**从 DRAFT 起**就拒绝改 hash（更严）。这不是缺陷，但两种语义下"草稿能否就地编辑"相反，
+而 definition hash 是早期引用它的东西的键，故写成测试固定实际行为。
+
+**未实现的一款：「只有 `ACTIVE` 因子可加入 factor set」。**
+全仓 grep `FactorStatus.ACTIVE`：**只出现在 `registry.py` 自己的迁移表里**（第 53、54 行），
+没有任何消费方。`create_factor_set` 收的是裸元组
+`(factor_id, factor_version, direction, definition_hash)`，**从头到尾不接触任何 registry**——
+尽管它的 docstring 写的是 "Build a deterministic DRAFT factor set from **active-registry** member identities"。
+**docstring 声称了一个代码并不执行的约束**，这类偏差比缺失更危险，因为它会让读者以为门已经在了。
+
+**而且即使实现了，今天也拦不住任何东西。**这是本节更重要的发现：
+
+- **`FactorRegistry` 的生产调用者为 0**（`research_v2/src` 与 `research_v2/scripts` 全仓 grep：
+  `FactorRegistry()` 与 `.transition(` 零命中，只有 `registry.py` 自身与单测）。
+- **`create_factor_set` 的生产调用者也为 0**（24 处命中全在 `tests/`）。
+- 生产中真实的冻结集是 **`artifacts/diagnostics/factor_set_frozen_v1.json`**，
+  由 **`scripts/apply_admission_decisions.py`** 直接写成一个 JSON dict
+  （`scope/frozen_date/factors/count/special_decisions/conflicts/warnings/data_version`），
+  被 `materialize_frozen_factor_daily.py`、`verify_admission_consistency.py`、
+  `walk_forward_factor_daily.py` 消费。该脚本里 grep `ACTIVE|registry|FactorStatus`：**零命中**。
+  它的成员资格来自**人工裁决 D1–D4** 加一个 `data_version`，不是来自 registry 状态，
+  `factor_set_id` 也不是 `create_factor_set` 的内容寻址哈希。
+
+**结论：C 计划的 registry + factor-set 机制（C1.2/C1.3/C1.4/C8.1/C8.2）与生产中真实使用的冻结集
+是两套互不相通的实现，前者未接线。**这是本轮发现的**第三处**同一模式
+（续四：C6.2 结构质量有两套并行实现、本模块未被接线；
+续七：`select_cluster_representatives` 无生产消费者）。
+**三处同型已构成一个模式，建议作为整体上报 owner**，因为它决定了 C 计划里
+有多少治理是**真正承重**的、多少是**写了但没接上**的——这不是逐条补测试能解决的问题。
+
+**不代实现的理由**：把 `registry` 变成 `create_factor_set` 的**必需**参数会破坏 20+ 个调用点
+以及已勾选的 C8.1/C8.2 所依赖的接口；做成**可选**参数则等于没有强制。
+而"以哪条路径为准"正是**裁决 4** 已经在问的同一个问题
+（`factor_set_frozen_v1.json` 是已结案契约条款，应新发 V2 而非就地改）。
+**故记录、不实现。**
+
+### C1.6 无法执行：它要求的集成测试文件从未被创建
+
+C1.6 的第二条 Run 命令是
+`QRV2_INTEGRATION=1 pytest tests/integration/factors/test_factor_registry_import.py -q -m integration`，
+但 **`research_v2/tests/integration/factors/` 目录不存在**
+（现有 integration 子目录：`data/datasets/db/evaluation/inference/models/pit/registry`）。
+计划文件清单里它标为 "Create"，即**从未创建**。
+其 Expected 三项中，「全部因子有显式映射」由 C1.1 本轮覆盖、
+「定义漂移要求升版」由 registry 单测覆盖、「V1 无写入」属只读会话性质；
+但在 registry 未接线的前提下，一个"registry import"集成测试**没有可断言的实质内容**。
+**不代为编造**：先解决上面的接线归属，再决定这个集成测试该测什么。
+
+### 变异验证（本节 7 个，全部被预期测试捕获）
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 11 | 生成器去掉通配符拒绝 | 通配符两条（`GP_*` 与四种形态） |
+| 12 | `compare()` 忽略逐条差异（只比 hash） | 源多因子 / 手改 owner / 重排序 三条 |
+| 13 | verifier 的查询指向 `factor_data1` | `..._selects_metadata_columns_and_no_factor_values` |
+| 14 | DRAFT 允许直接跳到 ACTIVE | `..._only_moves_forward[DRAFT-ACTIVE]` |
+| 15 | RETIRED 不再是终态 | `..._only_moves_forward[RETIRED-ACTIVE]` 与 `test_retired_is_terminal` |
+| 16 | 改定义时静默替换旧条目 | 4 条（含既有的 `test_definition_change_requires_a_new_factor_version`） |
+| 17 | `transition` 完全不校验 | 12 条 |
+
+**全量：1422 passed / 45 skipped**（本节起点 1381；+13 一致性 +8 verifier +20 registry），
 `ruff check src tests` 清、`mypy src` 157 文件清。

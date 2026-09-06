@@ -154,3 +154,139 @@ def test_registering_an_identical_definition_twice_returns_the_same_entry() -> N
     second = registry.register(_definition())
 
     assert second is first
+
+
+# --- C1.4: the lifecycle itself, which nothing above exercised beyond one happy path ------------
+
+
+_LIFECYCLE_PATH = {
+    FactorStatus.DRAFT: (),
+    FactorStatus.VALIDATED: (FactorStatus.VALIDATED,),
+    FactorStatus.ACTIVE: (FactorStatus.VALIDATED, FactorStatus.ACTIVE),
+    FactorStatus.RETIRED: (FactorStatus.VALIDATED, FactorStatus.ACTIVE, FactorStatus.RETIRED),
+}
+
+
+def _registry_at(status: FactorStatus) -> FactorRegistry:
+    """A registry whose single factor has been walked to ``status`` by legal transitions only."""
+    registry = FactorRegistry()
+    registry.register(_definition())
+    for step in _LIFECYCLE_PATH[status]:
+        registry.transition("turnover_20d", 1, step)
+    assert registry.get("turnover_20d", 1).status is status
+    return registry
+
+
+def test_a_newly_registered_factor_starts_in_draft() -> None:
+    """Nothing is usable by accident: a factor must be walked to ACTIVE to be relied on."""
+    registry = FactorRegistry()
+
+    entry = registry.register(_definition())
+
+    assert entry.status is FactorStatus.DRAFT
+
+
+@pytest.mark.parametrize(
+    ("start", "attempted"),
+    [
+        (FactorStatus.DRAFT, FactorStatus.ACTIVE),
+        (FactorStatus.DRAFT, FactorStatus.DRAFT),
+        (FactorStatus.VALIDATED, FactorStatus.DRAFT),
+        (FactorStatus.VALIDATED, FactorStatus.VALIDATED),
+        (FactorStatus.ACTIVE, FactorStatus.VALIDATED),
+        (FactorStatus.ACTIVE, FactorStatus.DRAFT),
+        (FactorStatus.ACTIVE, FactorStatus.ACTIVE),
+        (FactorStatus.RETIRED, FactorStatus.DRAFT),
+        (FactorStatus.RETIRED, FactorStatus.VALIDATED),
+        (FactorStatus.RETIRED, FactorStatus.ACTIVE),
+        (FactorStatus.RETIRED, FactorStatus.RETIRED),
+    ],
+)
+def test_the_lifecycle_only_moves_forward(start: FactorStatus, attempted: FactorStatus) -> None:
+    """C1.4's DRAFT -> VALIDATED -> ACTIVE -> RETIRED is one-way.
+
+    Skipping VALIDATED would let a factor reach ACTIVE without ever having been checked, and any
+    backward edge would let a definition that is already feeding models be silently re-opened.
+    Re-transitioning to the current state is refused too: it is not a no-op, it is a caller that
+    believes it is somewhere else.
+    """
+    registry = _registry_at(start)
+
+    with pytest.raises(ValueError, match="invalid factor state transition"):
+        registry.transition("turnover_20d", 1, attempted)
+
+    assert registry.get("turnover_20d", 1).status is start, (
+        "a refused transition must leave the entry where it was"
+    )
+
+
+@pytest.mark.parametrize(
+    "start", [FactorStatus.DRAFT, FactorStatus.VALIDATED, FactorStatus.ACTIVE]
+)
+def test_any_live_state_may_be_retired_directly(start: FactorStatus) -> None:
+    """Retirement is the escape hatch, so it must not require walking the rest of the lifecycle."""
+    registry = _registry_at(start)
+
+    entry = registry.transition("turnover_20d", 1, FactorStatus.RETIRED)
+
+    assert entry.status is FactorStatus.RETIRED
+
+
+def test_retired_is_terminal() -> None:
+    registry = _registry_at(FactorStatus.RETIRED)
+
+    for status in FactorStatus:
+        with pytest.raises(ValueError, match="invalid factor state transition"):
+            registry.transition("turnover_20d", 1, status)
+
+
+def test_a_definition_cannot_be_changed_after_validation() -> None:
+    """C1.4: once VALIDATED the semantic fields are closed; a change means a new factor_version."""
+    registry = _registry_at(FactorStatus.VALIDATED)
+    before = registry.get("turnover_20d", 1)
+
+    with pytest.raises(ImmutableDefinitionError, match="definition hash"):
+        registry.register(replace(_definition(), unit="percent"))
+
+    after = registry.get("turnover_20d", 1)
+    assert after.definition_hash == before.definition_hash
+    assert after.status is FactorStatus.VALIDATED, (
+        "a refused redefinition must not disturb the state either"
+    )
+    assert after.definition.unit == "ratio"
+
+
+def test_a_definition_change_is_refused_even_before_validation() -> None:
+    """Pins that the implementation is *stricter* than C1.4, deliberately.
+
+    The spec closes the definition at VALIDATED; ``register`` refuses a changed hash from DRAFT
+    onward. Recording the actual behaviour matters because it is the difference between "a draft
+    can be edited in place" and "it cannot" -- and a draft that could be edited would make the
+    definition hash an unstable key for anything that references it early.
+    """
+    registry = FactorRegistry()
+    registry.register(_definition())
+
+    with pytest.raises(ImmutableDefinitionError):
+        registry.register(replace(_definition(), expected_direction=-1))
+
+
+def test_transitioning_a_factor_that_was_never_registered_is_an_error() -> None:
+    registry = FactorRegistry()
+
+    with pytest.raises(KeyError, match="not registered"):
+        registry.transition("turnover_20d", 1, FactorStatus.VALIDATED)
+
+
+def test_a_new_version_lives_alongside_the_old_one_and_has_its_own_lifecycle() -> None:
+    """C1.4's remedy for a needed change: a new version, not an edit -- and not a replacement."""
+    registry = FactorRegistry()
+    registry.register(_definition())
+    registry.transition("turnover_20d", 1, FactorStatus.VALIDATED)
+    registry.register(replace(_definition(), factor_version=2))
+
+    assert registry.get("turnover_20d", 1).status is FactorStatus.VALIDATED
+    assert registry.get("turnover_20d", 2).status is FactorStatus.DRAFT
+    assert registry.get("turnover_20d", 1).definition_hash != (
+        registry.get("turnover_20d", 2).definition_hash
+    )

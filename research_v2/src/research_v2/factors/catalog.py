@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from typing import Any, cast
 
 import pandas as pd
@@ -16,6 +17,10 @@ _REQUIRED_COLUMNS = frozenset(
     {"factor_id", "factor_name", "creator", "update_frequency", "store_factor"}
 )
 _ALLOWED_TABLES = frozenset(f"factor_data{index}" for index in range(1, 12))
+#: C1.1 forbids accepting factors by runtime wildcard. A glob in a factor name would put an entry
+#: into the catalog that describes no single factor, while the read path filters
+#: ``where factor_name in [...]`` -- so it would select nothing, or something nobody defined.
+_WILDCARD_PATTERN = re.compile(r"[*?\[\]]")
 
 
 def build_yeslab_catalog(metadata: pd.DataFrame) -> list[dict[str, object]]:
@@ -36,6 +41,10 @@ def build_yeslab_catalog(metadata: pd.DataFrame) -> list[dict[str, object]]:
         owner = str(row["creator"]).strip()
         if not factor_name or factor_name.lower() == "nan" or not owner or owner.lower() == "nan":
             raise CatalogBuildError("factor metadata has an empty factor_name or creator")
+        if _WILDCARD_PATTERN.search(factor_name):
+            raise CatalogBuildError(
+                f"factor name must be explicit, not a runtime wildcard: {factor_name}"
+            )
         factor_number = int(row["factor_id"])
         frequency = str(row["update_frequency"]).strip().upper()
         if frequency != "DAILY":
