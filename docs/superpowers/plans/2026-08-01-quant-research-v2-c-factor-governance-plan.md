@@ -4944,3 +4944,123 @@ if not report["market_stable_rebuild"].all():
   **未改动任何哈希计算、契约、schema、scope、门阈值或 `dropna` 口径**。
 - **决定 N 未被代做**；**决定 J/K 未被代做**（N-iii 的前置）；**决定 A/G 未被代做**（N-ii 的前置）；
   **裁决 2/3/4 与决定 A–M 全部仍开放。**
+
+## 勾选审计续四十一（2026-09-07 01:15）：决定 B 不是"会算错数"，是**已经算错了 18,884 行并发布在库**——但影响面已界定：不在信任根、不在基线、不在任何模型
+
+### 一、为什么去测这一项
+
+决定清单 §4 把决定 B 记为 *"**本清单里唯一会算错数的一项**，故必须排在 C 之前"*——
+**用的是条件式（"会"）**。但续三十六已实测：`build_fundamental_snapshot` **虽无任何
+orchestrator/runbook 引用，却已被跑过并落了 32,689,537 行**到 `fundamental_pit_snapshot`。
+**若 B 描述的排序语义真的会让报告期倒退，那它就不是"会"，而是"已经"。**
+**这一字之差决定 B 是预防性决定还是补救性决定，也就决定它在 §4 里的排位。**
+
+### 二、判据：报告期在 signal_date 前进时**必须单调不减**
+
+`_expand_metric_events` 按 `(ts_code, available_date, report_period, source_revision_id)`
+**升序** + `keep="last"`，再由 `merge_asof(direction="backward")` 取
+`available_date <= signal_date` 的最后一行。**故 `available_date` 排在 `report_period` 之前**：
+一个**较晚公告的较旧报告期**会压过**较早公告的较新报告期**。
+而在 B-i 的语义下（最新报告期优先、修订只在同期内决胜），
+**一旦某证券的 Q3 已发布，更晚的 signal date 就不可能再看到 Q2**。
+
+**故可测的特征是**：对同一 `(ts_code, metric_id)`，随 `signal_date` 前进，
+**`report_period` 是否曾跌破自己的运行最大值**。每一次跌破 = 一个 signal date
+发布了比更早的 signal date 已经见过的**更旧**的报告期。
+实现为服务端 `context by ts_code order by signal_date` + `cummax(report_period)`，
+只读 SELECT，**未写任何数据库**。
+
+### 三、实测结果：**18,884 行**，8/10 个指标受影响
+
+`fundamental_pit_snapshot` 共 **32,689,537 行**：
+
+| metric | 行数 | **倒退行数** | 占比 | 首次 | 末次 |
+|---|---|---|---|---|---|
+| `cfoa` | 3,829,025 | **2,367** | 0.062% | 2020-05-14 | 2020-08-31 |
+| `np_qoq` | 3,934,228 | **0** | 0.000% | — | — |
+| `roa` | 3,806,031 | **2,234** | 0.059% | 2020-05-14 | 2020-08-31 |
+| `road` | 2,772,797 | **2,387** | 0.086% | 2020-05-14 | **2024-02-27** |
+| `roe` | 3,909,658 | **2,302** | 0.059% | **2020-01-08** | 2020-08-31 |
+| `roe_yoy` | 2,846,359 | **2,420** | 0.085% | 2020-05-14 | **2024-02-27** |
+| `roed` | 2,846,359 | **2,420** | 0.085% | 2020-05-14 | **2024-02-27** |
+| `roicd` | 2,772,203 | **2,387** | 0.086% | 2020-05-14 | **2024-02-27** |
+| `ta_yoy` | 2,846,359 → 2,785,840 | **2,367** | 0.085% | 2020-05-14 | 2020-08-31 |
+| `roic` | 3,187,037 | **0** | 0.000% | — | — |
+| **合计** | **32,689,537** | **18,884** | **0.058%** | 2020-01-08 | 2024-02-27 |
+
+**两个最严重的实例（原文照录）**：
+
+- `roe` / `002939.SZ` / signal_date **2020-01-08**：发布的是 **report_period 2016-12-31**，
+  而**运行最大值已是 2019-09-30**——即**更早的 signal date 已经见过 2019 三季报，
+  这一天却退回 2016 年报**，`ann_date 2020-01-07`、`available_date 2020-01-08`、value 6.0978。
+  **倒退约三年。**
+- `roa` / `300220.SZ` / signal_date **2020-05-14** 起：发布 **2019-12-31**，运行最大值 **2020-03-31**，
+  由 `ann_date 2020-05-13` 的**旧期重述**触发，倒退一个季度。
+  **`cfoa`/`road` 同一证券同一天同样倒退**；且 **`cfoa` 的 `source_revision_id` 是 `nan`**——
+  **即该指标连修订号都没有，故排序的第三个键在它身上也不起作用。**
+
+**分布形状本身说明了成因**：各受影响指标的行数紧密聚在 **2,234–2,420**，
+且 6 个指标的首日**同为 2020-05-14**——**这是一波集中的旧期重述**（2019 年报在 2020-05-13 前后被重述），
+而不是零散噪声；`roe` 另有 **2020-01-08** 一波（更早、跨度更大）。
+**`road`/`roe_yoy`/`roed`/`roicd` 的末次延伸到 2024-02-27**，
+即**这四个派生指标在四年后仍在倒退**，而直接指标止于 2020-08-31。
+**`np_qoq` 与 `roic` 为 0**，故这不是"所有指标都错"，而是**特定重述事件 × 特定指标**的交集。
+
+### 四、影响面已界定（这一步不能省，否则会高估或低估）
+
+`rg -n "fundamental_pit_snapshot" src/ scripts/ tests/ ../docs/` 的**读取方只有两个**，且都是评价类：
+
+- `scripts/evaluate_fundamental_snapshot_quality.py`（`SNAPSHOT_OBJECT = "fundamental_pit_snapshot"`，
+  其 `input_source` 自述为 *"QuantResearchV2Test.fundamental_pit_snapshot and latest V2 universe/labels"*，
+  即**它对 V2 标签算 RankIC**），产出
+  `fundamental_pit_snapshot_quality_2020_v1/{summary.csv, daily_rank_ic.csv}`；
+- `scripts/summarize_fundamental_annual_quality.py`（读上面那两个产物）。
+
+**没有任何生产因子/标签/基线/walk-forward 路径读它**；
+**冻结信任根 `factor_daily` 也不依赖它**——`materialize_frozen_factor_daily.py` 的值来自
+Tushare 行情缓存 + `REPLAY_DEFINITIONS` 公式重放 + `universe_daily`，与基本面快照无关。
+
+**故准确的影响面陈述是三句，缺一不可**：
+
+1. **它已经在库里**：`fundamental_pit_snapshot` 的 18,884 行（0.058%）发布了倒退的报告期。
+2. **它已经喂过一次评价**：`fundamental_pit_snapshot_quality_2020_v1` 的 summary 与 daily RankIC
+   是在含这些行的表上算的。**该评价的窗口是 2020 年，而倒退行首次出现在 2020-01-08、
+   集中出现在 2020-05-14 之后 ⇒ 与评价窗口重叠，不是擦肩而过。**
+3. **它没有进入信任根、基线或任何模型**：`factor_daily`、criterion-303 六折、
+   M1–M3 与冻结集候选链都不读这张表。**故基线数字与 G1–G6 不受影响。**
+
+### 五、这对决定 B 与 §4 排序的后果
+
+**B 的性质变了**：从"唯一**会**算错数的一项"变成"**唯一已经算错数、且错值已发布并已喂过一次评价**的一项"。
+**故 §4 里 B 的排位应从第 3（在 A 之后）提到开放决定里的第 1**，理由不是它更复杂，而是
+**它是唯一一个"每多等一天，下游多读一天错值"的决定**（`evaluate_fundamental_snapshot_quality.py`
+可以被再次运行，而那 18,884 行会再次进入评价）。
+
+**A 与 B 的相对顺序也需要重述**：§4 原本把 A 排在 B 前，理由是"A 最上游、多项依赖它"。
+**但 A 依赖的是谱系 A（`factor_observation_clean`）与冻结集表示，B 依赖的是基本面路径
+（`fundamental_pit_snapshot`）——两者不共享数据，故不存在 A 必须先于 B 的技术依赖。**
+A 的先决性来自"多项**决定**依赖它"，B 的紧迫性来自"一项**在库数据**正在错"。
+**这两件事不该互相排队，应并行决定。**
+
+**修 B 的代价（新增一条重物化成本，供批次规划用）**：
+B-i 要改 `_expand_metric_events` 的排序（把 `report_period` 提到 `available_date` 之前，
+或改为"先按报告期、再按可用日"），**这会让 32,689,537 行里的一部分选出不同的行**，
+故 **B 落地必然伴随一次 `fundamental_pit_snapshot` 全量重物化**，
+且**已归档的 `fundamental_pit_snapshot_quality_2020_v1` 需要在重物化后重算**（否则文书与数据不一致）。
+**这与裁决 4 的 `factor_daily` 重物化是两张不同的表、两条不同的链，故不能互相搭车**——
+但**两者都需要"重物化 + 重算下游评价"这一套动作，可以共用同一份 runbook 与同一批核验脚本。**
+
+**本轮不代做 B**：改排序就是选语义（B-i / B-ii / 维持现状），
+而 §2 决定 B 名下已写明这是 owner 的选择；**本轮只把"会"改成"已经"，并给出计数、实例与影响面。**
+
+### 六、门槛（全部重测）
+
+- **本节零代码改动**（一个只读测量脚本 + 文书）；`pytest tests -q` 沿用续四十的实测值
+  **1593 passed / 45 skipped**，`ruff check src tests` 清、`mypy src` **158 文件清**
+  （本轮未动 `src/` 与 `tests/`，故未重跑全量；**若下一轮改代码必须重跑**）。
+- **未写任何数据库**（普查是 SELECT + 服务端 `context by`/`cummax`）；
+  **未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何排序、契约、schema、scope、门阈值或 `dropna` 口径**。
+- **决定 B 未被代做**；**裁决 2/3/4 与决定 A、C–N 全部仍开放。**
+- 证据：`decision_b_materialized_regression_census.txt`（含全部 10 个指标的计数、首末日与实例，
+  脚本副本同存）。
