@@ -151,7 +151,7 @@ source_watermark_id
 
 接受 DolphinDB 数值类型与可解释的 decimal；将 ±inf 转为 invalid flag 而非有效 NaN；保留 raw value 精度；不在 source reader winsorize、scale 或 impute。
 
-- [ ] **C2.4 运行测试并提交**
+- [x] **C2.4 运行测试并提交**
 
 Run: `cd research_v2 && pytest tests/unit/factors/test_source_reader.py -q`
 
@@ -1781,3 +1781,78 @@ registry 新版本不覆盖旧版本——**前两款无任何实现**。
 **全量：1438 passed / 45 skipped**（本节起点 1436；+2 dedup 不变量），
 `ruff check src tests` 清、`mypy src` 157 文件清；
 `deduplication.py` 两次变异后以 `git status --porcelain` 确认**还原干净**。
+
+## 勾选审计续十五（2026-09-06 11:05）：C2.4 已勾（Task C2 收口）；C4.5 差一款，且缺的那款暴露出一个"只写不读"的溯源字段
+
+### C2.4 已勾选：Task C2 四款全部收口
+
+C2.4 是 Task C2 的收口项，其两条 Run 命令实测：
+
+```
+pytest tests/unit/factors/test_source_reader.py        -q  ->  8 passed
+pytest tests/unit/factors/test_source_backfill_query.py -q  -> 10 passed
+```
+
+Expected 的四类逐一对上：**宽/长映射**（长表已在生产中用于冻结集物化；宽表在本源不出现，
+按字面由列序不变测试覆盖——沿用续六的范围判定）、**列漂移**（C1.5 dry-run 报未映射源列 +
+reader 重投影到恰好注册的那几列 + 续九新增的 catalog↔读路径一致性）、
+**chunk**（月份/因子组分块与整帧一次归一化逐帧相等，含 `source_row_id`）、
+**数值异常**（±inf 转 invalid flag、raw 精度逐位保真、不 winsorize/scale/impute）。
+**C2.1/C2.2/C2.3 三款实质项均已勾**，故收口项可以成立。
+
+### C4.5 仍不勾：四款中三款由 Hypothesis 性质测试钉得很硬，第四款**没有任何执行点**
+
+**先说好消息——C4.5 前三款是本计划里证据强度最高的部分之一。**
+`tests/property/factors/test_availability_invariants.py` 用 Hypothesis 在**生成的**
+事件帧/universe 帧上断言，而不是在几个手写样例上：
+
+- **`observation_date <= available_date <= signal_date`**：
+  `test_every_published_row_satisfies_the_point_in_time_ordering` 对**每一条发布行**断言
+  `ann_date < available_date <= signal_date`，**并同时钉住 `stale_days` 的公式与上下界**
+  （`stale_days == (signal_date - available_date).days` 且 `0 <= stale_days <= 180`）。
+- **technical 三者相等**：由 C4.1 的单测钉住（本轮又补了"不 ffill"的两个读法）。
+- **fundamental `available_date > ann_date`（按交易日规则）**：
+  `test_available_date_is_the_earliest_trading_day_strictly_after_the_announcement` 断言三件事——
+  `available > ann_date`、`available` **落在开市日**、且 **ann_date 与 available 之间不存在更早的开市日**。
+  第三条是关键：只断言"严格晚于"的话，顺延到下周也算通过。
+- **附带一条 C4.3 的强性质**：`test_expansion_never_invents_a_key_or_duplicates_one` 断言
+  **发布键是 universe 请求键的子集**且无重复——即展开**既不发明也不复制**键。
+
+**第四款「source watermark 的捕获时间不晚于 run publish」——完全没有实现，且缺得很隐蔽。**
+`SourceBatch.extracted_at` 由**四个源适配器**认真填写
+（`sources/yeslab.py` 三处、`sources/tushare.py` 一处，都是 `pd.Timestamp.now(tz="UTC")`），
+`contracts/source.py:22` 也把它声明为契约字段，`pit/security_profile.py:97` 还往下传递。
+**但全仓没有任何一处读取它、更没有任何一处把它与发布时间比较**：
+
+```
+grep -rn "extracted_at" research_v2/src research_v2/scripts
+  → 4 处赋值（源适配器）、1 处契约声明、1 处向下传递、1 处脚本自写 now()
+  → 比较运算（<= / >= / < / > / max / min）命中：0
+  → 非赋值形式的读取（即真正的消费者）：0
+```
+
+**这是一个"只写不读"的溯源字段**：每一次取数都忠实地记下"我是什么时候抓的"，
+然后没有任何东西去问"这个时间是不是晚于它被发布的时刻"。
+而这一款要防的失效是具体的——**如果一次 run 用了在发布时刻之后才抓取的水位，
+那么被发布的数据里可能含有发布当时还不存在的信息**，这正是 PIT 的最后一道缝。
+前三款把"行内的时间顺序"钉得很死，**第四款管的是"批次与 run 之间的时间顺序"，而它没有执行点。**
+
+**这与续十查出的 C1.4 是同一族问题**：那里是 `create_factor_set` 的 docstring 声称
+"from active-registry member identities" 而代码从不接触 registry；
+这里是契约声明了一个字段、四处代码认真填它、而没有任何一处校验它。
+**共同点是：一个看起来已经在了的保证，其实没有执行点。**
+这类问题 grep 字段名查不出来（字段确实在、确实被填），只有**grep 它的消费者**才查得出来。
+
+**不代实现的理由**：要执行这一款，需要决定**比较发生在哪一层**——
+是在 `StagedBatch`/发布器里把 `extracted_at` 与 `created_at` 对比并拒绝发布，
+还是在证据层只记录不拒绝。前者会**新增一条能让发布失败的路径**，
+在 Task 2.4 正在逐位复现、且 `factor_observation_clean` 有版本指针红线的当口，
+**新增拒绝路径属于会改变运行链行为的改动**，不宜代做。
+
+### 顺带更正本文书一处时间戳
+
+续十三原标 11:10，实际写作时刻为 10:45，已更正。审计时间戳是追溯顺序的依据，
+**标在未来会让人误判各节之间的先后**，故记一笔。
+
+**全量：1438 passed / 45 skipped**（本节无新增测试，仅收口与判定），
+`ruff check src tests` 清、`mypy src` 157 文件清。
