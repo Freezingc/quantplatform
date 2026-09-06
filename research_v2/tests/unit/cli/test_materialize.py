@@ -229,17 +229,24 @@ def test_the_row_estimate_is_null_rather_than_guessed_without_a_width(tmp_path: 
 
 
 @pytest.mark.parametrize(
-    ("flag", "value"),
+    ("flag", "value", "message"),
     [
-        ("start", "01-2014-01"),
-        ("end", "2014-13-01"),
-        ("cross-section", "0"),
-        ("lookback-trading-days", "0"),
+        ("start", "01-2014-01", "--start must use YYYY-MM-DD"),
+        ("end", "2014-13-01", "--end must use YYYY-MM-DD"),
+        ("cross-section", "0", "--cross-section must be a positive number of securities"),
+        ("lookback-trading-days", "0", "--lookback-trading-days must be positive"),
     ],
 )
 def test_bad_parameters_are_rejected_before_any_planning(
-    tmp_path: Path, flag: str, value: str
+    tmp_path: Path, flag: str, value: str, message: str
 ) -> None:
+    """Rejected *before planning* is the claim in the name, so the layer has to be visible.
+
+    ``exit_code != 0`` cannot show it: a ``BadParameter`` at validation and a
+    ``FactorPlanError`` during planning both exit 2. What separates them is the message --
+    a refusal is echoed as "factor materialization plan refused", a validation failure as a
+    click usage error naming the flag. Asserting both halves is what makes the name true.
+    """
     calendar = _write_calendar(tmp_path / "calendar.txt")
     catalog = _write_catalog(tmp_path / "catalog.yaml")
 
@@ -259,10 +266,21 @@ def test_bad_parameters_are_rejected_before_any_planning(
         ]
     )
 
-    assert result.exit_code != 0
+    assert result.exit_code == 2, result.output
+    assert message in result.output
+    assert "factor materialization plan refused" not in result.output, (
+        "planning ran, so this was not rejected before it"
+    )
 
 
 def test_an_inverted_range_is_rejected(tmp_path: Path) -> None:
+    """Both layers would refuse this, so the message is the only evidence of which one did.
+
+    ``plan_factor_materialization`` raises ``FactorPlanError`` for an inverted range too.
+    The command checks first and raises ``BadParameter``, and that ordering is the point:
+    the operator gets a usage error naming the two flags rather than a refusal from inside
+    the planner.
+    """
     calendar = _write_calendar(tmp_path / "calendar.txt")
     catalog = _write_catalog(tmp_path / "catalog.yaml")
 
@@ -280,7 +298,9 @@ def test_an_inverted_range_is_rejected(tmp_path: Path) -> None:
         ]
     )
 
-    assert result.exit_code != 0
+    assert result.exit_code == 2, result.output
+    assert "--start cannot be after --end" in result.output
+    assert "factor materialization plan refused" not in result.output
 
 
 def test_an_empty_calendar_file_is_rejected(tmp_path: Path) -> None:
@@ -302,7 +322,12 @@ def test_an_empty_calendar_file_is_rejected(tmp_path: Path) -> None:
         ]
     )
 
-    assert result.exit_code != 0
+    assert result.exit_code == 2, result.output
+    assert "calendar file contains no dates" in result.output
+    assert "factor materialization plan refused" not in result.output
+    # The message does name the offending file, but click renders it inside a rich box that
+    # hard-wraps a long path across lines, so the path is not matchable as one substring
+    # under pytest's tmp_path. Naming the layer is what this test is for.
 
 
 def test_the_output_flag_writes_the_same_document_it_prints(tmp_path: Path) -> None:
