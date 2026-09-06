@@ -174,3 +174,142 @@ def test_cluster_representative_uses_stable_business_tie_breakers() -> None:
 
     assert chosen.selected_factor_keys == (("a", 1),)
     assert chosen.status == "READY"
+
+
+# --- C7.3: clusters must be exposed with a content-addressed identity ------------
+
+
+def _candidate(factor_id: str, **overrides: object) -> dict[str, object]:
+    row: dict[str, object] = {
+        "factor_id": factor_id,
+        "factor_version": 1,
+        "status": "ELIGIBLE",
+        "fdr_q_value": 0.01,
+        "signed_mean_rank_ic": 0.05,
+        "positive_year_count": 4,
+        "coverage": 0.95,
+        "conflict_rate": 0.01,
+    }
+    row.update(overrides)
+    return row
+
+
+def _edge(left: str, right: str, rho: float = 0.95, status: str = "PASS") -> dict[str, object]:
+    return {
+        "factor_id_left": left,
+        "factor_version_left": 1,
+        "factor_id_right": right,
+        "factor_version_right": 1,
+        "median_daily_abs_spearman": rho,
+        "status": status,
+    }
+
+
+def _expected_cluster_id(members: list[tuple[str, int]]) -> str:
+    import hashlib
+    import json
+
+    payload = json.dumps(
+        [[factor_id, version] for factor_id, version in sorted(members)],
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def test_clusters_are_exposed_with_a_content_addressed_id() -> None:
+    """C7.3: the cluster id is SHA-256 over the sorted member identities.
+
+    Connected components were already computed internally to pick representatives, but the
+    clusters themselves were never exposed and had no identity, so a clustering result could
+    not be referenced in evidence or compared across folds. factor_set_id is content
+    addressed (C8.2); a cluster that is not would be the one grouping in the pipeline whose
+    identity depends on the order its members happened to arrive in.
+    """
+    candidates = pd.DataFrame([_candidate("a"), _candidate("b"), _candidate("c")])
+    similarity = pd.DataFrame([_edge("a", "b")])
+
+    chosen = select_cluster_representatives(candidates, similarity, minimum_features=1)
+
+    by_members = {cluster.members: cluster.cluster_id for cluster in chosen.clusters}
+    assert by_members == {
+        (("a", 1), ("b", 1)): _expected_cluster_id([("a", 1), ("b", 1)]),
+        (("c", 1),): _expected_cluster_id([("c", 1)]),
+    }
+
+
+def test_cluster_id_is_invariant_to_the_order_of_both_inputs() -> None:
+    candidates = pd.DataFrame([_candidate("a"), _candidate("b"), _candidate("c")])
+    similarity = pd.DataFrame([_edge("a", "b"), _edge("b", "c")])
+
+    forward = select_cluster_representatives(candidates, similarity, minimum_features=1)
+    backward = select_cluster_representatives(
+        candidates.iloc[::-1].reset_index(drop=True),
+        similarity.iloc[::-1].reset_index(drop=True),
+        minimum_features=1,
+    )
+
+    assert forward.clusters == backward.clusters
+    assert [cluster.cluster_id for cluster in forward.clusters] == sorted(
+        cluster.cluster_id for cluster in forward.clusters
+    ), "clusters must come back in a deterministic order"
+
+
+def test_chained_edges_form_one_cluster_through_transitivity() -> None:
+    """C7.5's chained case: A-B and B-C above threshold means one cluster {A,B,C}.
+
+    A per-pair grouping would split this into two clusters and could then keep two
+    representatives that are transitively the same signal.
+    """
+    candidates = pd.DataFrame([_candidate("a"), _candidate("b"), _candidate("c")])
+    similarity = pd.DataFrame([_edge("a", "b"), _edge("b", "c")])
+
+    chosen = select_cluster_representatives(candidates, similarity, minimum_features=1)
+
+    assert len(chosen.clusters) == 1
+    assert chosen.clusters[0].members == (("a", 1), ("b", 1), ("c", 1))
+    assert len(chosen.selected_factor_keys) == 1
+
+
+def test_edges_below_the_threshold_or_not_passing_do_not_join_clusters() -> None:
+    candidates = pd.DataFrame([_candidate("a"), _candidate("b"), _candidate("c")])
+    similarity = pd.DataFrame(
+        [_edge("a", "b", rho=0.89), _edge("b", "c", rho=0.99, status="INSUFFICIENT")]
+    )
+
+    chosen = select_cluster_representatives(candidates, similarity, minimum_features=1)
+
+    assert len(chosen.clusters) == 3
+    assert all(len(cluster.members) == 1 for cluster in chosen.clusters)
+
+
+def test_ineligible_candidates_are_not_clustered() -> None:
+    """Clustering happens over the eligible set, which is what a representative is drawn from."""
+    candidates = pd.DataFrame(
+        [_candidate("a"), _candidate("b", status="FDR_FAILED"), _candidate("c")]
+    )
+    similarity = pd.DataFrame([_edge("a", "b"), _edge("a", "c", rho=0.10)])
+
+    chosen = select_cluster_representatives(candidates, similarity, minimum_features=1)
+
+    members = {member for cluster in chosen.clusters for member in cluster.members}
+    assert members == {("a", 1), ("c", 1)}
+
+
+def test_cluster_identity_is_order_independent_on_its_own() -> None:
+    """Pins the sort inside ``cluster_identity``, which the end-to-end test cannot.
+
+    ``select_cluster_representatives`` already sorts members before constructing a
+    ``FactorCluster``, so an invariance test written against that function passes even if
+    ``cluster_identity`` stops sorting -- confirmed by mutation. The function is public to
+    the module, so its own contract needs its own test.
+    """
+    from research_v2.datasets.selection import cluster_identity
+
+    members = [("c", 1), ("a", 2), ("a", 1), ("b", 1)]
+
+    assert cluster_identity(members) == cluster_identity(list(reversed(members)))
+    assert cluster_identity(members) == _expected_cluster_id(members)
+    assert cluster_identity([("a", 1)]) != cluster_identity([("a", 2)]), (
+        "a version change must produce a different cluster identity"
+    )

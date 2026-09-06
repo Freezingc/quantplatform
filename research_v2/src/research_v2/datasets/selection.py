@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -48,6 +50,43 @@ class ClusterSelection:
     selected_factor_keys: tuple[FactorKey, ...]
     status: str
     validation_reason: str | None
+    clusters: tuple[FactorCluster, ...] = ()
+
+
+@dataclass(frozen=True)
+class FactorCluster:
+    """One connected component of the similarity threshold graph, with a stable identity.
+
+    ``cluster_id`` is SHA-256 over the sorted member identities, so it depends only on which
+    factors are in the cluster -- not on the order they were read, the order the edges
+    arrived in, or which member happened to be chosen as the representative. Without an
+    identity a clustering result cannot be referenced in evidence or compared across folds,
+    and it would be the only grouping in this pipeline that is not content addressed:
+    ``factor_set_id`` already is.
+    """
+
+    cluster_id: str
+    members: tuple[FactorKey, ...]
+
+
+def cluster_identity(members: Sequence[FactorKey]) -> str:
+    """Content-address a cluster over its sorted member identities.
+
+    The sort here looks redundant next to the ``tuple(sorted(members))`` at the call site,
+    and it is not. ``select_cluster_representatives`` builds its key set with a set
+    comprehension, and Python randomises string hashing per process, so the order members
+    arrive in differs between runs. With this sort removed, cluster ids became
+    PYTHONHASHSEED-dependent -- verified across four seeds -- which is a reproducibility
+    defect rather than a cosmetic one: the same clustering would not be referable by the
+    same id twice. Keeping the sort in the function itself also means any future caller
+    gets that guarantee without having to remember to pre-sort.
+    """
+    payload = json.dumps(
+        [[factor_id, version] for factor_id, version in sorted(members)],
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def benjamini_hochberg(p_values: Mapping[FactorKey, float]) -> dict[FactorKey, float]:
@@ -244,6 +283,15 @@ def select_cluster_representatives(
     grouped: dict[FactorKey, list[FactorKey]] = {}
     for key in keys:
         grouped.setdefault(find(key), []).append(key)
+    clusters = tuple(
+        sorted(
+            (
+                FactorCluster(cluster_identity(members), tuple(sorted(members)))
+                for members in grouped.values()
+            ),
+            key=lambda cluster: cluster.cluster_id,
+        )
+    )
     indexed = eligible.set_index(["factor_id", "factor_version"], drop=False)
     representatives: list[FactorKey] = []
     for members in grouped.values():
@@ -253,8 +301,8 @@ def select_cluster_representatives(
     representatives.sort(key=lambda key: _representative_sort_key(_candidate_row(indexed, key)))
     selected = tuple(representatives[:maximum_features])
     if len(selected) < minimum_features:
-        return ClusterSelection(selected, "DRAFT", "INSUFFICIENT_FEATURES")
-    return ClusterSelection(selected, "READY", None)
+        return ClusterSelection(selected, "DRAFT", "INSUFFICIENT_FEATURES", clusters)
+    return ClusterSelection(selected, "READY", None, clusters)
 
 
 def _scope_to_train(frame: pd.DataFrame, train_start: date, train_end: date) -> pd.DataFrame:

@@ -372,7 +372,7 @@ git commit -m "feat(v2): score structural factor quality"
 
 每个因子对仅在同日共同非空数 ≥30 时计算 Spearman；scope 相似度为有效每日 `abs(rho)` 的中位数，并记录有效天数/覆盖。有效日 <60 的 pair 标记 insufficient，不连边。
 
-- [ ] **C7.3 实现阈值图 connected components**
+- [x] **C7.3 实现阈值图 connected components**
 
 `median_daily_abs_spearman >= 0.90` 建无向边，因子簇为 connected components。cluster id 对排序后的成员 ID 做 SHA-256，保证输入顺序不影响结果。
 
@@ -855,3 +855,57 @@ source reader 是值进入平台的入口，**它改动的任何东西都与「�
 **因此 C2.1 的唯一实质缺口与 C1.5 是同一件事**，应一并处理。
 
 **全量：1327 passed / 45 skipped**（本节起点 1312），`ruff check src tests` 清、`mypy src` 156 文件清。
+
+## 勾选审计续七（2026-09-06 08:45）：C7.3 已补齐并勾选，C7.4 有两处不符（一处可证无实质影响）
+
+**先更正本文书前面一处定位。**「勾选审计（06:45）」曾记 C7.3/C7.4 在
+`datasets/selection.py:177 select_cluster_representatives`，并以「带路径减半的并查集」为据认为
+C7.3 已实现。**只对了一半**：连通分量确实实现了（内部用于挑代表），但 C7.3 还要求
+「**cluster id 对排序后的成员 ID 做 SHA-256，保证输入顺序不影响结果**」——而
+`ClusterSelection` 只有 `selected_factor_keys / status / validation_reason`，
+**既无 `cluster_id`，簇本身也完全不对外暴露**，`selection.py` 里当时没有任何 SHA-256。
+后果是聚类结果**无法被引用、无法跨折比较**；而 `factor_set_id` 早已内容寻址（C8.2），
+于是管线里唯一没有稳定身份的分组就是因子簇。
+
+**已实现并勾选 C7.3**：新增 `FactorCluster(cluster_id, members)` 与 `cluster_identity(members)`
+（对排序后的 `[[factor_id, factor_version], ...]` 做 `sort_keys` 紧凑 JSON 后 SHA-256），
+`ClusterSelection` 增加 `clusters` 字段并按 `cluster_id` 排序返回。6 条新测试覆盖：
+内容寻址 id 与独立算出的期望值一致、两个输入帧各自反序后 `clusters` 完全相同、
+**链式 A–B / B–C 合成一个簇 {A,B,C}**（C7.5 的传递性案例；按对分组会错分成两簇、
+从而留下两个实为同一信号的代表）、低于阈值或 `status != PASS` 的边不连簇、
+非 ELIGIBLE 候选不参与聚类、以及版本不同必须得到不同 id。
+`select_cluster_representatives` **无生产消费者**（仅自身测试），故扩展返回类型零下游风险。
+
+**变异验证顺带查出一个可复现性事实（值得单独记）。**把 `cluster_identity` 内部的 `sorted()`
+去掉后，**哪条测试捕获它在两次运行间不一致**：第一次只有「与期望 id 比对」那条失败，
+第二次「顺序无关」那条也失败。原因是 `select_cluster_representatives` 用**集合推导**构造 `keys`，
+而 Python 的字符串哈希**每进程随机化**，故 `grouped` 的成员顺序跨进程会变。
+即：**去掉那次看似冗余的内部排序，cluster id 会变成依赖 PYTHONHASHSEED** ——
+这是可复现性缺陷，不是外观问题（同一聚类两次运行得不到同一个 id）。
+已实测当前实现在 `PYTHONHASHSEED=0/1/12345/99999` 下 cluster id 与成员顺序**逐一相同**。
+该理由已写进 `cluster_identity` 的 docstring，以防这次「冗余」排序日后被清理掉；
+并补了一条**直接针对该函数**的顺序无关测试，因为经 `select_cluster_representatives`
+写的那条无法钉住它（构造点已先排过序）。
+
+**C7.4 仍不勾：实现的排序键与规格有两处不符，其中一处会改变选出的代表因子。**
+规格：`eligible → FDR pass → direction stability → median abs IC → coverage → lower conflict rate → factor_id ASC`
+实现（`_representative_sort_key`）：`(fdr_q_value ASC, -signed_mean_rank_ic, -positive_year_count, -coverage, conflict_rate ASC, factor_id ASC, factor_version ASC)`
+
+- **(a) 中间两项顺序相反（实质影响，需裁决）**：规格是 direction stability 先、IC 后；
+  实现是 IC 先（`-signed_mean_rank_ic`）、`-positive_year_count` 后。
+  当两个因子一个 IC 更高而方向稳定性更差时，**选出的代表不同**，即模型输入不同。
+  **故不代改**：这不是补测试能解决的，而是改判据；应由 owner 裁定以哪份为准。
+- **(b) IC 字段是 signed mean 而非 median abs（可证一半无影响）**：
+  「signed vs abs」**在本管线上无实质差别**——`ELIGIBLE` 只由 `_selection_status` 赋予，
+  而它在 `frozen_direction == 0 或 signed_mean_rank_ic <= 0` 时返回 `NON_POSITIVE_MEAN_IC`，
+  故进入代表排序的候选必有 `signed_mean_rank_ic > 0`，此时 signed 与 abs 相等。
+  但「**mean vs median**」是**真实差异**：候选帧里只有 `signed_mean_rank_ic`，
+  没有 median IC 字段，故要按规格实现必须**在上游新增一个统计量**，属更大改动。
+- 其余各项相符：eligible 由上游 `status == "ELIGIBLE"` 过滤、FDR 为第一排序键、
+  coverage 降序、conflict_rate 升序、factor_id 升序（实现另加 factor_version 作最终 tie-break，
+  规格未提但属合理补强）。
+**「不得读取 validation/test 指标」这一款已满足**：排序键只用
+fdr_q_value / signed_mean_rank_ic / positive_year_count / coverage / conflict_rate / 身份字段，
+全部是训练内统计，无任何 validation/test 指标。
+
+**全量：1333 passed / 45 skipped**（本节起点 1327），`ruff check src tests` 清、`mypy src` 156 文件清。
