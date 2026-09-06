@@ -483,3 +483,161 @@ def test_database_publisher_scopes_orphan_check_to_the_batch_month() -> None:
 
     count_query = next(script for script in session.queries if "count(*) as row_count" in script)
     assert "signal_date between date('2023.07.01') and date('2023.07.31')" in count_query
+
+
+# --- C5.5/C5.6: the same-version retry path, which is what "正常发布幂等" actually means ----------
+
+
+class RetrySession(RecordingWriteSession):
+    """A session whose target already holds ``current_version`` with ``current_rows`` rows."""
+
+    def __init__(self, current_version: str, current_rows: int) -> None:
+        super().__init__()
+        self._current_version = current_version
+        self._current_rows = current_rows
+
+    def query(self, script: str) -> object:
+        if script.startswith("schema("):
+            return super().query(script)
+        if "count(*) as row_count" in script:
+            # The real query is scoped by data_version, so rows exist only for the version
+            # already published. Answering every count with the same number would make a
+            # genuinely new version look like it had orphan rows, and the retry branch would
+            # never be distinguishable from a first publish.
+            if f"data_version='{self._current_version}'" not in script:
+                return pd.DataFrame({"row_count": [0]})
+            return pd.DataFrame({"row_count": [self._current_rows]})
+        return pd.DataFrame({"data_version": [self._current_version]})
+
+
+def _retry_batch(rows: int = 2, data_version: str = "version-a") -> StagedBatch:
+    return StagedBatch.create(
+        object_name="market_daily_clean",
+        logical_partition="2025-01",
+        data_version=data_version,
+        frame=pd.DataFrame(
+            {
+                "trade_date": ["2025-01-02"] * rows,
+                "ts_code": [f"{index:06d}.SZ" for index in range(rows)],
+                "value": [float(index) for index in range(rows)],
+            }
+        ),
+        business_keys=("trade_date", "ts_code"),
+    )
+
+
+_PASSING = [CheckResult("keys_unique", Severity.BLOCKER, CheckStatus.PASS)]
+_FAILING = [CheckResult("keys_unique", Severity.BLOCKER, CheckStatus.FAIL)]
+
+
+def test_a_same_version_retry_writes_nothing_at_all() -> None:
+    """C5.6's 正常发布幂等: a retry is a no-op against the target, not a second append.
+
+    This is the property that makes an interrupted run safe to restart. If a retry re-uploaded and
+    re-inserted, the partition would hold the same rows twice and the business-key uniqueness the
+    publisher enforces on the way in would already have been violated in the table.
+    """
+    batch = _retry_batch(rows=2)
+    batch.validate()
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    V2BatchPublisher(session).publish(batch, list(_PASSING))
+
+    assert session.uploads == []
+    assert session.scripts == []
+    assert batch.state is PublishState.PUBLISHED
+
+
+def test_a_retry_carrying_different_data_under_the_same_version_is_refused() -> None:
+    """The sharpest edge of idempotence: same version, different content, must not ride through.
+
+    ``data_version`` is content-addressed, so a retry whose row count differs from what the target
+    already holds means the caller is reusing an existing version identifier for different data.
+    Accepting that would let a version pointer keep its meaning while the rows behind it changed --
+    which is precisely the invariant the pointer exists to protect, and it would be invisible
+    afterwards because nothing about the version string would look wrong.
+    """
+    batch = _retry_batch(rows=3)
+    batch.validate()
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    with pytest.raises(PublishValidationError, match="row count does not match"):
+        V2BatchPublisher(session).publish(batch, list(_PASSING))
+
+    assert session.uploads == []
+    assert session.scripts == []
+
+
+def test_a_retry_still_passes_through_the_quality_gate() -> None:
+    """Idempotence shortcuts the write, not the checks."""
+    batch = _retry_batch(rows=2)
+    batch.validate()
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    with pytest.raises(PublishValidationError, match="data-quality gate"):
+        V2BatchPublisher(session).publish(batch, list(_FAILING))
+
+    assert batch.state is PublishState.REJECTED
+    assert session.uploads == []
+    assert session.scripts == []
+
+
+def test_an_empty_quality_run_never_satisfies_a_retry() -> None:
+    """No checks run is not the same as checks passed."""
+    batch = _retry_batch(rows=2)
+    batch.validate()
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    with pytest.raises(PublishValidationError, match="data-quality gate"):
+        V2BatchPublisher(session).publish(batch, [])
+
+
+def test_a_rejected_batch_cannot_be_retried_into_existence() -> None:
+    """Retry is for restarting an interrupted publish, not for resurrecting a refused one."""
+    batch = _retry_batch(rows=2)
+    batch.validate()
+    batch.state = PublishState.REJECTED
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    with pytest.raises(PublishValidationError, match="newly created or validated"):
+        V2BatchPublisher(session).publish(batch, list(_PASSING))
+
+    assert session.uploads == []
+
+
+def test_a_batch_that_was_never_validated_is_validated_by_the_retry() -> None:
+    """A CREATED batch is the normal state after a crash between staging and validating."""
+    batch = _retry_batch(rows=2)
+    assert batch.state is PublishState.CREATED
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    V2BatchPublisher(session).publish(batch, list(_PASSING))
+
+    assert batch.state is PublishState.PUBLISHED
+    assert session.uploads == []
+
+
+def test_an_already_published_batch_may_be_retried_without_writing_again() -> None:
+    batch = _retry_batch(rows=2)
+    batch.validate()
+    batch.publish()
+    assert batch.state is PublishState.PUBLISHED
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    V2BatchPublisher(session).publish(batch, list(_PASSING))
+
+    assert batch.state is PublishState.PUBLISHED
+    assert session.uploads == []
+    assert session.scripts == []
+
+
+def test_a_different_version_is_a_real_publish_not_a_retry() -> None:
+    """The retry branch must not swallow a genuine new version."""
+    batch = _retry_batch(rows=2, data_version="version-b")
+    session = RetrySession(current_version="version-a", current_rows=2)
+
+    V2BatchPublisher(session).publish(batch, list(_PASSING))
+
+    assert batch.state is PublishState.PUBLISHED
+    assert session.uploads, "a new version must actually be written"
+    assert session.scripts, "and the pointer must be advanced"

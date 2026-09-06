@@ -2207,3 +2207,99 @@ CLI 表面交付了四条里不依赖裁决的一条；余下三条分别绑定�
 
 **全量：1479 passed / 45 skipped**（本节起点 1464；+15 CLI），
 `ruff check src tests` 清、`mypy src` 158 文件清。
+
+## 勾选审计续二十（2026-09-06 12:55）：发布器的"同版本重跑"路径此前零单元覆盖，已补 8 条；C5.5/C5.6 仍不勾（要的是集成测试）
+
+### 缺口：`V2BatchPublisher.publish` 的 retry 分支是一条四出口校验路径，而它一条单测都没有
+
+C5.6 的 Expected 写的是「**正常发布幂等**；所有 blocker 均保持旧版本可见」，
+C5.5 要覆盖的六种故障里有「**相同版本重跑**」与「**publish 前进程异常**」。
+两者都落在同一段代码上：`publish(..., idempotent=True)`（**默认值**）在
+"目标分区的当前 `data_version` 与本批相同"时走的分支。
+
+**此前只有 `idempotent=False` 的拒绝路径被测**
+（`test_database_publisher_rejects_republishing_the_current_data_version`），
+另有一条集成测试在 `QRV2_INTEGRATION=1` 后面。
+**也就是说：默认路径——真正会被走到的那条——没有单元测试。**
+而它并不简单，它有四个不同出口：
+
+1. 行数与目标已有行数**不符** → 拒（"row count does not match the retry batch"）
+2. DQ 门**不过** → 置 REJECTED 并拒
+3. 批次状态**既非 CREATED/VALIDATED 也非 PUBLISHED** → 拒（"must be newly created or validated for retry"）
+4. 以上都过 → **不写任何东西**，必要时把 VALIDATED 推到 PUBLISHED，返回
+
+### 8 条新测试，逐出口钉住
+
+- **`test_a_same_version_retry_writes_nothing_at_all`**：`uploads == []` 且 `scripts == []`，
+  批次终态 PUBLISHED。**这是"幂等"的实质**——重跑对目标是 no-op，不是第二次 append；
+  若重跑会重新上传重新插入，分区里就有两份同样的行，
+  而发布器入口刚校验过的业务键唯一性**在表里已经被破坏了**。
+- **`test_a_retry_carrying_different_data_under_the_same_version_is_refused`**：**本轮最锋利的一条。**
+  `data_version` 是内容寻址的，故"同版本但行数不同"意味着**调用方在给不同的数据复用同一个版本标识**。
+  放它过去，版本指针的含义还在、而它背后的行已经变了——
+  **这正是指针这个机制存在的目的所要防的事，而且事后完全看不出来**，
+  因为版本字符串本身没有任何异常。
+- **`test_a_retry_still_passes_through_the_quality_gate`**：幂等**省掉的是写入，不是检查**；
+  DQ 不过则 REJECTED 且零写入。
+- **`test_an_empty_quality_run_never_satisfies_a_retry`**：**"没跑检查"不等于"检查通过"**
+  （`can_publish` 对空列表返回 False，专测钉住）。
+- **`test_a_rejected_batch_cannot_be_retried_into_existence`**：retry 是给**被中断的发布**续跑的，
+  不是给**被拒绝的发布**翻案的。
+- **`test_a_batch_that_was_never_validated_is_validated_by_the_retry`**：
+  CREATED 正是"在 staging 与 validate 之间崩掉"后的常态，故 retry 必须能接住它。
+- **`test_an_already_published_batch_may_be_retried_without_writing_again`**。
+- **`test_a_different_version_is_a_real_publish_not_a_retry`**：**反向对照**——
+  新版本必须真的写（`uploads` 与 `scripts` 都非空）。
+  没有这一条，"retry 什么都不写"的测试可以靠**让所有发布都什么都不写**来通过。
+
+### fixture 精度：又一次"测试先错、实现对"
+
+第一版 `RetrySession` 对**任何** `count(*) as row_count` 查询都返回同一个行数，
+于是 `test_a_different_version_is_a_real_publish_not_a_retry` **失败**，
+报的是 "target contains orphan rows for data_version"。
+**实现是对的**：真实的 `_current_version_row_count` 查询**按 `data_version` 过滤**
+（`where data_version='<version>'`），而我的假会话不区分版本，
+于是一个**全新的版本**看起来像是已经有孤儿行了。
+**修正后的假会话按版本应答**，并在注释里写明理由：
+**若对所有计数都答同一个数，retry 分支与首次发布就无法区分**——
+那正是这组测试要分辨的东西。
+**这是本轮第六次同一类教训**，且是第二次由我自己的 fixture 触发（续十的 `_registry_at` 是第一次）。
+
+### 变异验证（3 个，各被其对应测试捕获）
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 41 | retry 跳过行数一致性校验 | 同版本不同数据那条 |
+| 42 | retry 跳过 DQ 门 | DQ 门那条 **+** 空检查集那条 |
+| 43 | REJECTED 批次也允许 retry | 被拒批次不可 retry 那条 |
+
+`db/publish.py` 三次变异后以 `git status --porcelain` 确认**还原干净**。
+
+### C5.5 / C5.6 仍不勾：交付的是单元层覆盖，规格要的是 V2Test 集成故障测试
+
+C5.5 的六种故障，按**当前实际覆盖**逐一点名：
+
+| 故障 | 覆盖情况 |
+|---|---|
+| 源 schema 漂移 | **单元层已覆盖**（续九 C1.5 dry-run：表/列缺失、类型不可转换、表不可读三种） |
+| 源水位中途变化 | **无任何覆盖** |
+| 重复冲突 | **已覆盖**（C3 去重测试 + 本轮续十一的两条不变量） |
+| `available > signal` | **已覆盖**（`tests/property/` 与 `tests/leakage/` 的 PIT 排序不变量） |
+| publish 前进程异常 | **本轮起实质覆盖**（retry 的四种入口状态：CREATED/VALIDATED/PUBLISHED/REJECTED） |
+| 相同版本重跑 | **本轮起覆盖**（含"同版本不同数据必须被拒"） |
+
+**即六种里四种在单元层有了覆盖，此前是零到一之间**。
+**但 C5.5 的标题是「V2Test 集成故障测试」**，而 `tests/integration/factors/` **目录仍不存在**
+（与续十对 C1.6、续十三对 C5.5 的发现同因）。
+**单元层证明的是发布器的状态机正确，集成层要证明的是它在真实 V2Test 上、
+真实会话中断与真实水位变化下也正确——后者无法由前者代替。**
+**故不勾**，并把"源水位中途变化"记为**唯一六种里仍零覆盖**的一项。
+
+C5.6 同理：其第一条 Run（`pytest tests/unit/factors/test_materializer.py -q`）通过，
+Expected 的前半「正常发布幂等」**本轮已在单元层钉住**，
+后半「所有 blocker 均保持旧版本可见」由既有的
+`test_database_publisher_does_not_write_when_dq_rejects_batch` 与本轮的 REJECTED 断言共同覆盖；
+但**第二条 Run 指向的 `tests/integration/factors/test_factor_publish.py` 不存在**，故不勾。
+
+**全量：1487 passed / 45 skipped**（本节起点 1479；+8 publish retry），
+`ruff check src tests` 清、`mypy src` 158 文件清。
