@@ -1,7 +1,7 @@
 # C 计划逐款核验：待裁决清单与未接线治理路径
 
-> 生成时间：2026-09-06 10:40 CST（Asia/Shanghai）· 最后更新：12:25 CST
-> 分支 `codex/publish-quant-platform` · 状态：**七项待人工裁决 / 决定，其中一项阻塞两条实现**
+> 生成时间：2026-09-06 10:40 CST（Asia/Shanghai）· 最后更新：13:05 CST
+> 分支 `codex/publish-quant-platform` · 状态：**八项待人工裁决 / 决定，其中一项阻塞两条实现**
 > 来源：C 计划勾选审计续七～续十二（`docs/superpowers/plans/2026-08-01-quant-research-v2-c-factor-governance-plan.md`）
 > 本文书**只汇总已实测的事实与选项**，未代做任何一项决定，未变更任何运行中的链。
 
@@ -202,6 +202,44 @@ signal_date report_period  raw_value  available_date  source_revision_id  stale_
 **等 2.4 落地后即可跑。** **不代造 fixture**：C3.4 要的是真实审计抽取的样例，
 凭空编一个会让回归测试**看起来有真实出处而没有**，那比缺这条测试更糟。
 
+## 3b. 决定 H（新增）：源水位一致性的不变量该放在哪一层
+
+**问题**：C5.5 的六种故障里，「源水位中途变化」是**唯一在任何一层都不被检测**的一种。
+实测证据（详见计划审计续二十一）：
+
+- **`db/publish.py` 里 `source_watermark_id` 零命中**——发布器校验业务键、分区归属、DQ、
+  版本与指针状态，**但不看 lineage**。一个行来自两个源快照的批次，发布路径与干净批次完全相同。
+- **批内混合当前不可能**（每个 materializer 对整帧盖同一个水位），
+  **故暴露面在批间**：同一对象的两个月、同一 `data_version`、一读在源变动前一读在后。
+  **每批内部一致 ⇒ 任何按批的检查都看不见 ⇒ 该版本装着混源的行。**
+- **`RunContext.build` 把水位折进 `data_version`**（`sorted(set(watermarks))`），
+  故源变动**确实改变版本号**（要紧的一半：不会与干净 run 相撞）；
+  但该集合**无键**，**不能回答"是同一张表中途动了，还是本来就读了几张表"**。
+- **`verify_factor_daily_backfill.py` 核验的是版本字符串**（观测版本集合 == 预测版本），
+  **不是**已发布行的水位列是否单值。
+
+**后果**：源中途移动 → run 正常完成、正常发布、指针照常推进 →
+**混源的行成为正式可见版本，且没有任何一层报错或记录哪张表动过。**
+
+**三个候选位置：**
+
+- **(H-i) `StagedBatch.validate` 加批内检查**：改动最小，**但抓不到真正的暴露面**——
+  批内混合本就不可能发生，故它对所有现存批次静默通过、批间混合照旧。
+  **它会制造"已经防住了"的错觉**，因此**不建议单独采用**。
+- **(H-ii) 发布器跨批记住该版本已写过的水位**：能抓住，但需要发布器持有跨调用状态或回查已发布行，
+  而 `V2BatchPublisher` 现在是无状态的（只靠注入的 pointer reader 感知外部）。
+- **(H-iii) 发布后核验「一个 data_version × 一个对象 × 一张源表 ⇒ 一个水位」**：
+  **能抓住且不改发布路径**，与 `verify_factor_daily_backfill.py` 已有的
+  「单一 data_version」核验同类，**最贴合现有结构**；
+  代价是**事后拦下而非事前阻止**（混源行会先落库，再由核验器拒绝推进指针）。
+
+**倾向 (H-iii)**。**未实施**：(H-ii) 新增一条能让发布失败的拒绝路径，
+(H-iii) 新增一个必须被编排器调用的核验步骤，**两者都改变运行链行为**，
+而 Task 2.4 正在逐位复现。
+**现状已用两条 characterization test 钉住**（`tests/unit/db/test_publish.py`），
+其中一条经变异验证：**把 (H-i) 直接加上去会让它失败**，
+故日后补这条不变量必然是一次显式的、有意识的改动，而不是静默生效。
+
 ## 4. 建议的处理顺序
 
 1. **等 Task 2.4 落地**（`/tmp/legacy_flagcheck/report.json` → 自动核验 → 期望 `CONSISTENT`），
@@ -213,6 +251,8 @@ signal_date report_period  raw_value  available_date  source_revision_id  stale_
 6. **决定 F**（quarantine JSON 格式）——独立，随时可定。
 7. **决定 G**（去重偏差）——**必须在 Task 2.4 落地之后**，且会改变已物化数据，需配合版本指针策略。
 8. **C3.4**——2.4 落地后跑只读普查即可解锁，无需裁决。
+9. **决定 H**（源水位一致性放在哪一层）——独立于 A–G，可单独决定；
+   倾向 (H-iii) 发布后核验，因为它不改发布路径。
 
 ## 5. 本轮已交付（均已提交推送，无需裁决）
 
@@ -253,10 +293,11 @@ signal_date report_period  raw_value  available_date  source_revision_id  stale_
 
 ## 6. 关联文书
 
-- 计划与逐款审计：`docs/superpowers/plans/2026-08-01-quant-research-v2-c-factor-governance-plan.md`（续七～续十二）
+- 计划与逐款审计：`docs/superpowers/plans/2026-08-01-quant-research-v2-c-factor-governance-plan.md`（续七～续二十一）
 - 算力与覆盖决策（裁决 1–4）：`docs/handoffs/2026-09-05-compute-and-coverage-decision-brief.md`
+- 裁决 2 的两条补充证据（基线不收敛、90 次数值奇异求解）：同上文书，裁决 2 名下
 - 裁决 4 影响面：`docs/handoffs/2026-09-06-adjudication-4-implementation-blast-radius.md`
 - 证据目录：`/data/zhangyudong/qrv2_research_artifacts/`
   （`catalog_schema_dry_run{.txt,_report.json,_schemas.json}`、
   `catalog_reproducibility{_report.json,.txt}`、`factor_metadata_frozen_snapshot.parquet`、
-  `fundamental_expansion_scaling.txt`）
+  `fundamental_expansion_scaling.txt`、`factor_materialize_plan_demo.json`）

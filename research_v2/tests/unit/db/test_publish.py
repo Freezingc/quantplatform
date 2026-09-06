@@ -641,3 +641,90 @@ def test_a_different_version_is_a_real_publish_not_a_retry() -> None:
     assert batch.state is PublishState.PUBLISHED
     assert session.uploads, "a new version must actually be written"
     assert session.scripts, "and the pointer must be advanced"
+
+
+# --- C5.5's "source watermark changes mid-run": not detected at any layer ------------------------
+
+
+def test_a_batch_carrying_two_source_watermarks_publishes_without_comment() -> None:
+    """Pinned so that adding the missing invariant is a deliberate act, not a surprise.
+
+    C5.5 lists "源水位中途变化" among the failures to cover, and it is the one mode with no
+    coverage anywhere. This is why. ``publish.py`` never mentions ``source_watermark_id``: the
+    publisher validates business-key uniqueness, month-partition membership, DQ results and
+    version/pointer state, and does not look at lineage at all. So a batch whose rows came from two
+    different source snapshots publishes exactly like a clean one.
+
+    Within a single batch this cannot currently happen -- every materializer stamps one watermark
+    for the whole frame. The exposure is across batches: two months of one object, published under
+    one ``data_version``, read before and after the source moved. Each batch is internally uniform,
+    so no per-batch check can see it, and the version ends up holding rows of mixed provenance.
+
+    Not fixed here. Where the invariant belongs is a design decision, not an obvious one: a
+    per-batch check in ``StagedBatch.validate`` would pass every batch that can currently be
+    produced and still miss the cross-batch case, while a per-version check needs either publisher
+    memory of what it already wrote for that version or a post-publish verifier. Adding a
+    rejection to the live publish path also cannot happen while a bit-for-bit reproduction is
+    running.
+    """
+    batch = StagedBatch.create(
+        object_name="market_daily_clean",
+        logical_partition="2025-01",
+        data_version="version-a",
+        frame=pd.DataFrame(
+            {
+                "trade_date": ["2025-01-02", "2025-01-03"],
+                "ts_code": ["000001.SZ", "000001.SZ"],
+                "source_watermark_id": [
+                    "watermark-before-the-source-moved",
+                    "watermark-after-it-moved",
+                ],
+            }
+        ),
+        business_keys=("trade_date", "ts_code"),
+    )
+    session = RecordingWriteSession()
+
+    V2BatchPublisher(session).publish(
+        batch,
+        [CheckResult("keys_unique", Severity.BLOCKER, CheckStatus.PASS)],
+    )
+
+    assert batch.state is PublishState.PUBLISHED
+    assert len(session.uploads) == 1
+    uploaded = session.uploads[0][1]
+    assert uploaded["source_watermark_id"].nunique() == 2, (
+        "fixture premise: one batch really does carry two source snapshots"
+    )
+    assert any("published_version" in script for script in session.scripts), (
+        "and the pointer still advances, so the mixed-provenance rows become the visible version"
+    )
+
+
+def test_run_identity_folds_watermarks_into_an_unkeyed_sorted_set() -> None:
+    """What ``data_version`` does and does not say about source movement.
+
+    ``RunContext.build`` hashes ``sorted(set(watermarks))``, so a watermark change *does* change the
+    version -- a run that read a moving source cannot collide with a clean run's identity, which is
+    the important part and is worth pinning. But the set is unkeyed: the version records *that* some
+    set of watermarks was involved, not which source each came from, and duplicates collapse. So the
+    version cannot answer "did one table move mid-run, or did I simply read two tables?", and the
+    answer has to come from the per-row ``source_watermark_id`` column instead -- which, per the
+    test above, nothing validates.
+    """
+    from research_v2.runs.context import RunContext
+
+    def build(watermarks: list[str]) -> str:
+        return RunContext.build(
+            config={},
+            watermarks=watermarks,
+            code_commit="commit-a",
+            schema_version="schema-1",
+        ).data_version
+
+    baseline = build(["w1", "w2"])
+
+    assert build(["w2", "w1"]) == baseline, "order must not matter"
+    assert build(["w1", "w1", "w2"]) == baseline, "multiplicity is discarded by the set"
+    assert build(["w1", "w3"]) != baseline, "a different watermark does change the version"
+    assert build(["w1", "w2", "w3"]) != baseline, "and so does an additional one"

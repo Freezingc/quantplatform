@@ -2303,3 +2303,76 @@ Expected 的前半「正常发布幂等」**本轮已在单元层钉住**，
 
 **全量：1487 passed / 45 skipped**（本节起点 1479；+8 publish retry），
 `ruff check src tests` 清、`mypy src` 158 文件清。
+
+## 勾选审计续二十一（2026-09-06 13:05）：C5.5 最后一种零覆盖故障已查清——「源水位中途变化」在**任何一层都不被检测**；新增决定 H
+
+续二十把 C5.5 六种故障里四种补到了单元层，剩下「源水位中途变化」标注为**唯一零覆盖**。
+本轮把它查清了，结论不是"缺一条测试"，而是**缺一条不变量**。
+
+### 实测证据链
+
+1. **发布器根本不看 lineage。**`grep source_watermark_id research_v2/src/research_v2/db/publish.py`
+   → **零命中**。`V2BatchPublisher` 校验业务键唯一、月份分区归属、DQ 结果、版本与指针状态，
+   **唯独不碰 `source_watermark_id`**。故一个**行来自两个不同源快照**的批次，
+   与一个干净批次**发布路径完全相同**。
+2. **批内混合当前不可能发生**——每个 materializer 都对整帧盖**同一个**水位
+   （`materializers/market.py` 四处 `materialized["source_watermark_id"] = source.watermark_id`、
+   `materializers/labels.py`、`materializers/factor_evaluation.py::_append_lineage`）。
+   **所以暴露面不在批内，而在批间**：同一个对象的两个月、在同一个 `data_version` 下发布、
+   一个在源变动前读、一个在变动后读。**每一批内部都是一致的，故任何按批的检查都看不见它**，
+   而这个版本最终装着**混源的行**。
+3. **`RunContext.build` 把水位折进 `data_version`，但折的是一个无键的集合。**
+   `payload["watermarks"] = sorted(set(watermarks))`，故**源变动确实会改变版本号**
+   ——这是要紧的一半：读过移动源的 run **不会与干净 run 的身份相撞**。
+   但集合**不记录每个水位来自哪个源**，且**重复被折叠**。
+   于是版本号能回答"涉及了这组水位"，**不能回答"是同一张表中途动了，还是我本来就读了几张表"**。
+4. **回填核验器查的是版本字符串，不是水位列。**
+   `scripts/verify_factor_daily_backfill.py` 重算出**预测的** `data_version`
+   并断言观测到的版本集合等于它（第 126 行），
+   但**没有**断言已发布行的 `source_watermark_id` 列是单值的。
+
+**合起来**：一次源中途移动会让 run **正常完成、正常发布**，产出一个**与干净 run 不同**的
+`data_version`，其中装着**混源的行**，而**没有任何一层报错、也没有任何一层记录"哪张表在中途动了"**。
+指针照常推进，于是混源的行成为**正式可见版本**。
+
+### 两条钉住现状的测试
+
+- **`test_a_batch_carrying_two_source_watermarks_publishes_without_comment`**：
+  构造一个 `source_watermark_id` 列**含两个不同值**的批次，断言它**发布成功**、
+  上传帧里水位**确实有两个**（fixture 前提）、且**指针照样推进**。
+- **`test_run_identity_folds_watermarks_into_an_unkeyed_sorted_set`**：
+  钉住 `data_version` **对水位顺序与重数不敏感**（`["w1","w2"] == ["w2","w1"] == ["w1","w1","w2"]`），
+  而**换一个或加一个水位确实改变版本**（`["w1","w3"] != baseline`、`["w1","w2","w3"] != baseline`）。
+  **两个方向都要断言**：只断言"不敏感"会让"版本号根本不包含水位"的实现通过。
+
+**变异验证**：
+**M44 = 直接把缺失的不变量加上去**（在 `StagedBatch.validate` 里拒绝水位不唯一的批次）
+→ 第一条测试**失败**。**这正是 characterization test 应有的行为**：
+它钉住现状，使得日后补这条不变量时**必须显式改动一条测试**，从而是一次有意识的决定。
+**M45**（`RunContext` 改为按有序 list 而非 sorted set 哈希）→ 第二条测试失败，
+**并同时使既有的 `test_data_version_is_stable_for_equivalent_orderings` 失败**，
+说明那条既有测试也在看守同一性质。
+`db/publish.py` 与 `runs/context.py` 变异后均确认**还原干净**。
+
+### 不实施的理由：不变量该放在哪一层是个设计决定（新增决定 H）
+
+三个候选位置，各自的能力不同：
+
+- **(H-i) `StagedBatch.validate` 里加批内检查**：**改动最小，但抓不到真正的暴露面**。
+  批内混合当前根本不可能发生（见证据 2），故这条检查会对所有现存批次静默通过，
+  而**批间混合照旧**。**它给人一种已经防住了的错觉**——这正是本轮反复遇到的失效模式。
+- **(H-ii) 发布器记住该 `data_version` 已写过的水位，跨批比对**：能抓住批间混合，
+  但需要**发布器持有跨调用状态**（或查已发布行），
+  而 `V2BatchPublisher` 现在是无状态的、只靠注入的 pointer reader 感知外部。
+- **(H-iii) 发布后核验器断言"一个 `data_version` × 一个对象 × 一张源表 ⇒ 一个水位"**：
+  **能抓住，且不改动发布路径**，位置与 `verify_factor_daily_backfill.py` 已有的
+  "单一 `data_version`"核验同类，是**最贴合现有结构的一处**。
+  代价是**事后发现而非事前阻止**——混源的行会先落库，再由核验器拦下不推进指针。
+
+**倾向 (H-iii)**，但**不代做**：它要么新增一条能让发布失败的拒绝路径（(H-ii)），
+要么新增一个必须被编排器调用的核验步骤（(H-iii)）——
+**两者都改变运行链行为，而 Task 2.4 正在逐位复现**（本节写作时已 15h57m）。
+**已作为决定 H 写入决策清单。**
+
+**全量：1489 passed / 45 skipped**（本节起点 1487；+2 watermark），
+`ruff check src tests` 清、`mypy src` 158 文件清。
