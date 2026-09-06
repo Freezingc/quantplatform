@@ -143,11 +143,11 @@ source_watermark_id
 
 测试宽表列顺序改变不影响输出；额外未注册列被报告但不加载；缺少注册列阻止对应因子批次。
 
-- [ ] **C2.2 实现分列/分月读取**
+- [x] **C2.2 实现分列/分月读取**
 
 按注册表只查询所需列和日期，不加载 135 列全历史到单机；默认月份 chunk + factor group，输出 canonical long form。chunk 边界不影响最终 hash。
 
-- [ ] **C2.3 实现数值规范化**
+- [x] **C2.3 实现数值规范化**
 
 接受 DolphinDB 数值类型与可解释的 decimal；将 ±inf 转为 invalid flag 而非有效 NaN；保留 raw value 精度；不在 source reader winsorize、scale 或 impute。
 
@@ -804,3 +804,54 @@ metadata revision」，已由 `test_metadata_changes_do_not_change_definition_ha
 **可推广的规则（建议写进后续 review 清单）**：任何在**反序列化边界**（YAML / JSON / DB 行）
 构造的契约对象，必须在构造时校验枚举成员身份，因为其下游的类型专属规则很可能用身份比较分派；
 `StrEnum` 让「值相等的字符串」看起来完全正常，只有 `is` 会暴露它。
+
+## 勾选审计续六（2026-09-06 08:30）：C2.2 / C2.3 已勾，C2.1 差一款
+
+**C2.3 已勾——三款全部有测试，其中两款此前无测试。**
+「±inf 转为 invalid flag 而非有效 NaN」此前已测；本轮补上另外两款：
+**「保留 raw value 精度」与「不在 source reader winsorize、scale 或 impute」**。
+新测试 `test_the_reader_never_alters_drops_or_invents_a_value` 断言输出行数等于输入行数
+（不丢不增），且每个发布值与源在同键上交付的某个值**逐位相同**（用 `float.hex()` 比较，
+两个 NaN 视为同一种缺失）；`test_extreme_but_finite_values_are_passed_through_not_clipped`
+断言 ±1e308 原样通过且被标记为有效。这与去重层「永不合成值」是同一性质、同一理由：
+source reader 是值进入平台的入口，**它改动的任何东西都与「源本来就这么说」无法区分**，
+被裁剪的离群值或被插补的均值会传进每一个因子值、每一个基线、每一个信任根，而下游无从察觉。
+**变异验证**：在 reader 里插入 `.clip(-1e6, 1e6).fillna(0.0)`（即 winsorize + 插补）→
+**3 条测试失败**（新增两条 + 既有的 `marks_nonfinite_values`，因 `fillna(0.0)` 把 NaN 变成了有效的 0）；
+而列序、额外列、分块三条不变量测试在变异下仍通过是**正确的**——它们比较的是 reader 输出对 reader 输出，
+属不变量而非值保真。变异后 `source_reader.py` 以 `git diff --quiet` 确认还原干净。
+
+**C2.2 已勾——四款全部核实，其中取数层此前完全无测试。**
+`factors/source_backfill.py::_query_source_month` 实测：
+**只投影 4 列**（`select ts_code, trade_date, factor_name, value`）、
+**按 factor group 过滤**（`factor_name in ['Alpha1', 'Alpha2']`）、
+**按月份 chunk 过滤**（`trade_date between date('2025.03.01') and date('2025.03.31')`，
+来自 `FactorMonth.from_partition`），故不会把 135 列全历史拉到单机；
+输出为 canonical long form（11 列，已由 C2.1 相关测试钉住列集合）。
+新增 `tests/unit/factors/test_source_backfill_query.py`（10 测试）钉住查询形状，
+并把**表名白名单当作注入防护来测**：6 个不安全表名（`factor_data12`、`factor_data0`、
+`factor_data`、`stock_factor_daily`、`factor_data1') ; drop table x --`、`factor_data1,factor_data2`）
+必须在**发出任何查询之前**被拒——测试断言 `session.queries == []`，而不只是断言最终抛错；
+另测因子名内的单引号被转义为 `''`、返回 schema 缺列被拒、以及返回帧被**重投影到恰好那 4 列**
+（多出的列不得搭便车进入管线）。
+**「chunk 边界不影响最终 hash」已测**：`_source_row_id` 哈希的是
+`(表名, 代码, 观测日, 因子名, 值, 组内出现序号)`，**不含帧内位置**，
+而 `occurrence` 是 `(代码, 日期, 因子名, 值)` 组内的 `cumcount`；
+故按 C2.2 规定的两个轴（月份、因子组）分块时同一组永不被切开，row id 必然不变。
+测试按月份切成两块分别归一化再拼接，与整帧一次归一化的结果**逐帧相等（含 `source_row_id`）**。
+注：任意行切分不在此列，也不是规格所指的 chunk。
+
+**C2.1 仍不勾——五款中四款已满足，差「额外未注册列被报告」。**
+已满足并测试：统一输出契约（11 列，含 C2.3 要求的 `value_is_valid` / `invalid_reason`，
+是规格所列 9 列的超集）、**源列顺序改变不影响输出**、额外未注册列**不被加载**、
+缺少注册列时抛 `SourceFactorSchemaError` 阻止该因子批次。
+**未满足的一款**：「额外未注册列**被报告**」——reader 只是丢弃它们，没有任何报告机制。
+按 C1.5 的措辞（dry-run 输出「`mapped/blocked/retired` 数量和**未映射源列**」），
+报告本应属于 catalog dry-run，而 **C1.5 尚未实现**，故该款无处落地。
+**关于「宽表」**：实测所有 11 张 `factor_data1..11` 源表都是**长表**
+（取数一律 `select ts_code, trade_date, factor_name, value ... where factor_name in [...]`，
+且该路径已在生产中用于冻结集物化），故「一列一个因子」的宽表映射在本源上**不出现**；
+规格标题里的「宽表列顺序改变不影响输出」按字面已由列序不变测试覆盖。
+**因此 C2.1 的唯一实质缺口与 C1.5 是同一件事**，应一并处理。
+
+**全量：1327 passed / 45 skipped**（本节起点 1312），`ruff check src tests` 清、`mypy src` 156 文件清。
