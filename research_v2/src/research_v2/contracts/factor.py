@@ -52,6 +52,24 @@ class FactorDefinition:
             raise ValueError("factor_id, positive factor_version, and owner are required")
         if self.source_database != "dfs://YesLab":
             raise ValueError("factor source_database must be dfs://YesLab")
+        # Membership is checked before the type-specific rules below, because those rules
+        # dispatch on identity (``is FactorType.TECHNICAL``). A plain string equal in value
+        # is not identical, so every branch is skipped and the rules silently do not apply.
+        # That is fail-open in the worst direction: a YAML catalog stores these as strings,
+        # so a loader that forgets ``FactorType(...)`` would register a fundamental factor
+        # as SAME_DAY_CLOSE -- usable on its announcement date, before the market could
+        # react -- or a technical factor with a non-zero staleness allowance. Measured
+        # before this check: both accepted.
+        if not isinstance(self.factor_type, FactorType):
+            raise ValueError(
+                f"factor_type must be a FactorType, got {self.factor_type!r}; coerce with "
+                "FactorType(value) rather than passing the raw catalog string"
+            )
+        if not isinstance(self.availability_policy, AvailabilityPolicy):
+            raise ValueError(
+                "availability_policy must be an AvailabilityPolicy, got "
+                f"{self.availability_policy!r}; coerce with AvailabilityPolicy(value)"
+            )
         if not all(
             (
                 self.source_table,

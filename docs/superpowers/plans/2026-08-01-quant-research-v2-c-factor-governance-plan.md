@@ -69,7 +69,7 @@ research_v2/tests/integration/factors/test_factor_registry_import.py
 
 `source_database` 固定为 `dfs://YesLab`；`source_table` 必须是 Phase 0 从 `factor_metadata.store_factor` 冻结出的 `factor_data1` 至 `factor_data11` 中的准确表名；值/日期/证券字段按当前源契约固定为 `value`、`trade_date`、`ts_code`。C1 的生成命令必须把冻结的 metadata snapshot 转成显式逐因子 YAML，并在人审后保存 snapshot hash；不存在待运行时替换的表名。
 
-- [ ] **C1.2 写失败测试：稳定 ID 与版本不可变**
+- [x] **C1.2 写失败测试：稳定 ID 与版本不可变**
 
 ```python
 def test_definition_change_requires_new_factor_version(registry):
@@ -80,7 +80,7 @@ def test_definition_change_requires_new_factor_version(registry):
 
 覆盖重复 ID/version、未知 factor type、无 owner、源 URI 非 YesLab、technical 配置 staleness>0、fundamental 缺 ann_date mapping、definition hash 变化。
 
-- [ ] **C1.3 定义类型与 definition hash**
+- [x] **C1.3 定义类型与 definition hash**
 
 ```python
 class FactorType(StrEnum):
@@ -724,3 +724,55 @@ C6.2 是补三条 blocker 判定。二者都会改变 `FactorQualitySnapshot.met
 `quality.py` 以 `git diff` 确认还原干净。
 **全量：1305 passed / 45 skipped**（本轮起点 1289），`ruff check src tests` 清、
 `mypy src` 156 文件清。
+
+## 勾选审计续五（2026-09-06 08:05）：C1.2 / C1.3 已勾，并修掉一个 fail-open 缺陷
+
+**查出一个真实缺陷（已修，commit 见下）：`FactorDefinition` 的类型专属校验是 fail-open 的。**
+`contracts/factor.py::__post_init__` 用**身份比较**分派类型专属规则
+（`self.factor_type is FactorType.TECHNICAL`、`self.availability_policy is not
+AvailabilityPolicy.NEXT_TRADING_DAY_AFTER_ANNOUNCEMENT`），却**从不校验这两个字段是否为合法枚举成员**。
+`FactorType` 是 `StrEnum`，值相等的普通字符串与枚举成员**并非同一对象**，故 `is` 为假、
+分支整体跳过、规则静默不适用。dataclass 也不在运行时强制类型注解。实测四种组合：
+
+| 输入 | 期望 | 修复前实测 |
+|---|---|---|
+| `factor_type=FactorType.TECHNICAL`, staleness=30 | 拒绝 | 拒绝 ✓ |
+| `factor_type="TECHNICAL"`（字符串）, staleness=30 | 拒绝 | **接受** ✗ |
+| `factor_type="BOGUS"` | 拒绝 | **接受** ✗ |
+| `factor_type="FUNDAMENTAL"` + `availability_policy="SAME_DAY_CLOSE"`（均为字符串） | 拒绝 | **接受** ✗ |
+
+**第四例后果最严重**：availability 正是把公告挡在「它存在之前」的那道机制，
+一个被当作 SAME_DAY_CLOSE 的基本面因子会**在其公告日当天即可用**，即市场尚无从反应之前——
+**那是前视偏差**，正是 PIT 层存在的理由。注意该绕过需要**两个字段都是字符串**：
+若 `factor_type` 是真枚举，原有的 fundamental 检查仍会触发。
+
+**当前是否可达**：`src/` 中唯一的构造点 `factors/source_backfill.py:324` **做对了**
+（`FactorType(str(...))`、`AvailabilityPolicy(str(...))` 显式转换，未知值会被枚举本身拒绝）。
+且 **catalog → `FactorDefinition` 的加载器目前并不存在**（那正是 C1.5 dry-run 与 C5.3
+`registry import --catalog` 缺失的部分）。所以缺陷尚未被触发——但
+`configs/factors/source_catalog.yaml` 里 487 个条目的 `factor_type` **本来就是 YAML 字符串**，
+未来任何加载器只要忘了转换就会命中。**在一个自称「Fail-closed registry」的模块里，
+契约对象自身 fail-open 是设计缺陷，不是调用方的问题。**
+
+**修法**：在类型专属规则**之前**校验两个字段均为对应枚举成员，否则 `ValueError`，
+错误信息直接给出修法（「coerce with FactorType(value) rather than passing the raw catalog
+string」）。选择**拒绝而非静默转换**：这是不可变契约对象，在 frozen dataclass 内部
+改写调用方输入属于隐式变更，与本项目其余部分的做法相反
+（如 `describe_runtime_environment` 只观测不配置）；且唯一的现有调用方本就显式转换，故拒绝零成本。
+**附带收益**：修复前对字符串类型的定义调用 `definition_hash` 会在**哈希时**抛
+`AttributeError: 'str' object has no attribute 'value'`（已实测），即一个晚期且与真因无关的崩溃；
+现在改为构造期的清晰拒绝。
+
+**C1.2 已勾**：其列举的 7 类情形现已全部有测试——重复 ID/version（同定义幂等返回原条目、
+改定义则 `ImmutableDefinitionError`）、未知 factor type、无 owner、源 URI 非 YesLab、
+technical staleness>0、fundamental 缺公告可用策略、definition hash 变化。
+其中「无 owner」「fundamental 缺公告可用策略」「重复注册幂等」三类**此前已实现但无测试**，
+补测即通过；另三类中未知类型与两处字符串绕过**此前既未实现也未测试**。
+**C1.3 已勾**：`definition_hash` 对 13 个字段（availability_policy、expected_direction、
+factor_id、factor_type、factor_version、frequency、max_staleness_calendar_days、
+四个 source 映射列、source_database、unit）做 `sort_keys` 规范 JSON 后 SHA-256，
+覆盖规格点名的语义/源映射/方向/版本/频率/单位/availability policy；
+且 `display_name` 与 `owner` **不在载荷内**，正是规格要求的「描述文案和 owner 变更可通过
+metadata revision」，已由 `test_metadata_changes_do_not_change_definition_hash_or_active_state` 断言。
+
+**全量：1312 passed / 45 skipped**（本节起点 1305），`ruff check src tests` 清、`mypy src` 156 文件清。
