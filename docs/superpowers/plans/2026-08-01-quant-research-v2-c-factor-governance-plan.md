@@ -2688,11 +2688,23 @@ GP_017：7,282,831 = 3,184,961 + 4,097,870；GP_077：6,764,199 = 0 + 6,764,199�
   (b)（`[v,v,NaN]` 也被标 SINGLE_NONNULL）**在实测的 18 个因子上一次也没发生**——
   真实形状是 `[v, NULL]`，**恰好符合规格**；故 (b) 是**纯标签问题、且当前无实例**。
   (a)（折叠只比 `raw_value`、存活者由最小 `source_row_id` 决定）
-  **影响面现在可按因子量化**：它作用于上表 7 个"纯精确重复"因子的
-  **3,528,553–7,322,304 个键**（若这些键的 `source_available_date` 在重复行间不同，
-  则可用日是被溯源排序挑中的）。**这一条本轮未测**：普查只取了
-  `(ts_code, trade_date, value)`，**没有取 `source_available_date`**，
-  故"重复行间的可用日是否真的不同"**仍是未知**。**这是决定 G 需要的那个数，尚未测。**
+  **不需要普查来回答——读代码即可，答案是"当前结构性无值可挑"**：
+  `source_available_date` **全仓只有一处写入**（`source_reader.py:102`）且**直接等于
+  `observation_date`**，而 `observation_date` 是去重的四个业务键之一；
+  技术路径的 PIT 步骤又赋一次（`availability.py:77`
+  `result["available_date"] = result["observation_date"]`），
+  经 `materializer.py:110` 写进发布列 `available_date`（migration 003 声明）。
+  **故同一重复组内所有行的可用日必然相同**：续十一 那句"可用日是被溯源排序顺手挑中的"
+  **对代码的描述成立，但候选之间在这一列上没有任何差别，挑谁结果都一样。**
+  **它何时会变成真的**：`deduplicate_factor_observations` 的**唯一调用者**是
+  `materializer.py:98`（技术路径）；基本面路径的可用日**从 `ann_date` 派生**
+  （`availability.py:102-103` → `assign_fundamental_available_date`），与 `observation_date`
+  **不同值**，而它**当前既未接线、也不经过这个去重器**。
+  **故 (a) 款的生效条件是"决定 B/C 把基本面路径接进这个去重器"**——
+  这是 **B/C 与 G 之间一条此前没被写下的耦合**：同一报告期的两个修订若带着不同 `ann_date`
+  落到同一业务键，(a) 款当场从"无值可挑"变成"可用日由溯源排序决定"。
+  **结论：决定 G 的两款在当前生产路径上都是零实例**，
+  其优先级应据此下调；**而它重新变要紧的时刻由 B/C 决定，不由 G 自己决定。**
 - **决定 E（C7.1 scope 绑定 / C7.2 覆盖率分母）**：**新增成本上限**（评审 #18）。
   `compute_factor_similarity` **零生产调用者**，实测标度律为
   **`t = pairs × R × (1.7457e-05 + 1.2547e-07 × F)` 秒**（R = 每因子 天数×股票数），
