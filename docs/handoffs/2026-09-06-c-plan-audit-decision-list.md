@@ -621,7 +621,9 @@ inspect the scope's other criteria"*——**续二十九就是那次 inspect。*
 
 - **累计有效变异 81 个**（本节 25 → 续二十一 45 → 续二十二 61 → 续二十三 67 → 续二十四 70 →
   续二十五 74 → 续二十七 79 → 续二十八 81，即 M46–M72、M75、M77–M82、M84、M85；
-  **M73/M74 编号留空未复用**，因为它们要看守的两条性质已由 M68 与"只回聚合"那条测试覆盖；
+  **M73/M74/M76 三个编号留空且未复用**：M73/M74 要看守的两条性质已由 M68 与
+  "只回聚合"那条测试覆盖，M76 是续二十五编号时的跳号（实际只做了 M75 与 M77）——
+  **三者都不对应任何未做的验证**，留空是为了让编号与已记录的一一对应、不回填；
   **M83 存活但不计入**，因为变异本身无效），**其中 M70 存活过一次**（见下），
   其余全部被预期测试捕获。
   **其中 M63 / M64 / M67 三个"只被一条测试抓住"**，而它们看守的三处性质
@@ -728,7 +730,7 @@ inspect the scope's other criteria"*——**续二十九就是那次 inspect。*
 
 ## 6. 关联文书
 
-- 计划与逐款审计：`docs/superpowers/plans/2026-08-01-quant-research-v2-c-factor-governance-plan.md`（续七～续二十三）
+- 计划与逐款审计：`docs/superpowers/plans/2026-08-01-quant-research-v2-c-factor-governance-plan.md`（续七～续二十九）
 - 算力与覆盖决策（裁决 1–4）：`docs/handoffs/2026-09-05-compute-and-coverage-decision-brief.md`
   ——**裁决 3 与裁决 4 已于 2026-09-06 17:00 补入新证据**：
   裁决 3 的复现性由 Task 2.4 的 CONSISTENT 落地证实（余下障碍只有算力与裁决 2 的并发改造，
