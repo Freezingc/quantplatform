@@ -121,7 +121,7 @@
       测试：新增 `test_run_real_walk_forward_factor_source.py`（10 测试）；
       `tests/unit/scripts` **420 passed**；四个文件 ruff 全清；mypy 仅剩
       `walk_forward_common.py:20` 的既有 dolphindb stub 报错（对 HEAD 版本输出一致）。
-- [ ] 2.4 遗留链复现性保护：criterion-303 复现命令（不带新旗标）行为逐位不变；
+- [x] 2.4 遗留链复现性保护：criterion-303 复现命令（不带新旗标）行为逐位不变；
       提交前重跑一致性核验器确认。
       **已启动（2026-09-05 21:08，pid 见 `/tmp/legacy_flagcheck_pid.txt`）**：不带新旗标全量重跑
       `run_real_walk_forward.py --folds F01..F06 --report /tmp/legacy_flagcheck/report.json`
@@ -150,6 +150,37 @@
       进程内代码在启动时已载入，本轮的文件修改对在跑进程无影响。
       **状态（03:55）**：pid 1340873 存活 **6h47m**，无 `/tmp/legacy_flagcheck_failed_at.txt`，
       报告目录仍空（尚在拟合阶段），预计 ~14.5h 即 **~11:38** 落盘，watcher 自动跑核验器。
+      **落地（2026-09-06 13:16:50，实际耗时 ~16h09m，比 ~14.5h 的估计多约 1.6h）**：
+      无 `/tmp/legacy_flagcheck_failed_at.txt`，watcher 自动跑核验器，
+      `/tmp/legacy_flagcheck_verification.txt` 首行
+      **`CONSISTENT: re-run reproduces the criterion-303 evidence exactly`，`verifier exit=0`**。
+      **不只看核验器的结论行，另做了一次独立的逐字段比对**（产物：
+      `/data/zhangyudong/qrv2_research_artifacts/task2_4_independent_comparison.txt`）：
+      - `folds`、`data_versions`、`oos` 三节**逐字节相同**（`oos.mean_rank_ic = 0.08644480476791745`、
+        `icir = 0.634437170950933`、`hac_t_statistic = 13.091963990192541`、`valid_day_count = 1455`
+        与参考完全一致）；
+      - `selections` **不是**逐字节相同，但差异**纯为新增字段**：重跑多出
+        **`invalid_day_count` 与 `unselected_reasons`**，参考侧**没有任何独有字段**；
+      - 顶层多出 **`baseline_oos_artifacts`** 一个键（与 03:53 预干跑时的判断一致）；
+      - **把上述新增字段与新增键剔除后，整份白名单报告与参考逐字节相同**
+        （`ENTIRE WHITELISTED REPORT IDENTICAL after removing added fields: True`）——
+        即**没有任何一个共有字段的值发生变化**。这是深度比对的结果，不是对核验器结论的转述。
+      **六个折匹配基线工件全部产出**（`/tmp/legacy_flagcheck/baseline_oos/F01..F06.parquet`），
+      列序六者一致（`signal_date, ts_code, score, model_id, fold_id, dataset_id`），
+      且**行数与本次运行日志里的 test 段行数逐一吻合**
+      （F03 787,930 / F04 870,331 / F05 923,404 / F06 922,724），即每个 test 配对恰好一行。
+      **顺带一个对 Task 3.3 有意义的事实**：`invalid_day_count` 与 `unselected_reasons`
+      正是 3.3 所写的「扩展选拔字段（invalid_day_count/unselected_reasons）」，
+      而 `baseline_oos_artifacts` 正是 3.3 的「折匹配基线预测工件」——
+      **两者的产出侧在本次重跑里已经存在**，3.3 剩下的是判定渲染与归档，不是字段本身。
+      **对裁决 2 的影响（重要，且是对本轮早先判断的修正性补充）**：
+      本次重跑的日志里有 **345 条 ElasticNet 不收敛警告**与 **90 条 rcond 低至 9.7e-114 的
+      数值奇异警告**（详见算力简报裁决 2 的两条补充证据），
+      **而它仍然逐位复现了参考报告**。故需把两件事分开陈述：
+      **(a) 同环境下的逐位可复现性已被证明**——即使基线是迭代截断点、路径上还有数值奇异求解；
+      **(b) 这并不证明跨环境稳定**——迭代截断点与奇异求解对浮点累加顺序敏感，
+      而累加顺序由线程数 / BLAS / 库版本决定，本次重跑与参考运行**在同一台机、同一环境下**进行，
+      故 (a) 成立不构成 (b) 的证据。**裁决 2 的必要性不因 CONSISTENT 而下降。**
 
 ## Task 3: 冻结集基线 walk-forward（新信任根）
 
@@ -752,3 +783,11 @@
 **3.1**（按 3.1b 主动拦停）、**3.1b**（待裁决 4）、**3.2 / 3.3**（依赖 3.1）、
 **4.1**（`--reference` 需指向尚不存在的冻结集基线报告）、**5.1 / 5.2 / 5.3**（依赖 3.1 与裁决 2）。
 勾选仅改动 `- [ ]` → `- [x]`，已用 diff 核验**两文件除复选框外零字符变化**。
+
+**更新（2026-09-06 13:30）：2.4 已落地并勾选，上面那句"2.4 判定未出"是当时的状态、保留不改。**
+重跑于 **13:16:50** 落盘（实际 ~16h09m），核验器首行 **`CONSISTENT`、`exit=0`**；
+另做了独立的逐字段深度比对，确认**剔除新增字段（`invalid_day_count`/`unselected_reasons`）
+与新增顶层键（`baseline_oos_artifacts`）后，整份白名单报告与 criterion-303 参考逐字节相同**，
+六个折匹配工件齐全且行数与日志 test 段逐一吻合。详见 2.4 条目下的落地记录。
+**其余各项状态不变**：3.1 仍按 3.1b 主动拦停（`/tmp/frozen_chain_hold.txt` 未解除），
+**2.4 落地不是 3.1 的解锁条件，裁决 4 才是**。
