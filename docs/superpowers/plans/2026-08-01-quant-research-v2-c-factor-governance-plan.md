@@ -7115,3 +7115,108 @@ golden 那一类更脆：**任何一次有意的指标变更之后都要重新�
    `attribution_matrix.py` 已是雏形（从各 harness 复用变异表、逐文件跑、记录杀手节点），
    缺的是候选文件的自动选取。**这是一件工具活，不是一条链的测量活，应单独排一轮。**
 3. 其余同前：约 1,530 个测试函数在已审计的八条链之外从未做过变异测量。
+
+## 勾选审计续六十二（2026-09-07 07:25）：**开链 9 = 锁定测试**（PRODUCTION 前的最后一道门，也是唯一被允许碰 2026 标签的那次评价）。`locked_test.py` 1707 行 + `shadow.py` 1026 行**一轮做不完，故切一个有界的片**：预注册的冻结输入绑定 + 逐日指标的校验与聚合。首轮 12 个变异 **1 杀 11 存活（本 session 最差比例）**，补 5 条测试后 **12 杀 0 存活**。原因很具体：**这个套件有 724 行 15 个测试、覆盖不薄，但它们测的全是工作流，而工作流测试全部喂合法输入——删掉一条输入校验不会让任何一条合法输入的测试失败**
+
+### 一、切片理由（以及为什么不是整块）
+
+`registry/locked_test.py` **1707 行**、`monitoring/shadow.py` **1026 行**、`registry/active_pointer.py` **455 行**，
+合计约 3,200 行的签名 / 一次性消费 / 成熟度 / 审批机制——**一轮做不完，硬做只会得到一次浅测**。
+本轮取的两块是**决定"这次尝试被绑到什么"与"它被允许披露什么"**的部分：
+
+- **`LockedTestPreregistration`**：`__post_init__` 的 11 条校验 + `preregistration_hash`
+  ——**它绑定了 model、三个 seed 产物、两份 manifest、因子集、预处理器、股票池、标签定义、
+  评价代码、门列表、命令、以及申请人与批准人两个角色**；
+- **`LockedTestMetrics`**：`__post_init__` 的校验 + `aggregate()`
+  ——**后者算出唯一被允许离开隔离评价器的那个分数健康数字**。
+
+现有覆盖：`tests/unit/registry/test_locked_test.py`，**724 行 / 15 个测试**。**覆盖不薄**，这使首轮结果更值得注意。
+
+### 二、首轮：12 个变异，**1 杀 11 存活**（基线 134 passed）
+
+唯一被杀的是 **L-E**（预注册哈希不再绑定 `evaluation_code_hash`），
+**而且它的死因是 `FileExistsError`**：预注册存储按这个哈希寻址，
+于是"只差评价代码哈希"的预注册**变成了同一份文档**、写入时撞名。
+**那次撞名正是缺陷本身在显形，但它不是一条关于该性质的断言**，
+而且**在分诊的人眼里它长得像测试夹具的问题**。
+**这是本 session 第三次遇到非语义击杀**（链 2 的 T-F 死于 `KeyError`、链 7 的 R-Q 死于 12 个 `ZeroDivisionError`）。
+
+存活 11 条：**L-A**（门列表可少于 G1–G6）、**L-B**（申请人与批准人角色可相同）、
+**L-C**（seed 哈希不必是三个、不必互异）、**L-D**（规范化 JSON 不再排序键）、
+**L-F**（不再校验 model_id）、**L-G**（不再校验 universe_id）、
+**L-H**（零有效日被接受）、**L-I**（逐日分数健康不必与日数对齐）、
+**L-J**（非有限均值被接受）、**L-K**（**披露的分数健康通过率恒为 1.0**）、
+**L-L**（聚合载荷不再携带该通过率）。
+
+**为什么一个 724 行、15 个测试的套件会漏掉 11 条**：这些测试测的是**工作流**——
+签名与不可变性、成熟度守卫、双人解锁与一次性消费、崩溃后能力已消耗、阈值失败、
+血缘暴露、生产批准、指针批准——**而工作流测试全部使用合法输入**。
+**删掉一条输入校验，不会让任何一条只用合法输入的测试失败。**
+**"覆盖不薄"与"覆盖到了这一类性质"是两件事**，这是本轮最该记下的一条。
+
+### 三、L-D **不是等价变异**，而是一条跨版本风险（实测）
+
+初看 `sort_keys=True` 像冗余：本模块六个 `payload()` 里**有五个的字面量键序本来就是字母序**。
+**但第六个不是**——`LockedTestResult.payload()`（第 368 行）把 `evaluator_actor` 写在
+`evaluated_at` **之前**，而字母序恰好相反。**故签名结果的规范化形式确实依赖这次排序。**
+它仍然存活的原因是：**在同一进程里自签自验的测试，两侧一起变**——
+**暴露面在跨版本**：一个版本签出的结果，在另一个版本下会验不过。
+**这类缺陷在本进程内永远测不出来，只能直接钉住那个函数。**
+
+### 四、补的 5 条测试
+
+`tests/unit/registry/test_locked_test.py` 从 **15 个测试变 20 个**：
+
+1. `test_preregistration_rejects_a_weaker_gate_list_and_the_other_input_faults`
+   （**L-A / L-B / L-C / L-F / L-G**，7 个用例：门列表少一个、两角色相同、seed 哈希只给两个、
+   seed 哈希三个但重复、model_id 非法、universe_id 全空白、命令为空）
+2. `test_the_preregistration_hash_binds_every_frozen_input`（**L-E 的正面钉子**）——
+   **对 15 个载荷字段里"能在保持合法的前提下变化"的 14 个逐一改值，
+   断言哈希全部改变、且两两互异**；第 15 个 `required_gates` 不能变
+   （第 1 条测试正是钉它必须恰为 G1–G6），故在测试里写明原因。
+   **这条同时防住将来任何一个字段从 `payload()` 里被漏掉。**
+3. `test_locked_test_metrics_refuse_inputs_that_cannot_be_aggregated`
+   （**L-H / L-I / L-J**，6 个用例；并先自证合法夹具的聚合通过率确为 1.0）
+4. `test_the_disclosed_score_health_ratio_is_computed_and_carried_into_the_payload`（**L-K / L-L**）——
+   4 天里 2 天塌缩，断言通过率**恰好 0.5**、载荷里确实带着这个字段、且载荷字段集合恰为那 5 个
+5. `test_canonical_json_sorts_keys_so_a_signature_does_not_depend_on_key_order`（**L-D**）——
+   **直接钉住那个函数**，并**用 `LockedTestResult` 里真实存在的那一对乱序键**做用例
+
+### 五、结果与门槛（全部实测）
+
+- **定向**（只跑 `test_locked_test.py`，**0.8s/次**）：control **20 passed** →
+  **12 个变异逐条 killed、0 存活** → restored **20 passed**；`locked_test.py` **还原后逐字节相同**。
+  **L-E 现在由 2 个测试杀掉**（原工作流测试 + 新的哈希绑定测试）。
+  日志 `mutation_locked_test_slice_targeted_with_killers.txt`。
+- **全量 harness**（`tests/unit/registry tests/unit/monitoring tests/property`）：
+  **基线 139 passed**，**12 杀 0 存活**，还原后逐字节相同并复跑通过。
+  日志 `mutation_locked_test_slice_after_pins.txt`。
+- **全量门槛**：`pytest tests -q` → **1670 passed / 45 skipped**（续六十一的 1665 + 本轮 5 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 归档：`mutation_locked_test_slice_first_round.txt`、`mutation_locked_test_slice_after_pins.txt`、
+  `mutation_locked_test_slice_targeted_with_killers.txt`、`mutate_locked_test_slice.py`、
+  `mutate_locked_test_slice_targeted.py`。
+
+### 六、这一片**没有做完**的部分（明确列出，避免被读成"链 9 已完成"）
+
+本轮只测了 `locked_test.py` 的两个 dataclass。**同文件里还有约 1,600 行未测**：
+`LockedTestPreregistrationStore` / `LockedTestOperatorIdentityStore` 的签名与验证、
+`LockedTestAuthority` 的一次性能力发放与消费、`LockedTestMaturityGuard` 与交易日历、
+`LockedTestEvaluator` 的隔离执行与 stdout 抑制、`LockedTestResultVerifier`、
+`ProductionDeploymentApprovalStore` / `Verifier`；
+以及整个 `monitoring/shadow.py`（1026 行）与 `registry/active_pointer.py`（455 行）。
+**其中一部分被现有 15 个工作流测试覆盖得不差**（续五十八的 X-K / X-L 就是被它们杀掉的），
+**但"被顺带覆盖"与"被测过"的差别正是本轮的主题**。
+下一片应当从**签名 / 验证对**开始——它们与 L-D 同型：
+**同进程内自签自验，测不出跨版本与跨密钥的问题。**
+
+### 七、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`locked_test.py` 的签名 / 验证对**（预注册存储、operator identity、result verifier、production approval）：
+   重点不是"签名对不对"，而是**"验签方拒绝什么"**——篡改载荷、换密钥、重放、以及跨版本的规范化差异。
+2. **`monitoring/shadow.py`**（1026 行，四组 store/verifier + 资格聚合）。
+3. **把归属矩阵自动化**（续六十一第 2 条，仍未做）：`attribution_matrix.py` 的候选文件表是手写的。
+4. 其余同前：约 1,530 个测试函数在已审计的九条链之外从未做过变异测量。

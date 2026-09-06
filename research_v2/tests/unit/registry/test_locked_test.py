@@ -36,6 +36,7 @@ from research_v2.registry.locked_test import (
     LockedTestPreregistrationStore,
     LockedTestTradingCalendar,
     ProductionDeploymentApprovalStore,
+    _canonical_json,
 )
 from research_v2.registry.model_registry import ModelRegistry, ModelStatus
 
@@ -722,3 +723,158 @@ def test_production_pointer_accepts_only_the_signed_approval_for_its_exact_artif
 
     assert update is not None
     assert update.event.production_approval_id == approval.approval_id
+
+
+# --- the frozen inputs and the disclosed aggregate ---------------------------
+#
+# The workflow above is well tested: signing, one-shot consumption, maturity, the
+# two-person unlock, crash handling, lineage exposure, production approval. What was
+# not tested is the validation of the inputs those workflows carry, because every
+# workflow test feeds well-formed data -- and deleting a validation clause cannot break
+# a test that never exercised the clause. Eleven of twelve mutations in this slice
+# survived. Each test below is one group of those clauses.
+
+
+def test_preregistration_rejects_a_weaker_gate_list_and_the_other_input_faults() -> None:
+    """The preregistration is the frozen definition of the attempt, so its inputs are checked.
+
+    A shorter gate list defines a weaker locked test than the one that was approved; equal
+    applicant and approver roles remove the two-person rule at the point where it is
+    cheapest to enforce; fewer than three seed hashes, or three that are not distinct,
+    unbinds the attempt from a specific three-seed artifact.
+    """
+    base = _preregistration()
+    cases = (
+        (lambda: replace(base, required_gates=("G1", "G2", "G3", "G4", "G5")), "exactly G1-G6"),
+        (lambda: replace(base, approver_role="research-owner"), "roles must be distinct"),
+        (lambda: replace(base, seed_artifact_hashes=("a" * 64, "b" * 64)), "seed_artifact_hashes"),
+        (lambda: replace(base, seed_artifact_hashes=("a" * 64,) * 3), "seed_artifact_hashes"),
+        (lambda: replace(base, model_id="model-1"), "model_id"),
+        (lambda: replace(base, universe_id="   "), "universe_id"),
+        (lambda: replace(base, command=()), "command"),
+    )
+
+    for build, match in cases:
+        with pytest.raises(ValueError, match=match):
+            build()
+
+
+def test_the_preregistration_hash_binds_every_frozen_input() -> None:
+    """Every frozen input is inside the hash, and each is distinguishable from the others.
+
+    Measured before this test existed: dropping ``evaluation_code_hash`` from ``payload()``
+    survived the whole workflow suite. The one test that did fail, failed with
+    ``FileExistsError`` -- the preregistration store is addressed by this hash, so a
+    preregistration differing only in its evaluation code became the SAME document and
+    collided on write. That collision is the defect showing up, but it is not an assertion
+    about it, and it would read as a test-fixture problem to whoever triaged it. This
+    asserts the property directly for all fourteen fields that can vary while staying
+    valid, and also that no two of them hash to the same document.
+    """
+    base = _preregistration()
+    variants: dict[str, object] = {
+        "model_id": "sha256:" + "b" * 64,
+        "lineage_id": "sha256:" + "c" * 64,
+        "seed_artifact_hashes": ("a" * 64, "b" * 64, "9" * 64),
+        "artifact_bundle_hash": "9" * 64,
+        "final_train_manifest_hash": "9" * 64,
+        "final_validation_manifest_hash": "9" * 64,
+        "factor_set_id": "factor-set-final-v2",
+        "preprocessor_hash": "9" * 64,
+        "universe_id": "cn-liquid-a-2026-v2",
+        "label_definition_hash": "9" * 64,
+        "evaluation_code_hash": "9" * 64,
+        "command": ("qr-v2", "registry", "locked-test", "evaluate", "--strict"),
+        "applicant_role": "research-owner-2",
+        "approver_role": "risk-approver-2",
+    }
+    # required_gates is the fifteenth payload field and cannot vary: the clause above
+    # requires it to be exactly G1-G6, so there is no valid alternative to hash.
+    assert set(base.payload()) == set(variants) | {"required_gates"}
+
+    hashes = {
+        field: replace(base, **{field: value}).preregistration_hash
+        for field, value in variants.items()
+    }
+
+    assert base.preregistration_hash not in hashes.values()
+    assert len(set(hashes.values())) == len(variants), "two fields hash to the same document"
+
+
+def test_locked_test_metrics_refuse_inputs_that_cannot_be_aggregated() -> None:
+    """The metrics dataclass is the only checkpoint between the isolated evaluator and the verdict.
+
+    ``aggregate()`` divides by ``valid_test_day_count``, so a zero there is a division by
+    zero waiting to happen rather than a number; a score-health tuple whose length
+    disagrees with the day count makes the disclosed ratio meaningless in the same way
+    G6's numerator and denominator would; and a non-finite mean or t statistic would be
+    carried into the signed result.
+    """
+    base = _locked_test_metrics()
+    # Guard the guard: the helper's metrics are valid and aggregate to a perfect ratio.
+    assert base.aggregate().score_health_pass_ratio == pytest.approx(1.0)
+
+    cases = (
+        (lambda: replace(base, mean_rank_ic=float("nan")), "mean_rank_ic"),
+        (lambda: replace(base, hac_t_statistic=float("inf")), "hac_t_statistic"),
+        (lambda: replace(base, candidate_delta_rank_ic=float("nan")), "candidate_delta_rank_ic"),
+        (lambda: replace(base, valid_test_day_count=0), "valid_test_day_count"),
+        (lambda: replace(base, valid_test_day_count=5), "score_health is incomplete"),
+        (lambda: replace(base, score_health=base.score_health[:5]), "score_health is incomplete"),
+    )
+
+    for build, match in cases:
+        with pytest.raises(ValueError, match=match):
+            build()
+
+
+def test_the_disclosed_score_health_ratio_is_computed_and_carried_into_the_payload() -> None:
+    """``aggregate()`` yields the only score-health number allowed out of the isolation.
+
+    Both mutations here survived the workflow suite. Hardcoding the ratio to 1.0 reports
+    every locked test as perfectly score-healthy whatever its days looked like, and
+    dropping the field from ``payload()`` removes it from the signed result entirely --
+    in both cases the workflow still runs, still signs, still verifies, and still promotes.
+    """
+    healthy = ScoreHealthEvidence(coverage=0.95, unique_score_count=30, score_std=0.1)
+    collapsed = ScoreHealthEvidence(coverage=0.95, unique_score_count=1, score_std=0.1)
+    metrics = LockedTestMetrics(
+        mean_rank_ic=0.04,
+        hac_t_statistic=2.5,
+        candidate_delta_rank_ic=0.006,
+        valid_test_day_count=4,
+        score_health=(healthy, healthy, collapsed, collapsed),
+    )
+
+    aggregate = metrics.aggregate()
+
+    assert aggregate.score_health_pass_ratio == pytest.approx(0.5)
+    assert aggregate.valid_test_day_count == 4
+    assert aggregate.mean_rank_ic == pytest.approx(0.04)
+    assert aggregate.payload()["score_health_pass_ratio"] == pytest.approx(0.5)
+    assert set(aggregate.payload()) == {
+        "candidate_delta_rank_ic",
+        "hac_t_statistic",
+        "mean_rank_ic",
+        "score_health_pass_ratio",
+        "valid_test_day_count",
+    }
+
+
+def test_canonical_json_sorts_keys_so_a_signature_does_not_depend_on_key_order() -> None:
+    """Every signed document here is hashed through ``_canonical_json``, and sorting matters.
+
+    Measured, and it is not the no-op it looks like: five of this module's six ``payload()``
+    literals already list their keys alphabetically, but ``LockedTestResult.payload()`` does
+    not -- it writes ``evaluator_actor`` before ``evaluated_at``, the reverse of sorted
+    order, so the canonical form of the signed result depends on this call sorting. It
+    survived anyway because a test that signs and verifies inside one process changes both
+    sides together; the exposure is cross-build, where a result signed by one version stops
+    verifying under another.
+    """
+    assert _canonical_json({"b": 1, "a": 2}) == '{"a":2,"b":1}'
+    assert _canonical_json({"b": 1, "a": 2}) == _canonical_json({"a": 2, "b": 1})
+    # The pair that is out of order in LockedTestResult.payload().
+    assert _canonical_json({"evaluator_actor": "e", "evaluated_at": "t"}) == (
+        '{"evaluated_at":"t","evaluator_actor":"e"}'
+    )
