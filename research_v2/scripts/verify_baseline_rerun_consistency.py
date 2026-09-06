@@ -1,9 +1,21 @@
 """Verify a baseline walk-forward re-run reproduces the criterion-303 evidence.
 
-Deterministic comparison of a new walk-forward report against the archived
-criterion-303 report: folds, per-fold selections, OOS statistics, and gates
-must match exactly; every fold-matched baseline prediction artifact must
-exist with the full lineage columns. Exit code 0 only when fully consistent.
+Deterministic comparison of a new walk-forward report against an archived
+baseline report: folds, per-fold selections (winner, validation RankIC, day
+counts, unselected reasons), OOS statistics, gates, and the published
+data-version mapping must match; every fold-matched baseline prediction
+artifact must exist with the full lineage columns. Exit code 0 only when fully
+consistent.
+
+The comparison is driven by what the *reference* carries. The archived
+criterion-303 report predates ``invalid_day_count``, ``unselected_reasons`` and
+a recorded ``data_versions`` mapping, and Task 2.4's CONSISTENT verdict was
+produced against it by a re-run that did carry them; requiring fields the
+reference lacks would overturn a verdict that was already issued and relied on.
+So a field absent from the reference is not required of the re-run, and a field
+present in the reference is verified. That is what makes the verifier a stronger
+trust root rather than a different one when Task 4.1 repoints ``--reference`` at
+the frozen-set baseline report, which does carry all of them.
 
 Usage:
   verify_baseline_rerun_consistency.py --report <new.json> \
@@ -77,15 +89,37 @@ def compare_reports(new: dict[str, Any], reference: dict[str, Any]) -> list[str]
         for baseline_id in EXPECTED_BASELINES:
             if baseline_id not in archived_scores:
                 continue
+            entered_score = cast(dict[str, Any], entered_scores[baseline_id])
+            archived_score = cast(dict[str, Any], archived_scores[baseline_id])
             if not _close(
-                entered_scores[baseline_id]["mean_rank_ic"],
-                archived_scores[baseline_id]["mean_rank_ic"],
+                entered_score["mean_rank_ic"],
+                archived_score["mean_rank_ic"],
             ):
                 problems.append(
                     f"{fold_id}/{baseline_id} validation RankIC differs: "
-                    f"{entered_scores[baseline_id]['mean_rank_ic']} "
-                    f"vs {archived_scores[baseline_id]['mean_rank_ic']}"
+                    f"{entered_score['mean_rank_ic']} "
+                    f"vs {archived_score['mean_rank_ic']}"
                 )
+            # Day counts are compared only when the reference records them. A mean RankIC
+            # that matches to 1e-9 over 228 days is not the same evidence as one over 240,
+            # and invalid_day_count is where a coverage regression would first show.
+            for day_field in ("valid_day_count", "invalid_day_count"):
+                if day_field not in archived_score:
+                    continue
+                if not _close(
+                    entered_score.get(day_field), archived_score.get(day_field)
+                ):
+                    problems.append(
+                        f"{fold_id}/{baseline_id} {day_field} differs: "
+                        f"{entered_score.get(day_field)} vs {archived_score.get(day_field)}"
+                    )
+        if "unselected_reasons" in archived and entered.get(
+            "unselected_reasons"
+        ) != archived.get("unselected_reasons"):
+            problems.append(
+                f"{fold_id} unselected_reasons differ: "
+                f"{entered.get('unselected_reasons')} vs {archived.get('unselected_reasons')}"
+            )
     new_oos = cast(dict[str, Any], new.get("oos", {}))
     ref_oos = cast(dict[str, Any], reference.get("oos", {}))
     for key in (
@@ -111,6 +145,18 @@ def compare_reports(new: dict[str, Any], reference: dict[str, Any]) -> list[str]
         if not _close(new_yearly.get(year), value):
             problems.append(
                 f"yearly {year} RankIC differs: {new_yearly.get(year)} vs {value}"
+            )
+    if "data_versions" in reference:
+        new_versions = cast(dict[str, Any], new.get("data_versions") or {})
+        ref_versions = cast(dict[str, Any], reference.get("data_versions") or {})
+        if new_versions != ref_versions:
+            tables = sorted(set(new_versions) | set(ref_versions))
+            differing = [
+                table for table in tables if new_versions.get(table) != ref_versions.get(table)
+            ]
+            problems.append(
+                "data_versions differ for: "
+                + (", ".join(differing) if differing else "<whole mapping>")
             )
     return problems
 
