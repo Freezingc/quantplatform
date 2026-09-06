@@ -277,7 +277,7 @@ git commit -m "feat(v2): enforce point-in-time factor availability"
 
 顺序固定：registry validate → source read → normalize → deduplicate → availability → universe filter → structural DQ → stage → validate → publish。任一步失败均不产生正式可见行，pipeline run 标记失败。
 
-- [ ] **C5.2 实现统一 observation 输出**
+- [x] **C5.2 实现统一 observation 输出**
 
 `factor_observation_clean` 最小字段：
 
@@ -1593,3 +1593,130 @@ M25 同时被一条**既有** leakage 测试捕获，说明那条测试对排序
 **全量：1431 passed / 45 skipped**（本节起点 1427；+4 availability），
 `ruff check src tests` 清、`mypy src` 157 文件清；
 `availability.py` 三次变异后均以 `git status --porcelain` 确认**还原干净**。
+
+## 勾选审计续十三（2026-09-06 11:10）：C5.2 已勾并闭上一条无人看守的边；C5.1/C5.3/C5.4/C5.5 的缺口逐一定位（其中一处比预想的好）
+
+### C5.2 已勾选——四款逐一核实，其中一款的机制在另一个模块里
+
+**(1) 16 个最小字段：与规格逐字一致，且顺序一致。**
+`build_technical_factor_batches` 产出的 `factor_observation_clean` 帧列**恰好**是
+C5.2 列出的 16 个字段、**且顺序相同**（11 个业务字段 + 5 个 lineage 字段）。
+
+**(2) 顺带闭上一条此前无人看守的边：产出列 ↔ migration 声明列。**
+`migrations/003_factor_label_tables.dos` 用反引号列表声明
+`factor_observation_clean` 的 16 列与类型，materializer 用另一处字面量按名装配同一批列，
+**两者之间没有任何共享真值来源**。而现有的两类检查都碰不到这条边：
+`tests/unit/db/test_migrations.py` 只断言**表名**出现在脚本文本里
+（`assert f"\`{table_name}" in factor_migration.script`），
+黄金样本只比较 **6 列子集**（`CLEAN_COLUMNS`）。
+**故任何一侧增列、删列、改名或换序，两道检查都会同时放行。**
+新增测试从 migration 脚本里**解析**出列名与类型，与 materializer 的实际输出逐位比对，
+`factor_quarantine`（12 列，在另一处字面量里装配）同样比对。
+**顺序也要断言，不只是集合**：若写入是按位置的，换序会把一列的值发布到另一列名下——
+那是**静默损坏**而不是报错。变异 M26（交换 `observation_date`/`available_date` 两列顺序）
+与 M27（删掉 `stale_days`）**都被这两条测试捕获**。
+
+**(3)「技术因子的 `report_period/source_revision_id` 可空」——一个真空、一个比要求更强。**
+`report_period` 发布为 `NaT`：日频技术观测**不属于任何报告期**，
+NaT 是诚实的值，填一个日期会**暗示一个并不存在的会计期间**。
+`source_revision_id` 则被填成 source row id（规格只要求"可空"）——
+**这比要求更强，且值得钉住**，因为它是**从一条已发布行回到它所来自的那一条源观测的唯一链接**。
+已断言其非空且逐行唯一。
+
+**(4)「值为空的行默认不写事实表」——成立，且不是静默丢弃。**
+空值行不进 clean，而是进 quarantine 并带 `reason = NO_FINITE_VALUE`。
+**这一点必须与"丢弃"区分开**：事实表里留一个 null `value` 会迫使每个下游消费者
+各自重新决定它是什么意思；而带理由进隔离区意味着缺失**被记录**了。
+
+**(5)「但缺失在质量分母中保留」——成立，机制在 C6 的模块里，已定位到行。**
+`quality.py:142`：`coverage = finite_value_count / universe_member_count`——
+**分母是 universe 成员数，不是有限值个数**，故 universe 里一个没有值的成员**会拉低覆盖率**。
+该模块自己的注释把这对指标区分得很清楚（`quality.py:185`）：
+"finite ratio describes what the source delivered, coverage what the universe could [have delivered]"。
+**即 C5.2 的这一款由两处共同discharge**：materializer 把缺失送进 quarantine（信息不丢），
+quality 用 universe 作分母（缺失计入代价）。**二者缺一，"缺失被保留"都只是半句话。**
+
+### C5.1 仍不勾：十步固定顺序里，**三步不在物化链上**——但其中一步的位置比预想的好
+
+规格顺序：registry validate → source read → normalize → deduplicate → availability →
+universe filter → structural DQ → stage → validate → publish。
+
+**已接线的部分（实测有生产调用者）**：normalize → deduplicate → availability → stage → publish。
+`build_technical_factor_batches` 被 `source_backfill.py:536`、`source_evaluation.py:235`
+及 4 个脚本调用，**这是本轮核验的所有模块里接线最实的一个**（对照续十/续十二的四处未接线）。
+
+**不在链上的三步，逐一说明**：
+
+- **registry validate**：registry 整体未接线（续十、决定 A）。**故这一步不是"漏了"，
+  而是它依赖的那套东西还没被采用。**在决定 A 之前无法实现。
+- **structural DQ**：C6 的结构质量模块未被接线（续四已记两套并行实现），
+  生产中用的是 `scripts/screen_factor_daily_coverage.py` 自带的一套阈值。
+  **同样是决定 A 类的归属问题，不是补测试能解决的。**
+- **universe filter**：**这一步实际上是有的，只是在下游、不在物化层**——
+  `datasets/builder.py:164` 的 docstring 明写 "Build a stable feature frame **anchored only on
+  the eligible daily universe**"，即特征帧以合格 universe 为锚。
+  **这个位置是合理的，甚至更好**：事实表存"源里观测到什么"，数据集选"合格 universe 里要什么"，
+  于是**改 universe 定义不需要重新物化因子**。
+  **故 C5.1 在这一款上不是缺失，而是步骤被放在了规格的顺序之外**——
+  但这仍意味着**规格所写的那条"任一步失败均不产生正式可见行"的单一 pipeline 并不存在**：
+  物化与 universe 过滤是两个独立阶段，中间隔着一次发布。
+  **不勾的理由是这个，不是 universe filter 缺失。**
+
+**另需说明「任一步失败均不产生正式可见行」**：stage → validate → publish 的指针式发布
+确有实现（`db/publish.py` 与指针回滚集成测试），故"失败不产生正式可见行"这一**性质**
+在已接线的阶段上是成立的；但它**不覆盖**上面两步未接线的阶段，
+因为那两步根本不在同一条 pipeline 里。**待决定 A 之后才能整体验证。**
+
+### C5.3 仍不勾：四条命令一条都不存在，但 dry-run 的形状已有先例可循
+
+**`research_v2/src/research_v2/cli/factors.py` 不存在**（`cli/` 下为
+`app/baselines/datasets/db/evaluate/export/inference/materialize/models/registry/reports`）。
+规格的四条命令逐条核实：
+`qr-v2 factor registry validate` / `factor registry import` / `materialize factors` /
+`factor quarantine report` —— **全部不存在**（`cli/` 下 grep `registry validate|registry import|quarantine`
+只命中 `registry/model_registry.py` 的模型注册表，与因子 registry 无关）。
+
+**部分可复用的先例**：`cli/materialize.py::emit_plan` 是一个**fail-closed 的计划发射器**——
+校验日期、输出全限定的源表与目标表、`dry_run=False` 时**直接拒绝执行**
+（"runtime backend is not configured; refusing to materialize"，退出码 2）。
+**这正是 C5.3 要的形状**，但 `_PLANS` 只覆盖 `security-master / market / universe / labels`
+——**没有 factors 这一项**；且它输出的是 operation/日期/源表/目标表，
+**不含**规格要求的**因子数、源列、日期 chunk、估算行数、目标分区**。
+**本轮 C1.5 的 dry-run 已独立提供了其中的"源表/列"部分**
+（并证明了自己只发 schema 查询、不读值、不写库），故 C5.3 落地时可直接复用其输出，
+不必另写一套 schema 探测。
+
+### C5.4 仍不勾：增量影响范围完全没有实现
+
+`research_v2/src/research_v2/factors/` 下 grep `incremental|affected_signal_dates|impact_scope`
+**零命中**。规格三款——技术日频源变化只重算变化的 signal dates、
+基本面公告/修订变化重算该证券从 available date 到下次版本或 180 日上限与 universe 的交集、
+registry 新版本不覆盖旧版本——**前两款无任何实现**。
+第三款（新版本不覆盖旧版本）在 registry 层成立（续十：新旧版本并存、各有生命周期），
+但 registry 未接线，故对物化无实际约束力。
+**与决定 B/C 相关**：基本面那一半的重算范围定义**正是**"到下次版本或 180 日上限"，
+而"下次版本"的语义就是决定 B 争议的跨期优先级。**故 C5.4 的基本面半部应等 B 定后再实现。**
+
+### C5.5 仍不勾：`tests/integration/factors/` 目录不存在
+
+与续十对 C1.6 的发现同因：`tests/integration/factors/` **从未被创建**
+（现有 integration 子目录：`data/datasets/db/evaluation/inference/models/pit/registry`），
+故 C5.5 要覆盖的六种故障（源 schema 漂移、源水位中途变化、重复冲突、
+`available > signal`、publish 前进程异常、相同版本重跑）**没有集成测试载体**。
+其中**源 schema 漂移**本轮已在单元层由 C1.5 的 dry-run 覆盖（表/列缺失、类型不可转换、
+表不可读三种），**重复冲突**由 C3 的去重测试覆盖，**`available > signal`** 由
+`tests/property/factors/test_availability_invariants.py` 的 PIT 排序不变量覆盖——
+**但"源水位中途变化""publish 前进程异常""相同版本重跑（幂等）"三项确无任何覆盖**，
+而 C5.6 的 Expected 恰恰写的是"正常发布幂等；所有 blocker 均保持旧版本可见"。
+**这三项是 C5.5 的实质内容，需要真实或仿真的发布会话，属集成测试范畴，不宜在单元层伪造。**
+
+### 变异验证（本节 2 个，均被预期测试捕获）
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 26 | 交换 `observation_date`/`available_date` 的发布顺序 | C5.2 字段列表测试 **+** migration 一致性测试 |
+| 27 | 从发布帧里删掉 `stale_days` | 同上两条 |
+
+**全量：1436 passed / 45 skipped**（本节起点 1431；+5 materializer），
+`ruff check src tests` 清、`mypy src` 157 文件清；
+`materializer.py` 两次变异后均以 `git status --porcelain` 确认**还原干净**。
