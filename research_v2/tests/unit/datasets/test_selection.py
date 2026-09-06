@@ -313,3 +313,77 @@ def test_cluster_identity_is_order_independent_on_its_own() -> None:
     assert cluster_identity([("a", 1)]) != cluster_identity([("a", 2)]), (
         "a version change must produce a different cluster identity"
     )
+
+
+def test_identical_and_mirrored_factors_share_one_cluster_and_one_representative() -> None:
+    """C7.5, end to end from raw values through similarity to clusters.
+
+    Correlation is taken in absolute value, so a factor and its negation are the same signal
+    and must collapse to one representative. Treating them as distinct would let a model be
+    handed the same information twice with opposite signs, which is the duplication the
+    clustering step exists to remove. An uncorrelated factor must stay in its own cluster.
+    """
+    from research_v2.factors.similarity import compute_factor_similarity
+
+    days = [date(2025, 1, day) for day in (2, 3, 6, 7, 8)]
+    codes = [f"{index:06d}.SZ" for index in range(40)]
+    rows: list[dict[str, object]] = []
+    for day in days:
+        for index, code in enumerate(codes):
+            dense = float(index) + 1.0
+            scrambled = float((index * 7) % 40)
+            for factor_id, value in (
+                ("dense", dense),
+                ("copy", dense),
+                ("mirror", -dense),
+                ("other", scrambled),
+            ):
+                rows.append(
+                    {
+                        "signal_date": day,
+                        "ts_code": code,
+                        "factor_id": factor_id,
+                        "factor_version": 1,
+                        "value": value,
+                    }
+                )
+
+    similarity = compute_factor_similarity(
+        pd.DataFrame(rows),
+        start_date=days[0],
+        end_date=days[-1],
+        minimum_common_members=30,
+        minimum_valid_days=3,
+    )
+    rho = {
+        (str(row["factor_id_left"]), str(row["factor_id_right"])): float(
+            row["median_daily_abs_spearman"]
+        )
+        for row in similarity.to_dict(orient="records")
+    }
+    # Premises, so the clustering assertion below cannot pass on a degenerate fixture.
+    assert all(status == "PASS" for status in similarity["status"])
+    assert rho[("copy", "dense")] == 1.0
+    assert rho[("dense", "mirror")] == 1.0
+    assert rho[("copy", "mirror")] == 1.0
+    assert max(rho[pair] for pair in rho if "other" in pair) < 0.90
+
+    candidates = pd.DataFrame(
+        [
+            _candidate("dense", fdr_q_value=0.001),
+            _candidate("copy", fdr_q_value=0.010),
+            _candidate("mirror", fdr_q_value=0.020),
+            _candidate("other", fdr_q_value=0.030),
+        ]
+    )
+
+    chosen = select_cluster_representatives(
+        candidates, similarity, similarity_threshold=0.90, minimum_features=1
+    )
+
+    assert len(chosen.clusters) == 2
+    large = max(chosen.clusters, key=lambda cluster: len(cluster.members))
+    small = min(chosen.clusters, key=lambda cluster: len(cluster.members))
+    assert large.members == (("copy", 1), ("dense", 1), ("mirror", 1))
+    assert small.members == (("other", 1),)
+    assert sorted(chosen.selected_factor_keys) == [("dense", 1), ("other", 1)]

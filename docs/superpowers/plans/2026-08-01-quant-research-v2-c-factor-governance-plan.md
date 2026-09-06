@@ -380,7 +380,7 @@ git commit -m "feat(v2): score structural factor quality"
 
 本模块只接受 D 计划传入的训练内 quality/predictive statistics；代表排序固定：eligible → FDR pass → direction stability → median abs IC → coverage → lower conflict rate → factor_id ASC。不得读取 validation/test 指标。
 
-- [ ] **C7.5 回归测试已知高相关因子**
+- [x] **C7.5 回归测试已知高相关因子**
 
 用匿名化小 fixture 覆盖完全重复、符号相反但绝对相关、缺失错位和链式 A–B/B–C 相关；验证 abs 相关使符号相反落同簇，connected component 处理传递边。
 
@@ -909,3 +909,109 @@ fdr_q_value / signed_mean_rank_ic / positive_year_count / coverage / conflict_ra
 全部是训练内统计，无任何 validation/test 指标。
 
 **全量：1333 passed / 45 skipped**（本节起点 1327），`ruff check src tests` 清、`mypy src` 156 文件清。
+
+## 勾选审计续八（2026-09-06 08:50）：C7.5 已勾，C7.1 / C7.2 各差一款且都不宜代补
+
+**已勾选 C7.5。**规格要求四款案例，逐款落点如下（均已通过，且都做了变异验证）：
+
+- **完全重复**与**符号相反但绝对相关**：新增端到端测试
+  `test_selection.py::test_identical_and_mirrored_factors_share_one_cluster_and_one_representative`。
+  它从**原始数值**出发，经 `compute_factor_similarity` 到 `select_cluster_representatives`，
+  构造 `dense / copy（=dense）/ mirror（=-dense）/ other（乱序置换）` 四个因子，
+  先断言前提（三对互为 ±1、含 `other` 的各对 <0.90、全部 `status == PASS`），
+  **再**断言聚类结果：`{copy, dense, mirror}` 合成一簇、`{other}` 独立一簇、
+  代表为 `dense` 与 `other`。先钉前提是为了让聚类断言**不可能靠退化的 fixture 蒙过**。
+  选 `dense` 而非 `copy`/`mirror` 作代表，是因为三者 FDR q 值递增（0.001/0.010/0.020），
+  而 FDR 是排序首键——这一点由 C7.4 的排序键决定，本测试只是顺着它断言。
+- **缺失错位**：`test_similarity.py::test_misaligned_missingness_skips_the_day_rather_than_counting_it`。
+  两个因子各自都populate得很满，但第 2、3 天只在 10 个标的上重叠；
+  这两天必须**被整天跳过**而不是拿 10 个样本去算相关，于是有效日只剩 1 天、落到 `INSUFFICIENT`。
+  这条与「有效日下限」是同一处代码的两个后果，但只有它钉住了**为什么**要跳天：
+  在 10 个标的上算出的 rho 看起来是个测量值，其实不是。
+- **链式 A–B / B–C 相关与传递边**：已由续七的
+  `test_selection.py::test_chained_edges_form_one_cluster_through_transitivity` 覆盖（本节不重复）。
+
+**变异验证：4 个变异，全部被预期的那条测试捕获——但其中一个变异起初没被捕获，值得记。**
+
+1. 去掉 `correlations.append(abs(...))` 的 `abs` → 端到端镜像测试失败
+   （`rho == -1.0`，既过不了 `== 1.0` 的前提断言，也因 `-1.0 < 0.90` 不连边而使簇数从 2 变 3）。
+2. 把「共同成员数 < `minimum_common_members` 则跳过该日」的下限改成 2 →
+   缺失错位测试失败（`valid_days` 从 1 变 3、`INSUFFICIENT` 变 `PASS`）。
+3. 让 `_is_finite` 只查 `pd.notna`（即**无穷大算作可用观测**）→ **起初 15 条测试全过**。
+4. 让 `_is_finite` 恒为真（即**完全不筛非有限值**）→ 同上，起初不失败。
+
+**3、4 暴露的是我第一版非有限值测试写得不对。**它把因子 `b` 的第 31–40 号标的设为 `inf`，
+留下**恰好 30** 个有限对，然后断言 `valid_days == 1 / PASS`。问题在于：
+把 `inf` 也算进去时共同成员是 40，同样 `>= 30`，**结论一模一样**。
+也就是说那条测试在「正确实现」与「被破坏的实现」下都通过——它钉住的是 `>=` 这个边界，
+**完全没有钉住"非有限值不算观测"这件事**。这类测试比没有测试更危险，因为它给人已覆盖的错觉。
+
+**已按"变异必须改变结论"的原则重写为两条**：
+
+- `test_non_finite_values_cannot_prop_up_a_day_below_the_member_floor[inf|nan]`：
+  40 个共同标的中**破坏 11 个**，只剩 29 个有限对——比下限 30 **少一个**。
+  正确实现必须整天跳过（`valid_days == 0`、`INSUFFICIENT`、中位数为 `NaN`）；
+  若把填充值算作观测则 `>= 30` 而给出 `PASS`。**两种实现的结论相反**，故能区分。
+  参数化同时覆盖 `inf` 与 `nan`，因为二者的失效方式不同：
+  `inf` 会真的参与 `rank()` 从而算出一个 rho；
+  `nan` 会被 pandas 的 `rank(na_option="keep")` 与 `corr()` 悄悄丢弃，
+  于是**用 29 个标的算出的相关，却对外声称覆盖了 40 个**——数值更可信、错得更隐蔽。
+- `test_a_day_exactly_at_the_common_member_floor_still_counts`：破坏 10 个、剩**恰好 30**，
+  断言 `valid_days == 1 / PASS`，把原先那条真正想钉的 `>=`（而非 `>`）边界单独保住。
+
+重写后重跑变异 3、4：`[inf]` 与 `[nan]` 两个参数**都失败**，即变异被捕获。
+**方法上的教训**：变异验证的判据不是"改了实现有没有测试红"，而是
+"**这条测试在正确实现与被破坏实现下是否给出相反结论**"。只跑到"全绿"就收工，
+会把一条恒真的测试当成覆盖。
+
+**C7.1 仍不勾——差「universe_id / data_version 绑定与 query builder」。**
+规格要求「输入明确 `start_date/end_date/universe_id/data_version`，query builder 必须带闭区间」，
+并要求「测试在 end_date 后添加高度相关数据不改变历史 scope 相似度」。
+
+- **日期闭区间与 scope 隔离这一款已满足并有测试**：
+  `test_similarity.py::test_similarity_is_scope_bounded_and_uses_absolute_daily_spearman`
+  正是在 `end_date`（2025-01-03）之后追加了 2025-01-06 的一对完全相同数据，
+  断言 `valid_days` 仍是 2 而非 3。实现里
+  `(signal_date >= start_date) & (signal_date <= end_date)` 为闭区间。
+- **缺的是绑定与取数**：`compute_factor_similarity` 的签名只有
+  `(observations, *, start_date, end_date, minimum_common_members, minimum_valid_days)`，
+  **没有 `universe_id`，没有 `data_version`，模块里也没有任何 query builder / SQL**
+  （`grep universe_id|data_version|SELECT` 在 `similarity.py` 中零命中）。
+  它接收的是**调用方已装配好的内存长表**，因此"scope"目前只由日期界定：
+  **同一个 universe 换个版本、或换个 universe 但日期相同，算出的相似度无从区分，也不会报错。**
+  这与 C7.3 已交付的 `cluster_id` 内容寻址形成对照——簇有了稳定身份，
+  但**产生它的相似度矩阵没有记录自己是在哪个 universe / 哪个数据版本上算的**，
+  于是跨折或跨版本比较簇时无法判断可比性。
+- **不代补的理由**：与 C7.4 同理，`select_cluster_representatives` 与
+  `compute_factor_similarity` 目前**都没有生产调用者**（全仓 grep 仅命中自身定义与测试）。
+  把 `universe_id/data_version` 加进签名要同时决定它们的**来源与校验方式**
+  （是从 `factor_daily` 的查询条件回填，还是由 D 计划的 scope 对象传入并要求与观测帧自洽），
+  这属于接口契约设计，应由 owner 定，而不是在测试轮里顺手加两个未被消费的参数。
+
+**C7.2 仍不勾——差「记录覆盖」，且覆盖的分母口径规格里没有定义。**
+规格四款中三款已满足：同日共同非空数 `>= 30` 才算 Spearman（`minimum_common_members` 默认 30）、
+scope 相似度取有效每日 `abs(rho)` 的**中位数**、有效日 `< 60` 标 `INSUFFICIENT`
+（`minimum_valid_days` 默认 60）；「不连边」也已满足——
+`select_cluster_representatives` 只用 `status == "PASS"` 的行建边
+（由 `test_edges_below_the_threshold_or_not_passing_do_not_join_clusters` 钉住）。
+
+**缺的是输出里没有覆盖字段**：返回列为
+`factor_id_left/version_left/factor_id_right/version_right/median_daily_abs_spearman/valid_days/status`，
+`valid_days` 是**有效天数**，不是规格另外要求的**覆盖**。二者不能互相代替：
+`valid_days` 只回答"有几天够格算"，不回答"这几天里每个横截面有多满"。
+两个 pair 可以同为 `valid_days == 60`，一个每天在 4000 个标的上算、另一个每天刚好卡在 30 个下限——
+**当前的输出无法区分这两种证据强度**，而下游正是拿这个中位数去连边、去选代表的。
+
+**不代补的理由是口径未定**：规格只写「记录有效天数/覆盖」，没说覆盖是什么比值。
+候选至少有三种，且给出的是不同的数：
+(i) 有效日的共同成员数中位数 ÷ 该日 universe 全量；
+(ii) 有效日共同成员数 ÷ 两因子各自覆盖数的并集；
+(iii) 有效天数 ÷ scope 内总交易日数（这一种其实已被 `valid_days` 隐含，只差归一）。
+(i) 最贴近"证据强度"的直觉，但它需要**额外的 universe 口径输入**——
+而这恰好是 C7.1 缺的那个绑定；也就是说 **C7.2 的覆盖字段依赖 C7.1 先定下 universe 的来源**，
+两项应当一并裁决，不宜先挑一个分母写进去、事后再改（改分母会改变 `INSUFFICIENT` 之外的
+所有输出数值，进而可能改变连边与代表选择）。
+
+**全量：1340 passed / 45 skipped**（本节起点 1338，+2 来自非有限值测试改写为 1 条参数化 2 例 + 1 条边界），
+`ruff check src tests` 清、`mypy src` 156 文件清。
+`ruff format` 未纳入门禁（全仓 159 个文件本就不符合其风格、且无任何配置或 CI 钩子引用它），故不据此改动测试文件。
