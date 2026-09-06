@@ -387,3 +387,125 @@ def test_identical_and_mirrored_factors_share_one_cluster_and_one_representative
     assert large.members == (("copy", 1), ("dense", 1), ("mirror", 1))
     assert small.members == (("other", 1),)
     assert sorted(chosen.selected_factor_keys) == [("dense", 1), ("other", 1)]
+
+
+def test_a_per_date_scalar_multiple_is_one_factor_however_much_its_values_move() -> None:
+    """C7.5's known case, taken from a real in-repo diagnosis rather than constructed.
+
+    ``artifacts/diagnostics/gp_turnover_scalar_degeneracy_diagnostic_v1.json`` records that
+    yeslab_436 (GP_067), yeslab_446 (GP_077) and yeslab_468 (GP_099) all end in
+    ``turnover.mul(<per-date Series>, axis=0)`` -- one multiplies by a per-date mean, another
+    by a per-date max -- and that their daily RankIC series came out **exactly identical over
+    all 36 signal days** of the smoke window. The admission decision rested on the reason:
+    a factor equal to turnover times a per-date scalar has the same cross-sectional ranks as
+    turnover every day, so no rank-based evaluation can tell them apart.
+
+    That shape is not covered by the test above, and the difference is the point. ``copy`` is
+    identical and ``mirror`` is a *constant* negation, so both are fixed multiples of ``dense``
+    and any value-based comparison would catch them. A per-date scalar is neither: the values
+    change every single day and the three factors are not scalar multiples of one another over
+    the window as a whole. Only a rank-based, per-day similarity sees through it -- which is
+    what ``compute_factor_similarity`` computes, and why this belongs in C7.5's set.
+
+    The diagnostic also supplies the real contrast case: yeslab_464 (GP_095) ends in a
+    per-stock regression residual, its RankIC series differs, and it was allowed to proceed to
+    full evaluation. ``residual`` below plays that part, so the test cannot pass by putting
+    everything in one cluster.
+
+    Values are synthetic -- the diagnostic records the *structure*, not a sample of the source,
+    and copying source rows into the tree is what C3.4 explicitly forbids. What is real is the
+    mechanism and the contrast, both cited from a committed artifact.
+    """
+    from research_v2.factors.similarity import compute_factor_similarity
+
+    days = [date(2025, 1, day) for day in (2, 3, 6, 7, 8)]
+    codes = [f"{index:06d}.SZ" for index in range(40)]
+    # Two different per-date scalars, neither constant across the window and not multiples of
+    # one another, mirroring "per-date mean" versus "per-date max".
+    mean_like = [1.0 + 0.25 * position for position in range(len(days))]
+    max_like = [3.0 - 0.4 * position for position in range(len(days))]
+
+    rows: list[dict[str, object]] = []
+    for day_position, day in enumerate(days):
+        for index, code in enumerate(codes):
+            turnover = float(index) + 1.0
+            for factor_id, value in (
+                ("turnover", turnover),
+                ("scalar_mean", turnover * mean_like[day_position]),
+                ("scalar_max", turnover * max_like[day_position]),
+                # per-stock and per-day, so its ranks are unrelated to turnover's
+                ("residual", float((index * 7 + day_position * 13) % 40)),
+            ):
+                rows.append(
+                    {
+                        "signal_date": day,
+                        "ts_code": code,
+                        "factor_id": factor_id,
+                        "factor_version": 1,
+                        "value": value,
+                    }
+                )
+    frame = pd.DataFrame(rows)
+
+    # Premise: the mechanism the diagnostic names, asserted directly on the fixture. If the
+    # three degenerate factors did not share a rank vector every day, the rho assertions below
+    # would be measuring something else.
+    wide = frame.pivot_table(index=["signal_date", "ts_code"], columns="factor_id", values="value")
+    per_day_ranks = {
+        factor: wide.groupby("signal_date")[factor].rank(method="average")
+        for factor in ("turnover", "scalar_mean", "scalar_max")
+    }
+    assert per_day_ranks["scalar_mean"].equals(per_day_ranks["turnover"])
+    assert per_day_ranks["scalar_max"].equals(per_day_ranks["turnover"])
+    assert not wide.groupby("signal_date")["residual"].rank(method="average").equals(
+        per_day_ranks["turnover"]
+    )
+    # And the values really do move day to day, so this is not the constant-multiple case.
+    scalar_mean_rows = frame.loc[frame["factor_id"] == "scalar_mean"]
+    daily_means = scalar_mean_rows.groupby("signal_date")["value"].mean()
+    assert daily_means.nunique() == len(days), "the per-date scalar has to vary across the window"
+
+    similarity = compute_factor_similarity(
+        frame,
+        start_date=days[0],
+        end_date=days[-1],
+        minimum_common_members=30,
+        minimum_valid_days=3,
+    )
+    rho = {
+        tuple(sorted((str(row["factor_id_left"]), str(row["factor_id_right"])))): float(
+            row["median_daily_abs_spearman"]
+        )
+        for row in similarity.to_dict(orient="records")
+    }
+    assert all(status == "PASS" for status in similarity["status"])
+    degenerate_pairs = [
+        ("scalar_max", "scalar_mean"),
+        ("scalar_max", "turnover"),
+        ("scalar_mean", "turnover"),
+    ]
+    assert all(rho[pair] == 1.0 for pair in degenerate_pairs), rho
+    assert max(rho[pair] for pair in rho if "residual" in pair) < 0.90, rho
+
+    candidates = pd.DataFrame(
+        [
+            _candidate("turnover", fdr_q_value=0.001),
+            _candidate("scalar_mean", fdr_q_value=0.010),
+            _candidate("scalar_max", fdr_q_value=0.020),
+            _candidate("residual", fdr_q_value=0.030),
+        ]
+    )
+
+    chosen = select_cluster_representatives(
+        candidates, similarity, similarity_threshold=0.90, minimum_features=1
+    )
+
+    assert len(chosen.clusters) == 2
+    large = max(chosen.clusters, key=lambda cluster: len(cluster.members))
+    small = min(chosen.clusters, key=lambda cluster: len(cluster.members))
+    assert large.members == (("scalar_max", 1), ("scalar_mean", 1), ("turnover", 1))
+    assert small.members == (("residual", 1),)
+    assert sorted(chosen.selected_factor_keys) == [("residual", 1), ("turnover", 1)], (
+        "one representative for three factors that are the same signal, and the contrast "
+        "case keeps its own"
+    )
