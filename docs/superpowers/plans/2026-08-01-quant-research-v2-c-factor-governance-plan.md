@@ -4367,3 +4367,130 @@ M4 让所有因子都拿 provider / M5 把 206 的 calculator 名改成 median �
 **未改动契约、scope、门阈值或 `dropna` 口径**。
 **决定 B 未被代做**——形状 2 原样保留、原测试原样通过；
 **裁决 2 / 裁决 3 / 裁决 4 / 决定 A–M 一个都没被代做。**
+
+## 勾选审计续三十六（2026-09-06 22:25）：把续三十五那个缺陷**按类扫了一遍**——同类 8 处：2 处已修（1 处潜伏）、2 处本来就是本仓的正确范式、2 处实测零实例、**2 处未核实故未动**
+
+### 一、缺陷类抽象出来是一句话
+
+> **稳定排序（或 `keep="first"/"last"`）的键集不是全序，于是并列行由输入行序决定，而结果被发布出去。**
+
+它危险在**不报错**：值可能完全正确，只有溯源列（或版本指针）随抽取顺序漂移。
+而属性测试的 docstring 自己写了为什么行序不固定：
+*"YesLab extracts arrive per column, per month and per factor group"*。
+
+### 二、扫描结果（8 处；逐处读代码，两处另做实测）
+
+| 位置 | 写法 | 冲突隔离 | 全序 tiebreaker | 判定 |
+|---|---|---|---|---|
+| `factors/deduplication.py:71-74` | `sort_values(_BUSINESS_KEYS + ["source_row_id"], mergesort)` → `drop_duplicates(keep="first")` | **有**：`distinct_finite>1` → `CONFLICT_QUARANTINE`，且冲突组**不进** representatives | **有**：`source_row_id` | **正确——本仓的参考范式** |
+| `pit/market.py:48-50` | `drop_duplicates(key_columns, keep="first")` | **有**：`if not group.eq(group.iloc[0]).all(axis=None)` 先行 | 不需要 | **正确（fail-closed）** |
+| `factors/availability.py:115` | `sort_values(3 keys, desc, mergesort).iloc[0]` | 无 | **无** → 续三十五补第 4 键 `ann_date` | **曾是活体缺陷**（hypothesis 已持久化反例、套件曾红） |
+| `factors/fundamental_snapshot.py:110` | `sort_values(4 keys, mergesort).drop_duplicates(["ts_code","available_date"], keep="last")` | 无 | **无** → **本轮补第 4 键 `ann_date`** | **潜伏缺陷，实测零实例**（§三 a） |
+| `compact/publisher.py:144-145`、`compact/verification.py:153-154` | `sort_values("published_at", desc, mergesort)` → `drop_duplicates("logical_partition", keep="first")`；SQL 侧同样 `order by published_at desc` | 无 | **无**；且 `published_at` 由 `[now()]` 写入（毫秒精度，同一插入语句内多行会同值） | **潜伏，实测零实例**（§三 b） |
+| `factors/repair.py:185-194` | 先 `_has_distinct_finite_values` → `CONFLICT_QUARANTINE`；否则 `finite_rows.iloc[0]` | **有** | 无 | **发布值是确定的**；同值重复行之间取哪一行仍由输入序定 → **其溯源列是否被发布：本轮未核实** |
+| `factors/compact_coverage.py:58-65` | 先 `SOURCE_VALUE_CONFLICT` → `COMPACT_DQ_BLOCKED` 早退；否则 `drop_duplicates(_KEYS, keep="last")`（**前面没有排序**） | **有** | 无 | 同上 → **未核实** |
+| `factors/source_backfill.py:271` | `sort_values(keys, mergesort).drop_duplicates(keys, keep="first")`，而 **`keys` 与排序键完全相同** | **本轮未核实** | **结构性地不可能有**：排序键＝去重键 ⇒ 同组行在排序键上必然全等 ⇒ **这个 `sort_values` 对打破并列毫无作用**，`keep="first"` 实际就是输入序 | **候选实例**（§四） |
+
+### 三、两处"潜伏"是实测的零实例，不是推测
+
+**(a) `fundamental_snapshot`。** 它写出 `fundamental_pit_snapshot`，实测 **32,689,537 行**。
+**这里要更正决定清单 §1 的一处易误读**：§1 说"基本面可用性整条路径未接线"，
+那说的是 **`expand_fundamental_events`**（C4.2–C4.4，生产调用者 0）；
+而 **`build_fundamental_snapshot` 没有任何 orchestrator / runbook / docs / src 引用**
+（`rg -ln materialize_fundamental_pit_snapshot scripts/ runbooks/ ../docs/ src/` **零命中**），
+**却已经被跑过并落了 3269 万行**。
+**故"未接线"≠"没跑过"**：无编排调用者的脚本仍可能已产出在库数据，
+而 §1 那张表的读者很容易把前者读成后者——**这与 §1 自己的论点（未接线故改契约不影响已物化数据）直接相关：对本模块该论点不成立。**
+
+并列形状是否在源里出现过？**逐组精确判定**——不按天数间隔近似，
+因为**间隔 5 天以上仍可能整段落在春节/国庆休市里**，故用交易日历精确算
+（`available_date(x)` = 严格晚于 x 的第一个交易日；a0<a1 塌陷 ⟺ 区间 (a0,a1] 内无交易日）：
+
+| 源表 | `(ts_code, end_date, update_flag)` 组数 | 含 >1 个 `ann_date` | **其中塌到同一 `available_date`** |
+|---|---|---|---|
+| `financial_metrics_table` | 570,149 | 0 | **0** |
+| `balance_sheet` | 421,742 | 286（间隔中位 80 天、**最短 2 天**） | **0** |
+| `company_income_table` | 386,068 | 219（间隔中位 65 天、最短 5 天） | **0** |
+| **合计** | **1,377,959** | **505** | **0** |
+
+**故那 3269 万行从未遇到该形状，本修复对现有已发布数据是可证明的 no-op**——
+**这也正是本轮敢改它的前提**。（注意 `update_flag` 只有 `{0,1}` 两个取值，
+即 `source_revision_id` 基数极低，"三键全等"并非天方夜谭；
+只是那 505 个多公告日的组**恰好都跨了至少一个交易日**。
+`balance_sheet` 最短间隔 2 天，**是最接近触发的一处**。）
+证据：`fundamental_tie_shape_census_zero_instances.txt`。
+
+**(b) `compact/publisher`。** `published_version` 实测 **1,210 行**、
+**1,210 个不同 `(logical_partition, published_at)` 对**、**1,210 个不同三元组**——
+三者相等即**每个 (分区, 时间戳) 恰好只有一个 `data_version`**，故并列歧义**零实例**。
+**但 SQL 侧 `order by published_at desc` 仍不是全序**，且 `published_at` 由 `[now()]` 写入，
+**故这是潜伏、不是不存在**。（`latest_manifest` 无 `data_version` 列，该判定不适用。）
+证据：`published_version_tie_census_zero_instances.txt`。
+
+### 四、本轮改了什么、以及为什么另外 4 处不动
+
+**改了（1 处 src + 1 条测试）**：`fundamental_snapshot._expand_metric_events` 的排序补第四键
+`ann_date`（升序 + `keep="last"` ⇒ 取较晚的公告日），
+**与 `availability.expand_fundamental_events` 的降序 + 取首行得到同一结果**——
+两者不只都变确定，而且**结果一致**。
+
+**这一处不是"顺手改"，是补自己上一轮留下的口子**：`_expand_metric_events` 的 docstring
+自称是 `expand_fundamental_events` 的 *"Vectorized per-security **equivalent**"*，
+而**续三十五只修了一边**，等于把一个 docstring 声称的等价关系改成了"置换下不等价"。
+仓内**没有任何测试钉这个等价**（`rg expand_fundamental_events tests/unit/factors/test_fundamental_snapshot.py` 零命中），
+**故全量 1588 全绿也测不出这个口子**——这正是"声称的等价没有测试"的代价。
+
+新增 `test_snapshot_is_order_invariant_when_announcement_dates_collapse`，
+用**构造**的塌陷形状钉住（真实源里没有该形状，故只能构造），
+并在 docstring 里**写明实测零实例、故对现有数据是 no-op**，
+免得下一个读者以为在库数据曾受影响。
+**变异验证**：撤掉第四键 → **恰好这一条失败、其余 4 条通过**；还原后 diff 只有该修复（**20+/1−**）。
+
+**没改的 4 处，理由各自不同**：
+
+- **`repair.py` / `compact_coverage.py`**：两者都**先隔离冲突再取行**，故**发布出去的值是确定的**；
+  余下的只是"同值重复行里取哪一行的溯源列"。**要不要修取决于那些溯源列是否被发布——
+  本轮未核实，故不猜、不改**，只登记为待核实。
+- **`source_backfill.py:271`**：**本轮扫描里最像问题的一处**（排序键＝去重键，
+  故那个 `sort_values` 对打破并列**结构性地无效**），
+  但它**上游是否有冲突隔离本轮未核实**；
+  **在未核实之前改一条回填路径，等于在不知道会不会撞上真实数据的地方动手**，故只登记。
+- **`publisher.py` / `verification.py`**：零实例（§三 b）。
+  而且**改法本身不是纯技术问题**：同一 (分区, 时间戳) 出现两个 `data_version` 时
+  "取哪一个"是语义选择；本仓对同类歧义的既有答案是 **`pit/market.py` 那样先拒绝**。
+  照那个范式加一道 fail-closed 拒绝大概是对的，
+  **但它会让一条当前正常运行的指针路径在歧义时报错而不是选一个**——
+  这是会改变运行期行为的改动，**且与决定 B 的"歧义该隔离还是该选"是同一个问题**，故只登记不改。
+
+### 五、对决定 B 的一条增量：本仓**已有**"拒绝在冲突值之间挑选"的参考实现
+
+决定 B 与 `availability.py` 那条 DEFECT 测试的 docstring 都写着：
+技术路径遇到矛盾重复值有**一整层去重与隔离**（拒绝在冲突值之间挑选），
+而基本面路径**没有任何对应物**，故"诚实的修法大概是给这条路径加同一层，那是架构问题"。
+**本轮把那层"参考实现"定位到了具体代码**，使 B 的这个选项从抽象变成二选一：
+
+- **`factors/deduplication.py:57-90`**：`distinct_finite > 1` → `reason = "CONFLICT_QUARANTINE"`，
+  且 `representatives = representatives.loc[representatives["reason"].isna()]`
+  ——**冲突组一律不进代表行、只进隔离**；非冲突时用
+  `sort_values(_BUSINESS_KEYS + ["source_row_id"])` 取 `keep="first"`，
+  **即用一个显式全序键（`source_row_id`）而非输入序来定代表**。
+- **`pit/market.py:48-50`**：另一种范式——**组内不完全相等就不折叠**（fail-closed）。
+
+**故 B 若要给基本面路径补一层，本仓已有两种已接线在产的范式可选。**
+**这没有替 B 做决定**（B 要定的是跨报告期谁压谁，那仍是键的**次序**问题，
+而本轮两处修复都只**追加**第四键、不重排前三键，**与 B 的每一种结论都相容**），
+**但它把"要不要加一层、加哪种"从开放问题变成了二选一。**
+
+### 六、门槛（全部重测）
+
+- `pytest tests -q` → **1589 passed / 45 skipped**（92.47s）＝续三十五的 1588 **+1**（本轮新测试）
+- `ruff check src tests` → **All checks passed!**
+- `mypy src` → **Success: no issues found in 158 source files**
+- 变异还原核验：`git diff --stat` 对 `fundamental_snapshot.py` 只有 **20 insertions / 1 deletion**
+- **未写任何数据库**（普查全是 SELECT）；**未碰** `materialization_status.{json,md}`；
+  **未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、scope、门阈值或 `dropna` 口径**。
+- **决定 B 未被代做**：`availability.py` 的形状 2（同 `ann_date`、不同 `raw_value`）原样保留、
+  原 DEFECT 测试原样通过；本轮改动同样只追加第四键。
+  **裁决 2/3/4 与决定 A–M 全部仍开放。**
+- **两处明确未核实**（`repair.py`/`compact_coverage.py` 的溯源列是否被发布；
+  `source_backfill.py:271` 上游有无冲突隔离），**已登记在 §二/§四，未据猜测改动任何代码**。

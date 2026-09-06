@@ -107,8 +107,27 @@ def _expand_metric_events(
     source["available_date"] = source["ann_date"].map(
         lambda value: pd.Timestamp(assign_fundamental_available_date(value.date(), calendar))
     )
+    # ``ann_date`` is the last key and it is there to make the collapse deterministic, not to
+    # rank anything. ``available_date`` is derived from ``ann_date`` through the calendar and
+    # that map is many-to-one -- a Friday and the weekend behind it all roll to the same next
+    # trading day -- so two events announced on different calendar days can tie on
+    # ``available_date``, ``report_period`` and ``source_revision_id`` at once. With a stable
+    # sort and no fourth key, ``keep="last"`` then picked whichever of them arrived last in the
+    # input, and ``ann_date`` is a published lineage column, so the recorded provenance
+    # depended on the row order of the extract. ``availability.expand_fundamental_events``,
+    # whose per-security equivalent this function documents itself as being, took ``ann_date``
+    # as its own fourth key on 2026-09-06 for the same reason; without this the two would
+    # disagree under permutation and the equivalence claim in ``_expand_metric_events``'
+    # docstring would be false.
+    #
+    # Ascending here plus ``keep="last"`` selects the later ``ann_date``, which is what the
+    # descending sort plus first-row selection in ``expand_fundamental_events`` selects, so the
+    # two agree on the outcome and not merely on being deterministic. Neither call reorders
+    # ``available_date`` / ``report_period`` / ``source_revision_id``: a key that only fires
+    # once those three are already equal cannot change which report period or revision wins,
+    # so this is compatible with every ordering decision B could reach.
     source = source.sort_values(
-        ["ts_code", "available_date", "report_period", "source_revision_id"],
+        ["ts_code", "available_date", "report_period", "source_revision_id", "ann_date"],
         kind="mergesort",
     ).drop_duplicates(["ts_code", "available_date"], keep="last")
     targets = universe.copy()
