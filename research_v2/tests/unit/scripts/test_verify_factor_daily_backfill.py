@@ -153,3 +153,151 @@ def test_assess_year_fails_closed_on_empty_region() -> None:
     assessment = M.assess_year(2014, versions={}, factor_counts={}, duplicates=0)
     assert not assessment.passed
     assert any("factor count 0" in failure for failure in assessment.failures)
+
+
+# The five tests below came from a 14-mutation run over this script, in which five survived and all
+# five turned out to be genuine rather than masked. This is the FIRST of the five pre-flight doors:
+# preflight_frozen_baseline.run_gates stops early when it fails and marks the other four as failed
+# without running them, so a door that reports complete when the data is not is worse here than
+# anywhere else in the chain -- the later doors never get the chance to disagree.
+#
+# Three of the five are cases where another check in the same function looked like it should have
+# caught them and does not: the factor-count gate does not notice one factor being replaced by
+# another, the total-rows gate does not notice a shortfall smaller than its own tolerance, and the
+# version gate does not notice seventeen factors that are all present and all empty.
+
+
+_FIDS = [f"yeslab_{i}" for i in range(17)]
+_EXPECT = {f: 6_000_000 for f in _FIDS}
+
+
+def _assess(factor_counts, expectations=_EXPECT, duplicates=0, year=2020):
+    return M.assess_year(
+        year,
+        versions={M.predicted_version(year): sum(factor_counts.values())},
+        factor_counts=factor_counts,
+        duplicates=duplicates,
+        expectations=expectations,
+    )
+
+
+def test_a_factor_replaced_by_an_impostor_fails_even_though_the_count_is_right() -> None:
+    """`observed is None` is load-bearing: the count gate cannot see a swapped identity.
+
+    Seventeen factors are present, so `factor_count != FROZEN_FACTOR_COUNT` does not fire, and the
+    impostor is not in the expectations so it is never examined. The only thing that notices the
+    expected factor is absent is the `observed is None` half of the per-factor check. Dropping it
+    turns a correct FAIL into a PASS, which is the realistic shape of a factor being renamed or
+    substituted during a re-materialization.
+    """
+    swapped = {f: 6_000_000 for f in _FIDS}
+    del swapped[_FIDS[0]]
+    swapped["yeslab_IMPOSTOR"] = 6_000_000
+
+    result = _assess(swapped)
+    assert result.factor_count == 17, "the count gate sees nothing wrong here, by construction"
+    assert not result.passed
+    assert any(_FIDS[0] in failure and "None" in failure for failure in result.failures), (
+        f"the absent factor must be named: {result.failures}"
+    )
+
+
+def test_an_undercount_within_the_total_tolerance_is_still_caught_per_factor() -> None:
+    """`abs()` is load-bearing, and the total gate cannot cover for it.
+
+    Per-factor tolerance is max(4, 0.002% of 6,000,000) = 120 while the total tolerance over
+    102,000,000 rows is 2,040. A single factor short by 500 exceeds its own tolerance but is well
+    inside the total's, so removing abs() -- which leaves only over-counts
+    detectable -- would pass a
+    year that is missing 500 rows of one factor. Under-counting is the direction that matters here:
+    it is what an interrupted materialization produces.
+    """
+    short = {f: 6_000_000 for f in _FIDS}
+    short[_FIDS[1]] = 6_000_000 - 500
+
+    assert M.row_tolerance(6_000_000) == 120
+    assert M.row_tolerance(sum(_EXPECT.values())) == 2040
+    result = _assess(short)
+    assert not result.passed
+    assert any(_FIDS[1] in failure for failure in result.failures)
+    assert not any("total rows" in failure for failure in result.failures), (
+        "the total gate does not catch this one, which is why the per-factor abs() must"
+    )
+
+    over = {f: 6_000_000 for f in _FIDS}
+    over[_FIDS[1]] = 6_000_000 + 500
+    assert not _assess(over).passed, "the same magnitude over-count must fail identically"
+
+
+def test_a_total_over_by_exactly_its_tolerance_passes_and_one_more_row_does_not() -> None:
+    """`>` not `>=` on the total, pinned from both sides.
+
+    Spread the excess so no single factor exceeds its own tolerance: seventeen factors each over by
+    exactly 120 puts the total over by exactly 2,040, which is the total tolerance. At the tolerance
+    the year passes; one row more and it does not. Without the passing half, `>` and `>=` are
+    indistinguishable and the published tolerance means something other than what it says.
+    """
+    at_tolerance = {f: 6_000_000 + 120 for f in _FIDS}
+    total_excess = sum(at_tolerance.values()) - sum(_EXPECT.values())
+    assert total_excess == M.row_tolerance(sum(_EXPECT.values()))
+
+    assert _assess(at_tolerance).passed
+
+    one_over = dict(at_tolerance)
+    one_over[_FIDS[0]] += 1
+    assert not _assess(one_over).passed
+
+
+def test_seventeen_factors_present_and_all_empty_is_a_failure() -> None:
+    """The `total <= 0` branch is the only thing standing between an empty year and a PASS.
+
+    With all seventeen factor ids present, the factor-count gate is satisfied and the version gate
+    can
+    be satisfied, so an empty partition would clear every other check. Changing `<=` to `<` makes a
+    year in which nothing was materialized report as complete -- and since this door short-circuits
+    the other four, that empty year would then be waved through the whole pre-flight.
+    """
+    empty = {f: 0 for f in _FIDS}
+    result = _assess(empty, expectations=None)
+    assert not result.passed
+    assert any("total rows is 0" in failure for failure in result.failures)
+
+
+def test_main_exits_nonzero_when_a_year_fails(monkeypatch) -> None:
+    """The exit code is what the pre-flight actually reads, and nothing tested it.
+
+    `preflight_frozen_baseline._run` executes this script with runpy and takes the SystemExit code
+    as
+    the door's verdict, so `return 1 if failed else 0` is the only line that decides whether the
+    first
+    door passes. No test called main() at all: forcing that line to `return 0`
+    left all thirteen green,
+    which would have made an incomplete factor_daily clear the pre-flight and, because run_gates
+    stops
+    early on this door, mark the other four as failed without running them -- the opposite of the
+    intended fail-closed behaviour in both directions at once.
+    """
+    import walk_forward_common
+
+    monkeypatch.setattr(walk_forward_common, "new_holder", lambda: {})
+
+    def state(holder, year):
+        counts = {f: 6_000_000 for f in _FIDS}
+        return {M.predicted_version(year): sum(counts.values())}, counts, 0
+
+    monkeypatch.setattr(M, "collect_year_state", state)
+    assert M.main(["--years", "2020"]) == 0
+
+    def broken(holder, year):
+        return {}, {}, 0
+
+    monkeypatch.setattr(M, "collect_year_state", broken)
+    assert M.main(["--years", "2020"]) == 1, "an empty year must make the process exit non-zero"
+
+    monkeypatch.setattr(M, "collect_year_state", state)
+    assert M.main(["--years", "2020..2021"]) == 0
+    monkeypatch.setattr(
+        M, "collect_year_state",
+        lambda holder, year: broken(holder, year) if year == 2021 else state(holder, year),
+    )
+    assert M.main(["--years", "2020..2021"]) == 1, "one bad year in a range must fail the run"
