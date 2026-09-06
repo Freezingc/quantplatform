@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import ast
+from pathlib import Path
+
 import pytest
 
+import research_v2.factors.factor_sets as factor_sets_module
 from research_v2.factors.factor_sets import (
     FactorSetStatus,
     FactorSetTransitionError,
@@ -160,3 +164,47 @@ def test_a_member_definition_hash_change_alone_changes_the_id() -> None:
 
     assert redefined.factor_set_id != original.factor_set_id
     assert [m.factor_id for m in redefined.members] == [m.factor_id for m in original.members]
+
+
+def test_an_identity_no_registry_has_ever_heard_of_is_accepted_as_asserted() -> None:
+    """The scope the corrected docstring states, pinned so it cannot be widened in passing.
+
+    Making a factor set registry-verified is not a bug fix: it is what the open decision
+    about which frozen-set representation is authoritative would settle. Until then a
+    successful call means "these four fields were well shaped", not "this factor is ACTIVE
+    and this hash is its registered definition" -- and a reader who believes the stronger
+    claim will trust ``factor_set_id`` as a verified identity, which is the more dangerous
+    shape of gap because it reads as a guarantee that exists.
+    """
+    asserted = create_factor_set(
+        [("yeslab_never_registered", 7, 1, "a-hash-that-matches-nothing")],
+        selection_scope_id="fold-1",
+        rules_version=1,
+    )
+
+    assert asserted.status is FactorSetStatus.DRAFT
+    assert asserted.members[0].factor_id == "yeslab_never_registered"
+    assert asserted.members[0].definition_hash == "a-hash-that-matches-nothing"
+    assert len(asserted.content_hash) == 64
+
+
+def test_the_factor_set_builder_has_no_channel_through_which_it_could_verify_an_identity() -> None:
+    """Structural, because the claim is structural: nothing in the module can reach a registry.
+
+    Checked over the AST rather than by text, so the docstring above -- which uses the word
+    "registry" precisely to say it is not consulted -- does not produce a false failure. This
+    is the same technique the materialization planner's no-session test uses. If a registry
+    check is ever wired in, an import appears and this fails, which is the point: that is a
+    decision being taken, not a detail being tidied.
+    """
+    tree = ast.parse(Path(factor_sets_module.__file__).resolve().read_text(encoding="utf-8"))
+
+    imported: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported.extend(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            imported.append(node.module or "")
+
+    assert [name for name in imported if "registry" in name.lower()] == []
+    assert "research_v2.factors.registry" not in imported

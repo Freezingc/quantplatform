@@ -44,7 +44,23 @@ def create_factor_set(
     selection_scope_id: str,
     rules_version: int,
 ) -> FactorSet:
-    """Build a deterministic DRAFT factor set from active-registry member identities."""
+    """Build a deterministic DRAFT factor set from member identities the caller asserts.
+
+    Nothing here is verified against a registry. ``members`` is a list of bare
+    ``(factor_id, factor_version, frozen_direction, definition_hash)`` tuples and the checks
+    below are shape checks: one version per factor, a positive version, a direction in
+    {-1, 0, 1}, a non-empty hash. No ``FactorRegistry`` is consulted, so neither "this factor
+    is ACTIVE" nor "this definition hash is the registry's" is established by a successful
+    call -- both remain the caller's assertion.
+
+    That is the honest scope of the content addressing. ``content_hash``, and therefore
+    ``factor_set_id``, is a deterministic function of what the caller supplied, which makes
+    the set immutable and independent of input order; it does not make the set
+    *authoritative*. Building sets from registry-verified identities is an open decision, and
+    an earlier version of this docstring claimed it was already settled by saying the members
+    came from the active registry. The production frozen set in use today is a
+    hand-adjudicated JSON artifact that never passed through this function.
+    """
     if not members or not selection_scope_id or rules_version < 1:
         raise ValueError("factor set requires members, selection scope, and positive rules version")
     factor_ids = [member[0] for member in members]

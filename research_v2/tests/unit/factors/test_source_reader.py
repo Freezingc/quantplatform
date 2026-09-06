@@ -269,3 +269,46 @@ def test_month_chunks_normalize_identically_to_a_single_read() -> None:
         chunked.sort_values(ordering, kind="mergesort", ignore_index=True),
     )
     assert len(set(whole["source_row_id"])) == len(set(chunked["source_row_id"]))
+
+
+def test_every_row_of_a_duplicate_group_carries_the_same_available_date() -> None:
+    """The invariant that makes C3.1(a) moot, pinned so it cannot lapse silently.
+
+    C3.1(a) records that IDENTICAL_COLLAPSE compares only ``raw_value``: when two rows share
+    a business key and a value but differ in ``source_available_date``, the survivor's
+    available date -- the point-in-time field that decides when the value may be used
+    downstream -- is picked by the smallest ``source_row_id``, a provenance field with no
+    semantic meaning. A census of the source found the collapse acting on between 3.5 and
+    7.3 million keys in each of seven frozen factors, so the branch is not hypothetical.
+
+    On the technical read path the hazard still cannot fire, and not by luck: the reader
+    assigns ``source_available_date`` from ``observation_date``, and ``observation_date`` is
+    one of the four business keys the deduplicator groups on, so every candidate in a group
+    agrees on it by construction. There is nothing for the provenance ordering to choose
+    between.
+
+    That deserves a test rather than a sentence in an audit, because exactly one writer holds
+    it up. The fundamental path derives its available date from ``ann_date`` instead
+    (``availability.py:102-103``), which is a genuinely different value, and it neither is
+    wired nor passes through this deduplicator today. If decisions B or C ever route it here,
+    two revisions of one report period can land on one business key with different available
+    dates, and C3.1(a) turns from "nothing to choose between" into "the PIT field is decided
+    by row order". This is the tripwire for that moment: whoever breaks it is making the
+    decision rather than inheriting it.
+
+    Both assertions are load-bearing in opposite directions. The per-group count would also
+    pass if the reader stamped every row with one constant date, so the equality against
+    ``observation_date`` pins the mechanism; and the equality alone would keep passing if
+    ``observation_date`` ever stopped being a business key, so the per-group count pins the
+    consequence.
+    """
+    normalized = _normalize(_wide_source())
+    business_keys = ["observation_date", "ts_code", "factor_id", "factor_version"]
+    duplicated = normalized.loc[normalized.duplicated(business_keys, keep=False)]
+
+    assert not duplicated.empty, "the fixture must contain a duplicate group to say anything"
+    distinct_per_group = duplicated.groupby(business_keys, sort=True)[
+        "source_available_date"
+    ].nunique()
+    assert set(distinct_per_group) == {1}, distinct_per_group.to_dict()
+    assert (normalized["source_available_date"] == normalized["observation_date"]).all()
