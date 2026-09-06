@@ -6461,3 +6461,126 @@ max 与 min 同值、截不截负数同值、`<=` 与 `<` 同值——
    判成"晋级路径不可达"，**但"读它"与"测它"是两件事**——
    那三条不可达的结论，强度取决于这套解析器有没有被钉住。
 3. 其余同前：约 1,530 个测试函数在已审计的三条链之外从未做过变异测量。
+
+## 勾选审计续五十六（2026-09-07 03:45）：**开链 4 = 证据组装层** `model_evaluator.py`（G4 的 fold-matched 截面、G6 的分子分母、锁定期隔离都在这里）——首轮 16 个变异 **7 杀 9 存活**；**九条存活里六条做了探针实测，其中两条推翻了我自己的预判**（V-K 根本不是 fail-open，V-P 不是数值泄漏而是静默容忍）；补 6 条测试后 **13 杀 3 存活**，剩下三条有探针级证据证明它们**是三重冗余里的两重、或只换文案**
+
+### 一、为什么这条链排在 registry 之前
+
+续五十五第六节的排序理由是：`gates.py` **判**，`model_evaluator.py` **算证据**；
+**判得对而证据算错，等于没有门**。本轮实测确认这个排序是对的——三个最要紧的性质都在这里，不在门里：
+
+- **G4 的 "fold-matched"**：`_match_prediction_coverage` 把候选与基线限制在**完全相同的
+  `(signal_date, ts_code)` 截面**上，delta 才不是拿两个不同宇宙在比；
+- **G6 的分母**：`_valid_label_day_count`，以及**必须与它对齐**的分子 `_score_health_evidence`；
+- **锁定期隔离**：`_reject_locked_or_future_dates` 与 `role != "TEST"` 的拒绝。
+
+现有覆盖：`tests/unit/evaluation/test_frozen_oos_evaluator.py`，**171 行 / 6 个测试**。
+
+### 二、首轮：16 个变异，7 杀 9 存活（基线 182 passed）
+
+杀掉的 7 条，死因均已核对：
+
+| 变异 | 死因 |
+|---|---|
+| **V-A** role 守卫去掉 | `Failed: DID NOT RAISE <class 'PermissionError'>` |
+| **V-B / V-C** 2026 墙（`>=`→`>`、永不触发） | 同上（`test_frozen_oos_rejects_locked_year...`） |
+| **V-D** 覆盖匹配由内连接改左连接 | `assert [30,30,30,30,30,30] == [29,29,...]`——**G4 的 fold-matched 性质是被钉住的** |
+| **V-G** G6 分母 `>=`→`>` | `assert 'FAIL' == 'PASS'`，2 个测试 |
+| **V-L** **delta 的两个操作数互换** | `assert -2.0 == 2.0`，3 个测试 |
+| **V-N** 候选 RankIC 不再携带无效标签日 | `KeyError: 'rank_ic_valid'`，10 个测试 |
+
+**V-N 的死因要如实记**：`include_invalid=False` 会让 `compute_daily_rank_ic` 不再输出 `rank_ic_valid` 列，
+于是函数自己在 `daily.loc[daily["rank_ic_valid"]]` 崩掉。**即这个变异在任何真实运行里都会立刻炸，
+不可能成为静默缺陷**——它的 "killed" 含金量低于其它几条：**不是测试认出了语义错误，是代码自己崩了**。
+
+### 三、六条存活的探针实测：**两条推翻了我自己的预判**
+
+| 变异 | 探针前的预判 | 探针实测（原始 vs 变异） | 定性 |
+|---|---|---|---|
+| **V-K** 去掉"至少五个有效日"守卫 | **fail-open：三天的证据也能出 OOS 结论** | 五日：原 `ValueError: OOS evaluation requires more than five valid daily RankIC observations`；变异 `ValueError: HAC series must contain more observations than max_lags`。**三日重测同样**：只是两句不同文案的 `ValueError` | **预判错误，只换文案**——`hac_mean_test(max_lags=5)` 要求观测数 > 5，**与五日守卫的阈值完全重合**，故去掉守卫**不可能**放行小样本结论 |
+| **V-P** 基线帧不再查锁定期 | fail-open，2026 数据可能泄漏进数字 | 基线含一行 2026：原 `PermissionError: ... : baseline`；变异 **NO ERROR**，返回九日、六年、`delta 2.0` 的**完整正常结论**。而候选与标签也含 2026 时，**两种情况都被候选那侧拦下** | **不是数值泄漏，是静默容忍**：那一行被覆盖匹配的内连接丢掉了。**但"连接事后把它清掉了"不等于"输入在范围内"**——治理信号没了，而下一个不那么巧的产物不会被清掉 |
+| **V-H** `label_valid` 的 NULL 当作有效 | 会放宽 G6 | 第九日 20 个有效 + 25 个 NULL：原 `valid_label_day_count = 8`、G6 **PASS 1.0**；变异 `= 9`、**G6 FAIL（observed None）** | **fail-closed**：分子分母错位 → nan → 拒绝。**但送进证据文件的日数是错的** |
+| **V-I** 非有限 forward return 仍算有效日 | 会放宽 G6 | 一整日 30 个 NaN 收益：原 **5**（六日夹具）；变异 **6** | 同上：**fail-closed，但证据里的日数是错的** |
+| **V-J** 薄日进入 G6 分子 | 方向不确定 | 一日只有 25 只：原 G6 **PASS 1.0**；变异 **G6 FAIL（observed None）** | **fail-closed（误拒）**：不会放过坏模型，只会把好模型判死——而这种失败在报告里长得像"模型变差了" |
+| **V-M** 空基线不再被拒 | nan 会进报告 | 基线全常数：原 `ValueError: baseline has no valid OOS RankIC observations`；变异 **NO ERROR**，`baseline_mean=nan`、`delta=nan`、G4 FAIL；`json.dumps` 输出 `{"baseline_mean_rank_ic": NaN}`，**并用 `parse_constant` 实测确认它不是严格 JSON** | **门口 fail-closed（G4 拒绝），但 NaN 会走进 run 报告**，真正的拒绝被推到 registry 的 `_finite_number`——**离病因很远** |
+| **V-O** 非有限年份均值不再被过滤 | 方向不确定 | 塌掉 2023 一整年：原 `yearly` **五个键**；变异**六个键且 `2023: nan`**。**G3/G5 两种情况都 FAIL** | **fail-closed**，但同样把 NaN 送进报告，且 registry 的拒绝理由从"缺年份"变成"非有限"——**线索更差** |
+| **V-E / V-F** 覆盖合并的 `one_to_one` / 重复键守卫 | 防御性、只换文案 | V-F 变异后喂重复业务键：原 `ValueError: candidate predictions contain duplicate business keys`；变异 `MergeError: Merge keys are not unique in left dataset` | **两者互相冗余，且都不是第一重**：见下 |
+
+**关于重复键，本轮顺手量到一个此前没人写下来的事实**：第一版探针里 V-F 没传基线，
+于是量到的是**第三重守卫**——`compute_daily_rank_ic` 自己抛
+`ValueError: predictions and labels must have unique signal-date keys`。
+所以重复业务键一路上有**三道独立的拦截**：`compute_daily_rank_ic` 的唯一性检查、
+`_match_prediction_coverage` 的重复键守卫（V-F）、以及两次合并上的 `validate="one_to_one"`（V-E）。
+**V-E 存活是因为 V-F 先拦下，V-F 存活是因为 V-E 接着拦下，而两者都被拿掉时还有第三道。**
+这是本轮"不钉 V-E / V-F"的依据，**不是推断，是三次实测**。
+
+**方法论收获，与续五十二那条正好互补**：续五十二说的是"**killed 要追问因为什么杀的**"；
+**本轮说的是"survived 也要追问'是不是我夹具没造对'"**——
+第一版六个探针里**四个是废的**：V-F 没传基线（那个守卫只在有基线时才跑）、
+V-J 与 V-O 把某一日弄塌后**正好撞上"至少五个有效日"守卫**（于是量到的是那个守卫，不是被测行为）、
+V-H 传的是 `label_valid=False` 而不是 `None`（`fillna` 无事可做）。
+**四个废探针里有三个报告的是"无差异"或"与预期一致"**——若不重做，就会被当成结论写进文档。
+重做后的夹具统一改成**九日跨六年**，理由就是"弄坏任何一天也不会撞上五日守卫"。
+
+### 四、补的 6 条测试，与补完之后的结果
+
+`tests/unit/evaluation/test_frozen_oos_evaluator.py` 从 **6 个测试变 12 个**：
+
+1. `test_nine_day_fixture_is_a_clean_complete_evaluation`——**夹具自证**（九日、六年齐全、G6 PASS、delta 2.0）
+2. `test_locked_year_in_the_baseline_frame_is_refused_by_name`（钉 **V-P**）
+3. `test_a_baseline_with_no_valid_observation_is_refused_where_it_happens`（钉 **V-M**）
+4. `test_a_year_without_a_finite_mean_never_reaches_the_report`（钉 **V-O**）
+5. `test_g6_denominator_ignores_null_label_flags_and_non_finite_returns`（钉 **V-H 与 V-I**）
+6. `test_a_thin_day_stays_out_of_the_g6_numerator_so_the_two_sides_agree`（钉 **V-J**）
+
+**没钉 V-E / V-F / V-K，理由写在这里而不是省略**：V-K 已被探针证明只换文案（与 HAC 的 `max_lags`
+阈值重合，五日与三日两处都实测过）；V-E 与 V-F 是三重冗余里的第二、第三重，
+**钉任一条都等于钉一个异常类型**，而"重复键必被拒"这个性质本身仍被剩下的两道覆盖。
+**真正会变成洞的情形是"有人同时动这两处"**——这一点写进文档，比写成一条脆弱测试有用。
+
+结果：
+
+- **定向**（只跑 `test_frozen_oos_evaluator.py`，**1.8s/次**）：control **12 passed** →
+  **13 killed（每条带杀手节点与死因）→ 3 survived（V-E / V-F / V-K）** → restored **12 passed**；
+  `model_evaluator.py` **还原后逐字节相同**。日志 `mutation_oos_evidence_targeted_with_killers.txt`。
+- **全量 harness**（五路径）：**基线 188 passed**，**13 杀 3 存活**，还原后逐字节相同并复跑通过。
+  日志 `mutation_oos_evidence_after_pins.txt`。
+- 值得记的归属变化：**V-G 从 2 个杀手变 5 个**、**V-B/V-C 从 1 个变 2 个**（新的基线墙测试也在盯 2026）、
+  **V-N 从 8 个失败变 10 个**——但 **V-N 的死因仍是 `KeyError`，不是语义识别**，故其含金量不变。
+
+### 五、门槛与证据
+
+  **skipped 数未变**）；`ruff check src tests` 清；`mypy src` **158 文件清**。
+  **warning 数由 3 变 5**，两条都来自第六节那条 pandas `FutureWarning`（新夹具里含 NULL 的
+  `label_valid` 列会触发它）——**这是新测试把那条即将变更的行为纳入了监视，不是新问题**。
+- **本轮只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**；
+  **未改任何门阈值、契约、schema 或 `dropna` 口径**。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 归档：`mutation_oos_evidence_first_round.txt`（首轮 16 变异）、
+  `mutation_oos_evidence_after_pins.txt`（补测后）、
+  `mutation_oos_evidence_targeted_with_killers.txt`（定向 + 节点级归属）、
+  `probe_oos_evidence{,2,3}.py` 与同名 `.log`（**三版探针，含四个废探针的原始输出**——
+  留着是为了让"夹具造错会长什么样"有据可查）、`mutate_oos_evidence.py`、`mutate_oos_evidence_targeted.py`。
+
+### 六、附带发现（不是本轮任务，但如实记）
+
+`model_evaluator.py:175` 的 `normalized_labels["label_valid"].fillna(False)` 在 object dtype 列上触发
+pandas `FutureWarning: Downcasting object dtype arrays on .fillna ... is deprecated and will change in
+a future version`。**这一行正是 V-H 与 V-I 变异的那一行**，也就是说：
+**将来 pandas 改变这里的语义时，本轮新增的
+`test_g6_denominator_ignores_null_label_flags_and_non_finite_returns` 会立刻响**
+（它把"NULL 不算有效、非有限收益不算有效"钉成了 G6 的可观测结果，而不是钉成实现细节）。
+**本轮没有改这一行**——改 dtype 行为属于契约变更，超出"只改测试"的范围。
+
+### 七、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`registry/model_registry.py` 的第二套门**（`load_walk_forward_evidence` /
+   `_parse_gate_evidence` / `validate_walk_forward_evidence`）。
+   **本 session 已经有三次结论是靠"读它"得出的**：续五十四把 U-E/U-F/U-O 判成"晋级路径不可达"、
+   续五十五用它解释三处 fail-closed 的兜底位置、本轮用它解释 V-M/V-O 的 NaN 最终在哪被拦下。
+   **这三个结论的强度，全都取决于它自己被钉住没有——而它至今没被变异测量过。**
+2. **`evaluation/rank_ic.py`**（`compute_daily_rank_ic` / `summarize_rank_ic` /
+   `summarize_rank_ic_by_year`）：**G1/G2/G3/G5 的原始数字都出自这里**，
+   而且它正是本轮量到的"重复键三重守卫"里的**第一重**。
+3. 其余同前：约 1,530 个测试函数在已审计的四条链之外从未做过变异测量。
