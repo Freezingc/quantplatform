@@ -1926,3 +1926,93 @@ published row"**，即声称了一个 fixture 根本没有区分辨力的保证�
 **全量：1440 passed / 45 skipped**（本节起点 1438；+2 availability），
 `ruff check src tests` 清、`mypy src` 157 文件清；
 `availability.py` 两次变异后以 `git status --porcelain` 确认**还原干净**。
+
+## 勾选审计续十七（2026-09-06 12:25）：C5.4 不勾——已有的月度续跑器回答的是**另一个问题**；并查出第六处未接线组件
+
+### 先把"看起来已经有了"的东西辨清楚
+
+`research_v2/src/research_v2/backfill/` 下确实有一套续跑机制：
+`resolve_monthly_backfill_windows`（按**真实交易月**而非日历月切分，带回溯窗口）与
+`MonthlyBackfillRunner`（`plan()` 给出每月仍缺的对象，`run()` 只发布 pending 的那些，
+**已完成的月份永不进 publish 回调**）。
+
+**但它回答的问题不是 C5.4 的问题。**两者差在**两个正交的维度**上：
+
+| | `MonthlyBackfillRunner`（已有） | C5.4（要求） |
+|---|---|---|
+| **问题** | 哪些月**从未发布过** | 哪些 signal date **自发布后变了** |
+| **判据** | 指针是否存在（`pointer_reader(object, month)`） | 源数据是否变化 |
+| **粒度** | 月 × 对象 | signal date |
+| **触发** | 缺失（completeness-driven） | 变更（change-driven） |
+
+**关键后果**：**一个已有指针的月份会被无条件跳过，无论它的源后来发生了什么。**
+源里某天的值被更正、某行被重述、水位推进——**已发布月份里的这些变化永远不会被重算**，
+而且 `plan()` 的结果**一个字都不会变**。
+
+**这不是 runner 的缺陷。**续跑（resumability）与变更检测（change detection）是两份不同的工作，
+**把它们混在一起会让一次续跑重新发布它早已完成的月份**，那才是 bug。
+**记下它是因为"我们有一个可续跑的月度 runner"读起来像"我们有增量重算"，而后者不存在。**
+C5.4 要检测源变更，需要**按日期的摘要或水位与已持久化状态做比对**——
+那是一份**新的持久化状态**，属 schema 决定（新表或新列），且要动发布路径，
+**在 Task 2.4 逐位复现期间不宜代做**。
+
+### 第六处未接线组件
+
+`MonthlyBackfillRunner(` 在 `research_v2/src` 与 `research_v2/scripts` 中
+**生产调用者为 0**（只有自身定义与单测）。
+**这是本轮查出的第六处**（续四 C6.2 结构质量、续七 `select_cluster_representatives`、
+续十 `FactorRegistry` 与 `create_factor_set`、续十二 `expand_fundamental_events`）。
+已同步进决策清单的未接线表格。
+
+### 本轮补的 7 条测试：三道 fail-closed 守卫此前**完全没有测试**
+
+runner 的 docstring 明写这些守卫是为了"prevent accidental cross-month or duplicate writes"，
+但**没有一条测试触及它们**——既有 3 条测试全是 happy path（plan 只列缺失对象、
+run 跳过完成月并发布 pending 月）。已补：
+
+- **`test_the_publish_callback_cannot_report_an_object_that_was_not_pending`**：
+  回调报告一个**不在该月 pending 集合里**的对象必须被拒。
+  否则结果会声称某对象在某月已发布，而**那个月的指针从未被检查过**——
+  这正是"续跑最后把某月标成 complete、依据却是另一个月的证据"的路径。
+  **fixture 细节值得记**：回调必须报告一个**根本不在 `required_objects` 里**的对象名
+  （用 `label_daily`）。第一版报告了一个必需对象名，而该月在 pending 状态下三个对象**都在**
+  pending 集合里，于是**先触发的是唯一性守卫**，跨对象守卫根本没被测到——测试通过了，
+  但通过的理由是错的。
+- **`test_the_publish_callback_cannot_report_the_same_object_twice`**：重复报告必须被拒。
+- **`test_a_publish_callback_that_reports_nothing_is_refused`**：pending 月的回调**空手而归**必须被拒。
+  若静默接受，该月会被记为 `published` 而**没有任何指针被写**，
+  于是下次续跑又把它规划为 pending，**结果与指针表互相矛盾**。
+  **顺带钉住一处误导性错误信息**：空报告与重复报告**共用同一条** "must report unique object
+  names"，对空报告这个情形是**答非所问**的。已按现状钉住并在 docstring 注明，
+  使改进它成为一次**有意的**变更而不是顺手改文案。
+- **`test_required_objects_must_be_non_empty_and_unique[empty|duplicated]`**：
+  **空的需求集合会让每个月都平凡地"完成"、从而什么都不发布**——
+  这是一个会让整条回填静默空转的配置错误。
+- **`test_the_runner_is_blind_to_source_change_and_answers_only_pointer_presence`**：
+  把上面的判定写成可执行的证据。fixture 里放两份不同的"源摘要"
+  （`digest-a` / `digest-b-changed`），**两者都不是 runner 的输入**，
+  断言正是这一点：**两次 `plan()` 结果完全相同、且都是 `complete`**。
+- **`test_a_missing_pointer_for_one_object_leaves_only_that_object_pending`**：
+  月内粒度是**逐对象**的，故半个月只补那一个缺口。
+
+**变异验证**：M32（去掉跨对象守卫）→ 1 条失败；
+M33（去掉唯一性/非空守卫）→ 2 条失败；M34（去掉 `required_objects` 校验）→ 2 条失败。
+**三个变异各自只被对应的测试捕获**，说明这三条守卫现在各有专属看守。
+`runner.py` 三次变异后以 `git status --porcelain` 确认**还原干净**。
+
+### C5.4 三款的逐款判定
+
+- **技术日频源变化只重算其变化 signal dates** → **未实现**（如上：现有机制是 completeness-driven，
+  且粒度是月不是 signal date）。
+- **基本面公告/修订变化重算该证券从 available date 到下次版本或 180 日上限与 universe 交集** →
+  **未实现，且被决定 B 阻塞**：这一款的"到下次版本"里的**"下次版本"语义正是决定 B 争议的
+  跨期优先级**（若按 (B-i) 最新报告期优先，则不同报告期的有效区间会重叠，
+  重算范围就不再是"到下一个版本的可用日"这么简单）。**故应等 B 定后再实现，否则会改两遍。**
+- **registry 新版本不覆盖旧版本** → **在 registry 层成立且有测试**（续十：
+  新旧版本并存、各有自己的生命周期、definition hash 不同），
+  **但 registry 未接线**，故它对物化**没有实际约束力**。
+
+**故 C5.4 不勾。**
+
+**全量：1447 passed / 45 skipped**（本节起点 1440；+7 backfill），
+`ruff check src tests` 清、`mypy src` 157 文件清。
