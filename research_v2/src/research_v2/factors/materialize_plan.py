@@ -33,6 +33,7 @@ from typing import Any
 from research_v2.backfill.windows import resolve_monthly_backfill_windows
 from research_v2.factors.catalog_dry_run import (
     SourceColumn,
+    entry_key,
     registered_source_columns,
     run_catalog_dry_run,
 )
@@ -97,14 +98,6 @@ class FactorMaterializePlan:
         return self.schema_verified and not self.blocked_factors
 
 
-def _entry_key(entry: Mapping[str, Any]) -> tuple[str, int]:
-    try:
-        version = int(entry.get("factor_version", 0))
-    except (TypeError, ValueError):
-        version = 0
-    return (str(entry.get("factor_id", "")), version)
-
-
 def plan_factor_materialization(
     entries: Sequence[Mapping[str, Any]],
     *,
@@ -136,7 +129,7 @@ def plan_factor_materialization(
             "cross_section_size must be a positive number of securities, or omitted entirely"
         )
 
-    in_scope = [entry for entry in entries if _entry_key(entry) not in retired]
+    in_scope = [entry for entry in entries if entry_key(entry) not in retired]
     if not in_scope:
         raise FactorPlanError("no factor entries remain in scope after retirement")
     factor_count = len(in_scope)

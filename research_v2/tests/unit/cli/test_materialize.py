@@ -340,3 +340,98 @@ def test_the_shipped_catalog_plans_across_its_eleven_source_tables(tmp_path: Pat
     assert plan["schema_verified"] is False, (
         "no --schemas was supplied, so the plan must not claim to have checked the source"
     )
+
+
+def _write_drifted_catalog(path: Path, version: object) -> Path:
+    """A catalog hand-edited away from what the generator produces."""
+    document = {
+        "metadata_snapshot_hash": "a" * 64,
+        "factors": [
+            {
+                "factor_id": "yeslab_1",
+                "factor_version": version,
+                "display_name": "Alpha1",
+                "source_database": "dfs://YesLab",
+                "source_table": "factor_data1",
+                "source_factor_name": "Alpha1",
+                "source_value_column": "value",
+                "source_date_column": "trade_date",
+                "source_code_column": "ts_code",
+            }
+        ],
+    }
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    return path
+
+
+def test_a_non_integer_factor_version_is_refused_with_a_message_instead_of_silence(
+    tmp_path: Path,
+) -> None:
+    """The user-visible half of the crash: exit 2 and a sentence, not exit 1 and nothing.
+
+    The command refuses a bad plan through ``except FactorPlanError``. A malformed
+    ``factor_version`` used to raise a plain ``ValueError`` out of the entry key instead,
+    which that handler does not catch, so the command died with an empty stdout and exit
+    code 1: the operator learned that something had gone wrong but not which entry caused
+    it. This is catalog drift of exactly the kind the reproducibility verifier exists to
+    catch, so the dry-run's answer to it has to be a finding.
+
+    Asserted on ``result.output``, which holds both streams, because the refusal is
+    written to stderr and click only separates the two from 8.2 onwards.
+    """
+    catalog = _write_drifted_catalog(tmp_path / "catalog.yaml", "v1")
+
+    result = _invoke_factors(
+        [
+            "--start",
+            "2014-01-01",
+            "--end",
+            "2014-02-28",
+            "--catalog",
+            str(catalog),
+            "--calendar",
+            str(_write_calendar(tmp_path / "calendar.txt")),
+            "--schemas",
+            str(_write_schemas(tmp_path / "schemas.json")),
+            "--dry-run",
+        ]
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "factor materialization plan refused" in result.output
+    assert "factor_version" in result.output
+    assert "yeslab_1" in result.output
+
+
+def test_the_same_drift_without_schemas_plans_but_cannot_be_executed(tmp_path: Path) -> None:
+    """The door that is left open, pinned so it stays a door nobody can walk through.
+
+    Without ``--schemas`` the planner validates no entry at all, so the malformed version
+    is *not* detected here -- it used to crash the command on this path too, because
+    ``registered_source_columns`` runs unconditionally. Surviving is the fix, and the
+    reason surviving is safe is the flag the plan already carries: an unverified plan
+    reports ``materializable: false``, so drift that slips past this door still cannot
+    become a run. Catching it here as well would need a schema-independent catalog
+    validator, which does not exist.
+    """
+    catalog = _write_drifted_catalog(tmp_path / "catalog.yaml", "v1")
+
+    result = _invoke_factors(
+        [
+            "--start",
+            "2014-01-01",
+            "--end",
+            "2014-02-28",
+            "--catalog",
+            str(catalog),
+            "--calendar",
+            str(_write_calendar(tmp_path / "calendar.txt")),
+            "--dry-run",
+        ]
+    )
+
+    assert result.exit_code == 0, result.output
+    plan = json.loads(result.stdout)
+    assert plan["schema_verified"] is False
+    assert plan["materializable"] is False
+    assert plan["blocked_factors"] == [], "nothing was checked, so nothing may be claimed blocked"

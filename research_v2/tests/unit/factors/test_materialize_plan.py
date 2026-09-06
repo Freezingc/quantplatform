@@ -20,14 +20,14 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+
 import research_v2.factors.materialize_plan as planner_module
+from research_v2.backfill.windows import resolve_monthly_backfill_windows
+from research_v2.factors.catalog_dry_run import SourceColumn
 from research_v2.factors.materialize_plan import (
     FactorPlanError,
     plan_factor_materialization,
 )
-
-from research_v2.backfill.windows import resolve_monthly_backfill_windows
-from research_v2.factors.catalog_dry_run import SourceColumn
 from research_v2.pit.calendar import TradingCalendar
 
 _LIVE_TYPES = {
@@ -402,3 +402,63 @@ def test_factors_spanning_several_tables_are_grouped_per_chunk_not_flattened() -
     assert plan.source_tables == ("factor_data1", "factor_data3")
     assert plan.chunks[0].source_tables == ("factor_data1", "factor_data3")
     assert sorted(plan.source_columns) == ["factor_data1", "factor_data3"]
+
+
+def test_a_non_integer_factor_version_is_refused_by_name_instead_of_crashing_the_planner() -> None:
+    """The planner's own copy of the entry key was defensive; the one it called was not.
+
+    ``plan_factor_materialization`` asks ``catalog_dry_run.registered_source_columns`` for
+    the consumed columns, and that module's entry key did ``int(entry["factor_version"])``
+    with no guard -- so a catalog hand-edited to ``v1`` escaped as a bare ``ValueError``,
+    past the ``except FactorPlanError`` refusal path the CLI is built around. There were
+    two copies of the same helper and only one of them could survive its own input.
+    """
+    with pytest.raises(FactorPlanError) as refused:
+        plan_factor_materialization(
+            [_entry("yeslab_1", factor_version="v1")],
+            calendar=_calendar(),
+            start_date=date(2014, 1, 1),
+            end_date=date(2014, 1, 31),
+            schemas=_schemas(),
+        )
+
+    message = str(refused.value)
+    assert "factor_version" in message, message
+    assert "yeslab_1" in message, message
+
+
+def test_a_non_integer_factor_version_is_listed_as_blocked_when_the_plan_is_not_strict() -> None:
+    """``strict=False`` exists to report the whole picture, so it must report this too."""
+    plan = plan_factor_materialization(
+        [_entry("yeslab_1", factor_version="v1"), _entry("yeslab_2")],
+        calendar=_calendar(),
+        start_date=date(2014, 1, 1),
+        end_date=date(2014, 1, 31),
+        schemas=_schemas(),
+        strict=False,
+    )
+
+    assert plan.blocked_factors == (("yeslab_1", 0),)
+    assert plan.materializable is False
+    assert plan.factor_count == 2, "a blocked entry is reported, not quietly dropped"
+
+
+def test_an_unverified_plan_survives_a_non_integer_version_because_it_cannot_be_executed() -> None:
+    """The crash was unconditional: ``registered_source_columns`` runs with no schema set too.
+
+    Surviving is the whole requirement on this path. Without ``--schemas`` the planner runs
+    no entry validation at all, so a malformed version is not detected here -- but the plan
+    it returns is already ``materializable is False``, which is the flag that stops an
+    unverified plan from becoming a run. Detecting malformed entries without a schema set
+    would mean adding a second, schema-independent catalog validator; that is a real gap
+    and is recorded as such rather than papered over by this test.
+    """
+    plan = plan_factor_materialization(
+        [_entry("yeslab_1", factor_version="v1")],
+        calendar=_calendar(),
+        start_date=date(2014, 1, 1),
+        end_date=date(2014, 1, 31),
+    )
+
+    assert plan.schema_verified is False
+    assert plan.materializable is False

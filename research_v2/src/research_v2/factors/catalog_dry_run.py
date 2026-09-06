@@ -310,7 +310,7 @@ def registered_source_columns(
     """
     referenced: set[str] = set()
     for entry in entries:
-        if _entry_key(entry) in retired:
+        if entry_key(entry) in retired:
             continue
         if str(entry.get("source_table", "")) != source_table:
             continue
@@ -320,8 +320,45 @@ def registered_source_columns(
     return tuple(sorted(referenced))
 
 
-def _entry_key(entry: Mapping[str, Any]) -> tuple[str, int]:
-    return (str(entry.get("factor_id", "")), int(entry.get("factor_version", 0)))
+def _parse_factor_version(raw: object) -> int | None:
+    """Return a catalog entry's version as an int, or None when it is not one.
+
+    An integral float is accepted, because ``1.0`` is how a hand-edited YAML file often
+    spells 1. A non-integral float is refused rather than truncated: ``int(1.5) == 1``
+    would silently identify a different factor version everywhere downstream, and a wrong
+    identity that looks valid is worse than a refusal.
+    """
+    if raw is None or isinstance(raw, bool):
+        return None
+    if isinstance(raw, int):
+        return raw
+    if isinstance(raw, float):
+        return int(raw) if raw.is_integer() else None
+    if isinstance(raw, str):
+        try:
+            return int(raw.strip())
+        except ValueError:
+            return None
+    return None
+
+
+def entry_key(entry: Mapping[str, Any]) -> tuple[str, int]:
+    """The identity a catalog entry is sorted, retired-matched and reported under.
+
+    This must never raise. It is the sort key of ``run_catalog_dry_run`` and it also runs
+    inside ``registered_source_columns``, which the materialization planner calls
+    unconditionally -- with or without a schema set. A version that could not be parsed
+    therefore used to escape as a bare ``ValueError``, straight past the
+    ``except FactorPlanError`` refusal path the CLI is built around, so
+    ``qr-v2 materialize factors --dry-run`` exited 1 having printed nothing at all, not
+    even which factor was at fault.
+
+    The malformed version is reported as a BLOCKED reason by ``_check_entry``. This
+    function only has to keep an identity stable enough to sort and to report, hence the
+    documented 0 fallback rather than an exception.
+    """
+    version = _parse_factor_version(entry.get("factor_version"))
+    return (str(entry.get("factor_id", "")), 0 if version is None else version)
 
 
 _EXPECTED_TYPE_CLASS = {
@@ -339,16 +376,22 @@ def _check_entry(
     discriminator: str,
 ) -> FactorDryRunFinding:
     factor_id = str(entry.get("factor_id", ""))
-    try:
-        factor_version = int(entry.get("factor_version", 0))
-    except (TypeError, ValueError):
-        factor_version = 0
+    raw_version = entry.get("factor_version", 0)
+    parsed_version = _parse_factor_version(raw_version)
+    factor_version = 0 if parsed_version is None else parsed_version
     source_table = str(entry.get("source_table", ""))
 
     reasons: list[str] = []
     for required in _REQUIRED_ENTRY_FIELDS:
         if required not in entry or entry[required] in (None, ""):
             reasons.append(f"catalog entry is missing required field: {required}")
+    # Absent and empty are already named above as a missing required field; this is the
+    # other way the same field can be wrong, and it needs its own sentence or whoever
+    # edits the catalog looks for a dropped key where the problem is an unparseable one.
+    if parsed_version is None and raw_version not in (None, ""):
+        reasons.append(
+            f"catalog entry factor_version cannot be read as an integer: {raw_version!r}"
+        )
 
     if not _SAFE_TABLE.fullmatch(source_table):
         reasons.append(
@@ -450,8 +493,8 @@ def run_catalog_dry_run(
     )
 
     findings: list[FactorDryRunFinding] = []
-    for entry in sorted(entries, key=_entry_key):
-        key = _entry_key(entry)
+    for entry in sorted(entries, key=entry_key):
+        key = entry_key(entry)
         if key in retired:
             findings.append(
                 FactorDryRunFinding(

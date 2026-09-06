@@ -410,3 +410,94 @@ def test_the_catalog_registration_agrees_with_the_columns_the_read_path_projects
 
     assert disagreements == {}
     assert expected == ("factor_name", "trade_date", "ts_code", "value")
+
+
+def test_a_non_integer_factor_version_is_a_blocked_finding_that_names_the_field() -> None:
+    """Catalog drift must come back as a finding, never as an exception that prints nothing.
+
+    ``factor_version`` is one of the six required entry fields, but "required" only ever
+    checked presence and non-emptiness. An entry hand-edited to ``v1`` therefore reached
+    ``int()`` inside the sort key that both ``run_catalog_dry_run`` and
+    ``registered_source_columns`` use, and raised a bare ``ValueError``. The CLI refuses a
+    plan through ``except FactorPlanError``, which does not catch that, so
+    ``qr-v2 materialize factors --dry-run`` exited 1 having printed nothing at all -- not
+    even which factor was at fault.
+
+    Fixing only the crash would be worse than the crash: the pre-existing ``try/except`` in
+    ``_check_entry`` coerces an unparseable version to 0 and appends *no* reason, so the
+    entry would have been reported MAPPED with a silently invented version. A version that
+    cannot be parsed is exactly the drift this gate exists to report, so it is a reason.
+    ``test_a_catalog_matching_the_live_source_schema_maps_completely`` is the control that
+    keeps the new reason from firing on well-formed entries.
+    """
+    from research_v2.factors.catalog_dry_run import BLOCKED
+
+    report = run_catalog_dry_run(
+        [_entry(factor_version="v1")],
+        _schemas(factor_data1=_LIVE_TYPES),
+    )
+
+    assert report.blocked_count == 1
+    assert report.mapped_count == 0
+    finding = report.blocked_findings[0]
+    assert finding.status == BLOCKED
+    assert finding.factor_id == "yeslab_1"
+    assert any("factor_version" in reason for reason in finding.reasons), finding.reasons
+    assert finding.factor_version == 0, (
+        "a finding still has to carry a well-defined identity; 0 is the documented fallback"
+    )
+
+
+def test_a_missing_factor_version_is_still_reported_as_missing_and_not_as_unparseable() -> None:
+    """The two version defects are different findings, and only one of them is new.
+
+    An absent or empty ``factor_version`` was already caught by the required-field check.
+    Both paths now end in BLOCKED, but they must not collapse into one another: a reason
+    that says "unparseable" for a field that is simply absent would send whoever edits the
+    catalog looking for a typo where the real problem is a dropped key.
+    """
+    report = run_catalog_dry_run(
+        [_entry(factor_version="")],
+        _schemas(factor_data1=_LIVE_TYPES),
+    )
+
+    assert report.blocked_count == 1
+    reasons = report.blocked_findings[0].reasons
+    assert any("missing required field: factor_version" in reason for reason in reasons), reasons
+    assert not any("cannot be read as an integer" in reason for reason in reasons), (
+        "an absent field is not an unparseable one, and saying so sends the editor hunting "
+        "for a typo where the real problem is a dropped key"
+    )
+
+
+def test_a_version_that_is_not_integral_is_refused_rather_than_truncated() -> None:
+    """``int(1.5) == 1`` would identify a different factor version, and say nothing about it.
+
+    A wrong identity that still looks valid is the worst outcome available here: the entry
+    would be sorted, retired-matched and reported as version 1 while the catalog says
+    something else. Refusing costs one BLOCKED line.
+    """
+    report = run_catalog_dry_run(
+        [_entry(factor_version=1.5)],
+        _schemas(factor_data1=_LIVE_TYPES),
+    )
+
+    assert report.blocked_count == 1
+    reasons = report.blocked_findings[0].reasons
+    assert any("cannot be read as an integer" in reason for reason in reasons), reasons
+
+
+def test_a_version_spelled_as_an_integral_float_is_the_entry_it_looks_like() -> None:
+    """``1.0`` is how a hand-edited YAML file often spells 1, and it does mean version 1.
+
+    The other half of refusing ``1.5``: being strict about integrality must not turn into
+    being strict about spelling, or the gate blocks a catalog that is semantically fine.
+    """
+    report = run_catalog_dry_run(
+        [_entry(factor_version=1.0)],
+        _schemas(factor_data1=_LIVE_TYPES),
+    )
+
+    assert report.blocked_count == 0
+    assert report.mapped_count == 1
+    assert report.findings[0].factor_version == 1
