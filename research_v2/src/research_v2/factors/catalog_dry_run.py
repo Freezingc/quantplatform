@@ -241,6 +241,51 @@ def schema_fingerprint(columns: Sequence[SourceColumn]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def schema_set_to_payload(
+    schemas: Mapping[str, tuple[SourceColumn, ...] | None],
+    errors: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """Serialize a collected schema set so a verdict can be replayed without the cluster.
+
+    This is the single definition of that on-disk shape. Both the audit script that writes it and
+    any consumer that reads it back go through here, because two independent encoders of one format
+    is how a saved artifact stops loading -- and it stops loading later, at the moment someone tries
+    to re-examine a verdict rather than at the moment the format changed.
+    """
+    return {
+        "schemas": {
+            table: (
+                None
+                if columns is None
+                else [
+                    {"name": column.name, "typeString": column.type_string}
+                    for column in columns
+                ]
+            )
+            for table, columns in sorted(schemas.items())
+        },
+        "errors": dict(sorted((errors or {}).items())),
+    }
+
+
+def schema_set_from_payload(
+    payload: Mapping[str, Any],
+) -> tuple[dict[str, tuple[SourceColumn, ...] | None], dict[str, str]]:
+    """Inverse of :func:`schema_set_to_payload`."""
+    schemas: dict[str, tuple[SourceColumn, ...] | None] = {}
+    for table, columns in (payload.get("schemas") or {}).items():
+        schemas[str(table)] = (
+            None
+            if columns is None
+            else tuple(
+                SourceColumn(name=str(column["name"]), type_string=str(column["typeString"]))
+                for column in columns
+            )
+        )
+    errors = {str(key): str(value) for key, value in (payload.get("errors") or {}).items()}
+    return schemas, errors
+
+
 def _role_columns(entry: Mapping[str, Any], discriminator: str) -> dict[str, str]:
     """The columns one entry consumes, keyed by the role each plays in the read path."""
     return {

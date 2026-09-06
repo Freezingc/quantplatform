@@ -19,7 +19,7 @@ from research_v2.cli.export import compatibility, verify
 from research_v2.cli.inference import daily as inference_daily
 from research_v2.cli.inference import retry as inference_retry
 from research_v2.cli.inference import status as inference_status
-from research_v2.cli.materialize import emit_plan
+from research_v2.cli.materialize import emit_plan, plan_factors
 from research_v2.cli.models import plan_model_train
 from research_v2.cli.registry import pointer_app, promote
 from research_v2.cli.reports import report_experiment
@@ -65,6 +65,41 @@ materialize_app.command("security-master")(_materialize_command("security-master
 materialize_app.command("market")(_materialize_command("market"))
 materialize_app.command("universe")(_materialize_command("universe"))
 materialize_app.command("labels")(_materialize_command("labels"))
+
+
+@materialize_app.command("factors")
+def materialize_factors(
+    start: str = typer.Option(..., "--start"),
+    end: str = typer.Option(..., "--end"),
+    catalog: Path = typer.Option(..., "--catalog"),  # noqa: B008
+    calendar: Path = typer.Option(..., "--calendar"),  # noqa: B008
+    schemas: Path = typer.Option(None, "--schemas"),  # noqa: B008
+    cross_section: int = typer.Option(None, "--cross-section"),
+    lookback_trading_days: int = typer.Option(20, "--lookback-trading-days"),
+    strict: bool = typer.Option(True, "--strict/--no-strict"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+    output: Path = typer.Option(None, "--output"),  # noqa: B008
+) -> None:
+    """Plan a factor materialization from metadata only: no values read, no table written.
+
+    The calendar is an explicit file of ISO trading dates rather than something fetched here, so the
+    command is runnable with no cluster reachable and its output is reproducible. Pass ``--schemas``
+    with the file written by ``audit_factor_catalog_schema_dry_run.py --save-schemas`` to have the
+    plan verified against the source schema; without it the plan reports itself unverified and not
+    materializable.
+    """
+    plan_factors(
+        catalog,
+        start,
+        end,
+        calendar_path=calendar,
+        schemas_path=schemas,
+        cross_section=cross_section,
+        lookback_trading_days=lookback_trading_days,
+        strict=strict,
+        dry_run=dry_run,
+        output=output,
+    )
 
 
 @dataset_app.command("build")

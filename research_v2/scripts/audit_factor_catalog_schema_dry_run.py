@@ -36,6 +36,8 @@ from research_v2.factors.catalog_dry_run import (  # noqa: E402
     catalog_tables,
     collect_source_schemas,
     run_catalog_dry_run,
+    schema_set_from_payload,
+    schema_set_to_payload,
 )
 
 _DEFAULT_CATALOG = REPO_ROOT / "research_v2/configs/factors/source_catalog.yaml"
@@ -64,37 +66,17 @@ def _parse_retired(raw: str | None) -> frozenset[tuple[str, int]]:
 
 
 def _schemas_from_disk(path: Path) -> dict[str, tuple[SourceColumn, ...] | None]:
+    """Read a schema set saved by ``--save-schemas``. Delegates to the shared format definition."""
     saved = json.loads(path.read_text(encoding="utf-8"))
-    schemas: dict[str, tuple[SourceColumn, ...] | None] = {}
-    for table, payload in (saved.get("schemas") or {}).items():
-        schemas[table] = (
-            None
-            if payload is None
-            else tuple(
-                SourceColumn(name=column["name"], type_string=column["typeString"])
-                for column in payload
-            )
-        )
+    schemas, _ = schema_set_from_payload(saved)
     return schemas
 
 
 def _schema_payload(
     schemas: Any, errors: dict[str, str]
 ) -> dict[str, Any]:
-    return {
-        "schemas": {
-            table: (
-                None
-                if columns is None
-                else [
-                    {"name": column.name, "typeString": column.type_string}
-                    for column in columns
-                ]
-            )
-            for table, columns in sorted(schemas.items())
-        },
-        "errors": dict(sorted(errors.items())),
-    }
+    """Serialize a schema set for ``--save-schemas``. Delegates to the shared format definition."""
+    return schema_set_to_payload(schemas, errors)
 
 
 def _summarize(report: CatalogDryRunReport) -> dict[str, Any]:

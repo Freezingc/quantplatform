@@ -2116,3 +2116,94 @@ cross_section_size=None, lookback_trading_days=20, strict=True, target_table=...
 
 **全量：1464 passed / 45 skipped**（本节起点 1447；+17 planner），
 `ruff check src tests` 清、`mypy src` **158** 文件清。
+
+## 勾选审计续十九（2026-09-06 12:47）：C5.3 的 CLI 表面交付了不依赖裁决的那一条命令，并对真实 catalog 实跑通过
+
+续十八交付了规划器；本节把它接成 **`qr-v2 materialize factors`**，
+即 C5.3 四条命令里**唯一一条语义完全不依赖未决裁决**的。
+
+### 交付内容
+
+- **`cli/materialize.py::plan_factors`**（新，+139 行）：解析参数、读 catalog 与日历、
+  可选读入已保存的 schema 集、调用规划器、输出 JSON、可选写文件。
+- **`cli/app.py`**：注册 `materialize_app.command("factors")`（+37 行），
+  `Path` 型选项按本仓既有约定加 `# noqa: B008`（与 `app.py:147/181` 一致）。
+- **15 条 CLI 测试**（`tests/unit/cli/test_materialize.py`，用 `CliRunner`，与该文件既有两条同风格）。
+- **一处去重重构**：把"已保存 schema 集"的磁盘格式从脚本里提到
+  `catalog_dry_run.schema_set_to_payload` / `schema_set_from_payload`，
+  **C1.5 的脚本与 CLI 共用同一份定义**。理由与续九查出的"两个真值来源"同类：
+  **一个格式有两个独立编码器，就是保存的工件某天开始读不回来的成因**——
+  而且它会在**日后有人要复核判定时**才失败，不在改格式的那一刻失败。
+  **已验证向后兼容**：重构前保存的 `catalog_schema_dry_run_schemas.json` 仍能载入，
+  且离线复演报告与实跑报告**逐字节相同**。
+
+### 对真实 catalog 实跑（离线，未连库）
+
+用**已提交的 487 条 catalog** + **续九实跑保存的真实 schema 集** + 一份日历文件：
+
+```
+qr-v2 materialize factors --start 2014-01-01 --end 2014-03-31 \
+  --catalog configs/factors/source_catalog.yaml --calendar <dates> \
+  --schemas <续九保存的 schema 集> --cross-section 2500 --dry-run
+
+factor_count           : 487
+source_tables          : 11 张（factor_data1..11）
+schema_verified        : True        materializable : True
+blocked_factors        : []          unmapped_source_columns : 11 张表全为空
+chunks                 : 2014-01 (23 交易日, 28,002,500 行)
+                         2014-02 (20 交易日, 24,350,000 行)
+                         2014-03 (21 交易日, 25,567,500 行)
+estimated_rows_total   : 77,920,000
+target_table           : factor_observation_clean   target_partition_column : signal_date
+```
+
+**估算的算术已独立核算**：487 × 23 × 2500 = 28,002,500 ✓、487 × 20 × 2500 = 24,350,000 ✓、
+487 × 21 × 2500 = 25,567,500 ✓、三月合计 77,920,000 ✓。
+产物存于 `/data/zhangyudong/qrv2_research_artifacts/factor_materialize_plan_demo.json`。
+**注意该演示用的是近似（工作日）日历**；生产规划必须喂真实的 `trade_calendar` 日期，
+文件首行已注明 APPROXIMATE。**这也正是把日历做成显式输入的价值**：
+用哪份日历是**可见的、被记录的**，而不是藏在一次取数里。
+
+### 三个设计决定
+
+**(1) 日历是显式文件输入，不是命令内部去取。**
+这同时买到三样东西：命令**在没有集群可达时也能跑**（C5.3 的"禁止读取值"因此是结构性的，
+不只是"这次没读"）；输出**可复现**（同一份日历文件 + 同一份 catalog → 同一个计划）；
+以及**用哪份日历这件事本身进了证据**（`calendar` 路径写进输出文档）。
+支持"每行一个 ISO 日期"（允许 `#` 注释与空行）与 JSON 列表两种格式。
+
+**(2) 不带 `--dry-run` 时 fail-closed，退出码 2**，与同文件既有的 `emit_plan` **同一惯例**
+（`materialize market/labels/...` 在不带 `--dry-run` 时也是打印计划后拒绝执行）。
+**理由是这条命令背后确实没有物化执行器**：`build_technical_factor_batches` 有生产调用者，
+但没有从 CLI 到它的已接线路径，**假装能执行比明确拒绝更危险**。
+
+**(3) `--no-strict` 用于报告全貌。**默认 `strict` 下任何一个 blocked 因子都以退出码 2 中止
+并把因子与原因写到 stderr；`--no-strict` 则输出带 `blocked_factors` 的完整计划、退出码 0，
+**让调用方看到全部问题而不是第一个**。两种模式各有专测。
+
+### 变异验证（2 个 CLI 层，各被其对应测试捕获）
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 39 | 去掉不带 `--dry-run` 时的拒绝分支 | fail-closed 那条 |
+| 40 | CLI 内部把 `strict` 硬写成 `False` | blocked 因子中止整份计划那条 |
+
+`cli/materialize.py` 两次变异后确认无残留（`strict=strict` 与两处拒绝分支均在原位）。
+
+### C5.3 的判定：仍不勾，剩下的三条命令各有归属
+
+- `qr-v2 materialize factors` → **本轮交付**（以 `--catalog` 界定范围）。
+  **但规格里写的是 `--factor-set all-active`，而 "active" 正是 C1.4 未实现的那个状态**，
+  故该旗标仍依赖**决定 A**；本轮用 `--catalog` 而非 `--factor-set` 正是为了不预判 A。
+- `qr-v2 factor registry validate` / `factor registry import` → **`FactorRegistry` 之上的 CLI，
+  而 registry 无生产调用者**（决定 A）。不建。
+- `qr-v2 factor quarantine report --run-id` → 独立于决定 A，但它读的是已发布的
+  `factor_quarantine`，而该表的 `distinct_values_json` 有续十一记的**非法 JSON** 缺陷
+  （`[Infinity]`，严格解析器直接拒绝）。**一个报告命令会把那个缺陷原样递到用户手里**，
+  故宜与**决定 F** 一并处理。
+
+**故 C5.3 现状：dry-run 的输出内容已全部可产出且经测试（续十八），
+CLI 表面交付了四条里不依赖裁决的一条；余下三条分别绑定决定 A（两条）与决定 F（一条）。**
+
+**全量：1479 passed / 45 skipped**（本节起点 1464；+15 CLI），
+`ruff check src tests` 清、`mypy src` 158 文件清。
