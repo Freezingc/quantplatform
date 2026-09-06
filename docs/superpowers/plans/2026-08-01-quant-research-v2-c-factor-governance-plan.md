@@ -5811,3 +5811,110 @@ S-E 非有限 `survival_ratio`、S-F 整折无覆盖、S-G 缺某个 role）全�
   **`REQUIRED_ROLES` 与 `DEFAULT_ROLES` 一个都没动，只是被钉住了。**
 - **裁决 2/3/4 与决定 A–N 全部仍开放**；**前置门当前仍是 `REFUSED`，本轮没有放行任何东西。**
 - 证据：`mutation_report_path_11_of_15_four_unreachable.txt`（含 15 个变异对照、4 个存活者名单与还原核对）。
+
+## 勾选审计续五十（2026-09-07 07:20）：抽出接缝后**前置门这条链 86+15 个变异全部有归属**——最后一道门 15/15 全杀；而重构过程中我自己弄丢过一次入口，**是"实跑真实门"这一步抓到的**
+
+### 一、做了什么
+
+续四十九把最后 4 个存活者定位为"`main()` 没有可注入的缝"，并写明补法是抽接缝、
+但那是"对门的结构性重构，不是加测试"，故只登记未做。**本轮做了。**
+
+抽出两个函数，**行为不变**：
+
+- **`collect_fold_coverage(holder, *, fold_id, roles, factor_source)`**——
+  把"取数"整体下沉：resolver、`factor_source_plan`、`factor_members_for`、`current_versions`、
+  `extract_fn_for`、逐 role 的 `extract` + `summarize_frame_coverage`、以及
+  `driver.describe_run_environment`。**这与第一道门 `verify_factor_daily_backfill.collect_year_state`
+  是同一种接缝、同一个理由**，故不是新发明，是把这条链上已有的范式补到唯一缺它的那个脚本上。
+- **`build_report(environment, coverage, *, fold_id, roles) -> (problems, text)`**——
+  **纯函数**：两个报告块的检查、完整性规则、以及**按 runner 的方式序列化最终被归档的那份 payload**。
+  无数据库、无文件写、无打印。
+
+`main()` 由此变薄：解析参数 → 两道 role 守卫 → `new_holder()` → `collect_fold_coverage` →
+`build_report` → 打印 → `return 1 if problems else 0`。
+
+### 二、"行为不变"是实测的，不是声称的——而且这一步抓到了我自己的一个回归
+
+**重构后实跑真实门**，与续三十二那次前置门实跑留下的记录逐行对比：
+
+```
+factor source: frozen (17 factors); fold F01; roles ['validation', 'test']
+  F01/validation  rows=   609899 complete=   159049 survival=0.2608 days=  238 <30=  0 empty=  0 median=  515 min=   57
+  F01/test        rows=   666421 complete=   169107 survival=0.2538 days=  243 <30=  0 empty=  0 median=  599 min=  121
+  report path OK: 1929 bytes of serialisable environment + assembly_coverage for F01 ['validation', 'test']
+FROZEN REPORT PATH: PASS
+```
+
+**与重构前的记录逐字节相同，包括 `1929 bytes` 这个长度。**
+证据：`report_path_door_after_seam_refactor_identical_1929_bytes.txt`。
+
+**而这一步抓到了一个我自己引入的回归**：抽函数时我用
+`s[s.index("def main(..."):]` 取到**文件末尾**作为被替换的旧文本，
+**把结尾的 `if __name__ == "__main__": raise SystemExit(main())` 一起替换掉了**。
+后果是**脚本被直接执行时什么都不做、退出码 0**——
+即**第五道门会变成永远 PASS 且什么都不检查**，而这恰恰是 S-L/S-O 两个变异模拟的后果。
+**16 条单元测试全绿也发现不了它**（它们 import 模块、不走 `__main__`），
+**是"实跑真实门"这一步发现的：日志 0 字节、瞬间退出 0。**
+
+**教训与本 session 前两次同类**（续四十三的筛查工具 S4 失效、续四十六的变异 harness 字节码缓存、
+续四十九的注释重排脚本制造语法错误）：
+**辅助性的批量改写（这次是"抽函数"）自己也需要被验证，而验证它的方式是运行被改的东西本身，
+不是运行测试。** 若本轮只跑单元测试就提交，前置门的第五道会变成一道恒 PASS 的空门，
+而 1617 条测试全绿。
+
+### 三、四个存活者现已全部被杀，各由对应的新测试单独杀掉
+
+| | 变异 | 现在由谁杀 |
+|---|---|---|
+| **S-L** | 退出码强制为 0 | `test_main_exits_nonzero_when_the_report_would_not_archive`（patch `collect_fold_coverage` + `new_holder`，三种情形：正常 → 0、NaN → 1、缺一个 role → 1） |
+| **S-M** | `main()` 不再调用完整性检查 | `test_build_report_still_demands_every_requested_role`（缺 test 段 → 必须报 "missing coverage for the test segment"；整折无覆盖 → "no coverage recorded"） |
+| **S-N** | **被归档的那份 payload** 去掉 `allow_nan=False` | `test_a_nan_makes_the_archived_payload_unserialisable_and_yields_no_text` |
+| **S-O** | 打印判定恒为 PASS | `test_the_printed_verdict_agrees_with_the_exit_code`（capsys：PASS 时不得出现 FAIL，FAIL 时不得出现 PASS） |
+
+**S-N 的定性本轮更正过一次，需如实记下**：起初怀疑它与 `report_block_problems` 那层重复
+（因为 NaN 在两处都会被发现），并进一步猜测 `ensure_ascii=False` 会让合并层**更严**
+（例如孤立代理字符）。**实测两条都不成立**：
+孤立代理字符在 `json.dumps(..., ensure_ascii=False)` 下**不报错**
+（它返回 `str`，只在**编码为字节**时才失败），故两层都接受它；
+**但 S-N 仍然可杀**，判据不是"多一种失败输入"，而是**返回的 `text`**——
+原实现在合并层失败时 `text = ""`（**不提供任何可归档文本**），
+变异后 `json.dumps` 成功、**`text` 是一段含裸 `NaN` 的非法 JSON**。
+**故测试同时断言"报了 combined payload 那条问题"与"`text == ""`"，
+并断言 problems 恰好 2 条**（两层各一条；只剩一条说明有一层哑了）。
+
+**重跑 15 个变异：全杀，0 存活**，四个原存活者各被对应新测试单独杀掉；
+被变异脚本**还原后逐字节相同**。测试 **12 → 16**。
+
+### 四、前置门这条链至此收口
+
+| 门 / 脚本 | 变异 | 真洞 | 补测 | 现状 |
+|---|---|---|---|---|
+| `verify_frozen_fold_coverage.py` | 12 | 3 | 3 | 全杀 |
+| `verify_admission_consistency.py` | 14 | 2 | 2 | 全杀 |
+| `screen_factor_daily_coverage.py` | 15 | 6 | 5 | 全杀 |
+| `preflight_frozen_baseline.py` | 16 | 1 | 1 | 15 杀 + 1 已证等价 |
+| `verify_factor_daily_backfill.py` | 14 | 5 | 5 | 全杀 |
+| `verify_frozen_report_path.py` | 15 | **9**（含本轮 4 个原不可达） | **4** | **全杀（抽接缝后）** |
+| **合计** | **86** | **26** | **20** | **85 杀 + 1 已证等价，0 未杀** |
+
+**故续四十三那句限定现在可以收窄到它的准确形式**：
+> **前置门这条链（6 个脚本）已全量变异验证：86 个变异，85 杀、1 个经探针证明为等价变异、0 个未杀。**
+> **"全套件断言强度"仍未被证明**——其余约 1,530 个测试函数未审、未立项、未估工。
+
+**这条链之所以值得单独做完**：它是 Task 3.1 解冻时**唯一会跑的那组检查**，
+而 Task 3.1 是裁决 4 落地后的第一步、其产物又是 3.2/3.3/4.1/5.x 整条链的输入。
+**换言之，这 6 个脚本是"决定落地后第一批承重的代码"。**
+
+### 五、门槛（全部重测）
+
+- `pytest tests -q` → **1617 passed / 45 skipped**（106.99s）＝续四十九的 1613 **+4**
+- `ruff check src tests` → **All checks passed!**；`mypy src` → **158 文件清**
+- **本轮改了 1 个 `scripts/` 文件**（抽接缝 + 恢复入口守卫），**未改任何 `src/`**；
+  **行为不变的证据是真实门实跑输出与重构前逐字节相同（含 `1929 bytes`）**
+- **未写任何数据库**（真实门只读 `factor_daily` 与缓存数据集）；
+  **未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何门阈值、role 常量、契约、schema 或 `dropna` 口径**
+- **裁决 2/3/4 与决定 A–N 全部仍开放**；**前置门当前仍是 `REFUSED`（三道门 FAIL），本轮没有放行任何东西**——
+  本轮只让第五道门**可被测试**，没有改变它的判定
+- 证据：`mutation_report_path_15_of_15_after_seam.txt`、
+  `report_path_door_after_seam_refactor_identical_1929_bytes.txt`

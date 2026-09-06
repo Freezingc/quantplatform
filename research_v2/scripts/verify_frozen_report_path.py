@@ -85,46 +85,46 @@ def coverage_completeness_problems(
     return problems
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--fold", default="F01")
-    parser.add_argument(
-        "--roles", default=",".join(DEFAULT_ROLES),
-        help="comma-separated segments to assemble and measure; train is the expensive one",
-    )
-    parser.add_argument("--factor-source", default="frozen")
-    args = parser.parse_args(argv)
+def collect_fold_coverage(
+    holder: Any,
+    *,
+    fold_id: str,
+    roles: Sequence[str],
+    factor_source: str,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]], tuple[str, ...]]:
+    """Assemble one fold's requested segments and summarise their coverage.
 
-    roles = tuple(role.strip() for role in args.roles.split(",") if role.strip())
-    unknown = sorted(set(roles) - set(REQUIRED_ROLES))
-    if unknown:
-        raise SystemExit(f"unknown roles: {unknown}; choose from {list(REQUIRED_ROLES)}")
-    if not roles:
-        raise SystemExit("no roles requested")
+    Returns ``(environment, coverage, factor_ids)``. This is the seam that makes the rest of
+    the verifier testable: everything above it -- the two report blocks, the completeness
+    rule, the serialisation and the exit code -- is pure or near-pure, and everything below
+    it needs a database, a resolver and the real extractor. ``verify_factor_daily_backfill``
+    draws the same line around ``collect_year_state`` for the same reason; before this split
+    the work was inline in ``main()``, which imported eight collaborators inside the function
+    body and left nothing for a test to replace.
 
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    The prints stay here rather than moving to the caller because they report per-segment
+    measurements as each expensive frame is assembled and released, and holding all of them
+    until the end would keep every frame alive at once.
+    """
     import run_real_walk_forward as driver
     from walk_forward_common import (
         current_versions,
         factor_members_for,
         load_calendar,
-        new_holder,
     )
     from walk_forward_factor_daily import extract_fn_for, factor_source_plan
 
     from research_v2.datasets.coverage import summarize_frame_coverage
     from research_v2.datasets.splits import SplitResolver
 
-    fold_id = args.fold.strip().upper()
-    holder = new_holder()
     resolver = SplitResolver(load_calendar(holder))
-    factor_ids, version_tables = factor_source_plan(args.factor_source)
+    factor_ids, version_tables = factor_source_plan(factor_source)
     factor_members = factor_members_for(factor_ids)
     versions = {table: current_versions(holder, table) for table in version_tables}
-    extract = extract_fn_for(args.factor_source)
+    extract = extract_fn_for(factor_source)
     feature_order = tuple(member.feature_name for member in factor_members)
     print(
-        f"factor source: {args.factor_source} ({len(factor_ids)} factors); "
+        f"factor source: {factor_source} ({len(factor_ids)} factors); "
         f"fold {fold_id}; roles {list(roles)}",
         flush=True,
     )
@@ -143,7 +143,31 @@ def main(argv: list[str] | None = None) -> int:
         )
         del frame
 
-    environment = driver.describe_run_environment(args.factor_source, factor_ids)
+    environment = driver.describe_run_environment(factor_source, factor_ids)
+    return environment, coverage, factor_ids
+
+
+def build_report(
+    environment: Mapping[str, Any],
+    coverage: Mapping[str, Mapping[str, Any]],
+    *,
+    fold_id: str,
+    roles: Sequence[str],
+) -> tuple[list[str], str]:
+    """Return every problem with the report, plus the text that would be archived.
+
+    Pure: no database, no file writes, no printing. Both halves of the verdict live here --
+    the problems that make the door fail and the serialised payload whose length the door
+    reports -- so a test can exercise the archived shape directly instead of only through a
+    fifteen-hour run.
+
+    ``allow_nan=False`` is the reason this function exists separately from
+    :func:`report_block_problems`. That helper checks each block on its own; this serialises
+    the *combined* payload exactly as the runner archives it, which is the artefact that has
+    to round-trip. A zero-row segment makes ``survival_ratio`` NaN and Python's json emits
+    the bare token ``NaN`` by default, which is not valid JSON and cannot be compared
+    byte-for-byte against a reference later.
+    """
     problems = report_block_problems(environment, coverage)
     problems += coverage_completeness_problems(coverage, (fold_id,), roles)
 
@@ -161,6 +185,35 @@ def main(argv: list[str] | None = None) -> int:
     except (TypeError, ValueError) as error:
         problems.append(f"the combined report payload is not JSON serialisable: {error}")
         text = ""
+    return problems, text
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--fold", default="F01")
+    parser.add_argument(
+        "--roles", default=",".join(DEFAULT_ROLES),
+        help="comma-separated segments to assemble and measure; train is the expensive one",
+    )
+    parser.add_argument("--factor-source", default="frozen")
+    args = parser.parse_args(argv)
+
+    roles = tuple(role.strip() for role in args.roles.split(",") if role.strip())
+    unknown = sorted(set(roles) - set(REQUIRED_ROLES))
+    if unknown:
+        raise SystemExit(f"unknown roles: {unknown}; choose from {list(REQUIRED_ROLES)}")
+    if not roles:
+        raise SystemExit("no roles requested")
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from walk_forward_common import new_holder
+
+    fold_id = args.fold.strip().upper()
+    holder = new_holder()
+    environment, coverage, _factor_ids = collect_fold_coverage(
+        holder, fold_id=fold_id, roles=roles, factor_source=args.factor_source
+    )
+    problems, text = build_report(environment, coverage, fold_id=fold_id, roles=roles)
 
     for problem in problems:
         print(f"  PROBLEM: {problem}")
@@ -171,7 +224,6 @@ def main(argv: list[str] | None = None) -> int:
         )
     print("FROZEN REPORT PATH:", "FAIL" if problems else "PASS")
     return 1 if problems else 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

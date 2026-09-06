@@ -201,3 +201,121 @@ def test_an_empty_role_list_is_rejected() -> None:
     """`--roles ""` would otherwise loop over nothing and report a clean, empty coverage block."""
     with pytest.raises(SystemExit, match="no roles requested"):
         M.main(["--fold", "F01", "--roles", ""])
+
+
+# The four tests below close the gap recorded last round. They were unreachable while main()
+# did its work inline with eight collaborators imported inside the function body; extracting
+# collect_fold_coverage (the seam, mirroring verify_factor_daily_backfill.collect_year_state) and
+# build_report (the pure half: both report blocks, the completeness rule and the serialisation) made
+# all four testable. The refactor is behaviour-preserving: the twelve pre-existing tests pass
+# unchanged, and the real door still reports "report path OK: 1929 bytes" and PASS on F01.
+
+_COVERAGE = {
+    "F01": {
+        "validation": {"survival_ratio": 0.2608, "rows": 609899},
+        "test": {"survival_ratio": 0.2538, "rows": 666421},
+    }
+}
+_ENV = {"factor_ids": ["yeslab_484"], "factor_source": "frozen"}
+
+
+def test_a_nan_makes_the_archived_payload_unserialisable_and_yields_no_text() -> None:
+    """The combined dump is a second layer, and it is the one that describes the artefact.
+
+    `report_block_problems` checks each block on its own and already reports the NaN, so a mutation
+    dropping allow_nan from the *combined* dump is easy to mistake for redundant. It is not: with
+    allow_nan the combined dump succeeds and returns text containing the bare token NaN, which is
+    what would actually be archived. Asserting both that the combined-payload problem is
+    reported and that the returned text is empty is what distinguishes the two -- under the
+    mutation there is one
+    problem instead of two and the text is a non-empty string that is not valid JSON.
+
+    A lone surrogate was checked as a candidate distinguisher and is not one: json.dumps with
+    ensure_ascii=False returns a str and only fails when that str is encoded, so both layers accept
+    it. Recorded so the next reader does not re-derive it.
+    """
+    problems, text = M.build_report(
+        {"factor_ids": ["yeslab_484"], "some_metric": float("nan")},
+        _COVERAGE,
+        fold_id="F01",
+        roles=("validation", "test"),
+    )
+    assert any("combined report payload is not JSON serialisable" in p for p in problems), problems
+    assert text == "", "no text may be offered for archiving when the payload will not serialise"
+    assert len(problems) == 2, (
+        "the per-block and combined-payload checks must both fire; one alone means a "
+        f"layer has gone quiet: {problems}"
+    )
+
+    clean_problems, clean_text = M.build_report(
+        _ENV, _COVERAGE, fold_id="F01", roles=("validation", "test")
+    )
+    assert clean_problems == []
+    assert json.loads(clean_text)["assembly_coverage"]["folds"] == _COVERAGE
+
+
+def test_build_report_still_demands_every_requested_role() -> None:
+    """The completeness rule must be applied by the report builder, not only be available to it.
+
+    coverage_completeness_problems has its own tests, but nothing pinned the call site: dropping
+    `problems += coverage_completeness_problems(...)` left the whole suite green, which would have
+    let a fold be measured for validation and silently skip test -- precisely the "silently skipped"
+    failure this door exists to prevent.
+    """
+    partial = {"F01": {"validation": {"survival_ratio": 0.26}}}
+    problems, _ = M.build_report(
+        _ENV, partial, fold_id="F01", roles=("validation", "test")
+    )
+    assert any("missing coverage for the test segment" in p for p in problems), problems
+
+    absent, _ = M.build_report(_ENV, {}, fold_id="F01", roles=("validation", "test"))
+    assert any("no coverage recorded" in p for p in absent), absent
+
+
+def _patch_main(monkeypatch, environment, coverage):
+    import walk_forward_common
+
+    monkeypatch.setattr(walk_forward_common, "new_holder", lambda: {})
+    monkeypatch.setattr(
+        M,
+        "collect_fold_coverage",
+        lambda holder, *, fold_id, roles, factor_source: (
+            environment, coverage, tuple(environment.get("factor_ids") or ())
+        ),
+    )
+
+
+def test_main_exits_nonzero_when_the_report_would_not_archive(monkeypatch) -> None:
+    """The exit code is the door's verdict: runpy hands it to the pre-flight as the gate result.
+
+    Forcing `return 1 if problems else 0` to `return 0` previously left every test green,
+    which would have made an unarchivable report clear the fifth door.
+    """
+    _patch_main(monkeypatch, _ENV, _COVERAGE)
+    assert M.main(["--fold", "F01", "--roles", "validation,test"]) == 0
+
+    _patch_main(monkeypatch, {"factor_ids": ["yeslab_484"], "x": float("nan")}, _COVERAGE)
+    assert M.main(["--fold", "F01", "--roles", "validation,test"]) == 1
+
+    _patch_main(monkeypatch, _ENV, {"F01": {"validation": {"survival_ratio": 0.26}}})
+    assert M.main(["--fold", "F01", "--roles", "validation,test"]) == 1, (
+        "a silently skipped segment must fail the door"
+    )
+
+
+def test_the_printed_verdict_agrees_with_the_exit_code(monkeypatch, capsys) -> None:
+    """The line an operator reads and the code the pre-flight reads must not disagree.
+
+    Printing PASS unconditionally previously survived every test. The pre-flight consumes the exit
+    code, but a human reading the log reads this line, and the two contradicting each other is how a
+    refused run gets launched by hand.
+    """
+    _patch_main(monkeypatch, _ENV, _COVERAGE)
+    assert M.main(["--fold", "F01", "--roles", "validation,test"]) == 0
+    assert "FROZEN REPORT PATH: PASS" in capsys.readouterr().out
+
+    _patch_main(monkeypatch, {"factor_ids": [], "x": float("nan")}, _COVERAGE)
+    assert M.main(["--fold", "F01", "--roles", "validation,test"]) == 1
+    out = capsys.readouterr().out
+    assert "FROZEN REPORT PATH: FAIL" in out
+    assert "FROZEN REPORT PATH: PASS" not in out
