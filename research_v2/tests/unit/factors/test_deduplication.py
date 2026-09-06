@@ -311,3 +311,76 @@ def test_two_equal_finite_values_and_a_null_are_labelled_single_nonnull() -> Non
     assert len(result.clean) == 1
     assert result.clean["dedup_resolution"].iloc[0] == "SINGLE_NONNULL"
     assert float(result.clean["raw_value"].iloc[0]) == 1.0
+
+
+# --- the two completion-criterion invariants that were true but never asserted -------------------
+
+_BUSINESS_KEYS = ("observation_date", "ts_code", "factor_id", "factor_version")
+
+
+def _mixed_shape() -> pd.DataFrame:
+    """One group of every resolution class, plus unique rows, across three factors."""
+    rows: list[dict[str, object]] = []
+
+    def add(factor: str, code: str, value: float, rid: str) -> None:
+        rows.append(
+            {
+                "observation_date": "2025-01-02",
+                "ts_code": code,
+                "factor_id": factor,
+                "factor_version": 1,
+                "raw_value": value,
+                "source_row_id": rid,
+            }
+        )
+
+    add("yeslab_1", "000001.SZ", 1.0, "a")  # identical collapse
+    add("yeslab_1", "000001.SZ", 1.0, "b")
+    add("yeslab_1", "000002.SZ", 2.0, "c")  # single non-null
+    add("yeslab_1", "000002.SZ", math.nan, "d")
+    add("yeslab_2", "000001.SZ", 3.0, "e")  # conflict
+    add("yeslab_2", "000001.SZ", 4.0, "f")
+    add("yeslab_2", "000003.SZ", math.nan, "g")  # duplicate group, no finite value
+    add("yeslab_2", "000003.SZ", math.nan, "h")
+    add("yeslab_3", "000004.SZ", 5.0, "i")  # unique, finite
+    add("yeslab_3", "000005.SZ", math.nan, "j")  # unique, non-finite
+    return pd.DataFrame(rows)
+
+
+def test_the_clean_output_is_unique_on_the_business_key() -> None:
+    """Completion criterion: clean 表唯一.
+
+    The business key is what the fact table is keyed on, so two clean rows sharing one would mean
+    two published values for the same date, security, factor and version. Downstream would then
+    either double-count the observation or silently keep whichever arrived first -- and because
+    every resolution class produces exactly one survivor by construction, a regression here would
+    most likely come from a change to how representatives are selected, not from the grouping.
+    """
+    result = deduplicate_factor_observations(_mixed_shape())
+
+    assert len(result.clean) > 1, "the fixture must actually exercise more than one clean row"
+    assert not result.clean.duplicated(list(_BUSINESS_KEYS)).any()
+    assert len(result.clean.drop_duplicates(list(_BUSINESS_KEYS))) == len(result.clean)
+
+
+def test_no_business_key_appears_in_both_clean_and_quarantine() -> None:
+    """Completion criterion: 冲突键全部隔离 -- which means isolated *from clean*, not just recorded.
+
+    Keeping the conflicting candidates in the quarantine is only half of it. The half that protects
+    downstream is that the disputed key contributes nothing publishable: a key present in both
+    frames would mean a conflicted observation reached the fact table while its audit trail
+    simultaneously claimed it had been held back.
+    """
+    result = deduplicate_factor_observations(_mixed_shape())
+
+    clean_keys = set(map(tuple, result.clean.loc[:, list(_BUSINESS_KEYS)].astype(str).to_numpy()))
+    quarantined_keys = set(
+        map(tuple, result.quarantine.loc[:, list(_BUSINESS_KEYS)].astype(str).to_numpy())
+    )
+
+    assert clean_keys.isdisjoint(quarantined_keys)
+    assert ("2025-01-02", "000001.SZ", "yeslab_2", "1") in quarantined_keys
+    assert ("2025-01-02", "000001.SZ", "yeslab_2", "1") not in clean_keys
+    assert ("2025-01-02", "000001.SZ", "yeslab_1", "1") in clean_keys, (
+        "the same security under a different factor is unaffected by its neighbour's conflict"
+    )
