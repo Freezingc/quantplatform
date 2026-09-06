@@ -6257,3 +6257,100 @@ T-K/T-L：实测去掉守卫后**抛的是什么、在哪一行抛**。
 `_mean_seed_percentile_scores` / `predictions_to_frame` 这三处，
 那时应连带重跑 `mutate_candidate_scoring.py`（已归档，T-F 为忠实版）。
 下一轮按续五十的收口方式**挑下一条链**——标准是**"门阈值最集中"**，不是"测试最多"。
+
+## 勾选审计续五十四（2026-09-07 02:45）：**开链 3 = OOS 晋级门 G1–G6**（`evaluation/gates.py`，全系统阈值最密集处，此前**从未做过变异测量**）——16 个变异 **6 杀 10 存活**；其中 **U-K 把 G5 从"最大年贡献占比"改成"最小年贡献占比"，全套件一声不响**，也就是说**那条防止 alpha 由单一年份撑起来的门，它的失败路径一个测试都没有**
+
+### 一、为什么选这条链（按续五十/续五十三定的标准：门阈值最集中，不是测试最多）
+
+- `src/research_v2/evaluation/gates.py` **147 行**里放了**六个晋级阈值**
+  （G1 mean RankIC ≥ 0.030、G2 HAC t ≥ 2.000、G3 正年份占比 ≥ 0.70、G4 delta ≥ 0.005、
+  G5 最大年贡献占比 ≤ 0.50、G6 分数健康日占比 ≥ 0.95）、
+  **三个逐日分数健康边界**（coverage ∈ [0.90, 1.0]、unique ≥ 10、std > 1e-6），
+  以及一组 fail-closed 的 nan 路径。**这六道门决定一个模型到底能不能被晋级。**
+- **它此前从未被变异测量过**：计划文档全文**零次**提到 `evaluate_oos_gates`（`rg -c` 结果为 0），
+  已归档的 8 个 `mutation_*.txt` 里也没有它。
+- 它的测试只有 `tests/unit/evaluation/test_gates.py`：**143 行 / 5 个测试**，
+  对应六道门 + 三条逐日边界 + 若干 fail-closed 路径。
+
+### 二、结果：16 个变异，6 杀 10 存活（基线 162 passed；`gates.py` 还原后逐字节相同）
+
+**杀掉的 6 条**（每条都按续五十二的方法论修正**核对了死因**，不只看 returncode）：
+
+| 变异 | 死因 |
+|---|---|
+| **U-C** 门比较改严格（`>=` → `>`） | `AssertionError: assert <GateStatus.FAIL> is ...`，**2 个测试**——恰好卡在阈值上的证据不再通过 |
+| **U-H** 基线不再豁免 G4 | `assert 'FAIL' == 'NOT_APPLICABLE'`，**3 个测试** |
+| **U-N** 每天都算分数健康（G6 永不失败） | `assert 'PASS' == 'FAIL'`，**3 个测试** |
+| **U-P** 逐日 coverage 下限 0.90 → 0.89 | `assert <GateStatus.PASS> ...`，1 个测试 |
+| **U-R** 逐日离散度 `> 1e-6` → `>= 1e-6` | 同上，1 个测试 |
+| **U-T** `all_passed` 不再接受 NOT_APPLICABLE | `assert False`，1 个测试 |
+
+**存活的 10 条**，按"是不是活缺陷"分三类：
+
+**（1）语义被整个反转、而全套件不响——本轮最重要的发现**
+
+| 变异 | 后果 |
+|---|---|
+| **U-K** | G5 从"**最大**年贡献占比"变成"**最小**年贡献占比"。**G5 存在的唯一理由是防止 alpha 由单一年份撑起来**；换成 min 之后它量的是"最弱的那一年有多弱"，**与集中度无关，而且永远更容易通过**。存活原因很具体：夹具 `_evidence()` 的六个年份是 `0.01×5` 与 `-0.01`，**正贡献全部相等**，max 与 min 给出同一个数（0.2）。**即 G5 的失败路径没有任何测试** |
+| **U-L** | G5 的分母不再把负年份截到 0，于是**一个亏钱的年份会缩小分母、抬高占比**——让另一个年份看起来更集中。同样因为夹具年份太对称而存活 |
+| **U-I** | G5 的 `<= 0.50` 变成 `< 0.50`：**恰好 0.50 的集中度会从"通过"变"不通过"**。夹具占比 0.2，够不着边界 |
+| **U-D** | G3 的 `value > 0` 变成 `>= 0`：**一个均值恰好为 0 的年份会被算成"正年份"**。夹具里没有 0 年份 |
+
+**（2）阈值可以悄悄漂移——六个阈值里，本轮试的三个都只钉了"恰好通过"，没钉"差一点就失败"**
+
+| 变异 | 漂移 | 为什么存活 |
+|---|---|---|
+| **U-A** | G1 `0.030` → `0.029` | `test_double_gate_boundaries_..._pass_at_exact_thresholds` 只证明"恰好等于阈值时通过"，**它能抓到向上漂移（变严），抓不到向下漂移（变松）**——而变松才是危险方向 |
+| **U-G** | G4 `0.005` → `0.004` | 同上（夹具 delta 恰好 0.005） |
+| **U-M** | G6 `0.95` → `0.94` | 同上（夹具恰好 95/100 健康日） |
+
+**G2 与 G3 本轮没有试漂移**（**故下面这两句是读夹具推断，未实测**）：
+G2 的夹具恰好卡在 2.000，**推断与 G1/G4/G6 同型**（只钉上侧）；
+**G3 更松**——它的夹具是 5/6 = 0.8333，**离 0.70 的阈值还有余量**，
+故 G3 连"恰好通过"都没钉住，**要向上漂到 0.84 以上才会被抓到**。
+
+**（3）fail-closed 守卫被拿掉——但晋级路径上有第二套更严的实现兜住了，报告路径没有**
+
+| 变异 | 晋级路径（registry） | 报告路径（`all_passed`） |
+|---|---|---|
+| **U-F** 缺失的 candidate delta 由 FAIL 变 NOT_APPLICABLE | **不可达**：`model_registry._parse_gate_evidence` 用 `_finite_number` 解析 `candidate_delta_rank_ic`，**null 当场被拒**；且 `validate_walk_forward_evidence` 要求六道门**逐一为 PASS**，NOT_APPLICABLE 同样算失败 | **可达**：`evaluate_frozen_oos` 的签名允许 `baseline_predictions=None` 且 `is_baseline=False`，此时 delta 为 None，今天 G4=FAIL → `all_passed=False`；变异后 G4=NOT_APPLICABLE → **`all_passed` 可能变 True**，而驱动自己的准入检查读的正是报告里的 `oos.all_passed`（`run_real_candidate_training.py:187`） |
+| **U-E** G3/G5 不再要求六个年份齐全且有限 | **不可达**：`_parse_gate_evidence` 要求 `set(yearly) == set(range(2020, 2026))` 且每个值有限 | 直接调用 `evaluate_oos_gates` 时可达（例如只覆盖单一年份的折叠评价） |
+| **U-O** `valid_test_day_count <= 0` 不再被拒 | **不可达**：`_parse_gate_evidence` 要求它是 `Integral`、非 bool、且 `> 0` | 直接调用时，去掉守卫会把 fail-closed 的 nan 换成 **`ZeroDivisionError`** |
+
+**这一栏是本轮读代码读出来的一个结构性事实，值得单独记**：
+`model_registry.load_walk_forward_evidence` → `validate_walk_forward_evidence`
+实际上是**第二套、更严的门实现**（自己解析原始 JSON、要求六个年份齐全、要求 delta 有限、
+要求 day count 为正、要求六道门逐一为 PASS），
+**它把 `gates.py` 里这三处 fail-open 变异在晋级路径上全部堵住了**。
+**但它只覆盖晋级路径**：驱动写进 run 报告、再被 `summarize_real_*` 与驱动准入检查读取的
+`oos.all_passed` 走的是 `evaluate_frozen_oos` → `GateReport.all_passed`，
+**而在那条路上 NOT_APPLICABLE 等于通过**（U-T 反向证明了这一点：把 NOT_APPLICABLE 从
+`all_passed` 的接受集里拿掉，测试就响了）。
+**故"某个变异可不可达"必须按路径分别回答，不能一句话概括**——
+这也是本轮把三条守卫类存活判为"晋级路径不可达 / 报告路径可达"而不是简单判为"不可达"的原因。
+
+### 三、门槛与证据
+
+- 变异范围 `tests/unit/evaluation tests/unit/monitoring tests/unit/registry tests/property`：
+  **基线 162 passed**，16 个变异逐个跑，**`gates.py` 还原后逐字节相同**，还原后复跑 **162 passed**。
+- **本轮零代码改动、零测试新增**（纯测量 + 文书）。故全量门槛沿用续五十三的实测值
+  **1622 passed / 45 skipped**，且沿用**有据**：`git diff --stat` 对 `research_v2/src`、
+  `research_v2/scripts`、`research_v2/tests` 自 `788595b` 起**为空**。
+- `ruff check src tests` 清、`mypy src` **158 文件清**（本轮未改代码，二者亦未变）。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 证据：harness `mutate_oos_gates.py`、日志 **`mutation_oos_gates_first_round.txt`**
+  （**每条 killed 都带失败测试节点与前两行 `E` 死因**——这是续五十二那条方法论修正第一次在新 harness 里内建）。
+
+### 四、下一轮（按本轮结果排序，非承诺）
+
+1. **钉 G5 的失败路径（U-K / U-L / U-I）**：需要三个年份字典——
+   "单一年份占大头"（杀 U-K）、"恰好 0.50"（杀 U-I）、"负年份改变判定"（杀 U-L）。
+   **U-K 是本轮唯一一条把门的语义整个反转却无人察觉的变异，优先级最高。**
+2. **钉三个阈值的下侧（U-A / U-G / U-M）**：各加一条"差一点就失败"的证据
+   （0.0299 / 0.0049 / 94 of 100）。与现有的"恰好通过"配对后，阈值被夹在两侧之间，
+   **任何方向的漂移都会被抓到**；顺带把 G2、G3 的漂移也实测一遍（本轮只做了推断）。
+3. **钉 U-D**（均值为 0 的年份不算正年份）与 **U-F**（缺 delta 必须 FAIL、且 `all_passed` 必须为 False）。
+4. **U-E / U-O 的处置**：晋级路径不可达这一点已由 `_parse_gate_evidence` 的实读支持；
+   若仍要钉，应钉在**直接调用 `evaluate_oos_gates`** 的层面（即"守卫自身 fail-closed"），
+   并在 docstring 里写清它防的是直接调用方、不是 registry——否则会重复本轮"半钉"的误读问题。
