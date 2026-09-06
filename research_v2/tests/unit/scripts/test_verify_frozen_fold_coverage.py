@@ -356,3 +356,85 @@ def test_at_least_the_full_count_is_the_same_predicate_as_the_default() -> None:
 
     assert "iif(c>=17,1,0)" in explicit
     assert "iif(c==17,1,0)" in default
+
+
+# The three tests below pin the boundary of each numeric comparison in assess_coverage. They exist
+# because a mutation run over that function found all three comparisons unpinned: flipping `<` to
+# `<=` in the cross-section floor, in the valid-day share, and in the calibrated median width each
+# left all 27 pre-existing tests green. Two further survivors were checked and are NOT holes -- the
+# days-below-floor allowance is pinned once both of its occurrences are mutated together (mutating
+# only one desynchronises the two branches that read the same constant, which is not a change anyone
+# could ship), and dropping the `minimum_median_width > 0` guard is an equivalent mutation, since
+# widths are non-negative so a floor of 0 fails nothing either way.
+#
+# Each test asserts both sides of its boundary. One side alone would not pin the comparison: a test
+# asserting only that 29 fails leaves `<=` and `<` indistinguishable, which is exactly the shape
+# C7.5 had to rewrite.
+
+
+def test_a_day_exactly_at_the_cross_section_floor_is_not_below_it() -> None:
+    """`width < minimum_cross_section`, not `<=`: a day at the floor is a valid day.
+
+    The floor is the per-day minimum the assembly needs to compute a cross-sectional statistic at
+    all, so a day with exactly that many stocks has one and must not be counted against the
+    calibrated allowance. Counting it would consume the single tolerated day on a segment that is
+    in fact fine.
+    """
+    at_floor = M.assess_coverage(
+        "F01", "test", (2020,), {2020: [30, 30, 30, 30]}, minimum_cross_section=30
+    )
+    assert at_floor.days_below_floor == 0
+    assert at_floor.min_width == 30
+    assert at_floor.passed
+
+    one_under = M.assess_coverage(
+        "F01", "test", (2020,), {2020: [29, 29, 29, 29]}, minimum_cross_section=30
+    )
+    assert one_under.days_below_floor == 4
+    assert not one_under.passed
+
+
+def test_a_valid_day_share_exactly_at_the_threshold_passes() -> None:
+    """`share < min_valid_day_share`, not `<=`: meeting the threshold exactly is meeting it.
+
+    Nineteen valid days out of twenty is a share of exactly 0.95, which is the default threshold.
+    A segment that lands precisely on a published threshold passes it; requiring strictly more would
+    make the documented number mean something other than what it says.
+    """
+    widths = [1402] * 19 + [5]
+
+    at_threshold = M.assess_coverage(
+        "F01", "test", (2020,), {2020: widths}, min_valid_day_share=0.95
+    )
+    assert at_threshold.valid_day_share == pytest.approx(0.95)
+    assert at_threshold.days_below_floor == 1  # inside the calibrated allowance of 1
+    assert at_threshold.passed
+
+    above_threshold = M.assess_coverage(
+        "F01", "test", (2020,), {2020: widths}, min_valid_day_share=0.96
+    )
+    assert not above_threshold.passed
+    assert any("valid day share" in failure for failure in above_threshold.failures)
+
+
+def test_a_median_exactly_at_the_calibrated_floor_passes() -> None:
+    """`median_width < minimum_median_width`, not `<=`, on the constant the calibration chose.
+
+    1000 is not an arbitrary number: it was placed inside a measured 4.2-4.8x gap between the
+    frozen-17 train medians (310-673) and the accepted legacy-14 ones (1402-2794). A segment whose
+    median is exactly the floor satisfies the criterion the calibration defined, and one below it
+    does not -- which is the distinction that makes all six frozen train segments fail and all six
+    legacy ones pass.
+    """
+    at_floor = M.assess_coverage(
+        "F01", "train", (2014,), {2014: [1000] * 10}, minimum_median_width=1000
+    )
+    assert at_floor.median_width == 1000
+    assert at_floor.passed
+
+    one_under = M.assess_coverage(
+        "F01", "train", (2014,), {2014: [999] * 10}, minimum_median_width=1000
+    )
+    assert one_under.median_width == 999
+    assert not one_under.passed
+    assert any("below the calibrated floor" in failure for failure in one_under.failures)

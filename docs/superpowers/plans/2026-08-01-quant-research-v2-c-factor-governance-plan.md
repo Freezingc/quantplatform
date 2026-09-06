@@ -5239,3 +5239,104 @@ B-i 要改 `_expand_metric_events` 的排序（把 `report_period` 提到 `avail
 - 证据：`test_suite_falsifiability_screen_zero_instances.txt`（真实套件）、
   `test_suite_falsifiability_screen_PROBE_validates_all_four.txt`（探针，含修复前后对照所需的四种形状）、
   两个脚本副本（`screen_unfalsifiable_v2.py`、`test_deliberately_unfalsifiable.py`）。
+
+## 勾选审计续四十四（2026-09-07 03:25）：姊妹判据剩下那一半（断言强度）开始补——对**冻结基线宽度门**做 12 个变异，**3 个是真洞已补测、2 个经查证不是洞**；套件 27 → 30 条
+
+### 一、为什么是这个门
+
+续四十三把"不可能失败"的**语法**形状扫干净了（1,545 个测试函数、四种形状、0 实例），
+并写明它**不证明断言强度**——那只有变异测试能证，而本计划的变异覆盖是
+**M23–M29（可用性/去重路径）与 M46–M85（catalog / planner / CLI / runbook）**，
+**冻结基线的五道前置门一道都不在其中**。
+
+本轮选了其中后果最重的一道：**`verify_frozen_fold_coverage.py`**。理由三条：
+它是 Task 3.1 前置门里**当前 FAIL 的三道之一**；它判定的是
+**"冻结基线每一折的训练横截面够不够宽"**，即**信任根能不能被训练**；
+而它的两个常量是**标定出来的、且正在被裁决 4 重新讨论**——
+计划里已写明"若裁决 4 选 (i) 或 (iii)，本门的『容忍 1 天』可以（并应当）**收回为 0**"。
+**一个正被讨论要不要改的常量，若它的边界没有测试钉住，改的时候就没有任何东西会提醒改错了。**
+
+### 二、12 个变异：初次 7 杀 5 活
+
+针对 `assess_coverage` 的判定逻辑（它是纯函数，故变异可以精确落在比较式上）：
+
+| | 变异 | 初次结果 |
+|---|---|---|
+| M-A | 低于门槛天数 `>` → `>=`（严一格） | killed |
+| **M-B** | 低于门槛天数的容忍**放宽一天** | **SURVIVED** |
+| **M-C** | 横截面下限 `width < minimum_cross_section` → `<=` | **SURVIVED** |
+| **M-D** | 有效日占比 `share < min_valid_day_share` → `<=` | **SURVIVED** |
+| M-E | 整段删掉"空横截面日"检查 | killed |
+| M-F | 中位宽度下限**也施加到 test 段**（去掉角色限定） | killed |
+| **M-G** | 中位宽度 `median_width < minimum_median_width` → `<=` | **SURVIVED** |
+| **M-H** | 去掉 `minimum_median_width > 0`（即"0 关闭该判据"那个守卫） | **SURVIVED** |
+| M-I | 判定强制为 `passed=True` | killed |
+| M-J | 中位数换成均值（一个宽日就能掩盖窄中位） | killed |
+| M-K | 强制降级为 note（永不失败） | killed |
+| M-L | `min_width` 报 max 而非 min（藏掉最窄日） | killed |
+
+### 三、5 个存活里**有 2 个不是洞**——查证过，不是推断
+
+**这一步不能省**：把"存活"直接当"洞"报出去，与续三十六那次把"一个消费者有特例"
+推广成"所有消费者都缺特例"是同一类错误。
+
+- **M-B 不是洞，是我的变异做错了。** `max_days_below_floor` 在函数里被读**两次**
+  （"低于门槛天数"分支与"空横截面日"分支），而我的 harness 用 `replace(..., 1)`
+  **只改了第一处**。**那不是在放宽容忍度，而是把读同一个常量的两个分支去同步**——
+  不是任何人能提交的改动。**忠实变异（两处一起 +1）重跑：killed。**
+  **故那个标定容忍度 1 其实是被钉住的**（由 `test_zero_width_days_fail_once_they_exceed_the_calibrated_allowance`，
+  它用 2 个空日对容忍度 1）。
+- **M-H 不是洞，是等价变异。** 去掉 `> 0` 守卫后，判据变成 `median_width < 0`；
+  **而宽度恒非负，故该式永假**——与原实现（守卫挡住）行为**完全相同**。
+  直接探针对比证实：`minimum_median_width=0` 时**两种实现都 `passed=True`**，
+  `=1000` 时**都 `passed=False`**，逐字相同。
+  **等价变异无法被任何测试杀死，故它不构成覆盖缺口**；
+  那个 `> 0` 守卫是**冗余但无害的防御**，"0 关闭该判据"这条 CLI 文档在两种实现下都成立。
+
+### 四、3 个是真洞：三个数值比较的**边界**全都没有被钉住
+
+`<` 改成 `<=` 后 **27 条测试全绿**——即**没有任何一条测试让被测值恰好等于阈值**：
+
+| | 比较式 | 未被钉住的边界 | 为什么这个边界要紧 |
+|---|---|---|---|
+| **M-C** | `width < minimum_cross_section`（=30） | 某日宽度**恰好 30** | 30 是"当天能不能算出横截面统计"的下限；**恰好 30 的那天是有效日**，若被算作低于门槛就会**白白吃掉那个只容忍 1 天的额度** |
+| **M-D** | `share < min_valid_day_share`（=0.95） | 占比**恰好 0.95**（19/20） | **落在公布阈值上就是达到阈值**；要求严格更多会让那个文档数字含义与字面不符 |
+| **M-G** | `median_width < minimum_median_width`（=1000） | 中位**恰好 1000** | **1000 不是随手取的**：它被放进实测的 **4.2–4.8 倍空隙**里（冻结 17 的 train 中位 310–673 对遗留 14 的 1402–2794）。**"恰好等于下限算过"正是让六个遗留段全过、六个冻结段全不过的那条线** |
+
+**已补 3 条测试，每条都断言边界的两侧**：
+`test_a_day_exactly_at_the_cross_section_floor_is_not_below_it`（30 不算低于 / 29 算）、
+`test_a_valid_day_share_exactly_at_the_threshold_passes`（0.95 过 / 0.96 不过）、
+`test_a_median_exactly_at_the_calibrated_floor_passes`（1000 过 / 999 不过）。
+
+**只断一侧钉不住比较式**：只断言"29 会失败"的测试对 `<` 与 `<=` 给出同样的结论——
+**这正是 C7.5 那两条被重写的控制测试的形状**，故三条都写了两侧。
+
+**重跑同一套 12 个变异：M-C / M-D / M-G 全部 killed，且各自只被对应那一条新测试杀掉**
+（`1 failed, 29 passed`），**其余 9 条判定不变**。**最终：12 个变异，10 杀，2 个存活均已查证为非洞。**
+测试数 **27 → 30**；被变异的脚本**还原后逐字节相同**，还原后 30 条全过。
+
+### 五、这条结论的边界
+
+- **只做了一道门、12 个变异。** 前置门的另外四道
+  （`verify_factor_daily_backfill.py`、`verify_admission_consistency.py`、
+  `screen_factor_daily_coverage.py`、`verify_frozen_report_path.py`）与
+  `preflight_frozen_baseline.py` 自身**仍未做变异测试**，**未立项也未估工**。
+  **故"套件断言强度足够"这个命题仍然没有被证明**——续四十三那句限定一字未变。
+- **`verify_admission_consistency.py` 应是下一个**：它是决定 M 的标的（门 2 的 scope 盲区），
+  而**一道已知有设计盲区的门，其测试强度更该先被验证**；它有 13 条测试。
+- 变异测试是**手工驱动**的（改文件 → 跑测试 → 还原），故每次都要核对"还原后逐字节相同"；
+  本轮两次运行都核对了（`restored byte-identical: True`）。
+
+### 六、门槛（全部重测）
+
+- `pytest tests -q` → **1596 passed / 45 skipped**（100.51s）＝续四十二的 1593 **+3**（本轮新测试）
+- `ruff check src tests` → **All checks passed!**（中途 1 处注释超长已重排）
+- `mypy src` → **Success: no issues found in 158 source files**
+- **本轮只加测试，未改任何 `src/` 或 `scripts/` 的实现**（变异全部还原，已两次核对逐字节相同）
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何门阈值、契约、schema 或 `dropna` 口径**——
+  **特别是：本轮没有动 30 / 0.95 / 1000 / 容忍 1 天这四个常量中的任何一个，只是把它们的边界钉住。**
+- **裁决 4 未被代做**（"容忍 1 天该不该收回为 0"仍是它的选项，本轮只是让那个改动一旦发生就会被测到）；
+  **决定 I 及其姊妹判据未被代做**；**裁决 2/3 与决定 A–N 全部仍开放。**
+- 证据：`mutation_fold_coverage_before_and_after.txt`（含 12 个变异的前后对照、
+  M-B 忠实变异的重跑、M-H 等价性的探针对比），两个脚本副本同存。
