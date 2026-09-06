@@ -101,7 +101,7 @@ definition hash 对规范化的语义、源映射、方向、公式/来源版本
 
 状态 `DRAFT → VALIDATED → ACTIVE → RETIRED`；只有 `ACTIVE` 因子可加入 factor set。定义字段在 `VALIDATED` 后不可修改；需要变更时创建新 `factor_version`。
 
-- [ ] **C1.5 实现 catalog 对源 schema 的 dry-run**
+- [x] **C1.5 实现 catalog 对源 schema 的 dry-run**
 
 逐条验证表/列存在、类型可转换、日期/代码键明确，输出 `mapped/blocked/retired` 数量和未映射源列；不读取全量值、不写数据库。
 
@@ -125,7 +125,7 @@ git commit -m "feat(v2): register immutable factor definitions"
 - Create: `research_v2/src/research_v2/factors/source_reader.py`
 - Test: `research_v2/tests/unit/factors/test_source_reader.py`
 
-- [ ] **C2.1 写失败测试：宽表/长表均映射到统一契约**
+- [x] **C2.1 写失败测试：宽表/长表均映射到统一契约**
 
 统一输出：
 
@@ -1015,3 +1015,130 @@ scope 相似度取有效每日 `abs(rho)` 的**中位数**、有效日 `< 60` �
 **全量：1340 passed / 45 skipped**（本节起点 1338，+2 来自非有限值测试改写为 1 条参数化 2 例 + 1 条边界），
 `ruff check src tests` 清、`mypy src` 156 文件清。
 `ruff format` 未纳入门禁（全仓 159 个文件本就不符合其风格、且无任何配置或 CI 钩子引用它），故不据此改动测试文件。
+
+## 勾选审计续九（2026-09-06 09:15）：C1.5 已实现并勾选，C2.1 的唯一缺口随之关闭
+
+续六的结论是「**C2.1 的唯一实质缺口与 C1.5 是同一件事**」——C2.1 差「额外未注册列**被报告**」，
+而按 C1.5 的措辞（输出「`mapped/blocked/retired` 数量和**未映射源列**」），报告本就属于 dry-run，
+但 C1.5 当时未实现，故该款无处落地。**本节交付 C1.5，两项一并勾选。**
+
+### 交付内容
+
+- **`research_v2/src/research_v2/factors/catalog_dry_run.py`**（新）：纯函数
+  `run_catalog_dry_run(entries, schemas, *, retired, schema_errors)` 输出
+  `CatalogDryRunReport(findings, unmapped_source_columns, schema_fingerprints)`，
+  带 `mapped_count / blocked_count / retired_count` 与 `to_frame()`。
+  另暴露 `registered_source_columns(entries, table)`（该表仍被消费的列，排序后）与
+  `collect_source_schemas(session, tables)`（唯一会碰会话的函数）。
+- **`research_v2/scripts/audit_factor_catalog_schema_dry_run.py`**（新）：跑真实 catalog，
+  打印逐表 schema 与三类计数、未映射源列、blocked 明细，写 JSON 报告；
+  有 blocked 或 unmapped 时**退出码 1**（可作 catalog 变更的门），`--report-only` 降级为只打印；
+  `--save-schemas` / `--schemas-from` 让判定可离线复演。
+- **41 条新测试**：`tests/unit/factors/test_catalog_dry_run.py`（28）与
+  `tests/unit/scripts/test_audit_factor_catalog_schema_dry_run.py`（13）。
+
+### 逐条对应 C1.5 的四款检查
+
+- **表/列存在**：表名先过冻结集白名单 `factor_data(?:[1-9]|10|11)`；表不在 schema 集内 → BLOCKED；
+  角色列缺失 → BLOCKED。**并额外要求判别列 `factor_name`**：catalog 里没有任何条目把它登记为列
+  （条目存的是因子**名**作为值），但 `source_reader` 与两条取数路径都靠它
+  `where factor_name in [...]` 选出单个因子，**缺它则整表不可读**。
+- **类型可转换**：按各角色**实际的读法**判定，而不是笼统的"类型对不对"——
+  `value` 走 `pd.to_numeric`，故必须是数值类型（**STRING 会被静默 coerce 成全 NaN**，
+  看起来像"这个因子没有数据"而不是"schema 不匹配"，这正是必须前置拦下的失效模式）；
+  `trade_date` 走 `pd.to_datetime(errors="raise")`，故必须是时间类型；
+  `ts_code` 与 `factor_name` 必须是 SYMBOL/STRING/CHAR。DolphinDB 的参数化类型
+  （如 `DECIMAL32(S)`）只取头部 token 再比对。
+- **日期/代码键明确**：一个角色只能指一列、**一列只能担任一个角色**，否则读路径对
+  "哪一列是日期键"没有唯一答案（如 `source_code_column="trade_date"` → BLOCKED，理由含 ambiguous）；
+  源 schema 内**同名列出现两次**也判为不明确。
+- **输出三类计数与未映射源列**：未映射列**按表**给出（同名列在两张表是两件事）。
+  参照集是**非 retired 条目**登记的列 ∪ 判别列——retirement 是消费的主动终止，
+  故只有 retired 条目用过的列在其退役后**应当**变为未映射并被报告出来（有专测）。
+  schema 查询失败的表**不计入**未映射（无从知晓），但会以
+  `RuntimeError: ...` 原文出现在该表因子的 BLOCKED 理由里，
+  **让连接故障与 schema 漂移可区分**——否则一次断连会读作"487 个因子全部 blocked"。
+
+### 三条红线是可验证的，不是文档声明
+
+- **不读取全量值**：`collect_source_schemas` 能发出的**唯一**脚本由 `_schema_query` 生成，
+  形如 `schema(loadTable('dfs://YesLab', '<table>')).colDefs`。
+  实跑记录到 JSON 里复核过：**恰好 11 条查询、全部匹配该形状、无一含 `select`/`where`**。
+  测试另从模块 AST 的字符串常量里断言不存在 `select ... from` 形态的查询。
+- **不写数据库**：脚本**根本不构造 `V2WriteSession`**（也不 import）。
+  该性质用 **AST 而非文本**钉住：遍历 `ast.Name`/`ast.Attribute` 收集标识符，
+  断言 `V2WriteSession`、`UploadClient` 不在其中而 `YesLabReadOnlySession` 在。
+  选 AST 是因为脚本的 docstring 与注释里**都提到了** `V2WriteSession`（用来说明它没被用），
+  纯文本匹配会同时产生假阳与假阴；而 AST 也拦得住"在 `main()` 内部再 import"这种规避。
+  另用 `db.session._MUTATING_COMMAND_PATTERN` 扫全部字符串常量，确认无任何 DDB 变更动词。
+- **不探测任意表**：表名白名单在**发出任何查询之前**校验，
+  测试断言的是 `session.queries == []` 而不只是"最终抛错"——与续六对取数层的注入防护同一标准。
+  一个拼错的 catalog 条目因此不能变成探测源集群上别的表的手段。
+
+### 实跑证据（2026-09-06 09:05，只读）
+
+```
+catalog=source_catalog.yaml entries=487 tables=11
+metadata_snapshot_hash=afb9cc396189e47bb4963d8df65674867905606371ebec9f6998e8e2c69ce3f6
+  factor_data1..11: ts_code:SYMBOL, trade_date:DATE, factor_name:STRING, value:DOUBLE
+mapped=487 blocked=0 retired=0 total=487
+unmapped source columns: none
+DRY_RUN_PASSED
+```
+
+产物：`/data/zhangyudong/qrv2_research_artifacts/catalog_schema_dry_run{.txt,_report.json,_schemas.json}`。
+**11 张源表的 schema 完全一致**（4 列、同类型），故真实数据下 dry-run 报不出任何东西。
+这本身是个值得记的结论：**它当下的价值不在"发现了什么"，而在"日后源表加列/改类型/删表时会立刻发现"**，
+也意味着它的正确性**只能由测试确立**（合成漂移场景），不能由这次干净的空跑证明。
+离线复演（`--schemas-from` 读回保存的 schema）产出的报告与实跑**逐字节相同**。
+
+### 顺带闭上一处真实的三角缺口（新发现，非规格所列）
+
+写测试时发现「**哪些列会被读**」此前有**两个互不校验的真值来源**：
+catalog 的逐条登记，与 `source_backfill._SOURCE_COLUMNS = ("ts_code","trade_date","factor_name","value")`
+（`source_evaluation._query_source_range` 里是同一份硬编码投影）。
+dry-run 校验 catalog ↔ **源**，续六的取数测试校验 **reader** ↔ 返回帧，
+**唯独 catalog ↔ 读路径这一条边没有任何东西看着**。
+后果是具体的：若某条目登记 `source_value_column: "val"` 而源表同时有 `val` 和 `value`，
+dry-run 会判 MAPPED（列确实存在、类型也对），而取数路径**照旧 select `value`** ——
+该因子被从错误的列读出，或根本读不到，且**两道现有检查都放行**。
+已补 `test_the_catalog_registration_agrees_with_the_columns_the_read_path_projects`：
+对**真实 487 条**逐条断言 `registered_source_columns([entry], table) == sorted(_SOURCE_COLUMNS)`。
+三条边现已闭合。
+
+### 变异验证：10 个变异全部被预期的测试捕获，其中一个变异第一次写错了位置
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 1 | 去掉 `abs()`（C7.5 相关，见续八） | 端到端镜像测试 |
+| 2 | 降低共同成员下限（C7.5 相关，见续八） | 缺失错位测试 |
+| 3 | 无穷大算作可用观测（C7.5 相关，见续八） | 改写后的非有限值测试（两参数） |
+| 4 | 完全不筛非有限值（C7.5 相关，见续八） | 同上 |
+| 5 | 白名单校验挪到查询循环之后 | `..._refused_without_being_queried`（断言 `queries == []`） |
+| 6 | `_schema_query` 改成 `select top 1 *` | `..._issues_schema_queries_only_and_never_reads_values` |
+| 7 | retired 条目照常被重新检查 | retired 两条测试 |
+| 8 | retired 条目仍算作消费其列 | `test_columns_only_a_retired_entry_used_become_unmapped` |
+| 9 | 跳过类型可转换检查 | 6 个参数化类型用例全部失败 |
+| 10 | 角色列硬编码而不读 catalog 登记 | 4 条测试（含 blocked 退出码那条） |
+
+**方法论上的第二次教训，与续八那次不同但同源。**第一版「只报第一个缺陷」的变异**活了下来**：
+我把 `if reasons: break` 插在了类型检查之前，而该测试的两个缺陷都是**列不存在**，
+走的是更早的 `continue` 分支，**根本到不了我插入的那一行**。
+变异没生效不等于性质没被测到——**变异必须真的改变被断言的那条路径**。
+把它挪到角色循环开头（M6b）、以及在 `_check_entry` 末尾截断 `reasons[:1]`（M7）后，
+`test_every_defect_of_one_factor_is_reported_not_just_the_first` 两次都失败。
+与续八的教训合起来是同一句话的两面：**变异验证的判据是"正确实现与被破坏实现结论相反"，
+而且要确认变异真的落在了被测代码上。**
+
+### C2.1 勾选的边界（沿用续六的判定，明确留档）
+
+五款现已全部有测试：统一输出契约（11 列）、源列顺序不影响输出、
+**额外未注册列被报告**（本节 dry-run + `test_extra_unregistered_source_columns_are_reported_but_not_loaded`）
+**且不被加载**（续六的 `test_extra_unregistered_columns_are_not_loaded`、取数层重投影到恰好 4 列，
+加本节的 `registered_source_columns` 派生）、缺少注册列阻止该因子批次。
+**沿用续六的范围判定并在此复述以免被误读**：实测 11 张源表**全部是长表**，
+「一列一个因子」的宽表在本源上不出现，故「宽表映射」一款按字面由列序不变测试覆盖，
+**并非在某个宽表源上验证过**。若日后接入宽表源，该款需重新核验。
+
+**全量：1381 passed / 45 skipped**（本节起点 1340，+41 新测试），
+`ruff check src tests` 清、`mypy src` 157 文件清。
