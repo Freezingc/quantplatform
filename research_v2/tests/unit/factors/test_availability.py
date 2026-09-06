@@ -105,6 +105,59 @@ def test_a_shared_announcement_date_tie_is_broken_on_the_latest_report_period() 
     assert result.loc[0, "source_revision_id"] == "a-later-period"
 
 
+def test_announcement_dates_collapsing_to_one_available_date_are_order_invariant() -> None:
+    """FIXED, and deliberately pinned next to the defect above so the boundary is visible.
+
+    The calendar map from ``ann_date`` to ``available_date`` is many-to-one: a Friday and the
+    weekend behind it all roll to the same next trading day. Two events announced on 2025-08-29
+    (Friday) and 2025-08-30 (Saturday) therefore both become available on 2025-09-01 and tie on
+    ``available_date``, on ``report_period`` and on ``source_revision_id`` -- while disagreeing on
+    ``ann_date``. Before ``ann_date`` became the fourth sort key, a stable mergesort resolved that
+    tie by input row order, so the *published provenance* depended on the order the extract
+    arrived in even though every value agreed. Hypothesis found exactly this case on 2026-09-06
+    in ``test_event_row_order_does_not_change_the_expansion``; these are its literal arguments.
+
+    This is not the defect below and does not belong to decision B. Nothing is being chosen
+    between competing values -- both rows carry 0.0 -- and no precedence among
+    ``available_date`` / ``report_period`` / ``source_revision_id`` is restated, because the
+    fourth key only fires once those three are already equal. The test below still passes
+    unchanged, which is the evidence that the two shapes are disjoint: there the two rows share
+    one ``ann_date`` and disagree on ``raw_value``, so they tie on all four keys and remain
+    resolved by input order, still deferred to decision B.
+    """
+    calendar = TradingCalendar.from_dates(
+        [timestamp.date() for timestamp in pd.bdate_range("2025-08-01", "2025-09-30")]
+    )
+    events = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "report_period": [date(2024, 9, 30), date(2024, 9, 30)],
+            "ann_date": [date(2025, 8, 29), date(2025, 8, 30)],
+            "raw_value": [0.0, 0.0],
+            "source_revision_id": ["r1", "r1"],
+        }
+    )
+    universe = pd.DataFrame([{"signal_date": date(2025, 9, 1), "ts_code": "000001.SZ"}])
+
+    # Both announcement dates really do collapse onto one available date; without this the
+    # test would silently stop exercising the tie it exists to pin.
+    assert assign_fundamental_available_date(date(2025, 8, 29), calendar) == date(2025, 9, 1)
+    assert assign_fundamental_available_date(date(2025, 8, 30), calendar) == date(2025, 9, 1)
+
+    forward = expand_fundamental_events(events, universe, calendar)
+    backward = expand_fundamental_events(
+        events.iloc[::-1].reset_index(drop=True), universe, calendar
+    )
+
+    pd.testing.assert_frame_equal(forward, backward)
+    assert len(forward) == 1
+    # The fourth key is descending like the other three, so the later announcement wins the
+    # provenance column. The value was never in dispute.
+    assert forward.loc[0, "ann_date"] == date(2025, 8, 30)
+    assert forward.loc[0, "raw_value"] == 0.0
+    assert forward.loc[0, "report_period"] == date(2024, 9, 30)
+
+
 def test_two_events_tied_on_every_sort_key_are_resolved_by_input_order() -> None:
     """DEFECT, pinned rather than fixed: a full tie lets the input row order pick the value.
 

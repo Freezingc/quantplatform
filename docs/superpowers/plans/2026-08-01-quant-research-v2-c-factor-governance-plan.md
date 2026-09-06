@@ -4230,3 +4230,140 @@ cd research_v2 && mypy src                 → Success: no issues found in 158 s
 **未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、scope、门阈值或 `dropna` 口径**；
 **裁决 4 / 决定 L / 决定 M 一个都没被代做**——
 本轮**撤回了自己上一轮加给 (iii) 的一条论据**，并把四轮沿用的门槛数字换成了实测值。
+
+## 勾选审计续三十五（2026-09-06 21:55）：全量套件在 HEAD 上变红——hypothesis 钉住了 `expand_fundamental_events` 的**第二个**顺序依赖；本轮已修，并**证明**该修复不侵入决定 B；另补上写信任根那个脚本的零测试覆盖
+
+**本轮是续二十八以来第一次改动 `src/`**，故门槛全部重测（见 §五），不再沿用。
+
+### 一、发现经过：红的不是本轮新加的测试
+
+本轮先给冻结物化脚本补路由测试（§四），随后跑全量门槛：
+**`1 failed, 1586 passed, 45 skipped`**，失败项是
+`tests/property/factors/test_availability_invariants.py::test_event_row_order_does_not_change_the_expansion`。
+**20 分钟前同一命令是 `1582 passed, 45 skipped`、零失败**（续三十四 §一），
+而本轮唯一新增是一个测试文件，不可能影响基本面可用性路径。
+**单独跑也失败**，且加不加 `-p no:randomly` 一样（仓内并未安装 pytest-randomly，
+只有 hypothesis 6.164.0），**故不是测试顺序依赖**。
+
+**真实原因**：`.hypothesis/examples/` 里有 **21:00 之后新写入的条目**——
+hypothesis 在某次运行中**找到反例并持久化**，此后每次都先重放它，故现在**确定性失败**。
+**即这不是本轮引入的：是一个此前潜伏、现被 hypothesis 钉住的真实缺陷，而套件当时已经红着。**
+（**红着的全量套件会影响每一个在本仓工作的人**，包括"因子优化"那条对话，故优先处理它。）
+
+### 二、根因：日历映射是多对一，而排序键只有三个
+
+反例（hypothesis 输出的字面参数）：
+
+```
+events:   000001.SZ  report_period 2024-09-30  ann_date 2025-08-29  raw_value 0.0  r1
+          000001.SZ  report_period 2024-09-30  ann_date 2025-08-30  raw_value 0.0  r1
+universe: signal_date 2025-09-01  000001.SZ      seed=0
+断言失败：ann_date 列  left=[2025-08-29]  right=[2025-08-30]
+```
+
+实测 `assign_fundamental_available_date`（2025 年 bdate 日历）：
+
+| ann_date | 星期 | → available_date |
+|---|---|---|
+| 2025-08-28 | 四 | 2025-08-29 |
+| **2025-08-29** | **五** | **2025-09-01** |
+| **2025-08-30** | **六** | **2025-09-01** |
+| **2025-08-31** | **日** | **2025-09-01** |
+
+**三个连续日历日塌到同一个 available_date**——该映射**多对一**（非交易日顺延到下一交易日）。
+而 `expand_fundamental_events`（`src/research_v2/factors/availability.py`）原来只按
+`["available_date", "report_period", "source_revision_id"]` 三键、全降序、
+`kind="mergesort"`（**稳定**排序）取第一行。上面两行在**三键上全等**
+（available_date 都是 09-01、report_period 都是 2024-09-30、revision 都是 r1），
+**而 `ann_date` 不同**，于是稳定排序**按输入行序**决定取谁——
+`ann_date` 是**发布出去的溯源列**，故**"记录的公告日"取决于抽取文件里行的先后**，
+**即使两行的值完全相同（都是 0.0）**。
+
+### 三、为什么这个可以修，而昨天那个不可以——三条可验证的理由
+
+该文件的 docstring 原本写着 **"One input shape violates that last property"**，
+指 `test_availability.py::test_two_events_tied_on_every_sort_key_are_resolved_by_input_order`
+钉住的形状（**同 `ann_date`、不同 `raw_value`**），并明说
+**"because the fix belongs to decision B"**、
+"decision B … would **restate the sort key** and with it the C4.3 interval formula"。
+**本轮是第二个形状，不在那句话覆盖范围内**：
+
+| | **形状 1（本轮修的）** | **形状 2（仍延后给决定 B）** |
+|---|---|---|
+| `ann_date` | **不同**（08-29 / 08-30），塌到同一 `available_date` | **相同** |
+| `raw_value` | **相同**（0.0 / 0.0） | **不同**（0.0 / 1.0） |
+| 争的是 | **发布哪个公告日作为溯源** | **发布哪个数值** |
+| 是语义选择吗 | **不是**：无值冲突、且不重排前三个键的优先级 | **是**：两个不可区分的修订版谁压谁 |
+| 处置 | **修**：`ann_date` 作**第四个、最后一个**排序键 | **不修**：仍按输入行序，仍由那条 DEFECT 测试钉住 |
+
+**"不侵入决定 B"是被验证的，不是被声称的**：
+
+1. **只加第四个键，前三个键的相对次序一字未动。** 决定 B 要定的是"跨报告期谁压谁"，
+   即前三个键的次序；**一个只在三者已全等时才生效的第四键，与 B 的每一种可能结论都相容。**
+2. **形状 2 的 tripwire 测试在修复前后都原样通过**（它两行同 `ann_date`，加第四键后仍全等、仍按输入行序）。
+   那条测试自称 *"any tie-break, refusal, or dedup layer added here has to change it deliberately"*——
+   **本轮改动没有触发它，这正是两个形状不相交的证据。**
+3. **修复后 `_has_contradictory_tie` 的分组键恰好成为完整 tie 集**：
+   它按 `(ts_code, report_period, ann_date, source_revision_id)` 分组，
+   而 `available_date` 是 `ann_date` 的函数，故"同 `ann_date` ⇒ 同 `available_date`"，
+   **四键全等的行恰好就是该分组内 `raw_value` 不唯一的行**。
+   **过滤器一行未改就正好描述了修复后唯一剩下的顺序依赖**——
+   这是"该修复是设计本意的补全、不是外加补丁"的最强内部一致性证据。
+
+**变异验证**：把第四个键撤掉 → **恰好这两条失败**
+（新的确定性单测 + hypothesis 属性），**其余 18 条全过（含形状 2 的 tripwire）**；
+还原后 `git diff --stat` 对 `availability.py` 只有 **20 insertions / 2 deletions**（即修复本身加注释）。
+
+**同时更正两处写着错误前提的 docstring**（只改文字、不改断言）：
+
+- 属性测试的模块 docstring："One input shape" → **两个形状**，一个已修、一个仍延后，并写明为何只修一个。
+- `_has_contradictory_tie` 原有那句 *"``available_date`` is derived from ``ann_date`` through the
+  calendar, **so tying on ``ann_date`` is tying on ``available_date``**"*——
+  **该推理只在一个方向成立**，却被当等价关系用（"不同 `ann_date` ⇒ 不同 `available_date`"），
+  而日历顺延使反向为假。**这正是第二个形状漏过过滤器的原因。** 已改写为明说"蕴含只朝一个方向"，
+  并写明该过滤器**不得被放宽**（放宽就会把已修的形状重新藏起来）。
+
+### 四、另补一处零覆盖：写信任根的那个脚本此前**没有任何测试**
+
+`rg -ln "materialize_frozen_factor_daily|replay_factor_values" tests/` **零命中**——
+**产出 `factor_daily`（新信任根）的脚本此前没有任何测试。**
+新增 `tests/unit/scripts/test_materialize_frozen_factor_daily_routing.py`（**5 项**），
+把续三十三 §五记录的那处 id 冲突变成断言：
+
+1. 冻结 `yeslab_206` **必须**走 `materialize_alpha206_median_repair`，
+   **不得**落到 `REPLAY_DEFINITIONS`（那里是 `Bias_Vol_Demean_60_Calculator` / `factor_data5`，**另一个因子**）；
+2. `yeslab_443_reg30_max20_v1` **必须**走 `compute_gp074_variant(wide, 30, 20)`
+   （**窗口写错就是另一个因子**），且它**不在** `REPLAY_DEFINITIONS` 里（走错会 KeyError，fail-closed）；
+3. 其余每个冻结成员**必须**用**自己那条**定义走 `_replay_factor`，且不得借用两条修复路径；
+4. **只有** `PIT_FACTORS` 拿到 industry provider（它会改变行业相关因子的值，故属路由契约而非顺带参数）；
+5. 把 id 冲突本身钉住：`REPLAY_DEFINITIONS["yeslab_206"]` 的 calculator/store 仍是源谱系那一套，
+   且 `apply_admission_decisions.py` 的 `grade_alias` 仍指向 `yeslab_206_median_abs_v2`。
+
+**5 项全部经变异验证，5/5 被对应测试杀掉**：
+M1 删 206 分支 / M2 删 443 分支 / M3 把 443 窗口 `30,20` 换成 `20,30` /
+M4 让所有因子都拿 provider / M5 把 206 的 calculator 名改成 median 版；
+每次变异后**只有一条失败**，还原后 `git diff` 对两个被变异脚本**为空**。
+**这把续三十三 §五那句"8 个绕行全靠约定、没有一处由断言强制"，
+在"写信任根"这一处（最重要的一处）变成了强制。**
+路由用哨兵替换三个被调方来断言，**故不触数据库、不读行情缓存、不走网络。**
+
+### 五、门槛（本轮全部重测，不沿用）
+
+| | 修复前 | 修复后 |
+|---|---|---|
+| `pytest tests -q` | **1 failed, 1586 passed, 45 skipped** | **1588 passed / 45 skipped**（95.25s） |
+| `ruff check src tests` | Found 1 error（新测试名超长，已改） | **All checks passed!** |
+| `mypy src` | — | **Success: no issues found in 158 source files** |
+
+**1588 = 1582（续三十四实测）+ 5（新路由测试）+ 1（新确定性测试）**，逐条对得上。
+证据：`fullsuite_reverified_at_head_2026_09_06_2115.txt`（修复前的 1582 基线）。
+
+**改动的落点与影响面**：`src/research_v2/factors/availability.py` 一处（20+/2−，含注释）。
+`expand_fundamental_events` 按 §1 的普查**生产调用者为 0**
+（"只有 `materialize_technical_availability` 被接线；**基本面可用性整条路径未接线**"），
+**故本修复不影响任何已物化数据、任何已发布版本指针、任何基线数值。**
+**未写任何数据库**（`.hypothesis/` 自带 `.gitignore`，未入库）；
+**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+**未改动契约、scope、门阈值或 `dropna` 口径**。
+**决定 B 未被代做**——形状 2 原样保留、原测试原样通过；
+**裁决 2 / 裁决 3 / 裁决 4 / 决定 A–M 一个都没被代做。**

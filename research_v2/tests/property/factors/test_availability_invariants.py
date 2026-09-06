@@ -13,17 +13,33 @@ arrive per column, per month and per factor group, so an order dependence would 
 reproducibly. It would quietly change which revision of a fundamental figure a past signal
 date sees.
 
-**One input shape violates that last property, and this file no longer pretends otherwise.**
-Two events tied on all three sort keys -- same ``available_date``, same ``report_period``, same
-``source_revision_id`` -- but carrying different ``raw_value``s are resolved by input row order,
-because the sort is stable and has no further tie-break. Hypothesis found it on 2026-09-06 after
-the property had passed for several sessions. The case is excluded from the order-invariance
-property below and pinned deterministically by
+**Hypothesis found two input shapes that violated that last property, on the same day and after it
+had passed for several sessions. One is fixed, one is still a pinned defect, and the difference
+between them is the reason only one was fixed.**
+
+*Shape 1 -- fixed.* ``available_date`` is derived from ``ann_date`` through the calendar and that
+map is many-to-one: a Friday and the weekend behind it all roll to the same next trading day. Two
+events announced on different calendar days could therefore tie on ``available_date``,
+``report_period`` and ``source_revision_id`` while disagreeing on ``ann_date``, and a stable sort
+with no fourth key resolved them by input row order -- publishing a different *provenance*
+depending on how the extract arrived, with every value in agreement. ``ann_date`` is now the
+fourth, last sort key, which makes the sort total without reordering the first three. Pinned by
+``test_availability.py::test_announcement_dates_collapsing_to_one_available_date_are_order_invariant``.
+
+*Shape 2 -- still a defect, still deferred to decision B.* Two events sharing one ``ann_date``, so
+tied on all four keys, but carrying different ``raw_value``s, are still resolved by input row
+order. They are excluded from the property below by ``_has_contradictory_tie`` and pinned
+deterministically by
 ``test_availability.py::test_two_events_tied_on_every_sort_key_are_resolved_by_input_order``,
-because the fix belongs to decision B: what should happen when two revisions are
-indistinguishable is a semantic choice, and the technical path's answer -- a deduplication and
-quarantine layer that refuses to pick between conflicting values -- has no counterpart on the
-fundamental path at all.
+because what should happen when two revisions are indistinguishable is a semantic choice, and the
+technical path's answer -- a deduplication and quarantine layer that refuses to pick between
+conflicting values -- has no counterpart on the fundamental path at all.
+
+Shape 1 was fixed rather than deferred because nothing semantic is chosen by it: no value competes,
+and no precedence among ``available_date`` / ``report_period`` / ``source_revision_id`` is
+restated, so it is compatible with every ordering decision B could reach. That the two shapes are
+disjoint is measured, not assumed -- the shape-2 tripwire test passes unchanged on both sides of
+the fix.
 """
 
 from __future__ import annotations
@@ -149,12 +165,20 @@ def test_event_row_order_does_not_change_the_expansion(
 def _has_contradictory_tie(events: pd.DataFrame) -> bool:
     """True when two events are indistinguishable to the sort yet disagree on the value.
 
-    ``expand_fundamental_events`` orders candidates by ``available_date``, ``report_period``
-    and ``source_revision_id`` and takes the first with a stable sort, so rows tied on all
-    three keep their input order. ``available_date`` is derived from ``ann_date`` through the
-    calendar, so tying on ``ann_date`` is tying on ``available_date``. Filtering these out is
-    what lets the property above state something true; the excluded shape is a defect with its
-    own deterministic test, not a case nobody thought about.
+    ``expand_fundamental_events`` orders candidates by ``available_date``, ``report_period``,
+    ``source_revision_id`` and ``ann_date``, all descending, and takes the first with a stable
+    sort, so rows tied on all four keep their input order. Grouping on
+    ``(ts_code, report_period, ann_date, source_revision_id)`` is exactly that tie set, because
+    ``available_date`` is a function of ``ann_date``: equal ``ann_date`` implies equal
+    ``available_date``, so the derived column needs no place in the key.
+
+    The implication runs only that way. The converse -- different ``ann_date`` implies different
+    ``available_date`` -- is false, because the calendar rolls a non-trading day forward to the
+    next trading one and is therefore many-to-one. Believing the converse is what let a second
+    order-dependence through this filter until 2026-09-06; that shape is now closed by the fourth
+    sort key rather than excluded here, so this filter describes the *only* remaining tie and must
+    not be widened. Filtering these out is what lets the property above state something true; the
+    excluded shape is a defect with its own deterministic test, not a case nobody thought about.
     """
     if events.empty:
         return False

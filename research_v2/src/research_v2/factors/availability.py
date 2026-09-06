@@ -112,9 +112,27 @@ def expand_fundamental_events(
         ]
         if candidates.empty:
             continue
+        # ``ann_date`` is a fourth, last key and it is there to make the sort total, not to
+        # rank anything. ``available_date`` is derived from ``ann_date`` through the calendar
+        # and that map is many-to-one -- a Friday, its Saturday and its Sunday all roll to the
+        # same next trading day -- so two events announced on different calendar days can tie
+        # on ``available_date`` while carrying different ``ann_date``s. Tied on all three of
+        # the original keys, a stable sort then resolved them by input row order, and since
+        # ``ann_date`` is published as provenance the *recorded announcement date* depended on
+        # the order the extract happened to arrive in even when every value agreed. Hypothesis
+        # found that shape on 2026-09-06.
+        #
+        # This does not pre-empt decision B, which owns the precedence *among* the keys above
+        # (whether a late restatement of an older period should supersede a newer period).
+        # Appending a key that only fires once those three are already equal cannot reorder
+        # them, and it is compatible with every ordering B could choose. It also leaves the
+        # pinned value-conflict defect untouched: two events sharing one ``ann_date`` and
+        # disagreeing on ``raw_value`` still tie on all four keys and are still resolved by
+        # input order, which is what
+        # ``test_two_events_tied_on_every_sort_key_are_resolved_by_input_order`` asserts.
         latest = candidates.sort_values(
-            ["available_date", "report_period", "source_revision_id"],
-            ascending=[False, False, False],
+            ["available_date", "report_period", "source_revision_id", "ann_date"],
+            ascending=[False, False, False, False],
             kind="mergesort",
         ).iloc[0]
         available_date = _as_date(latest["available_date"])
