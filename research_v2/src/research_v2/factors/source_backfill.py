@@ -12,10 +12,10 @@ import json
 import re
 import uuid
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Protocol, cast
+from typing import Any, Final, Protocol, cast
 
 import pandas as pd
 
@@ -206,6 +206,53 @@ def _count_factor_rows(frame: pd.DataFrame, counts: Counter[str], kind: str) -> 
     counts.update(frame["factor_id"].astype(str).tolist())
 
 
+# Columns this recovery path republishes exactly as it read them. ``run_id``,
+# ``data_version``, ``created_at`` and ``record_hash`` are deliberately absent: the path
+# overwrites all four, so duplicate rows left behind by an interrupted chunk stream are
+# *expected* to disagree on them and the disagreement cannot reach the published version.
+# Every other selected column is carried through unchanged, so a disagreement on one of
+# these means the row that gets published depends on the order the database returned them.
+_REPUBLISHED_UNCHANGED: Final[tuple[str, ...]] = (
+    "value",
+    "observation_date",
+    "available_date",
+    "report_period",
+    "stale_days",
+    "dedup_resolution",
+    "source_revision_id",
+    "source_watermark_id",
+)
+
+
+def _duplicate_payload_conflicts(
+    frame: pd.DataFrame,
+    keys: Sequence[str],
+    payload_columns: Sequence[str],
+) -> list[tuple[tuple[object, ...], list[str]]]:
+    """Business keys whose duplicate rows disagree on a column published unchanged.
+
+    The deduplication in :func:`_iter_client_repair_batches` sorts by ``keys`` and then
+    drops duplicates on ``keys``, so every row in a duplicate group is equal on all of the
+    sort keys by construction -- that sort cannot break the tie, and ``keep="first"`` is
+    really "whichever row the query returned first". That is harmless when the tied rows
+    agree on everything this path republishes, and unsafe the moment they do not, because
+    the published value would then depend on a row order nothing guarantees. This finds the
+    unsafe case so the caller can refuse it instead of resolving it silently; refusing
+    matches ``pit.market``'s handling of an unequal duplicate group and keeps this path
+    from having to choose a semantic that belongs to nobody's decision.
+    """
+    present = [column for column in payload_columns if column in frame.columns]
+    if frame.empty or not present:
+        return []
+    counts = frame.groupby(list(keys), sort=True, dropna=False)[present].nunique(dropna=False)
+    conflicts: list[tuple[tuple[object, ...], list[str]]] = []
+    for key, row in counts.iterrows():
+        differing = sorted(row.index[row > 1].tolist())
+        if differing:
+            conflicts.append((key if isinstance(key, tuple) else (key,), differing))
+    return conflicts
+
+
 def publish_client_deduplicated_repair(
     target_session: FactorBackfillTargetSession,
     *,
@@ -268,6 +315,22 @@ def _iter_client_repair_batches(
         if not result.empty:
             frame = result.copy(deep=True)
             keys = ["signal_date", "ts_code", "factor_id", "factor_version"]
+            # The sort below cannot break a tie: its keys are the dedup keys, so rows in a
+            # duplicate group are equal on every one of them. Refuse the case where that
+            # would matter rather than let the query's row order decide a published value.
+            conflicts = _duplicate_payload_conflicts(frame, keys, _REPUBLISHED_UNCHANGED)
+            if conflicts:
+                first_key, columns = conflicts[0]
+                raise FactorBackfillError(
+                    f"repair source has {len(conflicts)} business key(s) whose duplicate rows "
+                    f"disagree on columns this path republishes unchanged, so the surviving row "
+                    f"would be chosen by the query's row order; first such key {first_key} "
+                    f"differing on {columns}. This path collapses duplicates left by an "
+                    f"interrupted chunk stream, which are expected to differ only on run_id, "
+                    f"data_version, created_at and record_hash -- all four are overwritten. "
+                    f"A disagreement on anything else is a source conflict, and resolving it "
+                    f"is not this recovery path's to decide."
+                )
             frame = frame.sort_values(keys, kind="mergesort").drop_duplicates(
                 keys, keep="first"
             )

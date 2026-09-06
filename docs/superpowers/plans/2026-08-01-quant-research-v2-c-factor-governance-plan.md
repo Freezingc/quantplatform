@@ -4494,3 +4494,126 @@ M4 让所有因子都拿 provider / M5 把 206 的 calculator 名改成 median �
   **裁决 2/3/4 与决定 A–M 全部仍开放。**
 - **两处明确未核实**（`repair.py`/`compact_coverage.py` 的溯源列是否被发布；
   `source_backfill.py:271` 上游有无冲突隔离），**已登记在 §二/§四，未据猜测改动任何代码**。
+
+## 勾选审计续三十七（2026-09-06 23:00）：续三十六登记的两处"未核实"已核实——**两处都不是缺陷，且是结构上不可能**；第三处是真缺陷，已加 fail-closed 守卫并双向变异验证；20 个 hypothesis 种子复跑**零新反例**
+
+### 一、先关掉自己上一轮留的两个未核实项
+
+续三十六 §四写了两处"未核实故未动"。本轮核实了，**结论都是"不是缺陷"**，
+而且理由比"实测零实例"更硬——**是结构上没有通道**：
+
+**(1) `repair.py:193`（`finite_rows.iloc[0]`）——并列行在**所有列**上相同，故取哪一行无关。**
+`_normalize_overlay_source` → `_normalize_factor_source`（`repair.py:695-702`）做的是
+`source.loc[:, list(_FACTOR_COLUMNS)]`，而 `_FACTOR_COLUMNS` **只有四列**
+（`trade_date`、`ts_code`、`factor_name`、`value`），
+故 `source_representatives[key]` 存的行**不含任何溯源列**。
+又因取值前已过 `_has_distinct_finite_values` → `CONFLICT_QUARANTINE`（第 186-190 行），
+**留下的同键行 `value` 必然全等**；`trade_date`/`ts_code` 由分组键相同；
+`factor_name` 由第 163 行 `(source_normalized["factor_name"] == factor_name).all()` 强制相同。
+**四列全部相同 ⇒ `.iloc[0]` 的"输入序依赖"是空的。**
+**核实的关键点在这里**：`clean_rows.append(source_row)`（第 296 行）追加的是**整行**，
+而第 314-316 行 `repaired = source_row.copy()` 同样保留整行，
+**故这条结论依赖"整行只有四列"，而不依赖"下游只用了 value"**——
+续三十六把它登记为"其溯源列是否被发布未核实"，答案是**它根本没有溯源列可发布**。
+
+**(2) `compact_coverage.py:65`（`drop_duplicates(_KEYS, keep="last")`）——并列之后只投影出键与 value。**
+第 65 行之后紧跟 `merged = mature.merge(source_frame.loc[:, [*list(_KEYS), "value"]], ...)`：
+**显式只取 `_KEYS` 与 `value`**，故即使源帧带别的列也带不出去；
+而其上方（第 58-64 行）已因 `SOURCE_VALUE_CONFLICT` 早退为 `COMPACT_DQ_BLOCKED`，
+**value 冲突到不了这一行**。**故 `keep="last"` 选谁对输出没有任何影响。**
+
+**这两条把续三十六 §二那张 8 行表里的两行从"未核实"改成"不适用"**，
+且靠的是**结构无通道**而非零实例：零实例只说明今天没发生，
+结构无通道说明**输入怎么变都不会发生**。**该表现已无"未核实"项。**
+
+### 二、第三处是真缺陷：`source_backfill.py:271`，已加守卫
+
+**为什么它与上面两处不同**：那条路径读 `factor_observation_clean` 的 **16 列**，
+去重后只覆盖 `run_id`/`data_version`/`created_at`/`record_hash` 四列，
+**其余 8 列原样重新发布**：`value`、`observation_date`、`available_date`、`report_period`、
+`stale_days`、`dedup_resolution`、`source_revision_id`、`source_watermark_id`。
+而它的 `sort_values(keys)` 与 `drop_duplicates(keys)` **用同一组键**，
+同组行在排序键上必然全等 ⇒ **这个排序对打破并列结构性地无效**，
+`keep="first"` 的实际语义是"数据库先返回谁就用谁"。
+**故重复行若在那 8 列上有分歧，发布出去的版本由查询行序决定，
+而 `record_hash` 还会为胜者重新计算、替它背书。**
+
+**它是未接线的**：`publish_client_deduplicated_repair` 的调用者**为零**
+（`rg` 只命中定义处与 `factors/__init__.py` 的导出），
+**故是潜伏缺陷而非在产缺陷**。但**潜伏不等于可以留着**：
+这条路径的**存在目的**就是"在源不可信时把它救回来"，
+而一个在最需要确定性的恢复路径上依赖行序的选择，**会在被接线那天直接变成在产缺陷**。
+
+**修法是拒绝，不是挑选**，依据是本仓已有的两种范式（续三十六 §五）：
+`deduplication.py` 隔离冲突 + 显式全序键；`pit/market.py` 组内不等即不折叠。
+**"挑哪一个"是语义选择、无人授权；"拒绝歧义"不是。**
+新增 `_REPUBLISHED_UNCHANGED`（那 8 列）与 `_duplicate_payload_conflicts(...)`，
+在去重**之前**检查：**同一业务键的重复行若在这 8 列中任一列上不止一个取值，
+即抛 `FactorBackfillError`**；文案写明是哪个键、哪几列，并说明为什么
+`run_id`/`data_version`/`created_at`/`record_hash` 的分歧是**允许**的
+（这四列会被覆盖，正是中断的 chunk 流应产生的形状）。
+
+**守卫的**宽度**才是这条修复的实质，故两个方向都做了变异验证**：
+
+| 变异 | 结果 |
+|---|---|
+| **M1** 整段删除守卫 | **恰好 2 条失败**（逐列 parametrize 的"分歧必须被拒" + 两种行序的那条），其余 11 条通过 |
+| **M2** 把那 4 个会被覆盖的簿记列也加进 `_REPUBLISHED_UNCHANGED` | **恰好 1 条失败**（"只在簿记列上分歧的重复行必须**不**被拒"），其余 12 条通过 |
+
+**M2 是更重要的一半**：只测 M1 只能证明守卫"存在"，
+**M2 才证明守卫的宽度是对的**——太宽会让这条恢复路径
+**对它被写来处理的那种数据一律报错**，即永远跑不起来。
+还原后 `git diff --stat` 只有 **65 insertions / 2 deletions**。
+
+新增 4 条测试，其中两条是**为守卫本身设的对照**：
+`test_the_guard_is_indifferent_to_row_order_which_is_the_point_of_it`
+（**两种行序都必须被拒**——一个只在某一行序下触发的守卫，与它所替换的代码一样依赖行序）、
+`test_distinct_business_keys_are_never_treated_as_duplicates`
+（不同键的多行日**不得**被当成重复）。
+测试桩 `_RepairTargetSession` **按查询里的日期过滤**再返回：
+`_iter_client_repair_batches` 逐日走完整月，**一个对每天都返回整帧的桩会把每行乘以月长**
+（本轮第一版就是这么写的，得到 93 行而不是 3 行），
+**从而把正在被测的"逐日去重"掩盖掉**——桩的错误形状会让测试通过而什么都没测。
+
+### 三、顺带核实：那条路径承诺的 "duplicate-key validation" 是由构造保证的，不是被测量的
+
+`publish_client_deduplicated_repair` 的 docstring 说
+*"the new version becomes visible only after all daily chunks pass **duplicate-key validation**"*，
+而它传下去的是 `CheckResult("repair_keys_unique", Severity.BLOCKER, CheckStatus.PASS)`——
+**一个写死为 PASS 的常量**（第 230 行）；且 `drop_duplicates` 发生在 `StagedBatch.create` **之前**，
+故暂存帧按构造已无重复键。**即那道"验证"验证的是自己刚做完的事。**
+这与本计划反复出现的"一条不可能失败的检查"同模式（参见 C7.5 那两条被重写的控制测试）。
+
+**本轮未改它**：把它改成真检查需要先决定"重复键在哪一层被拒绝"，
+而**刚加的守卫已经在更靠前的一层做了这件事**。故只登记两者关系——
+**守卫在语义层拒绝（重复行能否安全折叠），`repair_keys_unique` 在形式层恒真（暂存帧是否已无重复键）**，
+两者不重复也不冲突；**但 docstring 那句话现在应读成"由构造保证"而非"经校验通过"**。
+
+### 四、20 个 hypothesis 种子复跑：零新反例
+
+续三十五那个缺陷是 hypothesis **在通过若干轮之后**才找到并持久化的，
+故"当前全绿"不等于"没有潜伏反例"。本轮用 **20 个显式种子**复跑整个 `tests/property`
+（`--hypothesis-seed=1..20`，`-p no:randomly`）：**20/20 全部 `19 passed`、零失败**，
+即 **380 次属性测试执行、零新反例**。
+证据：`property_suite_20_hypothesis_seeds_zero_new_counterexamples.txt`（含 `seed_hunt.sh`）。
+**这不能证明没有潜伏反例**（hypothesis 的搜索是概率性的），
+但它把"续三十五那次是孤例还是普遍"从猜测变成了有界证据：
+**在 20 个不同种子下，属性套件里没有第二处会塌的地方。**
+
+### 五、门槛（全部重测）
+
+- `pytest tests -q` → **1593 passed / 45 skipped**（95.21s）＝续三十六的 1589 **+4**（本轮新测试）
+- `ruff check src tests` → **All checks passed!**（中途 1 处 import 排序已 `--fix`）
+- `mypy src` → **Success: no issues found in 158 source files**
+- 变异还原核验：`git diff --stat` 对 `source_backfill.py` 只有 **65+/2−**
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；
+  **未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、scope、门阈值或 `dropna` 口径**。
+- **决定 B 未被代做**：守卫是"拒绝歧义"而非"挑选胜者"；
+  `availability.py` 的形状 2 与其 DEFECT 测试原样不动。
+  **裁决 2/3/4 与决定 A–M 全部仍开放。**
+- **续三十六 §二那张 8 行表的收尾**：2 处缺陷已修（`availability`、`fundamental_snapshot`）、
+  2 处是本仓正确范式（`deduplication`、`pit/market`）、
+  2 处潜伏且实测零实例（`publisher`、`verification`）、
+  **2 处经核实为不适用**（`repair`、`compact_coverage`）——
+  而本轮新修的 `source_backfill` 是该表第 8 行之外**同一类的第 9 处**，
+  故该类的最终清点为 **9 处：3 修、2 范式、2 潜伏零实例、2 不适用**。
