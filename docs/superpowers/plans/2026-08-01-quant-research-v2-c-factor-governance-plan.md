@@ -182,7 +182,7 @@ CONFLICT_QUARANTINE: 存在两个不相等的有限非空值，整组隔离，cl
 
 浮点相等使用 canonical binary/decimal value，不用宽松 `isclose` 把真实冲突吞掉；源如果声明量化精度，则先按该精度规范化再比较。
 
-- [ ] **C3.2 实现纯函数 resolution**
+- [x] **C3.2 实现纯函数 resolution**
 
 ```python
 @dataclass(frozen=True)
@@ -1274,3 +1274,139 @@ C1.6 的第二条 Run 命令是
 
 **全量：1422 passed / 45 skipped**（本节起点 1381；+13 一致性 +8 verifier +20 registry），
 `ruff check src tests` 清、`mypy src` 157 文件清。
+
+## 勾选审计续十一（2026-09-06 10:10）：C3.2 已勾；C3.1 有两处实现与规格不符（均不改，理由具体）；C3.4 缺输入；另查出一个计划外的证据格式缺陷
+
+### C3.2 已勾选——但其中一半的缺口是"两个已发布的数字从未被断言过"
+
+`deduplicate_factor_observations` 是纯函数、返回 `DedupResult(clean, quarantine, statistics)`，
+quarantine 保留**全部原始候选行**（含 `source_row_id`、`reason`、全精度 `raw_value`，
+±inf 也原样保留），冲突组**不选 first/last**。这些此前已有测试。
+
+**真正的缺口在 `statistics`**：`DedupStatistics` 四个计数里，
+**`invalid_groups` 与 `single_nonnull_groups` 在整个测试套件中从未被断言过任何一次**
+（`identical_groups`/`conflict_groups` 也只在两个窄场景里各断言过一次）。
+而这四个数**不是内部记账**：`conflict_groups` 是持久化质量快照里的**存储列**
+（`repair_persistence`、`migrations` 都引用它），四个数合起来是
+"源里有多少被折叠、多少被保留、多少被隔离、多少不可用"的**唯一汇总**。
+**任一计数错算，读起来就是"源里的冲突比实际少"**——正是这类数字最不该出错的方向。
+
+新增 `test_statistics_count_groups_not_rows_and_cover_all_four_classes`：
+一个 fixture 同时含**四类各一组**（identical / single-nonnull / conflict / 全空重复组）
+外加**一行唯一有限值**与**一行唯一非有限值**，期望值**独立手算**后写入断言：
+`identical=1, single_nonnull=1, conflict=1, invalid=2`，clean 3 行、quarantine 5 行。
+**`invalid_groups == 2` 而非 1 是这个 fixture 的关键**：它由**两条不同的代码路径**相加
+（唯一非有限行走 `len(invalid_unique)`，全空重复组走 `reason == "NO_FINITE_VALUE"` 计数），
+只有同时包含两者的 fixture 才钉得住这个和；单独任一类都会让"漏加一项"的变异存活。
+另补 `test_a_conflict_never_leaves_a_partial_group_behind_in_clean`（冲突键贡献 **0** 行 clean，
+三行候选组不得留下"平局幸存者"）。
+
+**分层说明（避免误读 C3.2 的"distinct values"）**：C3.2 约束的是**这个纯函数**的 quarantine，
+它保留逐行候选，故四要素齐备。发布层（materializer，属 C5）再把它聚合成每组一行
+`source_row_ids_json` + `distinct_values_json` + `reason`——那是 C5 的输出形状，不是 C3.2 的。
+
+### C3.1 仍不勾：两处实现与规格不符，**都不改**，理由不是"麻烦"而是"会改动物化数据"
+
+**前置事实：`deduplicate_factor_observations` 在活的物化路径上**——
+`materializer.py:98` 直接调用它。因此任何收紧判定的改动都会**重新分类真实行**、
+改变 `factor_observation_clean` 的内容。而 Task 2.4（遗留链 criterion-303 逐位复现）**仍在跑**
+（本节写作时已 12h58m），红线明确：改变因子数据会推进版本指针、使遗留折缓存失效、破坏逐位复现。
+**故本节只钉行为、只记录偏差，不改实现。**
+
+**(a) IDENTICAL_COLLAPSE 只比 `raw_value`，不比"所有非审计字段"。**
+规格：「所有非审计字段完全一致，只保留一行」。实现：`distinct_finite <= 1` 即折叠。
+后果是具体的，不是理论上的——两行业务键相同、`raw_value` 相同、但
+**`source_available_date` 不同**时会被折叠，而**谁存活由最小的 `source_row_id` 决定**，
+那是一个**溯源字段、与语义无关**。也就是说：**可用日（决定该值何时可被下游使用的 PIT 字段）
+是被溯源排序"顺手挑中"的**，不是按任何关于可用性的规则挑的。
+已写 `test_identical_collapse_compares_the_value_only_not_every_non_audit_field` 钉住现状，
+docstring 明写这是与 C3.1 的偏差、以及为什么现在不能改。
+
+**(b) SINGLE_NONNULL 不要求"恰有一个有限非空值"。**
+规格：「恰有一个有限非空值，其余为空」。实现的判据是"非冲突且并非全部有限"，
+故 **[1.0, 1.0, NaN] 也被标为 SINGLE_NONNULL**（有两个相等的非空值）。
+**发布值不受影响**（两个有限值相等；若不等就是冲突），故这是**标签不精确**而非数字错误——
+但该标签正是复核者用来理解"这行为什么活下来"的依据，且会被持久化。
+已写 `test_two_equal_finite_values_and_a_null_are_labelled_single_nonnull` 钉住。
+
+**(c)「源如果声明量化精度，则先按该精度规范化再比较」——对本源为空条款，已核实。**
+这是一个**前件为假**的条件句：`FactorDefinition` 无任何精度/量化字段（17 个字段逐一核对）、
+`SourceBatch` 无（8 个字段）、`source_catalog.yaml` 中 `precision|quantiz` **命中 0 次**、
+`unit` 全部为 `UNKNOWN`。故本源**未声明量化精度**，该款的规范化步骤无从触发。
+**与续六对"宽表"的处理同一形状**：不是跳过，而是核实前件为假并留档。
+若日后接入声明精度的源，该款需重新核验（届时"先规范化再比较"会与
+「不用宽松 isclose 把真实冲突吞掉」直接张力，需要明确规范化只用于**折叠判定**而不用于**发布值**）。
+
+**已满足并有测试的部分**（连同上面三点即 C3.1 的全貌）：业务键四元组正确、
+三类决策的主干行为正确、**浮点相等用精确二进制而非 isclose**
+（既有测试钉住"相差 1 ULP 即冲突"与"落在 np.isclose 默认容差内仍是冲突"，
+后者特意用 numpy 而非 math.isclose，因为要向量化实现最容易顺手拿的正是 `np.isclose`）、
+**发布值逐位保真**（用 `float.hex()` 比较 `0.1+0.2`）。
+
+### 计划外发现：quarantine 的证据列会写出**非法 JSON**（已钉住，未修）
+
+写 (a)(b) 的测试时顺着发布层查出一处规格没提到的缺陷，**经公开 API 实测可达**：
+
+- C2.3 要求「±inf 转为 invalid flag 而非有效 NaN」，故 `raw_value` **确实可以是无穷**；
+- 某键的观测全为非有限值 → 该组以 `NO_FINITE_VALUE` 进 quarantine；
+- materializer 聚合证据时用 `json.dumps`，过滤条件是 `pd.notna` ——
+  **`pd.notna(inf)` 为 True**，故无穷被留下，输出 **`distinct_values_json == "[Infinity]"`**；
+- `Infinity` 是 Python 的扩展，**RFC 8259 不允许**；严格解析器（数据库 JSON 函数、
+  JS `JSON.parse`、serde_json）**直接拒绝**。
+
+**代价落在最痛的地方**：quarantine 就是"不可发布观测"的审计轨迹，
+而**恰好是描述源里最坏数据的那条记录无法被标准工具读取**。
+同一次聚合还**丢掉了 reader 的 `invalid_reason`**，故发布行**无法区分
+"源说了无穷"与"源什么都没说"**——而这个区分正是 C2.3 特意建立的。
+**clean 批次全程不受影响**，这纯属证据格式问题。
+
+已写 `test_a_quarantined_infinity_is_published_as_non_standard_json` 钉住现状
+（断言输出串为 `"[Infinity]"`、断言严格解析器抛错、断言 `invalid_reason` 不在发布列中），
+并变异验证：把过滤改成 `pd.notna(v) and np.isfinite(v)` → 该测试失败（M22）。
+**不修的理由**：如何表示无穷是**格式决定**（字符串哨兵 / null 加标志位 / 把 `invalid_reason` 带下去），
+三者都会改变**已持久化列的内容**从而改变 `record_hash`，而 migrations 已定义该列。
+**记录在案，留给 owner 连同 C5 一并裁定。**
+
+### C3.4 缺输入：所谓「Phase 0 审计中的 GP_017/GP_077 重复键样例」在仓库里不存在
+
+已把能查的都查了：全仓 grep `GP_017|GP_077` 命中 13 个文件，逐个看过性质——
+`gp_candidate_screen_*`（候选筛查的 IC/覆盖率统计）、`explicit_admission_review_checklist_v1.json`（准入清单）、
+`factor_catalog_final_status_v1.json`、`band10_*`/`alpha_386_387_*`（训练质量）等，
+**没有一个是"重复业务键"的审计**。唯一以 GP_077 为主角的诊断
+`gp_turnover_scalar_degeneracy_diagnostic_v1.json` 讲的是**标量退化**
+（`turnover × 每日横截面标量` → 与 turnover_rate 完全冗余，yeslab_436/446/468 三者 RankIC 逐日完全相同），
+**那是 C7 聚类的问题域，不是 C3 去重的问题域**。
+另 grep `duplicate_key|dup_key|conflict_key|重复键` 于 artifacts/docs：命中的都是
+compact universe coverage 与 repair manifest，与重复键统计无关。
+
+**顺带确立了一个有用的映射**（后续 C3.4/C7 都用得上）：
+**GP_017 = `yeslab_386`，GP_077 = `yeslab_446`**
+（出自 `gp_candidate_screen_2020_2024/summary.csv` 的 `factor_name,factor_id` 两列）。
+注意 `yeslab_386` 与待裁决的 `yeslab_387`@2017-10-09 是相邻的一对，
+artifacts 里已有 `alpha_386_387_train_2020_quality_v1.json` 与 `manual_alpha_386_387_train_2020/`。
+
+**两条前进路径，都需要 owner 或需要等待**：
+(i) 在 V1 树（`数据库/daily_task_new/`，他人维护）里找到那份 Phase 0 审计原件；
+(ii) 对 `yeslab_386`/`yeslab_446` 跑一次**有界的只读重复键普查**，据实构造匿名化 fixture。
+**(ii) 本节刻意不做**：它要对 `factor_data*` 发聚合查询，而 Task 2.4 正在跑第 13 个小时、
+还剩约 1.5 小时，且它是**裁决 3 与裁决 4 的共同前置**。在关键路径收尾阶段给源库加负载，
+换取一个可以晚两小时做的 fixture，**不划算**。**等 2.4 落地后再跑。**
+**不代造 fixture**：C3.4 要的是"从真实审计中抽取的样例"，凭空编一个"匿名化 GP_017 重复键"
+会让回归测试**看起来有真实出处而没有**，那比缺这条测试更糟。
+
+**C3.5 因此也不勾**：它的 Expected 是"三类 resolution 和全部不变量通过"，
+而 C3.1 的两处偏差与 C3.4 的缺失都还开着；`C3.5` 是 Task 级的收口项，不应先于其子项勾选。
+
+### 变异验证（本节 5 个，全部被预期测试捕获）
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 18 | `invalid_groups` 漏掉唯一非有限行 | 四类统计测试 |
+| 19 | 计数改成按行而非按组 | 四类统计测试 + 两相等值加空值那条 |
+| 20 | 代表行改按帧内顺序而非 `source_row_id` | IDENTICAL_COLLAPSE 偏差钉住测试 |
+| 21 | 两个 resolution 标签互换 | 4 条 |
+| 22 | 发布证据里滤掉无穷 | 非法 JSON 钉住测试 |
+
+**全量：1427 passed / 45 skipped**（本节起点 1422；+4 dedup +1 materializer），
+`ruff check src tests` 清、`mypy src` 157 文件清；
+`deduplication.py` 与 `materializer.py` 变异后均以 `git status --porcelain` 确认**还原干净**。

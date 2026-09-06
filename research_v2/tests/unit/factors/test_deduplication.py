@@ -149,3 +149,165 @@ def test_quarantine_evidence_keeps_both_conflicting_values_at_full_precision() -
     recorded = [float(value).hex() for value in result.quarantine["raw_value"]]
     assert sorted(recorded) == sorted([low.hex(), high.hex()])
     assert set(result.quarantine["source_row_id"]) == {"a", "b"}
+
+
+# --- C3.2's statistics contract, and two C3.1 clauses where the code and the spec differ --------
+
+
+def _keyed(code: str, value: float, source_row_id: str, **extra: object) -> dict[str, object]:
+    return {
+        "observation_date": "2025-01-02",
+        "ts_code": code,
+        "factor_id": "yeslab_1",
+        "factor_version": 1,
+        "raw_value": value,
+        "source_row_id": source_row_id,
+        **extra,
+    }
+
+
+def test_statistics_count_groups_not_rows_and_cover_all_four_classes() -> None:
+    """C3.2's ``statistics`` is a published number, so all four counts need pinning.
+
+    These are not internal bookkeeping: ``conflict_groups`` is a stored column in the persisted
+    quality snapshot, and the other three are the only summary of how much of the source was
+    collapsed, kept, quarantined or unusable. ``invalid_groups`` and ``single_nonnull_groups``
+    were asserted nowhere in the suite before this, so either could have been silently
+    miscounted -- and a miscount reads as "less conflict in the source than there was".
+
+    One group of each class, plus one unique finite row and one unique non-finite row, so the
+    per-group (not per-row) counting and the unique-row contribution are both visible:
+
+    ====== ================================================== ==========================
+    key    rows                                               expected class
+    ====== ================================================== ==========================
+    A      1.0, 1.0                                           identical collapse
+    B      2.0, NaN                                           single non-null
+    C      3.0, 4.0                                           conflict
+    D      NaN, NaN                                           duplicate group, no value
+    E      5.0 (single row)                                   unique, clean
+    F      NaN (single row)                                   unique, invalid
+    ====== ================================================== ==========================
+
+    ``invalid_groups`` counts D (a duplicate group with no finite value) plus F (a unique
+    non-finite row), which is why it is 2 rather than 1: the two arrive by different code paths
+    and only a fixture containing both can pin the sum.
+    """
+    observations = pd.DataFrame(
+        [
+            _keyed("000001.SZ", 1.0, "a"),
+            _keyed("000001.SZ", 1.0, "b"),
+            _keyed("000002.SZ", 2.0, "c"),
+            _keyed("000002.SZ", math.nan, "d"),
+            _keyed("000003.SZ", 3.0, "e"),
+            _keyed("000003.SZ", 4.0, "f"),
+            _keyed("000004.SZ", math.nan, "g"),
+            _keyed("000004.SZ", math.nan, "h"),
+            _keyed("000005.SZ", 5.0, "i"),
+            _keyed("000006.SZ", math.nan, "j"),
+        ]
+    )
+
+    result = deduplicate_factor_observations(observations)
+
+    assert result.statistics.identical_groups == 1
+    assert result.statistics.single_nonnull_groups == 1
+    assert result.statistics.conflict_groups == 1
+    assert result.statistics.invalid_groups == 2
+
+    assert len(result.clean) == 3, "one surviving row each for A, B and E"
+    assert result.clean["ts_code"].tolist() == ["000001.SZ", "000002.SZ", "000005.SZ"]
+    assert result.clean["dedup_resolution"].tolist() == [
+        "IDENTICAL_COLLAPSE",
+        "SINGLE_NONNULL",
+        "UNIQUE",
+    ]
+    assert result.clean["raw_value"].tolist() == [1.0, 2.0, 5.0]
+
+    assert len(result.quarantine) == 5, "F alone, plus both rows of C and both rows of D"
+    assert set(result.quarantine["ts_code"]) == {"000003.SZ", "000004.SZ", "000006.SZ"}
+    assert set(result.quarantine["reason"]) == {"CONFLICT_QUARANTINE", "NO_FINITE_VALUE"}
+    assert set(result.quarantine["source_row_id"]) == {"e", "f", "g", "h", "j"}
+
+
+def test_a_conflict_never_leaves_a_partial_group_behind_in_clean() -> None:
+    """C3.1: a conflicted key contributes zero clean rows -- not one, not the survivor of a tie."""
+    observations = pd.DataFrame(
+        [
+            _keyed("000003.SZ", 3.0, "e"),
+            _keyed("000003.SZ", 4.0, "f"),
+            _keyed("000003.SZ", 4.0, "g"),
+            _keyed("000005.SZ", 5.0, "i"),
+        ]
+    )
+
+    result = deduplicate_factor_observations(observations)
+
+    assert not (result.clean["ts_code"] == "000003.SZ").any()
+    assert len(result.quarantine.loc[result.quarantine["ts_code"] == "000003.SZ"]) == 3
+    assert result.clean["ts_code"].tolist() == ["000005.SZ"]
+
+
+def test_identical_collapse_compares_the_value_only_not_every_non_audit_field() -> None:
+    """Current behaviour, and a divergence from C3.1 that must not be "fixed" casually.
+
+    C3.1 defines IDENTICAL_COLLAPSE as *all* non-audit fields being identical. The implementation
+    compares ``raw_value`` alone, so two rows agreeing on the value but disagreeing on a
+    point-in-time field such as ``source_available_date`` are collapsed -- and which row survives
+    is decided by the lowest ``source_row_id``, a provenance field with no semantic meaning.
+    Silently choosing an availability date is the part that matters, because that date is what
+    decides when a value becomes usable downstream.
+
+    Recorded rather than changed. ``deduplicate_factor_observations`` sits on the live
+    materialization path (``materializer.py`` calls it), so tightening the comparison would
+    reclassify such rows into quarantine and change materialized factor data -- which is exactly
+    what must not happen while a bit-for-bit legacy reproduction is in flight.
+    """
+    observations = pd.DataFrame(
+        [
+            _keyed("000001.SZ", 1.0, "b", source_available_date="2025-01-03"),
+            _keyed("000001.SZ", 1.0, "a", source_available_date="2025-01-02"),
+        ]
+    )
+
+    result = deduplicate_factor_observations(observations)
+
+    assert result.quarantine.empty, "the differing availability date is not treated as a conflict"
+    assert result.statistics.identical_groups == 1
+    assert len(result.clean) == 1
+    assert result.clean["dedup_resolution"].iloc[0] == "IDENTICAL_COLLAPSE"
+    assert result.clean["source_row_id"].iloc[0] == "a"
+    assert result.clean["source_available_date"].iloc[0] == "2025-01-02", (
+        "the survivor is picked by lowest source_row_id, so the earlier availability date wins "
+        "here by accident of provenance ordering rather than by any rule about availability"
+    )
+
+
+def test_two_equal_finite_values_and_a_null_are_labelled_single_nonnull() -> None:
+    """Second divergence from C3.1, also recorded rather than changed.
+
+    C3.1 defines SINGLE_NONNULL as *exactly one* finite non-null value with the rest null. The
+    implementation labels a group SINGLE_NONNULL whenever it is not a conflict and not every row
+    is finite, so a group holding two *equal* finite values plus a null lands there too. The
+    published value is unaffected (both finite values are the same, and a differing pair would be
+    a conflict), so this is a labelling imprecision rather than a wrong number -- but the label is
+    what a reviewer reads to understand why a row survived, and it is persisted.
+    """
+    observations = pd.DataFrame(
+        [
+            _keyed("000001.SZ", 1.0, "a"),
+            _keyed("000001.SZ", 1.0, "b"),
+            _keyed("000001.SZ", math.nan, "c"),
+        ]
+    )
+
+    result = deduplicate_factor_observations(observations)
+
+    assert result.statistics.single_nonnull_groups == 1
+    assert result.statistics.identical_groups == 0, (
+        "not counted as an identical collapse, because one row is null"
+    )
+    assert result.statistics.conflict_groups == 0
+    assert len(result.clean) == 1
+    assert result.clean["dedup_resolution"].iloc[0] == "SINGLE_NONNULL"
+    assert float(result.clean["raw_value"].iloc[0]) == 1.0
