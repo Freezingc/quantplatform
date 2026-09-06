@@ -105,6 +105,7 @@ def plan_factor_materialization(
     start_date: date,
     end_date: date,
     schemas: Mapping[str, tuple[SourceColumn, ...] | None] | None = None,
+    schema_errors: Mapping[str, str] | None = None,
     retired: frozenset[tuple[str, int]] = frozenset(),
     cross_section_size: int | None = None,
     lookback_trading_days: int = DEFAULT_LOOKBACK_TRADING_DAYS,
@@ -119,6 +120,13 @@ def plan_factor_materialization(
     whose registered column does not exist in the source cannot be read. With ``strict=False`` the
     plan is still returned with the blocked factors named, so a caller can report the whole picture
     rather than only the first failure.
+
+    ``schema_errors`` carries the text of any schema query that failed, keyed by table. It is a
+    separate argument because a caller that collected schemas offline holds them as a plain dict
+    with the failures beside it, and ``run_catalog_dry_run`` can only recover them from a
+    ``SourceSchemaSet``. Without it every unreadable table is reported as "unknown schema query
+    failure", which under ``strict`` is the entire refusal message -- and an outage then reads
+    exactly like catalog drift.
     """
     if start_date > end_date:
         raise FactorPlanError("start_date cannot be after end_date")
@@ -138,7 +146,9 @@ def plan_factor_materialization(
     unmapped: Mapping[str, tuple[str, ...]] = {}
     schema_verified = schemas is not None
     if schemas is not None:
-        report = run_catalog_dry_run(entries, schemas, retired=retired)
+        report = run_catalog_dry_run(
+            entries, schemas, retired=retired, schema_errors=schema_errors
+        )
         blocked = tuple(
             sorted(
                 (finding.factor_id, finding.factor_version)

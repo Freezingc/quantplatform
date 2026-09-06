@@ -162,6 +162,7 @@ def plan_factors(
             start_date=start_date,
             end_date=end_date,
             schemas=schemas,
+            schema_errors=schema_errors,
             cross_section_size=cross_section,
             lookback_trading_days=lookback_trading_days,
             strict=strict,

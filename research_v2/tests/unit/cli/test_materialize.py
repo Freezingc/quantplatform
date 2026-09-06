@@ -435,3 +435,45 @@ def test_the_same_drift_without_schemas_plans_but_cannot_be_executed(tmp_path: P
     assert plan["schema_verified"] is False
     assert plan["materializable"] is False
     assert plan["blocked_factors"] == [], "nothing was checked, so nothing may be claimed blocked"
+
+
+def test_the_command_passes_the_schema_errors_it_loaded_into_the_refusal(tmp_path: Path) -> None:
+    """The parameter means nothing unless the only production caller actually supplies it.
+
+    This is the wiring test, and it is the part that is easy to skip: adding
+    ``schema_errors`` to the planner and never threading it through from the command would
+    leave every unit test green while the operator still reads "unknown schema query
+    failure" for a dead source. Unwired-but-tested governance code is the single most
+    common finding in this plan's audit, so the wire gets its own test.
+    """
+    schemas_path = tmp_path / "schemas.json"
+    schemas_path.write_text(
+        json.dumps(
+            schema_set_to_payload(
+                {"factor_data1": None},
+                {"factor_data1": "the source host refused the connection"},
+            ),
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = _invoke_factors(
+        [
+            "--start",
+            "2014-01-01",
+            "--end",
+            "2014-02-28",
+            "--catalog",
+            str(_write_catalog(tmp_path / "catalog.yaml")),
+            "--calendar",
+            str(_write_calendar(tmp_path / "calendar.txt")),
+            "--schemas",
+            str(schemas_path),
+            "--dry-run",
+        ]
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "the source host refused the connection" in result.output
+    assert "unknown schema query failure" not in result.output

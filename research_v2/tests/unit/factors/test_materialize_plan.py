@@ -462,3 +462,45 @@ def test_an_unverified_plan_survives_a_non_integer_version_because_it_cannot_be_
 
     assert plan.schema_verified is False
     assert plan.materializable is False
+
+
+def test_a_schema_query_failure_is_named_in_the_refusal_rather_than_read_as_unknown() -> None:
+    """An outage has to be distinguishable from drift in the one message the user sees.
+
+    ``schema_set_from_payload`` returns a plain dict plus a separate errors dict, so the
+    ``getattr(schemas, "errors", {})`` fallback inside ``run_catalog_dry_run`` finds
+    nothing on the CLI's own input and every unreadable table was reported as "unknown
+    schema query failure". Under ``strict`` that string is the whole refusal message, and
+    it is the difference between "the source is unreachable" and "the catalog is wrong".
+    """
+    with pytest.raises(FactorPlanError) as refused:
+        plan_factor_materialization(
+            [_entry("yeslab_1")],
+            calendar=_calendar(),
+            start_date=date(2014, 1, 1),
+            end_date=date(2014, 1, 31),
+            schemas={"factor_data1": None},
+            schema_errors={"factor_data1": "connection refused by the source host"},
+        )
+
+    message = str(refused.value)
+    assert "connection refused by the source host" in message
+    assert "unknown schema query failure" not in message
+
+
+def test_an_unreadable_schema_with_no_error_text_still_says_it_is_unknown() -> None:
+    """Control for the test above: the fallback has to survive, not be replaced.
+
+    Without this, "the real cause appears in the message" would also pass on an
+    implementation that hardcoded a plausible-looking string for every table.
+    """
+    with pytest.raises(FactorPlanError) as refused:
+        plan_factor_materialization(
+            [_entry("yeslab_1")],
+            calendar=_calendar(),
+            start_date=date(2014, 1, 1),
+            end_date=date(2014, 1, 31),
+            schemas={"factor_data1": None},
+        )
+
+    assert "unknown schema query failure" in str(refused.value)
