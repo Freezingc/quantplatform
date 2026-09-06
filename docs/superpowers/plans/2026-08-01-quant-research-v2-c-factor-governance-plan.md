@@ -2473,6 +2473,10 @@ Expected 的前半「正常发布幂等」**本轮已在单元层钉住**，
 `yeslab_443_reg30_max20_v1` **未普查**：`factor_metadata` 里没有它的行（它是修复变体，不是原始源因子），
 已在工件里以 `NOT_CENSUSED` + 理由记录，**不静默跳过**。
 
+上表的纯文本版另存 `/data/zhangyudong/qrv2_research_artifacts/frozen17_six_cell_table.txt`；
+**权威数据是入库的 `duplicate_key_shape_census_v3.json`**（fixture 的 sha256 指向它），
+表格只是它的渲染。
+
 **四种形状，按因子而非按表分布**：
 
 - **8 个因子零重复**（206、398、405、406、425、464、471、484）。
@@ -2723,6 +2727,8 @@ GP_017：7,282,831 = 3,184,961 + 4,097,870；GP_077：6,764,199 = 0 + 6,764,199�
 
   本机 629 GiB 内存 / 521 GiB 可用 / 104 核，**故约束是时间而非内存**：
   冻结 17 尺度**可跑**（数小时），**全 catalog 尺度不可跑**（112 天，且函数是串行循环、无并行）。
+  **原始测量存于** `/data/zhangyudong/qrv2_research_artifacts/factor_similarity_scaling.txt`
+  （与 C4.3 的 `fundamental_expansion_scaling.txt` 同一处置：测量脚本不入库，数字入文书）。
   **外推的已知偏乐观处**：两项拟合是在 **N ≤ 48,000 行**上测的，
   而 88.9M 行时掩码项受内存带宽支配、**大概率差于线性外推**，故 3.9 h 是**下限**。
   **两处结构性改法已看出但未做**（无生产调用者，且接线属决定 E/A）：
