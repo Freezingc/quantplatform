@@ -5,7 +5,7 @@
 > 因为"还有哪些能并行"这个问题无法在单份计划里回答（A/B/D 已 100% 勾选，
 > E/F/冻结集/真实候选/主计划共余 60 项）。**§0c 不含新决定，只连依赖边**；
 > 编号取 0c 是因为它与 §0b 同属"先看这个"的定向材料，而 §5 已被"本轮已交付"占用。
-> 分支 `codex/publish-quant-platform` · 状态：**十三项待人工裁决 / 决定（新增 I、J、K、L、M），
+> 分支 `codex/publish-quant-platform` · 状态：**十四项待人工裁决 / 决定（新增 I、J、K、L、M、N），
 > 其中一项阻塞两条实现；原"缺输入"的 C3.4 已关闭，决定 G 的前置已解除**
 > **勘察结论（续二十三）**：C 计划余下 **19 项未勾项全部落在这 11 个决定或 4 个 Task 级收口依赖上，
 > 没有一项是"现在就能写代码推进"的**——即本计划已由**决定**约束，不再由**实现**约束。
@@ -66,6 +66,7 @@
 | 13 | **K** | C5.5 的故障注入能否写 `dfs://QuantResearchV2Test` | **(K-iii) 只覆盖不需落库的故障**、另两款显式记为未覆盖（续二十/续二十一 实际就是这么做的），并就 (K-i)/(K-ii) 请示——**该库里已有一份完成的冻结 17 物化，实测 `factor_daily` 共 106,598,549 行**（先前写的 6836 万是 2020+ 部分，见 §3e 更正），在它上面做故障注入属会造成外部状态改变的动作 | §3e |
 | 14 | **L** | 结构覆盖率的**权威 scope** 是哪一个、门 2 该读谁 | **(L-i) 先发布修正 scope 并让门 2 只读指定 scope，(L-ii) 随后**；(L-iii) waive 只作临时措施且须写过期条件。**注意"顺手发布修正版"反而更糟**：门 2 用**子串**匹配 scope，新旧会同时生效、清单从 7 个变成 8 个并集。**(L-ii) 与裁决 4 (iii) 是同一件事的机械后果，应一并定**。**续三十二把 L 从"选一份对的清单"改写成"选一台仪器"**：两份清单的**源、分母、三个阈值全不同**（快照＝RankIC `sample_count` ÷ 参照因子 `yeslab_0`，阈 median≥**0.80** / p05≥**0.70** / 月≥**0.70**；活体＝`factor_daily` 行数 ÷ 同日 `universe_daily` 成员，阈 median≥**0.70** / p05≥**0.30** / 月≥**0.90**），**量的是两件事**（能否被打分 vs 有没有行），故不存在"一份对一份错"。**另：快照的 V1 与 V2 是同一次测量**（14 个因子九个字段逐一全等、status 14/14 相同，只差 reason_codes 粒度），**故门 2 报的"14 blocking failures"是 7 个发现记了两遍，override 必须按 factor 记而不是按行记** | §3f + §3f-续三十二 |
 | 15 | **M**（新增） | 门 2 只读 `STRUCTURAL_COVERAGE`，而那个 scope 的 population **正是** `DAILY_HAC_FDR` 的**通过者**——于是一道筛查失败会把因子从门 2 的视野里移走 | **倾向 (M-ii)"缺席即发现"**：对冻结集每个成员，在任一阻塞 scope 里**没有行**就报 `NO_EVIDENCE`。(M-i) 扩 `BLOCKING_SCOPE_SUBSTRINGS` 改动最小但**抓不到零行的 443**；(M-iii) 在契约 `conflicts` 里人工记三条，**与 L-ii、裁决 4 (iii) 是同一处改动，应一并定**。**实测后果不是假设的**：冻结 17 里 **206 在出现的 4 个 scope 全部 FAIL**（`TRAIN_PREDICTIVE_FAIL` ×2 + `ANNUAL_PREDICTIVE_FAIL`）、**375 全部 UNSCREENED**（reason `NO_TRAIN_DAILY_RANK_IC`、`factor_rank_ic_daily` 零行）、**443 变体在 20 个 scope 里零行**（其 `grade` 是 `apply_admission_decisions.py:177` 硬编码的 `"REPAIR"`，不是评出来的），而三者都被准入、门 2 一条都看不见 | 续三十三 §三–§六 |
+| 16 | **N**（新增） | `record_hash` 该是**内容哈希**还是**身份戳**——仓内现有**三套互不相容的定义** | **倾向：先 (N-iv) 只文书化（零代价），再把 (N-i) 绑到裁决 4 那一批做**——因为裁决 4 的 (i)/(iii) 本来就要重物化 `factor_daily`，**同批改哈希的边际成本是零，单独做则要额外付一次 106.6M 行重物化**；(N-ii) 前置是 A/G，(N-iii) 前置是 J/K。**三套定义**：`materializers/market.py:23` 排除 `_RUN_LINEAGE_COLUMNS` ⇒ **SHA-256、可复现、能发现 value 变化**；`factors/materializer.py` 哈希整行含 `created_at`/`run_id` ⇒ **每次运行都变**；**`materialize_frozen_factor_daily.py:180-184` 是 MD5 且输入只有 `factor_id|signal_date|ts_code|data_version`——不含 `value`**，故**信任根的 `record_hash` 发现不了该行内容的任何变化，却会因版本号变化而变化**。**后果**：仓内唯一那道重建确定性闸门（`rehearse_full_range_pipeline.py:137` 的 `market_stable_rebuild`）**只覆盖 market/tradability/universe/labels，不覆盖 226.6M 行的 `factor_observation_clean` 与 106.6M 行的 `factor_daily`**，而 factor 路径**现在也不可能有**这道闸门。三处目前**都是潜伏**（无任何 verifier 读 `factor_daily.record_hash`），风险是将来按 market 语义误用会得到"值没变"的假保证 | 续四十 |
 
 **已关闭、不再需要决定的两项**：**C3.4**（普查 + fixture 已交付，见 §3）；
 **"决定 G 还缺哪个输入"**（两款均已结案为零实例，见 §2 决定 G）。
@@ -888,6 +889,66 @@ again"*。**该目的在当前的 scope 选择下达不到。**
 `predictive_verdict_vs_grade_instrument.txt`、`factor_quality_grade_frozen17.txt`、
 `rankic_month_gap_and_predictive_pool.txt`、`rankic_left_edge_census.txt`。
 
+## 3h. 决定 N（新增，2026-09-07 00:40）：`record_hash` 是内容哈希还是身份戳——一个列名，三套定义，而信任根那套最弱
+
+**事实（逐一读代码核实）**：
+
+| 路径 | 算法 | 哈希输入 | 依赖挂钟/随机 | **能否发现 `value` 变了** |
+|---|---|---|---|---|
+| `materializers/market.py`（`market_daily_clean` 等） | SHA-256 | 整行**减去** `_RUN_LINEAGE_COLUMNS={"run_id","data_version","created_at"}`（第 23、75-83 行） | **否** | **能** |
+| `factors/materializer.py`（`factor_observation_clean` **226,568,607 行**、`factor_quarantine`）+ `source_backfill.py` | SHA-256（canonical）／`hash_pandas_object`→SHA-256（fast） | **整行，含那三个易变列** | **是** | 能，但**每次都变**、不可复现 |
+| **`materialize_frozen_factor_daily.py`（`factor_daily` 106,598,549 行＝冻结信任根）** | **MD5** | **只有 `factor_id\|signal_date\|ts_code\|data_version`**（第 180-184 行） | 否 | **不能——`value` 不在输入里** |
+
+**三点各自要紧**：
+1. **同层同名列、性质相反**：`build_market_batch` 与 `build_technical_factor_batches` 都在盖
+   `run_id`/`created_at` 之后算哈希，**前者排除易变列、后者不排除**——不是层次差异，是同层的两个选择。
+2. **信任根那套是身份哈希**：同一 `(factor_id, signal_date, ts_code, data_version)` 下
+   **无论 `value` 是什么哈希都相同**；它反而**含 `data_version`**，故**值不变、只换版本号，哈希就变**——
+   **敏感方向与该敏感的方向相反**。
+3. **MD5 全仓仅此一处**（`rg "hashlib.md5|md5\(" src/ scripts/` 只命中该文件第 180、182 行），
+   其余全是 SHA-256 ⇒ **跨表比较 `record_hash` 无意义**。
+
+**后果**：`rehearse_full_range_pipeline.py:137` 那道真闸门
+（`stable = market_batch.record_hash == rebuilt.record_hash`，False 即打
+`STABILITY FAILURE`）**能成立完全依赖 market 排除了易变列**。
+而该脚本**不 import 任何 factor 物化器**、末行自称覆盖
+*"stable calendar/master/market/tradability/universe/labels"*——**factor 不在其中**；
+且 **factor 路径不可能有这道闸门**（哈希含 `created_at`，两次重建必然不同），
+**`factor_daily` 更不能**（对 `value` 盲 ⇒ **即使两次重建数值不同，`stable` 也会是 True**）。
+**即：本仓对"重建是否确定"的唯一机械保证，不覆盖因子链与冻结基线消费的那两张表。**
+
+**三处目前都是潜伏**：`rg` 显示**无任何 verifier/audit 读 `factor_daily.record_hash`**（只有写入方），
+也**无任何跨路径比较**。故今天没有一条检查在撒谎；
+**风险是将来任何按 market 语义使用这一列的 verifier 都会得到假保证，
+而在 `factor_daily` 上那个假保证恰好是"值没变"。**
+
+**选项**：
+
+- **(N-i)** 把 `factor_daily.record_hash` 改成内容哈希（SHA-256、整行减易变列、**含 `value`**），
+  即采用 `market.py:23` 的既有范式。**代价**：改变 106.6M 行存量列值 ⇒ 需重新物化。
+  **应与裁决 4 同批**：裁决 4 的 (i)/(iii) 本来就要重物化 `factor_daily`，**故同批做的边际成本是零**。
+- **(N-ii)** 把 `factors/materializer.py` 改为排除 `_RUN_LINEAGE_COLUMNS`，使 factor 路径可复现、可上闸门。
+  **代价**：改变谱系 A 两张表的存量列值 ⇒ **前置是决定 A 与 G**。
+- **(N-iii)** 三处统一为一个定义，真正是身份哈希的另起列名（如 `record_identity`）。
+  **最正确、代价最大**：动两条谱系 + **一次 schema 变更** ⇒ **前置是决定 J / K**。
+- **(N-iv)** **只文书化**：三处各写明本路径的 `record_hash` 是什么，并写明
+  "列名被重载、跨路径比较无意义、`factor_daily` 那套对 `value` 盲"。**零代码、零数据，随时可做。**
+
+**倾向（不代做）**：**先 (N-iv)，(N-i) 绑裁决 4 同批，(N-ii) 排在 A/G 之后，(N-iii) 排在 J/K 之后。**
+(N-i) 单独做要付一次 106.6M 行重物化、与裁决 4 同批做则免费——
+**这是一个纯执行顺序收益，它把 N 从"要不要改"变成"什么时候顺手改"。**
+
+**本轮已做（零行为变更）**：因子侧两份文书
+（`tests/golden/README_factor_cases.md:35`、`tests/golden/test_factor_materialization.py` docstring）
+原本都写"排除 `record_hash` … **exactly as the B plan's market golden test excludes its own
+non-deterministic fields**"。**该先例不存在**：`tests/golden/test_pit_market.py` 测的是
+`clean_market_daily`，在盖 lineage 列那一层**之下**，其输出根本没有那四列
+（`rg` 零命中），**它什么都没排除**；而真正同层的 market 物化器**做了相反选择并测了它**。
+**故那句类比把"本路径与 market 的差异"写成了"全仓共同约定"，且方向写反了。**
+两处均已改为如实陈述并指向本节。**未改任何哈希计算、任何断言、任何数据**；
+`tests/golden` **21 passed**、`ruff check src tests` 清。
+证据：续四十（C 计划）。
+
 ## 4. 建议的处理顺序
 
 1. ~~**等 Task 2.4 落地**~~ **已完成（2026-09-06 13:16:50）**：核验器 `CONSISTENT`、`exit=0`，
@@ -956,6 +1017,17 @@ again"*。**该目的在当前的 scope 选择下达不到。**
     且门 2 一条都看不见。
     **若只定 L 不定 M，那 3 个成员会继续静默留在信任根里。**
     **M-iii 与 L-ii 与裁决 4 (iii) 是同一处契约改动，三者应一次定完。**
+16. **决定 N**（`record_hash` 是内容哈希还是身份戳）——见 §3h，本轮新增。
+    **它有一个纯执行顺序的收益，故值得现在就排期而不是等到要改的时候**：
+    (N-i)（把 `factor_daily.record_hash` 改成含 `value` 的 SHA-256 内容哈希）
+    **单独做要付一次 106.6M 行的重物化，而与裁决 4 同批做则边际成本为零**——
+    因为裁决 4 的 (i)/(iii) 本来就要重物化 `factor_daily`。
+    **故建议：裁决 4 落地时把 (N-i) 一并做掉，不要单独立项。**
+    (N-ii) 前置是 A/G，(N-iii) 前置是 J/K，**(N-iv)（只文书化）零代价、随时可做**。
+    **为什么这条不该被当成"反正没人读那一列"**：仓内唯一那道重建确定性闸门
+    （`market_stable_rebuild`）正是因为 market 排除了易变列才成立，
+    而它**不覆盖 226.6M 行的 `factor_observation_clean` 与 106.6M 行的 `factor_daily`**；
+    `factor_daily` 的哈希**对 `value` 盲**，故**即使两次重建数值不同，稳定性检查也会报 True**。
 
 ## 5. 本轮已交付（均已提交推送，无需裁决）
 

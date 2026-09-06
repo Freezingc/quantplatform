@@ -32,4 +32,30 @@ Expected quarantine: 25.
 - fundamental `source_revision_id`: {'r2': 900, 'r1': 500}
 - fundamental `stale_days`: min 0, max 23
 
-Columns compared by the golden test are the business-meaningful ones only. `created_at` is a wall-clock timestamp and `record_hash` derives from it, so neither is reproducible and both are excluded, exactly as the B plan's market golden test excludes its own non-deterministic fields.
+Columns compared by the golden test are the business-meaningful ones only. `created_at` is a
+wall-clock timestamp and this path's `record_hash` derives from it, so neither is reproducible and
+both are excluded.
+
+**Correction (2026-09-07): this paragraph used to justify that exclusion by claiming it worked
+"exactly as the B plan's market golden test excludes its own non-deterministic fields". There is no
+such precedent.** `tests/golden/test_pit_market.py` exercises `clean_market_daily`, which runs one
+layer *below* lineage stamping, so its frame has no `created_at`, `run_id`, `data_version` or
+`record_hash` to exclude -- it excludes nothing, and `rg` for those four names in that file returns
+zero hits.
+
+The relevant comparison is with the market *materializer*, which sits at the same layer as
+`build_technical_factor_batches` and reaches the opposite result: `materializers/market.py:23`
+defines `_RUN_LINEAGE_COLUMNS = {"run_id", "data_version", "created_at"}` and `_hash_record`
+(line 75-83) hashes the row *without* them, so the market `record_hash` is wall-clock and run-id
+independent. That is pinned by
+`test_market_batch_record_hashes_are_wall_clock_independent` and used as a real gate by
+`scripts/rehearse_full_range_pipeline.py:137`, which rebuilds the market batch and asserts
+`market_stable_rebuild`. `research_v2.factors.materializer._record_hash` hashes every column
+including those three, which is why this path's hash is not reproducible.
+
+So the exclusion above is correct for this path but it is a **difference from the market path, not
+a shared convention** -- and the factor side is the one that is non-deterministic. The consequence
+is that the rebuild-determinism guarantee the rehearsal asserts for market has no factor
+counterpart, and cannot have one without changing what `record_hash` means here. That is recorded
+as decision N in `docs/handoffs/2026-09-06-c-plan-audit-decision-list.md`; nothing about the hash
+is changed by this note.

@@ -7,9 +7,16 @@ against expectations computed by the hand-written reference in
 ``research_v2.factors``. That independence is the whole point: a golden sample produced by
 snapshotting the implementation would pin whatever the code happens to do, defects included.
 
-Only business-meaningful columns are compared. ``created_at`` is a wall-clock timestamp and
-``record_hash`` derives from it, so neither is reproducible; the B plan's market golden test
-excludes its own non-deterministic fields the same way.
+Only business-meaningful columns are compared. ``created_at`` is a wall-clock timestamp and this
+path's ``record_hash`` derives from it, so neither is reproducible.
+
+This used to cite the B plan's market golden test as doing "the same way", and that precedent does
+not exist: ``tests/golden/test_pit_market.py`` exercises ``clean_market_daily``, a layer below
+lineage stamping, so it has no non-deterministic field to exclude. The same-layer comparison points
+the other way -- ``materializers/market.py`` excludes ``_RUN_LINEAGE_COLUMNS`` from its hash and is
+therefore rebuild-deterministic, which ``rehearse_full_range_pipeline.py`` asserts, while
+``factors.materializer._record_hash`` hashes those columns in and is not. See
+``tests/golden/README_factor_cases.md`` and decision N.
 
 The fixture digests are pinned here so that regenerating the fixtures against a defective
 implementation cannot make this test pass by moving the expectation.

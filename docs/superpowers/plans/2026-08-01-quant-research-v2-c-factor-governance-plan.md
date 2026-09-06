@@ -4830,3 +4830,117 @@ M4 让所有因子都拿 provider / M5 把 206 的 calculator 名改成 median �
   **未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、schema、scope、门阈值或 `dropna` 口径**。
 - **决定 J / K 未被代做**（(c) 的前置正是它们）；**裁决 2 未被代做**（本轮只指出 (b) 是它的前置守卫）；
   **裁决 3/4 与决定 A–M 全部仍开放。**
+
+## 勾选审计续四十（2026-09-07 00:40）：`record_hash` 这一个列名在仓内有**三套互不相容的定义**，而**信任根那一套最弱**（MD5、且**不含 `value`**）；另有一处**引用了不存在的先例**，已更正（新增决定 N）
+
+### 一、问题从哪来
+
+续三十九查到 `source_backfill.py` 先写 `created_at = Timestamp.now()`、`run_id = uuid4()`，
+**再**算 `record_hash`。于是问：**内容哈希依赖挂钟时间吗？** 若依赖，逐位复现契约就有一处例外。
+答案是**依赖，但只在其中一条路径上**——而顺着这条线查下去，发现问题比"依赖挂钟"大。
+
+### 二、三套定义（逐一读代码核实）
+
+| 路径 | 算法 | 哈希输入 | 依赖挂钟/随机？ | **能否发现 `value` 变了** |
+|---|---|---|---|---|
+| **`materializers/market.py`**（`market_daily_clean` 等） | **SHA-256** | 整行**减去** `_RUN_LINEAGE_COLUMNS = {"run_id","data_version","created_at"}`（第 23、75-83 行） | **否** | **能** |
+| **`factors/materializer.py`**（`factor_observation_clean` 226,568,607 行、`factor_quarantine`）+ `source_backfill.py` | SHA-256（`canonical`：整行 JSON 排序）或 `hash_pandas_object`→SHA-256（`fast`） | **整行，含那三个易变列** | **是** | 能，但**每次运行都变**，故不可复现 |
+| **`scripts/materialize_frozen_factor_daily.py`**（**`factor_daily` 106,598,549 行 = 冻结信任根**） | **MD5** | **只有 `f"{factor_id}\|{signal_date}\|{ts_code}\|{data_version}"`**（第 180-184 行） | 否 | **不能——`value` 根本不在输入里** |
+
+**三点各自都要紧**：
+
+1. **同层同名列，性质相反。** `build_market_batch` 与 `build_technical_factor_batches` 是**同一层**
+   （都在 `context` 里盖 `run_id`/`created_at` 后算哈希），**前者把易变列排除、后者不排除**。
+   故"market 的 `record_hash` 可复现、factor 的不可复现"**不是层次差异，是同一层的两个选择**。
+2. **信任根那一套是**身份**哈希，不是内容哈希。** `factor_daily.record_hash` 的输入里**没有 `value`**，
+   故**同一 `(factor_id, signal_date, ts_code, data_version)` 下无论 `value` 是什么，哈希都相同**。
+   **一个叫 `record_hash` 的列发现不了该行内容的任何变化。**
+   它反而**包含 `data_version`**，故**值完全相同、只是版本号变了，哈希就会变**——
+   **敏感的方向和该敏感的方向正好相反。**
+3. **MD5 在全仓只出现在这一处**（`rg "hashlib.md5|md5\(" src/ scripts/` 只命中
+   `materialize_frozen_factor_daily.py:180` 与 `:182`）。**其余所有路径都是 SHA-256。**
+   故**跨表比较 `record_hash` 毫无意义**（三种算法、三种输入集）。
+
+### 三、后果：仓内唯一那道"重建确定性"闸门只覆盖 market，而信任根**没有、且现在也不可能有**
+
+`scripts/rehearse_full_range_pipeline.py:137` 做的是真闸门：
+
+```python
+rebuilt = build_market_batch(...)          # 同一输入再建一次
+stable  = market_batch.frame["record_hash"].tolist() == rebuilt.frame["record_hash"].tolist()
+...
+if not report["market_stable_rebuild"].all():
+    print("STABILITY FAILURE: market rebuild is not deterministic")
+```
+
+**它能成立，完全依赖 market 的哈希排除了易变列。** 而：
+
+- 该脚本的 import 里**没有任何 factor 物化器**
+  （`rg "build_technical_factor_batches|factor_observation_clean" rehearse_full_range_pipeline.py` 零命中），
+  其末行自称覆盖 *"stable calendar/master/market/tradability/universe/labels"*——**factor 不在其中**；
+- **factor 路径也不可能有这道闸门**：`factors/materializer.py` 的哈希含 `created_at`，
+  两次重建**必然**不同，`stable` 恒为 False；
+- **`factor_daily` 更不能**：它的哈希对 `value` 盲，**即使两次重建的数值不同，`stable` 也会是 True**。
+
+**即：本仓对"重建是否确定"的唯一机械保证，覆盖的是 market／tradability／universe／labels，
+而不覆盖 226.6M 行的 `factor_observation_clean` 与 106.6M 行的 `factor_daily`——
+后两者恰恰是因子链与冻结基线消费的对象。**
+
+**这三处都是潜伏而非在产**：`rg` 显示**没有任何 verifier／audit 读取 `factor_daily.record_hash`**
+（只有写入方自己），也没有任何地方跨路径比较 `record_hash`。
+**故今天没有一条检查在撒谎**；风险是**任何将来按 market 的语义去用这一列的 verifier
+都会得到假的保证**——而在 `factor_daily` 上，那个假保证恰好是"值没变"。
+
+### 四、一处引用了不存在的先例，已更正（只改文书与注释，未改任何哈希）
+
+因子侧两份文书都为"排除 `record_hash`"给了同一个理由：
+
+> *"`created_at` is a wall-clock timestamp and `record_hash` derives from it, so neither is
+> reproducible and both are excluded, **exactly as the B plan's market golden test excludes its own
+> non-deterministic fields**."*
+> ——`tests/golden/README_factor_cases.md:35` 与 `tests/golden/test_factor_materialization.py` docstring
+
+**这个先例不存在。** `tests/golden/test_pit_market.py` 测的是 **`clean_market_daily`**，
+它在**盖 lineage 列的那一层之下**，其输出**根本没有** `created_at`/`run_id`/`data_version`/`record_hash`
+——`rg` 这四个名字在该文件里**零命中**。**它什么都没排除，因为没有东西可排除。**
+而**真正同层的对照（market 物化器）指向相反结论**：它排除易变列、故哈希可复现、并被上述闸门依赖。
+
+**故那句类比把一个"本路径与 market 路径的差异"写成了"全仓共同的约定"，
+并且把方向写反了**——factor 侧才是不可复现的那一个。
+**已把两处都改成如实陈述**（写明 `test_pit_market.py` 在更低一层、同层对照是 market 物化器、
+以及这属于决定 N），**未改动任何哈希计算、任何测试断言、任何数据**。
+`tests/golden` **21 passed**、`ruff check src tests` 清。
+
+**为什么这条值得单独更正**：它不是措辞不精，而是**一个可核查的事实断言错了**，
+而它的作用是**为一个设计选择提供正当性**。下一个读者若照它去查"market 也这么干"，
+会找到 `test_pit_market.py`、看到它确实没比 `record_hash`、于是**得出"约定如此"的错误结论**——
+**而真相是同层的 market 物化器做了相反的选择并且测了它。**
+
+### 五、新增决定 N：`record_hash` 到底该是内容哈希还是身份戳
+
+| | 做法 | 代价 | 何时可做 |
+|---|---|---|---|
+| **(N-i)** | 把 `factor_daily.record_hash` 改成**内容哈希**（SHA-256、整行减去易变列、**含 `value`**），即采用 `market.py:23` 的既有范式 | 改变 106.6M 行的存量列值 ⇒ 需重新物化 | **应与裁决 4 同批**：裁决 4 的 (i)/(iii) 本来就要重物化 `factor_daily`，**故此时改哈希的边际成本是零**；单独做则要额外一次重物化 |
+| **(N-ii)** | 把 `factors/materializer.py` 的哈希改为排除 `_RUN_LINEAGE_COLUMNS`，使 factor 路径也可复现、可上闸门 | 改变 `factor_observation_clean`／`factor_quarantine` 的存量列值 ⇒ 需重新物化**谱系 A** | **前置是决定 A 与 G**（谱系 A 的去留与去重语义），故不能先于它们 |
+| **(N-iii)** | 三处统一为一个定义；真正是身份哈希的另起列名（如 `record_identity`） | 最大：动两条谱系 + **一次 schema 变更** | **前置是决定 J / K**（谁可改 schema、改到哪个库） |
+| **(N-iv)** | **只文书化**：在三处各写明本路径的 `record_hash` 是什么、并写明"列名被重载、跨路径比较无意义、`factor_daily` 那一套对 `value` 盲" | **零代码、零数据** | **随时可做** |
+
+**倾向（不代做）**：**先 (N-iv)，再把 (N-i) 绑到裁决 4 那一批、(N-ii) 绑到 A/G 之后。**
+理由：**(N-i) 单独做要付一次 106.6M 行的重物化，而与裁决 4 同批做则免费**——
+**这是一个纯粹的执行顺序收益，且它把 N 从"要不要改"变成"什么时候顺手改"**；
+而 (N-iv) 立刻消除"将来某个 verifier 按 market 语义误用这一列"的风险，代价为零。
+**(N-iii) 最正确但前置最多，故排在 J/K 之后。**
+
+**本轮不代做任何一项**：改哈希会改变已物化数据的列值，
+而 `factor_daily` 是冻结信任根、`factor_observation_clean` 属谱系 A（决定 A/G 的标的），
+**两者都不是本轮可以单方面触碰的**。
+
+### 六、门槛（全部重测）
+
+- `pytest tests/golden -q` → **21 passed**；`ruff check src tests` → **All checks passed!**
+- **本轮零代码改动**（两处文书/注释更正 + 本节）；全量套件沿用续三十八/三十九的实测值
+  **1593 passed / 45 skipped**（`src/` 与 `tests/` 的断言与实现均未变，只改了一个 README 段落与一个 docstring）。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何哈希计算、契约、schema、scope、门阈值或 `dropna` 口径**。
+- **决定 N 未被代做**；**决定 J/K 未被代做**（N-iii 的前置）；**决定 A/G 未被代做**（N-ii 的前置）；
+  **裁决 2/3/4 与决定 A–M 全部仍开放。**
