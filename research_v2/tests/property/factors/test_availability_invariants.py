@@ -12,6 +12,18 @@ Order independence matters for the same reason it does for deduplication: YesLab
 arrive per column, per month and per factor group, so an order dependence would not fail
 reproducibly. It would quietly change which revision of a fundamental figure a past signal
 date sees.
+
+**One input shape violates that last property, and this file no longer pretends otherwise.**
+Two events tied on all three sort keys -- same ``available_date``, same ``report_period``, same
+``source_revision_id`` -- but carrying different ``raw_value``s are resolved by input row order,
+because the sort is stable and has no further tie-break. Hypothesis found it on 2026-09-06 after
+the property had passed for several sessions. The case is excluded from the order-invariance
+property below and pinned deterministically by
+``test_availability.py::test_two_events_tied_on_every_sort_key_are_resolved_by_input_order``,
+because the fix belongs to decision B: what should happen when two revisions are
+indistinguishable is a semantic choice, and the technical path's answer -- a deduplication and
+quarantine layer that refuses to pick between conflicting values -- has no counterpart on the
+fundamental path at all.
 """
 
 from __future__ import annotations
@@ -19,7 +31,7 @@ from __future__ import annotations
 from datetime import date
 
 import pandas as pd
-from hypothesis import given, settings
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
 from research_v2.factors.availability import (
@@ -124,12 +136,57 @@ def test_expansion_never_invents_a_key_or_duplicates_one(
 def test_event_row_order_does_not_change_the_expansion(
     events: pd.DataFrame, universe: pd.DataFrame, seed: int
 ) -> None:
+    assume(not _has_contradictory_tie(events))
+
     baseline = expand_fundamental_events(events, universe, CALENDAR)
 
     shuffled = events.sample(frac=1.0, random_state=seed).reset_index(drop=True)
     permuted = expand_fundamental_events(shuffled, universe, CALENDAR)
 
     pd.testing.assert_frame_equal(baseline, permuted)
+
+
+def _has_contradictory_tie(events: pd.DataFrame) -> bool:
+    """True when two events are indistinguishable to the sort yet disagree on the value.
+
+    ``expand_fundamental_events`` orders candidates by ``available_date``, ``report_period``
+    and ``source_revision_id`` and takes the first with a stable sort, so rows tied on all
+    three keep their input order. ``available_date`` is derived from ``ann_date`` through the
+    calendar, so tying on ``ann_date`` is tying on ``available_date``. Filtering these out is
+    what lets the property above state something true; the excluded shape is a defect with its
+    own deterministic test, not a case nobody thought about.
+    """
+    if events.empty:
+        return False
+    keys = ["ts_code", "report_period", "ann_date", "source_revision_id"]
+    distinct_values = events.groupby(keys, sort=False, dropna=False)["raw_value"].nunique()
+    return bool((distinct_values > 1).any())
+
+
+def test_the_excluded_shape_is_really_the_one_that_breaks_order_invariance() -> None:
+    """The filter above has to be narrow, or it would hide cases the property could cover.
+
+    Without this, ``assume`` could be widened until the property tested nothing and still
+    passed -- the same failure mode as a check that cannot fail. Two events tied on every sort
+    key with the *same* value are not contradictory and must stay inside the property; only
+    differing values are excluded.
+    """
+    tied_same_value = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "report_period": [date(2024, 9, 30)] * 2,
+            "ann_date": [date(2025, 1, 1)] * 2,
+            "raw_value": [1.5, 1.5],
+            "source_revision_id": ["r1", "r1"],
+        }
+    )
+    tied_different_value = tied_same_value.assign(raw_value=[1.5, 2.5])
+    different_revision = tied_same_value.assign(source_revision_id=["r1", "r2"])
+
+    assert not _has_contradictory_tie(tied_same_value)
+    assert not _has_contradictory_tie(different_revision)
+    assert _has_contradictory_tie(tied_different_value)
+    assert not _has_contradictory_tie(pd.DataFrame(columns=tied_same_value.columns))
 
 
 @given(events=event_frames(), universe=universe_frames())

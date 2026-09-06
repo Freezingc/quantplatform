@@ -105,6 +105,56 @@ def test_a_shared_announcement_date_tie_is_broken_on_the_latest_report_period() 
     assert result.loc[0, "source_revision_id"] == "a-later-period"
 
 
+def test_two_events_tied_on_every_sort_key_are_resolved_by_input_order() -> None:
+    """DEFECT, pinned rather than fixed: a full tie lets the input row order pick the value.
+
+    ``expand_fundamental_events`` orders candidates by ``available_date``, ``report_period``
+    and ``source_revision_id``, all descending, with a stable sort, and takes the first. Two
+    events that tie on all three therefore keep whatever order they arrived in -- and if they
+    carry different values, the published number depends on the row order of the extract.
+    Hypothesis found this on 2026-09-06 in
+    ``test_event_row_order_does_not_change_the_expansion``, after that property had passed for
+    several sessions; the minimal case is two rows identical in every key field with values
+    0.0 and 1.0, which is what is reproduced here deterministically.
+
+    Not fixed, for two reasons that are decisions rather than caution. What *should* happen
+    when two revisions are indistinguishable is a semantic choice, and the ordering semantics
+    of this function are already open as decision B, which would restate the sort key and with
+    it the C4.3 interval formula. And the deeper gap is structural: the technical path meets
+    contradictory duplicates with a whole deduplication and quarantine layer that refuses to
+    choose between conflicting values, while the fundamental path has no counterpart at all --
+    so the honest fix is probably "give this path the same layer", which is architecture.
+
+    Either way this test is the tripwire: any tie-break, refusal, or dedup layer added here has
+    to change it deliberately.
+    """
+    events = pd.DataFrame(
+        {
+            "ts_code": ["000001.SZ", "000001.SZ"],
+            "report_period": [date(2024, 9, 30), date(2024, 9, 30)],
+            "ann_date": [date(2025, 1, 1), date(2025, 1, 1)],
+            "raw_value": [0.0, 1.0],
+            "source_revision_id": ["r1", "r1"],
+        }
+    )
+    universe = pd.DataFrame([{"signal_date": date(2025, 1, 2), "ts_code": "000001.SZ"}])
+    calendar = TradingCalendar.from_dates(
+        [date(2025, 1, 1), date(2025, 1, 2), date(2025, 1, 3)]
+    )
+
+    forward = expand_fundamental_events(events, universe, calendar)
+    backward = expand_fundamental_events(
+        events.iloc[::-1].reset_index(drop=True), universe, calendar
+    )
+
+    assert len(forward) == 1 and len(backward) == 1
+    assert forward.loc[0, "raw_value"] == 0.0
+    assert backward.loc[0, "raw_value"] == 1.0, (
+        "the same two events publish a different value depending only on the order they "
+        "arrived in, which is the defect this test exists to keep visible"
+    )
+
+
 EXPANSION_COLUMNS = [
     "signal_date",
     "ts_code",
