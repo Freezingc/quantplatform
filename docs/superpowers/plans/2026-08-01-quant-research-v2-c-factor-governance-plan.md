@@ -6584,3 +6584,113 @@ a future version`。**这一行正是 V-H 与 V-I 变异的那一行**，也就�
    `summarize_rank_ic_by_year`）：**G1/G2/G3/G5 的原始数字都出自这里**，
    而且它正是本轮量到的"重复键三重守卫"里的**第一重**。
 3. 其余同前：约 1,530 个测试函数在已审计的四条链之外从未做过变异测量。
+
+## 勾选审计续五十七（2026-09-07 04:25）：**开链 5 = registry 那套"第二道更严的门"**——首轮 16 个变异 **4 杀 12 存活**（本 session 五条链里最差）；**12 条存活全部探针实测**，其中 **W-M 推翻了我的预判**（我以为是冗余守卫，实测二次晋级直接成功）；补 6 条测试后 **10 杀 6 存活**，剩下 6 条**逐条有探针证据**说明为什么不该钉。探针还牵出一个**比任何单个变异都更结构性的问题**：生命周期表在六个入口里只有一个被强制执行，而**其余五个自带的守卫中有四个至今没有任何测试**
+
+### 一、为什么这条链值得单独一条链
+
+本 session 已有三次结论是**靠读这个文件**得出的：续五十四判 U-E/U-F/U-O "晋级路径不可达"、
+续五十五用 `validate_walk_forward_evidence` 的"逐一 PASS"解释 NOT_APPLICABLE 混不过去、
+续五十六用它解释 V-M/V-O 的 NaN 最终在哪被拦下。
+**读它 ≠ 测它**：这三个结论的强度取决于它自己有没有被钉住，而它此前从未被变异测量过。
+本轮实测：**16 个变异只杀掉 4 个**——**比链 3 首轮的 6/16 还差**，
+而那 147 行门代码我本来已经认为"很薄"了。
+
+### 二、首轮：4 杀 12 存活
+
+杀掉的 4 条：**W-C**（重算未通过仍拦住晋级）、
+**W-D**（`evaluate_oos_gates(evidence, is_baseline=False)` 改成 `True`，**34 个测试失败，本轮爆炸半径最大的一条**）、
+**W-K**（schema 版本钉在 1）、
+**W-L**（证据哈希必须绑定**文件原始字节**——注意**钉它的不是 registry 单元测试，而是
+`tests/unit/cli/test_registry_cli.py` 里那句 `payload["evidence_hash"] == hashlib.sha256(raw).hexdigest()`**）。
+
+### 三、12 条存活的探针实测
+
+**（1）真缺陷，已钉（6 条）**
+
+| 变异 | 探针实测（原始 vs 变异） | 后果 |
+|---|---|---|
+| **W-M** DRAFT-only 守卫去掉 | 原：第二次晋级 `ValueError: only DRAFT models can enter WALK_FORWARD_PASSED`；变异：**NO ERROR，并追加一条 WALK_FORWARD_PASSED 事件** | **我预判错了**。我以为 `_transition` 会用 `_ALLOWED_TRANSITIONS` 兜住，**实测不会**——那个检查在**公开的** `transition()`（第 211 行），而 `promote_walk_forward` 调的是**私有 `_transition`**（第 192 行）。**即这道守卫是唯一的拦截**：SHADOW / PRODUCTION / **RETIRED** 的模型都能被拉回 WALK_FORWARD_PASSED |
+| **W-J** 证据文件的 role 不再检查 | 原：`role=VALIDATION`、`role=LOCKED_TEST`、role 缺失**全部被拒**；变异：**三者都通过，六道门全 PASS** | **验证集证据可以把模型送进 WALK_FORWARD_PASSED**。评价层同一道墙（`role != "TEST"` → PermissionError）**是被钉住的**（链 4 的 V-A），**registry 这一份副本没人钉** |
+| **W-G** `gate_evidence` 允许未知字段 | 原：`gate_evidence fields are invalid`；变异：**接受，且证据哈希由 `6b539dab…` 变成 `16a2a3d2…`** | 多一个字段的文件照样六道门全过，而**它的哈希与规范文件不同**——绑到其中一个的审批不会匹配另一个；同时意味着**将来新增的 schema 字段会被这一版静默忽略** |
+| **W-N** 哈希不再绑定重算出的判定 | 同一份证据配两种判定（G6 PASS vs G6 FAIL）：原**哈希不同**；变异**哈希相同** | **审批不会随门代码变更而失效**：同一份证据在判定改变之后仍匹配旧审批 |
+| **W-O** 哈希依赖 dict 插入顺序 | 同样内容、年份正序 vs 倒序：原**哈希相同**；变异**哈希不同** | 证据由一个进程写、另一个进程验，而 `json.dumps` 保留插入序：**一次无害的重排就会让所有已记录的审批哈希失效** |
+| **W-P** `fullmatch` → `match` | 原：`sha256:<64 hex>` + 尾随 `\n`（长 72）**被拒**；变异：**被接受** | `$` 也匹配尾随换行前的位置。**model_id 来自文件与命令行，尾随换行是常态**，而多一个字符的内容寻址 id 不是同一个对象 |
+
+**（2）不该钉，且每一条都有探针证据（6 条）**
+
+| 变异 | 探针实测 | 定性 |
+|---|---|---|
+| **W-B** 只拦 FAIL、不再拦 NOT_APPLICABLE | `is_baseline=False` 下可达状态集 = **{FAIL, PASS}**；`is_baseline=True` 下才是 {NOT_APPLICABLE, PASS}；`delta=None` → **G4 FAIL** | **可证等价**：NOT_APPLICABLE 只在 `evaluate_oos_gates` 的 `is_baseline` 分支产生，而本调用点把 `is_baseline=False` **写死**。**故续五十五那句"registry 要求逐一 PASS，所以 N/A 混不过去"是对的，但今天它在空转**——N/A 根本不会出现。**它的等价性依赖 W-D 被钉住**，而 W-D 确实被 34 个测试盯着：**这次前提是有钉子的**（对照链 2 的 T-E，那次前提没有） |
+| **W-A** 报告不是恰好 G1–G6 也接受 | 四种差异极大的证据下 `sorted(results) == _REQUIRED_GATES` **恒为 True** | **按构造不可达**：`evaluate_oos_gates` 只有一个返回点，恒定填充 G1–G6。它防的是 gates.py 将来的改动 |
+| **W-E** 非有限数值被接受 | 原 `walk-forward evidence mean_rank_ic is invalid`；变异 `walk-forward evidence did not pass: G1`（`inf` 的 delta → `did not pass: G4`）。**bool 两侧都被拒** | **fail-closed，只换了一级**：从"哪个字段坏了"变成"哪道门没过"——结论一样，**线索更差** |
+| **W-H** 年份不齐被接受 | 原 `must contain yearly values for 2020-2025`；变异 `did not pass: G3, G5` | 同上 |
+| **W-I** `valid_test_day_count = 0` 被接受 | 原 `valid_test_day_count is invalid`；变异 `did not pass: G6`。**bool 两侧都被拒** | 同上 |
+| **W-F** 年份键非十进制 | 原 `walk-forward evidence year is invalid`；变异 `invalid literal for int() with base 10: '20a'` | **只换文案**，同为 `ValueError` |
+
+**W-E / W-H / W-I 这三条"fail-closed 换级"的结论，强度直接来自链 3**：
+它们最终被拦下的位置是 `gates.py` 的 G1 / G3+G5 / G6，而**那三处判定在续五十五已被 16/16 钉住**。
+**这是本 session 第一次出现"一条链的结论显式依赖另一条链的钉子"**——反过来说：
+**若哪天有人放松 gates.py 的 isfinite 或 valid_years，这三条会同时从 fail-closed 变成 fail-open**，
+而它们在 registry 这一层没有任何测试。**这不是本轮的洞，是本轮记下的一处耦合。**
+
+### 四、补的 6 条测试与结果
+
+`tests/unit/registry/test_model_registry.py` 从 **4 个测试变 10 个**：
+
+1. `test_evidence_role_must_be_ordinary_test`（**W-J**；含"未改动的文件必须能加载且六道门全过"的夹具自证，三种越界 role 各测一次）
+2. `test_evidence_file_carrying_unknown_fields_is_refused`（**W-G**）
+3. `test_only_a_draft_can_enter_walk_forward_passed`（**W-M**；含"失败的尝试不得追加历史"与"RETIRED 不能被复活"）
+4. `test_evidence_hash_binds_the_recomputed_verdict`（**W-N**；含"两个判定真的不同"的自证）
+5. `test_evidence_hash_is_independent_of_yearly_insertion_order`（**W-O**；含"内容相等而插入序不同"的自证）
+6. `test_model_id_must_match_exactly_not_only_at_the_front`（**W-P**；含 well-formed id 必须先通过的控制，四种越界 id 各测一次）
+
+结果：
+
+- **定向**（只跑 `test_model_registry.py`，**0.2s/次**）：control **10 passed** →
+  **W-G / W-J / W-M / W-N / W-O / W-P 全部 killed，且各由对应的新测试杀掉** → restored **10 passed**；
+  `model_registry.py` **还原后逐字节相同**。日志 `mutation_registry_gate_targeted_with_killers.txt`。
+  **W-L 在这个文件里仍然存活**——它由 CLI 测试钉住。**这正是定向 harness 必须写清范围的理由**：
+  范围外的钉子不能算作这个文件的钉子，反之亦然。
+- **全量 harness**：**基线 183 passed / 3 skipped**，**10 杀 6 存活**（存活 W-A / W-B / W-E / W-F / W-H / W-I，
+  即上表第（2）组），**无新增存活**，还原后逐字节相同并复跑通过。日志 `mutation_registry_gate_after_pins.txt`。
+- **全量门槛**：`pytest tests -q` → **1643 passed / 45 skipped**（续五十六的 1637 + 本轮 6 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**；
+  未改任何门阈值、契约、schema 或 `dropna` 口径。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- **未打开 `QRV2_INTEGRATION`**：harness 范围里那两条 integration 路径本轮**全程 skipped**，
+  **因为它们可能触库，而本 session 的红线是零数据库写入**。故"六路径"里有两路径实际是空跑，**如实记**。
+
+### 五、本轮最结构性的发现：**生命周期策略被写了两遍，而只有其中一遍被强制执行**
+
+W-M 的探针暴露的不是一个守卫没测，而是一处设计事实：
+
+- `_ALLOWED_TRANSITIONS`（第 47–58 行）是生命周期表的**声明式**版本；
+- **但只在公开的 `transition()`（第 211 行）里被强制执行**；
+- `_transition`（第 320–334 行）**不查这张表**，只校验 actor / reason / evidence_hashes；
+- 而**六个入口里有五个绕过 `transition()` 直接调 `_transition`**：
+  `promote_walk_forward`(192)、`enter_shadow`(250)、`_approve_locked_test`(263)、
+  `_complete_locked_test`(278)、`_approve_production`(291)。
+
+这五个入口**各自带一句手写的前置状态守卫**（"only X models can enter Y"），
+所以策略实际上被写了两遍：**一张表 + 五句手写守卫**。**两者之间没有任何测试保证它们一致。**
+
+**而这五句手写守卫里，本轮之前一句都没有被测过**，这一条是查过的，不是推断：
+`git grep -c -E "only WALK_FORWARD_PASSED|only SHADOW|only LOCKED_TEST|only DRAFT" HEAD -- research_v2/tests`
+**在本轮提交之前的整个测试树上零命中**；补测之后同一查询命中 2 处，**两处都是本轮新加的 "only DRAFT"**。
+**即：W-M 不是五个里的例外，而是五个里的一个样本；本轮只钉住了其中一个。**
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **钉住另外四句生命周期守卫**（`enter_shadow` / `_approve_locked_test` /
+   `_complete_locked_test` / `_approve_production`），并**加一条一致性测试**：
+   断言"五句手写守卫允许的状态迁移"与 `_ALLOWED_TRANSITIONS` 这张表**完全一致**——
+   否则策略的两份写法会继续各自漂移。
+   **其中 `enter_shadow` 最便宜**：它的状态守卫在审批校验**之前**执行，故传一个占位 approval 即可触发；
+   另外三个要先造出有效的一次性 workflow proof，需要复用 `tests/unit/registry/test_locked_test.py` 的夹具。
+2. **`evaluation/rank_ic.py`**：G1/G2/G3/G5 的原始数字都出自 `compute_daily_rank_ic` /
+   `summarize_rank_ic` / `summarize_rank_ic_by_year`，而它也是续五十六量到的"重复键三重守卫"里的**第一重**。
+   **链 3 钉了判定、链 4 钉了证据组装、链 5 钉了晋级把关，唯独最底层的算术还没人钉。**
+3. 其余同前：约 1,530 个测试函数在已审计的五条链之外从未做过变异测量。
