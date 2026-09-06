@@ -3383,7 +3383,76 @@ YesLab 抽取按列、按月、按因子组到达，**顺序依赖不会可复�
 **属性测试的条数没变**，只是其中一条改为条件式（`assume` 排除矛盾并列），
 新增的两条是"过滤器必须窄"与那条 characterization。
 `ruff check src tests` 清、`mypy src` **158 文件清**。
-**`src/` 只改了一个文件**：`verify_baseline_rerun_consistency.py` 属 `scripts/`，
-`summarize_real_walk_forward.py` 亦属 `scripts/`，**故 `src/` 本节零改动**；
+**本节 `src/` 零改动**：改的两个文件 `verify_baseline_rerun_consistency.py` 与
+`summarize_real_walk_forward.py` **都属 `scripts/`**，其余全是 `tests/`；
 `availability.py` 变异后以 `git diff` 确认**还原干净**。
+**未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`。
+
+## 勾选审计续二十八（2026-09-06 18:35）：Task 4.2 的 runbook 命令逐条核验（**结果：零错误**），以及一条控制测试的 docstring 过度承诺
+
+### 一、4.2 已勾，但它的命令此前没人验过
+
+冻结集计划 **4.2「复现 runbook 增补『冻结集基线』章节与命令」已勾**，
+依据是 `runbooks/real-walk-forward-reproduction.md` 里那些命令。
+**但"文书里有命令"与"命令能跑"是两件事**，而 runbook 的使用场景恰恰最不容出错：
+它是在一次 15 小时运行的末尾、在压力下被照着敲的。
+
+**逐条核验结果：零错误。** 抽取代码块里的命令行（含续行拼接）：
+**11 个被引用的脚本全部存在**，**17 个 (脚本, flag) 对全部对得上**，
+且 11 个脚本的 `--help` 全部可运行；正文里解释的两个 flag
+（`verify_frozen_fold_coverage.py` 的 `--factor-set` / `--minimum-factors`）也确认已注册。
+**这是一次已核实的阴性结果**——没有东西需要修，故本轮**未改任何生产脚本**。
+
+**但"我查过一次"与"它会一直被查"是两回事**，故已做成常驻测试
+`tests/unit/scripts/test_runbook_commands.py`（6 条）：
+脚本存在性、flag 注册性、**按脚本归属**、正文 flag、以及两条控制。
+flag 从各脚本的 **AST**（`add_argument` 的字符串实参）读取而非跑 `--help`：
+字符串常量可能出现在 docstring 或报错信息里而并不是选项，
+而 11 个子进程各自 import dolphindb 比解析 11 个文件贵。
+**M84 = 把 `preflight_frozen_baseline.py` 的 `--waiver-reason` 改名而不动 runbook
+→ 只有注册性那条失败**，即这正是该文件存在的理由。
+
+### 二、一条控制测试的 docstring 过度承诺，是被"照它说的去变异"抓出来的
+
+我写的控制测试自称：若 `_declared_flags` "返回每一个 flag"，整个文件就会无论 runbook 写什么都通过，
+而这条控制能抓住那种 bug。**照这句话去构造变异（M85：把两个脚本的 flag 汇成一池）后发现——
+旧控制测试照常通过。**
+
+**原因是具体的**：一个把所有脚本的 flag 汇成一池的收集器，
+**仍然不会包含一个凭空编造的 flag**，故我那条"塞一个 `--definitely-not-a-flag` 进去"的控制
+**照样通过，而真正的检查已经空转**。
+**即：旧控制的 docstring 声称的能力，它并不具备。**
+
+**已补第二条控制**，钉住**按脚本归属**：`--months` 属版本发布脚本、`--folds` 属走查脚本，
+**互不得记到对方名下**。M85 正是**只被这条新控制抓住**（旧控制同时通过），
+**这就实证了旧控制的承诺是假的**，而不是我推测的。
+旧控制的 docstring 已改为**如实说明它钉的是更窄的一件事**（"未知 flag 的计算确实会报告"），
+并明写它抓不住池化那种 bug、以及哪一条才抓得住。
+
+**这是本轮第三次"变异无效或打偏"，也是第二次"控制测试只看起来像控制"**：
+
+- 续二十二 M67 第一版：掩码全 True、被 pandas 对齐回原切片，**变异等于没改**；
+- 续二十四 M70 第一版：两段逐字相同的文字，**变异落在了另一份拷贝上**；
+- 本节 M83：`add_argument` 的位置实参在这些脚本里本来就全是 flag，**变异几乎不改变行为**。
+
+**判据因此再补一句**：**控制测试的价值必须用"它自称要抓的那个变异"来检验**，
+而不是用"它能抓住某个变异"来推断。**写下控制时顺手把它声称的变异真做一遍**，
+是本轮唯一能发现这处过度承诺的手段。
+
+### 三、变异验证（本节 M83–M85：M83 无效不计，M84/M85 均被捕获）
+
+| # | 变异 | 结果 |
+|---|---|---|
+| M83 | 去掉 `startswith("--")` 过滤 | **存活——因为变异无效**（位置实参本来就全是 flag），不计入 |
+| M84 | 脚本 flag 改名、runbook 不动 | 仅注册性那条失败 |
+| M85 | flag 收集器把两个脚本汇成一池 | **仅新的归属性控制失败**（旧控制通过，故旧控制的承诺被证伪） |
+
+**累计 81 个有效变异**（M46–M72、M75、M77–M82、M84、M85；M73/M74 留空未复用，M83 无效不计）。
+
+### 四、测试与门槛
+
+**全量：1582 passed / 45 skipped**（续二十七 起点 1576；+6 runbook），
+`ruff check src tests` 清、`mypy src` **158 文件清**。
+**本节 `src/` 与 `scripts/` 均零改动**（runbook 核验未发现任何错误，故无可修）；
+`preflight_frozen_baseline.py` 的变异已用 `git diff` 确认**还原干净**。
 **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`。
