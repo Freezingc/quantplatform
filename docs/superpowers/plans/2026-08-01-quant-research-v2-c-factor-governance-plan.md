@@ -776,3 +776,31 @@ factor_id、factor_type、factor_version、frequency、max_staleness_calendar_da
 metadata revision」，已由 `test_metadata_changes_do_not_change_definition_hash_or_active_state` 断言。
 
 **全量：1312 passed / 45 skipped**（本节起点 1305），`ruff check src tests` 清、`mypy src` 156 文件清。
+
+### 同一反模式的全仓排查（2026-09-06 08:12）：仅因子契约一处，已修
+
+既然 `is <Enum>.MEMBER` 在字符串误入时会静默跳过守卫，就把全仓的正向身份比较都过了一遍。
+**结论：只有 `contracts/factor.py` 一处构成 fail-open，即上面已修的那处。**
+
+判据是**值能否以字符串形态到达比较点**，而不是比较本身有多少处：
+
+- **正向 `is <Enum>.X`（危险方向：字符串会让守卫不触发）** 共 20+ 处，分布在
+  `monitoring/notifier.py`、`monitoring/data_health.py`、`monitoring/drift.py`、`db/publish.py`、
+  `inference/daily_pipeline.py`、`reporting/daily.py`。逐一核查其比较对象：
+  **全部是内部状态机自行赋值的枚举成员**（`StagedBatch.state`、pipeline step status、
+  drift/notifier severity），没有反序列化边界喂字符串进来，故安全。
+- **`is not <Enum>.X`（安全方向：字符串会让守卫更严）** 分布在
+  `registry/model_registry.py`（6 处）、`registry/active_pointer.py`、`registry/locked_test.py`、
+  `monitoring/shadow.py`、`compact/publisher.py`、`training/trainer.py`、`training/search.py`。
+  这些即便有字符串误入也是 fail-closed（把「是 PRODUCTION」误判为「不是」→ 拒绝迁移），
+  方向安全。**并且经核查它们根本不可能收到字符串**：`ModelRegistry` 把记录保存在内存
+  （`self._records: dict[str, ModelRecord]`，`model_registry.py:145/170`，用枚举字面量构造），
+  **该类没有从 DB 反序列化记录的路径**；全仓 `ModelStatus(...)` 除类定义外**零次调用**，
+  也不存在 `status=row[...]` / `status=str(...)` 这类从行赋值的写法。
+
+**为何唯独因子契约中招**：它是唯一一个**输入直接来自文本配置**的契约对象——
+`configs/factors/source_catalog.yaml` 的 487 个条目里 `factor_type` / `availability_policy`
+本来就是 YAML 字符串，而其余状态机的枚举值都由代码自己产生。
+**可推广的规则（建议写进后续 review 清单）**：任何在**反序列化边界**（YAML / JSON / DB 行）
+构造的契约对象，必须在构造时校验枚举成员身份，因为其下游的类型专属规则很可能用身份比较分派；
+`StrEnum` 让「值相等的字符串」看起来完全正常，只有 `is` 会暴露它。
