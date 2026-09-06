@@ -2016,3 +2016,103 @@ M33（去掉唯一性/非空守卫）→ 2 条失败；M34（去掉 `required_ob
 
 **全量：1447 passed / 45 skipped**（本节起点 1440；+7 backfill），
 `ruff check src tests` 清、`mypy src` 157 文件清。
+
+## 勾选审计续十八（2026-09-06 12:35）：C5.3 的 dry-run 实质已交付（规划器 + 17 测试）；该项仍不勾，因为四条命令里两条属决定 A
+
+C5.3 有两半：**dry-run 要输出什么**，与**四条 CLI 命令**。本轮交付前者的全部实质，
+因为它**不依赖任何未决裁决**——它只需要已经交付的三样东西组合起来：
+**C1.1 的 catalog**（因子数、源绑定）、**C1.5 的 schema dry-run**（源表/列、未映射列、blocked）、
+**`backfill/windows.py` 的月度窗口**（日期 chunk、回溯起点）。
+
+### 交付内容
+
+**`research_v2/src/research_v2/factors/materialize_plan.py`**（新，纯函数，无 I/O）：
+`plan_factor_materialization(entries, *, calendar, start_date, end_date, schemas=None, retired=...,
+cross_section_size=None, lookback_trading_days=20, strict=True, target_table=..., target_partition_column=...)`
+→ `FactorMaterializePlan`，其 `chunks` 为逐月 `FactorMaterializeChunk`。
+**17 条测试**（`tests/unit/factors/test_materialize_plan.py`）。
+
+**规格要求的五项输出，逐项落点：**
+
+- **因子数**：`factor_count`，**退役因子从中扣除**（有专测：退役一个后计数、估算、列集合三处同时变化）。
+- **源表/列**：`source_tables` 与 `source_columns`，后者**来自 catalog 登记**
+  （复用 C1.5 的 `registered_source_columns`），不是硬编码；
+  专测用一个登记了 `val`/`dt` 而非 `value`/`trade_date` 的条目钉住这一点——
+  **这正是续九查出的"两个真值来源"那条边**，规划器因此不会与读路径分家。
+- **日期 chunk**：直接复用 `resolve_monthly_backfill_windows`，故 chunk 与生产回填**同源同定义**
+  （按真实交易月切分、带回溯起点）；专测断言规划器的 chunk 与该函数的输出**逐项相同**。
+- **估算行数**：见下。
+- **目标分区**：`target_table = factor_observation_clean`、`target_partition_column = signal_date`
+  ——**两者取自 migration 003 的实际声明**，不是猜的；`logical_partition` 为 `YYYY-MM`。
+
+### 三个设计决定，每个都对应一个具体的失效模式
+
+**(1)「禁止读取值或写库」做成了签名性质，而不是函数内部的自律。**
+规划器**不接受任何 session / client / connection 参数**：输入只有 catalog 条目、
+一份**已由别处只读采集好**的 schema 映射、以及交易日历。
+**没有能让语句到达数据库的参数，就没有能被说服去用的通道。**
+测试用 AST 钉住：模块不 import `research_v2.db.*` 也不 import `dolphindb`，
+标识符里没有 `query`，`plan_factor_materialization` 的参数里没有 `session`/`client`。
+**用 AST 而非文本**的理由与续九相同——docstring 里正是要提到"不查询、不写库"，
+文本匹配会同时产生假阳与假阴。
+
+**(2) 估算行数在没有横截面宽度时是 `None`，不是猜一个。**
+这是元数据规划器**唯一真正无法知道**的数：它取决于每天有多少证券在交易。
+**猜一个宽度会产出一个看起来像测量值的数字**，故 `cross_section_size` 必须由调用方显式给出，
+否则 `estimated_rows` 与 `estimated_rows_total` 都是 `None`（专测钉住 `None` 会**传播到总数**，
+使调用方无法把"估算"与"猜测"混着相加）。
+**取得真实宽度需要对源做 count——那正是 dry-run 不该做的事**，故这条边界写在 docstring 里。
+公式集中在一处：`factor_count × trading_days × cross_section_size`。
+
+**(3) `trading_days` 只数目标月，绝不数回溯窗口。**
+回溯是为了算特征而读的，**不是本月要发布的**，把它算进估算会按回溯比例高估写入量，
+更糟的是**让估算与物化器实际发布的行数不一致**。
+专测用"回溯跨到上一年 12 月"的日历把两者拉开（目标 5 天 vs 含回溯 8 天），
+并同时断言 `estimated_rows == 2×5×1000` **且** `!= 2×8×1000`——
+**只断言前者是不够的**，因为一个把回溯算进去的实现可能碰巧也满足某个等式。
+
+**另有一处刻意的不对称**：`materializable` 要求 `schema_verified and not blocked_factors`，
+故**"没对着源校验过"与"校验过且干净"报告不同的结果**。
+若两者都为真，跳过 schema dry-run 就会**看起来像通过了它**——
+而这正是 C1.5 存在的意义。专测钉住：不传 `schemas` 时 `schema_verified is False`
+**且 `materializable is False`**。
+
+**fail-closed 默认**：`strict=True` 时**任何一个 blocked 因子都会中止规划**并列出它与原因。
+这是把 C5.1 的原则（任一步失败均不产生正式可见行）**前移到规划阶段**：
+一个登记列在源里不存在的因子根本读不出来，就不该出现在计划里。
+`strict=False` 则返回带 `blocked_factors` 的计划，**让调用方能看到全貌而不是只看到第一个失败**
+（与 C1.5 dry-run"收集全部理由"同一取向）。
+
+### 变异验证（4 个，各被其对应测试捕获）
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 35 | `materializable` 不再要求 `schema_verified` | 未校验计划那条 |
+| 36 | `trading_days` 从回溯起点算起 | 估算不含回溯那条 **+** 退役影响估算那条 |
+| 37 | 调用方没给宽度时自己编一个 5000 | 「宁可 `None` 也不编造」那条 |
+| 38 | `strict` 不再因 blocked 因子中止 | fail-closed 那条 |
+
+`materialize_plan.py` 四次变异后以 `git status --porcelain` 确认**还原干净**。
+
+### C5.3 仍不勾：剩下的是 CLI，而其中两条命令属决定 A
+
+规格的四条命令：
+
+- `qr-v2 factor registry validate --catalog ...` / `qr-v2 factor registry import --catalog ...`
+  → **这两条是 `FactorRegistry` 之上的 CLI，而 registry 无生产调用者**（续十、决定 A）。
+  **在"以哪条冻结集路径为准"未定之前给一套未采用的 registry 做命令行，
+  是在为一个可能被降级为"设计参考"的东西建门面。故不做。**
+- `qr-v2 materialize factors --start ... --end ... --factor-set all-active`
+  → **dry-run 的实质已交付**，剩下的是 typer 接线；且 `--factor-set all-active` 里的
+  "active" **正是 C1.4 未实现的那个状态**，故该旗标的语义也依赖决定 A。
+- `qr-v2 factor quarantine report --run-id RUN_UUID`
+  → 独立于决定 A，可做；但它是**读已发布的 `factor_quarantine`**，
+  而该表的 `distinct_values_json` 有续十一记的**非法 JSON** 缺陷（`[Infinity]`），
+  **报告命令会把那个缺陷直接暴露给用户**，故宜与决定 F 一并处理。
+
+**因此 C5.3 的判定是：dry-run 的输出内容已全部可产出并经测试，CLI 表面尚未建，
+而其中三条命令的语义分别依赖决定 A（两条）与决定 F（一条）。**
+**规划器本身不依赖任何裁决**，这也是它现在就能交付的原因。
+
+**全量：1464 passed / 45 skipped**（本节起点 1447；+17 planner），
+`ruff check src tests` 清、`mypy src` **158** 文件清。
