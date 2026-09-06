@@ -7220,3 +7220,140 @@ golden 那一类更脆：**任何一次有意的指标变更之后都要重新�
 2. **`monitoring/shadow.py`**（1026 行，四组 store/verifier + 资格聚合）。
 3. **把归属矩阵自动化**（续六十一第 2 条，仍未做）：`attribution_matrix.py` 的候选文件表是手写的。
 4. 其余同前：约 1,530 个测试函数在已审计的九条链之外从未做过变异测量。
+
+## 勾选审计续六十三（2026-09-07 07:45）：**链 9 第二片 = 签名 / 验证对**——首轮 14 个变异 **1 杀 13 存活（本 session 最差）**，补 7 条测试后 **11 杀 3 存活**；剩下 3 条**不是漏网，而是这一类性质在进程内根本测不到**（其中两条改用源码级钉子钉住，一条是持久性、一条是构造性冗余）。本轮最有用的一条认识：**"验签方拒绝什么"与"验签方通过什么"是两套测试，而这个套件只有后者**
+
+### 一、为什么这一片比上一片更薄
+
+上一片（预注册字段与指标聚合）在一个 724 行 / 15 测试的套件面前漏了 11/12；
+这一片在**同一个套件（当时 20 个测试）面前漏了 13/14**——
+**唯一被钉住的是"发放互斥"**：`_write_exclusive` 去掉 `O_EXCL` 之后重发会静默覆盖，
+被 `test_preregistration_is_signed_immutable_and_has_no_result_fields` 抓到。
+
+原因与上一片同型、但更彻底：**工作流测试全都是"自己发放、自己验证"**，
+于是每个验签方为**拒绝**而做的那几步——比对不可变记录、要求"确实发放过"、检查字段形态——
+**一步都没有被执行到**。**"验签会通过"被反复测了，"验签拒绝什么"一次都没测。**
+
+### 二、首轮：14 个变异，1 杀 13 存活（基线 139 passed）
+
+| | 变异 | 结果 |
+|---|---|---|
+| **S-J** | `_write_exclusive` 去掉 `O_EXCL`（重发静默覆盖） | **killed**（首轮唯一一条） |
+| **S-A** | 预注册验签不再比对不可变记录 | 存活 |
+| **S-B** | 从未发放过的预注册也能验过 | 存活 |
+| **S-C** | operator identity 不必与自身内容哈希一致 | 存活 |
+| **S-D** | **PASSED 的锁定测试结果可以完全不带聚合指标** | 存活 |
+| **S-E** | 结果验签不再校验 model_id | 存活 |
+| **S-F** | 解锁请求内嵌的预注册可与冻结的那份不一致 | 存活 |
+| **S-G** | 签名信封不再绑定 document_id | 存活（**预期内**） |
+| **S-H** | HMAC-SHA256 → HMAC-SHA1 | 存活（**预期内**） |
+| **S-I** | `hmac.compare_digest` → `==` | 存活（**预期内**） |
+| **S-K** | 去掉 `fsync` | 存活（**预期内**） |
+| **S-L** | 产物权限 0o600 → 0o644 | 存活 |
+| **S-M** | 能力（capability）不必与其存档记录一致 | 存活 |
+| **S-N** | 结果验签不再校验 preregistration_hash | 存活 |
+
+**S-D 是这一片里后果最重的一条**：`passed=True` 而 `aggregate=None` 的结果**正是那份用来晋级的判决**，
+而聚合指标是**唯一被允许离开隔离评价器、用来支撑这个判决的披露**。
+**去掉那一句，一份"通过、但什么数字都没有"的判决可以验过。**
+
+**四条"预期内存活"是本轮故意放进变异集的**，理由写在 harness 的 docstring 里：
+**同进程内自签自验，两侧一起变**，故**弱化的哈希、非常量时间的比较、信封里冗余的 document_id、
+缺失的 fsync，在返回值里都不留痕迹**。
+**放它们进去是为了把"这一类性质本测试策略到不了"这件事测出来，不是为了凑击杀数。**
+
+### 三、补的 7 条测试：全部针对"拒绝"
+
+1. `test_preregistration_verify_refuses_a_document_that_differs_from_its_record`（**S-A**）——
+   **多一个换行符就够**：签名仍然验得过、声明哈希仍然与内容一致，
+   **只有"与 `.issued/` 里实际写入的字节比对"这一步能看出来**。
+2. `test_a_preregistration_never_issued_by_this_store_does_not_verify`（**S-B**）——
+   **第二个 store 用同一把钥匙、根目录为空**：它会重算出一致的签名，
+   **故唯一能拒绝的是"读记录"那一步**。**持有钥匙 ≠ 发放过。**
+3. `test_the_result_verifier_refuses_a_passed_verdict_with_nothing_behind_it`（**S-D / S-E / S-N**）——
+   需要一份**签名与内容哈希都正确**的结果文档，才能让每个用例只隔离一条拒绝理由；
+   `_signed_result` 就是为此写的（用 `_content_hash` 与 `_signature` 自己签，
+   并**自证"签的载荷正是 verify() 会重建的那个"**）。四个用例：
+   `aggregate=None`、`model_id="model-1"`、`preregistration_hash="not-a-digest"`、`passed="yes"`。
+4. `test_issued_locked_test_artifacts_are_written_owner_only`（**S-L**）——
+   `stat.S_IMODE(...) == 0o600`，预注册与 operator identity 两类产物各测一次。
+   **没有任何工作流行为依赖权限位，故除了一条显式断言，没有别的东西能守住它。**
+5. `test_a_capability_that_differs_from_its_stored_record_cannot_be_consumed`（**S-M**）——
+   **控制半段与断言半段同样重要**：先证明一个未被篡改的能力从同样方式搭起来的 authority 里
+   **确实可以被消费**，再证明把存档改一个换行符之后**同一次调用被拒**。
+6. `test_an_operator_identity_is_accepted_only_under_its_own_content_hash`（**S-C**）——
+   **这一条是探针的产物**：伪造一个 `identity_id` 为假值、**签名恰好是对这个假 id 签的**、
+   并**把记录写到假 id 的路径上**的身份。**原文拒绝；去掉那一句就接受**
+   （签名比对与记录比对两步都是在伪造者设定的条件下满足的）。
+   **威胁模型如实说明**：造出这个东西需要**同时**拿到签名钥匙与 store 根目录的写权限，
+   **故它不是一条伪造通道**，而是"内容寻址的存储确实按内容寻址"这条不变式——
+   **而它是一道格式正确的伪造与"被接受"之间唯一的一步**。
+7. `test_signatures_are_hmac_sha256_and_compared_in_constant_time`（**S-H / S-I**）——
+   **一条源码级钉子**，因为**没有任何行为测试能够到这两个性质**。
+   它断言 `hmac.compare_digest(` 恰好出现 **10 次**、源码里不含 `hashlib.sha1`、
+   不含 `== expected` 与 `!= expected`。
+   **这条测试是故意脆的**：站点数目被精确断言，**故新增或删除任何一个验签点都必须同时改这条测试**——
+   **而这正是"钉住一个测试本来看不见的性质"唯一可行的办法**。
+   **它的代价也如实写在这里：它证明的是"源码这么写"，不是"运行时这么做"。**
+
+### 四、剩下 3 条为什么**不钉**（每条都有依据，不是"没时间"）
+
+- **S-F**（解锁请求的预注册交叉核对）：**可证冗余**。那一句比较的是
+  `request.preregistration.preregistration_hash`（信封上声明的哈希）与
+  `frozen.preregistration_hash`（`verify()` 从内容重算出的哈希），
+  而**它上面两行的 `LockedTestPreregistrationStore.verify()` 已经在做同一个比较**
+  （不一致时抛 `locked-test preregistration hash is invalid`）。
+  **故不存在能区分两者的输入**——与链 5 的 W-B 同型（那里是 NOT_APPLICABLE 不可达）。
+  **但这一句里还有另一半 `request.label_watermark_id == ""`，S-F 的变异刻意保留了它**，
+  故本轮末尾**单独补测了一次（记为 S-O）**：只去掉这半边，**全范围 146 passed，存活**——
+  **即它同样没有被钉住**。同时实测确认 `request_unlock` **在签名之前就校验 watermark**，
+  故空的 watermark id **只能来自一条伪造的、已签名的解锁请求**，
+  **威胁模型与 S-C 相同**（需要 authority 的签名钥匙）。
+  **它登记为下一轮的一条钉子而不在本轮补**：钉它需要伪造一条已签名请求**并**在其记录路径写入存档，
+  成本高于本轮其余各条，而收益与 S-C 同级。
+- **S-G**（签名信封里的 document_id）：**构造性冗余**。全部 12 个 `_signature(...)` 调用点传入的
+  document_id **都是同一个 payload 的 `_content_hash`**（预注册的 `preregistration_hash` 定义就是
+  `sha256(_canonical_json(payload))`，与 `_content_hash` 逐字相同），
+  **故信封里那个 id 是它所伴随载荷的函数，不提供任何额外绑定**。
+  **顺带量到一件此前没人写下来的事**：正因为它就是内容哈希，**它也不提供文档类型隔离**——
+  真正的类型隔离需要一个类型标签（如 `document_type`），而代码里没有。
+  **今天这不构成风险**：八类文档的 payload 键集合互不相同
+  （identity 2 个键、preregistration 15 个、result 8 个……），
+  **故"两类文档载荷完全相同"这件事造不出来**。
+  **但这是"恰好造不出来"，不是"设计上排除了"**，故记在这里。
+- **S-K**（`fsync`）：**持久性，进程内测不到**。去掉它，写入仍然成功、内容仍然正确，
+  差别只在断电之后。**这一类性质的正确控制手段不是单元测试**（是部署检查或故障注入），
+  **故登记而不钉**——把它钉成一条 mock 断言，只会制造一条与真实持久性无关的绿灯。
+
+### 五、门槛与证据（全部实测）
+
+- **定向**（只跑 `test_locked_test.py`，**0.9s/次**）：control **27 passed** →
+  **11 killed（每条带杀手与死因）** → **3 存活（S-F / S-G / S-K）** → restored **27 passed**；
+  `locked_test.py` **还原后逐字节相同**。日志 `mutation_locked_test_signing_targeted_with_killers.txt`。
+- **全量 harness**（`tests/unit/registry tests/unit/monitoring tests/property`）：
+  **基线 146 passed**，**11 杀 3 存活**，还原后逐字节相同并复跑通过。
+  日志 `mutation_locked_test_signing_after_pins.txt`。
+- **全量门槛**：`pytest tests -q` → **1677 passed / 45 skipped**（续六十二的 1670 + 本轮 7 条，skipped 未变）；
+  `ruff check src tests` 清（`ruff --fix` 只重排了新加的 import）；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 归档：`mutation_locked_test_signing_first_round.txt`、`mutation_locked_test_signing_after_pins.txt`、
+  `mutation_locked_test_signing_targeted_with_killers.txt`、`mutate_locked_test_signing.py`、
+  `mutate_locked_test_signing_targeted.py`；
+  **以及 S-O 那次单变异补测**：`mutation_locked_test_watermark_half_S-O.txt`
+  （原始输出：control 146 passed、mutated **SURVIVED**、还原后逐字节相同）与
+  `mutate_locked_test_watermark_half.py`。
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **钉住 S-O**（`request.label_watermark_id == ""` 那半边）：**本轮已测出它存活**，
+   故剩下的只是写钉子——伪造一条 watermark id 为空、但签名与记录都自洽的解锁请求，断言被拒。
+   **做法与本轮 S-C 那条完全同型，可直接复用其骨架。**
+2. **`registry/active_pointer.py`（455 行）与 `monitoring/shadow.py`（1026 行）**：本 session 尚未碰过。
+   `active_pointer` 是生产指针的 CAS 切换，**其"只接受恰好匹配自己产物的签名批准"这一性质
+   在续五十八被 X-M 侧面碰到过，但从未系统测量**。
+3. **`locked_test.py` 剩下的部分**：一次性能力的发放与消费状态机、成熟度守卫与交易日历、
+   隔离评价器与它的 stdout 抑制。
+4. **把归属矩阵自动化**（续六十一第 2 条，仍未做）。
+5. 其余同前：约 1,530 个测试函数在已审计的九条链之外从未做过变异测量。

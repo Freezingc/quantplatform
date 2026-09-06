@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import stat
 from collections.abc import Callable
 from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
@@ -16,6 +17,7 @@ from research_v2.monitoring.shadow import (
     ShadowQualification,
     ShadowQualificationStatus,
 )
+from research_v2.registry import locked_test as locked_test_module
 from research_v2.registry.active_pointer import (
     ActiveModelPointerStore,
     PointerEligibilityGuard,
@@ -25,6 +27,7 @@ from research_v2.registry.locked_test import (
     IssuedLabelMaturityWatermark,
     IssuedPreregistration,
     LabelMaturityWatermark,
+    LockedTestAggregate,
     LockedTestAuthority,
     LockedTestCapability,
     LockedTestEvaluator,
@@ -34,9 +37,13 @@ from research_v2.registry.locked_test import (
     LockedTestOperatorIdentityStore,
     LockedTestPreregistration,
     LockedTestPreregistrationStore,
+    LockedTestResult,
+    LockedTestResultVerifier,
     LockedTestTradingCalendar,
     ProductionDeploymentApprovalStore,
     _canonical_json,
+    _content_hash,
+    _signature,
 )
 from research_v2.registry.model_registry import ModelRegistry, ModelStatus
 
@@ -878,3 +885,211 @@ def test_canonical_json_sorts_keys_so_a_signature_does_not_depend_on_key_order()
     assert _canonical_json({"evaluator_actor": "e", "evaluated_at": "t"}) == (
         '{"evaluated_at":"t","evaluator_actor":"e"}'
     )
+
+
+# --- what the verifiers refuse -----------------------------------------------
+#
+# Thirteen of fourteen mutations of the signing layer survived a suite that already
+# walks the entire locked-test workflow. The reason is the one 续六十二 recorded for the
+# input clauses, one level up: the workflow tests issue a document and then verify it, so
+# every step a verifier takes in order to REFUSE something goes unexercised. The single
+# pinned property was exclusivity of issuance. What follows pins what each verifier
+# refuses, and one property that no behavioural test can reach at all.
+
+
+def _signed_result(key: bytes, **overrides: object) -> LockedTestResult:
+    """A correctly self-consistent signed result: id and signature derived from the payload.
+
+    Signing it properly is what makes each case below isolate one refusal: a document whose
+    signature and content hash are both correct can only be rejected by the clause under test.
+    """
+    fields: dict[str, object] = {
+        "model_id": _MODEL_ID,
+        "capability_id": "a" * 64,
+        "preregistration_hash": "b" * 64,
+        "artifact_bundle_hash": "c" * 64,
+        "passed": True,
+        "aggregate": LockedTestAggregate(
+            mean_rank_ic=0.04,
+            hac_t_statistic=2.5,
+            candidate_delta_rank_ic=0.006,
+            valid_test_day_count=6,
+            score_health_pass_ratio=1.0,
+        ),
+        "evaluator_actor": "locked-test-evaluator",
+        "evaluated_at": datetime(2027, 1, 20, tzinfo=UTC),
+    }
+    fields.update(overrides)
+    provisional = LockedTestResult(result_id="0" * 64, signature="0" * 64, **fields)
+    payload = provisional.payload()
+    result_id = _content_hash(payload)
+    signed = LockedTestResult(
+        result_id=result_id, signature=_signature(key, result_id, payload), **fields
+    )
+    # Guard the guard: the payload signed here is the one verify() rebuilds.
+    assert signed.payload() == payload
+    assert signed.result_id == _content_hash(signed.payload())
+    return signed
+
+
+def test_preregistration_verify_refuses_a_document_that_differs_from_its_record(
+    tmp_path: Path,
+) -> None:
+    """The presented bytes must equal the immutable record, or the record means nothing.
+
+    One extra newline is enough to test it: the signature still verifies and the declared
+    hash still matches the content, so only the comparison against what was actually
+    written to ``.issued/`` can catch the difference.
+    """
+    store = LockedTestPreregistrationStore(tmp_path, signing_key=b"preregistration-key")
+    issued = store.issue(_preregistration())
+    record = tmp_path / ".issued" / f"{issued.preregistration_hash}.json"
+    # Control: untampered, it verifies.
+    assert store.verify(issued) == _preregistration()
+
+    record.write_text(issued.to_json() + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="does not match its immutable record"):
+        store.verify(issued)
+
+
+def test_a_preregistration_never_issued_by_this_store_does_not_verify(tmp_path: Path) -> None:
+    """Holding the signing key is not the same as having issued the document.
+
+    A second store with the same key and an empty root recomputes a matching signature, so
+    the only thing that can refuse it is the read of the record: issuance is a fact about
+    the store, not a property of the bytes presented.
+    """
+    issuer = LockedTestPreregistrationStore(tmp_path / "issuer", signing_key=b"shared-key")
+    issued = issuer.issue(_preregistration())
+    stranger = LockedTestPreregistrationStore(tmp_path / "stranger", signing_key=b"shared-key")
+
+    assert issuer.verify(issued) == _preregistration()
+    with pytest.raises(ValueError, match="has not been issued"):
+        stranger.verify(issued)
+
+
+def test_the_result_verifier_refuses_a_passed_verdict_with_nothing_behind_it(
+    tmp_path: Path,
+) -> None:
+    """A PASSED result carrying no aggregate is the one document that must never verify.
+
+    It is the verdict that promotes, and the aggregate is the only disclosure that
+    justifies it. Also refused here: a model id that is not content-addressed, a
+    preregistration hash that is not a digest, and a ``passed`` that is not a bool. All
+    three are inside the signed payload, so a correctly signed document can carry them and
+    the field checks are the only thing that notices.
+    """
+    key = b"result-verification-key"
+    verifier = LockedTestResultVerifier(tmp_path, verification_key=key)
+
+    # Control: a well-formed, correctly signed result reaches the record check, and fails
+    # there only because nothing was ever written to this root.
+    with pytest.raises(ValueError, match="has not been issued"):
+        verifier.verify(_signed_result(key))
+
+    cases = (
+        ({"aggregate": None}, "must contain aggregate metrics"),
+        ({"model_id": "model-1"}, "model_id"),
+        ({"preregistration_hash": "not-a-digest"}, "preregistration_hash"),
+        ({"passed": "yes"}, "passed flag"),
+    )
+    for overrides, match in cases:
+        with pytest.raises(ValueError, match=match):
+            verifier.verify(_signed_result(key, **overrides))
+
+
+def test_issued_locked_test_artifacts_are_written_owner_only(tmp_path: Path) -> None:
+    """0o600, measured: the mutation to 0o644 survived the whole suite.
+
+    These files carry the signed preregistration and the operator identities behind the
+    only permitted look at 2026 labels. No workflow behaviour depends on the mode, so
+    nothing but an explicit assertion holds it.
+    """
+    store = LockedTestPreregistrationStore(tmp_path / "preregistrations", signing_key=b"k")
+    issued = store.issue(_preregistration())
+    record = tmp_path / "preregistrations" / ".issued" / f"{issued.preregistration_hash}.json"
+
+    identities = LockedTestOperatorIdentityStore(tmp_path / "identities", signing_key=b"id-key")
+    identity = identities.issue(actor_id="research-principal", role="research-owner")
+    identity_record = tmp_path / "identities" / ".issued" / f"{identity.identity_id}.json"
+
+    assert stat.S_IMODE(record.stat().st_mode) == 0o600
+    assert stat.S_IMODE(identity_record.stat().st_mode) == 0o600
+
+
+def test_a_capability_that_differs_from_its_stored_record_cannot_be_consumed(
+    tmp_path: Path,
+) -> None:
+    """The capability authorizes reading 2026 labels, so its record has to be the one consulted.
+
+    The tampered copy is presented as the original object, with a signature and a content
+    hash that are both still correct; only the comparison against the stored bytes can see
+    the difference. The control half matters as much as the assertion: an untampered
+    capability from an identically built authority really is consumable, so the refusal
+    below is about the tampering and not about the fixture.
+    """
+    clean = _approved_capability(tmp_path / "clean")
+    assert clean[0].consume(clean[2], clean[3], consumer="locked-test-evaluator") is not None
+
+    authority, _registry, capability, issued, _store = _approved_capability(tmp_path / "tampered")
+    records = list(
+        (tmp_path / "tampered" / "locked-test-authority").rglob(f"{capability.capability_id}.json")
+    )
+    assert len(records) == 1, records
+    records[0].write_text(capability.to_json() + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="does not match its immutable record"):
+        authority.consume(capability, issued, consumer="locked-test-evaluator")
+
+
+def test_signatures_are_hmac_sha256_and_compared_in_constant_time() -> None:
+    """A source-level pin, because no behavioural test can reach either property.
+
+    Measured, and it is not a gap in the fixtures: replacing ``hmac.compare_digest`` with
+    ``==`` and HMAC-SHA256 with HMAC-SHA1 both survive the entire suite, and always will,
+    because an in-process sign-and-verify changes both sides together and neither the
+    comparison's timing nor the hash's strength appears in a returned value. So this reads
+    the module source. It is deliberately brittle -- the count of comparison sites is
+    asserted exactly, so adding or removing a verifier has to be a deliberate edit here
+    too, which is the point of pinning something a test cannot otherwise see.
+    """
+    source = Path(locked_test_module.__file__).read_text(encoding="utf-8")
+
+    assert source.count("hmac.compare_digest(") == 10
+    assert "hashlib.sha1" not in source
+    assert "== expected" not in source
+    assert "!= expected" not in source
+
+
+def test_an_operator_identity_is_accepted_only_under_its_own_content_hash(
+    tmp_path: Path,
+) -> None:
+    """A content-addressed store must address by content, not merely by a valid-looking digest.
+
+    Probed rather than assumed: an identity carrying a bogus ``identity_id``, a signature
+    correctly computed over that bogus id, and a record written at the bogus path is
+    REFUSED by the content-hash check today and ACCEPTED the moment that check is removed
+    -- the signature and the record comparison both pass, because both were satisfied on
+    the attacker's terms. Reaching that state needs the signing key and write access to the
+    store root, so this is not a forgery vector; it is the invariant that makes the stored
+    record mean anything, and it is the only step between a well-formed forgery and acceptance.
+    """
+    key = b"operator-identity-key"
+    store = LockedTestOperatorIdentityStore(tmp_path, signing_key=key)
+    issued = store.issue(actor_id="research-principal", role="research-owner")
+    # Control: a genuinely issued identity verifies against its own record.
+    assert store.verify(issued) == issued
+
+    payload = issued.payload()
+    bogus_id = "f" * 64
+    assert bogus_id != _content_hash(payload)
+    forged = replace(
+        issued, identity_id=bogus_id, signature=_signature(key, bogus_id, payload)
+    )
+    (tmp_path / ".issued" / f"{bogus_id}.json").write_text(
+        forged.to_json(), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="does not match its identity_id"):
+        store.verify(forged)
