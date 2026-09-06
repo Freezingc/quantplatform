@@ -6908,3 +6908,101 @@ R-Q（去掉 `std > 0`）在全范围被 **12 个测试**杀掉，死因是 **`Z
    而本轮 R-J 恰恰证明了"顺带钉住"是真实存在且有效的，
    **但"顺带覆盖得好"与"被测量过"仍是两件事**：顺带的钉子会在重写那个测试时一起消失，且没人会知道。
 3. 其余同前：约 1,530 个测试函数在已审计的七条链之外从未做过变异测量。
+
+## 勾选审计续六十（2026-09-07 06:15）：**链 8 = HAC 推断** `evaluation/hac.py`（**G2 的全部实现，全文 39 行**）——首轮 12 个变异 **4 杀 8 存活**，补 5 条测试后 **11 杀 1 存活**。本轮的要害不是存活数，而是**"HAC 之所以是 HAC"此前只被一个 golden 数值钉住**：`test_hac.py` 自己那条唯一的测试只断言 `mean > 0` 与 `standard_error > 0`，**从不看 t 值**；而把协方差从 HAC 换成经典协方差，会让**同一条序列的 |t| 从 1.96 变成 4.13——G2 的门槛是 2.000**
+
+### 一、这条链有多薄，用一个实测数字说
+
+- `hac.py` **全文 39 行**，是 G2（`HAC t ≥ 2.000`）的**唯一实现**，也是六道门里**唯一一条统计推断门**存在的理由：
+  标签是**重叠的五日前瞻收益**，故相邻日的 RankIC **天然自相关**，经典标准误会低估不确定性、把 t 抬高。
+- 它的测试是 `tests/unit/evaluation/test_hac.py`：**1 个测试、11 行**，断言
+  `observation_count == 7`、`max_lags == 5`、`mean > 0`、`standard_error > 0`。
+  **没有断言 t 值，没有测守卫，没有喂过 NaN 或 inf，也没有任何一处检查协方差真的是 HAC。**
+- 本轮实测（AR(1)、ρ=0.8、60 个观测、固定种子 7）：
+
+| 协方差 | 标准误 | \|t\| |
+|---|---|---|
+| iid 公式 `std/√n` | 0.00239846 | **4.13** |
+| HAC，滞后截断 0 阶 | 0.00237839 | **4.16** |
+| **HAC，滞后截断 5 阶（现行）** | **0.00506212** | **1.96** |
+
+**HAC 把标准误放大 2.11 倍，而 G2 的门槛是 2.000**：
+**同一条序列过不过 G2，完全取决于这一个协方差选择。**
+
+### 二、首轮：12 个变异，4 杀 8 存活（基线 104 passed）
+
+- **杀掉 4 条**：**H-F**（协方差改经典 `nonrobust`）、**H-G**（要 HAC 但滞后截断为 0）、
+  **H-I**（截距设计矩阵多一列冗余）、**H-L**（返回的 `max_lags` 恒为 0）。
+- **存活 8 条**：**H-A**（守卫比较符 `<=` → `<`）、**H-B**（负 `max_lags` 不再被拒）、
+  **H-O**（守卫整个删掉）、**H-C**（inf 不再转 NaN）、**H-D**（NaN 不再丢弃）、
+  **H-K**（`observation_count` 报清洗前的长度）、**H-N**（默认滞后 5 → 4）、
+  **H-E**（非数值项由 coerce 改 raise）。
+
+**H-F / H-G / H-I 是谁杀的，要看清**：三条都由**同一个 golden 测试**
+`tests/golden/test_dataset_and_metrics.py::test_golden_daily_rank_ic_matches_inde…` 杀掉，死因是数值不符：
+**H-F → 0.33340701282625057，存量值 0.13042892339836…**（放大 2.6 倍）；
+**H-G → 0.3043575695922529，同一存量值**；
+**H-I → 0.265986394557823 对 0.5319727891156464，恰好一半**（正是冗余列把系数劈成两半）。
+**即"G2 的推断是 HAC 的"这件事此前确实被钉住了——但钉子不在它自己的测试文件里，而在一个 golden 数值里。**
+
+**这就是续五十九登记的那种"顺带钉住"，而这一处比 R-J 那处更脆**：
+golden 文件在**任何一次有意的指标变更之后都要重新生成**，那是常规操作；
+**重新生成一次，G2 唯一的钉子就没了，而且不会有任何人被告知。**
+
+### 三、补的 5 条测试：钉**性质**，不钉**数值**
+
+`tests/unit/evaluation/test_hac.py` 从 **1 个测试变 6 个**：
+
+1. `test_hac_widens_the_standard_error_of_an_autocorrelated_series`（**H-F + H-G**）——
+   断言**不等式而非存量数值**：HAC(5) 的标准误 **> 1.5 ×** iid 公式、**> 1.5 ×** HAC(0)，
+   且 **|t| < 0.6 × |t_iid|**；并自证 **|t_iid| > 3.5**——
+   **即 iid 那一侧确实是"显著"的，于是"修正抹掉了显著性"这句话是有内容的，而不是两侧都不显著。**
+   **余量取 1.5 与 0.6 是为了在 statsmodels 升级后仍成立**：实测比值是 2.11 与 0.474，离断言边界都有距离。
+2. `test_the_reported_t_is_the_reported_mean_over_the_reported_standard_error`（**H-I**）——
+   **G2 消费的是 t，而报告展示的是 mean 与 standard error；三者必须是同一个检验。**
+   顺带钉住"截距-only 拟合的系数就是样本均值"——**这正是冗余设计矩阵破坏的那个性质**。
+3. `test_hac_refuses_a_series_no_longer_than_its_own_lag_truncation`（**H-A + H-B + H-O**）——
+   `(len=5, lags=5)`、`(4, 5)`、`(9, -1)` 三组都必须抛，**且控制组 `(6, 5)` 必须通过**
+   （证明这是一条边界，不是无条件拒绝）。
+   **这个守卫不是形式**：实测 6 个观测配 `max_lags=5` 时标准误小到 **t = 3.5e15**，
+   7 个相同值时 **t = inf**——**`<=` 与 `<` 之间那一个字符，就是这些退化拟合与 G2 之间的全部距离。**
+4. `test_non_finite_entries_are_dropped_before_the_fit_and_out_of_the_count`（**H-C + H-D + H-K**）——
+   9 项里 1 个 NaN、2 个 inf，断言 `observation_count == 6`、`mean` 等于那 6 个有限值的均值、`t` 有限。
+5. `test_the_default_lag_truncation_is_five`（**H-N**）——**四个现有调用点全都显式传 `max_lags`**，
+   故默认值今天几乎是死代码；**而这正是"5 悄悄变成 4"在测试里零成本、在含义上全盘错位的那类地方**
+   （截断阶数本应匹配造成自相关的那个五日重叠）。
+
+**H-E 不钉，理由写明**：非数值项由 `errors="coerce"`（丢弃）改成 `errors="raise"`（抛出）
+**两种都是可辩护的选择**，而 `values` 来自 pandas 数值列、调用方产生不出非数值项；
+**钉住它等于钉住一个实现取舍，会在有人合理地把它改成 fail-loud 时挡路。**
+
+### 四、门槛与证据（全部实测）
+
+- **定向**（只跑 `test_hac.py`，**1.25s/次**）：control **6 passed** →
+  **11 killed**（每条带杀手与死因）→ **1 存活（H-E，即上面说明不钉的那条）** → restored **6 passed**；
+  `hac.py` **还原后逐字节相同**。
+  **H-F 与 H-G 现在在本文件内就被杀掉**，golden 文件不再是它们唯一的钉子。
+  日志 `mutation_hac_targeted_with_killers.txt`。
+- **全量 harness**：**基线 109 passed**，**11 杀 1 存活**，还原后逐字节相同并复跑通过。
+  日志 `mutation_hac_after_pins.txt`。
+- **全量门槛**：`pytest tests -q` → **1662 passed / 45 skipped**（续五十九的 1657 + 本轮 5 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**；
+  未改 HAC 口径、门阈值、契约或 schema。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 归档：`mutation_hac_first_round.txt`、`mutation_hac_after_pins.txt`、
+  `mutation_hac_targeted_with_killers.txt`、`mutate_hac.py`、`mutate_hac_targeted.py`。
+
+### 五、下一轮候选（按本轮结果排序，非承诺）
+
+1. **把本 session 的"顺带钉住"清单化**——**这条本轮排到了第一位，因为它已经出现四次，而且每一次都是事后才发现**：
+   链 7 的 **R-J** 由链 4 为 V-H/V-I 写的测试钉住；
+   链 8 的 **H-F / H-G / H-I** 由 golden 指标测试钉住；
+   续五十八的 **X-K / X-L / X-M** 由 locked-test 与 shadow 治理测试钉住。
+   **这些钉子都真实有效，但都不在自己模块的测试文件里**：
+   重写或删除那个"顺手带着它"的测试时，**被钉的性质会一起消失，而且没有人会被告知**。
+   **列一张"谁的性质由谁钉"的交叉表，比再多测一条链更能防这件事。**
+2. **shadow 审批与 locked-test proof 机制**（连续三轮排第二）：
+   `monitoring/shadow.py`、proof 的一次性消费、`registry._verified_workflow_proof`。
+3. 其余同前：约 1,530 个测试函数在已审计的八条链之外从未做过变异测量。
