@@ -5918,3 +5918,93 @@ FROZEN REPORT PATH: PASS
   本轮只让第五道门**可被测试**，没有改变它的判定
 - 证据：`mutation_report_path_15_of_15_after_seam.txt`、
   `report_path_door_after_seam_refactor_identical_1929_bytes.txt`
+
+## 勾选审计续五十一（2026-09-07 08:05）：转到**链 2**——`0cbbc88` 那个补 padding 的修复**已被测试钉住**（把历史缺陷原样装回去，测试抓住了）；12 个变异里 8 个存活，逐个定性后**没有一个是活的缺陷**，但其中 3 个是"真而未钉"
+
+### 一、为什么转到链 2
+
+前置门那条链（链 1 的解冻闸门）已在续五十收口。**链 2（模型候选）是与之并行的另一条**，
+而它的驱动 `run_real_candidate_training.py` 在 2026-09-06 02:34 由 commit `0cbbc88` 修过一个真缺陷：
+6 处直接遍历 `batch.inputs.ts_codes` 而无视 `stock_mask`，
+`build_static_training_batches` 又会把窄于"该段最宽横截面"的每个日期用**空证券码**补齐，
+于是每个较窄日吐出多行 `ts_code=""` → 那次 M1 全量跑了 **7h58m** 后死在
+`seed predictions contain duplicate business keys`；
+**更严重的另一半**是 `_percentile_rank_series` 在 `width`（含 padding）而非有效数上排名，
+而那个百分位正是**挑选获胜 config 的 validation RankIC** 的输入。
+
+**修复已落地、且带 3 条参差夹具回归测试。但"带了测试"不等于"钉住了"**——
+本 session 已四次发现验证物自身不可靠。故本轮问的是一个具体问题：**把那个缺陷原样装回去，测试抓不抓得到？**
+
+### 二、答案：抓得到
+
+修复把 6 处收敛成**一个** helper（`_score_batch` → `predictions_to_frame`），
+故变异点集中。**T-A 就是把历史缺陷在它的根部原样装回去**：
+把 `predictions_to_frame` 里的
+`torch.nonzero(batch.stock_mask[date_index], ...)` 换成 `list(range(batch.stock_mask.shape[1]))`
+——**即保留 padding 位、按含 padding 的宽度排名**，正是 `0cbbc88` 之前的行为。
+
+**结果：T-A killed。故那个修复是被钉住的，不是"看起来修了"。**
+
+12 个变异（跨 `src/research_v2/models/base.py` 的共享契约与驱动的 seed 平均）：
+**4 杀 8 存活**。被杀的 4 个正是最要紧的 4 个：
+**T-A**（保留 padding＝历史缺陷本体）、**T-C**（不再拒绝有效位的非有限分数）、
+**T-F**（seed 秩按位置而非业务键平均——即 `0cbbc88` 修的另一半）、
+**T-H**（seed 均值塌成只取第一个 seed）。
+
+### 三、8 个存活逐个定性：**没有一个是在产缺陷**，但 3 个是"真而未钉"
+
+| | 变异 | 定性 | 依据 |
+|---|---|---|---|
+| **T-J** | `_percentile_frame` 里的 `model.eval()` 去掉 | **不是洞——而且这个"不对称"是正确的** | 全驱动**只有一处** `.eval()`（第 304 行，在 `_percentile_frame` 内）。**这是对的**：`_percentile_frame` 的两个调用点（357、672）拿到的是**训练环出来的模型**，而 `training/torch_loop.py:55` 是 `self._model.train()`，**故它必须自己切 eval**；而 `_mean_seed_percentile_scores` 的模型来自 `load_inference_artifact`，**`inference/artifact_loader.py:111` 已经 `model.eval()`**（四处 `_concat_date_scores(loaded.models, ...)` 全走这条路）。**故后者不需要 eval。M2/M3 确实用 `nn.Dropout(0.1)`**（`models/temporal.py:38/106`、`models/set_attention.py`），**所以这个不对称一旦弄反就是真缺陷**——而它现在是对的，**只是没有任何测试钉住它** |
+| **T-G** | seed 合并去掉 `validate="one_to_one"` | **防御性、按上游契约不可达**（**推断，未实测**） | `predictions_to_frame` 每个日期只按 `nonzero(stock_mask)` 的**位置**出行，故要产生重复 `(signal_date, ts_code)` 需要**同一日期里同一个 ts_code 出现两次**，而 `FeatureBatch.__post_init__` 禁止有效位重复。其 docstring 自述这层是"把残余的键重复变成此处的错误，而不是留到 OOS 评价里" |
+| **T-K / T-L** | 空 seed 列表 / 空段不再 raise | **只是换了异常类型与文案**（**推断，未实测**） | 去掉后分别是 `frames[0]` 的 `IndexError` 与 `pd.concat([])` 的 `ValueError`——**都会抛**，故不是 fail-open |
+| **T-D** | 去掉 `scores.shape != stock_mask.shape` 检查 | **未核实** | 形状不符时下游索引大概也会抛，但抛在哪、文案是什么，本轮没测 |
+| **T-E** | 去掉按分数排序 | **未核实** | 下游 seed 合并是按业务键的，故行序可能无关；但**输出行序**是否被别的消费方依赖，本轮没测 |
+| **T-I** | `_percentile_frame` 不再按日期排序遍历 | **真而未钉** | `batches` 是 `Mapping[date, batch]`；**若调用方传入未按日期插入的映射，输出行序就跟着变**。当前调用方恰好有序，故看不出——**这是防御性排序，而防御性代码没被测就等于没有** |
+| **T-B** | 百分位排名 `method="average"` → `"first"` | **真而未钉** | 两者**只在 raw_score 有并列时**不同。夹具分数互异故看不出，而**真实模型会产出并列分数**（尤其 padding 修复后同日有效股票数不同）。**并列时"按位置定序"意味着同分股票的百分位取决于列顺序**——那正是 `0cbbc88` 要消除的那类依赖 |
+
+**故本轮的净结论有两条，方向相反，都要说清**：
+
+1. **好消息，而且是本轮要问的那个问题**：`0cbbc88` 的修复**被钉住了**——
+   把缺陷原样装回去（T-A）与把它的另一半装回去（T-F）都会被抓到。
+   **那次 8 小时的损失不会因为测试薄弱而重演。**
+2. **需要记的**：**8 个存活里没有一个是活的缺陷**（T-J 经核实是正确的不对称、
+   T-G/T-K/T-L 是不可达或只是换文案），**但 T-B 与 T-I 是"真而未钉"**，
+   T-D/T-E **本轮未核实**。**"没有活的缺陷"与"都被钉住了"是两件事**，
+   本节只能声称前者，且其中 T-J/T-G/T-K/T-L 四条的定性是**读代码推断、未做探针实测**——
+   **这与续三十七、续四十六、续四十九那几轮"每个存活都用探针构造出区分输入"的标准不同，
+   故那四条的结论强度低于本 session 先前同类结论，引用时应知道这一点。**
+
+### 四、为什么本轮没有补测试
+
+**不是因为不值得，而是因为 T-B 与 T-I 各需要一个本轮没有的夹具**：
+T-B 需要一个**存在并列 raw_score** 的参差夹具（现有夹具分数互异，这正是它测不出 T-B 的原因），
+T-I 需要一个**键序被打乱的 `Mapping`**（现有夹具按日期插入）。
+**造这两个夹具要先读懂 `test_run_real_candidate_training.py` 的参差夹具构造方式
+（40/31 只、9 个 padding 槽）并确认新夹具同样"真的是参差的"**——
+即还需要一条像 `test_ragged_fixture_really_is_padded` 那样的**夹具自证**控制测试，
+否则新夹具可能和旧夹具犯同一个错（看起来在测 padding，实际没有 padding）。
+**这是一件要做对的事，不是一件能顺手做的事**，故本轮**登记为下一步**，
+而不是在预算不足时交一个可能自欺的夹具。
+
+### 五、门槛（全部重测）
+
+- 变异运行的测试范围是 `tests/unit/models tests/unit/training tests/property
+  tests/unit/scripts/test_run_real_candidate_training.py`：**基线 116 passed**，
+  12 个变异逐个跑、**两个文件还原后逐字节相同**、还原后仍 **116 passed**。
+- **本轮零代码改动、零测试新增**（纯变异测量 + 文书）。
+  **故全量门槛沿用续五十的实测值 1617 passed / 45 skipped**，
+  且这次沿用是**有据的**：`git diff --stat` 对 `research_v2/src`、`research_v2/scripts`、
+  `research_v2/tests` 自 `53fd964` 起**为空**。
+- `ruff check src tests` 清、`mypy src` **158 文件清**（本轮未改代码，二者亦未变）。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何契约、schema、门阈值或 `dropna` 口径。**
+- **裁决 2/3/4 与决定 A–N 全部仍开放**；**链 2 仍未重启**（其前置见 §0d 批 2：
+  清理 13 个陈旧检查点、指针并列守卫、续跑键含契约版本）。
+- 证据：变异 harness 已存 `mutation_candidate_scoring.py`（含 12 个变异的定义、
+  逐变异跑 `tests/unit/models tests/unit/training tests/property
+  tests/unit/scripts/test_run_real_candidate_training.py`、以及两文件还原后的逐字节核对）。
+  **如实说明：本轮那一次运行的 stdout 未归档**（约 13 分钟，未重跑以捕获），
+  故"4 杀 8 存活"与"T-A killed"这两条**可由该脚本原样重跑复现，但没有留存的日志文件**。
+  **这与本 session 其他各轮都附了 `mutation_*.txt` 的做法不一致，是本轮的一处欠缺**；
+  下一轮若继续做链 2 的补测，应连带把这次运行重跑并归档。
