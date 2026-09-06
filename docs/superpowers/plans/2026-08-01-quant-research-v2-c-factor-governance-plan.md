@@ -4022,21 +4022,62 @@ candidates = tuple(... if json.loads(metrics_json).get("decision_status")
    `factor_quality_snapshot`（20 scope）、`factor_rank_ic_daily` 三处都找不到对应的行。**
    canonical 443 的评级是 **D / regime_min 0.2618**（2017 崩塌），**而变体没有任何评级记录**。
 
-### 五、还有一处发散：`REPLAY_DEFINITIONS["yeslab_206"]` 记的是**另一个公式**
+### 五、~~还有一处发散~~ → **本节初稿的断言是错的，已核实并撤回；真实情况窄得多**
 
-`audit_formula_replay_consistency.py:180` 把 `yeslab_206` 定义为
-`Bias_Vol_Demean_60_Calculator`（"60日成交量**去均值相对偏离**"、`factor_data5`、lookback 60），
-而生产物化对同一 id 用的是 **median 修复版**。
-**修正只以 `if fid == MEDIAN_206` 的形式存在于一个消费者里**（`materialize_frozen_factor_daily.py`），
-而 **`REPLAY_DEFINITIONS` 有 12 个以上消费者**
-（`evaluate_alpha484_canonical`、`audit_factor_market_coverage`、`audit_canonical_candidate_pairs`、
-`audit_pretraining_regime_redundancy`、`research_historical_window_eval` 等），
-**其中没有第二个做这个特例判断**（`audit_formula_replay_consistency.py` 里 grep
-`MEDIAN|median_repair` 只命中它自己的定义行）。
-**故任何经 `REPLAY_DEFINITIONS` 取 206 的审计，算的是去均值版、比的是 median 版。**
-这与 §1 的"六处未接线治理路径"、决定 L 的"两台覆盖仪器"是**同一模式的第三个实例**：
-**一个概念、两处实现、没有交叉核验。**
-（`yeslab_443_reg30_max20_v1` **不在** `REPLAY_DEFINITIONS` 里，查它会 KeyError —— 那是 fail-closed，可接受。）
+**初稿写了什么**：`REPLAY_DEFINITIONS["yeslab_206"]` 记的是 `Bias_Vol_Demean_60_Calculator`
+（"60日成交量**去均值相对偏离**"、`factor_data5`），而生产物化对同一 id 用 median 修复版，
+"**修正只以 `if fid == MEDIAN_206` 的形式存在于一个消费者里**"，
+"故**任何**经 `REPLAY_DEFINITIONS` 取 206 的审计，算的是去均值版、比的是 median 版"。
+
+**为什么错**：逐个查了 `REPLAY_DEFINITIONS` 的消费者，两个断言都不成立。
+
+1. **"只有一个消费者做特例判断"是错的——有 8 个，而且它们共用同一个 helper。**
+   `rg -l materialize_alpha206_median_repair scripts/` 命中 **8 个脚本**：
+   `audit_canonical_candidate_pairs`（**helper 的定义处**，并以
+   `CandidateSpec("yeslab_206_median_abs_v2", "yeslab_206", is_alpha206_median_repair=True)`
+   把该候选显式标出、第 109-111 行**只在 `not is_alpha206_median_repair` 时**才用
+   `REPLAY_DEFINITIONS`）、`audit_pretraining_regime_redundancy`、`research_historical_window_eval`、
+   `analyze_pool18_rank_turnover`、`analyze_pool23_rank_turnover`、`audit_extension_candidate_pairs`、
+   `audit_candidate464_pairs`、`materialize_frozen_factor_daily`。
+   `research_historical_window_eval.py:116` 甚至留有注释说明**为什么**仍要读那条定义：
+   *"its market requirements come from the source yeslab_206"*——
+   即取的是**行情字段需求**，不是公式。**这是有意的、正确的用法。**
+2. **"任何经它取 206 的审计都比错了"也是错的——那两个审计比的是另一条谱系，本来就对。**
+   `audit_formula_replay_consistency.py` 的 docstring 第一行是
+   *"Replay source-file calculators against **stored YesLab factor observations**"*，
+   第 1004 行读 `loadTable('dfs://YesLab','{store_factor}')`；
+   `audit_formula_replay_tushare.py` 第 481 行同样读 `dfs://YesLab`。
+   **在 YesLab 源谱系里，`yeslab_206` 就是去均值版（`factor_data5`），
+   而 median 修复版另有其 id `yeslab_206_median_abs_v2`。**
+   故这两个审计用 `REPLAY_DEFINITIONS["yeslab_206"]` = 去均值版**是正确的**，
+   它们比的也是源表的去均值值。**没有比错。**
+
+**真实情况（窄得多，但仍值得记）**：
+
+> **同一个 id `yeslab_206` 在两条谱系里指两个不同的因子**——
+> 源谱系（`dfs://YesLab`）里它是**去均值版**、median 修复版叫 `yeslab_206_median_abs_v2`；
+> 冻结谱系（`factor_daily`）里 `yeslab_206` 存的是**median 修复版**
+> （`materialize_frozen_factor_daily.py:62` → `materialize_alpha206_median_repair`，
+> 且 `apply_admission_decisions.py:164` 的 `grade_alias` 与之一致）。
+> **当前 8 个可能混淆的消费者全部经同一个 helper 正确绕行，两个源谱系审计本来就对，
+> 故这是一处"潜在 id 冲突隐患 + 一组目前正确的绕行"，不是一个在产的缺陷。**
+> **没有任何已发布工件因它而错。**
+
+**为什么仍然要记**：这是**决定 A"两条互不相通的谱系"在单个 id 上的实例**。
+决定 A 的现有文字讲的是谱系整体（`factor_observation_clean` 对 `factor_daily`、
+缺 8 个成员、1,721,876 个冲突键），**从未提到有一个 id 在两条谱系里指两个不同因子**。
+**这一条对决定 A 的 (A2) 选项有直接影响**：(A2) 要把冻结集换成经 registry 的
+内容寻址身份，而**一个 id 指两个因子正是内容寻址要消除的东西**——
+故 (A2) 的代价里应加上"必须给 206 的两个版本分配两个身份"，
+而 (A1) 的代价里应加上"必须在文书里写明 `yeslab_206` 在哪条谱系里指哪一个"。
+**风险是前瞻性的**：任何**新**消费者若经 `REPLAY_DEFINITIONS["yeslab_206"]` 取值
+又与 `factor_daily` 比，会**静默**算错因子——8 个绕行都靠约定，没有一处是类型或断言强制的。
+
+**方法论教训（本轮第二次自我更正，与续三十、续三十二同类）**：
+初稿从"**一个**消费者里有特例"直接推广到"**所有**消费者都缺特例"，
+而只查了 `audit_formula_replay_consistency.py` 一个文件的 grep。
+**"某处有一个 workaround"不能推出"别处没有"**；这类断言必须逐个消费者查，
+或者降级为"存在 id 冲突隐患"这种不需要穷举的表述。
 
 ### 六、这产生一个新决定（M），并**收窄** L
 

@@ -800,18 +800,38 @@ again"*。**该目的在当前的 scope 选择下达不到。**
   **"修复变体全评估已过"这句话在三张表里都找不到对应的行**；
   canonical 443 是 **D / regime_min 0.2618**（2017 崩塌），**变体没有任何评级记录**。
 
-### 顺带查出的第三处"一个概念、两处实现"
+### 一处 id 冲突隐患（**注意：初稿把它写成在产缺陷，已核实并撤回**）
 
-`audit_formula_replay_consistency.py:180` 把 `yeslab_206` 定义为
-`Bias_Vol_Demean_60_Calculator`（"60日成交量**去均值相对偏离**"、`factor_data5`），
-而生产物化对同一 id 用 **median 修复版**。修正只以 `if fid == MEDIAN_206` 存在于
-**一个**消费者里，而 `REPLAY_DEFINITIONS` 有 **12 个以上**消费者
-（`evaluate_alpha484_canonical`、`audit_factor_market_coverage`、
-`audit_canonical_candidate_pairs`、`audit_pretraining_regime_redundancy` 等），
-**没有第二个做该特例判断**（该文件里 grep `MEDIAN|median_repair` 只命中定义行自身）。
-**故任何经 `REPLAY_DEFINITIONS` 取 206 的审计，算的是去均值版、比的是 median 版。**
-与 §1"六处未接线"、决定 L"两台覆盖仪器"是**同一模式的第三个实例**。
+初稿写"`REPLAY_DEFINITIONS["yeslab_206"]` 记的是去均值公式而生产用 median 修复版，
+修正只存在于一个消费者里，故任何经它取 206 的审计都比错了"。**两个断言都不成立**：
+
+- **有 8 个消费者共用同一个 helper 正确绕行**（`rg -l materialize_alpha206_median_repair`）：
+  `audit_canonical_candidate_pairs`（helper 定义处，以
+  `CandidateSpec(..., is_alpha206_median_repair=True)` 显式标注、只在非该候选时才用
+  `REPLAY_DEFINITIONS`）、`audit_pretraining_regime_redundancy`、`research_historical_window_eval`
+  （第 116 行注释说明取的是**行情字段需求**而非公式）、`analyze_pool18/23_rank_turnover`、
+  `audit_extension_candidate_pairs`、`audit_candidate464_pairs`、`materialize_frozen_factor_daily`。
+- **那两个"consistency"审计比的是另一条谱系，本来就对**：
+  `audit_formula_replay_consistency.py` docstring 首行即 *"against **stored YesLab factor
+  observations**"*（第 1004 行读 `dfs://YesLab`），`audit_formula_replay_tushare.py:481` 同。
+  **在源谱系里 `yeslab_206` 就是去均值版，median 修复版另有 id `yeslab_206_median_abs_v2`。**
+
+**真实情况**：**同一个 id 在两条谱系里指两个不同因子**（源＝去均值版；
+冻结 `factor_daily`＝median 修复版，与 `apply_admission_decisions.py:164` 的 `grade_alias` 一致）。
+**当前无一处比错，没有任何已发布工件因它而错**；它是**潜在隐患**——
+8 个绕行全靠约定，**没有一处由类型或断言强制**，故新消费者经
+`REPLAY_DEFINITIONS["yeslab_206"]` 取值再与 `factor_daily` 比会**静默**算错。
+
+**对决定 A 的直接影响（这才是记它的理由）**：这是**决定 A"两条互不相通的谱系"在单个 id 上的实例**，
+而决定 A 现有文字只讲谱系整体、**从未提到有一个 id 跨谱系指两个因子**。
+**(A2)**（换成 registry 内容寻址身份）的代价里应加上"必须给 206 的两个版本分配两个身份"
+——**一个 id 指两个因子正是内容寻址要消除的东西**；
+**(A1)**（以 JSON 工件为准）的代价里应加上"必须在文书里写明 `yeslab_206` 在哪条谱系指哪一个"。
 （`yeslab_443_reg30_max20_v1` **不在** `REPLAY_DEFINITIONS` 里，查它 KeyError —— fail-closed，可接受。）
+
+**方法论教训**：初稿从"**一个**消费者里有特例"推广到"**所有**消费者都缺特例"，
+而只 grep 了一个文件。**"某处有 workaround"推不出"别处没有"**——
+本轮第二次自我更正（前两次见续三十、续三十二），详见续三十三 §五。
 
 ### 选项
 
