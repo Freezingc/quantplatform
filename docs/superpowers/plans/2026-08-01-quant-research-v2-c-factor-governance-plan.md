@@ -5573,3 +5573,93 @@ N-J 与 N-K 都落在
   **裁决 2/3 与决定 A–N 全部仍开放。**
 - 证据：`mutation_screen_factor_daily_coverage_15_of_15.txt`、
   `mutation_prior_rounds_reverified_without_bytecode_cache.txt`（含 deselect 复核），四个脚本副本同存。
+
+## 勾选审计续四十七（2026-09-07 05:15）：第四道门——**前置门的豁免聚合逻辑**，16 个变异 15 杀，唯一存活者经查证为等价变异；被杀掉的那个真洞是"**报告说豁免已批准，而其实被拒了**"
+
+### 一、为什么这道门比前三道更要紧
+
+前三道是**判定**门；这一道是**决定判定要不要被采纳**的门。
+Task 3.1 当前被三道门 REFUSED，而**唯一被认可的通过方式就是这个脚本的豁免机制**
+（续三十二已端到端验证豁免桥可通、且零写入）。
+**故"豁免是否被批准"这段代码，就是"冻结基线要不要开跑"那段代码。**
+它这里若有存活的变异，意味着**存在一种放行前置门的方式而它的 15 条测试察觉不到**。
+
+### 二、16 个变异：14 杀，2 存活
+
+覆盖了豁免校验的全部面：未知门名（Q-A）、空理由（Q-B）、**纯空白理由**（Q-C）、
+门根本没跑（Q-D）、blocking 集合反转（Q-E）、陈旧豁免与新豁免不再区分（Q-F）、
+陈旧豁免不再上报（Q-G）、`cleared` 忽略 blocking（Q-H）、`cleared` 强制 True（Q-I）、
+`blocking` 属性忽略豁免使豁免失效（Q-J）、`passed` 反转（Q-K）、
+数据不全时的提前终止被去掉（Q-L）、提前终止后被跳过的门报成 PASS（Q-M）、
+三个筛查窗口只取最后一个而非最差（Q-N）、**2025 窗口被删掉**（Q-O）、
+逐门失败消息被丢弃（Q-P）。
+**其中 14 个被既有的 15 条测试杀掉**——**这道门的测试质量明显高于前三道**
+（前三道初次存活率 5/12、2/14、7/15，这道是 2/16）。
+
+### 三、Q-H 是等价变异（已用探针证实，不是推断）
+
+变异：`cleared = not failures and not blocking` → `cleared = not failures`。
+**探针遍历三类输入**（一门失败未豁免 / 失败但已豁免 / 有一道门根本没跑）：
+
+| 输入 | `cleared` | `blocking` | `failures` 条数 |
+|---|---|---|---|
+| 一门失败未豁免 | False | 2 项 | **2** |
+| 失败门已豁免 | True | 空 | 0 |
+| 一道门没跑 | False | 2 项 | **3** |
+
+**`blocking` 非空的每一种情形都同时产生了 failure**——因为聚合函数对每个 blocking 结果
+都 `failures.append(f"{name} FAILED (exit {code}) and is not waived")`，
+而缺跑的门另有 `gate(s) did not run` 一条。
+**故 `not failures` 与 `not failures and not blocking` 在所有输入上同值：等价变异，不构成缺口。**
+`and not blocking` 是**冗余的双保险**——与续三十七 M-H 那个 `minimum_median_width > 0`
+守卫同类（也是冗余但无害）。**仍如实登记，因为"冗余"与"无用"的区别要有人写下来。**
+
+### 四、Q-C 是真洞，而且它的性质是"**报告说谎**"而不是"放行错误"
+
+变异：`waived=bool(reason.strip()) and ...` → `bool(reason) and ...`，
+即**纯空白的豁免理由（`"   "`）也算理由**。探针逐字对比：
+
+| | `cleared` | `blocking` | `waived` | failures |
+|---|---|---|---|---|
+| **原实现** | **False** | `['admission_consistency', 'factor_coverage_screen']` | `[]` | "waiver without a reason" **+ "admission_consistency FAILED … and is not waived"** + 另一门 |
+| **变异后** | **False** | `['factor_coverage_screen']` | **`['admission_consistency']`** | "waiver without a reason" + 另一门（**admission 那条 FAILED 行消失了**） |
+
+**判定没变**（两版都 REFUSED，因为 `empty` 那条 failure 仍在），**变的是报告**：
+变异后**把 `admission_consistency` 报成"已豁免"，并删掉了它自己那条"FAILED 且未豁免"**。
+
+**为什么这不是化妆问题**：这个脚本的**全部产出就是那份报告**，
+而操作者是**照着它决定要不要启动一次约 15 小时的冻结基线全量运行**的；
+续三十二又已确立**豁免是越过三道失败门的唯一被认可路径**。
+**一份把"被拒的豁免"报成"已批准的豁免"的报告，会让操作者以为自己的理由生效了**，
+于是下一步"把另外两道门修好再跑"看起来该成功、实际不会。
+**在一个以 fail-closed 为纲的项目里，报告与判定不一致本身就是缺陷**，
+即使判定这一侧仍然安全。
+
+**已补 1 条测试，三个面同时钉**（变异同时移动三者，只钉一个会留下部分缺口）：
+门**留在 `blocking`**、**不出现在 `waived`**、**且它自己那条 FAILED 行必须存活**；
+另加断言 `"waiver without a reason"` 仍在（那半边原本就有覆盖，一并钉住防止回退）。
+**重跑 16 个变异：15 杀，唯一存活是已证等价的 Q-H。** 测试 **15 → 16**；
+被变异脚本**还原后逐字节相同**（`git diff --stat -- scripts/ src/` 为空）。
+
+### 五、累计与边界
+
+**四道门已做：57 个变异（12 + 14 + 15 + 16），真洞 10 个，补测 11 条（3 + 2 + 5 + 1），
+经复核为等价变异或 harness 假象的 4 个（M-B、M-H、P-J、Q-H）。**
+**仍未做**：`verify_frozen_report_path.py`（报告可序列化性，前置门的第五道）、
+`verify_factor_daily_backfill.py`（数据完整性，**第一道**——它失败则其余四道全部跳过）。
+**未立项、未估工**，故续四十三那句限定继续有效：**全套件断言强度仍未被证明。**
+**但就前置门这条链而言，五道里已有四道经变异验证**，
+**剩下两道中 `verify_factor_daily_backfill` 是"失败即全停"的那一道，应排在下一位。**
+
+### 六、门槛（全部重测）
+
+- `pytest tests -q` → **1604 passed / 45 skipped**（100.02s）＝续四十六的 1603 **+1**
+- `ruff check src tests` → **All checks passed!**；`mypy src` → **158 文件清**
+- **本轮只加 1 条测试，未改任何 `src/` 或 `scripts/` 实现**（16 个变异全部还原，
+  `git diff --stat -- scripts/ src/` **为空**）
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何门阈值、豁免语义、契约、schema 或 `dropna` 口径**——
+  **豁免机制的行为一字未改，只是"空白理由必须被报成被拒"这一点被钉住了。**
+- **裁决 2/3/4 与决定 A–N 全部仍开放**；**前置门当前仍是 `REFUSED`，本轮没有放行任何东西。**
+- 证据：`mutation_preflight_waiver_aggregation_15_of_16.txt`（含 16 个变异对照 + Q-H/Q-C 探针输出），
+  两个脚本副本同存。

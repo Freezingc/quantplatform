@@ -196,3 +196,51 @@ def test_main_rejects_a_waive_without_a_reason() -> None:
 def test_main_rejects_an_unknown_waiver_target() -> None:
     with pytest.raises(SystemExit):
         M.main(["--waive", "not_a_gate", "--waiver-reason", "x"])
+
+
+def test_a_whitespace_only_waiver_reason_does_not_report_the_gate_as_waived() -> None:
+    """A reason of `"   "` must be refused AND must not be shown as granted.
+
+    The refusal half was already covered: ``aggregate`` collects whitespace-only reasons into its
+    `empty` list and fails the run. What was not covered is the reporting half, and a mutation run
+    found it -- replacing ``bool(reason.strip())`` with ``bool(reason)`` in the per-gate `waived`
+    flag left all 15 tests green. Under that mutation the verdict is unchanged (still refused,
+    because
+    the `empty` failure is still there) but the report says the gate was waived and drops its
+    "FAILED ... and is not waived" line.
+
+    That is not cosmetic in this script. Its entire output is the report an operator reads to decide
+    whether to launch a roughly fifteen-hour frozen baseline run, and 续三十二 established that this
+    waiver path is the sanctioned route past three currently-failing doors. A report that names a
+    gate
+    as waived when the waiver was rejected tells the operator their reason was accepted, so the
+    natural
+    next step -- fix the other two doors and re-run -- looks like it should work and does not.
+
+    Asserted three ways, because the mutation moves all three and any one of them alone would leave
+    a
+    partial pin: the gate stays in `blocking`, stays out of `waived`, and keeps its own failure
+    line.
+    """
+    results = (
+        M.GateResult("backfill_completeness", 0, False, ""),
+        M.GateResult("admission_consistency", 1, False, ""),
+        M.GateResult("factor_coverage_screen", 0, False, ""),
+        M.GateResult("fold_coverage", 0, False, ""),
+        M.GateResult("report_path", 0, False, ""),
+    )
+
+    verdict = M.aggregate(results, {"admission_consistency": "   "})
+
+    assert not verdict.cleared
+    assert "admission_consistency" in verdict.blocking, (
+        "a whitespace-only reason grants nothing, so the gate is still blocking"
+    )
+    assert "admission_consistency" not in verdict.waived, (
+        "the report must not name the gate as waived when the waiver was rejected"
+    )
+    assert any(
+        "admission_consistency FAILED" in failure and "not waived" in failure
+        for failure in verdict.failures
+    ), "the gate's own failure line must survive, or the report understates what is wrong"
+    assert any("waiver without a reason" in failure for failure in verdict.failures)
