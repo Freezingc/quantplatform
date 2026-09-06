@@ -171,3 +171,68 @@ def test_coverage_at_or_above_the_gate_threshold_is_noted_not_silenced() -> None
     audit = M.audit_admission(("yeslab_999",), (odd,))
     assert not audit.passed
     assert any("despite median coverage" in n for n in audit.notes)
+
+
+# The two tests below pin the coverage note's threshold and its boundary. A mutation run over this
+# gate killed 12 of 14 mutations but both of these survived: flipping the note's `>=` to `>`, and
+# moving COVERAGE_GATE_THRESHOLD from 0.70 to 0.99, each left all 13 pre-existing tests green --
+# because the one test that exercises the note uses median 0.9978, which is above both numbers and
+# so
+# cannot tell them apart.
+#
+# That note is not decorative. It is the only thing in this gate that hints at the shape 398 and 464
+# actually have: eight of the nine stored fields passing and one -- minimum_monthly_day_ratio -- at
+# zero. Reading it as "a coverage failure" sent two rounds of the audit in the wrong direction
+# before
+# the failing conjunct was extracted by hand. A diagnostic that took that long to interpret should
+# at
+# least have its own trigger condition pinned.
+
+
+def test_a_blocking_record_at_exactly_the_coverage_threshold_is_still_noted() -> None:
+    """`>=`, not `>`: a median exactly at the C6.2 gate is at it, so the note must fire.
+
+    Asserted from both sides. Only the at-gate half distinguishes `>=` from `>`; the below-gate half
+    keeps the note from being widened until it fires on every blocking record, which would make it
+    noise and cost it the attention it exists to attract.
+    """
+    at_gate = _record("yeslab_999", "SCREEN_X_STRUCTURAL_COVERAGE_V1", "ELIGIBILITY_FAIL",
+                      ("MISSING_MONTH_OR_LOW_MONTHLY_COVERAGE",), 0.70, 0.10)
+    audit = M.audit_admission(("yeslab_999",), (at_gate,))
+    assert not audit.passed
+    assert any("despite median coverage" in note for note in audit.notes), (
+        "median exactly at COVERAGE_GATE_THRESHOLD must still be noted as blocking-despite-coverage"
+    )
+
+    just_below = _record("yeslab_999", "SCREEN_X_STRUCTURAL_COVERAGE_V1", "ELIGIBILITY_FAIL",
+                         ("COVERAGE_GATE_FAIL", "LOW_MEDIAN_SAMPLE_COVERAGE"), 0.6999, 0.10)
+    below = M.audit_admission(("yeslab_999",), (just_below,))
+    assert not below.passed
+    assert not any("despite median coverage" in note for note in below.notes), (
+        "a median below the gate failed on coverage; the note would misdirect the reader"
+    )
+
+
+def test_the_coverage_note_threshold_is_the_c62_gate_and_names_itself() -> None:
+    """0.70 is C6.2's coverage gate, and a median between it and any higher candidate must note.
+
+    Three separate pins, because each catches a different drift: the constant's value, the note
+    firing at 0.80 (which is above 0.70 but below 0.99, so it distinguishes the real threshold
+    plausible-looking stricter one), and the message quoting the threshold it used -- so raising the
+    constant without updating the text a reader relies on fails here rather than silently.
+
+    0.70 belongs to the live screen on factor_daily. The persisted snapshot this gate reads uses
+    0.80
+    for the same quantity, which is one of the reasons the two instruments are not comparable and
+    decision L exists; pinning 0.70 here records which of the two this gate adopted.
+    """
+    assert M.COVERAGE_GATE_THRESHOLD == 0.70
+
+    between = _record("yeslab_999", "SCREEN_X_STRUCTURAL_COVERAGE_V1", "ELIGIBILITY_FAIL",
+                      ("MISSING_MONTH_OR_LOW_MONTHLY_COVERAGE",), 0.80, 0.10)
+    audit = M.audit_admission(("yeslab_999",), (between,))
+    notes = [note for note in audit.notes if "despite median coverage" in note]
+    assert notes, "0.80 is above the 0.70 gate, so the note must fire"
+    assert "0.7" in notes[0], (
+        f"the note must name the threshold it applied so the reader can check it: {notes[0]}"
+    )

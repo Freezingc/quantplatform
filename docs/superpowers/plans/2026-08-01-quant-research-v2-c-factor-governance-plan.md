@@ -5340,3 +5340,117 @@ B-i 要改 `_expand_metric_events` 的排序（把 `report_period` 提到 `avail
   **决定 I 及其姊妹判据未被代做**；**裁决 2/3 与决定 A–N 全部仍开放。**
 - 证据：`mutation_fold_coverage_before_and_after.txt`（含 12 个变异的前后对照、
   M-B 忠实变异的重跑、M-H 等价性的探针对比），两个脚本副本同存。
+
+## 勾选审计续四十五（2026-09-07 04:00）：第二道门（门 2，决定 M 的标的）变异测试完成——**14 个变异全杀**；其中一个变异**就是决定 M 的 (M-i) 选项**，它被杀这件事本身是给 M 的一条证据
+
+### 一、为什么接着做门 2
+
+续四十四末尾点名了下一个：`verify_admission_consistency.py`。理由是
+**一道已知有设计盲区的门，其测试强度更该先被验证**——
+续三十三已证它的阻塞 scope 之 population 恰是 predictive 筛查的**通过者**，
+故一道筛查失败会把因子移出它的视野（决定 M）。
+**盲区是设计层的；但如果连它已有那部分职责的测试都不牢，M 落地时就没有基线可比。**
+
+### 二、14 个变异：初次 12 杀 2 活
+
+`audit_admission` 是纯函数（收 `admitted` + `ScreeningRecord` 元组，返回 `AdmissionAudit`），
+故变异可精确落在判据上：
+
+| | 变异 | 初次 |
+|---|---|---|
+| N-A | 资格判定反转（`!= "PASS"` → `== "PASS"`） | killed |
+| N-B | 去掉 scope 过滤（任何 scope 都阻塞） | killed |
+| N-C | `_is_blocking` 恒 True | killed |
+| N-D | `_is_blocking` 恒 False（门永不阻塞） | killed |
+| N-E | 去掉"仅限已准入因子"过滤 | killed |
+| N-F | 逐条失败降级为 note（没有任何单条会失败） | killed（4 条测试） |
+| N-G | 整条删掉"契约必须记录冲突"的要求 | killed |
+| N-H | 声明冲突不再抑制那条汇总失败（更严） | killed |
+| N-I | 去掉"未被使用的 override"上报（陈旧豁免静默累积） | killed |
+| **N-J** | 覆盖 note 的 `>=` → `>` | **SURVIVED** |
+| **N-K** | `COVERAGE_GATE_THRESHOLD` 0.70 → 0.99 | **SURVIVED** |
+| N-L | 判定强制 `passed=True` | killed |
+| **N-M** | **实现决定 M 的 (M-i)：把 `DAILY_HAC_FDR` 加进阻塞 scope** | **killed** |
+| N-N | `parse_metrics` 不再取 median（覆盖 note 永不触发） | killed |
+
+### 三、两个存活都在**同一条 note** 上，而那条 note 正是花了两轮才读懂的那一条
+
+N-J 与 N-K 都落在
+*"blocking status despite median coverage X >= 0.7; inspect the scope's other criteria"* 这条 note 上：
+一个是它的边界（`>=` 对 `>`），一个是它的阈值常量（0.70）。
+**它们能存活的原因只有一个**：既有唯一触发该 note 的测试用的 median 是 **0.9978**——
+**它同时高于 0.70 与 0.99，故无法区分两者。**
+
+**为什么这条 note 值得单独钉住**：它是**门 2 里唯一暗示 398/464 真实形状的东西**——
+九个存量字段里八个达标、只有 `minimum_monthly_day_ratio = 0.0`。
+**而把它读成"覆盖率失败"曾让审计走错两轮**（续二十九判为"快照假阳性"、
+续三十二判为"取决于决定 L"），直到续三十三把失败的那个 conjunct 取出来才结案。
+**一条花了这么长时间才被正确解读的诊断，至少应该把它的触发条件钉住。**
+
+**已补 2 条测试**（各自钉住多个面，因为单面钉不住比较式）：
+- `test_a_blocking_record_at_exactly_the_coverage_threshold_is_still_noted`：
+  median **恰好 0.70 → note 必须触发**（杀 N-J）；**0.6999 → 必须不触发**
+  （**这一侧同样必要**：否则把 note 放宽到"每条阻塞记录都触发"也能过，而那样它就变成噪声、
+  失去它存在的目的）。
+- `test_the_coverage_note_threshold_is_the_c62_gate_and_names_itself`：**三重钉**——
+  常量值 `== 0.70`、median **0.80**（高于 0.70 而低于 0.99，故能区分真阈值与一个看起来合理的更严阈值）
+  时 note 必须触发、且**消息里必须出现它实际用的那个阈值**
+  （这样"改常量但不改读者依赖的文案"会在这里失败，而不是静默通过）。
+
+**重跑同一套 14 个变异：全杀，0 存活**；N-J 与 N-K 各被对应那条新测试单独杀掉。
+测试数 **13 → 15**；被变异脚本**还原后逐字节相同**。
+
+### 四、N-M 被杀，这条结果本身是给决定 M 的证据
+
+**N-M 不是缺陷搜寻，它是把决定 M 的 (M-i) 选项实现了一遍**
+（`BLOCKING_SCOPE_SUBSTRINGS = ("STRUCTURAL_COVERAGE",)` →
+`("STRUCTURAL_COVERAGE", "DAILY_HAC_FDR")`）。
+**结果：killed**，由 `test_non_blocking_scope_failure_does_not_block_admission` 抓住。
+
+**含义（对 M 的成本估计有直接影响）**：
+
+1. **套件确实钉住了"当前哪些 scope 是阻塞的"**，故 **M-i 不可能被静默实现**——
+   实施者必须**有意识地改那条测试**，正如 `test_two_events_tied_on_every_sort_key...` 的
+   docstring 自称"tripwire"那样。**这是好事**：M-i 会立刻让门 2 对 206 与 375 报 FAIL
+   （续三十三），那本来就是需要 owner 看见的后果，不该悄悄发生。
+2. **故 M-i 的实施成本里应加一条**：**改一条既有测试**（而不是只加常量）。
+   这与续三十六给 N-i 加的"与裁决 4 同批则边际成本为零"是同类信息——
+   **都是把某个选项的成本从"看起来只是改一行"校正为它真实的样子。**
+3. **M-ii（"缺席即发现"）没有被本轮的任何变异覆盖**：本轮变异的是既有逻辑，
+   而 M-ii 要新增一条"没有行就是 `NO_EVIDENCE`"的判据，**那是新行为、不是变异**。
+   **故 M-ii 的测试成本无法由本轮推断，仍未估。**
+
+### 五、顺带钉住的一处跨文书事实
+
+新测试的 docstring 里写明了：**0.70 是活体筛查（`factor_daily`）的门限，
+而门 2 所读的持久化快照对同一个量用的是 0.80**——
+**这正是决定 L 存在的原因之一（两台仪器不可比）**。
+**把"门 2 采用的是哪一个"写进测试**，等于在代码里留了一处
+**不会被文书过期影响的记录**：将来谁改这个常量，会同时读到"另一个数是 0.80、那是快照的、L 在议"。
+
+### 六、这条结论的边界
+
+- **已做两道门**（`verify_frozen_fold_coverage.py` 12 个变异、`verify_admission_consistency.py` 14 个）。
+  **仍未做**：`screen_factor_daily_coverage.py`、`verify_frozen_report_path.py`、
+  `verify_factor_daily_backfill.py`、以及 `preflight_frozen_baseline.py` 自身
+  （它的豁免路径有 15 条测试，续三十二只端到端跑过一次真实门，**未变异**）。
+  **未立项、未估工。**
+- **故"套件断言强度足够"仍未被证明**，续四十三那句限定继续有效。
+  两道门的样本（26 个变异、5 个初次存活、其中 2 个经查证非洞、3+2 个真洞已补）
+  **提示真洞率不低**（5/26 ≈ 19% 的初次存活里，约 5/5 是可判定的边界类），
+  **但这只是提示，两道门不足以外推到其余四道。**
+- 变异仍是手工驱动（改文件 → 跑测试 → 还原），本轮两次运行都核对了
+  `restored byte-identical: True`。
+
+### 七、门槛（全部重测）
+
+- `pytest tests -q` → **1598 passed / 45 skipped**（92.92s）＝续四十四的 1596 **+2**
+- `ruff check src tests` → **All checks passed!**（中途 5 处注释/docstring 超长已重排）
+- `mypy src` → **Success: no issues found in 158 source files**
+- **本轮只加测试，未改任何 `src/` 或 `scripts/` 的实现**（14 个变异全部还原、已核对逐字节相同）
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何门阈值、scope、契约、schema 或 `dropna` 口径**——
+  **特别是 `BLOCKING_SCOPE_SUBSTRINGS` 与 `COVERAGE_GATE_THRESHOLD` 都保持原值，只是被钉住了。**
+- **决定 M 未被代做**（N-M 只是把 (M-i) 当作变异试了一次并**立即还原**，
+  故仓内 scope 集合一字未改）；**决定 L 未被代做**；**裁决 2/3/4 与决定 A–N 全部仍开放。**
+- 证据：`mutation_admission_consistency_14_of_14.txt`（含 14 个变异的前后对照与还原核对），脚本副本同存。

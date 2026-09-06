@@ -966,6 +966,19 @@ again"*。**该目的在当前的 scope 选择下达不到。**
 **倾向（不代做）**：**(M-ii)**。M-i 抓不到 443（零行 ≠ FAIL），M-iii 只修这一次不修机制；
 **"缺席即发现"是唯一补上机制的一条，且对本轮三个实例同时生效。**
 
+**续四十五给 M 的成本估计补了两条实测事实**（对 `verify_admission_consistency.py` 做 14 个变异，
+最终 14/14 全杀，测试 13 → 15）：
+
+1. **(M-i) 不可能被静默实现。** 把 (M-i) 本身当作一个变异跑了一遍
+   （`BLOCKING_SCOPE_SUBSTRINGS` 加入 `"DAILY_HAC_FDR"`）——**killed**，
+   由 `test_non_blocking_scope_failure_does_not_block_admission` 抓住。
+   **故套件确实钉住了"当前哪些 scope 是阻塞的"，实施 (M-i) 必须有意识地改那条既有测试。**
+   这是好事：M-i 会立刻让门 2 对 **206 与 375** 报 FAIL（见上），那本就该被 owner 看见。
+   **但 (M-i) 的成本里因此要加一条：改一条既有测试，不只是加一个常量。**
+2. **(M-ii) 的测试成本无法由本轮推断，仍未估。** 本轮变异的是既有逻辑，
+   而 (M-ii) 要**新增**一条"冻结成员在阻塞 scope 里没有行就报 `NO_EVIDENCE`"的判据——
+   **那是新行为，不是变异**，故 14 个变异里没有一个覆盖它。
+
 **证据**（全部只读 SELECT，脚本副本同存）：
 `predictive_verdict_vs_grade_instrument.txt`、`factor_quality_grade_frozen17.txt`、
 `rankic_month_gap_and_predictive_pool.txt`、`rankic_left_edge_census.txt`。
