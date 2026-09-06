@@ -302,6 +302,50 @@ i.e. it is a **host property rather than a declared one**"*。
 **"3.4 重启前必须先处理的一件事"**（续跑键必须含驱动/契约版本，否则一次改变数值语义的修复
 会让同一 artifact root 静默混入两种口径——本轮那 13 个陈旧检查点就是该缺口的实例）。
 
+**裁决 2 (a) 新增一条前置守卫（2026-09-07 00:15，C 计划续三十九）：并发化之前，先让版本指针读取在歧义时拒绝。**
+
+(a) 的三条前置此前记为"钉住并记录线程数、搜索循环并发化、为并发重写续跑粒度"。
+本轮扫"非全序 `ORDER BY` 却被按位置消费"这一类时，查出**第四条，且它是 (a) 的前置而不是它的可选装饰**。
+
+**事实**：全仓 24 处 `order by` 里 **7 处**是 `select top 1 data_version … order by published_at desc`，
+即**版本指针读取**；`published_at` 是 `[now()]` 写入的**毫秒** TIMESTAMP，**故该 ORDER BY 不是全序**，
+而 `top 1` 会把并列**藏起来**（只回一行，结果里看不出还有并列者）。
+**其中后果最重的一处是 `db/publish.py:446` 的 `_previous_version`**——
+它决定要不要推进指针、以及判 `"data_version is already current"`。
+另 6 处：`compact/publisher.py:131`/`:323`、`compact/verification.py:142`、
+`publish_factor_daily_versions.py:198`、`run_factor_repair_overlay.py:726`、
+`record_train_similarity_full_day.py:132`。
+
+**当前零实例（实测，口径比续三十六那次更强）**：`published_version` **1,210 行、19 个对象**，
+不同 `(object_name, logical_partition, published_at)` **也是 1,210**，加上 `data_version` 仍是 1,210
+⇒ **没有任何两行共享 (对象, 分区, 时间戳)**。
+（`distinct (object, partition, data_version)` 为 **1,206**，差的 4 行是同一版本对同一分区发布两次，
+即 `publish_chunk_stream` docstring 里那条重试路径；**对 `top 1` 无害**，因两次 `published_at` 不同。）
+
+**为什么这与 (a) 有关**：触发歧义只需要**同一 (对象, 分区) 在同一毫秒内写入两个不同 `data_version`**。
+**在串行口径下可以按"不可能"忽略；而 (a) 要 48 路并发**，
+虽然并发 worker 按设计各自负责不同分区（故不共享 `logical_partition`），
+**但"毫秒级同分区双写"从此不再是一个可以按'串行所以不可能'驳回的形状。**
+**故零实例是当前执行口径的函数，而 (a) 正要改那个口径。**
+
+**建议的前置守卫**：把这 7 处改成 `select top 2`，
+**当两行 `published_at` 相同而 `data_version` 不同时 `raise`**——
+fail-closed，与本仓既有范式 `pit/market.py:48-50`（组内不等即不折叠）一致，
+且**在当前数据上是 no-op**（零实例已实测）。
+**不采用"加 `data_version desc` 作 tiebreaker"**：那会让字典序决定**谁是当前版本**，
+即在没有授权的地方挑一个胜者——**这与 C 计划续三十七在 `source_backfill` 里拒绝做的是同一件事**。
+
+**另需注意：`previous_data_version` 不能替代时间戳。** 乍看该表自带版本链，
+似乎可以靠走链回答"谁是当前版本"、从而绕开毫秒时钟；
+**实测该列在 1,060 / 1,210 行（87.6%）为空**——因为 `_previous_version` 在
+该 (对象, 分区) **首次发布时返回 `""`**，而绝大多数分区只发布过一次。
+**一条 87.6% 断头的链定位不到链尾**；若按它实现，会得到一个
+**在 150 行上看起来对、在 1,060 行上静默返回空指针**的东西。
+
+**给 (c)（加单调列）的定性**：那是真正的修法，但**是 schema 变更**，
+故其前置是**决定 J / 决定 K**（"谁可以改 schema、改到哪个库"），**不能先于它们**。
+证据：`published_version_pointer_order_census.txt`；详见 C 计划续三十九。
+
 **裁决 2 补充证据（2026-09-06 11:05）：正在被逐位复现的基线本身就不收敛，而"收敛与否"没有被任何工件记录。**
 
 这条把裁决 2 从"为了可复现性应当钉住线程数"升级为"**被复现的那个对象本身不是一个不动点**"。
