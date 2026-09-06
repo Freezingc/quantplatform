@@ -4717,3 +4717,116 @@ M4 让所有因子都拿 provider / M5 把 206 的 calculator 名改成 median �
 - **未写任何数据库**（本节全是读代码 + `rg`）；**未碰** `materialization_status.{json,md}`；
   **未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、scope、门阈值或 `dropna` 口径**。
 - **决定 I 未被代做**（本节只给它加了第二个实例）；**裁决 2/3/4 与决定 A–M 全部仍开放。**
+
+## 勾选审计续三十九（2026-09-07 00:05）：把"非全序 `ORDER BY` 却被按位置消费"按类扫了一遍——24 处里 **7 处非全序、实测零实例**；而本轮**自己想出的那个修法被数据否证了**
+
+### 一、这一类是什么，为什么接着扫
+
+续三十六在 `compact/publisher.py` 记下过一句：SQL 侧 `order by published_at desc`
+**也不是全序**（`published_at` 由 `[now()]` 写入，毫秒精度）。
+它与刚收尾的那一类是**同族的另一半**：
+
+> 上一类是**进程内**的稳定排序键不全序 ⇒ 并列由 pandas 的输入行序决定；
+> 这一类是**数据库侧**的 `ORDER BY` 不全序 ⇒ 并列由存储引擎 unspecified 的返回序决定，
+> 而 `select top 1` 会把并列**藏起来**（只回一行，看不出还有并列者）。
+
+**后者更隐蔽**：进程内的那一类至少还能靠"换个行序重跑"复现，
+而 `top 1` 的并列**在结果里没有任何痕迹**，只能靠查表本身才能发现。
+
+### 二、扫描与分类：24 处 `order by`，17 处全序、7 处非全序
+
+`rg -i "order by" src/ scripts/` 命中 **24 处**，分四组：
+
+| 组 | 处数 | 排序键 | 是否全序 | 依据 |
+|---|---|---|---|---|
+| `order by cal_date` | 10 | `cal_date` | **全序** | `trade_calendar` 每个 `cal_date` 一行，键唯一 |
+| `order by trade_date, ts_code` / `ts_code, trade_date` / `ts_code` / `ts_code, start_date` | 6 | 业务键 | **全序** | 分别是日行情主键、`stock_info_table` 的 `ts_code`、SCD 的 `(ts_code, start_date)` |
+| `order by factor_id, yr` | 1 | 分组键 | **全序** | 紧跟 `group by factor_id, year(signal_date) as yr`，结果里该组合唯一 |
+| **`order by published_at desc`** | **7** | **`published_at`** | **非全序** | `published_at` 是 TIMESTAMP（毫秒），**不保证唯一**；且 7 处全是 `select top 1` |
+
+**7 处全是同一个查询形状**——"这个 (对象, 分区) 的当前 `data_version` 是什么"，即**版本指针读取**：
+
+| 位置 | 用途 |
+|---|---|
+| **`src/research_v2/db/publish.py:446`（`_previous_version`）** | **发布器自己的指针读取**：决定要不要推进指针、以及判 `"data_version is already current"`。**后果最重的一处** |
+| `src/research_v2/compact/publisher.py:131`、`:323` | 紧凑层读源对象指针 / 读单分区指针 |
+| `src/research_v2/compact/verification.py:142` | 最新 manifest 核验 |
+| `scripts/publish_factor_daily_versions.py:198` | `factor_daily` 版本状态汇报 |
+| `scripts/run_factor_repair_overlay.py:726` | 读 `market_daily_clean` 指针 |
+| `scripts/record_train_similarity_full_day.py:132` | 读 `factor_observation_clean` 指针 |
+
+### 三、实测：零实例——但**这是"今天没有"，不是"不会有"**
+
+`published_version` 全表实测（只读 SELECT）：
+
+| 量 | 值 |
+|---|---|
+| 行数 | **1,210** |
+| 不同 `(object_name, logical_partition, published_at)` | **1,210** |
+| 不同 `(object_name, logical_partition, published_at, data_version)` | **1,210** |
+| 不同 `(object_name, logical_partition, data_version)` | **1,206** |
+| 覆盖对象数 | 19（`factor_daily`、`factor_observation_clean`、`market_daily_clean`、`universe_daily` …） |
+
+**前两个数都等于行数 ⇒ 没有任何两行共享 `(对象, 分区, published_at)`，故当前零歧义。**
+（**本轮的分组带上了 `object_name`**：续三十六那次只按 `(logical_partition, published_at)` 分组，
+虽然结论方向相同，但**跨对象可能相互抵消**，故这次是更强的口径。）
+
+**第四个数的差值也有解释**：1,210 − 1,206 = **4 行是"同一分区、同一 `data_version` 被发布两次"**，
+即 `publish_chunk_stream` docstring 里那条重试路径（*"a retry can safely use the same
+`data_version`"*）。**它对 `top 1` 无害**，因为两次的 `published_at` 不同、较晚者确定胜出。
+
+**但零实例只说明今天没发生**：`published_at` 来自 `[now()]`（毫秒），
+**要触发歧义只需要同一 (对象, 分区) 在同一毫秒内写入两个不同的 `data_version`**。
+**而裁决 2 的 (a) 选项要把执行改成 48 路并发**——
+虽然并发 worker 按设计各自负责不同分区（故不共享 `logical_partition`），
+**但"毫秒级同分区双写"从此不再是一个可以按'串行所以不可能'忽略的形状。**
+**这是本轮把它扫出来的实际理由：它的零实例是**当前执行口径**的函数，而那个口径正在被裁决 2 重议。**
+
+### 四、如实记录：本轮自己想出的那个修法，被数据否证了
+
+看到 schema 里有 `previous_data_version` 时，本轮的判断是：
+**"`published_version` 本身就是一条版本链，故'谁是当前版本'可以靠走链回答，
+根本不需要依赖毫秒时间戳"**——若成立，这会是四个选项里最好的一个
+（用已有的列，不加 schema、不改语义、不引入武断 tiebreaker）。
+
+**实测否证了它**：`previous_data_version` 在 **1,060 / 1,210 行（87.6%）为空**。
+原因就是 `_previous_version` 的语义——**该 (对象, 分区) 首次发布时它返回 `""`**
+（`db/publish.py:456-458`：`if result.empty: return ""`），
+而 1,210 行分布在 19 个对象 × 各自的分区上，**绝大多数 (对象, 分区) 只发布过一次**，
+故链上根本没有前驱可记。**一条 87.6% 断头的链不能用来定位链尾。**
+
+**这条必须写下来**：它是本轮唯一一次"看起来显然更好的修法"，
+而它错在一个**只有查数据才能知道的事实**上（那一列大部分是空的）。
+**若按它去改，会得到一个在 150 行上看起来对、在 1,060 行上静默返回空指针的实现。**
+
+### 五、余下三个选项，每一个都是决定而不是机械修复
+
+| | 做法 | 为什么是决定 |
+|---|---|---|
+| **(a) 武断 tiebreaker** | `order by published_at desc, data_version desc` | **确定性有了，但对一个"版本指针"来说 `data_version` 的字典序没有任何语义**——它会在歧义时**挑一个胜者**，而挑胜者正是续三十七在 `source_backfill` 里**拒绝**去做的那件事 |
+| **(b) 拒绝歧义** | 改成 `select top 2`，若两行 `published_at` 相同而 `data_version` 不同则 `raise` | **fail-closed，与本仓 `pit/market.py:48-50` 的既有范式一致**（组内不等即不折叠），且**只在当前零实例的那个分支上改变行为**。但它动的是**发布器自己的 `_previous_version`**——即门着指针推进的那一处，**7 处一起改才算改完**，属"会改变运行期行为"的改动 |
+| **(c) 加单调列** | 给 `published_version` 加一个序列/单调递增列并改 7 处排序 | **真正的修法**，但**是 schema 变更**——而**决定 J（C5.4 的比对状态存哪里）与决定 K（C5.5 能否写 V2Test）正是"谁可以改 schema、改到哪个库"这两件事**，故 (c) 的前置是 J/K，**不能先于它们** |
+
+**本轮不改，理由是三个选项里没有一个是机械的**：
+(a) 需要授权一个武断语义，(b) 会改发布器的运行期行为，(c) 的前置是 J/K。
+**这与续三十七对 `source_backfill` 的处置相反**——那里"拒绝歧义"是明确正确的，
+因为**歧义形状已经被实测到、且那条路径零调用者**；
+这里**歧义零实例、而受影响的是发布器主干**，故同一套范式要不要用、用在哪一层，需要 owner 定。
+
+**倾向（不代做）**：**(b)**。理由与续三十七一致——
+**"挑哪一个"是语义选择、无人授权；"拒绝歧义"不是**；
+且 (b) 在**当前数据上是 no-op**（零实例已实测），
+不像 (a) 会立刻改变"歧义时谁胜"的语义、也不像 (c) 需要先动 schema。
+**(b) 还应与裁决 2 一并考虑**：并发化会让"同毫秒同分区双写"从"串行故不可能"变成"需要被拒绝的形状"，
+**故 (b) 是 (a) 并发改造的前置守卫，而不是它的可选装饰。**
+
+证据：`published_version_pointer_order_census.txt`（含全部计数、schema 与 7 处清单）。
+
+### 六、门槛（全部重测）
+
+- `pytest tests -q` → **1593 passed / 45 skipped**（**本节零代码改动**，与续三十八同）
+- `ruff check src tests` → **All checks passed!**；`mypy src` → **158 文件清**
+- **未写任何数据库**（本节全是读代码 + 只读 SELECT）；**未碰** `materialization_status.{json,md}`；
+  **未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、schema、scope、门阈值或 `dropna` 口径**。
+- **决定 J / K 未被代做**（(c) 的前置正是它们）；**裁决 2 未被代做**（本轮只指出 (b) 是它的前置守卫）；
+  **裁决 3/4 与决定 A–M 全部仍开放。**
