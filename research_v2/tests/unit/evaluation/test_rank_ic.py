@@ -402,3 +402,79 @@ def test_a_cross_section_floor_below_two_is_refused() -> None:
     for floor in (1, 0, -5):
         with pytest.raises(ValueError, match="at least 2"):
             compute_daily_rank_ic(predictions, labels, minimum_cross_section=floor)
+
+
+# --- two properties this file was not pinning, and something else was ---------
+#
+# Both were already killed at full scope before these tests existed, which is why a
+# measurement round passed them over: R-J (a non-finite forward return counting as a
+# labelled row) died on the G6-denominator test in test_frozen_oos_evaluator.py, written
+# for a different module's mutation, and R-P (the sample degrees of freedom behind the
+# RankIC dispersion and therefore behind ICIR) died on a stored golden value in
+# tests/golden/test_dataset_and_metrics.py. A pin carried by exactly one foreign test is
+# a pin that disappears when that test is rewritten, and a golden file is regenerated as
+# a routine step after any deliberate metric change. Both properties belong here.
+
+
+def test_a_non_finite_forward_return_is_not_a_labelled_observation() -> None:
+    """``label_valid=True`` next to a NaN return is not a usable label, at this layer.
+
+    Thirty stocks all flagged valid, three of them with no forward return: the day has 27
+    labelled observations, so at a floor of 30 it is not evaluable. Counting the NaN rows
+    instead reports 30 valid labels and 30 scored rows and produces a RankIC anyway,
+    because pandas silently drops the NaN pairs when correlating -- the headline number
+    looks fine while the counts that feed G6's denominator and the run report do not.
+    """
+    day = date(2025, 1, 2)
+    codes = [f"S{index:03d}" for index in range(30)]
+    predictions = pd.DataFrame(
+        {
+            "signal_date": [day] * 30,
+            "ts_code": codes,
+            "score": [float(index) for index in range(30)],
+        }
+    )
+    labels = pd.DataFrame(
+        {
+            "signal_date": [day] * 30,
+            "ts_code": codes,
+            "raw_return_5d": [float(index) for index in range(27)] + [float("nan")] * 3,
+            "label_valid": [True] * 30,
+        }
+    )
+
+    daily = compute_daily_rank_ic(
+        predictions, labels, minimum_cross_section=30, include_invalid=True,
+        require_score_health=False,
+    )
+
+    assert daily.loc[0, "eligible_count"] == 30
+    assert daily.loc[0, "valid_label_count"] == 27
+    assert daily.loc[0, "sample_count"] == 27
+    assert not bool(daily.loc[0, "rank_ic_valid"]), "a 27-stock day cleared a floor of 30"
+
+
+def test_the_rank_ic_dispersion_uses_sample_degrees_of_freedom() -> None:
+    """The std behind ICIR is the sample std, and the difference is not marginal.
+
+    Three daily RankIC values of 0.1, 0.2 and 0.4 give 0.15275 with ddof=1 and 0.12472
+    with ddof=0 -- an 18% smaller dispersion, and ICIR is the mean divided by it, so the
+    population version reports a systematically better information ratio. A golden value
+    caught this before; an explicit assertion about which estimator is in use survives the
+    golden file being regenerated.
+    """
+    values = pd.Series([0.1, 0.2, 0.4])
+    daily = pd.DataFrame(
+        {
+            "signal_date": [date(2025, 1, 2), date(2025, 1, 3), date(2025, 1, 6)],
+            "rank_ic": [0.1, 0.2, 0.4],
+            "sample_count": [30, 30, 30],
+        }
+    )
+
+    summary = summarize_rank_ic(daily)
+
+    # Guard the guard: the two estimators really do differ on this fixture.
+    assert float(values.std(ddof=1)) != pytest.approx(float(values.std(ddof=0)))
+    assert summary.rank_ic_std == pytest.approx(float(values.std(ddof=1)))
+    assert summary.icir == pytest.approx(float(values.mean()) / float(values.std(ddof=1)))

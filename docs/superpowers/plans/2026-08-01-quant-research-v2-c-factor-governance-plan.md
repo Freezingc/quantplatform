@@ -7006,3 +7006,112 @@ golden 文件在**任何一次有意的指标变更之后都要重新生成**，
 2. **shadow 审批与 locked-test proof 机制**（连续三轮排第二）：
    `monitoring/shadow.py`、proof 的一次性消费、`registry._verified_workflow_proof`。
 3. 其余同前：约 1,530 个测试函数在已审计的八条链之外从未做过变异测量。
+
+## 勾选审计续六十一（2026-09-07 06:55）：**"谁的性质由谁钉"——把顺带钉住从四次偶发发现变成一张实测矩阵**。六条跨文件钉子**逐条单独跑出来**钉它的文件与测试；其中三条的宿主测试是**为别的目的写的**，已把钉子搬回本模块，另外三条的宿主**正是该行为的归属套件**，故只记范围划分、不复制断言
+
+### 一、为什么这一轮不是"再测一条链"
+
+续六十把它排到第一，理由是这件事**已经出现四次，而且每次都是事后才发现**：
+链 7 的 R-J、链 8 的 H-F/H-G/H-I、续五十八的 X-K/X-L/X-M、续五十七的 W-L。
+**这些钉子都真实有效**——变异体确实死了——**但都不在自己模块的测试文件里**。
+后果很具体：**重写或删除那个"顺手带着它"的测试时，被钉的性质会一起消失，而且不会有任何人被告知。**
+golden 那一类更脆：**任何一次有意的指标变更之后都要重新生成 golden 文件，那是常规操作。**
+
+**此前的证据只是 harness 日志里被截断的测试节点名。**本轮把它测成矩阵：
+对每一条"全范围被杀、但在本模块测试文件里存活"的变异，**逐个候选文件单独跑一遍**，记下究竟是谁杀了它。
+原始逐文件输出归档为 `attribution_matrix.txt`。
+
+### 二、实测矩阵（每格都是单独跑出来的，不是从日志推断的）
+
+**`evaluation/rank_ic.py`**
+
+| 变异 | `test_rank_ic.py` | `test_frozen_oos_evaluator.py` | `test_gates.py` | golden `test_dataset_and_metrics.py` | 判定 |
+|---|---|---|---|---|---|
+| **R-J** 非有限 forward return 仍算有效标签 | 存活（搬回前） | **KILLED** `test_g6_denominator_ignores_null_label_…` | 存活 | 存活 | **只有一个外来文件钉住 → 脆** |
+| **R-P** RankIC 离散度改用总体自由度 | 存活（搬回前） | 存活 | 存活 | **KILLED** `test_golden_daily_rank_ic_matches_indepe…` | **只有一个 golden 存量数值钉住 → 最脆** |
+| **R-O** 重复业务键守卫 | 存活 | 存活 | 存活 | 存活 | **四处都不钉**（续五十六已实测：第二重守卫即 merge 的 `validate="one_to_one"` 接住，只换异常类型与文案） |
+
+**`registry/model_registry.py`**
+
+| 变异 | `test_model_registry.py` | `test_locked_test.py` | `test_registry_cli.py` | `test_shadow_governance.py` | 判定 |
+|---|---|---|---|---|---|
+| **W-L** 证据哈希绑解析后的载荷而非文件字节 | 存活（搬回前） | 存活 | **KILLED** `test_registry_promote_dry_run_recomputes…` | 存活 | **只有一条 CLI 干跑输出断言钉住 → 脆** |
+| **X-F** 生产批准守卫要求错状态 | 存活 | **KILLED**（2 个测试）`test_independent_production_approval_re…` | 存活 | 存活 | **由该工作流自己的套件钉住 → 是范围划分，不是脆弱** |
+| **X-K** 锁定测试结论被反转 | 存活 | **KILLED**（6 个测试）`test_evaluator_crash_consumes_the_capabi…` | 存活 | 存活 | 同上 |
+| **X-L** 影子部署的双人规则 | 存活 | 存活 | 存活 | **KILLED** `test_shadow_transition_requires_a_separa…` | 同上 |
+
+**`evaluation/hac.py`**：**H-F / H-G / H-I 在搬回之前只由 golden 钉住，续六十已把它们搬回本模块**
+（改为断言不等式而非存量数值），**故它们不再出现在本轮矩阵里**——本轮做的正是同一件事的另外三条。
+
+### 三、判据：**外来钉子分两种，只有一种要搬**
+
+- **要搬（3 条）**：宿主测试是**为别的目的写的**——
+  R-J 的宿主是一条 **G6 分母**测试（链 4 为 V-H/V-I 写的）、
+  R-P 的宿主是一个 **golden 存量数值**、
+  W-L 的宿主是一条 **CLI 干跑输出**断言。
+  **这三处的宿主测试都不"关于"被钉的性质**，故重写它们的人不会意识到自己在拆钉子。
+- **不搬（3 条）**：X-F / X-K / X-L 的宿主分别是 `test_locked_test.py` 与 `test_shadow_governance.py`，
+  **而那正是锁定测试工作流与影子治理的归属套件**——
+  "生产批准要求锁定测试已通过""锁定测试结论不得反转""部署人不得等于批准人"
+  **本来就是那两个套件的主题**。**这不是脆弱，是范围划分**：
+  registry 单元测试文件重复它们只会造出第二份需要同步维护的写法
+  （与续五十七记的"策略被写两遍"是同一个错误）。**故本轮只在文书里记下归属，不复制断言。**
+
+### 四、搬回来的三条钉子
+
+1. `test_rank_ic.py::test_a_non_finite_forward_return_is_not_a_labelled_observation`（**R-J**）——
+   30 只全部 `label_valid=True`、其中 3 只前瞻收益为 NaN，在 30 的截面下限下断言
+   `eligible 30 / valid_label 27 / sample 27 / rank_ic_valid False`。
+   **要点是断言计数与可评价性，而不是相关系数**：变异体下 pandas 会静默跳过 NaN 配对，
+   **相关系数看起来正常，而喂给 G6 分母与 run 报告的计数是错的。**
+2. `test_rank_ic.py::test_the_rank_ic_dispersion_uses_sample_degrees_of_freedom`（**R-P**）——
+   三日 `[0.1, 0.2, 0.4]`：`ddof=1` 给 **0.15275**、`ddof=0` 给 **0.12472**，**小 18%**；
+   而 ICIR = 均值 ÷ 离散度，**故总体版本会系统性地报出更好的信息比**。
+   断言里含一条夹具自证 `std(ddof=1) != std(ddof=0)`，防夹具退化到两者相等而变成空测。
+3. `test_model_registry.py::test_the_evidence_hash_binds_the_file_bytes_not_its_parsed_content`（**W-L**）——
+   同一份证据**换一种缩进重新序列化**：解析后内容相同、字节不同，
+   断言两个摘要分别等于**各自字节的 sha256**、且**互不相等**。
+   **内容寻址的记录绑的是审阅者真正看过的那份产物**；改成对解析后的载荷取哈希，
+   摘要就会在重新序列化之后依然不变。
+
+### 五、搬回之后的实测变化
+
+- `test_rank_ic.py`：**12 → 14 个测试**；**定向存活从 3 条（R-J / R-O / R-P）降到 1 条（R-O）**。
+- `test_model_registry.py`：**17 → 18 个测试**；**W-L 从"只有 CLI 钉得住"变成本文件内 killed**；
+  定向存活仍是 **6 条（W-A / W-B / W-E / W-F / W-H / W-I）**，
+  即续五十七已逐条探针定性的那六条，**无新增存活**。
+- **三个受影响的全量 harness 都重跑并另存新名**（`*_after_local_pins.txt`），
+  使**每一份归档日志都能从当前提交的树原样复现**——
+  这是续五十一登记过的那处欠缺（日志与树不一致）的反面做法。
+
+### 六、门槛与证据（全部实测）
+
+- 三个全量 harness 重跑：**`rank_ic` 基线 111 passed、15 杀 1 存活（R-O）**；
+  **`registry_gate` 基线 191 passed / 3 skipped、10 杀 6 存活**；
+  **`lifecycle_guards` 基线 191 passed / 3 skipped、12 杀 0 存活**。
+  三者均**还原后逐字节相同并复跑通过**。
+  **杀/存活集合与搬回前完全一致**——**本轮改的是"谁钉的"，不是"有没有钉"。**
+- **全量门槛**：`pytest tests -q` → **1665 passed / 45 skipped**（续六十的 1662 + 本轮 3 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 归档：`attribution_matrix.py` 与 `attribution_matrix.txt`（矩阵的原始逐文件输出）、
+  `mutation_rank_ic_after_local_pins.txt`、`mutation_registry_gate_after_local_pins.txt`、
+  `mutation_lifecycle_guards_after_local_pins.txt`、
+  以及更新后的 `mutation_rank_ic_targeted_with_killers.txt` 与
+  `mutation_registry_gate_targeted_with_killers.txt`。
+
+### 七、下一轮候选（按本轮结果排序，非承诺）
+
+1. **shadow 审批与 locked-test proof 机制**（连续四轮排第二）：`monitoring/shadow.py`、
+   proof 的一次性消费、`registry._verified_workflow_proof`。
+   **本轮的矩阵恰好说明了为什么它排第二是合理的、也说明了为什么它仍然要做**：
+   X-F / X-K / X-L 都由那两个套件钉住，**说明它们覆盖得不差**；
+   **但"覆盖得不差"是从三条变异反推出来的，那两个文件自己从未被系统测量过。**
+2. **把矩阵变成可持续的东西**：本轮的候选文件表是**手写的**，
+   矩阵是手工挑出六条变异跑出来的。**若要长期防"顺带钉子无声消失"，
+   需要的是每次改动都能自动回答"这条性质现在由谁钉"**——
+   `attribution_matrix.py` 已是雏形（从各 harness 复用变异表、逐文件跑、记录杀手节点），
+   缺的是候选文件的自动选取。**这是一件工具活，不是一条链的测量活，应单独排一轮。**
+3. 其余同前：约 1,530 个测试函数在已审计的八条链之外从未做过变异测量。

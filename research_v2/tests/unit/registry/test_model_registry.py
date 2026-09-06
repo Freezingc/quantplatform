@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -315,6 +316,33 @@ def test_model_id_must_match_exactly_not_only_at_the_front() -> None:
     for candidate in (MODEL_ID + "\n", MODEL_ID + " ", MODEL_ID + "0", "model-1"):
         with pytest.raises(ValueError, match="model_id"):
             validate_model_id(candidate)
+
+
+def test_the_evidence_hash_binds_the_file_bytes_not_its_parsed_content(tmp_path: Path) -> None:
+    """The digest is over the raw bytes, so two files that parse alike hash differently.
+
+    Probed, and before this test the property was pinned in exactly one place: the CLI
+    dry-run test's ``payload["evidence_hash"] == hashlib.sha256(raw).hexdigest()``. A pin
+    carried by a single foreign test disappears when that test is rewritten. Hashing the
+    parsed payload instead of the bytes would let the digest survive a re-serialisation of
+    the evidence file, which is precisely what a content-addressed record must not do: an
+    approval binds the artifact a reviewer actually looked at, and the same content written
+    out differently is a different artifact.
+    """
+    original = _write_evidence(tmp_path, name="original.json")
+    document = json.loads(original.read_text(encoding="utf-8"))
+    reformatted = tmp_path / "reformatted.json"
+    reformatted.write_text(json.dumps(document, indent=2), encoding="utf-8")
+    # Guard the guard: same parsed content, genuinely different bytes.
+    assert json.loads(reformatted.read_text(encoding="utf-8")) == document
+    assert reformatted.read_bytes() != original.read_bytes()
+
+    _, original_hash, _ = load_walk_forward_evidence(original)
+    _, reformatted_hash, _ = load_walk_forward_evidence(reformatted)
+
+    assert original_hash == hashlib.sha256(original.read_bytes()).hexdigest()
+    assert reformatted_hash == hashlib.sha256(reformatted.read_bytes()).hexdigest()
+    assert reformatted_hash != original_hash
 
 
 # --- the other four hand-written lifecycle guards ----------------------------
