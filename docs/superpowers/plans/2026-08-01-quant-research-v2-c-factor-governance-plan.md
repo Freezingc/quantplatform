@@ -6174,3 +6174,86 @@ T-F 就是实例。同理，**"存活"也需要区分三种**：不可达（T-G�
    即需要先确认这个禁止是否真的在所有构造路径上成立。
 3. **链 2 之外**：本 session 仍有约 1,530 个测试函数在已审计的两条链之外未做变异测量，
    按续五十的收口方式，下一条链应挑**门阈值最集中**的那一段（而非测试最多的那一段）。
+
+## 勾选审计续五十三（2026-09-07 02:25）：钉上链 2 剩下四条存活里**唯一"弄反就是真缺陷"的那条**（T-J）——12 个变异现在 **9 杀 3 存活**；顺带查出这个"正确不对称"的**另一半早就有钉子**，也就是说它一直是**半钉状态**，而这比全没钉更容易骗过读测试的人
+
+### 一、为什么下一条是 T-J，而不是另外三条存活
+
+续五十二第六节把候选排了序，T-J 排第一。理由不是它"存活"，而是它的**方向**：
+剩下三条（T-G 按契约不可达、T-K/T-L 只换异常类型与文案）**反转后都不构成缺陷**，
+而 T-J **反转后是缺陷**。`_percentile_frame` 里那处全驱动唯一的 `model.eval()`：
+
+- 它的两个调用点（驱动 357、672 行）拿到的是**训练环刚出来的模型**，
+  而 `training/torch_loop.py:55` 是 `self._model.train()`；
+- **M2/M3 确实用 `nn.Dropout(0.1)`**（`models/temporal.py`、`models/set_attention.py`）；
+- 故删掉这一行 = **在 dropout 生效的状态下给冻结 TEST 打分** =
+  喂给 G1–G6 的那批预测**逐次运行都不一样**。
+
+**"正确但没被钉"与"错误但没被钉"承担同样的风险**：它会被任何一次看起来无害的重构移走，
+而全量套件一声不响。
+
+### 二、核实了不对称的另一半：**它早已被钉**，所以缺口是"半钉"而不是"全裸"
+
+`_mean_seed_percentile_scores` 自己不 `eval()` 是**对的**——它的模型来自 `load_inference_artifact`，
+而 `inference/artifact_loader.py:111` 已经 `model.eval()`。本轮去查那半边有没有测试：**有**，
+`tests/unit/inference/test_artifact_loader.py:68`：
+`assert all(not candidate.training for candidate in loaded.models)`。
+
+**这反而让缺口更值得记一笔**：一个不对称的两半，一半有钉子、一半没有，
+**读测试的人会以为"模式处理这块已经测过了"**。
+**半钉状态比全没钉更容易骗过人**，因为它发出了"已覆盖"的信号，
+而这个信号只覆盖了不会被驱动直接调用的那一半。
+
+### 三、钉子与它的自证
+
+`tests/unit/scripts/test_run_real_candidate_training.py`：
+
+- 新夹具 `_ModeRecordingScorer`（继承已有的 `_StubScorer`）：按 `nn.Module` 的语义维护 `training`，
+  并在**被调用的那一刻**把模式记下来。
+- `test_percentile_frame_scores_in_eval_mode_when_handed_a_train_mode_model`：
+  先自证 `scorer.training is True`（**模型真的是以 train 模式到达的**，正如训练环留下的那样），
+  再断言 `modes_at_call == [False, False]`（两个日期各一次调用，**两次都在 eval 模式下发生**）。
+- **钉的是"调用时刻的模式"，不是"有没有调用过 `eval()`"**——
+  后者可以被一个不生效的 `eval()`（比如返回新对象而不改自身）骗过。
+- docstring 里写清了两半的分工**与另一半钉子的确切位置**，免得下次又只钉一半。
+
+### 四、门槛与证据（全部实测）
+
+- **定向杀验证**：T-J **control PASS → mutated killed → restored PASS**；
+  五条钉子（T-B / T-D / T-E / T-I / T-J）**全部同样通过**；
+  续五十二那三条组合复测不变——**T-E + 忠实 T-F = killed**、
+  **忠实 T-F 单独 = killed（死因正确：`Mismatched elements: 30 / 31`）**、
+  **harness 原 T-F = killed（死因是 `KeyError`）**；
+  两个测试文件合计 **34 passed**，两文件**还原后逐字节相同**。
+- **全量 harness 重跑**：基线 **121 passed**，12 个变异 → **9 杀 3 存活**
+  （杀：T-A、T-B、T-C、T-D、T-E、T-F 忠实版、T-H、T-I、**T-J**；存活：**T-G、T-K、T-L**），
+  **无新增存活**，还原后逐字节相同并复跑通过。
+  日志 `mutation_candidate_scoring_after_eval_pin.txt`。
+- **全量门槛**：`pytest tests -q` → **1622 passed / 45 skipped**；`ruff check src tests` 清；
+  `mypy src` **158 文件清**。
+- **本轮只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**；
+  **未改任何契约、schema、门阈值或 `dropna` 口径**；**未写任何数据库**；
+  **未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+
+### 五、链 2 这条线到此的收口判断
+
+12 个变异：**9 杀 3 存活**，三条存活都有定性、**都不是活缺陷**：
+
+- **T-G**（seed 合并去掉 `validate="one_to_one"`）：按上游契约不可达——
+  要产生重复 `(signal_date, ts_code)` 需要同一日期内同一 `ts_code` 出现两次，
+  而 `FeatureBatch.__post_init__` 禁止；
+- **T-K / T-L**（去掉两个空输入守卫）：去掉后分别是 `frames[0]` 的 `IndexError` 与
+  `pd.concat([])` 的 `ValueError`，**都会抛**，故不是 fail-open，只是换了异常类型与文案。
+
+**如实标注证据等级**：这三条的定性仍是**读代码推断**，没有像 T-D/T-E 那样构造出区分输入。
+要提到探针级需要——T-G：确认"同一日期同一 `ts_code` 两次"在**所有**构造路径上都被禁止
+（不只 `FeatureBatch.__post_init__`，还有 `TemporalFeatureBatch` 与驱动自己的构造点）；
+T-K/T-L：实测去掉守卫后**抛的是什么、在哪一行抛**。
+**但这两件事的收益都低于去开下一条链**：它们反转后都不构成缺陷，
+而本 session 还有约 1,530 个测试函数在已审计的两条链之外从未做过变异测量。
+
+**故本轮把链 2 的变异审计收口**：除非有人要改 `_percentile_frame` /
+`_mean_seed_percentile_scores` / `predictions_to_frame` 这三处，
+那时应连带重跑 `mutate_candidate_scoring.py`（已归档，T-F 为忠实版）。
+下一轮按续五十的收口方式**挑下一条链**——标准是**"门阈值最集中"**，不是"测试最多"。

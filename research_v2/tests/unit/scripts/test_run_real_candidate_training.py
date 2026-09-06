@@ -453,3 +453,52 @@ def test_percentile_frame_is_date_ordered_whatever_order_the_mapping_iterates() 
     assert dates == sorted(dates), "dates were concatenated in mapping order"
     assert dates.count(date(2019, 1, 2)) == RAGGED_WIDTHS[date(2019, 1, 2)]
     assert dates.count(date(2019, 1, 3)) == RAGGED_WIDTHS[date(2019, 1, 3)]
+
+
+class _ModeRecordingScorer(_StubScorer):
+    """Track ``training`` the way ``nn.Module`` does, and record the mode at call time."""
+
+    def __init__(self, sign: float = 1.0, training: bool = True) -> None:
+        super().__init__(sign)
+        self.training = training
+        self.modes_at_call: list[bool] = []
+
+    def eval(self) -> _ModeRecordingScorer:
+        self.training = False
+        return self
+
+    def train(self, mode: bool = True) -> _ModeRecordingScorer:
+        self.training = mode
+        return self
+
+    def __call__(self, batch) -> torch.Tensor:
+        self.modes_at_call.append(self.training)
+        return super().__call__(batch)
+
+
+def test_percentile_frame_scores_in_eval_mode_when_handed_a_train_mode_model() -> None:
+    """The driver's only ``model.eval()`` is load-bearing, and it is the unpinned half.
+
+    ``_percentile_frame``'s two callers pass models straight out of the training loop,
+    and ``training/torch_loop.py:55`` leaves them in train mode, so this function has
+    to switch mode itself. ``_mean_seed_percentile_scores`` correctly does not: every
+    ``_concat_date_scores`` site passes ``loaded.models`` from ``load_inference_artifact``,
+    and that loader already calls ``model.eval()`` -- pinned on its own side by
+    ``tests/unit/inference/test_artifact_loader.py``'s
+    ``all(not candidate.training for candidate in loaded.models)``.
+
+    The asymmetry is exactly right, which is why it needs a pin: M2 and M3 both use
+    ``nn.Dropout(0.1)`` (``models/temporal.py``, ``models/set_attention.py``), so
+    deleting this one call would score the frozen TEST predictions fed to G1-G6 with
+    dropout active and make them run-to-run stochastic. Correct-but-unpinned can be
+    removed by any refactor that looks harmless.
+    """
+    scorer = _ModeRecordingScorer(training=True)
+    # Guard the guard: the model really does arrive in train mode, as the loop leaves it.
+    assert scorer.training is True
+
+    MODULE._percentile_frame(scorer, _ragged_batches())
+
+    assert scorer.modes_at_call == [False, False], (
+        "scores were produced while the model was still in training mode"
+    )
