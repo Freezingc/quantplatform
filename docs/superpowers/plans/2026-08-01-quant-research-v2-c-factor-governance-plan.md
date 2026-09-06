@@ -4617,3 +4617,103 @@ M4 让所有因子都拿 provider / M5 把 206 的 calculator 名改成 median �
   **2 处经核实为不适用**（`repair`、`compact_coverage`）——
   而本轮新修的 `source_backfill` 是该表第 8 行之外**同一类的第 9 处**，
   故该类的最终清点为 **9 处：3 修、2 范式、2 潜伏零实例、2 不适用**。
+
+## 勾选审计续三十八（2026-09-06 23:30）：把"硬编码为 PASS 的 BLOCKER 检查"按类扫了一遍——**13 处全部有支撑，无一处在产漏洞**；但这类记录**不可能失败**，故 `can_publish` 的 blocker 分支在这四个调用点上永不触发
+
+### 一、为什么扫这一类
+
+续三十七 §三发现 `publish_client_deduplicated_repair` 传下去的
+`CheckResult("repair_keys_unique", Severity.BLOCKER, CheckStatus.PASS)` **是一个写死的常量**，
+而 docstring 却承诺"only after all daily chunks pass duplicate-key validation"。
+本计划此前已两次遇到同一形状：**C7.5 那两条控制测试**（"在正确与被破坏实现下结论相同"，已被重写）。
+**三处同类 ⇒ 值得按类扫一遍，而不是逐个偶发地发现。**
+
+全仓 `rg "CheckResult\("` 命中 **4 个文件、14 处**，其中 **13 处**的状态是字面量
+`CheckStatus.PASS`，**1 处**是计算出来的（`repair_persistence.py:946`：
+`CheckStatus.PASS if passed else CheckStatus.FAIL`）——**后者是本仓的正确范式**。
+
+### 二、门本身怎么消费这些状态（决定了严重性）
+
+- `quality/engine.py::can_publish`：结果为空 → False；任一 `ERROR` → False；
+  **`check_name` 重复 → False**；**任一 `BLOCKER` 状态不是 `PASS` → False**；
+  `required_blocking_checks` 里点名而缺失或非 PASS → False。
+- `db/publish.py::publish_chunk_stream` 第 302 行调用它，False 即
+  `raise PublishValidationError("data-quality gate rejected staged batch")`。
+- **同函数另有独立强制**（与 checks 无关）：第 307-313 行"所有 chunk 必须同一发布身份"、
+  第 314 行 `batch.validate()`、第 322-324 行**跨 chunk 业务键重复即拒**。
+- `StagedBatch.validate()`（第 109-139 行）另强制：分区日期列存在且非空且**全部落在本逻辑分区内**、
+  业务键列存在、帧非空、业务键非空、**帧内业务键重复即 REJECTED**（第 138-139 行）。
+
+**故严重性取决于一件事**：每个被写死为 PASS 的名字，**是否在别处真的被强制**。
+逐个查了，13 处全部有支撑，**支撑方式分四类**：
+
+| 支撑方式 | 名字 | 证据 |
+|---|---|---|
+| **A. 同函数内显式 `raise`** | `candidate_scope_approved_factors`、`candidate_values_finite`、`candidate_no_overwrite`、`candidate_not_locked_test`、`candidate_keys_unique`（`publish_turnover_gap_candidates.py:200-204`，共 5 个） | `load_candidate_scope` 第 79-80 行 `set(factor_ids).issubset(APPROVED_FACTOR_IDS)` 否则 raise；第 119-120 行 `candidate_value.notna().all()` 否则 raise *"must all be finite"*；第 121-122 行源值必须全 NaN 否则 raise *"must not overwrite finite source values"*；**第 123-124 行 `observation_date.max() >= LOCKED_TEST_START` 否则 raise "candidate scope includes locked-test dates"**；第 126 行重复键 raise |
+| **B. 发布器自己强制** | `repair_keys_unique`、`factor_keys_unique`、`tradability_keys_unique`、`universe_keys_unique`、`market_keys_unique` | `StagedBatch.validate()` 第 138-139 行拒帧内重复；`publish_chunk_stream` 第 322-324 行拒跨 chunk 重复。**`materialize_train_years_pit_chain.py:205-206` 还另有一道本地 `raise ValueError("market batch contains duplicate keys")`，故 market 那一个是双保险** |
+| **C. 上游先隔离再暂存** | `repair_finite_values`、`factor_finite_values`、`market_finite_values` | 前两者读的是 `factor_observation_clean`／经 clean-quarantine 分流的帧，**有限性由 `deduplication.py` 的 `clean_unique = unique.loc[finite_unique]` 按构造成立**；market 那个由 `partition_invalid_ohlc(frame)`（`materialize_train_years_pit_chain.py:173`）**把非法 OHLC 切成 `ohlc_invalid` 并单独发隔离批**（第 190-194 行） |
+| **D. 该值是被计算出来的，不是被喂进来的** | `tradability_bitmap_valid`、`universe_membership_valid`、`market_source_schema`、`factor_source_schema`、`repair_source_rows` | `universe/tradability.py:118-141`：`reason_bitmap = 0` 后按各标志位 `\|=`，**且 `is_eligible_pre_liquidity = (reason_bitmap == 0)` 由它派生** ⇒ 位图与标志位**按构造互洽**，没有任何外部输入能令其不成立；`universe/builder.py:47` 的 `is_member`/`exclusion_reason`/`reason_bitmap` 出自 `build_universe(candidates, definition.rules)` 的**输出投影**（第 51-63 行），**不是调用方喂入的列** ⇒ 成员资格由规则算出；两个 schema 名由 `materialize_train_years_pit_chain.py:114/124/171`、`source_backfill.py:710`（*"YesLab factor query returned an invalid schema"*）的显式 raise 支撑；`repair_source_rows` 由 `_iter_client_repair_batches` 末尾"整月无行即 raise"支撑 |
+
+**结论：13 处里没有一处在产漏洞。** 特别是名字最 alarming 的那个——
+**`candidate_not_locked_test` 是有真实强制的**（`LOCKED_TEST_START = 2026-01-01`，
+第 123-124 行对 `observation_date.max()` 硬拒），
+**故 2026 锁定段的红线并不依赖那个常量 PASS**。
+
+### 三、但这不是一个可以留着不管的设计：这类记录**不可能失败**
+
+**A/C/D 三类的支撑都在 `CheckResult` 之外**，而 `CheckResult` 的状态是常量，故：
+
+> **`can_publish` 的 `has_failed_blocker` 分支，在这四个调用点上永远不会触发。**
+> **DQ 门在这些路径上提供的保护是零**；全部保护来自上游的 `raise`、隔离分流、
+> 发布器自己的 `validate()`／跨 chunk 查重、以及"该值是算出来的"。
+
+这**不是漏洞**（保护确实在，只是不在门里），但它有两个具体后果：
+
+1. **门的存在会误导读者。** `publish_client_deduplicated_repair` 的 docstring 就是实例：
+   它写 *"only after all daily chunks pass duplicate-key validation"*，
+   读起来像"有一道校验会跑"，实际是"去重已在暂存前做完，故那条校验恒真"。
+   **续三十七已把这一句登记为应读成"由构造保证"。**
+2. **`_dq_checks(names)` 是泛型的，故名单与强制之间没有任何绑定。**
+   `materialize_train_years_pit_chain.py:84-85` 是
+   `return [CheckResult(name, Severity.BLOCKER, CheckStatus.PASS) for name in names]`——
+   **传任何名字都返回 PASS**。故**往元组里加一个没有任何对应强制的名字，全套件依然全绿**，
+   而门会记录它"已通过"。**这与 C7.5 那两条被重写的控制测试是同一失效模式：
+   一条不可能失败的检查，等于没有检查，但它会让读者以为有。**
+
+**对照本仓已有的正确范式**：`repair_persistence.py:946`
+`return CheckResult(name, Severity.BLOCKER, CheckStatus.PASS if passed else CheckStatus.FAIL)`
+——**状态由 `passed` 计算**，故它**能**失败，`can_publish` 对它是活的。
+
+### 四、本轮为什么不改代码
+
+**因为 13 处都不是缺陷**，而"把常量 PASS 改成计算式"需要一个**能算出 `passed` 的判据**；
+对 B/D 两类，那个判据要么与发布器的 `validate()` 完全重复（多跑一遍同样的查重），
+要么根本不存在可失败的输入（该值是算出来的，没有"不成立"的可能）。
+**为恒真的性质写一个"能失败的检查"，只能靠人为构造一个会失败的输入，那是假检查。**
+
+**真正值得改的是第 2 条后果（名单与强制无绑定），而它不是本轮能单方面定的**：
+要么给每个名字配一个真实判据（B/D 两类无从配起），
+要么**把这些常量记录从 `CheckResult` 里拿掉、改为在文书里写明"该性质由构造保证"**。
+**后者会改变"DQ 门在这些路径上长什么样"，属于治理口径的选择**，故本轮**只登记，不改**。
+
+**但它不是决定 I 的第二个实例——决定 I 的判据对这一类完全无效，需要一条姊妹判据。**
+决定 I 的判据是"每个治理模块至少有一个生产调用者，或显式标注为设计参考"；
+**而这些 `CheckResult` 确实有调用者**（`publish_chunk_stream` 第 302 行把它们交给 `can_publish`）。
+**问题不在"没人用"，而在"它们的状态不可能不是 PASS"。** 故需要的是：
+
+> **每一条被记录为已通过的检查，要么能失败，要么被显式标注为"由构造保证"。**
+
+两者同族（**一条看起来承重、实际不承重的声明**）但作用在不同层：
+**I 问"有没有东西用它"，这条问"它能不能不成立"。**
+**C7.5 那两条被重写的控制测试**（"在正确与被破坏实现下结论相同"）是这条判据的**已有先例**——
+当时逐条发现并修，**本轮把它抽象成判据**。已挂到决定清单 §3c（决定 I）名下，
+**建议与 I 一并考虑**：两者要防的是同一种"看起来已经保证了"的误读，
+分开定会让同一份完成判据被改两次。
+
+### 五、门槛（全部重测）
+
+- `pytest tests -q` → **1593 passed / 45 skipped**（与续三十七同，**本节零代码改动**）
+- `ruff check src tests` → **All checks passed!**；`mypy src` → **158 文件清**
+- **未写任何数据库**（本节全是读代码 + `rg`）；**未碰** `materialization_status.{json,md}`；
+  **未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、scope、门阈值或 `dropna` 口径**。
+- **决定 I 未被代做**（本节只给它加了第二个实例）；**裁决 2/3/4 与决定 A–M 全部仍开放。**
