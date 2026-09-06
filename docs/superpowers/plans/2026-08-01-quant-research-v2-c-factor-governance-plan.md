@@ -6354,3 +6354,110 @@ G2 的夹具恰好卡在 2.000，**推断与 G1/G4/G6 同型**（只钉上侧）
 4. **U-E / U-O 的处置**：晋级路径不可达这一点已由 `_parse_gate_evidence` 的实读支持；
    若仍要钉，应钉在**直接调用 `evaluate_oos_gates`** 的层面（即"守卫自身 fail-closed"），
    并在 docstring 里写清它防的是直接调用方、不是 registry——否则会重复本轮"半钉"的误读问题。
+
+## 勾选审计续五十五（2026-09-07 03:00）：链 3 补测——G5 的失败路径、五个阈值的下侧、三处 fail-closed 读法全部钉上，**16 个变异从 6 杀 10 存活变成 16 杀 0 存活**；并把定向 harness 的输出升级成**节点级归属**，因为"死了"还得知道"是被谁弄死的"
+
+### 一、这轮做了什么
+
+续五十四测出 10 条存活并排了序；本轮按那个顺序把可钉的全部钉上：**9 条新测试**
+（`tests/unit/evaluation/test_gates.py` 从 **5 个测试变 14 个**），覆盖
+G5 的失败路径（U-K / U-L / U-I）、五个阈值的下侧（U-A / U-G / U-M，**外加续五十四只做推断、本轮实测的 G2 与 G3**）、
+G3 的零年份语义（U-D）、缺失 delta 的 fail-closed 读法（U-F）、
+"不可计算必须报成不可计算"（U-E）、以及日数守卫（U-O）。
+**门本身一行没动**：`gates.py` 全程只在变异期间被改、之后逐字节还原。
+
+### 二、结果：16/16 全杀，且**每条都记录了是谁杀的**
+
+本轮把定向 harness 的输出从"returncode + 摘要"升级成**节点级归属**（`killers=<测试名>`）。
+理由是续五十二那条方法论修正的**对称面**：上一轮的问题是"变异死了，但死因与被测语义无关"；
+**这一轮要防的是"变异死了，但功劳被记到错误的测试头上"**——
+一条变异被多个测试同时抓到时，删掉其中任何一个它都不会复活，
+审计若把功劳记在某个单一测试上，就会**同时高估那个测试的必要性、低估这套测试的冗余度**。
+
+| 变异 | 杀手数 | 杀手（测试名缩写） |
+|---|---|---|
+| **U-K** G5 用 min 代替 max | **3** | `g5_fails_when_one_year_carries` / `g5_passes_at_exactly_half` / `g5_clips_negative_years` |
+| U-C 比较改严格 | 2 | `baseline_marks_relative_gate...` / `double_gate_boundaries...` |
+| U-H 基线不再豁免 G4 | 2 | `baseline_marks_relative_gate...` / **`missing_candidate_delta_fails_g4`（本轮新增）** |
+| U-N 每天都算健康 | 3 | `g1_g4_and_g6_fail_just_below`（新）/ 两条原有 score-health 测试 |
+| U-P coverage 下限 0.90→0.89 | 2 | `score_health_requires_coverage...` / **`g1_g4_and_g6_fail_just_below`（新，副作用）** |
+| U-A / U-G / U-M 阈值下漂 | 各 1 | `g1_g4_and_g6_fail_just_below_their_thresholds`（新） |
+| U-D 零年份算正 | 1 | `g3_does_not_count_a_zero_year_as_positive`（新） |
+| U-E 不再要求年份齐全 | 1 | `incomplete_evidence_reports_not_computable`（新） |
+| U-F 缺 delta 变 NOT_APPLICABLE | 1 | `missing_candidate_delta_fails_g4_and_the_whole_report`（新） |
+| U-I G5 `<=`→`<` | 1 | `g5_passes_at_exactly_half_and_fails_just_above`（新） |
+| U-L G5 不截断负年份 | 1 | `g5_clips_negative_years_out_of_the_denominator`（新） |
+| U-O 日数 ≤ 0 不再被拒 | 1 | `non_positive_valid_day_count_fails_g6_instead_of_dividing_by_zero`（新） |
+| U-R 离散度 `>`→`>=` | 1 | `score_health_requires_coverage_unique_scores_and_dispersion`（原有） |
+| U-T `all_passed` 不接受 N/A | 1 | `baseline_marks_relative_gate_not_applicable`（原有） |
+
+**一处如实说明**：U-P 被新测试 `g1_g4_and_g6_fail_just_below_their_thresholds` 抓到是**副作用而非设计**——
+那条测试的"不健康日"用 coverage=0.89，**恰好落在 U-P 变异后的边界上**，于是它顺手也成了 coverage 下限的钉子。
+**碰上来的冗余和设计出来的冗余，可信度不一样**，故在此记明它是哪一种。
+
+### 三、G5 那条洞为什么值得单写一段
+
+`_evidence()` 的六个年份是 `0.01×5` 与 `-0.01`，**正贡献全部相等**。在这样的夹具上：
+max 与 min 同值、截不截负数同值、`<=` 与 `<` 同值——
+**G5 的四种实现错误全部不可见**。这不是"测试写得少"，
+而是**夹具的对称性恰好抹平了被测门的全部判别力**，
+而"5 个测试全绿"从外面看完全像是覆盖了。
+
+本轮的三个 G5 夹具各打破一种对称：
+
+| 夹具 | 年份 | G5 应有读数 | 杀掉的变异 |
+|---|---|---|---|
+| 单年独大 | `0.10` 对 `0.001×5` | 0.10/0.105 ≈ **0.952 → FAIL** | U-K（min 会给 0.0095 → PASS） |
+| 恰好一半 | `0.10, 0.10` 对四个 `0.0` | **0.50 → PASS**；`0.1001` 则 FAIL | U-I（`<` 会把 0.50 判 FAIL） |
+| 含负年份 | `0.20×3` 与 `-0.30` | 截断后 0.20/0.60 ≈ **0.333 → PASS** | U-L（不截断则 0.20/0.30 ≈ 0.667 → FAIL） |
+
+**三个夹具各自带一条数值自证**：断言 `observed_value` 的**具体数值**
+（`> 0.95`、`|x − 0.50| < 1e-12`、`== pytest.approx(0.20/0.60)`），而不是只断言 PASS/FAIL。
+**只断言状态的话，一个把 G5 恒判 FAIL 的变异同样会被"抓到"**，
+但那不是因为它测出了集中度——那正是续五十二在 T-F 上踩过的同一类坑，只是方向相反。
+
+### 四、阈值现在被夹在两侧；顺带查出一个**测试名与它实际证明的东西不符**
+
+| 门 | 阈值 | "恰好通过"侧 | "差一点失败"侧 |
+|---|---|---|---|
+| G1 | 0.030 | 原有（0.030） | **0.0299（新）** |
+| G2 | 2.000 | 原有（2.000） | **1.999（新）** |
+| G3 | 0.70 | **原夹具是 5/6 = 0.8333，并不在阈值上** | **4/6 = 0.6667（新）** |
+| G4 | 0.005 | 原有（0.005） | **0.0049（新）** |
+| G5 | 0.50 | **0.50（新）** | **0.1001/0.2001 略高于 0.5（新）** |
+| G6 | 0.95 | 原有（95/100） | **94/100（新）** |
+
+**G3 那一行是本轮读夹具读出来的一处名实不符**：原有测试叫
+`test_double_gate_boundaries_and_all_other_oos_gates_pass_at_exact_thresholds`，
+但 G3 的夹具值是 **0.8333，不在 0.70 上**，故"pass at exact thresholds"这个说法**对 G3 不成立**——
+它对 G1/G2/G4/G6 成立（0.030 / 2.000 / 0.005 / 95 of 100），对 G3 只是"离阈值还有余量地通过"。
+**续五十四据此推断"G3 要向上漂到 0.84 以上才会被抓到"，本轮实测确认了这个推断**
+（新增的 4/6 失败侧现在把它夹住了）。
+**本轮没有改那个测试名**——改名会让续五十四的记录与代码对不上，代价大于收益；差异记在这里。
+
+### 五、门槛与证据（全部实测）
+
+- **定向**（只跑 `tests/unit/evaluation/test_gates.py`，**每次 0.2s**，故 16 条变异各跑三遍也只花约 1 分钟）：
+  **control 14 passed → 16 条变异逐条 killed 且记录杀手 → restored 14 passed**；
+  `gates.py` **还原后逐字节相同**。日志 `mutation_oos_gates_targeted_with_killers.txt`。
+- **全量 harness**（四路径）：**基线 171 passed**，**16 杀 0 存活**，
+  还原后逐字节相同并复跑通过。日志 `mutation_oos_gates_16_of_16_after_pins.txt`。
+- **全量门槛**：`pytest tests -q` → **1631 passed / 45 skipped**（续五十三的 1622 + 本轮 9 条，
+  **skipped 数未变**）；`ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**；
+  **未改任何门阈值、契约、schema 或 `dropna` 口径**。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`model_evaluator.py`——喂给门的证据是怎么算出来的**。本轮只测了 `gates.py` 的**判定**，
+   **没测 `GateEvidence` 的组装**：`_score_health_evidence`（逐日 coverage / unique / std 从哪来）、
+   `_valid_label_day_count`（G6 的分母）、`_match_prediction_coverage`（候选与基线的可比口径，
+   即 G4 的 delta 到底在哪个截面上算）、`_reject_locked_or_future_dates`（2026 隔离）。
+   **证据算错，门判得再准也没用**——而 G4 的"fold-matched"这个性质正是靠 `_match_prediction_coverage` 实现的。
+2. **`registry/model_registry.py` 那套"第二道更严的门"**（`_parse_gate_evidence` /
+   `validate_walk_forward_evidence`）同样未做变异测量。续五十四正是**靠读它**才把 U-E/U-F/U-O
+   判成"晋级路径不可达"，**但"读它"与"测它"是两件事**——
+   那三条不可达的结论，强度取决于这套解析器有没有被钉住。
+3. 其余同前：约 1,530 个测试函数在已审计的三条链之外从未做过变异测量。
