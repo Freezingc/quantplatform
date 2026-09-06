@@ -176,3 +176,143 @@ def test_render_markdown_without_versions_still_renders_verdict() -> None:
     markdown = summarizer.render_markdown(_make_report())
     assert "Data versions" not in markdown
     assert "## Criterion 303 verdict" in markdown
+
+
+# --- Task 3.3: the extended selection fields have to reach the rendered verdict -------------
+
+_REPORTS = Path(__file__).resolve().parents[4] / "docs" / "reports"
+_LEGACY_JSON = _REPORTS / "2026-09-04-real-walk-forward-criterion-303.json"
+_LEGACY_MD = _REPORTS / "2026-09-04-real-walk-forward-criterion-303.md"
+
+
+def _extended_report(**overrides: object) -> dict[str, object]:
+    """The shape ``run_real_walk_forward.py`` emits since the extended fields landed.
+
+    Taken field for field from the Task 2.4 re-run report: each validation score carries
+    ``invalid_day_count`` beside ``valid_day_count``, each selection carries
+    ``unselected_reasons`` as ``[baseline_id, reason]`` pairs, and the report carries a
+    top-level ``baseline_oos_artifacts`` mapping fold id to a parquet path.
+    """
+    report = _make_report()
+    for selection in report["selections"]:  # type: ignore[union-attr]
+        for score in selection["validation_scores"]:
+            score["invalid_day_count"] = 0
+        selection["unselected_reasons"] = [
+            [baseline, "LOWER_VALIDATION_RANKIC"] for baseline in ("B0", "B1", "B3")
+        ]
+    report["baseline_oos_artifacts"] = {
+        fold: f"/tmp/run/baseline_oos/{fold}.parquet"
+        for fold in ("F01", "F02", "F03", "F04", "F05", "F06")
+    }
+    report.update(overrides)
+    return report
+
+
+@pytest.mark.skipif(not _LEGACY_MD.exists(), reason="archived criterion-303 evidence absent")
+def test_the_archived_criterion_303_markdown_is_still_reproduced_byte_for_byte() -> None:
+    """The archived evidence is a real file, so re-rendering it is a real regression test.
+
+    This is the strongest available pin on the renderer: not a synthetic expectation but the
+    committed markdown that criterion-303 was accepted against. Anything the extended-field
+    work does to the legacy rendering path shows up here as a byte difference, which is why
+    the new sections are appended conditionally rather than woven into the existing tables.
+    """
+    report = summarizer.load_report(_LEGACY_JSON)
+
+    assert summarizer.render_markdown(report) == _LEGACY_MD.read_text(encoding="utf-8")
+
+
+def test_invalid_day_counts_are_rendered_beside_the_valid_ones() -> None:
+    """``invalid_day_count`` is the field that says how many days a baseline lost.
+
+    It is the one number in the report that connects a validation score to the coverage
+    problem the frozen-set plan is blocked on, and before this it existed only in the JSON:
+    a reader of the verdict saw 0.0724 and had no way to know whether it came from 238 days
+    or from 118.
+    """
+    markdown = summarizer.render_markdown(_extended_report())
+
+    assert "## Selection detail" in markdown
+    assert "Invalid days" in markdown
+    assert "| F01 | B0 | 240 | 0 |" in markdown
+
+
+def test_a_baseline_that_lost_days_shows_it() -> None:
+    """The reason the field matters: a score computed on fewer days must not look like one
+    computed on all of them."""
+    report = _extended_report()
+    for selection in report["selections"]:  # type: ignore[union-attr]
+        if selection["fold_id"] != "F03":
+            continue
+        for score in selection["validation_scores"]:
+            if score["baseline_id"] == "B1":
+                score["valid_day_count"] = 226
+                score["invalid_day_count"] = 14
+
+    markdown = summarizer.render_markdown(report)
+
+    assert "| F03 | B1 | 226 | 14 |" in markdown
+
+
+def test_why_each_baseline_lost_is_rendered_per_fold() -> None:
+    report = _extended_report()
+
+    markdown = summarizer.render_markdown(report)
+
+    assert "LOWER_VALIDATION_RANKIC" in markdown
+    assert "| F01 | B0 | 240 | 0 | not selected: LOWER_VALIDATION_RANKIC |" in markdown
+    assert "| F01 | B2 | 240 | 0 | **selected** |" in markdown
+
+
+def test_fold_matched_baseline_artifacts_are_listed_with_their_paths() -> None:
+    """3.3's other half: the fold-matched baseline predictions have to be findable.
+
+    A path recorded only in JSON is a path nobody opens. Task 5.1 consumes these artifacts
+    as ``--baseline-artifacts``, so the verdict that issues them should say where they are.
+    """
+    markdown = summarizer.render_markdown(_extended_report())
+
+    assert "## Fold-matched baseline OOS artifacts" in markdown
+    assert "| F01 | /tmp/run/baseline_oos/F01.parquet |" in markdown
+    assert markdown.count("baseline_oos/F0") == 6
+
+
+def test_a_report_without_the_extended_fields_grows_no_empty_sections() -> None:
+    """Backward compatibility, asserted rather than assumed.
+
+    The archived criterion-303 report predates all three fields. Rendering it must not grow
+    a heading with nothing under it, which is how a report starts lying about what was
+    measured -- an empty "Invalid days" column reads as "zero invalid days", not as "not
+    recorded".
+    """
+    markdown = summarizer.render_markdown(_make_report())
+
+    assert "## Selection detail" not in markdown
+    assert "Invalid days" not in markdown
+    assert "## Fold-matched baseline OOS artifacts" not in markdown
+    assert "## Criterion 303 verdict" in markdown
+
+
+def test_the_extended_sections_come_before_the_verdict_so_the_verdict_stays_last() -> None:
+    markdown = summarizer.render_markdown(_extended_report())
+
+    assert markdown.index("## Selection detail") < markdown.index("## Criterion 303 verdict")
+    assert markdown.index("## Fold-matched baseline OOS artifacts") < markdown.index(
+        "## Criterion 303 verdict"
+    )
+
+
+def test_a_partially_extended_report_renders_what_it_has_and_omits_what_it_lacks() -> None:
+    """The three fields landed together in practice, but the renderer must not assume it.
+
+    A report carrying ``invalid_day_count`` but no ``baseline_oos_artifacts`` is what an
+    interrupted run produces, and it should render the detail table and simply not claim
+    there are artifacts.
+    """
+    report = _extended_report()
+    del report["baseline_oos_artifacts"]
+
+    markdown = summarizer.render_markdown(report)
+
+    assert "## Selection detail" in markdown
+    assert "## Fold-matched baseline OOS artifacts" not in markdown

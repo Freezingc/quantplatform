@@ -53,6 +53,17 @@ class FoldSelection:
 
 
 @dataclass(frozen=True)
+class SelectionDetailRow:
+    """One baseline in one fold: how many days it scored, how many it lost, and why it lost."""
+
+    fold_id: str
+    baseline_id: str
+    valid_day_count: int | None
+    invalid_day_count: int | None
+    outcome: str
+
+
+@dataclass(frozen=True)
 class Criterion303Verdict:
     all_gates_passed: bool
     folds_complete: bool
@@ -134,6 +145,69 @@ def data_version_summary(report: dict[str, Any]) -> dict[str, str] | None:
             f"{len(keys)} partitions ({keys[0]}..{keys[-1]})"
         )
     return summary
+
+
+def selection_detail(report: dict[str, Any]) -> tuple[SelectionDetailRow, ...] | None:
+    """Per-fold day counts and selection outcomes, or None if the report predates them.
+
+    ``None`` rather than an empty tuple on purpose. The extended fields --
+    ``invalid_day_count`` beside each validation score and ``unselected_reasons`` beside each
+    selection -- were added to the report after criterion-303 was archived, so the archived
+    report genuinely does not carry them. Rendering an "Invalid days" column for it would
+    show a dash or a zero, and a zero reads as "no days were lost" when the truth is "this
+    was not recorded". Omitting the section says the second thing.
+    """
+    selections = cast(list[dict[str, Any]], report.get("selections") or [])
+    carries_invalid_days = any(
+        "invalid_day_count" in cast(dict[str, Any], score)
+        for selection in selections
+        for score in selection.get("validation_scores") or []
+    )
+    carries_reasons = any("unselected_reasons" in selection for selection in selections)
+    if not carries_invalid_days and not carries_reasons:
+        return None
+    rows: list[SelectionDetailRow] = []
+    for selection in selections:
+        fold_id = str(selection.get("fold_id", ""))
+        winner = str(selection.get("selected_baseline_id", ""))
+        reasons = {
+            str(pair[0]): str(pair[1])
+            for pair in selection.get("unselected_reasons") or []
+            if isinstance(pair, (list, tuple)) and len(pair) == 2
+        }
+        for score in selection.get("validation_scores") or []:
+            entry = cast(dict[str, Any], score)
+            baseline_id = str(entry.get("baseline_id", ""))
+            valid = entry.get("valid_day_count")
+            invalid = entry.get("invalid_day_count")
+            if baseline_id == winner:
+                outcome = "**selected**"
+            elif baseline_id in reasons:
+                outcome = f"not selected: {reasons[baseline_id]}"
+            else:
+                outcome = "not selected"
+            rows.append(
+                SelectionDetailRow(
+                    fold_id=fold_id,
+                    baseline_id=baseline_id,
+                    valid_day_count=None if valid is None else int(valid),
+                    invalid_day_count=None if invalid is None else int(invalid),
+                    outcome=outcome,
+                )
+            )
+    return tuple(rows)
+
+
+def baseline_oos_artifacts(report: dict[str, Any]) -> dict[str, str] | None:
+    """Fold-matched baseline prediction artifacts, or None if the run did not save them.
+
+    Task 5.1 consumes these as ``--baseline-artifacts``, so a verdict that issues them has to
+    say where they are; a path recorded only in JSON is a path nobody opens.
+    """
+    artifacts = report.get("baseline_oos_artifacts")
+    if not isinstance(artifacts, dict) or not artifacts:
+        return None
+    return {str(fold): str(path) for fold, path in sorted(artifacts.items())}
 
 
 def criterion_303_verdict(report: dict[str, Any]) -> Criterion303Verdict:
@@ -236,6 +310,34 @@ def render_markdown(report: dict[str, Any]) -> str:
             "Full per-partition version mapping is stored in the report JSON "
             "under `data_versions`."
         )
+        lines.append("")
+    detail = selection_detail(report)
+    if detail is not None:
+        lines.append("## Selection detail (day counts and why each baseline lost)")
+        lines.append("")
+        lines.append("| Fold | Baseline | Valid days | Invalid days | Outcome |")
+        lines.append("|---|---|---|---|---|")
+        for row in detail:
+            valid = "-" if row.valid_day_count is None else str(row.valid_day_count)
+            invalid = "-" if row.invalid_day_count is None else str(row.invalid_day_count)
+            lines.append(
+                f"| {row.fold_id} | {row.baseline_id} | {valid} | {invalid} | {row.outcome} |"
+            )
+        lines.append("")
+        lines.append(
+            "Invalid days are days that baseline could not score. A mean RankIC computed on "
+            "fewer days is not comparable with one computed on all of them, which is why the "
+            "count sits beside the score instead of staying in the JSON."
+        )
+        lines.append("")
+    artifacts = baseline_oos_artifacts(report)
+    if artifacts is not None:
+        lines.append("## Fold-matched baseline OOS artifacts")
+        lines.append("")
+        lines.append("| Fold | Artifact |")
+        lines.append("|---|---|")
+        for fold, path in artifacts.items():
+            lines.append(f"| {fold} | {path} |")
         lines.append("")
     lines.append("## Criterion 303 verdict")
     lines.append("")
