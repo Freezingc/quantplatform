@@ -222,7 +222,7 @@ git commit -m "feat(v2): quarantine conflicting factor duplicates"
 - Test: `research_v2/tests/property/factors/test_availability_invariants.py`
 - Test: `research_v2/tests/leakage/test_factor_future_perturbation.py`
 
-- [ ] **C4.1 写技术因子可用日测试**
+- [x] **C4.1 写技术因子可用日测试**
 
 `SAME_DAY_CLOSE`：`observation_date = available_date = signal_date = trade_date`。缺值保持缺值，不从前一日 ffill；同日收盘后才可用于当日收盘信号语义。
 
@@ -1410,3 +1410,186 @@ artifacts 里已有 `alpha_386_387_train_2020_quality_v1.json` 与 `manual_alpha
 **全量：1427 passed / 45 skipped**（本节起点 1422；+4 dedup +1 materializer），
 `ruff check src tests` 清、`mypy src` 157 文件清；
 `deduplication.py` 与 `materializer.py` 变异后均以 `git status --porcelain` 确认**还原干净**。
+
+## 勾选审计续十二（2026-09-06 10:30）：C4.1 已勾；C4.2/C4.3/C4.4 各有具体缺口，其中 C4.4 查出一处会写错报告期版本的缺陷，并新增一条裁决
+
+### C4.1 已勾选——但我第一版"不 ffill"测试又一次是恒真的
+
+C4.1 三款：`SAME_DAY_CLOSE` 下 `observation_date = available_date = signal_date`（既有测试已覆盖）、
+**缺值保持缺值不从前一日 ffill**（本轮补）、同日收盘后才可用于当日收盘信号语义（即上款）。
+
+新增 `test_a_missing_technical_day_is_left_missing_rather_than_filled_from_the_previous_one`。
+**第一版只钉住了"不凭空造行"**：断言输出行数等于输入行数、缺的那天不在 `signal_date` 里。
+变异验证时发现它**抓不到值层面的 ffill**——插入
+`result.groupby("ts_code")["raw_value"].ffill()` 后**所有测试仍全绿**，
+因为 ffill 不改变行数，只把一个已存在的空值换成前一日的值。
+**「不 ffill」有两个读法，只测其一的测试在另一读法退化时照样通过**：
+(a) 某天**根本没有观测**时不得凭空多出一行；
+(b) 某天**有行但值缺失**时该值必须保持缺失，不得继承前一日。
+(b) 才是 `groupby.ffill()` 会静默做错的那个，而它把行数留得完完整整。
+已把 fixture 扩成两只证券同时覆盖两个读法（000001.SZ 缺 03-31 整天；000002.SZ 的 03-31 值为 NaN），
+重跑变异 M24 → **该测试失败**。
+**这是本轮第三次同一类教训**（续八：非有限值测试在 inf 计入与否下结论相同；
+续十：`_registry_at` 要 DRAFT 却走到 ACTIVE；本节：只测行数不测值）。
+统一表述：**一条测试是否有效，判据是"被破坏的实现下它是否给出相反结论"，
+而这必须对每一类可能的破坏分别验证——覆盖了"造行"不等于覆盖了"改值"。**
+
+### C4.2 仍不勾：两款未满足
+
+已满足并有测试：下一交易日可用（`assign_fundamental_available_date`）、
+周末/非交易日公告顺延到下一个开市日、交易日公告顺延一天、修订公告、同报告期多版本、
+180 日边界（本轮把**比较符本身**钉住了，见 C4.3）。
+
+**(a)「无 `ann_date` 的基本面记录隔离，不能用报告期代替公告日」——后半成立，前半不成立。**
+实测：`ann_date = pd.NaT` 时抛
+**`TypeError: Cannot compare NaT with datetime.date object`**。
+**后半款确实成立**：代码任何地方都没有拿 `report_period` 顶替 `ann_date`，故**没有前视**。
+**前半款不成立**：规格要的是"**隔离**"，而现状是**整个展开被一个不透明的类型错误打断**，
+错误信息指向 pandas 的一次比较、而不是"这条记录缺公告日"。
+**这与本模块自己声明的设计意图直接矛盾**：`_empty_expansion` 的 docstring 明写
+"one empty result must not abort the whole materialization"，
+并且列举了空展开是**正常结果**的三种情形。缺公告日不是正常结果，但**它也不该炸掉整批**。
+**不代实现"隔离"**：该函数返回**单个 DataFrame，没有第二条通道也没有 reason 列**，
+要隔离就必须改它的返回契约；而**它现在没有任何生产调用者**（见下），
+**改契约的最佳时机正是接线之前**，不是由我替 owner 选一个返回形状。
+
+**(b)「退市」——无任何测试覆盖，模块里也没有出现 `delist` 字样。**
+机制上是**隐式**成立的：`expand_fundamental_events` 只对 `universe` 里真实存在的
+(signal_date, ts_code) 产出行，故退市证券自然不再有 universe 行、也就不再有因子行。
+**这个设计是对的**（成员资格归 universe 所有，可用性层不该自己再判一次），
+但 C4.2 把"退市"明列为要覆盖的案例，而**它没有被测**：
+没有任何测试断言"某证券在 universe 中消失后其展开也随之终止"，
+也没有测试断言"退市前已公布的基本面值在退市后不会继续被展开"。
+**隐式成立且未测 ≈ 无人看守**：一旦 universe 的构造改了（例如为覆盖率而延长成员区间），
+这条性质会静默失效，而 180 日 staleness 会让退市证券继续"持有"旧值最多半年。
+
+### C4.3 仍不勾：输出语义正确，但**实测成本使它不可接线**
+
+语义三款全部成立并已测：**只对实际 universe 成员日期展开**（逐 universe 行迭代）、
+**输出 `stale_days`**、**第 181 个自然日值为空**。
+本轮把**比较符**单独钉住了：既有测试用的是 stale=179（保留）与 stale=182（丢弃），
+**中间留了空档**——写成 `>=` 再配一个差一错误可以**同时通过这两条**。
+新测试固定 stale=179，只变动上界：`max=179` 保留、`max=178` 丢弃，
+从而把 `stale_days > max`（严格大于）孤立出来。变异 M23（改成 `>=`）→ 该测试失败。
+
+**但「而非全笛卡尔积」这一款，实现只做到了一半。**
+**输出**确实不是笛卡尔积：行数只为实际 universe 成员产出。
+**时间**上却是：实现是**逐 universe 行的 Python 循环**，每行都对**整个 events 帧**做一次布尔掩码，
+即 `O(universe_rows × events)`。实测（离线合成，`TradingCalendar` 400 个工作日）：
+
+```
+ universe  events   seconds    us/universe-row  rows out
+      500     100      0.83             1664.4       190
+     1000     200      1.29             1286.0       190
+     2000     400      2.74             1371.1       380
+     4000     400      6.71             1677.9      1350
+     8000     800     13.99             1748.4      2339
+```
+
+按 ~1676 µs/universe-row 外推：
+**单因子单折**（5000 证券 × 250 信号日 = 1,250,000 行）≈ **0.6 小时**；
+**487 个 catalog 因子单折** ≈ **12 因子·天**；**6 折** ≈ **71 天**。
+每行成本在 universe 规模 16 倍区间内**持平到上升**，故不是预热假象。
+证据存于 `/data/zhangyudong/qrv2_research_artifacts/fundamental_expansion_scaling.txt`。
+
+**这一款的存在理由就是避免爆炸，而爆炸还在，只是从内存挪到了时间。**
+12 因子·天/折意味着**照现状接线是不可行的**，故不勾。
+
+**修法与 C4.4 的未决问题耦合，这是不现在就改的原因。**
+正解是真正的 as-of/区间连接（按证券把事件版本按 `available_date` 排序，
+用 `merge_asof` 或 `searchsorted`，`O((N+M) log M)`），
+**但它必须逐位复现现在的 tie-break 顺序**——而那个顺序正是下面 C4.4 里有争议的东西。
+**先优化等于把一个有争议的规则固化进一条更快的路径**，日后改语义要改两处。
+**故：先定语义，再重写。**
+
+### C4.4 仍不勾：三条子款各自成立，但同一条选择规则里有一处会写错报告期版本的缺陷
+
+**三条子款逐一核实为成立且有测试**：
+同一 report period 的后续修订**只从其新 available date 起生效**（修订版 available 更晚，
+故此前用原版、此后用修订版）；**过去 signal dates 继续看到当时已公布的版本**
+（`tests/leakage/` 四条未来扰动测试覆盖）；**`source_revision_id` 与 `report_period` 都被记录**
+（二者都在 `EXPANSION_COLUMNS` 里，逐行输出）。
+
+**但实测确认了一处缺陷：一份对较旧报告期的迟到重述，会顶掉较新报告期的值。**
+构造：FY2024（report_period 2024-12-31）于 2025-03-28 公告（available 03-31）；
+随后 2025-04-10 发行人**重述更旧的 Q3 2024**（report_period 2024-09-30，available 04-11）。
+在 signal date 2025-04-15：
+
+```
+signal_date report_period  raw_value  available_date  source_revision_id  stale_days
+ 2025-04-15    2024-09-30        1.5      2025-04-11    q3-2024-restated           4
+```
+
+**发布的是被重述的 Q3（1.5），FY2024（2.0）被丢弃**——因为版本排序是
+`["available_date", "report_period", "source_revision_id"]` 全降序，
+**`available_date` 是第一键**，而重述恰好是"最近才可用"的那个。
+在 2025-04-01（重述可用之前）发布的是 FY2024，故**报告期在跨越重述时向后退了一格**
+（新测试对此有显式断言）。
+**按通常的 PIT 基本面语义这是错的**：某证券某日的值应来自**当时可得的最新报告期**，
+修订只在**同一报告期内部**决胜。因为一份旧报告被迟到重述，就把整只证券的
+**报告年份倒回上一季**，是静默改写基本面版本。
+
+**规格在此确实两可，所以这是裁决而不是修复**：
+C4.3 把有效区间定义为到 `next_version_available_date - 1 trading day`，
+**"单一版本序列、每个新版本终结上一个"**——那正是代码实现的东西；
+C4.4 只讲**同一 report period 内部**的修订。**两者都没说跨报告期时谁压谁。**
+
+**顺带查出一条"测试名过度承诺"的问题，值得单独记。**
+既有测试 `test_fundamental_event_prefers_latest_report_period_before_revision`
+的名字断言的是"**报告期优先于修订**"这一 precedence，
+但它的 fixture 给两个版本**同一个 `ann_date`**，于是 `available_date` 相同、
+排序**落到第二键 `report_period`** 才得到正确结果。
+**即：名字读起来像一条关于"报告期优先"的保证，实际只是一条关于"平局如何打破"的保证。**
+（该测试本身是好的——它还刻意把 revision id 命名为 `z-earlier-period` / `a-later-period`，
+使"按 revision id 排序"的实现会挑错，这一点很扎实。）
+**教训与续八/续十/本节那条同源**：一条测试的**名字所声称的范围**可能大于**它的 fixture 所钉住的范围**，
+而读者只会读名字。
+
+**不勾 C4.4 的理由**：该款的标题是「实现修订版本语义」，
+而修订语义的选择规则在一个**确实会发生**的场景下给出错误的报告版本。
+三条子款成立不足以支撑标题级的勾选——这与续六对"宽表"的处理不同：
+那里是**前件在本源上不出现**（真空成立），这里是**场景会出现且结果是错的**。
+
+### 第四处"未接线"：`expand_fundamental_events` 无生产调用者
+
+全仓 grep：`materialize_technical_availability` 被 `materializer.py:101` 调用，
+而 **`expand_fundamental_events` 只出现在自身定义与测试里**。
+**这是本轮发现的第四处同型**（续四：C6.2 两套并行实现；续七：`select_cluster_representatives`；
+续十：`FactorRegistry` 与 `create_factor_set`）。
+**好消息是它降低了本节两个缺陷的当下风险**（没有基本面因子正在被错误版本物化），
+**坏消息是它意味着 C4 的基本面半边整体处于"写了但没接上"的状态**，
+而 12 因子·天/折的成本问题会在接线那一刻才暴露。
+
+### 新增裁决 5：跨报告期的基本面版本优先级
+
+**问题**：当同一证券同时存在"较新报告期的原版"与"较旧报告期的迟到修订"时，
+某 signal date 应发布哪一个？
+
+- **选项 (i) 最新报告期优先，修订仅在同一报告期内决胜**（通常的 PIT 语义；
+  排序键改为 `report_period DESC, available_date DESC, source_revision_id DESC`）。
+  代价：C4.3 的区间公式 `next_version_available_date` 需要重述为**按报告期分组**的区间，
+  因为不同报告期的有效区间会**重叠**而不再是一条线性序列。
+- **选项 (ii) 最新可用版本优先**（即现状；与 C4.3 的字面公式一致）。
+  代价：如上，报告版本会因一次旧期重述而倒退。
+- **选项 (iii) 两者都不选，改为并列输出并由下游按因子语义决定**。
+  代价：展开不再是每 (signal_date, ts_code) 一行，会波及 C5 的统一 observation 输出契约。
+
+**与 C4.3 的性能重写绑定**：无论选哪个，as-of 连接的排序键都必须与之一致，
+**故应先裁决再重写**，否则要改两遍。
+**与裁决 4 无关**（那是冻结因子集的覆盖率问题），可独立决定。
+
+### 变异验证（本节 3 个，全部被预期测试捕获）
+
+| # | 变异 | 捕获它的测试 |
+|---|---|---|
+| 23 | staleness 上界改成 `>=` | 上界比较符测试 |
+| 24 | 技术因子按证券 `ffill` 值 | 强化后的不-ffill 测试（**强化前抓不到**） |
+| 25 | 版本排序把 `report_period` 提到第一键 | 迟到重述钉住测试 **+** 既有的未来修订不改写历史测试 |
+
+M25 同时被一条**既有** leakage 测试捕获，说明那条测试对排序键是敏感的——
+这也反过来印证：现状的排序键并非无人看守，只是**看守的是"历史不被改写"，
+而不是"跨期谁压谁"**，后者是新增测试才钉住的。
+
+**全量：1431 passed / 45 skipped**（本节起点 1427；+4 availability），
+`ruff check src tests` 清、`mypy src` 157 文件清；
+`availability.py` 三次变异后均以 `git status --porcelain` 确认**还原干净**。
