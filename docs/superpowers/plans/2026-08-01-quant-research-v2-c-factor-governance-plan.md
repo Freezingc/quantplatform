@@ -3925,3 +3925,163 @@ inspect the scope's other criteria"——**它指对了方向，但没有把那�
 **未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
 **未改动契约、版本指针、门阈值或 `dropna` 口径**；**裁决 4 与决定 L 一个都没被代做**——
 本轮只让两者**各自少一个未知**：裁决 4 少了"(iii) 复议什么"，决定 L 少了"两份清单为何不同"。
+
+## 勾选审计续三十三（2026-09-06 20:50）：398/464 的缺月查明是**左端截断**，故续三十二那句"取决于决定 L"应撤回；顺这条线查出**门 2 有一处结构性盲区**——冻结 17 里有 **3 个成员在全部 20 个 scope 里没有任何一条通过判定**
+
+### 一、先把上一轮自己的话收回来
+
+续三十二 §五 事实 3 写：398/464 败在 `minimum_monthly_day_ratio = 0.0000`，
+**"若决定 L 选'管能不能打分'，398/464 就必须留在名单里并解释那一个缺月"**。
+**本轮把那个缺月解释了，结论是它不需要 L 来裁决**：
+续二十九"去掉这两个"的**结论成立**，而**续三十二那句"取决于决定 L"过于保守，在此撤回**。
+（续二十九的**理由**仍然是错的——它说的是"快照假阳性"，而真实原因是左端截断；
+**结论对、理由错**这个组合比结论错更危险，因为它下一次不会再对。）
+
+### 二、缺月是什么：左端连续截断，且是**逐因子**的，不是批次漏跑
+
+`factor_rank_ic_daily`（快照的源，窗口 2020-01-01..2024-12-31）实测：
+
+| factor | 首日 | 行数 | 缺的期望日 | 缺日按月分布 | 那些天**有行吗** |
+|---|---|---|---|---|---|
+| yeslab_0（参照） | 2020-01-02 | **1212** | 0 | — | — |
+| 其余 14 个冻结成员 | **2020-01-02** | **1212** | 0 | — | — |
+| **yeslab_464** | **2020-02-18** | 1185 | **27** | 2020-01 ×16、2020-02 ×11 | **27 天全部"根本没有行"** |
+| **yeslab_398** | **2020-03-25** | 1159 | **53** | 2020-01 ×16、2020-02 ×20、2020-03 ×17 | **53 天全部"根本没有行"** |
+
+**三个特征一起把它定性为左端截断**：
+(1) 缺失日**从窗口第一个交易日 2020-01-02 起连续**（398 到 03-24、464 到 02-17）；
+(2) 参照因子与其余 14 个成员**同日齐全**，故评价作业那些天**确实跑过**；
+(3) 缺失是**没有行**而不是"行里 `sample_count` 为 0"，即那些天**根本没产出 IC**。
+`factor_daily` 侧两者都是 **1212/1212 天、60/60 月**——因为冻结物化用
+`replay_lookback_days=180` **主动回看窗外 180 天**，warm-up 在窗口内已满足；
+RankIC 侧没有这层回看，故开头 ~60 个交易日无值（两者 `lookback_days` 都是 **60**）。
+
+**是不是批次效应？不是。** 全表 **476** 个因子里 **45 个（9.5%）首日晚于 2020-01-02**，
+分散在 **25 个不同首日**上；除 2020-01-03 有 15 个同日起，其余每个首日只有 1–3 个因子，
+而 **398（2020-03-25）与 464（2020-02-18）各自都是"该首日唯一的一个"**。
+**逐因子、不共享日期 ⇒ 是各自的 warm-up 长度，不是某一批漏跑。**
+
+**故 L 在这两个因子上没有可选的东西**：无论门 2 读哪台仪器，398/464 都**不是**结构性稀疏因子
+（`factor_daily` 上齐全、活体筛查 median **0.9978**、min_month **1.0000**）。
+**续二十九的六个（372/375/384/389/390/406）在本轮第四次成立，而且这次理由是对的。**
+
+### 三、顺着这条线查出的盲区：门 2 读的那个 scope，其 population 由它本该检查的那道筛查决定
+
+`record_structural_quality_snapshot.py:236-241` 的候选集**不是**冻结 17，而是
+
+```python
+prior = target.query("... factor_quality_snapshot where scope_id='SCREEN_TRAIN2020_2024_DAILY_HAC_FDR_V2'")
+candidates = tuple(... if json.loads(metrics_json).get("decision_status")
+                        == "TRAIN_PREDICTIVE_PASS_PENDING_DQ")
+```
+
+实测该 predictive scope 有 **487 行**：`TRAIN_PREDICTIVE_FAIL` **404**、
+`TRAIN_PREDICTIVE_PASS_PENDING_DQ` **70**、`UNSCREENED` **11**、`EXCLUDED_SYNTHETIC` **2**。
+**结构快照的 population 就是那 70 个**（故它"各 70 行"，§3f 早先记的数字对上了）。
+
+而 `verify_admission_consistency.py` 的 `BLOCKING_SCOPE_SUBSTRINGS = ("STRUCTURAL_COVERAGE",)`
+——**它只读结构 scope**。于是：
+
+> **一个因子若 predictive 筛查 FAIL，它就不会出现在结构快照里；
+> 而门 2 只看结构快照，"没有行"在门 2 里不等于"有问题"。**
+> **故门 2 对它本该拦的那一类失败完全看不见——恰恰因为那道失败把因子从它的视野里移除了。**
+
+门 2 的 docstring 自述目的是 *"so a blocking screening failure cannot be admitted silently again"*。
+**这个目的在它当前的 scope 选择下达不到。** 这不是阈值或源选错（决定 L 的议题），
+**是 scope 选择本身的逻辑漏洞**，故单列为决定 M。
+
+### 四、后果不是假设的：冻结 17 里有 3 个成员在**全部 20 个 scope** 里没有任何一条通过判定
+
+`factor_quality_snapshot` 对冻结 17 共 **178 行、跨 20 个 scope**。逐个查那三个：
+
+| factor | `factor_rank_ic_daily` | `factor_quality_snapshot`（20 scope） | `factor_quality_grade`（决策表的来源） | 准入决策表（2026-09-03）的记载 |
+|---|---|---|---|---|
+| **yeslab_206** | 1212 行齐全 | 出现的 **4 个 scope 全部 ELIGIBILITY_FAIL**：`DAILY_HAC_FDR_V1` 与 `_V2` 均 **`TRAIN_PREDICTIVE_FAIL`**（reason `TRAIN_DAILY_HAC_FDR_GATE`）、`ANNUAL_SUMMARY_PREFILTER_V1` **`ANNUAL_PREDICTIVE_FAIL`**、`VALIDATION2025_STRICT26_V1` `UNSCREENED` | **没有行** | **A / 10 分 / 训练ICIR 0.561 / 验证 0.733 / 决定=准入** |
+| **yeslab_375** | **零行** | 出现的 **4 个 scope 全部 ELIGIBILITY_FAIL**，`decision_status=UNSCREENED`、reason **`NO_TRAIN_DAILY_RANK_IC`** | **有行：A / 9 分 / train_icir 0.632 / validation_icir 0.791 / regime_min 0.6548** | **A / 9 / 准入**（备注"隔离范围批准"） |
+| **yeslab_443_reg30_max20_v1** | **零行** | **20 个 scope 里零行** | **没有行**（只有 canonical `yeslab_443`：**D / 6 分 / regime_min 0.2618**） | 经 **D1=A** 准入，理由"**修复变体全评估已过**" |
+
+**三条各自不同，且都不在门 2 的视野里**：
+
+1. **206**：`apply_admission_decisions.py:164` 有 `grade_alias = {"yeslab_206": "yeslab_206_median_abs_v2"}`，
+   即它的 A 级来自**另一个 factor_id** 的分级；冻结集里的 `yeslab_206` 在 `factor_quality_grade` 里**没有自己的行**。
+   **这不是身份错配**——已核实冻结物化对该 id 走 `materialize_alpha206_median_repair`
+   （`materialize_frozen_factor_daily.py:62`，且第 118 行把它与 443 变体一起排除在
+   `REPLAY_DEFINITIONS` 之外），**故 `factor_daily` 里存的确实是 median 修复版，别名与物化一致**。
+   **问题在别处**：snapshot 侧那 4 条 FAIL 是对 id **`yeslab_206`** 记的，
+   分级侧的 A 是对 id **`yeslab_206_median_abs_v2`** 记的——
+   **两台仪器在两个不同 id 上各说各话，没有任何文书说明那 4 条 FAIL 针对的是修复前还是修复后。**
+2. **375**：`factor_rank_ic_daily` **零行**、snapshot 的 reason 明写 **`NO_TRAIN_DAILY_RANK_IC`**，
+   而 `factor_quality_grade` 里它有 **train_icir 0.632 / validation_icir 0.791**。
+   **两台仪器对"375 有没有日频 RankIC 序列"给出了相反的答案。**
+   而 375 同时是：六个稀疏因子里最差的一个（median **0.3705**）、
+   冻结 17 里唯一有真冲突的（**1,721,876** 个冲突键，见决定 A 的代价量化）、
+   且从未进入结构筛查。**三个"最差"集中在同一个因子上，而它对两台仪器分别是零行与 UNSCREENED。**
+3. **443 变体**：`apply_admission_decisions.py:177-178` 对它是
+   `if fid == REPAIR_VARIANT_443: grade = "REPAIR"` ——**grade 是硬编码字符串，不是评出来的**。
+   **故决策表里"修复变体全评估已过"这句话，在 `factor_quality_grade`、
+   `factor_quality_snapshot`（20 scope）、`factor_rank_ic_daily` 三处都找不到对应的行。**
+   canonical 443 的评级是 **D / regime_min 0.2618**（2017 崩塌），**而变体没有任何评级记录**。
+
+### 五、还有一处发散：`REPLAY_DEFINITIONS["yeslab_206"]` 记的是**另一个公式**
+
+`audit_formula_replay_consistency.py:180` 把 `yeslab_206` 定义为
+`Bias_Vol_Demean_60_Calculator`（"60日成交量**去均值相对偏离**"、`factor_data5`、lookback 60），
+而生产物化对同一 id 用的是 **median 修复版**。
+**修正只以 `if fid == MEDIAN_206` 的形式存在于一个消费者里**（`materialize_frozen_factor_daily.py`），
+而 **`REPLAY_DEFINITIONS` 有 12 个以上消费者**
+（`evaluate_alpha484_canonical`、`audit_factor_market_coverage`、`audit_canonical_candidate_pairs`、
+`audit_pretraining_regime_redundancy`、`research_historical_window_eval` 等），
+**其中没有第二个做这个特例判断**（`audit_formula_replay_consistency.py` 里 grep
+`MEDIAN|median_repair` 只命中它自己的定义行）。
+**故任何经 `REPLAY_DEFINITIONS` 取 206 的审计，算的是去均值版、比的是 median 版。**
+这与 §1 的"六处未接线治理路径"、决定 L 的"两台覆盖仪器"是**同一模式的第三个实例**：
+**一个概念、两处实现、没有交叉核验。**
+（`yeslab_443_reg30_max20_v1` **不在** `REPLAY_DEFINITIONS` 里，查它会 KeyError —— 那是 fail-closed，可接受。）
+
+### 六、这产生一个新决定（M），并**收窄** L
+
+**决定 L 收窄**：398/464 出局已由左端截断解释清楚，**L 不再需要处理它们**。
+L 剩下的真问题是 §3f-续三十二 (3) 那张仪器对照表（源/分母/三个阈值都不同），
+以及**要不要给结构快照补 206/375/443 的行**（补 = 一次 DB 写入，故与**决定 K** 相关）。
+
+**决定 M（新）**：门 2 该不该同时读 predictive scope，以及那 3 个"无任何通过判定"的成员怎么处置。
+
+- **(M-i) 扩 `BLOCKING_SCOPE_SUBSTRINGS`**，把 `DAILY_HAC_FDR` 也纳入阻塞 scope。
+  **改动最小、直接堵住盲区**；但会立刻让门 2 对 **206 与 375** 报 FAIL
+  （**443 仍报不到，因为它零行**），**于是必须同时给出 override 或移出冻结集**——
+  **即 M-i 会立刻把 206/375 推到裁决台前，而它对 443 无效。**
+- **(M-ii) 让门 2 把"缺席"也当作发现**：对冻结集的每个成员，
+  若它在任一阻塞 scope 里**没有行**，就报 `NO_EVIDENCE` 而不是静默通过。
+  **这条能同时抓到 206/375/443 三个**（前两个 FAIL/UNSCREENED、第三个零行），
+  **是三个选项里唯一能抓到 443 的。**
+- **(M-iii) 维持现状，在冻结契约 `conflicts` 数组里人工记录这三条**。
+  这正是门 2 报错信息的字面要求（*"the contract's conflicts array must record this or the
+  factors must be removed"*），但**它改冻结契约**（含 `data_version`），属 owner 行为，
+  且与 **L-ii 是同一处改动**——**故 M-iii、L-ii 与裁决 4 (iii) 应一并定，不该分三次。**
+
+**倾向（不代做）**：**(M-ii)**。M-i 抓不到 443（零行不等于 FAIL），
+M-iii 只修这一次、不修机制；**"缺席即发现"是唯一补上机制的一条，
+且它对本轮查出的三个实例同时生效。**
+
+### 七、如实记录：本轮一个测量脚本有一列是坏的，且是同一类错误的第二次
+
+`rankic_month_gap.py` 的 Q1b 表里 **`ref_days` 列有 36 个 NaN 且数值不可信**（16/10/22/10…）：
+我用 `pd.Series(list(...)).map(...)` 造的月份键与 `ref_per_month["m"]` 的索引不对齐，
+`groupby` 因此错位——**与续三十一的 `in_universe` 列同一类错误（索引/键不对齐），这是第二次犯。**
+**同表另两列不受影响**：`distinct_factors_with_positive` 与 `median_days_per_factor`
+各自独立 groupby、数值自洽（451→476 单调上升、中位天数 15.9–23.0）。
+**结论未依赖坏列**：左端截断的定性来自 `rankic_left_edge.py` 的逐因子首日普查
+（45/476 晚起、25 个不同首日、398 与 464 各自唯一），那份没有对齐问题。
+**缺陷与恢复方式都写进了工件本身。**
+
+### 八、门槛
+
+**本节零代码改动**（四个 `/tmp` 下的只读测量脚本 + 文书）。**四个工件 + 四个脚本副本**已存
+`/data/zhangyudong/qrv2_research_artifacts/`：`rankic_month_gap_and_predictive_pool.txt`、
+`rankic_left_edge_census.txt`、`predictive_verdict_vs_grade_instrument.txt`、
+`factor_quality_grade_frozen17.txt`。
+沿用续二十八实测值：**全量 1582 passed / 45 skipped**、`ruff check src tests` 清、`mypy src` **158 文件清**。
+**未写任何数据库**（四个脚本全是 SELECT）；**未碰** `materialization_status.{json,md}`；
+**未释放** `/tmp/frozen_chain_hold.txt`；**未改动契约、scope、门阈值或 `dropna` 口径**；
+**裁决 4 / 决定 L / 新增决定 M 一个都没被代做**——
+本轮把 **L 收窄**了一个问题（398/464 出局有了正确理由），并**新开 M**（门 2 的 scope 盲区）。
