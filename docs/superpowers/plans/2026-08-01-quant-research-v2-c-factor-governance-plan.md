@@ -6798,3 +6798,113 @@ W-M 的探针暴露的不是一个守卫没测，而是一处设计事实：
    以及 `test_locked_test.py` 覆盖的那套流程做过系统的变异测量。
    **X-M 被 18 个测试杀掉说明这一带覆盖不差，但"覆盖不差"与"被测量过"是两件事。**
 3. 其余同前：约 1,530 个测试函数在已审计的六条链之外从未做过变异测量。
+
+## 勾选审计续五十九（2026-09-07 05:40）：**链 7 = RankIC 算术层** `evaluation/rank_ic.py`（G1/G2/G3/G5 的原始数字与 G6 的三元组都出自这里；**这条链连续三轮被排第一却一直被推迟**）——首轮 16 个变异 **8 杀 8 存活**，补 7 条测试后全范围 **15 杀 1 存活**。本轮两处最值得记：一处**半钉**（**分数侧的并列被 golden 测试钉住了，标签侧的并列无人钉**），一处**非语义击杀**（ICIR 的零离散守卫是被 12 个 `ZeroDivisionError` "杀掉"的，**不是被任何一条关于 ICIR 的断言杀掉的**）
+
+### 一、为什么是它，以及为什么拖了三轮
+
+续五十六、五十七、五十八连续三轮把它排在第一位而三轮都没做，每轮的理由都是"发现了更近的东西"
+（证据组装层、registry 的第二道门、生命周期守卫）。本轮做完，**晋级路径的五层就都测过了**：
+**判定（链 3）→ 证据组装（链 4）→ 晋级把关（链 5）→ 生命周期（链 6）→ 底下的算术（链 7）**。
+它的现有覆盖是 `tests/unit/evaluation/test_rank_ic.py`（**157 行 / 5 个测试**），
+外加两处**间接**覆盖：golden 指标测试 `tests/golden/test_dataset_and_metrics.py`，
+以及**链 4 上一轮新增的评价层测试**——后面这一处本轮证明很重要。
+
+### 二、首轮：16 个变异，8 杀 8 存活（基线 97 passed）
+
+- **存活 8 条**：**R-A**（label↔prediction 连接由 `left` 改 `inner`）、
+  **R-B**（coverage 的分母由 `valid_label_count` 换成 `eligible_count`）、
+  **R-G**（**标签**秩的并列改按位置定序）、**R-N**（截面下限 `< 2` 的守卫）、
+  **R-O**（重复业务键守卫）、**R-R**（`positive_day_share` 的 `> 0` 改 `>= 0`）、
+  **R-S**（有效日掩码去掉有限性）、**R-W**（年度分组不再按年排序）。
+- **杀掉 8 条**：**R-C**（唯一分数数变成行数，即塌缩检测失效，3 个测试）、
+  **R-E**（截面下限 `>=`→`>`，**18 个测试**）、**R-F**（**分数**秩的并列改按位置）、
+  **R-J**（非有限 forward return 仍算有效标签）、**R-L**（无效日不再被过滤出默认 API）、
+  **R-P**（ICIR 的 std 用总体而非样本自由度）、**R-Q**（ICIR 的零 std 守卫）、
+  **R-T**（无效日计数恒为 0）。
+
+### 三、两处要单独记
+
+**（1）并列处理是半钉的，而且钉住的是分数侧、没钉的是标签侧**
+
+`score_rank` 与 `label_rank` 是同一句 `rank(method="average")` 写两遍，
+**两者只在有并列时才有区别**。实测：**R-F（分数侧）被 golden 测试杀掉**
+（`test_golden_secondary_factors_cover_ne…`，死因 `assert [0.9999999999…`），
+**R-G（标签侧）无人杀掉**。
+这与链 2 的 `model.eval()` 不对称、链 5 的五句守卫是**同一类形状**：
+**成对出现的两半，只有一半被测到。**
+
+新测试把两侧放在同一个循环里跑，并带一条自证（**一侧恰好 29 个不同值、另一侧 30 个**），
+因为**每一侧的夹具都看不见另一侧的变异**。夹具是 30 只股票、只有一对并列：
+平均并列给出**略小于 1.0** 的 RankIC，而按位置定序会让两个秩向量完全相同、
+**报出恰好 1.0——一个由行序制造出来的"完美相关"**。
+
+**（2）ICIR 的零离散守卫是"崩死的"，不是"被断言杀死的"**
+
+R-Q（去掉 `std > 0`）在全范围被 **12 个测试**杀掉，死因是 **`ZeroDivisionError`**：
+套件里有大量"只有一个有效日"的汇总，而两日取值相同时 std=0，于是变异体直接崩。
+**这是一次非语义击杀**——它钉住的是"不会除以零"，
+**不是"ICIR 在离散为零时应当是未定义"**。与续五十二在链 2 发现的 T-F 同类（那次死因是 `KeyError`）。
+
+故本轮仍补了一条 ICIR 钉子：两日 RankIC 全等 → std=0 → **`math.isnan(icir)`**。
+**要害在于**：若有人把这个守卫"修"成不崩但返回 `inf`，那 12 个崩溃会全部消失、套件转绿，
+而 `inf` 会**活着穿过 `json.dumps`、在报告里印成一个数、并且大于它将来被拿来比较的任何有限阈值**。
+**崩溃是会被发现的，inf 不会。**
+
+### 四、R-O 不钉、R-S 钉，理由不同（两条都做了探针）
+
+| 变异 | 探针实测（原始 vs 变异） | 定性与处置 |
+|---|---|---|
+| **R-O** 重复业务键守卫去掉 | 原 `ValueError: predictions and labels must have unique signal-date keys`；变异 `MergeError: Merge keys are not unique in right dataset; not a one-to-one merge` | **只换异常类型与文案，不钉**。这同时**从第一重的角度证实了续五十六量到的"三重守卫"**：拿掉第一重，第二重（merge 上的 `validate="one_to_one"`）立刻接住 |
+| **R-S** 有效日掩码去掉有限性 | 原 `valid_days 1 / mean 0.10 / invalid_days 1`；变异 **`valid_days 2 / mean inf / invalid_days 0`** | **生产路径不可达**（`compute_daily_rank_ic` 只在 rank_ic 有限时才置 `rank_ic_valid=True`），但 `summarize_rank_ic` 是公开函数、接受任何日度帧；**即使可达也是 fail-closed**（G1 要求有限均值，而那条要求已被链 3 钉住），**但 inf 会先进 run 报告与 ICIR**。**故钉**——钉的是这个公开函数自己的契约 |
+
+### 五、补的 7 条测试与结果
+
+`tests/unit/evaluation/test_rank_ic.py` 从 **5 个测试变 12 个**：
+
+1. `test_coverage_counts_a_label_without_a_prediction_as_unscored`（**R-A + R-B**）——
+   **一条夹具同时分辨两种错法**：40 行标签里 30 行有效、其中 3 行没有预测，
+   断言 `eligible 40 / valid_label 30 / sample 27 / coverage 27÷30`，并自证这 27 只真的算出了 RankIC。
+2. `test_rank_ic_averages_tied_ranks_on_both_sides_not_just_the_score_side`（**R-G**，顺带把 R-F 也钉进本文件）
+3. `test_icir_is_undefined_rather_than_a_division_by_zero_when_every_day_agrees`（**R-Q 的语义版**）
+4. `test_a_non_finite_rank_ic_never_enters_the_mean_even_if_it_is_marked_valid`（**R-S**）
+5. `test_a_day_with_exactly_zero_rank_ic_is_not_a_positive_day`（**R-R**）——
+   4 只股票、标签秩 `[2,4,1,3]` 对分数秩 `[1,2,3,4]` **正交**，RankIC 恰好 0.0；
+   **这是链 3 给 G3 钉的"零年份不算正年份"在日度上的孪生**
+6. `test_the_yearly_summary_is_ordered_by_year_whatever_order_the_days_arrive`（**R-W**）
+7. `test_a_cross_section_floor_below_two_is_refused`（**R-N**）
+
+结果：
+
+- **定向**（只跑 `test_rank_ic.py`，**0.7s/次**）：control **12 passed** → **13 killed**（每条带杀手与死因）
+  → **3 存活：R-J / R-O / R-P** → restored **12 passed**；`rank_ic.py` **逐字节还原**。
+  **R-J 与 R-P 的钉子在本文件之外**：R-J 由**链 4 上一轮新增的**
+  `test_g6_denominator_ignores_null_label_flags_and_non_finite_returns` 杀掉（死因 `assert 'FAIL' == 'PASS'`），
+  R-P 由 golden 测试 `test_golden_daily_rank_ic_matches_inde…` 杀掉
+  （死因 `assert 0.7455207448546404 == 0.816677058089880`）。
+  **这是本 session 第一次出现"上一轮新增的测试替这一轮钉住了一条变异"**——
+  链 4 那条测试当时是为 V-H / V-I 写的，它顺带成了 RankIC 层"非有限标签"的钉子。
+  **这也说明定向 harness 必须写清范围**：R-J 在本文件里是存活，在全范围里是被杀，两句话都对。
+- **全量 harness**：**基线 104 passed**，**15 杀 1 存活**（唯一存活即 **R-O**，上表那条只换文案的），
+  还原后逐字节相同并复跑通过。日志 `mutation_rank_ic_after_pins.txt`。
+- **全量门槛**：`pytest tests -q` → **1657 passed / 45 skipped**（续五十八的 1650 + 本轮 7 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**；
+  未改任何 RankIC 口径、门阈值、契约或 schema。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 归档：`mutation_rank_ic_first_round.txt`、`mutation_rank_ic_after_pins.txt`、
+  `mutation_rank_ic_targeted_with_killers.txt`、`probe_rank_ic.py` 与
+  `probe_rank_ic_survivors.txt`、`mutate_rank_ic.py`、`mutate_rank_ic_targeted.py`。
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`evaluation/hac.py`**（`hac_mean_test`，**G2 的唯一来源**）：**全文 39 行，本 session 从未测过**，
+   而 G2 =「HAC t ≥ 2.000」是六道门里**唯一一条统计推断门**。
+   **链 7 钉了喂给它的日度序列，没钉它怎么算 t 值、怎么截滞后阶数。**
+   按本轮的标准，这一条最可能出现"崩死而非断言死"的非语义击杀，故值得优先。
+2. **shadow 审批与 locked-test proof 机制**（连续两轮排第二而未做）：
+   续五十八的 X-K / X-L / X-M 都是被"为别的目的写的测试"**顺带**杀掉的——
+   而本轮 R-J 恰恰证明了"顺带钉住"是真实存在且有效的，
+   **但"顺带覆盖得好"与"被测量过"仍是两件事**：顺带的钉子会在重写那个测试时一起消失，且没人会知道。
+3. 其余同前：约 1,530 个测试函数在已审计的七条链之外从未做过变异测量。
