@@ -14,9 +14,12 @@ from research_v2.evaluation.gates import (
 )
 from research_v2.monitoring.shadow import ShadowDeploymentApprovalStore
 from research_v2.registry.model_registry import (
+    _ALLOWED_TRANSITIONS,
+    ModelRecord,
     ModelRegistry,
     ModelStatus,
     _gate_evidence_hash,
+    _issue_registry_workflow_proof,
     load_walk_forward_evidence,
     validate_model_id,
 )
@@ -312,3 +315,217 @@ def test_model_id_must_match_exactly_not_only_at_the_front() -> None:
     for candidate in (MODEL_ID + "\n", MODEL_ID + " ", MODEL_ID + "0", "model-1"):
         with pytest.raises(ValueError, match="model_id"):
             validate_model_id(candidate)
+
+
+# --- the other four hand-written lifecycle guards ----------------------------
+#
+# 续五十七's W-M probe found the structure rather than a single hole: the lifecycle
+# table _ALLOWED_TRANSITIONS is consulted only by the public transition(), while five
+# entry points call the private _transition -- which validates actor, reason and
+# evidence hashes and never looks at the table -- each carrying its own hand-written
+# "only X models can enter Y" guard. The DRAFT guard is pinned. These four were not:
+# `git grep` over the whole test tree at that commit found no test asserting any of
+# their messages. Each guard is the ONLY thing stopping the jump it names.
+
+
+def _proof(operation: str, model_id: str = MODEL_ID, *, passed: bool | None = None):
+    """Mint a valid one-shot proof through the registry's own internal authority hook."""
+    return _issue_registry_workflow_proof(
+        operation=operation,
+        model_id=model_id,
+        actor="evaluator",
+        evidence_hash="e" * 64,
+        passed=passed,
+    )
+
+
+# (entry-point name, the status it moves a model to) -- the five private paths.
+_ENTRY_POINTS = (
+    ("promote_walk_forward", ModelStatus.WALK_FORWARD_PASSED),
+    ("enter_shadow", ModelStatus.SHADOW),
+    ("_approve_locked_test", ModelStatus.LOCKED_TEST_APPROVED),
+    ("_complete_locked_test", ModelStatus.LOCKED_TEST_PASSED),
+    ("_approve_production", ModelStatus.PRODUCTION),
+)
+
+# The statuses reachable without the shadow-approval and locked-test machinery.
+_REACHABLE = (ModelStatus.DRAFT, ModelStatus.WALK_FORWARD_PASSED, ModelStatus.RETIRED)
+
+
+def _drive_to(registry: ModelRegistry, model_id: str, status: ModelStatus) -> None:
+    """Park a freshly registered draft in ``status`` by the only route the registry allows."""
+    if status is ModelStatus.DRAFT:
+        return
+    if status is ModelStatus.RETIRED:
+        registry.transition(
+            model_id,
+            ModelStatus.RETIRED,
+            actor="reviewer",
+            evidence_hashes=(),
+            reason="withdrawn before evaluation",
+        )
+        return
+    registry.promote_walk_forward(model_id, actor="reviewer", evidence=_evidence())
+
+
+def _invoke(registry: ModelRegistry, entry_point: str) -> ModelRecord:
+    """Call one private entry point with inputs valid enough to reach its status guard."""
+    if entry_point == "promote_walk_forward":
+        return registry.promote_walk_forward(
+            MODEL_ID, actor="reviewer", evidence=_evidence()
+        )
+    if entry_point == "enter_shadow":
+        # The status guard runs before approval verification, so placeholders suffice.
+        return registry.enter_shadow(
+            MODEL_ID,
+            approval=object(),  # type: ignore[arg-type]
+            approval_root=Path("/nonexistent-approval-root"),
+        )
+    if entry_point == "_approve_locked_test":
+        return registry._approve_locked_test(_proof("APPROVE_LOCKED_TEST"))
+    if entry_point == "_complete_locked_test":
+        return registry._complete_locked_test(_proof("COMPLETE_LOCKED_TEST", passed=True))
+    return registry._approve_production(_proof("APPROVE_PRODUCTION"))
+
+
+def test_enter_shadow_refuses_a_model_that_has_not_passed_walk_forward() -> None:
+    """DRAFT -> SHADOW is not in the table, and this guard is the only thing saying so."""
+    registry = ModelRegistry()
+    registry.register_draft(MODEL_ID, actor="trainer")
+
+    with pytest.raises(ValueError, match="only WALK_FORWARD_PASSED"):
+        _invoke(registry, "enter_shadow")
+
+    assert registry.get(MODEL_ID).status is ModelStatus.DRAFT
+    assert len(registry.history(MODEL_ID)) == 1
+
+
+def test_locked_test_approval_refuses_a_model_that_is_not_in_shadow() -> None:
+    """WALK_FORWARD_PASSED -> LOCKED_TEST_APPROVED skips the entire shadow stage."""
+    registry = ModelRegistry()
+    registry.register_draft(MODEL_ID, actor="trainer")
+    registry.promote_walk_forward(MODEL_ID, actor="reviewer", evidence=_evidence())
+
+    with pytest.raises(ValueError, match="only SHADOW"):
+        _invoke(registry, "_approve_locked_test")
+
+    assert registry.get(MODEL_ID).status is ModelStatus.WALK_FORWARD_PASSED
+    assert len(registry.history(MODEL_ID)) == 2
+
+
+def test_completing_a_locked_test_refuses_a_model_never_approved_for_one() -> None:
+    """DRAFT -> LOCKED_TEST_PASSED would record a locked-test verdict for a test never run."""
+    registry = ModelRegistry()
+    registry.register_draft(MODEL_ID, actor="trainer")
+
+    with pytest.raises(ValueError, match="only LOCKED_TEST_APPROVED"):
+        _invoke(registry, "_complete_locked_test")
+
+    assert registry.get(MODEL_ID).status is ModelStatus.DRAFT
+    assert len(registry.history(MODEL_ID)) == 1
+
+
+def test_production_approval_refuses_a_model_that_has_not_passed_the_locked_test() -> None:
+    """The shortest possible path to PRODUCTION is exactly the one this guard blocks.
+
+    Probed: with the guard removed a model that is still DRAFT -- never evaluated, never
+    shadowed, never locked-tested -- is recorded as PRODUCTION, because _transition does
+    not consult the lifecycle table and nothing else stands between the two.
+    """
+    registry = ModelRegistry()
+    registry.register_draft(MODEL_ID, actor="trainer")
+
+    with pytest.raises(ValueError, match="only LOCKED_TEST_PASSED"):
+        _invoke(registry, "_approve_production")
+
+    assert registry.get(MODEL_ID).status is ModelStatus.DRAFT
+    assert len(registry.history(MODEL_ID)) == 1
+
+
+def test_no_private_entry_point_permits_a_jump_the_lifecycle_table_forbids() -> None:
+    """The table is the policy; the five hand-written guards must not contradict it.
+
+    Derived from _ALLOWED_TRANSITIONS rather than from a second copy of it, so the test
+    follows the policy instead of restating it: for every reachable status and every
+    private entry point whose target the table forbids, the entry point must refuse and
+    must leave both the record and the append-only history untouched.
+    """
+    checked = 0
+    for source in _REACHABLE:
+        for entry_point, target in _ENTRY_POINTS:
+            if target in _ALLOWED_TRANSITIONS[source]:
+                continue  # permitted by policy; the happy paths are tested elsewhere
+            registry = ModelRegistry()
+            registry.register_draft(MODEL_ID, actor="trainer")
+            _drive_to(registry, MODEL_ID, source)
+            events_before = len(registry.history(MODEL_ID))
+
+            with pytest.raises(ValueError):
+                _invoke(registry, entry_point)
+
+            assert registry.get(MODEL_ID).status is source, (source, entry_point)
+            assert len(registry.history(MODEL_ID)) == events_before, (source, entry_point)
+            checked += 1
+
+    # Guard the guard: this really did walk the whole forbidden grid, not an empty loop.
+    # 4 forbidden jumps from DRAFT, 4 from WALK_FORWARD_PASSED, 5 from RETIRED.
+    assert checked == 13
+
+
+def test_public_transition_refuses_every_pair_the_lifecycle_table_forbids() -> None:
+    """The one entry point that does consult the table must consult it for every pair.
+
+    Existing tests check two forbidden pairs. This checks all of them from the three
+    reachable statuses, and insists the refusal is the table's own message rather than
+    one of the later, target-specific refusals -- so removing the table check is caught
+    even where a downstream rule would have refused the same jump for another reason.
+    """
+    checked = 0
+    for source in _REACHABLE:
+        registry = ModelRegistry()
+        registry.register_draft(MODEL_ID, actor="trainer")
+        _drive_to(registry, MODEL_ID, source)
+        for target in ModelStatus:
+            if target in _ALLOWED_TRANSITIONS[source]:
+                continue
+            with pytest.raises(ValueError, match="cannot transition"):
+                registry.transition(
+                    MODEL_ID,
+                    target,
+                    actor="reviewer",
+                    evidence_hashes=("e" * 64,),
+                    reason="probe",
+                )
+            assert registry.get(MODEL_ID).status is source
+            checked += 1
+
+    # Guard the guard: 6 forbidden targets from DRAFT, 6 from WALK_FORWARD_PASSED,
+    # 8 from RETIRED (whose allowed set is empty).
+    assert checked == 20
+
+
+def test_the_lifecycle_table_is_the_reviewed_policy() -> None:
+    """A deliberate change-detector, because nothing else would notice a loosened row.
+
+    The table is duplicated by five hand-written guards and the two encodings are never
+    cross-checked. A loosened row is invisible to every behaviour test: for the pairs
+    probed here the public transition() refuses the target for its own reason before the
+    table matters (a DRAFT allowed to reach PRODUCTION still hits "locked-test and
+    production states require their dedicated workflow"), and the private entry points
+    never read the table at all. So this test copies the policy on purpose -- it is the
+    only thing that makes drift between the two writings visible.
+    """
+    assert {
+        ModelStatus.DRAFT: frozenset({ModelStatus.WALK_FORWARD_PASSED, ModelStatus.RETIRED}),
+        ModelStatus.WALK_FORWARD_PASSED: frozenset({ModelStatus.SHADOW, ModelStatus.RETIRED}),
+        ModelStatus.SHADOW: frozenset(
+            {ModelStatus.LOCKED_TEST_APPROVED, ModelStatus.RETIRED}
+        ),
+        ModelStatus.LOCKED_TEST_APPROVED: frozenset(
+            {ModelStatus.LOCKED_TEST_PASSED, ModelStatus.LOCKED_TEST_FAILED, ModelStatus.RETIRED}
+        ),
+        ModelStatus.LOCKED_TEST_PASSED: frozenset({ModelStatus.PRODUCTION, ModelStatus.RETIRED}),
+        ModelStatus.LOCKED_TEST_FAILED: frozenset({ModelStatus.RETIRED}),
+        ModelStatus.PRODUCTION: frozenset({ModelStatus.RETIRED}),
+        ModelStatus.RETIRED: frozenset(),
+    } == _ALLOWED_TRANSITIONS

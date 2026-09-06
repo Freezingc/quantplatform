@@ -6694,3 +6694,107 @@ W-M 的探针暴露的不是一个守卫没测，而是一处设计事实：
    `summarize_rank_ic` / `summarize_rank_ic_by_year`，而它也是续五十六量到的"重复键三重守卫"里的**第一重**。
    **链 3 钉了判定、链 4 钉了证据组装、链 5 钉了晋级把关，唯独最底层的算术还没人钉。**
 3. 其余同前：约 1,530 个测试函数在已审计的五条链之外从未做过变异测量。
+
+## 勾选审计续五十八（2026-09-07 04:55）：**链 6 = 五句手写生命周期守卫 + 它们复制的那张表**——首轮 12 个变异 **6 杀 6 存活**，补 7 条测试后**全范围 12 杀 0 存活**。这一轮的形状很干净：**守卫"改错要求的状态"会被立刻抓到、"整句删掉"无人察觉**；**表"被公开路径忽略"会被抓到、"被放松一行"无人察觉**
+
+### 一、这条链是上一轮探针的副产品，不是新挑的
+
+续五十七的 W-M 探针暴露的不是"一个守卫没测"，而是一处结构：
+`_ALLOWED_TRANSITIONS`（第 47–58 行）**只在公开的 `transition()`（第 211 行）被强制执行**；
+**五个入口绕过它直接调私有 `_transition`**（第 192 / 250 / 263 / 278 / 291 行），
+而 `_transition`（第 320–334 行）只校验 actor / reason / evidence_hashes，**从不查表**。
+**策略因此被写了两遍，且没有任何测试保证两遍一致。**
+本轮把这件事做完：五句守卫（其中四句此前零测试）、表本身、以及两者的一致性。
+
+### 二、首轮：12 个变异，6 杀 6 存活（基线 183 passed / 3 skipped）
+
+- **存活 6 条**：**X-A / X-B / X-C / X-D**（四句守卫**整句删掉**）、**X-G / X-I**（表**被放松两行**：
+  DRAFT 可直达 PRODUCTION、RETIRED 可回 PRODUCTION）。
+- **杀掉 6 条**：**X-E / X-F**（守卫**要求的状态改错**，分别由 20 个与 2 个测试抓到）、
+  **X-H**（公开路径不查表）、**X-K**（**锁定测试结论被反转**，6 个测试）、
+  **X-L**（**双人规则**去掉，1 个测试）、**X-M**（shadow 审批绑到**第一条**历史事件而非最后一条，18 个测试）。
+
+**两处"无人察觉"的原因不同，但同源**：守卫删掉之后没人拦，是因为 `_transition` 不查表；
+表放松之后没人拦，是因为**对这两对状态，公开路径在查表之后还有各自的目标专属拒绝**
+（`locked-test and production states require their dedicated workflow`），而私有路径根本不读表。
+**即两份写法各自都能兜住对方的一处失误，却都兜不住"自己被删 / 自己被放松"。**
+这与续五十六量到的"重复键三重守卫"是同一个形状的**反面**：那里三重冗余使任何单点删除都无害，
+这里两份写法**互不覆盖**，使单点删除直接生效。
+
+### 三、探针：删掉守卫之后**实际发生什么**（不是从"存活"推出来的）
+
+"没有测试察觉"不等于"知道变异体做了什么"——守卫消失也可能是被后面某道检查以别的理由拦下。
+故四个入口都在原始与变异两侧各驱动一次，`_issue_registry_workflow_proof`
+是模块级 authority hook，测试可直接铸造有效 proof：
+
+| 入口 | 起点 | 原始 | 守卫删掉后 |
+|---|---|---|---|
+| `enter_shadow` | DRAFT | `ValueError: only WALK_FORWARD_PASSED models can enter SHADOW` | **状态守卫消失**，改为 `ValueError: shadow deployment approval requires QRV2_SHADOW_APPROVAL_HMAC_…`——**仍然失败，但失败的已经不是生命周期**，而是一条部署密钥配置错误 |
+| `_approve_locked_test` | WALK_FORWARD_PASSED | `ValueError: only SHADOW models can enter LOCKED_TEST_APPROVED` | **NO ERROR，status → `LOCKED_TEST_APPROVED`，history 2 → 3**，**整个 shadow 阶段被跳过** |
+| `_complete_locked_test` | DRAFT | `ValueError: only LOCKED_TEST_APPROVED models can complete a locked test` | **NO ERROR，status → `LOCKED_TEST_PASSED`，history 1 → 2**，即为一次**从未运行的锁定测试**记录了"通过" |
+| `_approve_production` | DRAFT | `ValueError: only LOCKED_TEST_PASSED models can enter PRODUCTION` | **NO ERROR，status → `PRODUCTION`，history 1 → 2** |
+
+**X-D 是本轮最短的一条路径**：从"刚注册的草稿"到"生产"，中间**只隔一行 `if`**——
+不评价、不影子、不锁定测试，历史里只多一条 `verified independent production approval`。
+**X-A 与其它三条不同，要单独说清**：删掉 `enter_shadow` 的守卫**并不会让 DRAFT 进入 SHADOW**，
+因为它后面还有一整套审批校验（HMAC 密钥、approval 与 model_id 绑定、walk-forward 证据哈希、双人分离）。
+**它丢失的是"拒绝的理由"**：一次越级的 shadow 尝试会以"部署密钥没配"的面目出现，
+而不是以"这个模型还没过 walk-forward"的面目出现——**在事故复盘里这两句话指向完全不同的排查方向**。
+
+### 四、补的 7 条测试
+
+`tests/unit/registry/test_model_registry.py` 从 **10 个测试变 17 个**：
+
+1–4. **四句守卫各一条**（`test_enter_shadow_refuses_a_model_that_has_not_passed_walk_forward`、
+   `test_locked_test_approval_refuses_a_model_that_is_not_in_shadow`、
+   `test_completing_a_locked_test_refuses_a_model_never_approved_for_one`、
+   `test_production_approval_refuses_a_model_that_has_not_passed_the_locked_test`），
+   **每条都额外断言记录状态未变、历史条数未增**——失败的尝试不得留下痕迹。
+5. `test_no_private_entry_point_permits_a_jump_the_lifecycle_table_forbids`——**一致性测试，从表推导，不再抄一遍**：
+   三个可达状态（DRAFT / WALK_FORWARD_PASSED / RETIRED）× 五个入口，凡表所禁止的组合必须拒绝、
+   且状态与历史都不变；**共 13 格，并用 `checked == 13` 自证这个循环没有空转**。
+6. `test_public_transition_refuses_every_pair_the_lifecycle_table_forbids`——把公开路径的拒绝
+   从既有的"抽查两对"补成**全部 20 对**，并要求拒绝信息必须是表自己的 `cannot transition`，
+   **而不是后面那些目标专属的拒绝**——这样即使某个组合本来会被别的规则拦下，
+   "去掉查表"也仍然被抓到（X-H 就是这么死的）。
+7. `test_the_lifecycle_table_is_the_reviewed_policy`——**一条故意的变更探测器**：把表原样抄进测试。
+   理由写在 docstring 里：**放松一行表是任何行为测试都看不见的**，
+   所以这份"第三遍写法"是**唯一能让前两份写法之间的漂移显形的东西**（X-G / X-I 由它杀掉）。
+
+**第 7 条的代价要说清**：它是一份策略副本，**改表就必须同时改测试**——这正是目的
+（让漂移变成一次显式决定），但也意味着**它不能证明策略是对的，只能证明策略没有被悄悄改掉**。
+
+### 五、门槛与证据（全部实测）
+
+- **定向**（只跑 `test_model_registry.py`，**0.2s/次**）：control **17 passed** →
+  **首轮 6 条存活全部 killed**（X-A 由新守卫测试杀；X-B/X-C/X-D 各由"专属测试 + 一致性网格"两条杀；
+  X-G/X-I 各由"私有网格 + 公开网格 + 表副本"三条杀）→ restored **17 passed**；
+  `model_registry.py` **还原后逐字节相同**。日志 `mutation_lifecycle_guards_targeted_with_killers.txt`。
+- **本文件范围内仍存活 3 条：X-F / X-K / X-L**——它们由 `tests/unit/registry/test_locked_test.py`
+  与 `tests/unit/monitoring/test_shadow_governance.py` 钉住（全范围下分别由 2 / 6 / 1 个测试杀掉）。
+  **范围外的钉子不算本文件的钉子，故如实分列**，这也是定向 harness 一直写清范围的原因。
+- **全量 harness**：**基线 190 passed / 3 skipped**，**12 杀 0 存活**，
+  还原后逐字节相同并复跑通过。日志 `mutation_lifecycle_guards_after_pins.txt`。
+- **全量门槛**：`pytest tests -q` → **1650 passed / 45 skipped**（续五十七的 1643 + 本轮 7 条，skipped 未变）；
+  `ruff check src tests` 清（本轮 `ruff --fix` 只重排了新加的 import 块）；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**；
+  **未改任何生命周期规则、门阈值、契约或 schema**。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- **未打开 `QRV2_INTEGRATION`**（同上一轮：两条 integration 路径全程 skipped，因为可能触库，
+  而零数据库写入是本 session 的红线）。
+- 归档：`mutation_lifecycle_guards_first_round.txt`、`mutation_lifecycle_guards_after_pins.txt`、
+  `mutation_lifecycle_guards_targeted_with_killers.txt`、`probe_lifecycle_guards.py` 与
+  `probe_lifecycle_guards_outcomes.txt`、`mutate_lifecycle_guards.py`、`mutate_lifecycle_guards_targeted.py`。
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`evaluation/rank_ic.py`**：G1/G2/G3/G5 的原始数字出自 `compute_daily_rank_ic` /
+   `summarize_rank_ic` / `summarize_rank_ic_by_year`，而它也是续五十六量到的"重复键三重守卫"的**第一重**。
+   **判定（链 3）、证据组装（链 4）、晋级把关（链 5）、生命周期（链 6）都钉了，最底层的算术还没有。**
+   这条已经连续三轮被排到第一而未做，**下一轮应当就做它**。
+2. **shadow 审批与 locked-test proof 机制**：本轮 X-K / X-L / X-M 是被既有测试杀掉的，
+   但那是**顺带**——本 session 没有对 `monitoring/shadow.py`、proof 的一次性消费、
+   以及 `test_locked_test.py` 覆盖的那套流程做过系统的变异测量。
+   **X-M 被 18 个测试杀掉说明这一带覆盖不差，但"覆盖不差"与"被测量过"是两件事。**
+3. 其余同前：约 1,530 个测试函数在已审计的六条链之外从未做过变异测量。
