@@ -29,6 +29,7 @@ qr-v2 = "research_v2.cli.app:app"
 
 [project.optional-dependencies]
 dev = [
+  "click>=8.2",
   "hypothesis>=6.0,<7",
   "mypy>=1.10,<2",
   "pandas-stubs>=2.2,<3",

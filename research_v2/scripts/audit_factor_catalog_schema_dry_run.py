@@ -33,6 +33,7 @@ sys.path.insert(0, str(REPO_ROOT / "research_v2" / "src"))
 from research_v2.factors.catalog_dry_run import (  # noqa: E402
     CatalogDryRunReport,
     SourceColumn,
+    _schema_query,
     catalog_tables,
     collect_source_schemas,
     run_catalog_dry_run,
@@ -152,9 +153,10 @@ def main() -> int:
             client.close()
         schemas = dict(collected.schemas)
         errors = dict(collected.errors)
-        queries = [
-            f"schema(loadTable('dfs://YesLab', '{table}')).colDefs" for table in tables
-        ]
+        # Reuse the function that produced them. This list is the evidence that no value was
+        # read, so it has to be the strings that were actually issued; a paraphrase rebuilt
+        # by hand can drift from them and still look like a record.
+        queries = [_schema_query(table) for table in tables]
 
     if args.save_schemas is not None:
         payload = _schema_payload(schemas, errors)

@@ -47,6 +47,14 @@ _REQUIRED_ENTRY_FIELDS = (
     "source_code_column",
 )
 
+# Deliberate allowlists, not catalogues of DolphinDB's types. ``BOOL``, ``INT128`` and
+# ``COMPLEX`` are absent from the numeric set and ``TIME``/``SECOND``/``DURATION``/``PERIOD``
+# from the temporal set -- the temporal omissions are correct on the merits, since a
+# time-of-day is not a date key, and the numeric ones are a choice. An unlisted type yields a
+# false BLOCKED and never a false MAPPED, which is the safe direction for a governance gate,
+# but the operational consequence is blunt: migrating the source ``value`` column to ``BOOL``
+# would block all 487 factors with a type message rather than with "this type is not
+# recognised". Widening a set is therefore a decision, not a typo fix.
 _TEMPORAL_TYPES = frozenset(
     {
         "DATE",

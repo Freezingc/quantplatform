@@ -71,7 +71,16 @@ def test_fundamental_factor_becomes_available_on_next_trading_day_and_expires() 
     assert result["stale_days"].tolist() == [0, 179]
 
 
-def test_fundamental_event_prefers_latest_report_period_before_revision() -> None:
+def test_a_shared_announcement_date_tie_is_broken_on_the_latest_report_period() -> None:
+    """A tie-break, not period precedence. Both versions share one ``ann_date``, so the sort
+    on ``available_date`` cannot separate them and falls through to ``report_period``.
+
+    The name this replaces claimed to pin "prefers latest report period before revision",
+    which is exactly what ``test_a_late_restatement_of_an_older_period_supersedes_a_newer_period``
+    below shows does not hold once the announcement dates differ. Renaming a test cannot
+    change behaviour, so the append-only discipline that kept the old name in place while a
+    bit-for-bit reproduction was running does not apply to it.
+    """
     calendar = _calendar()
     events = pd.DataFrame(
         {

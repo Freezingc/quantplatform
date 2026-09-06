@@ -57,6 +57,13 @@ class FactorMaterializeChunk:
     ``trading_days`` counts the target month only. The lookback window is carried because the read
     path needs it to compute features, but those days are not published for this month, so they are
     deliberately excluded from ``estimated_rows``.
+
+    ``estimated_rows`` is a **dense upper bound**: it assumes every factor is present for every
+    security on every trading day of the month. The real figure is lower for a long-form source,
+    and measurably so -- a census of the frozen set found between 13.1% and 61.5% of its
+    (security, date) keys holding a row with no usable value, before any deduplication. The
+    planner still refuses to narrow the estimate, because a guessed density yields a number that
+    looks measured; read this one as a ceiling when sizing a run.
     """
 
     logical_partition: str
