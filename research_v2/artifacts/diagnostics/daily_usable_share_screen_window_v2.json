@@ -1,0 +1,190 @@
+{
+ "factors": {
+  "yeslab_206": {
+   "factor_name": "60日成交量去均值相对偏离",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 0.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.7788445342765706,
+    "min_daily_share": 0.5984503958228061,
+    "pooled_share": 0.7680741292926665,
+    "row_count": 7195644.0,
+    "usable_row_count": 5526788.0
+   },
+   "source_table": "factor_data5",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.779 vs pooled 0.768, worst day 0.598, 0 empty days, 0 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_357": {
+   "factor_name": "行业内收益标准化绝对值",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 0.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.8634821428571429,
+    "min_daily_share": 0.67375,
+    "pooled_share": 0.849923090523338,
+    "row_count": 13574400.0,
+    "usable_row_count": 11537196.0
+   },
+   "source_table": "factor_data8",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.863 vs pooled 0.850, worst day 0.674, 0 empty days, 0 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_372": {
+   "factor_name": "GP_003",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 879.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.3609711021505376,
+    "min_daily_share": 0.025537634408602152,
+    "pooled_share": 0.3803152114606622,
+    "row_count": 14427648.0,
+    "usable_row_count": 5487054.0
+   },
+   "source_table": "factor_data8",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.361 vs pooled 0.380, worst day 0.026, 0 empty days, 879 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_375": {
+   "factor_name": "GP_006",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 1000.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.3499916243229661,
+    "min_daily_share": 0.01853816516835111,
+    "pooled_share": 0.3660479077669339,
+    "row_count": 21705708.0,
+    "usable_row_count": 7945329.0
+   },
+   "source_table": "factor_data8",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.350 vs pooled 0.366, worst day 0.019, 0 empty days, 1000 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_381": {
+   "factor_name": "GP_012",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 0.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.8087197580645161,
+    "min_daily_share": 0.6290322580645161,
+    "pooled_share": 0.7963437976862202,
+    "row_count": 14427648.0,
+    "usable_row_count": 11489368.0
+   },
+   "source_table": "factor_data8",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.809 vs pooled 0.796, worst day 0.629, 0 empty days, 0 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_384": {
+   "factor_name": "GP_015",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 1011.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.3795362903225806,
+    "min_daily_share": 0.11105510752688172,
+    "pooled_share": 0.39015201923418147,
+    "row_count": 14427648.0,
+    "usable_row_count": 5628976.0
+   },
+   "source_table": "factor_data8",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.380 vs pooled 0.390, worst day 0.111, 0 empty days, 1011 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_389": {
+   "factor_name": "GP_020",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 846.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.3792002688172043,
+    "min_daily_share": 0.025369623655913977,
+    "pooled_share": 0.39429129404875973,
+    "row_count": 14427648.0,
+    "usable_row_count": 5688696.0
+   },
+   "source_table": "factor_data9",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.379 vs pooled 0.394, worst day 0.025, 0 empty days, 846 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_390": {
+   "factor_name": "GP_021",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 850.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.37806516627477327,
+    "min_daily_share": 0.025361101780315753,
+    "pooled_share": 0.39278943850045067,
+    "row_count": 14432496.0,
+    "usable_row_count": 5668932.0
+   },
+   "source_table": "factor_data9",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.378 vs pooled 0.393, worst day 0.025, 0 empty days, 850 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_406": {
+   "factor_name": "GP_037",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 1043.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.3604065177221569,
+    "min_daily_share": 0.054258357130858394,
+    "pooled_share": 0.3724966860872212,
+    "row_count": 7215036.0,
+    "usable_row_count": 2687577.0
+   },
+   "source_table": "factor_data9",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.360 vs pooled 0.372, worst day 0.054, 0 empty days, 1043 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_484": {
+   "factor_name": "羊群效应_CSAD波动率21",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 0.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.8065401897154268,
+    "min_daily_share": 0.6272258279247795,
+    "pooled_share": 0.7901695311817752,
+    "row_count": 7282908.0,
+    "usable_row_count": 5754732.0
+   },
+   "source_table": "factor_data10",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.807 vs pooled 0.790, worst day 0.627, 0 empty days, 0 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  },
+  "yeslab_96": {
+   "factor_name": "修正日间反转",
+   "metrics": {
+    "day_count": 1212.0,
+    "days_below_half": 0.0,
+    "days_zero_usable": 0.0,
+    "median_daily_share": 0.7989725450564258,
+    "min_daily_share": 0.6183257537476841,
+    "pooled_share": 0.7891078269019424,
+    "row_count": 14391288.0,
+    "usable_row_count": 11356278.0
+   },
+   "source_table": "factor_data3",
+   "status": "MEASURED",
+   "verdict": "UNIFORM_ACROSS_DAYS: the median day and the whole window agree, so the unusable values are spread evenly rather than concentrated in a few days (median 0.799 vs pooled 0.789, worst day 0.618, 0 empty days, 0 of 1212 days below half). A gap against a median-of-daily-ratios gate is therefore a denominator gap, not a day-level hole"
+  }
+ },
+ "metric_definitions": {
+  "days_below_half": "days on which fewer than half the present keys are usable",
+  "days_zero_usable": "days on which no key at all holds a usable value",
+  "median_daily_share": "median over days of (usable rows / rows present that day)",
+  "pooled_share": "usable rows over the whole window / rows over the whole window"
+ },
+ "window": {
+  "end": "2024-12-31",
+  "start": "2020-01-01"
+ }
+}
