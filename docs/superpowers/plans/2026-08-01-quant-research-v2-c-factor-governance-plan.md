@@ -3456,3 +3456,107 @@ flag 从各脚本的 **AST**（`add_argument` 的字符串实参）读取而非�
 **本节 `src/` 与 `scripts/` 均零改动**（runbook 核验未发现任何错误，故无可修）；
 `preflight_frozen_baseline.py` 的变异已用 `git diff` 确认**还原干净**。
 **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`。
+
+## 勾选审计续二十九（2026-09-06 18:50）：Task 3.1 的三道失败门逐一定性——其中一道读的是**已知有误的快照**，而修正版从未入库（新增决定 L）
+
+### 一、Task 3.1 的实际门不止裁决 4：预检现在是 REFUSED，五道门里三道 FAIL
+
+`preflight_frozen_baseline_five_door_run.txt`（今日 06:04）的末行是
+**`FROZEN BASELINE PRE-FLIGHT: REFUSED`**，阻塞门为
+`admission_consistency` / `factor_coverage_screen` / `fold_coverage`，**无一被 waive**。
+**故 Task 3.1 的门不只是"裁决 4 未定"，而是"预检明确拒绝启动"**，
+而预检自己写了理由：*其输出会成为 Task 4.1 的信任根、并被 Task 5.1 当 `--baseline-report` 消费*。
+
+**逐道定性后，三道门不是同一个问题**——这是本节的主要结果：
+
+| 门 | 读什么 | 失败原因 | 定性 |
+|---|---|---|---|
+| `backfill_completeness` | `factor_daily` 逐年 | **PASS**（2014–2025 每年 17 因子、duplicates=0） | — |
+| `admission_consistency` | **持久化快照** `factor_quality_snapshot` | 7 个已准入因子带阻塞性筛查失败、而冻结契约 `conflicts` 为空 | **读的是已知有误的快照**（见二） |
+| `factor_coverage_screen` | **活体** `factor_daily`（3 个窗口） | 6 个因子 `ELIGIBILITY_FAIL`（**三个窗口都是 PASS 11/17**） | **真问题**，即裁决 4 的标的 |
+| `fold_coverage` | 逐折横截面宽度 | F01/F02 各 15 天、F03 4 天低于门槛 | **真问题**，同上（裁决 4 / 3.1b） |
+| `report_path` | 报告可序列化 + 工件目录 | **PASS** | — |
+
+### 二、三套覆盖率度量的精确对账（本轮只读查询，工件已存）
+
+证据：`/data/zhangyudong/qrv2_research_artifacts/structural_coverage_scope_reconciliation.txt`
+（只读查 `dfs://QuantResearchV2Test.factor_quality_snapshot`，未写任何行）。
+
+**持久化快照里只存在两个 `STRUCTURAL_COVERAGE` scope**：
+`SCREEN_TRAIN2020_2024_STRUCTURAL_COVERAGE_V1` 与 `_V2`，**都是 `as_of_date=2026-08-04`、各 70 行**。
+**修正后的 `factor_daily` 筛查（`screen_factor_daily_coverage.py`，今日 00:55 跑过）从未被持久化**——
+它只产出工件、不写快照。
+
+| 因子 | 持久化快照（源表版，08-04） | 活体筛查（`factor_daily`，3 窗口） | 原始源普查（本轮，同窗） |
+|---|---|---|---|
+| 372 / 384 / 389 / 390 / 406 | **FAIL** | **FAIL** | **37.2%–39.4% 可发布** |
+| **375（GP_006）** | **无行** | **FAIL**（median 0.3705/0.4627/0.4641） | **35.1% 可发布 + 18.18% 冲突隔离** |
+| **398 / 464** | **FAIL**（`MISSING_MONTH_OR_LOW_MONTHLY_COVERAGE`，而 median **0.9978**） | **PASS**（median 0.9967、min_month 1.0000） | 74.9% / 76.8%（dense 档） |
+| **206 / 443** | **无行** | **PASS** | 76.8% / 未普查（无 metadata 行） |
+| 357 / 381 / 405 / 425 / 471 / 484 / 96 | PASS | PASS | 78.9%–86.9% |
+
+**权威结论：失败的是六个 —— 372 / 375 / 384 / 389 / 390 / 406。**
+**两套互不引用的方法在三个窗口上一致**：活体筛查（**按 universe 成员分母、逐日取中位**）
+与本轮原始源普查（**按源键分母、全窗池化**）。
+
+**持久化快照的那份七因子清单在两个方向上都不对**，而这不是新发现——
+`screen_factor_daily_coverage.py` 的 docstring **早已写明**：
+准入那次筛查跑在 **YesLab 源表**上、而冻结链消费的是 **`factor_daily`**，
+该错配产生了**一个假阴性**（375 **从未被结构筛查**，实测 43.9–62.8% 覆盖，低于 C6.2 的 0.70 门）
+**和两个假阳性**（398/464 在**源表**上 1159 / 1185 天（共 1212），
+而 `factor_daily` 对两者都是 **1212/1212 天、60/60 月**）。
+预检自己也打了 NOTE：*"blocking status despite median coverage 0.9978 >= 0.7; inspect the scope's other criteria"*
+——**本节就是那次 inspect。**
+
+**另有三个冻结因子从未被结构筛查**（快照里无行）：**206、375、443_reg30_max20_v1**。
+其中 206 与 443 经活体筛查为 PASS（0.9842–0.9862 / 0.8864–0.9883），
+**而 375 是三套度量里最差的一个**。即：**唯一从未被筛查、又确实有问题的因子，
+正是那个问题最重的**——这不是巧合，而是"筛查跑在错误的源上"的直接后果。
+
+### 三、为什么"把修正版发布进去"不能顺手做（新增决定 L）
+
+直觉的修法是：把 `factor_daily` 版筛查发布成一个新 scope，门 2 就读到对的了。
+**核实后不成立**：`verify_admission_consistency.py` 的
+`BLOCKING_SCOPE_SUBSTRINGS = ("STRUCTURAL_COVERAGE",)` 是**子串匹配**，
+故**新旧两份 scope 会同时被当作阻塞**，门 2 的清单会从 7 个变成 **8 个并集**
+（含两个已知假阳性）——**发布修正版反而让门 2 更错**。
+
+**决定 L（新增）：结构覆盖率的权威 scope 是哪一个，门 2 该读谁。**
+
+- **(L-i) 发布修正 scope + 让门 2 只读指定 scope**：需要把子串匹配改成"权威 scope 名单"，
+  **并向 `dfs://QuantResearchV2Test` 写入一个新 scope**（additive、不动既有行）。
+  **最正确**，但**是一次 DB 写入**，故与**决定 K** 相关（若 K 选独立库/前缀，L 的写入目标随之变）。
+- **(L-ii) 不发布，改为在冻结契约 `conflicts` 数组里记录这六个**：这正是门 2 的字面要求
+  （*"the contract's conflicts array must record this or the factors must be removed"*），
+  但**它会改动冻结契约**（含其 `data_version`），属 owner 行为，
+  **且它就是裁决 4 (iii) 的机械后果**——故 **L-ii 与裁决 4 应一并定，不该分两次**。
+- **(L-iii) waive 门 2**，理由写清（"快照基于错误的源、已由活体筛查取代，权威清单是这六个"）：
+  **改动最小**，但**把一份已知有误的快照留在库里继续被别的消费者读到**
+  （准入决策表、未来任何审计），**且 waive 是一次性动作、不会修好数据**。
+
+**倾向 (L-i) 先、(L-ii) 随后，(L-iii) 只作临时措施且必须写明过期条件。**
+**不代做**：(L-i) 要写库并改一道治理门的匹配语义，(L-ii) 要改冻结契约，
+(L-iii) 是放弃一道门——**三者都是 owner 的动作**。
+
+### 四、对裁决 4 的直接影响
+
+裁决 4 的 (iii)「复议那六个因子」**现在有了准确的名单与准确的依据**：
+
+1. **是六个，不是七个、也不是八个**：398/464 应从复议名单里**去掉**（假阳性，
+   `factor_daily` 上 1212/1212 天、60/60 月、median 0.9967），
+   375 必须**加进来**（假阴性，且是最差的一个）。
+2. **六个的失败在三个窗口上稳定**（2014–2019 / 2020–2024 / 2025 都是同样六个、都 PASS 11/17），
+   故**不是某段行情的偶然**。
+3. **其中五个的成因是"源里有行、值是 NULL"**（60.6%–62.8% 不可用），
+   **一个（375）另有 18.18% 的冲突隔离**，而冲突隔离**在无解决规则前不可恢复**（决定 G）。
+4. **门 2 与门 3/4 不是同一个问题**：门 3/4 是**真实的覆盖率不足**（裁决 4 的标的），
+   门 2 是**读错了工件**（决定 L 的标的）。
+   **把三者混为"覆盖率问题"会导致 waive 掉一道本该修的门、或修一道本该 waive 的门。**
+
+### 五、门槛
+
+**本节零代码改动**（只读查询 + 文书），故沿用续二十八的实测值：
+**全量 1582 passed / 45 skipped**、`ruff check src tests` 清、`mypy src` **158 文件清**。
+**未写任何数据库**（本轮对 `factor_quality_snapshot` 只发 `select`）；
+**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+**未改动冻结契约、未 waive 任何门、未发布任何 scope**——三者都属决定 L / 裁决 4。
