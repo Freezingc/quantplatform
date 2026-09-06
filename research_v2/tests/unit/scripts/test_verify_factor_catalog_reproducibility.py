@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import ast
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import pytest
 import verify_factor_catalog_reproducibility as verify
 import yaml
 
@@ -110,10 +112,87 @@ def test_a_hand_edit_to_one_catalog_entry_is_drift(tmp_path: Path) -> None:
     assert result["hash_matches"] is True
     assert result["entries_identical"] is False
     assert result["entries_differing"] == [{"factor_id": "yeslab_1", "fields": ["owner"]}]
+    assert result["entries_identical_ignoring_order"] is False, (
+        "ignoring order must not become ignoring content: a field was changed, not moved"
+    )
 
 
-def test_a_reordered_catalog_is_still_reproducible(tmp_path: Path) -> None:
-    """Entry order carries no meaning; the generator sorts, so a reshuffled file must not drift."""
+def _run_main(
+    monkeypatch: pytest.MonkeyPatch, catalog: Path, metadata: pd.DataFrame, tmp_path: Path
+) -> int:
+    """Drive the verifier the way an operator does, offline, and return its exit code."""
+    offline = tmp_path / "metadata.parquet"
+    metadata.to_parquet(offline, index=False)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["verify", "--catalog", str(catalog), "--offline-metadata", str(offline)],
+    )
+    return verify.main()
+
+
+def test_main_says_reproducible_and_exits_zero_for_an_untouched_catalog(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The gate's own contract, which nothing covered: what it prints and what it returns.
+
+    Every other test here calls ``compare()`` and reads a dict. ``compare()`` cannot show
+    whether the verdict built on top of it is right, so a gate that always printed
+    CATALOG_REPRODUCIBLE and returned 0 would have passed this whole file.
+    """
+    catalog = tmp_path / "catalog.yaml"
+    metadata = _metadata()
+    _write_catalog(catalog, metadata)
+
+    assert _run_main(monkeypatch, catalog, metadata, tmp_path) == 0
+    assert "CATALOG_REPRODUCIBLE" in capsys.readouterr().out
+
+
+def test_main_exits_one_and_blames_the_order_when_only_the_order_changed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A reshuffle is drift, but it is not the drift the generic message describes.
+
+    ``entries_differing`` is empty here and neither set difference fires, so the only true
+    statement about the file is that its bytes moved. Blaming "the frozen snapshot's
+    expansion" sends whoever reads it hunting for a dropped factor that was never dropped.
+    """
+    catalog = tmp_path / "catalog.yaml"
+    metadata = _metadata()
+    document = _write_catalog(catalog, metadata)
+    document["factors"] = list(reversed(document["factors"]))
+    catalog.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+
+    assert _run_main(monkeypatch, catalog, metadata, tmp_path) == 1
+    printed = capsys.readouterr().out
+    assert "the same entries in a different order" in printed
+    assert "not the frozen snapshot's expansion" not in printed
+
+
+def test_main_still_blames_the_expansion_when_a_factor_really_is_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Control for the message above, so it cannot become the new generic explanation."""
+    catalog = tmp_path / "catalog.yaml"
+    metadata = _metadata()
+    document = _write_catalog(catalog, metadata)
+    document["factors"] = document["factors"][:1]
+    catalog.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+
+    assert _run_main(monkeypatch, catalog, metadata, tmp_path) == 1
+    printed = capsys.readouterr().out
+    assert "not the frozen snapshot's expansion" in printed
+    assert "different order" not in printed
+
+
+def test_a_reordered_catalog_is_drift_because_the_gate_is_byte_exact(tmp_path: Path) -> None:
+    """Order carries no *semantic* meaning, and it is still part of what was generated.
+
+    This test used to be named ``..._is_still_reproducible``, which contradicted the
+    verdict ``main()`` returns for the very same file: ``reproducible`` requires the
+    snapshot hash to match and the hash covers the bytes. The distinction the old name was
+    reaching for is now reported separately, as a diagnosis rather than as a verdict.
+    """
     catalog = tmp_path / "catalog.yaml"
     metadata = _metadata()
     document = _write_catalog(catalog, metadata)
@@ -127,6 +206,7 @@ def test_a_reordered_catalog_is_still_reproducible(tmp_path: Path) -> None:
     assert result["entries_identical"] is False, (
         "order still differs, so this is reported honestly rather than silently normalized"
     )
+    assert result["entries_identical_ignoring_order"] is True
 
 
 def test_offline_metadata_round_trips_through_parquet(tmp_path: Path) -> None:

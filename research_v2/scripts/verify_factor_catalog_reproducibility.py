@@ -71,6 +71,17 @@ def _fetch_metadata(offline: Path | None) -> pd.DataFrame:
     return result
 
 
+def _entry_sort_key(entry: dict[str, Any]) -> tuple[str, str]:
+    """Order-insensitive identity of one catalog entry, for the diagnosis only.
+
+    Both sides are compared as multisets keyed on the entry's own identity, so a reshuffled
+    file compares equal here while still differing byte for byte. ``.get`` and ``str`` on
+    purpose: a hand-edited catalog is exactly the input this script is asked about, and a
+    verifier that crashes on the drift it exists to report has reported nothing.
+    """
+    return (str(entry.get("factor_id", "")), str(entry.get("factor_version", "")))
+
+
 def compare(metadata: pd.DataFrame, catalog_path: Path) -> dict[str, Any]:
     stored = yaml.safe_load(catalog_path.read_text(encoding="utf-8"))
     stored_entries: list[dict[str, Any]] = list(stored["factors"])
@@ -106,6 +117,12 @@ def compare(metadata: pd.DataFrame, catalog_path: Path) -> dict[str, Any]:
         "stored_entries": len(stored_entries),
         "rebuilt_entries": len(rebuilt_entries),
         "entries_identical": rebuilt_entries == stored_entries,
+        # The gate is byte-exact on purpose and the snapshot hash is what makes it so. This
+        # field exists to say *why* a byte-exact refusal happened when nothing about the
+        # entries themselves changed: without it the verdict blames the expansion for what
+        # is only a reshuffle, and sends whoever reads it hunting for a missing factor.
+        "entries_identical_ignoring_order": sorted(rebuilt_entries, key=_entry_sort_key)
+        == sorted(stored_entries, key=_entry_sort_key),
         "only_in_source": sorted(rebuilt_ids - stored_ids),
         "only_in_catalog": sorted(stored_ids - rebuilt_ids),
         "entries_differing": differing,
@@ -156,6 +173,18 @@ def main() -> int:
     if reproducible:
         print("CATALOG_REPRODUCIBLE", flush=True)
         return 0
+    if (
+        not result["entries_differing"]
+        and not result["only_in_source"]
+        and not result["only_in_catalog"]
+        and result["entries_identical_ignoring_order"]
+    ):
+        print(
+            "CATALOG_DRIFT: the same entries in a different order -- the file was rewritten "
+            "after it was generated",
+            flush=True,
+        )
+        return 1
     print("CATALOG_DRIFT: the shipped catalog is not the frozen snapshot's expansion", flush=True)
     return 1
 
