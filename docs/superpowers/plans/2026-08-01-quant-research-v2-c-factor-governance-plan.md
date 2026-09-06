@@ -5454,3 +5454,122 @@ N-J 与 N-K 都落在
 - **决定 M 未被代做**（N-M 只是把 (M-i) 当作变异试了一次并**立即还原**，
   故仓内 scope 集合一字未改）；**决定 L 未被代做**；**裁决 2/3/4 与决定 A–N 全部仍开放。**
 - 证据：`mutation_admission_consistency_14_of_14.txt`（含 14 个变异的前后对照与还原核对），脚本副本同存。
+
+## 勾选审计续四十六（2026-09-07 04:40）：第三道门 15 个变异全杀；但**本轮先查出我自己的变异 harness 有字节码缓存缺陷，它会同时制造假存活与假击杀**，故续四十四/四十五的结论已用修好的 harness 逐条复核
+
+### 一、先说工具的问题，因为它污染了前两轮的结果
+
+第三道门（`screen_factor_daily_coverage.py`）第一次跑出 **7 个存活**。其中一个（P-B：
+`median < MEDIAN_GATE` → `<=`）**与既有的 `test_threshold_boundary_is_inclusive_at_the_gate` 直接矛盾**——
+那条测试用的 median 正是 **0.70**，改成 `<=` 后应当 `ELIGIBILITY_FAIL`。单独跑该测试**确实失败**。
+**故 harness 报了假存活。**
+
+**根因**：harness 每轮把变异写回脚本文件后直接跑 pytest，**没有清 `__pycache__`**；
+测试用 `importlib.util.spec_from_file_location` 加载脚本，**`SourceFileLoader` 会读写字节码缓存，
+并以 `(mtime, size)` 判定缓存是否有效**。而**比较符类变异恰好只增加 1 个字节**
+（`<` → `<=`），于是 **P-A / P-B / P-C 三个变异产生同样大小的文件**；
+它们又在同一秒内写入（15 个变异共 9 秒），**故 mtime 也相同** ⇒
+**后一个变异复用了前一个变异的 `.pyc`，那个变异根本没被执行。**
+
+**这个缺陷是双向的**：修好缓存后重跑第三道门，**存活集合本身变了**——
+**P-B 由"存活"变成"击杀"，P-I 由"击杀"变成"存活"**。
+**即前两轮报出的存活与击杀都不可全信。**
+
+**修法**：每次跑 pytest 前 `shutil.rmtree` 掉 `scripts/`、`src/`、`tests/` 下所有 `__pycache__`，
+并设 `PYTHONDONTWRITEBYTECODE=1`（前者防读旧缓存，后者防写新缓存）。
+
+**这是本 session 第二次"验证工具本身有缺陷"**（续四十三那次是筛查工具的 S4 因 docstring 而失效）。
+**两次的共同点是：工具报出的是"没有问题"，而工具坏掉时最容易报的正是"没有问题"。**
+
+### 二、用修好的 harness 复核前两轮：结论成立
+
+把续四十四与续四十五的变异**重跑一遍，并且把这两轮新加的测试 deselect 掉**——
+因为要复核的命题正是"**既有**套件对这些变异是否是盲的"：
+
+| 轮次 | 变异 | 只跑既有测试的结果 | 结论 |
+|---|---|---|---|
+| 续四十四（宽度门） | M-C 横截面下限 `<`→`<=` | **SURVIVED**（27 passed, 3 deselected） | **真洞，补测成立** |
+| | M-D 有效日占比 `<`→`<=` | **SURVIVED** | **真洞，补测成立** |
+| | M-G 中位宽度 `<`→`<=` | **SURVIVED** | **真洞，补测成立** |
+| | M-B2 容忍度**两处同时** +1（M-B 的忠实形式） | **killed** | 印证续四十四的更正：M-B 的存活是 harness 只改一处所致 |
+| 续四十五（门 2） | N-J 覆盖 note `>=`→`>` | **SURVIVED**（13 passed, 2 deselected） | **真洞，补测成立** |
+| | N-K `COVERAGE_GATE_THRESHOLD` 0.70→0.99 | **SURVIVED** | **真洞，补测成立** |
+
+**故两轮已提交的补测都站得住**，被污染的只是当时 harness 打印的击杀/存活**明细**，
+不是最终写进文书的那几条结论（那几条本轮已逐条重验）。
+**但续四十四表格里"12 杀 2 活"、续四十五表格里"12 杀 2 活"这类逐条明细，
+应以本轮复核后的结果为准**；两轮文书已在此节标注，未回去改写原文（保留历史）。
+
+### 三、第三道门：15 个变异，初次 7 存活，补 5 条测试后 **15/15 全杀**
+
+`screen_factor_daily_coverage.py` 是**定义冻结集 11/17 划分的那台仪器**——
+它的判定就是"三个窗口都 PASS 11/17、同样六个 ELIGIBILITY_FAIL"的来源，
+也是 `verify_frozen_fold_coverage.py` 里 `C62_PASS_11` 常量的出处，
+**即裁决 4 选项 (iii) 的实测依据**。故它的阈值若能被静默改动，**冻结名单就能被静默改动**。
+
+**初次 7 个存活，逐个定性后是 6 个真洞 + 1 个等价变异**：
+
+| | 变异 | 定性 |
+|---|---|---|
+| P-A | 月度门 `<` → `<=` | **真洞**：无测试让 `min_monthly` 恰好 0.90（既有用例只有 1.0 与 0.0） |
+| P-C | p05 门 `<` → `<=` | **真洞**：无测试让 p05 恰好 0.30 |
+| P-G | `MONTHLY_DAY_RATIO_GATE` 0.90 → 0.50 | **真洞：这个阈值的数值此前完全没有被钉住** |
+| P-I | `MEDIAN_GATE` 0.70 → 0.50 | **真洞**：边界测试钉住的是 `COVERAGE_GATE`，不是 `MEDIAN_GATE` |
+| P-J | `COVERAGE_GATE` 0.70 → 0.50 | **等价变异**（见 §四），仍一并钉住 |
+| P-L | p05 变成 p10 | **真洞**：无测试能区分第 5 与第 10 百分位 |
+| P-O | 分位数取整由四舍五入改成向下取整 | **真洞**：既有 `_quantile` 边界测试用 5 个值，`q*(n-1)` 恰为整数，两者不可区分 |
+
+**补 5 条测试（10 → 15），每条都钉两面**（单面钉不住比较式，这是 C7.5 与续四十四已付过两次的学费）：
+月度门"恰好 0.90 不算低 / 0.70 算低"、p05"恰好 0.30 过 / p05=0.25 而 p10=0.40 必须不过"、
+两个中位常量各自 `== 0.70` 且 0.60 必须产出 `LOW_MEDIAN_SAMPLE_COVERAGE`、
+`_quantile([0.1,0.2,0.3,0.4], 0.5) == 0.3`（4 个值使索引落在 1.5，四舍五入与向下取整才分得开）、
+以及全比例扫描断言 `COVERAGE_GATE_FAIL` 永不出现。
+**重跑 15 个变异：全杀，0 存活**，且 P-A/P-C/P-G/P-I/P-J/P-L/P-O 各被对应的新测试单独杀掉；
+被变异脚本**还原后逐字节相同**。
+
+**其中 P-G 最要紧**：`MONTHLY_DAY_RATIO_GATE = 0.90` **是三个阈值里唯一与持久化快照不共用的那个**
+（快照对同一个量用 **0.70**），**也正是决定 L 那台仪器对照表里的差异项之一**。
+**此前它的数值没有任何测试钉住**——即改这一个数字，10 条测试全绿。
+
+### 四、P-J 是等价变异，但它暴露出第四处"一个名字、两台仪器"
+
+`COVERAGE_GATE` 与 `MEDIAN_GATE` **同为 0.70**，而
+`gate_pass = median >= COVERAGE_GATE and not reasons`，
+且 `median < MEDIAN_GATE` 已先把 `LOW_MEDIAN_SAMPLE_COVERAGE` 放进 `reasons`。
+**故只要两个常量相等，单独降低 `COVERAGE_GATE` 不可能改变任何判定**——
+中位数低于它时 `reasons` 必已非空。**实测确认**：把比例从 0 扫到 1.0，
+产出的 reason code 只有 `COVERAGE_GATE_PASS`、`LOW_MEDIAN_SAMPLE_COVERAGE`、
+`LOW_P05_SAMPLE_COVERAGE`、`MISSING_MONTH_OR_LOW_MONTHLY_COVERAGE` 四种，
+**`COVERAGE_GATE_FAIL` 一次都没出现**——
+因为发出它的那个分支要求 `median < COVERAGE_GATE` **且** `LOW_MEDIAN` 不在 reasons 里，
+**在两常量相等时该分支不可达**。
+
+**而这个同名标签在另一台仪器里是活的**：`record_structural_quality_snapshot.py` 的
+`else` 分支对**六个 conjunct 中任一个失败**都贴 `COVERAGE_GATE_FAIL`，
+**正是续三十三里把两轮审计带错方向的那个catch-all**。
+**故同一个 reason code：在活体筛查里不可达、在持久化快照里是总标签。**
+**这是本 session 查出的第四处"一个名字、两台仪器"**（前三处：两套覆盖仪器＝决定 L、
+两套冻结集表示＝决定 A、`yeslab_206` 跨谱系指两个因子）。
+
+**P-J 仍被钉住**（新测试断言两个常量都 `== 0.70`，且断言"若两者发散则该分支变活、reason code 语义改变"）：
+**等价变异虽不构成今天的覆盖缺口，但让两个常量的相等关系变成显式的、被测试守着的事实**，
+将来谁要把 `MEDIAN_GATE` 降到 `COVERAGE_GATE` 之下，会**先撞上一条测试**而不是一次静默的语义变更。
+
+### 五、边界与门槛
+
+- **已做三道门**：宽度门（12 变异）、门 2（14 变异）、C6.2 筛查（15 变异），**合计 41 个变异、全部击杀**。
+  **仍未做**：`verify_frozen_report_path.py`、`verify_factor_daily_backfill.py`、
+  `preflight_frozen_baseline.py` 自身（豁免聚合逻辑，15 条测试，续三十二只端到端跑过一次真实门）。
+  **未立项、未估工**，故续四十三那句限定继续有效：**全套件断言强度仍未被证明。**
+- 三道门的初次存活率分别是 5/12、2/14、7/15，**其中经复核为等价变异或 harness 假象的共 3 个**
+  （M-B、N/A、P-J），**真洞 9 个、已补 10 条测试**（3 + 2 + 5）。
+- `pytest tests -q` → **1603 passed / 45 skipped**（103.48s）＝续四十五的 1598 **+5**
+- `ruff check src tests` → **All checks passed!**；`mypy src` → **158 文件清**
+- **本轮只加测试与修 harness，未改任何 `src/` 或 `scripts/` 实现**（41 个变异全部还原并核对逐字节相同）
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **未改动任何门阈值、reason code、契约、schema 或 `dropna` 口径**——
+  **0.70 / 0.70 / 0.30 / 0.90 四个常量一个都没动，只是被钉住了。**
+- **裁决 4 未被代做**（`C62_PASS_11` 与 11/17 划分一字未改）；**决定 L 未被代做**；
+  **裁决 2/3 与决定 A–N 全部仍开放。**
+- 证据：`mutation_screen_factor_daily_coverage_15_of_15.txt`、
+  `mutation_prior_rounds_reverified_without_bytecode_cache.txt`（含 deselect 复核），四个脚本副本同存。
