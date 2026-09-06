@@ -93,6 +93,19 @@ _METRIC_EXPRESSIONS: dict[str, str] = {
         f"sum(iif(n > 1 && {_CORRECTED_DISTINCT} == 1 && usable_n < n, 1, 0))"
     ),
     "duplicated_conflict_key_count": f"sum(iif({_CORRECTED_DISTINCT} > 1, 1, 0))",
+    # Within-group shape, so a fixture can be built to the measured pattern instead of to
+    # a guess about it. The class counts above say how many keys fall in each class; these
+    # say what a group in that class actually looks like -- how many of its rows carry a
+    # usable value, and for a conflict, how many distinct values it holds. Both are sums
+    # over keys, so the average is the sum divided by the class count, and both stay
+    # additive when a census falls back to one query per year.
+    "single_nonnull_usable_row_count": (
+        f"sum(iif(n > 1 && {_CORRECTED_DISTINCT} == 1 && usable_n < n, usable_n, 0))"
+    ),
+    "conflict_usable_row_count": f"sum(iif({_CORRECTED_DISTINCT} > 1, usable_n, 0))",
+    "conflict_distinct_value_total": (
+        f"sum(iif({_CORRECTED_DISTINCT} > 1, {_CORRECTED_DISTINCT}, 0))"
+    ),
 }
 METRICS: tuple[str, ...] = tuple(_METRIC_EXPRESSIONS)
 
@@ -134,6 +147,20 @@ def check_partition(metrics: Mapping[str, int]) -> tuple[str, ...]:
             "a conflict needs two distinct values, so every conflicting key is a duplicated "
             "key and the two conflict counts must agree"
         )
+    # The naive predicate over-counts by exactly one class. ``nunique`` adds the NULL bucket
+    # once, so it reports a second distinct value for a group holding one value plus a NULL,
+    # and only for such a group: an all-NULL group still has nunique 1, as does a group of
+    # identical values and any single-row key. Verified on all 18 censused factors, where it
+    # holds with zero violations -- which is also the large-scale confirmation that the NULL
+    # model the correction rests on is the one DolphinDB actually implements.
+    expected_naive = (
+        metrics["duplicated_conflict_key_count"] + metrics["duplicated_single_nonnull_key_count"]
+    )
+    if metrics["conflict_key_count_naive"] != expected_naive:
+        violations.append(
+            f"conflict_key_count_naive {metrics['conflict_key_count_naive']} is not the "
+            f"{expected_naive} keys that hold a conflict or a value plus a NULL"
+        )
     return tuple(violations)
 
 
@@ -164,6 +191,11 @@ SELF_TEST_EXPECTED: dict[str, int] = {
     "duplicated_identical_key_count": 2,
     "duplicated_single_nonnull_key_count": 1,
     "duplicated_conflict_key_count": 1,
+    # F is the only single-non-null group and one of its two rows is usable; B is the only
+    # conflict, both of its rows are usable, and it holds two distinct values.
+    "single_nonnull_usable_row_count": 1,
+    "conflict_usable_row_count": 2,
+    "conflict_distinct_value_total": 2,
 }
 
 # Recorded 2026-09-06 in qrv2_research_artifacts/gp017_gp077_duplicate_census.json

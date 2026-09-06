@@ -52,6 +52,9 @@ def _metrics(**overrides: int) -> dict[str, int]:
             "duplicated_identical_key_count": 2,
             "duplicated_single_nonnull_key_count": 1,
             "duplicated_conflict_key_count": 1,
+            "single_nonnull_usable_row_count": 1,
+            "conflict_usable_row_count": 2,
+            "conflict_distinct_value_total": 2,
         }
     )
     values.update(overrides)
@@ -111,7 +114,7 @@ def test_every_reported_metric_is_an_aggregate_so_the_census_cannot_return_rows(
 
     assert offenders == {}
     assert tuple(census._METRIC_EXPRESSIONS) == census.METRICS
-    assert len(census.METRICS) == 15, (
+    assert len(census.METRICS) == 18, (
         "a new metric has to be hand-computed into SELF_TEST_EXPECTED and into the "
         "partition the fixture is built from, so adding one is a deliberate act"
     )
@@ -163,16 +166,39 @@ def test_a_consistent_census_reports_no_partition_violation() -> None:
             "the four duplicated cells sum to 7",
         ),
         ({"conflict_key_count": 2}, "the two conflict counts must agree"),
+        (
+            {"conflict_key_count_naive": 3},
+            "is not the 2 keys that hold a conflict or a value plus a NULL",
+        ),
     ],
 )
 def test_each_way_the_partition_can_fail_to_add_up_is_named(
     broken: dict[str, int], fragment: str
 ) -> None:
-    """Every one of the four checks is shown to fire on its own."""
+    """Every one of the five checks is shown to fire on its own."""
     violations = census.check_partition(_metrics(**broken))
 
     assert len(violations) == 1, violations
     assert fragment in violations[0]
+
+
+def test_the_naive_count_is_exactly_the_conflicts_plus_the_value_plus_null_groups() -> None:
+    """The identity that makes the correction checkable on real data, not only on a fixture.
+
+    ``nunique`` adds the NULL bucket once, so the naive predicate over-reports by precisely
+    the groups holding one value and at least one NULL. Every other class has nunique 1: an
+    all-NULL group, a group of identical values, and any single-row key. This held with zero
+    violations across all 18 censused factors, which is what turns "the correction was
+    checked on eight synthetic rows" into "the NULL model behind it is the one DolphinDB
+    actually implements".
+    """
+    measured = _metrics()
+
+    assert measured["conflict_key_count_naive"] == (
+        measured["duplicated_conflict_key_count"]
+        + measured["duplicated_single_nonnull_key_count"]
+    )
+    assert census.check_partition(measured) == ()
 
 
 def test_the_client_may_answer_with_a_frame_a_mapping_or_a_bare_column_list() -> None:
@@ -192,7 +218,7 @@ def test_the_client_may_answer_with_a_frame_a_mapping_or_a_bare_column_list() ->
 
 
 def test_a_wrongly_sized_column_list_is_refused_rather_than_zipped_into_nonsense() -> None:
-    with pytest.raises(RuntimeError, match="returned 3 values, want 15"):
+    with pytest.raises(RuntimeError, match="returned 3 values, want 18"):
         census.read_metrics([1, 2, 3])
 
 

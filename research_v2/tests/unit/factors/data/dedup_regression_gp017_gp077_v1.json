@@ -1,0 +1,3073 @@
+{
+ "anonymization": "business keys and values are synthetic; only the measured class distribution, multiplicity and within-group usable-row pattern are carried over from the source",
+ "factors": {
+  "GP_017": {
+   "allocated": {
+    "duplicated_conflict": 67,
+    "duplicated_identical": 0,
+    "duplicated_no_usable_value": 35,
+    "duplicated_single_nonnull": 87,
+    "unique_unusable": 9,
+    "unique_usable": 2
+   },
+   "duplicated_multiplicity": 3,
+   "factor_label": "GP_017",
+   "groups": [
+    {
+     "class": "unique_usable",
+     "values": [
+      -1.454435
+     ]
+    },
+    {
+     "class": "unique_usable",
+     "values": [
+      -2.134097
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.712424,
+      -0.712424,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.875376,
+      -0.875376,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.515179,
+      2.515179,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.712264,
+      1.712264,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.34268,
+      0.34268,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.364889,
+      -1.364889,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.415463,
+      -2.415463,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.962475,
+      -2.962475,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.496419,
+      0.496419,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.632226,
+      -1.632226,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.272615,
+      0.272615,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.73499,
+      -2.73499,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.964545,
+      1.964545,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.975467,
+      -2.975467,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.882538,
+      -1.882538,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.063259,
+      -2.063259,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.818781,
+      2.818781,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.615604,
+      -0.615604,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.013379,
+      0.013379,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.34691,
+      -0.34691,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.427297,
+      -1.427297,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.473917,
+      -2.473917,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.36925,
+      2.36925,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.854789,
+      -1.854789,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.243951,
+      -2.243951,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.352117,
+      -0.352117,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.611565,
+      1.611565,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.496839,
+      2.496839,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.156278,
+      -2.156278,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.79605,
+      0.79605,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.851242,
+      -2.851242,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.569217,
+      -2.569217,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.725627,
+      -2.725627,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.040942,
+      -1.040942,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.555074,
+      0.555074,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.518757,
+      -0.518757,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.852115,
+      -2.852115,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.213064,
+      0.213064,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.971172,
+      0.971172,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.570781,
+      2.570781,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.122114,
+      1.122114,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.163194,
+      -1.163194,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.73842,
+      -0.73842,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.329143,
+      -1.329143,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.502439,
+      1.502439,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.578565,
+      -0.578565,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.353608,
+      -0.353608,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.721453,
+      -1.721453,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.716299,
+      -1.716299,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.601401,
+      -2.601401,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.486989,
+      -1.486989,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.596811,
+      1.596811,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.991983,
+      1.991983,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.679005,
+      2.679005,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.521658,
+      -1.521658,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.295733,
+      0.295733,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.897615,
+      -0.897615,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.0748,
+      -0.0748,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.698044,
+      1.698044,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.442001,
+      1.442001,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.594912,
+      0.594912,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.754713,
+      -2.754713,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.879391,
+      2.879391,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.326247,
+      -2.326247,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.671592,
+      -2.671592,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.84767,
+      2.84767,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.855988,
+      2.855988,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.054849,
+      -1.054849,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.195428,
+      2.195428,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.425457,
+      0.425457,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.118298,
+      -0.118298,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.711122,
+      -0.711122,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.917795,
+      -2.917795,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.179756,
+      0.179756,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.970881,
+      -2.970881,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.524581,
+      -0.524581,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.237644,
+      -0.237644,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.39752,
+      0.39752,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.93124,
+      -2.93124,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.148859,
+      0.148859,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.013579,
+      0.013579,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.212277,
+      1.212277,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.289892,
+      0.289892,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.580031,
+      2.580031,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.868693,
+      0.868693,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.063136,
+      -0.063136,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.561844,
+      -1.561844,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.161114,
+      2.957559,
+      -1.161114
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.822742,
+      -2.735007,
+      -1.822742
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.696245,
+      2.416214,
+      -1.696245
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.436019,
+      2.686528,
+      -1.436019
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.326643,
+      0.922313,
+      -0.326643
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.414965,
+      1.118093,
+      -0.414965
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      1.535218,
+      0.919196,
+      1.535218
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.079752,
+      1.33025,
+      2.079752
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.162434,
+      0.023187,
+      -1.162434
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.394187,
+      2.163005,
+      -1.394187
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.31022,
+      0.114845,
+      2.31022
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.26287,
+      1.553964,
+      2.26287
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.654398,
+      -2.865789,
+      -0.654398
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.559435,
+      -2.3447,
+      -2.559435
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.344141,
+      -2.525095,
+      -2.344141
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      0.326561,
+      -2.531309,
+      0.326561
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      1.251357,
+      0.292669,
+      1.251357
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.565941,
+      -2.828368,
+      -0.565941
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.532778,
+      -2.881924,
+      -0.532778
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.544921,
+      0.242528,
+      -2.544921
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      1.525884,
+      0.666643,
+      1.525884
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.906424,
+      1.584743,
+      -1.906424
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.086368,
+      -0.903873,
+      -2.086368
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.71688,
+      -2.404627,
+      2.71688
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.366898,
+      1.178846,
+      2.366898
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      1.991176,
+      0.222862,
+      1.991176
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.566424,
+      0.325142,
+      -1.566424
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      0.182172,
+      1.328038,
+      0.182172
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.886034,
+      0.294634,
+      -1.886034
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.43299,
+      1.692901,
+      -1.43299
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.462454,
+      -0.341451,
+      -0.462454
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.686075,
+      -2.580804,
+      2.686075
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.14848,
+      -2.49741,
+      -0.14848
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.498692,
+      -0.918874,
+      -2.498692
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.095284,
+      1.185023,
+      -0.095284
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.372822,
+      -1.971181,
+      -1.372822
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.954569,
+      -0.484833,
+      -1.954569
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.531594,
+      0.375568,
+      2.531594
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      0.706109,
+      1.982815,
+      0.706109
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.478544,
+      -2.948636,
+      -1.478544
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.947387,
+      0.567985,
+      2.947387
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.756246,
+      -2.302982,
+      -1.756246
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      0.583947,
+      -2.63481,
+      0.583947
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.560747,
+      1.20568,
+      -0.560747
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.311709,
+      -1.009585,
+      -2.311709
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      0.703,
+      1.826359,
+      0.703
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      1.241491,
+      -1.223873,
+      1.241491
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.242777,
+      1.374651,
+      2.242777
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      1.877355,
+      0.116075,
+      1.877355
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.491882,
+      -0.135597,
+      -2.491882
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      1.65031,
+      -2.489703,
+      1.65031
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.58845,
+      -0.905936,
+      -1.58845
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.145013,
+      1.670798,
+      -2.145013
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.034678,
+      2.831289,
+      -2.034678
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.533374,
+      -1.661788,
+      -2.533374
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      0.465709,
+      -1.99646,
+      0.465709
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.366975,
+      -1.841072,
+      -1.366975
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.048671,
+      -0.272686,
+      -1.048671
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -0.169234,
+      0.459318,
+      -0.169234
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.281488,
+      -1.102603,
+      -2.281488
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.261302,
+      2.726551,
+      -2.261302
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      0.508914,
+      0.253348,
+      0.508914
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      2.476047,
+      -0.073775,
+      2.476047
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.198577,
+      2.64165,
+      -2.198577
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -1.249518,
+      -1.701719,
+      -1.249518
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.911948,
+      1.8247,
+      -2.911948
+     ]
+    },
+    {
+     "class": "duplicated_conflict",
+     "values": [
+      -2.202409,
+      -1.515899,
+      -2.202409
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null,
+      null
+     ]
+    }
+   ],
+   "measured": {
+    "conflict_distinct_value_total": 6369922,
+    "conflict_key_count": 3184961,
+    "conflict_key_count_naive": 7282831,
+    "conflict_usable_row_count": 9554883,
+    "duplicated_conflict_key_count": 3184961,
+    "duplicated_identical_key_count": 0,
+    "duplicated_key_count": 8951808,
+    "duplicated_no_usable_value_key_count": 1668977,
+    "duplicated_single_nonnull_key_count": 4097870,
+    "key_count": 9457875,
+    "max_multiplicity": 3,
+    "no_usable_value_key_count": 2072174,
+    "row_count": 27361491,
+    "single_nonnull_usable_row_count": 8191339,
+    "unique_key_count": 506067,
+    "unique_unusable_key_count": 403197,
+    "unique_usable_key_count": 102870,
+    "usable_row_count": 17849092
+   },
+   "measured_ratios": {
+    "duplicated_conflict": 0.336752283,
+    "duplicated_identical": 0.0,
+    "duplicated_no_usable_value": 0.176464269,
+    "duplicated_single_nonnull": 0.433275974,
+    "unique_unusable": 0.042630824,
+    "unique_usable": 0.01087665
+   },
+   "sample_keys": 200,
+   "source_factor_id": "yeslab_386"
+  },
+  "GP_077": {
+   "allocated": {
+    "duplicated_conflict": 0,
+    "duplicated_identical": 0,
+    "duplicated_no_usable_value": 46,
+    "duplicated_single_nonnull": 140,
+    "unique_unusable": 10,
+    "unique_usable": 4
+   },
+   "duplicated_multiplicity": 2,
+   "factor_label": "GP_077",
+   "groups": [
+    {
+     "class": "unique_usable",
+     "values": [
+      -2.993553
+     ]
+    },
+    {
+     "class": "unique_usable",
+     "values": [
+      -1.542624
+     ]
+    },
+    {
+     "class": "unique_usable",
+     "values": [
+      0.834422
+     ]
+    },
+    {
+     "class": "unique_usable",
+     "values": [
+      0.574984
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "unique_unusable",
+     "values": [
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.456173,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.602387,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.193492,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.679879,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.821664,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.875769,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.52403,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.811813,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.840553,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.023079,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.017307,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.230844,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.835692,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.684199,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.025532,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.08321,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.167849,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.613592,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.53148,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.231347,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.858118,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.317833,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.097138,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.774689,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.101982,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.175191,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.970839,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.004049,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.242771,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.897323,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.026107,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.055162,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.77355,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.000282,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.153187,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.161545,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.77458,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.012566,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.898085,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.086788,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.048331,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.831956,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.316641,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.234341,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.531842,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.445926,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.896538,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.57845,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.677823,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.037875,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.551881,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.578563,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.63235,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.352906,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.145068,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.926269,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.551555,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.601671,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.661084,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.384736,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.657599,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.780636,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.615917,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.673842,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.246119,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.67075,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.308945,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.672192,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.101971,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.565533,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.968238,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.864004,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.614002,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.039307,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.169989,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.985151,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.343865,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.000512,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.817385,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.302695,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.811221,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.677554,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.737627,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.458259,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.342438,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.64818,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.902467,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.793641,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.663531,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.390167,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.890022,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.627907,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.524625,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.120075,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.449893,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.779633,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.366803,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.910564,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.844903,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.20906,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.118071,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.492689,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.924443,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.911665,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.375154,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.108409,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.566777,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.551869,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.904947,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.527639,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.120337,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.727378,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.870315,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.613885,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.002067,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.682904,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.6518,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.679089,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.974098,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.858336,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.345675,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.446642,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.189261,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.046902,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.73862,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.255385,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -1.15393,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.21974,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.221822,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.699945,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      2.624212,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.231345,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -2.962313,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.939853,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.543924,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      -0.503117,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.964054,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      1.185502,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.622877,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_single_nonnull",
+     "values": [
+      0.645656,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    },
+    {
+     "class": "duplicated_no_usable_value",
+     "values": [
+      null,
+      null
+     ]
+    }
+   ],
+   "measured": {
+    "conflict_distinct_value_total": 0,
+    "conflict_key_count": 0,
+    "conflict_key_count_naive": 6764199,
+    "conflict_usable_row_count": 0,
+    "duplicated_conflict_key_count": 0,
+    "duplicated_identical_key_count": 0,
+    "duplicated_key_count": 8962275,
+    "duplicated_no_usable_value_key_count": 2198076,
+    "duplicated_single_nonnull_key_count": 6764199,
+    "key_count": 9665247,
+    "max_multiplicity": 2,
+    "no_usable_value_key_count": 2701899,
+    "row_count": 18627522,
+    "single_nonnull_usable_row_count": 6764199,
+    "unique_key_count": 702972,
+    "unique_unusable_key_count": 503823,
+    "unique_usable_key_count": 199149,
+    "usable_row_count": 6963348
+   },
+   "measured_ratios": {
+    "duplicated_conflict": 0.0,
+    "duplicated_identical": 0.0,
+    "duplicated_no_usable_value": 0.227420572,
+    "duplicated_single_nonnull": 0.699847505,
+    "unique_unusable": 0.052127276,
+    "unique_usable": 0.020604647
+   },
+   "sample_keys": 200,
+   "source_factor_id": "yeslab_446"
+  }
+ },
+ "fixture_id": "DEDUP_REGRESSION_GP017_GP077_V1",
+ "provenance": {
+  "census_artifact": "artifacts/diagnostics/duplicate_key_shape_census_v3.json",
+  "census_script": "research_v2/scripts/census_duplicate_key_shapes.py",
+  "census_script_sha256": "bb68adaf1b395726b32ae77cfc66b15139640ef07a5c07fe3a353117c29a7d38",
+  "census_sha256": "f27638bf08a7e0cd0588f6b789bccf2650c6fc423ccd8048eb7b3c783f5e1f19",
+  "generator_script": "research_v2/scripts/build_dedup_regression_fixture.py",
+  "generator_sha256": "d947c6736db83adad7d6c72ba48c44e5e98c0011172b80b258a415a6e3517a25",
+  "measured_on": "2026-09-06",
+  "source_tables": {
+   "GP_017": "factor_data8",
+   "GP_077": "factor_data10"
+  }
+ },
+ "purpose": "C3.4: prove duplicate rows are counted and that a conflicting key contributes nothing to clean, on the shapes the real source was measured to have",
+ "seed": 20260906
+}
