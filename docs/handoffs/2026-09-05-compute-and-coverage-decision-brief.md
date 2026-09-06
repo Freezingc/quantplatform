@@ -266,6 +266,42 @@ f00–f16 齐全、2014–2018 五年全在、`label_valid` 0.9827、546.5 s。
   1.57–1.75×。收益小于 (a) 的实现成本增量，可作为 (a) 落地后的二阶段优化。
   无论哪种，**device 与线程数都必须一起钉住并写入证据**（实测两者都改变 checkpoint sha256）。
 
+**裁决 2 状态更正（2026-09-06 21:15，只读核实）：选项 (a) 第一条要求的那件事已完成一半——「记录」已落地，「钉住」没有。**
+
+本简报把 (a) 的前置写成"**需要：显式钉住并记录线程数（补发现 3 的缺口）**、搜索循环并发化…、
+为并发重写续跑粒度…"。**逐项核对当前仓库后，第一条要拆成两半，且两半状态不同**：
+
+- **「记录线程数」已落地。** commit `d708864`（**2026-09-05 21:34**，
+  *"record the numerics-affecting torch thread config in evidence"*）与 `7f2e007`（**21:40**，
+  *"record the device that produced each checkpoint"*）让 `training/runner.py:60-77`
+  在每个检查点 manifest 里写入 `torch_intraop_threads`、`torch_interop_threads`、`model_device`；
+  `run_real_walk_forward.py:185` 另记 `omp_num_threads`，且第 164 行注明
+  **未设置时记为 `None` 而不是编一个值**。**故"证据里能看出当时跑在几个线程上"这一点已成立。**
+- **「钉住线程数」没有落地。** `rg -n "set_num_threads|MKL_NUM_THREADS" src/ scripts/` **零命中**；
+  `OMP_NUM_THREADS` 只作为**读取**出现（`run_real_walk_forward.py:185`），没有任何一处赋值。
+  `training/seeds.py` 的 `configure_reproducibility` 播所有 RNG 并
+  `torch.use_deterministic_algorithms(True, warn_only=False)`，**但从不设置线程数**；
+  其 `_capture` 的 docstring 自述是 *"pure observation, no global state changes"*，
+  读的是 `torch.get_num_threads()` / `get_num_interop_threads()` 的**当前值**。
+
+**代码自己的 docstring 说明了为什么"只记录不钉住"不够**（`training/seeds.py`，
+`describe_runtime_environment`）：*"the intra-op thread count **changes checkpoint digests**
+(floating-point reductions are not associative) and **defaults to half the host core count**,
+i.e. it is a **host property rather than a declared one**"*。
+**即：现在的证据能说明"当时是几个线程"，但不能保证"下次还是几个线程"**——
+而 (a) 要 48 路并发，**每路的线程数必须由代码声明，不能由宿主决定**，
+否则并发度一变、宿主核数一变，checkpoint digest 就变，
+本简报"补充证据一"里那条"被复现的对象本身不是不动点"会以更隐蔽的形式回来。
+
+**对 (a) 的成本含义（不代做决定）**：(a) 的第一条前置**只剩"钉住"这一半**，
+改动很小（进程起点一次 `torch.set_num_threads(1)` + 导出 `OMP_NUM_THREADS`/`MKL_NUM_THREADS`），
+**但它改变数值口径**，故必须按本简报已有的要求"**记录为已裁决偏差**"
+（与「CPU fp32」不冲突——仍是 CPU fp32，只是线程数由声明而来）。
+**故 (a) 的实现成本应比本节原估的低一项**；余下两项（搜索循环并发化并保持 canonical 并列顺序、
+为并发重写续跑粒度）**未动**，且后者新增了一条硬要求，见真实候选计划 Task 3.4 的
+**"3.4 重启前必须先处理的一件事"**（续跑键必须含驱动/契约版本，否则一次改变数值语义的修复
+会让同一 artifact root 静默混入两种口径——本轮那 13 个陈旧检查点就是该缺口的实例）。
+
 **裁决 2 补充证据（2026-09-06 11:05）：正在被逐位复现的基线本身就不收敛，而"收敛与否"没有被任何工件记录。**
 
 这条把裁决 2 从"为了可复现性应当钉住线程数"升级为"**被复现的那个对象本身不是一个不动点**"。

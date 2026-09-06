@@ -380,6 +380,63 @@ validation RankIC** 的输入，且 6 处中有 2 处产出**喂给 G1–G6 的�
 修复后的驱动 6 处全部委托 `predictions_to_frame`。全仓已无第二处手搓 `argsort().argsort()` 排名
 （唯一的 `np.argsort` 在 `monitoring/score_health.py:235`，作用于已过滤的 `finite_scores`，与 padding 无关）。
 `temporal_batches.py:157` 用同一套 `+ ("",) * (width - count)` padding 契约，其消费方现同样委托库函数。
+
+**3.4 重启前必须先处理的一件事（2026-09-06 21:15 只读核实，未改任何代码或工件）：
+照原命令重启会在第一次拟合的第一个检查点上直接崩，崩在那 8 小时自己的产物上。**
+
+三件事各自成立、合起来是硬阻塞：
+
+1. **检查点 id 是完全确定的，不含任何运行标识。**
+   `run_real_candidate_training.py:1032` 是
+   `checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-c{config_index}-{seed}"`，
+   `training/runner.py:62` 再拼 `checkpoint_id = f"{checkpoint_prefix}-seed-{seed}-epoch-{epoch}"`。
+   **无时间戳、无 run_id、无内容哈希**，故重启后 F01/config0/seed 20260801 的第一个检查点
+   **必然**仍是 `m1-f01-c0-20260801-seed-20260801-epoch-1`。
+2. **`CheckpointStore.save` 拒绝覆盖。**
+   `training/artifacts.py:44-45`：`if destination.exists(): raise FileExistsError(
+   "checkpoint is immutable and already exists: ...")`。
+   **这是正确的不可变性契约**，问题不在它。
+3. **那 13 个目录还在。** `/data/zhangyudong/qrv2_research_artifacts/m1/checkpoints/` 下
+   三个 seed 的 `epoch-1` 都存在（epoch 1 必然是一次改进，故必然被写）。
+
+**故重启到同一 `--workspace` 会在第一次拟合就 `FileExistsError`**——
+而且是在 8 小时之前那批**数值已作废**的检查点上。
+
+**那批检查点在两个独立维度上都是陈旧的，且没有任何字段能自动发现这一点**：
+
+- **数值陈旧**：它们产于 commit `0cbbc88` 修复之前，其 `validation_rank_ic`
+  （如 `m1-f01-c0-20260801-seed-20260801-epoch-8` 存的 **0.10573690469159619**）
+  正是该 commit 自述里"在 `width`（含 padding）而非有效数上排名"的**被扭曲的百分位**算出来的。
+  **而这个数就是挑选获胜 config 的信号**，故从它续跑等于从一个错的选择信号续跑。
+- **schema 陈旧**：盘上 manifest 的 `metadata` 只有 **6 个字段**
+  （`epoch`、`seed`、`torch_version`、`train_dataset_id`、`validation_dataset_id`、
+  `validation_rank_ic`），而 `training/runner.py:60-77` 现在**总是写 9 个**——
+  多出 `torch_intraop_threads`、`torch_interop_threads`、`model_device`，
+  由 commit `d708864`（**09-05 21:34**）与 `7f2e007`（**09-05 21:40**）加入，
+  **即在那次运行期间（17:35 → 01:34）加入**，故这批检查点是 21:34 之前的 runner 写的。
+- **manifest 里没有任何驱动/契约版本字段**，故**没有自动检查能识别它们陈旧**；
+  上面两条都是本轮人工比对代码与盘上工件得出的。
+
+**处置（两个都可以，第二个在实质上更该做）**：
+(i) 把 `--workspace` 指向一个新目录（计划的启动命令**没有传 `--workspace`**，
+而 `parser.add_argument("--workspace", type=Path, default=None)`，
+故实际路径由启动脚本给定，重启时显式换一个即可）；
+(ii) 移走或删除那 13 个目录。**倾向 (ii)**：它们数值已作废，留着只会在将来某次
+"看起来能续跑"的时候被误用；**且 (i) 不解决根因**——
+下一次出现 `0cbbc88` 这类修复时，同样的陷阱会在新目录里重新长出来。
+
+**由此得到一条对裁决 2 (a) 的"续跑粒度"改造的硬要求（这是从证据推出的，不是设计偏好，
+故记录它不预判裁决 2）**：
+> **续跑的键必须包含驱动/契约版本**（例如驱动文件的 sha256，或一个显式的
+> `scoring_contract_version`），否则一次像 `0cbbc88` 那样**改变数值语义**的修复，
+> 会让同一个 artifact root 里**静默混入两种数值口径的检查点**，
+> 而不可变性契约会阻止新的覆盖旧的、manifest 又无从分辨。
+> **本轮的 13 个目录就是这个缺口的实例**，只是它们碰巧崩在了合并阶段，
+> 所以还没有机会与修复后的检查点混在一起。
+
+**这条与裁决 2 的四个选项无关**：(a)/(b)/(c)/(d) 都要重启，重启都会撞上它。
+**故它不是决定门住的工作，而是重启前必须做的一步。**
+**本轮只核实、只记录，未删除任何工件、未改动 `--workspace` 默认值、未改代码。**
 **生产路径本来就是正确范例**：`inference/predictor.py` 正是 `predictions_to_frame` +
 `combine_seed_percentile_ranks`（按键 merge、`validate="one_to_one"`），
 即本次修复是让候选驱动**向项目既有契约收敛**，而非另造一套。
