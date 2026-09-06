@@ -13,8 +13,11 @@ fixture; nothing here reaches a database.
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Sequence
+from datetime import date
+from pathlib import Path
 from typing import Any
 
 import census_duplicate_key_shapes as census
@@ -85,15 +88,21 @@ class _YearAwareClient:
         self.scripts: list[str] = []
         self._per_year = per_year
         self._fail_whole_range = fail_whole_range
+        self._calls = 0
 
     def run(self, script: str) -> object:
         self.scripts.append(script)
-        match = _YEAR_IN_SCRIPT.search(script)
-        if match is None:
+        # Disambiguate by call order, not by the script's shape. A bounded window puts its own
+        # ``between date('2020.01.01') and ...`` clause into the whole-range query, so "does the
+        # script mention a first-of-January" cannot tell the two apart -- and guessing wrong
+        # here silently turns a test of the year fallback into a test of nothing.
+        self._calls += 1
+        if self._calls == 1:
             if self._fail_whole_range:
                 raise RuntimeError("Server response: 'Out of memory. RefId:S00000'")
             return pd.DataFrame([_metrics()])
-        year = int(match.group(1))
+        years = _YEAR_IN_SCRIPT.findall(script)
+        year = int(years[-1]) if years else None
         empty = {name: 0 for name in census.METRICS}
         return pd.DataFrame([self._per_year.get(year, empty)])
 
@@ -263,6 +272,88 @@ def test_the_chunked_fallback_still_checks_its_own_partition() -> None:
     )
 
     assert evidence["partition_violations"], "eight keys doubled by summing cannot still add up"
+
+
+def test_a_bounded_window_reaches_the_query_and_restricts_the_year_fallback() -> None:
+    """The bound is what makes a census comparable with a screening scope.
+
+    The frozen-set coverage debate compares factors measured over 2020-2024 with a
+    whole-range census, and those two denominators are not interchangeable: quoting one
+    against the other is how a corroboration turns into a false agreement. So the window has
+    to be visible in the issued script *and* in the fallback, because a fallback that still
+    walked 2010..2026 would quietly re-widen a bounded census after one server refusal --
+    and the years outside the window return no rows, so nothing would look wrong.
+    """
+    per_year = {2020: _metrics(key_count=5), 2021: _metrics(key_count=3)}
+    client = _YearAwareClient(per_year, fail_whole_range=True)
+    source = YesLabReadOnlySession(client)
+
+    measured, evidence = census.census_factor(
+        source,
+        table="factor_data8",
+        factor_name="GP_006",
+        start=date(2020, 1, 1),
+        end=date(2021, 12, 31),
+    )
+
+    assert evidence["chunked_by_year"] is True
+    # one refused whole-range query, then exactly the two years inside the window
+    assert len(evidence["queries"]) == 3, evidence["queries"]
+    bounded = "date('2020.01.01') and date('2021.12.31')"
+    assert all(bounded in query for query in evidence["queries"])
+    assert measured["key_count"] == 8
+
+
+def test_a_factor_the_source_catalog_cannot_resolve_is_recorded_not_skipped() -> None:
+    """A repaired variant has no factor_metadata row; silence would look like a clean run."""
+    metadata = pd.DataFrame(
+        [{"factor_id": 375, "factor_name": "GP_006", "store_factor": "factor_data8"}]
+    )
+    client = _RecordingClient([metadata, pd.DataFrame([_metrics()])])
+    source = YesLabReadOnlySession(client)
+
+    report = census.run_selected(
+        source,
+        ["yeslab_375", "yeslab_443_reg30_max20_v1"],
+        start=None,
+        end=None,
+    )
+
+    assert report["window"] == "whole source range"
+    assert report["factors"]["yeslab_375"]["status"] == "CENSUSED"
+    unresolved = report["factors"]["yeslab_443_reg30_max20_v1"]
+    assert unresolved["status"] == "NOT_CENSUSED"
+    assert "no factor_metadata row" in unresolved["reason"]
+
+
+def test_the_frozen_scope_also_names_the_member_it_cannot_census(tmp_path: Path) -> None:
+    """The frozen set has 17 members, so a census reporting 16 would still look complete.
+
+    ``yeslab_443_reg30_max20_v1`` is a repaired variant with no ``factor_metadata`` row and
+    cannot be censused from the source. Mutation M70 deleted exactly this record from
+    ``run_frozen`` -- the scope that produced the committed frozen-set artifact -- and nothing
+    in the suite noticed, while the identical silence in the selected scope was caught. Two
+    copies of one record, one of them watched: the record was since collapsed into a shared
+    helper, but the frozen scope needs its own test because it is the one whose output is
+    committed and quoted.
+    """
+    contract = tmp_path / "factor_set_frozen_v1.json"
+    contract.write_text(
+        json.dumps({"factors": ["yeslab_375", "yeslab_443_reg30_max20_v1"]}), encoding="utf-8"
+    )
+    metadata = pd.DataFrame(
+        [{"factor_id": 375, "factor_name": "GP_006", "store_factor": "factor_data8"}]
+    )
+    client = _RecordingClient([metadata, pd.DataFrame([_metrics()])])
+    source = YesLabReadOnlySession(client)
+
+    report = census.run_frozen(source, contract)
+
+    assert report["factors"]["yeslab_375"]["status"] == "CENSUSED"
+    unresolved = report["factors"]["yeslab_443_reg30_max20_v1"]
+    assert unresolved["status"] == "NOT_CENSUSED"
+    assert "no factor_metadata row" in unresolved["reason"]
+    assert len(report["factors"]) == 2, "a member that cannot be censused is still a member"
 
 
 @pytest.mark.parametrize(

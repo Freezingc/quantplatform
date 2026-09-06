@@ -44,7 +44,7 @@ import argparse
 import json
 import os
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -278,6 +278,8 @@ def census_factor(
     *,
     table: str,
     factor_name: str,
+    start: date | None = None,
+    end: date | None = None,
     fallback_years: tuple[int, ...] = tuple(range(2010, 2027)),
 ) -> tuple[dict[str, int], dict[str, Any]]:
     """Census one factor, falling back to one query per year if the server refuses."""
@@ -287,6 +289,14 @@ def census_factor(
         raise ValueError(f"unsafe factor name: {factor_name!r}")
     escaped = factor_name.replace("'", "''")
     base = f"loadTable('dfs://YesLab','{table}') where factor_name = '{escaped}'"
+    if start is not None and end is not None:
+        # A bounded window is what makes a census comparable with a screening scope: the
+        # whole-range figures and the 2020-2024 ones answer different questions, and quoting
+        # one against the other is how a corroboration turns into a false agreement.
+        base += (
+            f" and trade_date between date('{start:%Y.%m.%d}') and date('{end:%Y.%m.%d}')"
+        )
+        fallback_years = tuple(range(start.year, end.year + 1))
     evidence: dict[str, Any] = {"queries": [], "chunked_by_year": False}
     try:
         script = build_script(base)
@@ -311,6 +321,20 @@ def census_factor(
     combined = _combine(parts)
     evidence["partition_violations"] = list(check_partition(combined))
     return combined, evidence
+
+
+def _not_censused() -> dict[str, str]:
+    """The record left behind for a factor the source catalog cannot resolve.
+
+    Both scopes emit it. It used to be spelled out twice, and a mutation aimed at one copy
+    landed on the other and survived -- which is the usual way duplicated text gets away with
+    being half tested. Silence here would read as a clean run over the whole frozen set, so
+    the repaired variant that has no ``factor_metadata`` row is named instead of dropped.
+    """
+    return {
+        "status": "NOT_CENSUSED",
+        "reason": "no factor_metadata row: repaired variant, not a raw source factor",
+    }
 
 
 def _self_test_frame() -> pd.DataFrame:
@@ -439,10 +463,7 @@ def run_frozen(source: YesLabReadOnlySession, contract_path: Path) -> dict[str, 
     factors: dict[str, Any] = {}
     for factor_id in factor_ids:
         if factor_id not in mapping:
-            factors[factor_id] = {
-                "status": "NOT_CENSUSED",
-                "reason": "no factor_metadata row: repaired variant, not a raw source factor",
-            }
+            factors[factor_id] = _not_censused()
             continue
         entry = mapping[factor_id]
         try:
@@ -474,11 +495,76 @@ def run_frozen(source: YesLabReadOnlySession, contract_path: Path) -> dict[str, 
     return {"contract": str(contract_path), "factors": factors}
 
 
+def run_selected(
+    source: YesLabReadOnlySession,
+    factor_ids: Sequence[str],
+    *,
+    start: date | None,
+    end: date | None,
+) -> dict[str, Any]:
+    """Census an explicit list of factors, optionally over an explicit window.
+
+    Exists so a census can be run on the same window a screening scope used. The frozen-set
+    coverage debate compares factors measured over 2020-2024 with a whole-range census, and
+    those two denominators are not interchangeable.
+    """
+    mapping = _source_map(source, list(factor_ids))
+    factors: dict[str, Any] = {}
+    for factor_id in factor_ids:
+        if factor_id not in mapping:
+            factors[factor_id] = _not_censused()
+            continue
+        entry = mapping[factor_id]
+        measured, evidence = census_factor(
+            source,
+            table=entry["source_table"],
+            factor_name=entry["factor_name"],
+            start=start,
+            end=end,
+        )
+        factors[factor_id] = {
+            "status": "CENSUSED",
+            "factor_name": entry["factor_name"],
+            "source_table": entry["source_table"],
+            "metrics": measured,
+            "partition_violations": evidence.get("partition_violations", []),
+            "queries_issued": len(evidence["queries"]),
+            "chunked_by_year": evidence["chunked_by_year"],
+        }
+        publishable = (
+            measured["unique_usable_key_count"]
+            + measured["duplicated_identical_key_count"]
+            + measured["duplicated_single_nonnull_key_count"]
+        )
+        print(
+            f"{factor_id} {entry['factor_name']} keys={measured['key_count']} "
+            f"publishable={publishable} ({publishable / max(measured['key_count'], 1):.1%}) "
+            f"conflict={measured['duplicated_conflict_key_count']} "
+            f"unusable={measured['no_usable_value_key_count']}",
+            flush=True,
+        )
+    window = (
+        {"start": start.isoformat(), "end": end.isoformat()}
+        if start is not None and end is not None
+        else "whole source range"
+    )
+    return {"window": window, "factors": factors}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument(
-        "--scope", choices=("self-test", "crossval", "frozen", "all"), default="self-test"
+        "--scope",
+        choices=("self-test", "crossval", "frozen", "selected", "all"),
+        default="self-test",
     )
+    parser.add_argument(
+        "--factors",
+        default="",
+        help="comma-separated factor ids for --scope selected",
+    )
+    parser.add_argument("--start", type=date.fromisoformat, default=None)
+    parser.add_argument("--end", type=date.fromisoformat, default=None)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument(
         "--frozen-contract",
@@ -520,6 +606,15 @@ def main() -> None:
             print(f"crossval: {report['crossval']['status']}", flush=True)
         if args.scope in {"frozen", "all"}:
             report["frozen"] = run_frozen(source, args.frozen_contract)
+        if args.scope == "selected":
+            selected = [item.strip() for item in args.factors.split(",") if item.strip()]
+            if not selected:
+                raise SystemExit("--scope selected needs --factors")
+            if (args.start is None) != (args.end is None):
+                raise SystemExit("--start and --end must be given together")
+            report["selected"] = run_selected(
+                source, selected, start=args.start, end=args.end
+            )
     finally:
         client.close()
 
