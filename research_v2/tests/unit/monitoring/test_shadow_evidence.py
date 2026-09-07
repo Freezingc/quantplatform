@@ -695,3 +695,165 @@ def test_readiness_evidence_with_a_forged_signature_is_refused(tmp_path: Path) -
 
     with pytest.raises(ValueError, match="signature verification failed"):
         verifier.verify(forged)
+
+
+# --- the evidence payload's rulebook -----------------------------------------
+#
+# Fifteen of seventeen mutations of the issuance path survived. What was pinned is the
+# status check in issue() and the content-addressed evidence id; what was not is the whole
+# rulebook that ties the published numbers to each other -- the sixty-day floor, the
+# observed-day and success-rate domains, and six arithmetic cross-checks binding the date
+# lists and the three id lists to the day count. Those cross-checks are the only thing that
+# makes the published evidence self-consistent rather than merely signed.
+
+
+def test_the_evidence_payload_rulebook_refuses_each_inconsistency(tmp_path: Path) -> None:
+    """One case per clause of _validate_shadow_evidence_payload, each refused by name.
+
+    Every payload below is a real issued payload made inconsistent in exactly one way, so
+    each case isolates one clause -- which takes more care than it looks, because the
+    cross-checks interlock: violating the observed-day sum also violates the rate quotient
+    unless the rate is corrected too, and putting a valid date into the invalid list also
+    breaks the observed-day count unless that is corrected as well. Three of these cases
+    were rebuilt for exactly that reason after a first version tripped an earlier clause and
+    so proved nothing about the clause it named. ``ShadowEvidence.verify`` validates the
+    payload before it compares the id, which is what makes the reason survive instead of
+    collapsing into "the hash does not match".
+    """
+    genuine, _root = _issued_evidence(tmp_path / "rulebook")
+    base = dict(genuine.payload)
+    count = int(base["valid_day_count"])
+    # Guard the guard: the genuine payload passes its own rulebook.
+    assert ShadowEvidence(genuine.evidence_id, base, genuine.signature).verify() is None
+
+    fifty_nine = {
+        **base,
+        "valid_day_count": 59,
+        "valid_signal_dates": list(base["valid_signal_dates"])[:59],
+        "valid_report_ids": list(base["valid_report_ids"])[:59],
+        "valid_runtime_day_ids": list(base["valid_runtime_day_ids"])[:59],
+        "observed_day_count": 59,
+        "successful_day_rate": 1.0,
+    }
+    cases = (
+        ("extra field", {**base, "surprise": 1}, "payload is invalid"),
+        ("fifty-nine consistent days", fifty_nine, "valid_day_count is invalid"),
+        ("observed below valid", {**base, "observed_day_count": count - 1}, "observed-day metrics"),
+        ("rate out of domain", {**base, "successful_day_rate": 1.5}, "observed-day metrics"),
+        (
+            "valid dates short",
+            {**base, "valid_signal_dates": list(base["valid_signal_dates"])[:-1]},
+            "dates or report IDs",
+        ),
+        # Observed disagrees with valid plus invalid, while the rate still equals its own
+        # quotient, so only the sum check can refuse it.
+        (
+            "observed is not the sum",
+            {
+                **base,
+                "observed_day_count": count + 5,
+                "successful_day_rate": count / (count + 5),
+            },
+            "dates or report IDs",
+        ),
+        ("rate is not the quotient", {**base, "successful_day_rate": 0.5}, "dates or report IDs"),
+        # A date in both lists, with every count and the rate kept consistent and a runtime
+        # id that does NOT overlap, so only the date-overlap check can refuse it.
+        (
+            "a date both valid and invalid",
+            {
+                **base,
+                "invalid_signal_dates": [base["valid_signal_dates"][0]],
+                "invalid_runtime_day_ids": ["f" * 64],
+                "observed_day_count": count + 1,
+                "successful_day_rate": count / (count + 1),
+            },
+            "dates or report IDs",
+        ),
+        (
+            "report ids short",
+            {**base, "valid_report_ids": list(base["valid_report_ids"])[:-1]},
+            "dates or report IDs",
+        ),
+        # Counts, dates and list lengths all consistent, and the invalid runtime id IS one of
+        # the valid ones, so only the runtime-id overlap check can refuse it.
+        (
+            "runtime day ids overlap",
+            {
+                **base,
+                "invalid_signal_dates": ["2026-03-28"],
+                "invalid_runtime_day_ids": [base["valid_runtime_day_ids"][0]],
+                "observed_day_count": count + 1,
+                "successful_day_rate": count / (count + 1),
+            },
+            "dates or report IDs",
+        ),
+    )
+    for name, payload, match in cases:
+        try:
+            ShadowEvidence("0" * 64, payload, genuine.signature).verify()
+        except ValueError as error:
+            assert match in str(error), f"{name}: refused for the wrong reason: {error}"
+        else:
+            pytest.fail(f"payload accepted: {name}")
+
+
+def test_issued_evidence_reports_the_true_success_rate_not_a_perfect_one(
+    tmp_path: Path,
+) -> None:
+    """A day that was observed but not valid must show up in the published rate.
+
+    Sixty valid days plus one invalid day is the shape the qualification produces whenever
+    any day fails the filter, and the payload carries both the counts and their quotient.
+    Hardcoding the rate to 1.0 leaves every count correct and only the quotient wrong, so
+    it is invisible to any test that reads the counts -- and the rate is what a reviewer
+    reads first.
+    """
+    runtime_root = tmp_path / "runtime"
+    calendar_root = tmp_path / "calendar"
+    evidence_root = tmp_path / "evidence"
+    store = ShadowRuntimeDayStore(runtime_root, signing_key=_RUNTIME_KEY.encode())
+    dates = _trading_dates(date(2026, 1, 2), 60)
+    calendar = _calendar(calendar_root, dates)
+    for signal_date in dates:
+        _day(store, signal_date)
+    _day(store, date(2026, 3, 28))  # observed, but not a trading date: invalid
+
+    evidence = build_shadow_evidence(
+        _MODEL_ID,
+        runtime_root=runtime_root,
+        evidence_root=evidence_root,
+        calendar=calendar,
+        calendar_root=calendar_root,
+    )
+
+    assert evidence.payload["valid_day_count"] == 60
+    assert evidence.payload["observed_day_count"] == 61
+    assert evidence.payload["successful_day_rate"] == pytest.approx(60 / 61)
+    assert evidence.payload["invalid_signal_dates"] == ["2026-03-28"]
+
+
+def test_publishing_shadow_evidence_verifies_it_and_scopes_it_to_its_model(
+    tmp_path: Path,
+) -> None:
+    """The publisher is a gate, not a write: it verifies first, and files by model.
+
+    Two properties, both unpinned. Skipping the verification call publishes whatever it is
+    handed, and the file it writes is the artifact downstream consumers read. And the
+    destination is model-scoped by design -- one directory per model id -- so collapsing it
+    to a single shared path would let a second model's evidence overwrite the first, which
+    the existing assertion on the file NAME cannot see.
+    """
+    genuine, root = _issued_evidence(tmp_path / "publish")
+    published = write_shadow_evidence(genuine, root)
+
+    assert published.name == "shadow_evidence.json"
+    assert published.parent.name == _MODEL_ID.removeprefix("sha256:")
+
+    # Tamper with the id and leave the payload valid, so the refusal is the publisher's
+    # verification step and not the payload rulebook exercised above.
+    tampered = ShadowEvidence("1" * 64, genuine.payload, genuine.signature)
+    other_root = tmp_path / "publish-tampered"
+    with pytest.raises(ValueError, match="does not match evidence_id"):
+        write_shadow_evidence(tampered, other_root)
+    assert not (other_root / _MODEL_ID.removeprefix("sha256:")).exists()

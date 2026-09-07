@@ -12,7 +12,12 @@
 - 冻结集 = 16 个候选（357/471/406/390/206/464/389/405/96/375/372/384/425/381/484/398）+ **443 修复变体** `yeslab_443_reg30_max20_v1`（D1=A，替换规范 443）。
 - 决策记录：`factor_set_frozen_v1.json` + 决策清单 `2026-09-03-admission-decision-sheet.md`。
 
-**训练前置缺口（必须先补）**：`dfs://QuantResearchV2Test.factor_daily` 目前尚未物化这 17 个冻结因子的因子值（16 个候选此前走 Tushare 重放评估，443 修复变体仅有重放评估）。因此**训练的第一项基建是把整个冻结集的因子值物化进 `factor_daily`**（隔离规范版本，勿混历史 YesLab 值；443 用修复变体公式 `IndustryStandAbsCutBySkewCalculator` 的 PIT 分支）。物化范围 2020-01-02 起（训练起点），并按 `universe_daily` 的 `cn_liquid_a` 对齐。这一步属于训练阶段基建，不在本次准入执行范围。
+**训练前置缺口（已补齐，2026-09-04 验收）**：`dfs://QuantResearchV2Test.factor_daily` 已完成 17 个冻结因子 2020–2025 的物化——总行数 **68,363,458**、每年 **17/17**、全量查重 **0 重复键**（快照 `research_v2/artifacts/diagnostics/factor_daily_materialization/materialization_status.md`，生成于 2026-09-04T11:48，`complete: true`）。物化按 `universe_daily` 的 `cn_liquid_a` 对齐，443 用修复变体公式 `IndustryStandAbsCutBySkewCalculator` 的 PIT 分支，隔离规范版本、未混历史 YesLab 值。
+
+**已知边界（并行会话实测，2026-09-05/06，训练启动前须处理）**：
+
+1. 若沿用遗留 F01–F06 折结构（训练窗最早自 2014），2020–2025 物化不够用，需补 2014–2019——见 `docs/superpowers/plans/2026-09-05-frozen-set-baseline-reconstruction-plan.md` Task 3.0 阻塞项。
+2. 冻结 17 因子横截面覆盖不齐（全 17 齐全的占比 2020 年约 34.6%），基线 `dropna` 口径待人工裁决（裁决 4）——见 `docs/handoffs/2026-09-06-c-plan-audit-decision-list.md` §0b 与 `docs/handoffs/2026-09-06-adjudication-4-implementation-blast-radius.md`。
 
 ## 2. 冻结因子集的来源与口径
 
