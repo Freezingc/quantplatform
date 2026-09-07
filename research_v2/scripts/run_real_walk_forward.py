@@ -1,4 +1,4 @@
-"""Run the real-data B0-B3 walk-forward for the approved F01-F06 folds.
+"""Run the real-data B0-B3 walk-forward for the approved F1-F4 folds.
 
 Assembles TRAIN/VALIDATION/TEST datasets from the V2 PIT tables
 (factor_observation_clean / label_daily / universe_daily, current version per
@@ -7,7 +7,7 @@ RankIC, evaluates each winner on TEST, and produces the concatenated OOS
 evaluation with G1-G6 gates.
 
 Usage:
-  run_real_walk_forward.py --folds F01,F02,F03,F04,F05,F06 --report <path>
+  run_real_walk_forward.py --folds F1,F2,F3,F4 --report <path>
 
 The factor value source is switchable (reconstruction plan Task 2.3):
   run_real_walk_forward.py --factor-source frozen --report <path>
@@ -61,7 +61,7 @@ def save_baseline_oos_artifacts(
     These fold-matched baseline predictions are the comparison artifacts required
     for candidate evaluation (E8.3 delta computation).
     """
-    expected = ("F01", "F02", "F03", "F04", "F05", "F06")
+    expected = ("F1", "F2", "F3", "F4")
     missing = [fold for fold in expected if fold not in result.fold_results]
     if missing:
         raise ValueError(f"missing fold results for baseline artifacts: {missing}")
@@ -197,7 +197,7 @@ def _constant_loader(dataset: BaselineDataset) -> Callable[[], BaselineDataset]:
 
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--folds", default="F01,F02,F03,F04,F05,F06")
+    parser.add_argument("--folds", default="F1,F2,F3,F4")
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument(
         "--factor-source",

@@ -111,7 +111,7 @@ def test_extract_builds_pit_dataset_from_factor_daily(tmp_path: Path) -> None:
     dataset = MODULE.extract_dataset_factor_daily(
         {},
         _Resolver(),
-        "F03",
+        "F3",
         "train",
         members,
         VERSIONS,
@@ -137,7 +137,7 @@ def test_rows_with_unregistered_versions_are_dropped(tmp_path: Path) -> None:
     dataset = MODULE.extract_dataset_factor_daily(
         {},
         _Resolver(),
-        "F03",
+        "F3",
         "train",
         members,
         VERSIONS,
@@ -155,7 +155,7 @@ def test_missing_factor_daily_version_key_fails_closed(tmp_path: Path) -> None:
         MODULE.extract_dataset_factor_daily(
             {},
             _Resolver(),
-            "F03",
+            "F3",
             "train",
             members,
             incomplete,
@@ -173,12 +173,12 @@ def test_cache_is_isolated_by_versions_and_reused(tmp_path: Path) -> None:
         return _fake_query(holder, script)
 
     first = MODULE.extract_dataset_factor_daily(
-        {}, _Resolver(), "F03", "train", members, VERSIONS,
+        {}, _Resolver(), "F3", "train", members, VERSIONS,
         query_fn=counting_query, cache_root=tmp_path,
     )
     queries_first = len(calls)
     second = MODULE.extract_dataset_factor_daily(
-        {}, _Resolver(), "F03", "train", members, VERSIONS,
+        {}, _Resolver(), "F3", "train", members, VERSIONS,
         query_fn=counting_query, cache_root=tmp_path,
     )
     assert len(calls) == queries_first  # second run served entirely from cache
@@ -186,7 +186,7 @@ def test_cache_is_isolated_by_versions_and_reused(tmp_path: Path) -> None:
 
     other_versions = dict(VERSIONS, factor_daily={"2020-01": "fd2"})
     MODULE.extract_dataset_factor_daily(
-        {}, _Resolver(), "F03", "train", members, other_versions,
+        {}, _Resolver(), "F3", "train", members, other_versions,
         query_fn=counting_query, cache_root=tmp_path,
     )
     assert len(calls) > queries_first  # different version -> different cache key -> re-query
@@ -225,14 +225,14 @@ def test_cache_key_is_scoped_to_the_factor_set(tmp_path: Path) -> None:
         return _fake_query(holder, script)
 
     first = MODULE.extract_dataset_factor_daily(
-        {}, _Resolver(), "F03", "train", full, VERSIONS,
+        {}, _Resolver(), "F3", "train", full, VERSIONS,
         query_fn=counting_query, cache_root=tmp_path,
     )
     after_full = len(calls)
     wide_columns = [c for c in first.columns if c.startswith("f")]
 
     second = MODULE.extract_dataset_factor_daily(
-        {}, _Resolver(), "F03", "train", narrow, VERSIONS,
+        {}, _Resolver(), "F3", "train", narrow, VERSIONS,
         query_fn=counting_query, cache_root=tmp_path,
     )
     assert len(calls) > after_full, "narrower factor set was served the wider cache"
@@ -243,7 +243,7 @@ def test_cache_key_is_scoped_to_the_factor_set(tmp_path: Path) -> None:
     # Repeating the narrow request must now hit its own cache entry.
     after_narrow = len(calls)
     third = MODULE.extract_dataset_factor_daily(
-        {}, _Resolver(), "F03", "train", narrow, VERSIONS,
+        {}, _Resolver(), "F3", "train", narrow, VERSIONS,
         query_fn=counting_query, cache_root=tmp_path,
     )
     assert len(calls) == after_narrow
@@ -268,12 +268,12 @@ def test_legacy_fold_cache_key_formula_is_pinned() -> None:
         "label_daily": {"2020-01": "l1"},
     }
     payload = json.dumps(
-        {"fold_id": "F01", "role": "train",
+        {"fold_id": "F1", "role": "train",
          "versions": {k: dict(v) for k, v in versions.items()}},
         sort_keys=True,
         ensure_ascii=True,
     )
-    assert common.fold_cache_key("F01", "train", versions) == hashlib.sha256(
+    assert common.fold_cache_key("F1", "train", versions) == hashlib.sha256(
         payload.encode("utf-8")
     ).hexdigest()
 
@@ -331,11 +331,11 @@ def test_cache_key_function_matches_what_each_extractor_actually_writes() -> Non
     """
     members = MODULE.factor_members_for(("yeslab_206", "yeslab_357"))
 
-    legacy_key = MODULE.fold_cache_key_for("legacy")("F01", "train", members, VERSIONS)
-    frozen_key = MODULE.fold_cache_key_for("frozen")("F01", "train", members, VERSIONS)
+    legacy_key = MODULE.fold_cache_key_for("legacy")("F1", "train", members, VERSIONS)
+    frozen_key = MODULE.fold_cache_key_for("frozen")("F1", "train", members, VERSIONS)
 
-    assert legacy_key == MODULE.fold_cache_key("F01", "train", VERSIONS)
-    assert frozen_key == MODULE.scoped_cache_key("F01", "train", members, VERSIONS)
+    assert legacy_key == MODULE.fold_cache_key("F1", "train", VERSIONS)
+    assert frozen_key == MODULE.scoped_cache_key("F1", "train", members, VERSIONS)
     assert legacy_key != frozen_key
 
 

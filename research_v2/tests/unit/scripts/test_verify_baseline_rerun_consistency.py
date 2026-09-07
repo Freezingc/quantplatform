@@ -103,7 +103,7 @@ def test_check_artifacts_requires_all_folds(tmp_path: Path) -> None:
                                     for fold in MODULE.EXPECTED_FOLDS[:-1]}
     }
     problems = MODULE.check_artifacts(partial)
-    assert any("F06" in problem for problem in problems)
+    assert any("F4" in problem for problem in problems)
 
 
 def test_check_artifacts_validates_columns(tmp_path: Path) -> None:
@@ -124,11 +124,11 @@ def test_check_artifacts_validates_columns(tmp_path: Path) -> None:
         paths[fold] = str(target)
     assert MODULE.check_artifacts({"baseline_oos_artifacts": paths}) == []
     bad = pd.DataFrame({"signal_date": [1], "ts_code": ["a"]})
-    bad_path = tmp_path / "F01.parquet"
+    bad_path = tmp_path / "F1.parquet"
     bad.to_parquet(bad_path, index=False)
-    paths["F01"] = str(bad_path)
+    paths["F1"] = str(bad_path)
     problems = MODULE.check_artifacts({"baseline_oos_artifacts": paths})
-    assert any("artifact columns for F01" in problem for problem in problems)
+    assert any("artifact columns for F1" in problem for problem in problems)
 
 
 def test_main_exit_codes(tmp_path: Path) -> None:

@@ -72,8 +72,8 @@ def test_missing_extended_fields_fail(tmp_path: Path) -> None:
     del report["selections"][0]["unselected_reasons"]
     del report["selections"][1]["validation_scores"][0]["invalid_day_count"]
     problems = MODULE.check_report(report)
-    assert any("F01" in item and "unselected_reasons" in item for item in problems)
-    assert any("F02" in item and "invalid_day_count" in item for item in problems)
+    assert any("F1" in item and "unselected_reasons" in item for item in problems)
+    assert any("F2" in item and "invalid_day_count" in item for item in problems)
 
 
 def test_missing_gate_block_fails(tmp_path: Path) -> None:
@@ -85,16 +85,16 @@ def test_missing_gate_block_fails(tmp_path: Path) -> None:
 
 def test_missing_artifact_on_disk_fails(tmp_path: Path) -> None:
     report = _report(tmp_path)
-    report["baseline_oos_artifacts"]["F03"] = str(tmp_path / "absent.parquet")
+    report["baseline_oos_artifacts"]["F3"] = str(tmp_path / "absent.parquet")
     problems = MODULE.check_report(report)
-    assert any("F03" in item and "artifact" in item for item in problems)
+    assert any("F3" in item and "artifact" in item for item in problems)
 
 
 def test_incomplete_fold_set_fails(tmp_path: Path) -> None:
     report = _report(tmp_path)
-    report["selections"] = report["selections"][:5]
+    report["selections"] = report["selections"][:3]
     problems = MODULE.check_report(report)
-    assert any("F01..F06" in item for item in problems)
+    assert any("F1..F4" in item for item in problems)
 
 
 def test_cli_exit_codes(tmp_path: Path) -> None:

@@ -78,7 +78,7 @@ from research_v2.training.static_batches import build_static_training_batches
 from research_v2.training.temporal_batches import build_temporal_training_batches
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
-ORDINARY_FOLDS: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06")
+ORDINARY_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
 MODEL_FAMILIES: tuple[str, ...] = ("M0", "M1", "M2", "M3")
 FAMILY_ORDER_PREREQUISITES: dict[str, tuple[str, ...]] = {
     "M0": (),

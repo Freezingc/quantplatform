@@ -230,12 +230,12 @@ def test_asymmetry_note_is_none_when_a_side_is_degenerate() -> None:
 def test_fold_role_triples_skip_the_locked_final_fold() -> None:
     triples = M.fold_role_years()
     folds = {fold for fold, _, _ in triples}
-    assert folds == {"F01", "F02", "F03", "F04", "F05", "F06"}
-    assert len(triples) == 18
+    assert folds == {"F1", "F2", "F3", "F4"}
+    assert len(triples) == 12
     roles = {role for _, role, _ in triples}
     assert roles == {"train", "validation", "test"}
-    f01_train = next(years for f, r, years in triples if f == "F01" and r == "train")
-    assert f01_train == (2014, 2015, 2016, 2017, 2018)
+    f1_train = next(years for f, r, years in triples if f == "F1" and r == "train")
+    assert f1_train == (2017, 2018, 2019, 2020)
 
 
 # --- measuring a candidate factor subset before it is chosen ------------------

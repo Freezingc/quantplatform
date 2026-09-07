@@ -26,7 +26,7 @@ from typing import Any, Mapping, cast
 
 FAMILY_ORDER: tuple[str, ...] = ("M1", "M2", "M3")
 REQUIRED_YEARS: tuple[str, ...] = ("2020", "2021", "2022", "2023", "2024", "2025")
-REQUIRED_FOLDS: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06")
+REQUIRED_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
 GATE_ORDER: tuple[str, ...] = ("G1", "G2", "G3", "G4", "G5", "G6")
 
 

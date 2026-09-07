@@ -56,7 +56,7 @@ def _family_report(
                     }
                 ],
             }
-            for fold in ("F01", "F02", "F03", "F04", "F05", "F06")
+            for fold in ("F1", "F2", "F3", "F4")
         ],
         "oos": {
             "valid_day_count": 1455,

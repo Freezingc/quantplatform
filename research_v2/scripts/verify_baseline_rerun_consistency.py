@@ -33,7 +33,7 @@ from typing import Any, cast
 
 import pandas as pd
 
-EXPECTED_FOLDS: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06")
+EXPECTED_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
 EXPECTED_BASELINES: tuple[str, ...] = ("B0", "B1", "B2", "B3")
 ARTIFACT_COLUMNS: tuple[str, ...] = (
     "signal_date",
@@ -63,7 +63,13 @@ def compare_reports(new: dict[str, Any], reference: dict[str, Any]) -> list[str]
         entry["fold_id"]: entry
         for entry in cast(list[Any], reference.get("selections", []))
     }
-    for fold_id in EXPECTED_FOLDS:
+    # The rerun-consistency check compares a re-run against the archived reference, so the
+    # fold set to compare is the reference's own -- not necessarily the current fold
+    # contract. Archived F01-F06 reports must reproduce as F01-F06 even after the v2
+    # contract (F1-F4) replaced them; EXPECTED_FOLDS remains the fallback when the
+    # reference does not declare its folds.
+    folds_to_check = tuple(cast(list[str], reference.get("folds", ()))) or EXPECTED_FOLDS
+    for fold_id in folds_to_check:
         if fold_id not in new_selections:
             problems.append(f"missing selection for {fold_id}")
             continue

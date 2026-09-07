@@ -51,7 +51,7 @@ def _fold_report(
 
 
 def _report(*, all_passed: bool = True, folds: str = "all") -> dict:
-    fold_ids = list(module.REQUIRED_FOLDS) if folds == "all" else ["F01", "F02"]
+    fold_ids = list(module.REQUIRED_FOLDS) if folds == "all" else ["F1", "F2"]
     return {
         "family": "M1",
         "mode": "full",
@@ -127,8 +127,8 @@ class TestGateVerdicts:
 class TestFoldSummary:
     def test_extracts_best_config_and_worst_seed(self) -> None:
         summary = module.fold_summaries(_report())
-        entry = summary["F01"]
-        assert entry.model_id == "m1-f01"
+        entry = summary["F1"]
+        assert entry.model_id == "m1-f1"
         assert entry.best_config == {"hidden_dim": 128, "num_blocks": 2, "dropout": 0.1}
         assert entry.ensemble_validation_rank_ic == pytest.approx(0.09)
         assert entry.worst_seed == 20260802
@@ -171,7 +171,7 @@ class TestRender:
         assert "# Real-Data M1 Candidate Walk-Forward Report" in markdown
         assert "WALK_FORWARD_FAILED" in markdown  # G4 fails in the fixture
         assert "| G4 |" in markdown
-        assert "m1-f01" in markdown
+        assert "m1-f1" in markdown
         assert "20260802" in markdown  # worst seed surfaced
 
     def test_render_passing_report_announces_passed(self) -> None:
@@ -183,7 +183,7 @@ class TestRender:
     def test_baseline_comparison_section_optional(self) -> None:
         markdown = module.render_markdown(_report(), baseline_report=_baseline_report())
         assert "Validation-stage comparison against B0-B3" in markdown
-        assert "| F01 |" in markdown
+        assert "| F1 |" in markdown
         assert "Data versions" in markdown
 
     def test_missing_fold_rendered_as_missing(self) -> None:

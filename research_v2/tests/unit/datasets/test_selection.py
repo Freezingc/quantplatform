@@ -73,8 +73,8 @@ def test_selector_uses_train_dates_and_freezes_unknown_direction() -> None:
         train_start=dates[0],
         train_end=dates[-1],
         inner_validation_ics={
-            ("positive", 1): (0.1, 0.1, -0.1),
-            ("unknown_negative", 1): (-0.1, -0.1, -0.1),
+            ("positive", 1): (0.1, 0.1),
+            ("unknown_negative", 1): (-0.1, -0.1),
         },
     )
 
@@ -125,8 +125,8 @@ def test_selector_uses_train_dates_and_freezes_unknown_direction() -> None:
         train_start=dates[0],
         train_end=dates[-1],
         inner_validation_ics={
-            ("positive", 1): (0.1, 0.1, -0.1),
-            ("unknown_negative", 1): (-0.1, -0.1, -0.1),
+            ("positive", 1): (0.1, 0.1),
+            ("unknown_negative", 1): (-0.1, -0.1),
         },
     )
     assert result.candidates.equals(unchanged.candidates)

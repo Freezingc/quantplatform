@@ -19,7 +19,7 @@ from research_v2.baselines.linear import (
 def _dataset(role: str, dataset_id: str, start_day: int) -> BaselineDataset:
     features: list[dict[str, object]] = []
     labels: list[dict[str, object]] = []
-    for year in range(2014, 2019):
+    for year in range(2017, 2021):
         for day_index in range(10):
             signal_date = date(year, 1, 1) + timedelta(days=start_day + day_index)
             for stock_index in range(30):

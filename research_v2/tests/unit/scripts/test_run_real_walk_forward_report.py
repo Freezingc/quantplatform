@@ -201,7 +201,7 @@ def test_build_report_carries_the_supplied_assembly_coverage_verbatim() -> None:
     assert report["assembly_coverage"] == coverage
 
 
-_FOLD_IDS = ("F01", "F02", "F03", "F04", "F05", "F06")
+_FOLD_IDS = ("F1", "F2", "F3", "F4")
 
 
 def _fold_result(fold_id: str) -> BaselineFoldResult:

@@ -26,7 +26,7 @@ def _validation_scores() -> list[dict[str, object]]:
 def _make_report(
     *,
     all_passed: bool = True,
-    folds: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06"),
+    folds: tuple[str, ...] = ("F1", "F2", "F3", "F4"),
     gate_overrides: dict[str, dict[str, object]] | None = None,
     drop_baselines: bool = False,
     drop_year: str | None = None,
@@ -49,7 +49,7 @@ def _make_report(
         selections.append(
             {"fold_id": fold, "selected_baseline_id": "B2", "validation_scores": scores}
         )
-    yearly: dict[str, float] = {str(year): 0.03 for year in range(2020, 2026)}
+    yearly: dict[str, float] = {str(year): 0.03 for year in range(2022, 2026)}
     if drop_year is not None:
         yearly.pop(drop_year)
     return {
@@ -90,7 +90,7 @@ def test_criterion_303_satisfied_on_complete_report() -> None:
 
 
 def test_criterion_303_fails_when_fold_missing() -> None:
-    verdict = summarizer.criterion_303_verdict(_make_report(folds=("F01", "F02", "F03")))
+    verdict = summarizer.criterion_303_verdict(_make_report(folds=("F1", "F2", "F3")))
     assert not verdict.folds_complete
     assert not verdict.satisfied
 
@@ -117,7 +117,7 @@ def test_render_markdown_contains_key_sections() -> None:
     assert "# Real-Data B0-B3 Walk-Forward Report (Criterion 303)" in markdown
     assert "| G1 |" in markdown
     assert "**Criterion 303: SATISFIED**" in markdown
-    for fold in ("F01", "F06"):
+    for fold in ("F1", "F4"):
         assert f"| {fold} |" in markdown
 
 
@@ -183,6 +183,7 @@ def test_render_markdown_without_versions_still_renders_verdict() -> None:
 _REPORTS = Path(__file__).resolve().parents[4] / "docs" / "reports"
 _LEGACY_JSON = _REPORTS / "2026-09-04-real-walk-forward-criterion-303.json"
 _LEGACY_MD = _REPORTS / "2026-09-04-real-walk-forward-criterion-303.md"
+_LEGACY_V2_MD = _REPORTS / "2026-09-04-real-walk-forward-criterion-303.v2-renderer.md"
 
 
 def _extended_report(**overrides: object) -> dict[str, object]:
@@ -201,25 +202,33 @@ def _extended_report(**overrides: object) -> dict[str, object]:
             [baseline, "LOWER_VALIDATION_RANKIC"] for baseline in ("B0", "B1", "B3")
         ]
     report["baseline_oos_artifacts"] = {
-        fold: f"/tmp/run/baseline_oos/{fold}.parquet"
-        for fold in ("F01", "F02", "F03", "F04", "F05", "F06")
+        fold: f"/tmp/run/baseline_oos/{fold}.parquet" for fold in ("F1", "F2", "F3", "F4")
     }
     report.update(overrides)
     return report
 
 
 @pytest.mark.skipif(not _LEGACY_MD.exists(), reason="archived criterion-303 evidence absent")
-def test_the_archived_criterion_303_markdown_is_still_reproduced_byte_for_byte() -> None:
+def test_the_archived_criterion_303_report_is_stale_under_the_v2_folds() -> None:
     """The archived evidence is a real file, so re-rendering it is a real regression test.
 
-    This is the strongest available pin on the renderer: not a synthetic expectation but the
-    committed markdown that criterion-303 was accepted against. Anything the extended-field
-    work does to the legacy rendering path shows up here as a byte difference, which is why
-    the new sections are appended conditionally rather than woven into the existing tables.
+    The v1 accepted markdown (_LEGACY_MD) is preserved untouched as the historical record of
+    what criterion-303 was accepted against. The v2 fold contract (F1-F4, test years
+    2022-2025) replaced F01-F06, so re-rendering the SAME archived report now judges it
+    stale: the F01-F06 selections no longer match REQUIRED_FOLDS, the fold table shows
+    F1-F4 as MISSING, and the verdict flips to NOT SATISFIED. The strongest available pin on
+    the renderer is kept byte-for-byte, against the committed v2 rendering of that archived
+    report (_LEGACY_V2_MD), so any renderer change still shows up as a byte difference.
     """
     report = summarizer.load_report(_LEGACY_JSON)
 
-    assert summarizer.render_markdown(report) == _LEGACY_MD.read_text(encoding="utf-8")
+    rendered = summarizer.render_markdown(report)
+
+    assert rendered == _LEGACY_V2_MD.read_text(encoding="utf-8")
+    # Guard the guard: the v2 rendering really does judge the archived report stale.
+    assert "- F1-F4 all present: no" in rendered
+    assert "**Criterion 303: NOT SATISFIED**" in rendered
+    assert rendered != _LEGACY_MD.read_text(encoding="utf-8")
 
 
 def test_invalid_day_counts_are_rendered_beside_the_valid_ones() -> None:
@@ -234,7 +243,7 @@ def test_invalid_day_counts_are_rendered_beside_the_valid_ones() -> None:
 
     assert "## Selection detail" in markdown
     assert "Invalid days" in markdown
-    assert "| F01 | B0 | 240 | 0 |" in markdown
+    assert "| F1 | B0 | 240 | 0 |" in markdown
 
 
 def test_a_baseline_that_lost_days_shows_it() -> None:
@@ -242,7 +251,7 @@ def test_a_baseline_that_lost_days_shows_it() -> None:
     computed on all of them."""
     report = _extended_report()
     for selection in report["selections"]:  # type: ignore[union-attr]
-        if selection["fold_id"] != "F03":
+        if selection["fold_id"] != "F3":
             continue
         for score in selection["validation_scores"]:
             if score["baseline_id"] == "B1":
@@ -251,7 +260,7 @@ def test_a_baseline_that_lost_days_shows_it() -> None:
 
     markdown = summarizer.render_markdown(report)
 
-    assert "| F03 | B1 | 226 | 14 |" in markdown
+    assert "| F3 | B1 | 226 | 14 |" in markdown
 
 
 def test_why_each_baseline_lost_is_rendered_per_fold() -> None:
@@ -260,8 +269,8 @@ def test_why_each_baseline_lost_is_rendered_per_fold() -> None:
     markdown = summarizer.render_markdown(report)
 
     assert "LOWER_VALIDATION_RANKIC" in markdown
-    assert "| F01 | B0 | 240 | 0 | not selected: LOWER_VALIDATION_RANKIC |" in markdown
-    assert "| F01 | B2 | 240 | 0 | **selected** |" in markdown
+    assert "| F1 | B0 | 240 | 0 | not selected: LOWER_VALIDATION_RANKIC |" in markdown
+    assert "| F1 | B2 | 240 | 0 | **selected** |" in markdown
 
 
 def test_fold_matched_baseline_artifacts_are_listed_with_their_paths() -> None:
@@ -273,8 +282,8 @@ def test_fold_matched_baseline_artifacts_are_listed_with_their_paths() -> None:
     markdown = summarizer.render_markdown(_extended_report())
 
     assert "## Fold-matched baseline OOS artifacts" in markdown
-    assert "| F01 | /tmp/run/baseline_oos/F01.parquet |" in markdown
-    assert markdown.count("baseline_oos/F0") == 6
+    assert "| F1 | /tmp/run/baseline_oos/F1.parquet |" in markdown
+    assert markdown.count("baseline_oos/F") == 4
 
 
 def test_a_report_without_the_extended_fields_grows_no_empty_sections() -> None:

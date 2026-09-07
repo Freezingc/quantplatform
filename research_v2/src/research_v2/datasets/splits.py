@@ -1,4 +1,4 @@
-"""Purged annual 5y/1y/1y walk-forward split resolution."""
+"""Purged annual 4y/1y/1y walk-forward split resolution (frozen v2 fold contract)."""
 
 from __future__ import annotations
 
@@ -42,14 +42,25 @@ class InnerFold:
 
 
 def annual_folds() -> tuple[AnnualFold, ...]:
-    """Return the approved 2014–2026 outer folds in chronological order."""
+    """Return the approved v2 outer folds F1-F4 plus the locked FINAL production fold.
+
+    The frozen v2 factor contract (``factor_set_frozen_v2.json``) restructures the
+    walk-forward evaluation folds to a 4y/1y/1y grid with test years 2022-2025:
+    4-year train, 1-year validation, 1-year test, folds F1-F4. This deviates from
+    design doc section 7's F01-F06 5y/1y/1y grid (test years 2020-2025); the v2
+    rationale is that 2014-2016 carries the worst drift and a 4-year window is
+    sufficient. The fold ids change from F0x to Fx so the new dataset cache keys
+    are disjoint from the F01-F06 artifacts. The locked FINAL production fold is
+    unchanged (5y train 2020-2024, locked 2026 test): v2 redefines the evaluation
+    folds, not the production gate.
+    """
     folds: list[AnnualFold] = []
-    for index, train_start_year in enumerate(range(2014, 2020), start=1):
-        validation_year = train_start_year + 5
+    for index, train_start_year in enumerate(range(2017, 2021), start=1):
+        validation_year = train_start_year + 4
         folds.append(
             AnnualFold(
-                fold_id=f"F{index:02d}",
-                train_years=tuple(range(train_start_year, train_start_year + 5)),
+                fold_id=f"F{index}",
+                train_years=tuple(range(train_start_year, train_start_year + 4)),
                 validation_years=(validation_year,),
                 test_years=(validation_year + 1,),
             )
@@ -103,14 +114,14 @@ class SplitResolver:
         return self._resolve_years(fold_id, "test", fold.test_years, locked=True)
 
     def inner_folds(self, fold_id: str) -> tuple[InnerFold, ...]:
-        """Return the three expanding inner folds contained entirely in outer training years."""
+        """Return the two expanding inner folds contained entirely in outer training years."""
         if fold_id not in self._folds:
             raise KeyError(f"unknown fold: {fold_id}")
         outer = self._folds[fold_id]
-        if len(outer.train_years) != 5:
-            raise ValueError("inner folds require exactly five outer training years")
+        if len(outer.train_years) != 4:
+            raise ValueError("inner folds require exactly four outer training years")
         inner: list[InnerFold] = []
-        for index, validation_index in enumerate((2, 3, 4), start=1):
+        for index, validation_index in enumerate((2, 3), start=1):
             train_years = outer.train_years[:validation_index]
             validation_years = (outer.train_years[validation_index],)
             inner.append(

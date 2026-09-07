@@ -19,26 +19,28 @@ class InnerBaselineFold:
 def expanding_inner_folds(
     dataset: BaselineDataset,
     *,
-    fold_count: int = 3,
+    fold_count: int = 2,
     purge_trading_days: int = 6,
 ) -> tuple[InnerBaselineFold, ...]:
-    """Create three purged expanding folds from five outer-TRAIN calendar years.
+    """Create two purged expanding folds from four outer-TRAIN calendar years.
 
     The first two years form the warm-up period. Each following year is evaluated
     once, so every returned validation date is later than every date used to fit it.
     Both inner-TRAIN and inner-VALIDATION segments remove their final six trading
     dates, matching the frozen annual split contract for overlapping five-day labels.
+    The v2 outer folds use a four-year train window, so there are exactly two inner
+    folds (validation on the third and fourth training years).
     """
     if dataset.role != "TRAIN":
         raise PermissionError("inner folds can only be created from TRAIN data")
-    if fold_count != 3:
-        raise ValueError("the baseline protocol requires exactly three inner folds")
+    if fold_count != 2:
+        raise ValueError("the baseline protocol requires exactly two inner folds")
     if purge_trading_days < 0:
         raise ValueError("purge_trading_days cannot be negative")
     dates = sorted(pd.to_datetime(dataset.features["signal_date"], errors="raise").dt.date.unique())
     years = tuple(sorted({day.year for day in dates}))
-    if len(years) != 5:
-        raise ValueError("three expanding inner folds require exactly five training years")
+    if len(years) != 4:
+        raise ValueError("two expanding inner folds require exactly four training years")
     dates_by_year = {year: tuple(day for day in dates if day.year == year) for year in years}
     for year, year_dates in dates_by_year.items():
         if len(year_dates) <= purge_trading_days:
@@ -46,7 +48,7 @@ def expanding_inner_folds(
                 f"inner folds require more than {purge_trading_days} dates in training year {year}"
             )
     folds: list[InnerBaselineFold] = []
-    for validation_index in (2, 3, 4):
+    for validation_index in (2, 3):
         train_dates = _purge_tail(
             tuple(day for year in years[:validation_index] for day in dates_by_year[year]),
             purge_trading_days,

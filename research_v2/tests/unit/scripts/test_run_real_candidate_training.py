@@ -57,13 +57,13 @@ def test_load_baseline_predictions_reads_all_folds(tmp_path: Path) -> None:
         _write_fold_artifact(tmp_path, fold)
     frames = MODULE.load_baseline_predictions(tmp_path)
     assert sorted(frames) == list(MODULE.ORDINARY_FOLDS)
-    assert list(frames["F01"].columns) == PREDICTION_COLUMNS
+    assert list(frames["F1"].columns) == PREDICTION_COLUMNS
 
 
 def test_load_baseline_predictions_requires_every_fold(tmp_path: Path) -> None:
-    for fold in MODULE.ORDINARY_FOLDS[:-1]:  # drop F06
+    for fold in MODULE.ORDINARY_FOLDS[:-1]:  # drop F4
         _write_fold_artifact(tmp_path, fold)
-    with pytest.raises(ValueError, match="F06"):
+    with pytest.raises(ValueError, match="F4"):
         MODULE.load_baseline_predictions(tmp_path)
 
 

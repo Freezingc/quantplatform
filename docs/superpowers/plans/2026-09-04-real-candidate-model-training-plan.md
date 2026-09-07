@@ -500,3 +500,49 @@ G3/G4/G5 在合成数据上 FAIL 属预期，因「基线」是真 alpha 而 M0 
    ≈ 数百次快速拟合，CPU 单线程数小时量级（远低于 M1 的 42.7 天）。
 4. **R8 未动**：M1 崩溃遗留的 13 个检查点仍在（`m1-f01-*`）；M0 用独立前缀 `m0-*`，**不与之碰撞**；
    M1 链是否重启（裁决 2/3 + R8）仍开放，与 M0 无依赖。
+
+## 勾选审计与实测偏差记录（2026-09-07 17:35）：折结构改造 F01–F06 → F1–F4（v2 契约，owner 批准）
+
+**起因**：v2 冻结集契约（`factor_set_frozen_v2.json`，owner 于 2026-09-07 在因子会话批准）把
+walk-forward 评价折从设计文档 §7 的 **F01–F06（5 年训练 × 6 折，测试年 2020–2025）** 改为
+**F1–F4（4 年训练 × 4 折，测试年 2022–2025）**，理由是 2014–2016 漂移最剧、4 年窗足够。
+**这是设计文档 §7 折网格的一次已批准偏离**；本节记录实现与后果。
+
+**核心改动（TDD，先改直接测试到失败再实现）**：
+
+- `datasets/splits.py`：`annual_folds()` 生成器 `range(2014,2020)` → `range(2017,2021)`、
+  训练窗 5 年 → 4 年、折 ID `F0x` → `Fx`（**换名使新旧数据集缓存键天然不相交，无需清旧缓存**）；
+  `inner_folds()` 由「恰好 5 年 × (2,3,4) 三内折」改为「恰好 4 年 × (2,3) 两内折」。
+  **锁定 FINAL 折不变**（5 年 2020–2024、2026 锁定测试）：v2 只重定义评价折、未涉及生产门，
+  保持 FINAL 不动以不触碰锁定测试治理（链 9 域）——**4y/5y 训练窗在 FINAL 上的不一致留作开放问题**。
+- `baselines/cross_validation.py`：`expanding_inner_folds` 由「3 内折 / 5 年 / (2,3,4)」
+  改为「2 内折 / 4 年 / (2,3)」，错误文案同步。
+- `datasets/selection.py`：`inner_fold_count` 3 → 2。**设计注记**：`minimum_positive_inner_folds=2`
+  在 2 内折下 = **两折一致**（旧 2-of-3 的保守类比；1-1 平票意味着方向不可靠，故取全票）。
+
+**消费方**：`run_real_candidate_training.py`（ORDINARY_FOLDS）、`run_real_walk_forward.py`
+（docstring + expected + `--folds` 默认）、三个 summarize 脚本（REQUIRED_FOLDS + **REQUIRED_YEARS
+2020–2025 → 2022–2025** + G3 注记 + yearly-complete 行）、两个 verify_baseline 脚本（EXPECTED_FOLDS）。
+`walk_forward_common.py` / `walk_forward_factor_daily.py` / `audit_legacy_train_coverage.py`
+**本就动态调 `annual_folds()`，无需改**。
+
+**一处语义修正**：`verify_baseline_rerun_consistency.compare_reports` 的折集合**从"当前契约"
+改为"以参照报告自己的 `folds` 字段为准"**（回退 EXPECTED_FOLDS）。理由：它比对的是
+「重跑 vs 归档参照」，归档的 F01–F06 报告应能复现为 F01–F06，而不该被新契约判为缺失。
+（`check_artifacts` 仍用 EXPECTED_FOLDS——**新**报告必须满足**当前**契约。）
+
+**归档证据的处理**：`2026-09-04-real-walk-forward-criterion-303.{json,md}` **原样保留**（历史记录）。
+在新契约下重渲该归档报告，判其为**过时**（F01–F06 不再满足 REQUIRED_FOLDS、折表 F1–F4 全 MISSING、
+verdict 由 SATISFIED 翻为 NOT SATISFIED）；新渲染落为
+`2026-09-04-real-walk-forward-criterion-303.v2-renderer.md`，归档 golden 测试改为对它**逐字节**断言
+（保留"渲染器对真实归档工件逐字节稳定"这一最强钉子，v1 文件不动）。
+
+**验证（全部实测）**：`pytest tests -q` → **1710 passed / 45 skipped**；`ruff check src tests` 清；
+`mypy src` 158 文件清。爆炸半径实测远小于字符串 grep 的表象——多数测试只把 fold_id 当标签，
+真正结构性断裂集中在 3 个核心文件 + 折元组脚本 + 直接测试。
+
+**后续（按依赖排序，非承诺）**：
+1. **因子源**：`FROZEN_FACTOR_SET_V1`(17) → v2(15)；基线需单独的 9 稠密子集（角色感知因子源）。
+2. **基线按新折 + 9 稠密因子重算**（G4 标尺，约 17h）——旧的 0.0864 legacy 基线随之作废。
+3. **M0 全量运行**（15 因子 × F1–F4，CPU 数小时）。
+4. **§5.1 协调**：补物化范围 2014–2019 → 2017–2019（冻结集计划 Task 3.0，**属因子会话**，本会话不动）。

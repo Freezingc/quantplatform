@@ -22,7 +22,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, cast
 
-EXPECTED_FOLDS: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06")
+EXPECTED_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
 EXPECTED_GATES: tuple[str, ...] = ("G1", "G2", "G3", "G4", "G5", "G6")
 SCORE_FIELDS: tuple[str, ...] = (
     "baseline_id",
@@ -49,7 +49,7 @@ def check_report(report: dict[str, Any]) -> list[str]:
     selections = cast(list[Any], report.get("selections", []))
     fold_ids = sorted(str(entry.get("fold_id")) for entry in selections)
     if fold_ids != list(EXPECTED_FOLDS):
-        problems.append(f"selections do not cover exactly F01..F06 (got {fold_ids})")
+        problems.append(f"selections do not cover exactly F1..F4 (got {fold_ids})")
 
     for entry_raw in selections:
         entry = cast(dict[str, Any], entry_raw)

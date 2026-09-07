@@ -26,7 +26,7 @@ class FactorSelectionRules:
     fdr_q_threshold: float = 0.10
     minimum_positive_years: int = 3
     minimum_positive_inner_folds: int = 2
-    inner_fold_count: int = 3
+    inner_fold_count: int = 2
 
     def __post_init__(self) -> None:
         if self.minimum_cross_section < 2 or self.minimum_valid_days <= self.hac_max_lags:

@@ -23,14 +23,14 @@ from pathlib import Path
 from typing import Any, cast
 
 GATE_ORDER: tuple[str, ...] = ("G1", "G2", "G3", "G4", "G5", "G6")
-REQUIRED_FOLDS: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06")
-REQUIRED_YEARS: tuple[str, ...] = ("2020", "2021", "2022", "2023", "2024", "2025")
+REQUIRED_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
+REQUIRED_YEARS: tuple[str, ...] = ("2022", "2023", "2024", "2025")
 BASELINE_IDS: tuple[str, ...] = ("B0", "B1", "B2", "B3")
 
 GATE_DESCRIPTIONS: dict[str, str] = {
     "G1": "OOS mean RankIC >= 0.030",
     "G2": "HAC t-statistic >= 2.000",
-    "G3": "positive-year share >= 0.70 (2020-2025)",
+    "G3": "positive-year share >= 0.70 (2022-2025)",
     "G4": "delta RankIC vs best_simple baseline >= 0.005",
     "G5": "max single-year positive contribution share <= 0.50",
     "G6": "valid score-day ratio >= 0.95",
@@ -218,7 +218,7 @@ def render_markdown(
     lines.append(f"# Real-Data {family} Candidate Walk-Forward Report")
     lines.append("")
     lines.append(
-        "Constrained-search candidate evaluation over F01-F06 (test years 2020-2025) "
+        "Constrained-search candidate evaluation over F1-F4 (test years 2022-2025) "
         "against the frozen best_simple baseline evidence chain."
     )
     lines.append("")
@@ -311,9 +311,9 @@ def render_markdown(
     lines.append("")
     lines.append(f"- Full-mode run: {'yes' if verdict.mode_full else 'no'}")
     lines.append(f"- All G1-G6 gates satisfied: {'yes' if verdict.all_gates_passed else 'no'}")
-    lines.append(f"- F01-F06 all present: {'yes' if verdict.folds_complete else 'no'}")
+    lines.append(f"- F1-F4 all present: {'yes' if verdict.folds_complete else 'no'}")
     lines.append(
-        f"- Yearly RankIC complete for 2020-2025: {'yes' if verdict.years_complete else 'no'}"
+        f"- Yearly RankIC complete for 2022-2025: {'yes' if verdict.years_complete else 'no'}"
     )
     lines.append("")
     lines.append(f"**{family} candidate: {verdict.label}**")
