@@ -342,3 +342,84 @@ def test_cache_key_function_matches_what_each_extractor_actually_writes() -> Non
 def test_cache_key_function_rejects_an_unknown_source() -> None:
     with pytest.raises(ValueError, match="unknown factor source"):
         MODULE.fold_cache_key_for("dense11")
+def _v2_contract() -> dict:
+    import json
+
+    research_root = Path(__file__).resolve().parents[3]
+    return json.loads(
+        (research_root / "artifacts/diagnostics/factor_set_frozen_v2.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+
+def test_frozen_v2_constant_matches_frozen_v2_contract_json() -> None:
+    """The hardcoded v2 training sets must equal the approved factor_set_frozen_v2 contract."""
+    contract = _v2_contract()
+
+    assert tuple(contract["factors"]) == MODULE.FROZEN_FACTOR_SET_V2
+    assert len(MODULE.FROZEN_FACTOR_SET_V2) == contract["count"] == 15
+    assert tuple(contract["baseline_eligible"]) == MODULE.FROZEN_FACTOR_SET_V2_DENSE
+    assert len(MODULE.FROZEN_FACTOR_SET_V2_DENSE) == 9
+    # The baseline-eligible dense nine are a strict subset of the candidate fifteen.
+    assert set(MODULE.FROZEN_FACTOR_SET_V2_DENSE) < set(MODULE.FROZEN_FACTOR_SET_V2)
+    # The two watch-pair removals must not appear in either training set.
+    for removed in ("yeslab_405", "yeslab_398"):
+        assert removed not in MODULE.FROZEN_FACTOR_SET_V2
+        assert removed not in MODULE.FROZEN_FACTOR_SET_V2_DENSE
+
+
+def test_frozen_v2_feature_names_are_unique() -> None:
+    members = MODULE.factor_members_for(MODULE.FROZEN_FACTOR_SET_V2)
+    names = [member.feature_name for member in members]
+
+    assert len(set(names)) == 15
+    assert names[0] == "f00" and names[-1] == "f14"
+
+
+def test_factor_source_plan_frozen_v2_variants() -> None:
+    full_ids, full_tables = MODULE.factor_source_plan("frozen_v2")
+    dense_ids, dense_tables = MODULE.factor_source_plan("frozen_v2_baseline")
+
+    assert full_ids == MODULE.FROZEN_FACTOR_SET_V2
+    assert dense_ids == MODULE.FROZEN_FACTOR_SET_V2_DENSE
+    # Both v2 sources read factor_daily, not the legacy factor_observation_clean.
+    for tables in (full_tables, dense_tables):
+        assert "factor_daily" in tables
+        assert "factor_observation_clean" not in tables
+
+
+def test_frozen_v2_and_baseline_cache_keys_are_disjoint() -> None:
+    """Different factor sets must never be served the same cached frame."""
+    versions = {"universe_daily": {"2020.01": "u"}, "factor_daily": {"2020.01": "fd"},
+                "label_daily": {"2020.01": "l"}}
+    v1 = MODULE.factor_members_for(MODULE.FROZEN_FACTOR_SET_V1)
+    v2 = MODULE.factor_members_for(MODULE.FROZEN_FACTOR_SET_V2)
+    dense = MODULE.factor_members_for(MODULE.FROZEN_FACTOR_SET_V2_DENSE)
+
+    keys = {
+        MODULE.scoped_cache_key("F1", "train", members, versions)
+        for members in (v1, v2, dense)
+    }
+
+    assert len(keys) == 3
+
+
+def test_frozen_v2_set_satisfies_every_model_yaml_factor_bound() -> None:
+    """The v2 15-factor set sits inside every configs/models/*.yaml factor bound."""
+    import yaml
+
+    research_root = Path(__file__).resolve().parents[3]
+    configs = sorted((research_root / "configs" / "models").glob("*.yaml"))
+    assert configs, "expected model yaml configs to exist"
+
+    frozen_count = len(MODULE.FROZEN_FACTOR_SET_V2)
+    assert frozen_count == 15
+    for config_path in configs:
+        payload = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+        minimum = payload["raw_factor_count_min"]
+        maximum = payload["raw_factor_count_max"]
+        assert minimum <= frozen_count <= maximum, (
+            f"{config_path.name}: v2 factor count {frozen_count} outside "
+            f"[{minimum}, {maximum}]"
+        )

@@ -66,11 +66,51 @@ FROZEN_FACTOR_SET_V1: tuple[str, ...] = (
     "yeslab_96",
 )
 
+# Frozen factor set v2 (2026-09-07 owner-approved; factor_set_frozen_v2.json).
+# FROZEN_FACTOR_SET_V1 stays untouched above: it remains the frozen-set governance
+# contract the coverage gates screen against, not the training input. V2 is the
+# owner-confirmed training set -- 15 factors (9 dense baseline-eligible + 6 sparse
+# candidate-only), with yeslab_405 and yeslab_398 removed by the W1 watch-pair
+# review. Order is canonical: it fixes feature_name assignments (f00..f14).
+FROZEN_FACTOR_SET_V2: tuple[str, ...] = (
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_372",
+    "yeslab_375",
+    "yeslab_381",
+    "yeslab_384",
+    "yeslab_389",
+    "yeslab_390",
+    "yeslab_406",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+    "yeslab_96",
+)
+
+# The 9 dense baseline-eligible factors of v2 (contract field ``baseline_eligible``).
+# Baselines B0-B3 must not see the six sparse candidate-only factors: those are NaN
+# on roughly half of all days by formula (their sparsity IS the candidate signal),
+# and the dense-only baseline keeps the G4 bar an honest simple-model reference.
+FROZEN_FACTOR_SET_V2_DENSE: tuple[str, ...] = (
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_381",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+    "yeslab_96",
+)
+
 # Factor source switch (reconstruction plan Task 2.3). Both real-data drivers
 # (run_real_walk_forward.py and run_real_candidate_training.py) resolve their
 # factor ids, version tables and fold extractor through these helpers so the
 # legacy/frozen contract has exactly one definition.
-FACTOR_SOURCES: tuple[str, ...] = ("legacy", "frozen")
+FACTOR_SOURCES: tuple[str, ...] = ("legacy", "frozen", "frozen_v2", "frozen_v2_baseline")
 LEGACY_VERSION_TABLES: tuple[str, ...] = (
     "universe_daily",
     "factor_observation_clean",
@@ -99,6 +139,10 @@ def factor_source_plan(source: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
         return WALK_FORWARD_FACTOR_IDS, LEGACY_VERSION_TABLES
     if source == "frozen":
         return FROZEN_FACTOR_SET_V1, FROZEN_VERSION_TABLES
+    if source == "frozen_v2":
+        return FROZEN_FACTOR_SET_V2, FROZEN_VERSION_TABLES
+    if source == "frozen_v2_baseline":
+        return FROZEN_FACTOR_SET_V2_DENSE, FROZEN_VERSION_TABLES
     raise ValueError(f"unknown factor source: {source}")
 
 
@@ -106,7 +150,7 @@ def extract_fn_for(source: str) -> Callable[..., Any]:
     """Return the fold extractor bound to a factor source."""
     if source == "legacy":
         return extract_dataset
-    if source == "frozen":
+    if source in {"frozen", "frozen_v2", "frozen_v2_baseline"}:
         return extract_dataset_factor_daily
     raise ValueError(f"unknown factor source: {source}")
 
@@ -118,6 +162,8 @@ __all__ = [
     "factor_source_plan",
     "FACTOR_SOURCES",
     "FROZEN_FACTOR_SET_V1",
+    "FROZEN_FACTOR_SET_V2",
+    "FROZEN_FACTOR_SET_V2_DENSE",
     "FROZEN_VERSION_TABLES",
     "LEGACY_VERSION_TABLES",
     "fold_cache_key_for",
@@ -182,7 +228,7 @@ def fold_cache_key_for(source: str) -> CacheKeyFn:
             return fold_cache_key(fold_id, role, versions)
 
         return legacy_key
-    if source == "frozen":
+    if source in {"frozen", "frozen_v2", "frozen_v2_baseline"}:
         return scoped_cache_key
     raise ValueError(f"unknown factor source: {source}")
 def extract_dataset_factor_daily(
