@@ -546,3 +546,27 @@ verdict 由 SATISFIED 翻为 NOT SATISFIED）；新渲染落为
 2. **基线按新折 + 9 稠密因子重算**（G4 标尺，约 17h）——旧的 0.0864 legacy 基线随之作废。
 3. **M0 全量运行**（15 因子 × F1–F4，CPU 数小时）。
 4. **§5.1 协调**：补物化范围 2014–2019 → 2017–2019（冻结集计划 Task 3.0，**属因子会话**，本会话不动）。
+
+## 勾选审计与实测偏差记录（2026-09-08 01:17）：v2 基线已重算 + 修掉第三处折契约漂移（G3/G5 假 FAIL）
+
+**v2 基线重算已完成**（`run_real_walk_forward.py --folds F1,F2,F3,F4 --factor-source frozen_v2_baseline`，
+9 稠密因子 × F1–F4）。结果：**mean RankIC 0.08706、ICIR 0.7507、HAC t 12.75、逐年 2022–2025 全为正、
+有效日 969**；逐折赢家 F1–F3 = B2(Ridge)、F4 = B3(LightGBM)。**注意它显著强于旧标尺需要的程度**：
+对比旧 legacy 基线（0.0864 / t=13.1），换 9 稠密因子后**水平略升**——这把 G4 的 0.005 增量门槛
+放在了一根更硬的标尺上。
+
+**过程中修掉第三处折契约漂移**（前两处是 walk_forward.py 与 search.py 的硬编码 F01–F06，
+已随 dbf6c30 修）：`evaluate_oos_gates` 的 `required_years` 默认是**硬编码 `(2020,...,2025)`**——
+旧折结构的测试年。v2 基线的逐年 IC 只有 2022–2025，于是 2020/2021 取到 None → `valid_years=False`
+→ **G3/G5 算成 NaN → `observed_value=None` → FAIL**，而逐年明明全为正（G3 应为 1.0、G5 应为 0.28）。
+**这是"重述一个会漂移的常量"导致的假失败**——运行时报告曾据此记 `all_passed=false`。
+
+**修法（与 walk_forward 同一原则：派生而非重述）**：`evaluate_oos_gates` 的 `required_years`
+**缺省时从 `annual_folds()` 派生**（普通折的测试年，F1–F4 → 2022–2025），调用方测门逻辑时显式传。
+`test_gates.py` 的 22 处门逻辑测试改为经 `_gates(...)` 辅助显式传旧年份集（与折契约解耦、行为不变）；
+新增 1 条回归测试（v2 式逐年证据下缺省门必须 PASS G3/G5 且有真观测值）。
+**用保存的基线预测 + 对齐标签重评估**（脚本只读、命中缓存）：G1–G6 **全过**，主报告 `report.json`
+的门字段已用修正值合并（其余汇总逐位一致，自校验通过）。
+
+**对 M0 的直接含义**：G4 标尺 = `baseline_mean_rank_ic = 0.08706`（比旧的 0.0864 略硬）。
+**验证**：`pytest tests -q` 1716 passed / 45 skipped；`ruff src/tests` 清；`mypy src` 158 文件清。

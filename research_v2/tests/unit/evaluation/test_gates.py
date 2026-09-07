@@ -12,6 +12,18 @@ from research_v2.evaluation.gates import (
     evaluate_oos_gates,
 )
 
+_LEGACY_YEARS = (2020, 2021, 2022, 2023, 2024, 2025)
+
+
+def _gates(evidence, **kwargs):
+    """Gate-logic tests evaluate against the legacy 2020-2025 year set explicitly.
+
+    evaluate_oos_gates now derives its default required_years from the fold contract
+    (F1-F4 -> 2022-2025). These tests exercise the G1-G6 LOGIC against a fixed year
+    set, so they pin that set explicitly instead of depending on the default.
+    """
+    return evaluate_oos_gates(evidence, required_years=_LEGACY_YEARS, **kwargs)
+
 # Reused below: one day that satisfies every per-day score-health requirement and one that fails
 # the coverage floor, mirroring the 95/5 split in _evidence().
 _HEALTHY_DAY = ScoreHealthEvidence(0.90, 10, 1e-6 + 1e-9)
@@ -40,7 +52,7 @@ def _evidence() -> GateEvidence:
 
 
 def test_double_gate_boundaries_and_all_other_oos_gates_pass_at_exact_thresholds() -> None:
-    report = evaluate_oos_gates(_evidence())
+    report = _gates(_evidence())
 
     assert report.results["G1"].status is GateStatus.PASS
     assert report.results["G2"].status is GateStatus.PASS
@@ -52,8 +64,8 @@ def test_double_gate_boundaries_and_all_other_oos_gates_pass_at_exact_thresholds
 
 
 def test_baseline_marks_relative_gate_not_applicable_and_missing_year_fails_closed() -> None:
-    baseline = evaluate_oos_gates(_evidence(), is_baseline=True)
-    incomplete = evaluate_oos_gates(
+    baseline = _gates(_evidence(), is_baseline=True)
+    incomplete = _gates(
         GateEvidence(
             mean_rank_ic=0.1,
             hac_t_statistic=3.0,
@@ -77,7 +89,7 @@ def test_score_health_requires_coverage_unique_scores_and_dispersion() -> None:
         ScoreHealthEvidence(0.95, 9, 0.1),
         ScoreHealthEvidence(0.95, 20, 1e-6),
     ):
-        report = evaluate_oos_gates(
+        report = _gates(
             GateEvidence(
                 mean_rank_ic=0.03,
                 hac_t_statistic=2.0,
@@ -93,7 +105,7 @@ def test_score_health_requires_coverage_unique_scores_and_dispersion() -> None:
 
 def test_score_health_missing_or_misaligned_evidence_fails_closed() -> None:
     evidence = _evidence()
-    missing = evaluate_oos_gates(
+    missing = _gates(
         GateEvidence(
             mean_rank_ic=evidence.mean_rank_ic,
             hac_t_statistic=evidence.hac_t_statistic,
@@ -103,7 +115,7 @@ def test_score_health_missing_or_misaligned_evidence_fails_closed() -> None:
             score_health=(),
         )
     )
-    misaligned = evaluate_oos_gates(
+    misaligned = _gates(
         GateEvidence(
             mean_rank_ic=evidence.mean_rank_ic,
             hac_t_statistic=evidence.hac_t_statistic,
@@ -124,7 +136,7 @@ def test_score_health_malformed_runtime_evidence_fails_closed() -> None:
         ScoreHealthEvidence(0.95, cast(Any, "20"), 0.1),
         ScoreHealthEvidence(0.95, 20, cast(Any, "not-a-number")),
     ):
-        report = evaluate_oos_gates(
+        report = _gates(
             GateEvidence(
                 mean_rank_ic=0.03,
                 hac_t_statistic=2.0,
@@ -137,7 +149,7 @@ def test_score_health_malformed_runtime_evidence_fails_closed() -> None:
 
         assert report.results["G6"].status is GateStatus.FAIL
 
-    malformed = evaluate_oos_gates(
+    malformed = _gates(
         GateEvidence(
             mean_rank_ic=0.03,
             hac_t_statistic=2.0,
@@ -174,7 +186,7 @@ def test_g5_fails_when_one_year_carries_the_whole_signal() -> None:
         },
     )
 
-    report = evaluate_oos_gates(dominated)
+    report = _gates(dominated)
 
     # Guard the guard: the largest year really does dominate -- 0.10 of 0.105.
     assert report.results["G5"].observed_value is not None
@@ -201,8 +213,8 @@ def test_g5_passes_at_exactly_half_and_fails_just_above() -> None:
         },
     )
 
-    at_bound = evaluate_oos_gates(exactly_half).results["G5"]
-    above = evaluate_oos_gates(just_above).results["G5"]
+    at_bound = _gates(exactly_half).results["G5"]
+    above = _gates(just_above).results["G5"]
 
     assert at_bound.observed_value is not None and abs(at_bound.observed_value - 0.50) < 1e-12
     assert at_bound.status is GateStatus.PASS
@@ -229,7 +241,7 @@ def test_g5_clips_negative_years_out_of_the_denominator() -> None:
         },
     )
 
-    result = evaluate_oos_gates(mixed).results["G5"]
+    result = _gates(mixed).results["G5"]
 
     assert result.observed_value is not None
     # 0.2 + 0.2 + 0.2 is not exactly 0.6 in binary floating point, so compare loosely.
@@ -246,9 +258,9 @@ def test_g5_clips_negative_years_out_of_the_denominator() -> None:
 
 
 def test_g1_g4_and_g6_fail_just_below_their_thresholds() -> None:
-    below_g1 = evaluate_oos_gates(replace(_evidence(), mean_rank_ic=0.0299))
-    below_g4 = evaluate_oos_gates(replace(_evidence(), candidate_delta_rank_ic=0.0049))
-    below_g6 = evaluate_oos_gates(
+    below_g1 = _gates(replace(_evidence(), mean_rank_ic=0.0299))
+    below_g4 = _gates(replace(_evidence(), candidate_delta_rank_ic=0.0049))
+    below_g6 = _gates(
         replace(
             _evidence(),
             score_health=(_HEALTHY_DAY,) * 94 + (_UNHEALTHY_DAY,) * 6,
@@ -271,8 +283,8 @@ def test_g2_and_g3_fail_just_below_their_thresholds() -> None:
     drift anywhere below 0.8333 was invisible: four positive years of six is 0.6667 and
     must fail. G2 sits exactly on 2.000, so 1.999 must fail.
     """
-    below_g2 = evaluate_oos_gates(replace(_evidence(), hac_t_statistic=1.999))
-    below_g3 = evaluate_oos_gates(
+    below_g2 = _gates(replace(_evidence(), hac_t_statistic=1.999))
+    below_g3 = _gates(
         replace(
             _evidence(),
             yearly_mean_rank_ic={
@@ -313,7 +325,7 @@ def test_g3_does_not_count_a_zero_year_as_positive() -> None:
         },
     )
 
-    result = evaluate_oos_gates(with_zero_year).results["G3"]
+    result = _gates(with_zero_year).results["G3"]
 
     assert result.observed_value == cast(Any, 4 / 6)
     assert result.status is GateStatus.FAIL
@@ -333,13 +345,13 @@ def test_missing_candidate_delta_fails_g4_and_the_whole_report() -> None:
     """
     without_delta = replace(_evidence(), candidate_delta_rank_ic=None)
 
-    report = evaluate_oos_gates(without_delta, is_baseline=False)
+    report = _gates(without_delta, is_baseline=False)
 
     assert report.results["G4"].status is GateStatus.FAIL
     assert report.results["G4"].threshold == 0.005
     assert not report.all_passed
     # And the exemption still belongs to the baseline alone.
-    assert evaluate_oos_gates(without_delta, is_baseline=True).results["G4"].status is (
+    assert _gates(without_delta, is_baseline=True).results["G4"].status is (
         GateStatus.NOT_APPLICABLE
     )
 
@@ -361,7 +373,7 @@ def test_incomplete_evidence_reports_not_computable_rather_than_a_number() -> No
         score_health=(_HEALTHY_DAY,) * 10,
     )
 
-    report = evaluate_oos_gates(single_year)
+    report = _gates(single_year)
 
     assert report.results["G3"].status is GateStatus.FAIL
     assert report.results["G3"].observed_value is None
@@ -373,8 +385,36 @@ def test_non_positive_valid_day_count_fails_g6_instead_of_dividing_by_zero() -> 
     """The day-count guard is fail-closed; without it the ratio raises ZeroDivisionError."""
     no_days = replace(_evidence(), valid_test_day_count=0, score_health=())
 
-    report = evaluate_oos_gates(no_days)
+    report = _gates(no_days)
 
     assert report.results["G6"].status is GateStatus.FAIL
     assert report.results["G6"].observed_value is None
     assert not report.all_passed
+def test_default_required_years_follow_the_fold_contract_not_a_hardcoded_legacy_set() -> None:
+    """Regression for the v2 baseline's false G3/G5 FAIL with observed_value=None.
+
+    A v2 (F1-F4) OOS has yearly RankIC only for the fold contract's test years
+    (2022-2025). With the old hardcoded default (2020-2025), the missing 2020 and
+    2021 made the yearly check fail-closed and G3/G5 evaluated to NaN -> FAIL with
+    observed_value=None, even though every covered year was positive. With the
+    default now derived from annual_folds, the same evidence must PASS G3 and G5
+    with real observed values.
+    """
+    v2_evidence = GateEvidence(
+        mean_rank_ic=0.087,
+        hac_t_statistic=12.7,
+        yearly_mean_rank_ic={2022: 0.081, 2023: 0.078, 2024: 0.091, 2025: 0.098},
+        candidate_delta_rank_ic=None,
+        valid_test_day_count=969,
+    )
+
+    report = evaluate_oos_gates(v2_evidence, is_baseline=True)
+
+    assert report.results["G3"].status is GateStatus.PASS
+    assert report.results["G3"].observed_value == pytest.approx(1.0)
+    assert report.results["G5"].status is GateStatus.PASS
+    assert report.results["G5"].observed_value is not None
+    # And the legacy years that are absent from a v2 OOS no longer poison the result:
+    assert report.results["G5"].observed_value == pytest.approx(
+        0.098 / (0.081 + 0.078 + 0.091 + 0.098), rel=1e-3
+    )

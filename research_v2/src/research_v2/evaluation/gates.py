@@ -72,13 +72,35 @@ def _finite_at_least(value: float, threshold: float) -> GateResult:
     )
 
 
+def _ordinary_test_years() -> tuple[int, ...]:
+    """The ordinary (non-locked) folds' test years, derived from the fold contract.
+
+    Imported lazily so this module stays dependency-light; the fold contract lives in
+    datasets.splits. Deriving it here is what keeps G3/G5 aligned with the current grid:
+    the default used to be the hardcoded F01-F06 years (2020-2025), which made a v2
+    (F1-F4, test years 2022-2025) OOS evaluate G3/G5 as NaN -> FAIL with observed=None
+    simply because 2020 and 2021 were absent from the evidence.
+    """
+    from research_v2.datasets.splits import annual_folds
+
+    return tuple(fold.test_years[0] for fold in annual_folds() if not fold.locked)
+
+
 def evaluate_oos_gates(
     evidence: GateEvidence,
     *,
     is_baseline: bool = False,
-    required_years: tuple[int, ...] = (2020, 2021, 2022, 2023, 2024, 2025),
+    required_years: tuple[int, ...] | None = None,
 ) -> GateReport:
-    """Evaluate G1–G6 using raw OOS statistics without any formatting-rounding effects."""
+    """Evaluate G1–G6 using raw OOS statistics without any formatting-rounding effects.
+
+    ``required_years`` defaults to the ordinary folds' test years from the fold
+    contract (currently F1-F4 -> 2022-2025), so G3/G5 are evaluated over the years
+    the current grid actually covers; callers testing gate logic against a fixed
+    year set pass it explicitly.
+    """
+    if required_years is None:
+        required_years = _ordinary_test_years()
     results: dict[str, GateResult] = {
         "G1": _finite_at_least(evidence.mean_rank_ic, 0.030),
         "G2": _finite_at_least(evidence.hac_t_statistic, 2.000),
