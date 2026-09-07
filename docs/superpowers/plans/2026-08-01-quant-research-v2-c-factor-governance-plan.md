@@ -7643,3 +7643,104 @@ golden 那一类更脆：**任何一次有意的指标变更之后都要重新�
    而链 9 第二片的经验是**那一类正是覆盖率最低的地方**（14 个变异只杀掉 1 个）。
 3. **归属矩阵里"判定为不搬"的 X-F / X-K / X-L**（仍是读出来的，未实测；续六十五已主动降级标注）。
 4. **归属矩阵自动化**；`locked_test.py` 剩余部分；十条链之外约 1,530 个测试函数。
+
+## 勾选审计续六十七（2026-09-07 09:55）：**开链 12 = `reporting/shadow.py`**（249 行，影子日报的构造与校验）——首轮 16 个变异 **4 杀 12 存活**，补 4 条测试后 **15 杀 1 存活**。**上一轮那条等价性结论的地基（第 132 行）实测是被钉住的，债还上了**；但**标签泄漏守卫本身有真洞**（映射键里的禁用词、以及五个数值域检查全都没钉）；而唯一剩下的存活 **RB-C 经探针证明是"只换文案"**——因为映射键分支自己会 `.lower()`
+
+### 一、这一轮要还的债，以及还上了没有
+
+续六十六把 SH-H / SH-I 判为"同一谓词写了两遍"，**其全部依据是 `reporting/shadow.py:132`**：
+`prediction_published is not (pipeline_status == "SUCCESS")` 即报错。
+**那一行此前从未被变异测量过**——这是本 session 第二次出现"结论依赖另一处未测代码"，
+而第一次（链 5 的 W-E / W-H / W-I 依赖链 3 的 `gates.py`）那处依赖是有钉子的。
+
+**本轮实测：RB-F（删掉第 132 行那句）被杀**，死因是断言失败而非崩溃。
+**故续六十六那条等价性结论的地基是有钉子的，债还上了。**
+**并且本轮把它钉回了本模块**（见第三节第 4 条）：此前它只被 monitoring 套件间接钉住，
+那是归属矩阵的**第六个案例**，也是六个里搬家成本最低的一个。
+
+### 二、首轮：16 个变异，4 杀 12 存活（基线 170 passed）
+
+- **杀掉 4 条**：**RB-A**（禁用词遍历整个不再作用于载荷，2 个测试）、**RB-B**（词表里去掉 `return`）、
+  **RB-E**（不再遍历序列）、**RB-F**（上面那行）。
+- **存活 12 条**：**RB-C**（匹配改成大小写敏感）、**RB-D**（**不再检查映射的键**）、
+  **RB-G**（接受未列出的 pipeline 状态）、**RB-H**（`performance_status` 不必再是 `LOCKED_NOT_COMPUTED`）、
+  **RB-I**（容忍未知的多余字段）、**RB-J**（report_id 不必等于内容哈希）、**RB-K**（report_id 不必是合法摘要）、
+  **RB-L**（score_health 唯一值计数可为 0）、**RB-M**（seed agreement 不必在 [-1,1]）、
+  **RB-N**（feature coverage 不必在 [0,1]）、**RB-O**（延迟 SLO 可为 0）、**RB-P**（延迟可为负）。
+
+**为什么泄漏守卫只有 4 条被钉住**：既有的 4 个测试里，一个是 import 金丝雀，
+一个把禁用词放在**序列值**里且是小写（`event_ids=("future_return_observed",)`），
+另两个都只打 `score_health`。
+**于是"遍历是否启用、词表内容、是否遍历序列"被钉住了，而"怎么匹配"与另外五个数值域全都没被钉。**
+
+### 三、补的 4 条测试（`tests/leakage/test_shadow_has_no_label_access.py`：4 → 8）
+
+1. `test_shadow_report_rejects_forbidden_tokens_in_any_case_and_in_mapping_keys`（**RB-D**）——
+   四个用例：`Label_Coverage`、`label_coverage`、`RETURN_5D`、`PnL_Share` 作为 `feature_coverage` 的**键**。
+   **`feature_coverage` 的名字是自由的**，故键是"把标签或收益派生量记进影子日报"最现实的位置。
+2. `test_a_tampered_report_is_refused_for_what_changed_and_not_only_for_its_hash`（**RB-H / RB-I / RB-J / RB-K**）——
+   **关键点是 `verify()` 先校验载荷、后比对哈希**，所以四种篡改各自被**自己的那一句**拒掉，
+   而不是统统被"哈希不匹配"兜住。**这一点值得单独说**：若只靠哈希比对，
+   一份声称 `performance_status="IC_COMPUTED"` 的日报会以"哈希不对"被拒——
+   **话是真的，但它掩盖了"影子阶段刚刚产出了一份自称算过绩效的日报"这件事**。
+   `performance_status == LOCKED_NOT_COMPUTED` 是这个文件"无标签边界"的**字段级那一半**，
+   import 金丝雀是另一半。
+3. `test_shadow_report_refuses_out_of_domain_metrics_and_an_unlisted_pipeline_status`
+   （**RB-G / RB-L / RB-M / RB-N / RB-O / RB-P**）——六个用例各打一个数值域或状态词表。
+   **这些都是真实运行里不会出现的值，也正是一个坏掉的写入方会静默产出的值**：
+   影子阶段发布的是日报而不是绩效，**所以一个不可能的数字是唯一能拿到的信号**。
+4. `test_a_report_cannot_claim_success_without_publishing_or_publish_without_success`（**RB-F 搬回本模块**）——
+   三种非法组合各拒一次：`(SUCCESS, 未发布)`、`(FAILED, 已发布)`、`(NOOP_NON_TRADING_DAY, 已发布)`。
+   **docstring 里写明了它就是续六十六那条等价性所依赖的那一行**：
+   有它，"流水线成功"与"预测已发布"是同一个谓词，日过滤器的两个条件是**一道防线写了两遍**；
+   没有它，那就是**两个真的洞**。
+
+### 四、RB-C 不钉：探针证明它**只换文案**
+
+新测试里那四个大小写混合的键**没有杀掉 RB-C**，原因在代码里：
+变异只改了 `_contains_forbidden_token` 的**字符串分支**（`token in value.lower()` → `token in value`），
+而**映射分支自己对键做 `.lower()`**，故键上的禁用词照旧被抓。
+于是问题变成一个可以实测的问题：**是否存在任何一个载荷，原文拒绝而变异接受？**
+
+探针枚举了七个位置——coverage 的键、coverage 的值、event id、psi feature、pipeline 状态、alert key，
+以及一份手工构造、绕过 builder 的日报——在原始与变异两侧各跑一次：
+
+**结果：原始接受 0 个，变异接受 0 个。七个输入两侧全部被拒，只有错误文案不同。**
+机制也清楚：载荷里每一个字符串**值**位置要么受正则约束
+（model_id / 各哈希 / event id / alert key / psi feature 全是小写或十六进制），
+要么来自闭合词表（pipeline_status / performance_status），
+**而禁用词遍历跑在这些格式检查之前**——所以一个大小写混合的字符串值确实能走到遍历那一步，
+但随后必然被它自己的格式检查拒掉。**故 `.lower()` 只影响"以什么理由拒绝"，不影响"是否拒绝"。**
+**按链 4 的 V-F 与链 9 的 S-F 的同一标准：只换文案的不钉，记录。**
+证据：`probe_shadow_report_case.py` 与 `probe_shadow_report_case_outcomes.txt`。
+
+### 五、门槛与证据（全部实测）
+
+- **定向**（只跑 `tests/leakage/test_shadow_has_no_label_access.py`，**0.17s/次**）：
+  control **8 passed** → **15 killed** → **1 存活（RB-C，即上面探针定性为只换文案的那条）** →
+  restored **8 passed**；`reporting/shadow.py` **还原后逐字节相同**。
+  **这是本 session 归属最干净的一次结果：这个模块的契约现在全部钉在它自己的套件里。**
+  日志 `mutation_shadow_report_targeted_with_killers.txt`。
+- **全量 harness**（`tests/unit/monitoring tests/leakage tests/unit/registry tests/property`）：
+  **基线 174 passed**，**15 杀 1 存活**，还原后逐字节相同并复跑通过。
+  日志 `mutation_shadow_report_after_publication_pin.txt`；
+  搬家前那一轮（基线 173、同样 15 杀 1 存活）另存为 `mutation_shadow_report_after_pins.txt`，
+  **两份都留着，因为"RB-F 由谁杀"这件事正是本轮要改的**。
+- **全量门槛**：`pytest tests -q` → **1691 passed / 45 skipped**（续六十六的 1687 + 本轮 4 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**。
+- **未写任何数据库**；**未碰也未提交** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`shadow.py` 的四组 store/verifier**（部署批准、交易日历、运行时日、就绪证据）的**"验签方拒绝什么"**——
+   连续两轮排在前面而未做。链 9 第二片的经验是**这一形状是全仓覆盖最低的地方**（14 个变异只杀掉 1 个），
+   而链 11 只测了这个文件的资格聚合、链 12 测的是日报本身，**四个验签方至今一个都没测过**。
+2. **归属矩阵的复查**：本轮的 RB-F 是第六个案例、也是搬家最便宜的一个，已经搬完。
+   **剩下"判定为不搬"的 X-F / X-K / X-L 仍是读出来的、未实测**（续六十五已主动降级标注），
+   按本 session 的标准应当补一次实测或明确标注为推断。
+3. **归属矩阵自动化**（续六十一第 2 条，仍未做）：候选文件表仍是手写的。
+4. **`locked_test.py` 剩余部分**：一次性能力的发放与消费状态机、成熟度守卫与交易日历、
+   隔离评价器与它的 stdout 抑制。
+5. 其余同前：约 1,530 个测试函数在已审计的十二条链之外从未做过变异测量。
