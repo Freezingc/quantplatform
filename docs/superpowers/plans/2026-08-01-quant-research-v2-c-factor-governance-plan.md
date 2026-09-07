@@ -7561,3 +7561,85 @@ golden 那一类更脆：**任何一次有意的指标变更之后都要重新�
 4. **`locked_test.py` 剩余部分**：一次性能力的发放与消费状态机、成熟度守卫与交易日历、
    隔离评价器与它的 stdout 抑制。
 5. 其余同前：约 1,530 个测试函数在已审计的十条链之外从未做过变异测量。
+
+## 勾选审计续六十六（2026-09-07 09:15）：**开链 11 = `monitoring/shadow.py` 的日有效性过滤器与资格聚合**——首轮 16 个变异 **8 杀 8 存活**，补 2 条测试并**加一条组合变异**后 **12 杀 5 存活**。本轮最值钱的产出不是钉子，而是一条**实测出来的等价**：`pipeline_status == "SUCCESS"` 与 `prediction_published is True` **在所有合法日报上是同一个谓词**（`reporting/shadow.py:132` 强制二者互为充要），**单独删任何一个都不改变行为，只有两个一起删才让失败的日子上账**
+
+### 一、为什么是它，以及这一轮要还的债
+
+续六十四与续六十五**连续两轮**用这个文件解释链 10 的存活项（P-H / P-I），依据是
+"上游 `ShadowEvidenceStore.issue` 会拒绝"以及"它有测试"（`test_shadow_evidence.py:153` 与 `:163`）。
+**"它有测试"不等于"它被测过"**——按本 session 自己的标准，那两个结论都还是借来的。本轮从被借的那一侧量。
+
+切片取两个函数：**`_is_valid_shadow_day`**（六条件过滤器：这一天必须属于本模型、必须是在 SHADOW 状态下记录的、
+影子指针必须指向本模型**且本版本**、必须落在交易日、必须无 blocker、日报必须自验通过且报告 SUCCESS + 已发布预测）
+与 **`evaluate_shadow_qualification`**（每个日期取**最新**的已签尝试、拒绝时间戳歧义、
+沿交易日历求**最长连续** PSI 错误段、再与 60 个有效日的下限一起换成状态）。
+现有覆盖：`tests/unit/monitoring/` 三个 shadow 文件共 **682 行**，其中 `test_shadow_evidence.py` 328 行 / 9 个测试。
+
+### 二、首轮：16 个变异，8 杀 8 存活（基线 154 passed）
+
+- **杀掉 8 条**：**SH-C**（影子指针指向别的模型）、**SH-E**（非交易日）、**SH-F**（带 blocker）、
+  **SH-J**（**真正生效的那条"连续 PSI ≥ 3"阈值，3 个测试**）、**SH-K**（60 日下限，3 个测试）、
+  **SH-L**（时间戳歧义不再拒绝）、**SH-M**（**取最早而非最新的尝试**）、**SH-O**（没有一天算 PSI 错误）。
+- **存活 8 条**：SH-A、SH-B、SH-D、SH-G、SH-H、SH-I、SH-N、SH-P。
+
+**SH-J 被杀这一条要单独记**：续六十四与续六十五**两次借用**的"上游已钉"，
+**现在从它自己这一侧被实测确认了**——决定 REVIEW_REQUIRED 的 `maximum >= 3` 由 3 个测试盯着。
+**那两次借用是有据的，不是运气。**
+
+### 三、五条存活的定性：**两条冗余、一条恒真、两条互为冗余**（每条都有依据）
+
+| 变异 | 依据 | 定性 |
+|---|---|---|
+| **SH-A** 日属于别的模型也算 | `records_for_model` 已按 `payload["model_id"] != model_id` 跳过（第 407–410 行），`ShadowRuntimeDayVerifier.verify` 再查一次（第 391 行） | **同一件事的第三道检查**（与续五十六的"重复键三重守卫"同型） |
+| **SH-G** 日报自验失败也算 | `_shadow_runtime_day_from_payload` **已经调用 `report.verify()`**（第 783 行），失败即 `record is malformed` | **过滤器里那个 try/except 的 except 分支永不可达** |
+| **SH-N** 日期重复或降序不再拒绝 | `verified_days` 是 `tuple(latest_by_date[value] for value in sorted(latest_by_date))`——**按构造严格升序且唯一** | **恒真守卫**（与链 5 的 W-A 同型） |
+| **SH-H / SH-I** 日报未 SUCCESS / 未发布预测也算 | `reporting/shadow.py:132`：`prediction_published is not (pipeline_status == "SUCCESS")` 即报错，**故合法日报只有三种组合**：(SUCCESS, True)、(FAILED, False)、(NOOP_NON_TRADING_DAY, False) | **两个条件是同一个谓词写了两遍**：删任何一个，另一个仍拦得住；**只有两个一起删，失败的日子上账** |
+
+**SH-H / SH-I 这一条是实测出来的，不是读出来的**：本轮新增第 17 条变异
+**SH-Q（把两个条件一起删）**，定向实测 **SH-Q killed，而 SH-H 与 SH-I 各自存活**——
+**这正是"互为冗余"的可证形式：单删不可观测，双删可观测。**
+**若只报"SH-H 与 SH-I 存活"，读者会以为过滤器少了两道防线；实际是同一道防线写了两遍。**
+
+### 四、补的 2 条测试（`test_shadow_evidence.py`：9 → 11）
+
+1. `test_a_day_counts_only_if_it_was_a_real_shadow_day_for_this_model`（**SH-B / SH-D / SH-Q**）——
+   三种情形，每种只把六十天里的**最后一天**弄坏，断言 `valid_day_count == 59`、
+   状态跌出 READY_FOR_REVIEW、**且那一天被点名进 `invalid_signal_dates`**：
+   在 `model_status="PRODUCTION"` 下记录的一天、影子指针版本漂移到 2 的一天、流水线 FAILED 的一天。
+   **docstring 里写清了另外三条为什么是冗余的**，也写清了 FAILED 为什么必须与
+   `prediction_published=False` 成对出现（**日报构造器禁止 FAILED + 已发布**，
+   故"成功但未发布"这种组合根本造不出来——这本身就是上面那条等价性的来源）。
+2. `test_the_psi_run_is_consecutive_and_not_a_total`（**SH-P**）——
+   **三次 PSI 错误分散在第 10、30、50 个交易日**：正确的最长连续段是 **1**，
+   去掉重置之后它变成 **3**，于是**一个六十天全部合格的模型会被推进 REVIEW_REQUIRED**。
+   **既有那几条"连续 PSI"测试用的都是相邻日，而在相邻日上两种读法给出同一个数——这就是它此前存活的原因。**
+
+两个既有夹具（`_report` / `_day`）各加了两个关键字参数，**默认值保持原行为**，故既有 9 个测试未受影响。
+
+### 五、门槛与证据（全部实测）
+
+- **定向**（只跑 `test_shadow_evidence.py`，**1.0s/次**）：control **11 passed** →
+  **12 killed（含 SH-Q）** → **5 存活（SH-A / SH-G / SH-H / SH-I / SH-N，即上表五条）** → restored **11 passed**；
+  `shadow.py` **还原后逐字节相同**。日志 `mutation_shadow_qualification_targeted_with_killers.txt`。
+- **全量 harness**（17 个变异）：**基线 156 passed**，**12 杀 5 存活**，
+  还原后逐字节相同并复跑通过。日志 `mutation_shadow_qualification_after_pins.txt`；
+  首轮日志 `mutation_shadow_qualification_first_round.txt`。
+- **全量门槛**：`pytest tests -q` → **1687 passed / 45 skipped**（续六十五的 1685 + 本轮 2 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**。
+- **未写任何数据库**；**未碰也未提交** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`reporting/shadow.py` 的日报构造与校验**——**本轮排到第一，因为它是一条结论的地基**：
+   上面 SH-H / SH-I 的"互为冗余"**完全依赖它的第 132 行**，而那一行**从未被变异测量过**。
+   **若它被放松，SH-H 与 SH-I 会同时从"互为冗余"变成两个真的洞。**
+   **这是本 session 第二次出现"一条结论依赖另一处未测代码"**——
+   第一次是链 5 的 W-E / W-H / W-I 依赖链 3 的 `gates.py`，**而那处依赖是有钉子的；这处没有**。
+2. **`shadow.py` 剩下的部分**：四组 store/verifier（部署批准、交易日历、运行时日、就绪证据）的
+   **"验签方拒绝什么"**。本轮只测了资格聚合，**没测这四个验签方**，
+   而链 9 第二片的经验是**那一类正是覆盖率最低的地方**（14 个变异只杀掉 1 个）。
+3. **归属矩阵里"判定为不搬"的 X-F / X-K / X-L**（仍是读出来的，未实测；续六十五已主动降级标注）。
+4. **归属矩阵自动化**；`locked_test.py` 剩余部分；十条链之外约 1,530 个测试函数。

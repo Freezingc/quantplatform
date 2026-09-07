@@ -45,13 +45,19 @@ def _calendar(root: Path, dates: tuple[date, ...]) -> ShadowTradingCalendar:
     return ShadowTradingCalendarStore(root, signing_key=_CALENDAR_KEY.encode()).issue(dates)
 
 
-def _report(signal_date: date, *, psi_error: bool = False) -> ShadowDailyReport:
+def _report(
+    signal_date: date,
+    *,
+    psi_error: bool = False,
+    pipeline_status: str = "SUCCESS",
+    prediction_published: bool = True,
+) -> ShadowDailyReport:
     return build_shadow_daily_report(
         signal_date=signal_date,
         model_id=_MODEL_ID,
         model_version=1,
-        pipeline_status="SUCCESS",
-        prediction_published=True,
+        pipeline_status=pipeline_status,
+        prediction_published=prediction_published,
         inference_manifest_id="sha256:" + "b" * 64,
         artifact_bundle_hash="c" * 64,
         source_watermark_id="d" * 64,
@@ -75,9 +81,16 @@ def _day(
     shadow_pointer_model_version: int | None = 1,
     has_blocker: bool = False,
     psi_error: bool = False,
+    pipeline_status: str = "SUCCESS",
+    prediction_published: bool = True,
 ) -> ShadowRuntimeDay:
     return store.issue(
-        _report(signal_date, psi_error=psi_error),
+        _report(
+            signal_date,
+            psi_error=psi_error,
+            pipeline_status=pipeline_status,
+            prediction_published=prediction_published,
+        ),
         model_status=model_status,
         shadow_pointer_model_id=shadow_pointer_model_id,
         shadow_pointer_model_version=shadow_pointer_model_version,
@@ -326,3 +339,92 @@ def test_rebuilding_identical_shadow_evidence_is_idempotent(tmp_path: Path) -> N
     assert write_shadow_evidence(second, evidence_root) == write_shadow_evidence(
         first, evidence_root
     )
+
+
+# --- which days count, and what "consecutive" means --------------------------
+#
+# _is_valid_shadow_day is a six-condition filter and evaluate_shadow_qualification
+# turns its output into the status that the pointer switch consumes. Eight of sixteen
+# mutations of these two functions survived, and four of the eight are conditions nothing
+# upstream enforces: ShadowRuntimeDayStore.issue verifies the report's own signature and
+# takes model_status and the pointer version straight from the caller, so a day that was
+# not a shadow day, or that failed, or that published nothing, is issuable and only this
+# filter excludes it.
+
+
+def test_a_day_counts_only_if_it_was_a_real_shadow_day_for_this_model(tmp_path: Path) -> None:
+    """The filter's conditions that nothing upstream enforces, each broken on one of sixty days.
+
+    Each case must cost exactly one valid day, which drops the model below the sixty-day
+    floor and out of READY_FOR_REVIEW, and must name that day as invalid.
+
+    Three of the six conditions are redundant and are recorded as redundant rather than
+    pinned. ``records_for_model`` skips any record whose payload names a different model
+    and ``ShadowRuntimeDayVerifier.verify`` re-checks the same thing, so the filter's model
+    match is a third copy. ``_shadow_runtime_day_from_payload`` calls ``report.verify()``
+    and refuses a malformed record before it can reach the filter, so the filter's own
+    try/except cannot take its except branch at all. And ``build_shadow_daily_report``
+    enforces ``prediction_published is (pipeline_status == "SUCCESS")`` on every legal
+    report, which makes the filter's pipeline-status condition and its
+    prediction-published condition the SAME predicate written twice: deleting either one
+    alone changes nothing, and only deleting both lets a failed day count -- which is what
+    the third case below is for.
+    """
+    cases = (
+        ("not-in-shadow", {"model_status": "PRODUCTION"}),
+        ("pointer-version-drifted", {"shadow_pointer_model_version": 2}),
+        # FAILED forces prediction_published=False, so this one case is the only legal way
+        # to present a day that did not succeed, and it catches the pair of clauses.
+        (
+            "pipeline-failed",
+            {"pipeline_status": "FAILED", "prediction_published": False},
+        ),
+    )
+    for name, overrides in cases:
+        root = tmp_path / name
+        calendar_root = root / "calendar"
+        runtime_root = root / "runtime"
+        store = ShadowRuntimeDayStore(runtime_root, signing_key=_RUNTIME_KEY.encode())
+        dates = _trading_dates(date(2026, 1, 2), 60)
+        calendar = _calendar(calendar_root, dates)
+        for signal_date in dates[:-1]:
+            _day(store, signal_date)
+        _day(store, dates[-1], **overrides)  # type: ignore[arg-type]
+
+        qualification = evaluate_shadow_qualification(
+            _MODEL_ID,
+            runtime_root=runtime_root,
+            calendar=calendar,
+            calendar_root=calendar_root,
+        )
+
+        assert qualification.valid_day_count == 59, name
+        assert qualification.status is ShadowQualificationStatus.INCOMPLETE, name
+        assert qualification.invalid_signal_dates == (dates[-1],), name
+
+
+def test_the_psi_run_is_consecutive_and_not_a_total(tmp_path: Path) -> None:
+    """Three PSI errors spread across the calendar are not three in a row.
+
+    Measured: with the run's reset removed, ``max_consecutive_psi_errors`` becomes a count
+    of every PSI-error day, so three scattered errors -- each isolated, each recovered from
+    by the next trading day -- read as a streak and push a fully qualified sixty-day model
+    into REVIEW_REQUIRED. Every existing streak test uses consecutive days, on which the
+    two readings agree, which is why this survived.
+    """
+    root = tmp_path / "runtime"
+    calendar_root = tmp_path / "calendar"
+    store = ShadowRuntimeDayStore(root, signing_key=_RUNTIME_KEY.encode())
+    dates = _trading_dates(date(2026, 1, 2), 60)
+    calendar = _calendar(calendar_root, dates)
+    scattered = {dates[10], dates[30], dates[50]}
+    for signal_date in dates:
+        _day(store, signal_date, psi_error=signal_date in scattered)
+
+    qualification = evaluate_shadow_qualification(
+        _MODEL_ID, runtime_root=root, calendar=calendar, calendar_root=calendar_root
+    )
+
+    assert qualification.max_consecutive_psi_errors == 1
+    assert qualification.valid_day_count == 60
+    assert qualification.status is ShadowQualificationStatus.READY_FOR_REVIEW
