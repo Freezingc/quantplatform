@@ -821,6 +821,11 @@ def train_m2_smoke(workspace: Path) -> dict[str, Any]:
 
 M0_NUM_BOOST_ROUND = 500
 M0_EARLY_STOPPING_PATIENCE = 50
+# Threads per fit for the M0 search. deterministic=True is kept, so a fixed thread
+# count is reproducible (pinned by a determinism test); raising it is what makes a
+# 300-fit search on ~2.3M rows viable, since num_threads=1 measured >15 min for a
+# single fit. This is a candidate-family performance knob, NOT the B3 contract.
+M0_NUM_THREADS = 16
 M0_SMOKE_NUM_BOOST_ROUND = 64
 M0_FAMILY_NAME = "LGBM_RANKER"
 M0_MODEL_CODE_VERSION = "lgbm-ranker-1"
@@ -858,6 +863,7 @@ def _m0_hyperparameters(config_payload: Mapping[str, Any]) -> LGBMHyperparameter
         learning_rate=float(config_payload["learning_rate"]),
         min_child_samples=int(config_payload["min_child_samples"]),
         feature_fraction=float(config_payload.get("feature_fraction", 1.0)),
+        num_threads=M0_NUM_THREADS,
     )
 
 
@@ -897,6 +903,7 @@ def _m0_fit(
         evaluation_labels=evaluation_labels,
         early_stopping_patience=M0_EARLY_STOPPING_PATIENCE,
         seed=seed,
+        allow_nan=True,
     )
 
 
@@ -974,6 +981,10 @@ def _m0_load_booster(
         factor_order=tuple(str(name) for name in feature_order["feature_order"]),
         booster=booster,
         num_boost_round=int(booster.num_trees()),
+        # M0 is the candidate family that consumes the six sparse factors, so the
+        # frozen boosters must keep consuming NaN natively after being read back
+        # from the bundle (the default False would raise on the first NaN at TEST).
+        allow_nan=True,
     )
 
 
@@ -1172,7 +1183,7 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
         _m0_write_bundle(
             model_store,
             model_id,
-            dataset_id=dataset_id,
+            dataset_id=train_dataset_id,
             config_payload=best_config,
             factor_order=factor_order,
             seed_checkpoints=seed_checkpoints,

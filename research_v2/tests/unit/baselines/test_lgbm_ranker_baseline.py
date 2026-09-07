@@ -290,3 +290,69 @@ def test_lgbm_ranker_seed_changes_the_fit_when_feature_fraction_below_one() -> N
     assert not np.allclose(predictions[20260801], predictions[20260802])
     assert not np.allclose(predictions[20260801], predictions[20260803])
     assert not np.allclose(predictions[20260802], predictions[20260803])
+def _nan_fixture() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Two days, one factor NaN on the down day -- the sparse-factor shape."""
+    rows_f: list[dict[str, object]] = []
+    rows_l: list[dict[str, object]] = []
+    for day_offset in range(4):
+        signal_date = date(2020, 4, 1) + timedelta(days=day_offset)
+        for index in range(30):
+            value = float(index) if day_offset % 2 == 0 else float("nan")
+            rows_f.append({"signal_date": signal_date, "ts_code": f"S{index:03d}", "f1": value})
+            rows_l.append(
+                {
+                    "signal_date": signal_date,
+                    "ts_code": f"S{index:03d}",
+                    "raw_return_5d": float(index),
+                    "label_valid": True,
+                }
+            )
+    return pd.DataFrame(rows_f), pd.DataFrame(rows_l)
+
+
+def test_lgbm_ranker_rejects_nan_features_by_default() -> None:
+    features, labels = _nan_fixture()
+    with pytest.raises(ValueError, match="finite"):
+        LGBMRankerBaseline.fit(features, labels, factor_order=("f1",), role="TRAIN",
+                               num_boost_round=5)
+
+
+def test_lgbm_ranker_allow_nan_fits_and_predicts_on_sparse_features() -> None:
+    """M0's sparse factors carry NaN on down days; allow_nan passes them to LightGBM."""
+    features, labels = _nan_fixture()
+    model = LGBMRankerBaseline.fit(
+        features, labels, factor_order=("f1",), role="TRAIN", num_boost_round=10,
+        allow_nan=True,
+    )
+
+    scores = model.predict(features)
+
+    assert model.allow_nan is True
+    assert np.isfinite(scores.to_numpy()).all()
+    assert len(scores) == len(features)
+
+
+def test_lgbm_ranker_allow_nan_still_rejects_infinite_features() -> None:
+    features, labels = _nan_fixture()
+    features.loc[0, "f1"] = float("inf")
+    with pytest.raises(ValueError, match="infinite"):
+        LGBMRankerBaseline.fit(features, labels, factor_order=("f1",), role="TRAIN",
+                               num_boost_round=5, allow_nan=True)
+def test_lgbm_ranker_fit_is_deterministic_at_higher_thread_count() -> None:
+    """M0 raises num_threads above 1; determinism must hold for a FIXED thread count."""
+    features, labels = _seed_fixture()
+    kwargs = {
+        "factor_order": ("f1", "f2"),
+        "role": "TRAIN",
+        "num_boost_round": 20,
+        "hyperparameters": LGBMHyperparameters(
+            num_leaves=15, max_depth=4, learning_rate=0.05, min_child_samples=10,
+            num_threads=8,
+        ),
+        "seed": 20260802,
+    }
+
+    first = LGBMRankerBaseline.fit(features, labels, **kwargs)
+    second = LGBMRankerBaseline.fit(features, labels, **kwargs)
+
+    assert first.booster.model_to_string() == second.booster.model_to_string()

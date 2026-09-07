@@ -23,8 +23,9 @@ from research_v2.evaluation.walk_forward import (
 )
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
-MODEL_FAMILIES = ("M1", "M2", "M3")
+MODEL_FAMILIES = ("M0", "M1", "M2", "M3")
 _MODEL_CARD_FAMILIES = {
+    "M0": {"M0", "LGBM_RANKER"},
     "M1": {"M1", "RESIDUAL_MLP"},
     "M2": {"M2", "TEMPORAL"},
     "M3": {"M3", "SET_ATTENTION"},

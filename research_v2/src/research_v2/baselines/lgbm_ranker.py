@@ -32,6 +32,11 @@ class LGBMHyperparameters:
     feature_fraction: float = 1.0
     bagging_fraction: float = 1.0
     bagging_freq: int = 0
+    # Threads per fit. Default 1 keeps the reviewed B3 baseline's exact contract;
+    # the M0 candidate raises it (with deterministic=True kept) because its search
+    # is hundreds of fits on ~2.3M rows and single-threaded that is not viable.
+    # Determinism is pinned per thread count by a dedicated test.
+    num_threads: int = 1
 
     def __post_init__(self) -> None:
         if self.num_leaves < 1 or self.max_depth < 1 or self.min_child_samples < 1:
@@ -42,6 +47,8 @@ class LGBMHyperparameters:
             raise ValueError("LightGBM sampling fractions must lie in (0, 1]")
         if self.bagging_freq < 0:
             raise ValueError("LightGBM bagging_freq cannot be negative")
+        if self.num_threads < 1:
+            raise ValueError("LightGBM num_threads must be at least one")
 
 
 _DIRECT_FIT_DEFAULTS = LGBMHyperparameters(
@@ -73,6 +80,12 @@ class LGBMRankerBaseline:
     training_day_count: int = 0
     eligible_training_day_count: int = 0
     best_iteration: int | None = None
+    # When True, NaN feature values are passed to LightGBM natively (it treats
+    # "missing" as a value and learns a split direction for it) instead of being
+    # rejected. The frozen B3 baseline keeps the default False -- its 9 dense
+    # factors carry no NaN -- while the M0 candidate sets True for the six sparse
+    # factors, so "no value on a down day" stays information, not an imputation.
+    allow_nan: bool = False
 
     @classmethod
     def fit(
@@ -89,6 +102,7 @@ class LGBMRankerBaseline:
         evaluation_labels: pd.DataFrame | None = None,
         early_stopping_patience: int = LGBM_EARLY_STOPPING_PATIENCE,
         seed: int | None = None,
+        allow_nan: bool = False,
     ) -> LGBMRankerBaseline:
         """Fit LambdaRank only on TRAIN data, with one ranking group per date."""
         if role != "TRAIN":
@@ -113,7 +127,7 @@ class LGBMRankerBaseline:
             factor_order=factor_order,
             minimum_cross_section=minimum_cross_section,
         )
-        values = _finite_matrix(joined, factor_order)
+        values = _finite_matrix(joined, factor_order, allow_nan=allow_nan)
         raw_target = pd.to_numeric(joined["raw_return_5d"], errors="coerce")
         relevance, group_sizes = _relevance_and_groups(joined, raw_target)
         dataset = lgb.Dataset(values, label=relevance.astype(float), group=group_sizes)
@@ -128,7 +142,9 @@ class LGBMRankerBaseline:
                 factor_order=factor_order,
                 minimum_cross_section=minimum_cross_section,
             )
-            evaluation_values = _finite_matrix(evaluation_joined, factor_order)
+            evaluation_values = _finite_matrix(
+                evaluation_joined, factor_order, allow_nan=allow_nan
+            )
             evaluation_target = pd.to_numeric(
                 evaluation_joined["raw_return_5d"], errors="coerce"
             )
@@ -166,12 +182,13 @@ class LGBMRankerBaseline:
             training_day_count=training_day_count,
             eligible_training_day_count=eligible_training_day_count,
             best_iteration=int(best_iteration) if best_iteration else None,
+            allow_nan=allow_nan,
         )
 
     def predict(self, features: pd.DataFrame) -> pd.Series:
         """Score a validation or test frame with the immutable trained booster."""
         _validate_feature_schema(features, self.factor_order)
-        values = _finite_matrix(features, self.factor_order)
+        values = _finite_matrix(features, self.factor_order, allow_nan=self.allow_nan)
         predict = getattr(self.booster, "predict", None)
         if not callable(predict):
             raise ValueError("stored LightGBM booster cannot predict")
@@ -301,10 +318,16 @@ def _validate_feature_schema(features: pd.DataFrame, factor_order: tuple[str, ..
         raise ValueError("feature order must exactly match signal_date, ts_code, and factor_order")
 
 
-def _finite_matrix(frame: pd.DataFrame, factor_order: tuple[str, ...]) -> np.ndarray:
+def _finite_matrix(
+    frame: pd.DataFrame, factor_order: tuple[str, ...], *, allow_nan: bool = False
+) -> np.ndarray:
     numeric = frame.loc[:, list(factor_order)].apply(pd.to_numeric, errors="coerce")
     values = numeric.to_numpy(dtype=float)
-    if not np.isfinite(values).all():
+    if allow_nan:
+        # LightGBM consumes NaN natively; only infinite values are still rejected.
+        if np.isinf(values).any():
+            raise ValueError("baseline feature values must not be infinite")
+    elif not np.isfinite(values).all():
         raise ValueError("baseline feature values must be finite")
     return cast(np.ndarray, values)
 
@@ -391,7 +414,7 @@ def _training_parameters(
         "max_depth": parameters.max_depth,
         "min_child_samples": parameters.min_child_samples,
         "num_leaves": parameters.num_leaves,
-        "num_threads": 1,
+        "num_threads": parameters.num_threads,
         "objective": "lambdarank",
         "label_gain": [0, 1, 2, 3, 4],
         "seed": 20260801,

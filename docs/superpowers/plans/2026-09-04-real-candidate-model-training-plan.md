@@ -570,3 +570,33 @@ verdict 由 SATISFIED 翻为 NOT SATISFIED）；新渲染落为
 
 **对 M0 的直接含义**：G4 标尺 = `baseline_mean_rank_ic = 0.08706`（比旧的 0.0864 略硬）。
 **验证**：`pytest tests -q` 1716 passed / 45 skipped；`ruff src/tests` 清；`mypy src` 158 文件清。
+
+## 勾选审计与实测偏差记录（2026-09-08 03:39）：M0 可跑满 15 因子（NaN + 线程 + 三处撞出的 bug）
+
+**M0 全量运行前置已做**：
+
+1. **NaN 处理（方案 a：LightGBM 原生）**：`LGBMRankerBaseline` 加 `allow_nan`——`True` 时把 NaN 交给
+   LightGBM 原生分裂（"下跌日无值"本身是信息、**最贴合 v2"禁止数据层插补"**，比 FoldPreprocessor 的
+   0 填充更忠实）；默认 `False`（B3 的 9 稠密因子无 NaN、契约逐位不变）。M0 拟合与 bundle 重建都传 `True`。
+   3 条测试钉住：默认拒 NaN、allow_nan 能在稀疏 NaN 特征上拟合+预测、allow_nan 仍拒 inf。
+2. **num_threads 控制**：`LGBMHyperparameters.num_threads`（默认 1=B3 契约）。实测 `num_threads=1`
+   时单个拟合 >15 分钟（全量 300 次拟合 25h+，不可行）；提到 **M0_NUM_THREADS=16**（`deterministic=true`
+   保留）约 **2 分钟/拟合**。1 条测试钉住**固定线程数下确定性**（同种子两次逐字节一致）。
+
+**过程中撞出并修掉的 bug（都是 M0 作为第一个走到评估步的候选才暴露的）**：
+
+- **预测证据密钥缺口**：`evaluate_model_walk_forward` 用独立的 `QRV2_PREDICTION_EVIDENCE_HMAC_KEY` 验签，
+  而驱动只用 `QRV2_SELECTION_EVIDENCE_HMAC_KEY` 签预测 → 跑到评估步才崩。M1 崩得早、从没走到这步。
+  **运行口径**：两个 env 都设为同一信任根密钥（设计是"单一信任根"）。
+- **`model_walk_forward.MODEL_FAMILIES` 漏注册 M0**（它是与驱动**重复的常量**，只有 M1/M2/M3）：
+  补 `M0` 与 `_MODEL_CARD_FAMILIES["M0"]={"M0","LGBM_RANKER"}`。
+- **bundle `dataset_id` 写错**：`run_full_m0` 把裸 `dataset_id` 写进 model_card，而
+  `_require_verified_model_bundle` 与测试约定都要求 `card.dataset_id == selection.training_dataset_id`
+  （`dataset_id:train`）。改为写 `train_dataset_id`。**注意**：`_run_full_cross_section`（M1/M3）与
+  `run_full_m2` 有**同样的约定不一致**（bundle 写裸 id、`load_inference_artifact` 也期望裸 id，
+  与评估检查冲突），但它们被 裁决 2/3 挡住、从没走到评估步——**记为 M1–M3 重启时的必修项，本轮未动**。
+- **`--folds` 在全量运行里被接受但被忽略**（`_run_full_cross_section`/`run_full_m0` 固定跑 `ORDINARY_FOLDS`）：
+  **latent bug，已记待修**；本次"单折 smoke"因此实际是全量 4 折运行。
+
+**验证**：`pytest tests -q` **1720 passed / 45 skipped**（1716 + 本轮 4 条）；`ruff src/tests` 清；
+`mypy src` 158 文件清。M0 干净重跑（修正后代码 + 双密钥 + 缓存数据集）进行中。
