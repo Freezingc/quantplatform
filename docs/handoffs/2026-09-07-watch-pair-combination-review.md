@@ -1,4 +1,4 @@
-# 关注对组合评审：381↔405、398↔381（冻结集训练前置，待授权）
+# 关注对组合评审：381↔405、398↔381、381↔443修复变体（冻结集训练前置，待授权）
 
 > 生成：2026-09-07 11:40 CST · 分支 `codex/publish-quant-platform`
 > 性质：**只读评审**——未改冻结集、未写治理表、未触碰任何运行中的链。处置需人工授权。
@@ -7,15 +7,17 @@
 > 数据口径：`factor_daily`（物化冻结集，2020–2025，`cn_liquid_a`，factor_version=1，23,217,187 行）
 > × `label_daily` `forward_open_5d:v1`（label_valid）；体制用已批准的两个指标
 > （largecap_dominance_regime_v1 / liquidity_shock_regime_v1）。
-> 工具：`research_v2/scripts/review_watch_pairs.py`（新建，只读）；
-> 证据：`research_v2/artifacts/diagnostics/watch_pair_review/watch_pair_review_v1.{json,md}`。
+> 工具：`research_v2/scripts/review_watch_pairs.py`（新建，只读，逐对交集口径）；
+> 证据：`research_v2/artifacts/diagnostics/watch_pair_review/watch_pair_review_v2.{json,md}`（三对全量，逐对交集）；
+> `watch_pair_review_v1.{json,md}` 为首轮两对版本（三因子交集口径），两对结论与 v2 完全一致，留档对照。
 
 ## 0. 结论（一句话）
 
-**两对均 FAIL（按预登记规则）**：yeslab_381 是两对中共同的信息主导方——
-405 在给定 381 条件下几乎没有增量信息（pooled 保留率 **7.5%**，2021/2023 年为负），
+**381↔405 与 398↔381 两对均 FAIL（按预登记规则）**：yeslab_381 是两对中共同的信息主导方——
+405 在给定 381 条件下几乎没有增量信息（pooled 保留率 **7.6%**，2021/2023 年为负），
 398 同样弱（**20.3%**，流动性冲击体制下残差 IC 符号翻转）。
-**建议：冻结集移除 405 与 398，保留 381 并升级其监控**（选项 W1，见 §3）。
+**381↔443 修复变体复评为 REVIEW（可共存）**：median rho 仅 0.56–0.65（远低于准入时担忧的 0.811/0.837——修复变体确实改变了结构），双向保留率 0.55/0.44，各年均在 0.35 以上；唯一弱点是流动性冲击 ON 时 443 变体的残差翻转（-0.26），恰好落在既有体制监控与 D3 降权设计内。
+**建议：冻结集移除 405 与 398，保留 381 与 443 修复变体并维持/升级监控**（选项 W1，见 §3）。
 
 ## 1. 预登记判定规则（跑数前固定）
 
@@ -46,11 +48,23 @@
 
 **解读**：405、398 的残差信息在压力体制下不是变弱而是消失/翻转——它们与 381 的差异化部分不构成可靠 alpha，共享部分才是（而共享部分由 381 代表即可）。
 
+### 2.3 补充对：381↔443 修复变体（v2 新增，REVIEW=可共存）
+
+| 指标 | 值 |
+|---|---|
+| 各年 median|rho| | 0.564–0.650（无任何一天 rho≥0.85） |
+| 保留率 381|443v1（pooled） | **0.548**（逐年 0.39–0.66） |
+| 保留率 443v1|381（pooled） | **0.441**（逐年 0.35–0.55，最差单年 0.346 ≥ 0.30） |
+| largecap_dominance ON | 双向保留 0.40/0.48 —— 修复变体在大盘股主导体制下**未**崩塌（对比规范 443 的 2017 崩塌史） |
+| liquidity_shock ON | 443v1|381 = **-0.259（符号翻转）**；381|443v1 = 0.853 |
+
+**解读**：两者信息重叠中等、增量互补，可共存；443 变体在急性流动性冲击下的残差不稳定，由既有监控（决策清单 A 表）与 D3 体制降权覆盖，无需新增处置。443v1 pooled IC -0.071（ICIR -0.552），方向与其他 gp 族一致。
+
 ## 3. 处置选项（需授权，默认不执行）
 
 - **W1（推荐）**：冻结集移除 yeslab_405、yeslab_398，保留 yeslab_381 → 冻结集 17 → **15**。
   - 依据：增量证据明确不对称；405 的单因子表现（A 级、验证 ICIR 1.039）主要是与 381 的共享信息。
-  - 附加条件：381 成为两对的唯一代表后**监控升级**——它本体制最低 ICIR 0.356 是准入因子中最低，且与 443 修复变体仍有关注对（0.811/0.837，本次未复评，物化口径下建议复测）。
+  - 附加条件：381 成为两对的唯一代表后**监控升级**——它本体制最低 ICIR 0.356 是准入因子中最低。与 443 修复变体的关注对已在物化口径下复测（§2.3）：可共存，维持既有体制监控即可。
 - **W2**：保留 405、移除 381（理由：405 分级更高）。**与证据冲突**：405 给定 381 仅剩 7.5%，说明其优势是共享的；且移除 381 后 398↔405 需另行评审（当前无该对的物化口径数据）。不推荐。
 - **W3**：双双保留，交给模型正则化/特征筛选处理。不推荐：关注对设置的本意就是训练前解决，残差证据表明保留几乎无信息增益、只增加共线性与体制脆弱性。
 
@@ -68,10 +82,10 @@
 cd /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX
 conda activate quantyd
 # 重跑评审（只读，约 1 分钟）
-PYTHONPATH=research_v2/src:research_v2/scripts python research_v2/scripts/review_watch_pairs.py
+PYTHONPATH=research_v2/src:research_v2/scripts python research_v2/scripts/review_watch_pairs.py v2
 # 证据文件
-cat research_v2/artifacts/diagnostics/watch_pair_review/watch_pair_review_v1.md
-python -c "import json; d=json.load(open('research_v2/artifacts/diagnostics/watch_pair_review/watch_pair_review_v1.json')); print(json.dumps(d['pairs'], ensure_ascii=False, indent=1))"
+cat research_v2/artifacts/diagnostics/watch_pair_review/watch_pair_review_v2.md
+python -c "import json; d=json.load(open('research_v2/artifacts/diagnostics/watch_pair_review/watch_pair_review_v2.json')); print(json.dumps(d['pairs'], ensure_ascii=False, indent=1))"
 ```
 
 ## 6. 后续记录（授权后执行）
