@@ -1,7 +1,7 @@
 # 关注对组合评审：381↔405、398↔381、381↔443修复变体（冻结集训练前置，待授权）
 
 > 生成：2026-09-07 11:40 CST · 分支 `codex/publish-quant-platform`
-> 性质：**只读评审**——未改冻结集、未写治理表、未触碰任何运行中的链。处置需人工授权。
+> 性质：评审 + 落地——**W1 已于 2026-09-07 经用户批准并执行**（v2 冻结契约 15 因子，405/398 标记 REMOVED_WATCH_PAIR_REVIEW 追加入库，v1 批次未动；逐对证据已补录 `factor_pair_redundancy` 的 `*_fd` 窗口）。落地脚本：`research_v2/scripts/apply_watch_pair_review_v2.py`。
 > 触发依据：冻结契约 warnings（`factor_set_frozen_v1.json`）与准入决策清单 B 节——
 > 381↔405（验证期冗余 0.865/0.888）、398↔381（0.837/0.824）同时准入，**训练前必须完成组合评审**。
 > 数据口径：`factor_daily`（物化冻结集，2020–2025，`cn_liquid_a`，factor_version=1，23,217,187 行）

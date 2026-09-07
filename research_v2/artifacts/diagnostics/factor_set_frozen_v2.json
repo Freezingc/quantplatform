@@ -1,0 +1,74 @@
+{
+  "scope": "FACTOR_SET_FROZEN_V2",
+  "frozen_date": "2026-09-07",
+  "supersedes": "factor_set_frozen_v1.json",
+  "factors": [
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_372",
+    "yeslab_375",
+    "yeslab_381",
+    "yeslab_384",
+    "yeslab_389",
+    "yeslab_390",
+    "yeslab_406",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+    "yeslab_96"
+  ],
+  "count": 15,
+  "baseline_eligible": [
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_381",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+    "yeslab_96"
+  ],
+  "candidate_only": [
+    "yeslab_372",
+    "yeslab_375",
+    "yeslab_384",
+    "yeslab_389",
+    "yeslab_390",
+    "yeslab_406"
+  ],
+  "removed": {
+    "yeslab_405": "W1: retention 7.6% given yeslab_381 (watch_pair_review_v2 FAIL)",
+    "yeslab_398": "W1: retention 20.3% given yeslab_381 (watch_pair_review_v2 FAIL)"
+  },
+  "fold_structure": "4y_train_1y_val_1y_test_F1-F4_test2022-2025",
+  "folds": {
+    "F1": {
+      "train": "2017-2020",
+      "val": "2021",
+      "test": "2022"
+    },
+    "F2": {
+      "train": "2018-2021",
+      "val": "2022",
+      "test": "2023"
+    },
+    "F3": {
+      "train": "2019-2022",
+      "val": "2023",
+      "test": "2024"
+    },
+    "F4": {
+      "train": "2020-2023",
+      "val": "2024",
+      "test": "2025"
+    }
+  },
+  "special_decisions": {
+    "W1": "approved",
+    "adjudication4": "hybrid_dense_baseline_sparse_candidate"
+  },
+  "data_version": "888fd4b97bc66a617e30296b3ab7481f296824dc243308fa0d58295834d7bca2"
+}
