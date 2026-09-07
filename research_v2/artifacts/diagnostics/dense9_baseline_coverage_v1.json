@@ -1,0 +1,38 @@
+{
+ "scope": "DENSE9_BASELINE_COVERAGE_V1",
+ "generated_at": "2026-09-07T16:45:00+08:00",
+ "purpose": "preflight for the v2 baseline rebuild (G4 trust root): all-9-dense-present share of cn_liquid_a member-days, replacing the all-17 metric (11.6%/34.6%) that held the frozen chain",
+ "dense9": [
+  "yeslab_96",
+  "yeslab_206",
+  "yeslab_357",
+  "yeslab_381",
+  "yeslab_425",
+  "yeslab_443_reg30_max20_v1",
+  "yeslab_464",
+  "yeslab_471",
+  "yeslab_484"
+ ],
+ "per_year": {
+  "2017": 88.1,
+  "2018": 91.95,
+  "2019": 96.83,
+  "2020": 89.62,
+  "2021": 94.4,
+  "2022": 92.9,
+  "2023": 93.02,
+  "2024": 87.45,
+  "2025": 86.63
+ },
+ "fold_train_windows": {
+  "F1_2017-2020": 91.77,
+  "F2_2018-2021": 93.15,
+  "F3_2019-2022": 93.31,
+  "F4_2020-2023": 92.52
+ },
+ "notes": [
+  "denominator = universe_daily cn_liquid_a is_member member-days; numerator = member-days with all 9 dense factors present in factor_daily",
+  "coverage floor of the dense set is yeslab_206 (median-repair, ~90%); other dense factors individually 91-92.4%",
+  "vs all-17 complete share 11.6% (2014-01) / 34.6% (2020-01) measured in frozen_chain_hold: ~2.7x thicker trust root"
+ ]
+}
