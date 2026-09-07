@@ -7477,3 +7477,87 @@ golden 那一类更脆：**任何一次有意的指标变更之后都要重新�
    隔离评价器与它的 stdout 抑制。
 4. **把归属矩阵自动化**（续六十一第 2 条，仍未做）。
 5. 其余同前：约 1,530 个测试函数在已审计的十条链之外从未做过变异测量。
+
+## 勾选审计续六十五（2026-09-07 08:45）：**把归属矩阵的第五个案例真正关掉**——P-D 的钉子从 `test_locked_test.py` 搬回 `test_active_pointer.py`，并连带钉住此前**在任何文件里都没有钉子**的 P-C（生产批准签给别的模型）；指针套件自己的存活**从 5 条降到 3 条**，而这 3 条都有"上游已钉"或"按构造不可达"的实测依据
+
+### 一、为什么这一轮只搬一条钉子、不开新链
+
+续六十四第六节把这件事排第一，因为它是归属矩阵五个案例里**最名实错位**的一个：
+`test_locked_test.py::test_production_pointer_accepts_only_the_signed_approval_for_its_exact_artifact`
+——**测试名字说的是指针的性质，文件却在锁定测试套件里**，因为它需要那套机器才能造出一份批准。
+而 **P-C（同一处的模型匹配半边）当时在任何文件里都没有钉子**。
+
+**搬回家的阻碍不是难度，是夹具成本**：那条测试要跑完
+`_approved_capability` → `LockedTestEvaluator.evaluate` → `ProductionDeploymentApprovalStore.issue`
+整条链，才能拿到一份可用的批准。**本轮的做法是绕开这条链**：
+先读清 `ProductionDeploymentApprovalVerifier.verify` 究竟查什么
+（字段形态 → `approval_id == _content_hash(payload)` → 用 `QRV2_PRODUCTION_APPROVAL_HMAC_KEY` 的 HMAC →
+`.issued/<approval_id>.json` 存档逐字节一致），**然后在测试里直接签一份**。
+**持有钥匙的测试本来就能造出一份合法批准**——
+而这正是能造出"签给别的模型 / 引用别的产物、其余全部合法"这种输入的前提。
+
+### 二、做法与那一条测试的三段
+
+新增 `_production_approval(root, *, model_id, artifact_bundle_hash)`：用 `_content_hash` 与 `_signature`
+直接签、写好自己的存档记录，并**自证"签的载荷正是验签方会重建的那个"**
+（`approval.payload() == payload`、`approval_id == _content_hash(payload)`）。
+新增 `_production_switch(...)`：**每次用一个全新的 store**——
+因为 CAS 前置会让第二次 `expected_current=None` 的调用**直接返回 None 而不是抛出**，
+**三次尝试若不隔离，测试会以错误的理由通过或失败**。
+
+一条测试 `test_production_pointer_refuses_an_approval_for_another_model_or_artifact` 覆盖三段：
+
+1. **控制**：批准签给 _A、引用 _A 的产物摘要 → **切换成功**；
+2. **P-C**：批准签给 **_B**、但引用 **_A 的产物摘要** → 产物匹配通过，**只有模型匹配能拒** →
+   `approval model does not match pointer target`；
+3. **P-D**：批准签给 _A、但引用 **_B 的产物摘要** → 模型匹配通过，**只有产物匹配能拒** →
+   `approval artifact does not match pointer target`。
+
+**每一段都构造成"只有被测那一句能拒"**——这是本轮唯一也是最重要的设计约束：
+否则杀掉它的可能是别的那一句，而审计会把功劳记错地方（续五十二的教训）。
+**两条变异的死因都是 `DID NOT RAISE`**：即少掉那一句，**切换会真的发生**，
+线上消费者开始服务一份没人批准过的产物。
+
+### 三、结果
+
+- **定向**（只跑 `test_active_pointer.py`，**0.8s/次**）：control **17 passed** →
+  **P-C 与 P-D 都在本文件内被杀**（杀手都是这条新测试）→
+  **本文件存活从 5 条降到 3 条（P-H / P-I / P-N）** → restored **17 passed**；
+  `active_pointer.py` **还原后逐字节相同**。日志 `mutation_active_pointer_targeted_with_killers.txt`（已更新）。
+- **全量 harness**：**基线 154 passed**，17 个变异 → **14 杀 3 存活（P-H / P-I / P-N）**，
+  还原后逐字节相同并复跑通过。日志 `mutation_active_pointer_after_production_pins.txt`。
+- **剩下 3 条的定性沿用续六十四、未变**：P-H / P-I 与上游 `ShadowEvidenceStore.issue` 的签发校验冗余，
+  而**上游那两条在 `tests/unit/monitoring/test_shadow_evidence.py:153` 与 `:163` 是被钉住的**；
+  P-N 按构造不可达（被追加的两个 id 来自刚验签通过的文档）。
+- **没有删掉 `test_locked_test.py` 里那条端到端测试**，理由写在新测试的注释里：
+  **一条断言的是"这句条款在本模块被钉住"，另一条断言的是"整条流水线串起来能走通"，两者不是同一件事。**
+  **这也不是续五十七警告过的"策略写两遍"**——那处的两份写法是**同一策略的两种实现、会各自漂移**；
+  这里是**同一性质在两个层级上的两种证据，删掉任何一个都会丢信息**。
+
+### 四、门槛与证据（全部实测）
+
+- **全量门槛**：`pytest tests -q` → **1685 passed / 45 skipped**（续六十四的 1684 + 本轮 1 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**。
+- **未写任何数据库**；**未碰也未提交** `materialization_status.{json,md}`
+  （那两个文件属于另一个对话；本轮工作树里它们显示**因子物化已完成**，与此前"运行中/未完成"不同——
+  **这是外部状态变化，本轮只报告、不据此改动任何判断**，链 2 的 hold 理由针对的是 2014–2020 的逐股覆盖率）；
+  **未释放** `/tmp/frozen_chain_hold.txt`；**链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+- 归档：`mutation_active_pointer_after_production_pins.txt`、更新后的
+  `mutation_active_pointer_targeted_with_killers.txt`、`mutate_active_pointer.py`、
+  `mutate_active_pointer_targeted.py`。
+
+### 五、下一轮候选（按本轮结果排序，非承诺）
+
+1. **`monitoring/shadow.py`（1026 行）**：连续两轮靠它的上游校验解释存活项（P-H / P-I），
+   **但那两次都是"查过它有测试"，不是"测过它"**——按本 session 自己的标准还差一次真正的测量。
+   它的四组 store/verifier（部署批准、交易日历、运行时日、就绪证据）与资格聚合
+   **与链 9 第二片同型**，故可以直接复用那一轮的变异设计
+   （验签方拒绝什么、存档逐字节比对、签发互斥、权限位、以及"同进程自签自验测不到"的那一类）。
+2. **复查归属矩阵里"判定为不搬"的那三条**：X-F / X-K / X-L 被判为"范围划分而非脆弱"，
+   **但那个判定是读出来的、没有实测**——若把这三条的杀手测试各自改名或删掉会连带丢掉什么，本轮没有量。
+   **按本 session 的标准，"读出来的"应当被降级标注，或者补一次实测。**
+3. **归属矩阵自动化**（续六十一第 2 条，仍未做）：候选文件表仍是手写的。
+4. **`locked_test.py` 剩余部分**：一次性能力的发放与消费状态机、成熟度守卫与交易日历、
+   隔离评价器与它的 stdout 抑制。
+5. 其余同前：约 1,530 个测试函数在已审计的十条链之外从未做过变异测量。

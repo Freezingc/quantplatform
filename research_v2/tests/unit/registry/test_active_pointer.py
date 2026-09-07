@@ -21,6 +21,11 @@ from research_v2.registry.active_pointer import (
     PointerEligibilityGuard,
     PointerSwitchEvidence,
 )
+from research_v2.registry.locked_test import (
+    ProductionDeploymentApproval,
+    _content_hash,
+    _signature,
+)
 from research_v2.registry.model_registry import ModelRecord, ModelRegistry, ModelStatus
 
 _A = "sha256:" + "a" * 64
@@ -702,3 +707,112 @@ def test_a_repeated_switch_is_refused_and_a_stale_rollback_changes_nothing(
         is None
     )
     assert store.get("paper-sim", "shadow") == update.pointer
+
+
+# --- the production branch's two matches, pinned where the clauses live -------
+#
+# Both were already killed at full scope before this test existed -- but by
+# test_locked_test.py's end-to-end chain test, whose name describes a pointer
+# property while living in the locked-test suite because it needs that suite's
+# machinery to produce one approval. That is the fifth case in the attribution
+# matrix and the most name-mismatched one. These are the pointer guard's own
+# clauses, so they are pinned here against a directly signed approval; the
+# locked-test suite keeps its chain test, because a unit pin on the clause and an
+# end-to-end pin on the pipeline are different assertions, not duplicated ones.
+
+_PRODUCTION_KEY = "production-approval-key"
+
+
+def _production_approval(
+    root: Path, *, model_id: str, artifact_bundle_hash: str
+) -> ProductionDeploymentApproval:
+    """A correctly signed production approval, without running a locked test to get one.
+
+    The verifier checks the fields, the content hash, the HMAC under
+    QRV2_PRODUCTION_APPROVAL_HMAC_KEY and a stored record, so a test that holds the key
+    can produce one directly -- which is what makes it possible to name a DIFFERENT model
+    or cite a DIFFERENT artifact while everything else stays valid.
+    """
+    provisional = ProductionDeploymentApproval(
+        approval_id="0" * 64,
+        model_id=model_id,
+        locked_test_result_id="7" * 64,
+        artifact_bundle_hash=artifact_bundle_hash,
+        actor="production-risk-approver",
+        signature="0" * 64,
+    )
+    payload = provisional.payload()
+    approval_id = _content_hash(payload)
+    approval = replace(
+        provisional,
+        approval_id=approval_id,
+        signature=_signature(_PRODUCTION_KEY.encode(), approval_id, payload),
+    )
+    # Guard the guard: the payload signed here is the one the verifier rebuilds.
+    assert approval.payload() == payload
+    assert approval.approval_id == _content_hash(approval.payload())
+    record = root / ".issued" / f"{approval_id}.json"
+    record.parent.mkdir(parents=True, exist_ok=True)
+    record.write_text(approval.to_json(), encoding="utf-8")
+    return approval
+
+
+def _production_switch(
+    registry: ModelRegistry, approval: ProductionDeploymentApproval, root: Path, *, reason: str
+):
+    """One production switch attempt against _A on a fresh store, so attempts stay independent."""
+    return _store(registry, _DIGESTS).compare_and_swap(
+        consumer_id="paper-sim",
+        environment="production",
+        expected_current=None,
+        model_id=_A,
+        model_version=1,
+        actor="production-operator",
+        reason=reason,
+        evidence=PointerSwitchEvidence(
+            production_approval=approval, production_approval_root=root
+        ),
+        run_id=_RUN_ID,
+    )
+
+
+def test_production_pointer_refuses_an_approval_for_another_model_or_artifact(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A production approval authorises ONE model's ONE artifact, and both halves are checked.
+
+    Each refusal is built so only the clause under test can produce it: the cross-model
+    approval cites _A's artifact digest, and the cross-artifact approval names _A, so in
+    each case the other match passes. Measured death causes: with the model match removed
+    an approval signed for _B authorises a switch to _A; with the artifact match removed
+    the switch is authorised on an approval for a different bundle -- ``DID NOT RAISE`` in
+    both cases, i.e. a live consumer starts serving an artifact nobody approved.
+    """
+    monkeypatch.setenv("QRV2_PRODUCTION_APPROVAL_HMAC_KEY", _PRODUCTION_KEY)
+    registry = _registry()
+    # The guard reads the target's status; the other production tests in this file put the
+    # registry into PRODUCTION the same way.
+    monkeypatch.setattr(
+        registry, "get", lambda model_id: ModelRecord(model_id, ModelStatus.PRODUCTION)
+    )
+
+    genuine_root = tmp_path / "genuine"
+    genuine = _production_approval(
+        genuine_root, model_id=_A, artifact_bundle_hash=_DIGESTS[_A]
+    )
+    # Control: the matching approval really does switch the pointer.
+    assert _production_switch(registry, genuine, genuine_root, reason="genuine") is not None
+
+    cross_model_root = tmp_path / "cross-model"
+    cross_model = _production_approval(
+        cross_model_root, model_id=_B, artifact_bundle_hash=_DIGESTS[_A]
+    )
+    with pytest.raises(ValueError, match="approval model does not match pointer target"):
+        _production_switch(registry, cross_model, cross_model_root, reason="cross-model")
+
+    cross_artifact_root = tmp_path / "cross-artifact"
+    cross_artifact = _production_approval(
+        cross_artifact_root, model_id=_A, artifact_bundle_hash=_DIGESTS[_B]
+    )
+    with pytest.raises(ValueError, match="approval artifact does not match pointer target"):
+        _production_switch(registry, cross_artifact, cross_artifact_root, reason="cross-artifact")
