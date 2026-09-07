@@ -396,6 +396,46 @@ def _drive_to(registry: ModelRegistry, model_id: str, status: ModelStatus) -> No
     registry.promote_walk_forward(model_id, actor="reviewer", evidence=_evidence())
 
 
+def _drive_to_shadow(
+    registry: ModelRegistry,
+    model_id: str,
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Reach SHADOW by the registry's own route: a signed approval that really verifies.
+
+    _REACHABLE stops at WALK_FORWARD_PASSED because the forbidden-jump grid drives thirteen
+    combinations and each needs a fresh registry, but SHADOW is reachable in this file too.
+    That matters: 续七十 measured mutation X-F -- the production guard rewritten to require
+    SHADOW instead of LOCKED_TEST_PASSED -- surviving here, and the reason is that nothing in
+    this file ever calls _approve_production from SHADOW, which is the one source status that
+    tells the correct guard from the mutated one.
+    """
+    monkeypatch.setenv("QRV2_SHADOW_APPROVAL_HMAC_KEY", "test-shadow-approval-key")
+    monkeypatch.setenv("QRV2_SHADOW_DEPLOYER_ID", "shadow-controller")
+    registry.promote_walk_forward(model_id, actor="reviewer", evidence=_evidence())
+    approvals = ShadowDeploymentApprovalStore(
+        tmp_path / "approvals",  # type: ignore[operator]
+        signing_key=b"test-shadow-approval-key",
+    )
+    approval = approvals.issue(
+        model_id=model_id,
+        actor="risk-approver",
+        walk_forward_evidence_hash=registry.history(model_id)[-1].evidence_hashes[0],
+        artifact_bundle_hash="b" * 64,
+        inference_contract_hash="c" * 64,
+        v2test_drill_hash="d" * 64,
+        rollback_plan_hash="e" * 64,
+    )
+    shadow = registry.enter_shadow(
+        model_id,
+        approval=approval,
+        approval_root=tmp_path / "approvals",  # type: ignore[operator]
+    )
+    # Guard the guard: the fixture really is in SHADOW, so any refusal below is the guard's own.
+    assert shadow.status is ModelStatus.SHADOW
+
+
 def _invoke(registry: ModelRegistry, entry_point: str) -> ModelRecord:
     """Call one private entry point with inputs valid enough to reach its status guard."""
     if entry_point == "promote_walk_forward":
@@ -468,6 +508,51 @@ def test_production_approval_refuses_a_model_that_has_not_passed_the_locked_test
 
     assert registry.get(MODEL_ID).status is ModelStatus.DRAFT
     assert len(registry.history(MODEL_ID)) == 1
+
+
+def test_production_approval_refuses_a_model_that_is_still_in_shadow(
+    tmp_path: object, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The production guard names exactly one acceptable source status; this pins both sides.
+
+    The test above drives from DRAFT, and a DRAFT is refused whether the guard requires
+    LOCKED_TEST_PASSED, SHADOW, or nothing at all, so it cannot tell the correct guard from a
+    wrong one. 续七十 measured the consequence for X-F: this file stayed green, and the only two
+    failures in the whole chain-6 scope were
+    test_independent_production_approval_requires_a_verified_locked_test_pass and
+    test_production_pointer_accepts_only_the_signed_approval_for_its_exact_artifact -- each of
+    which needs a legal production approval to succeed in order to test something else, and each
+    of which died on its own happy path carrying the guard's message while asserting nothing
+    about the guard. Their kill signal also proved to be a strict subset of X-K's, so a single
+    refactor of that shared setup would have dropped both pins at once.
+
+    Driving from SHADOW separates the two readings: the mutated guard waves it through, the real
+    one refuses it. The second half walks the same model on to LOCKED_TEST_PASSED through the
+    registry's own private entries and requires the approval to succeed, so the guard is pinned
+    from both sides and "requires exactly LOCKED_TEST_PASSED" is the only reading left standing.
+    """
+    registry = ModelRegistry()
+    registry.register_draft(MODEL_ID, actor="trainer")
+    _drive_to_shadow(registry, MODEL_ID, tmp_path, monkeypatch)
+    events_before = len(registry.history(MODEL_ID))
+
+    with pytest.raises(ValueError, match="only LOCKED_TEST_PASSED"):
+        _invoke(registry, "_approve_production")
+
+    # A refused attempt leaves no trace, exactly as the four guard tests above require.
+    assert registry.get(MODEL_ID).status is ModelStatus.SHADOW
+    assert len(registry.history(MODEL_ID)) == events_before
+
+    _invoke(registry, "_approve_locked_test")
+    _invoke(registry, "_complete_locked_test")
+    # Guard the guard: the ladder really did reach a passed locked test, so the approval below
+    # exercises the guard's accepting side instead of failing for some earlier reason.
+    assert registry.get(MODEL_ID).status is ModelStatus.LOCKED_TEST_PASSED
+
+    approved = _invoke(registry, "_approve_production")
+
+    assert approved.status is ModelStatus.PRODUCTION
+    assert registry.get(MODEL_ID).status is ModelStatus.PRODUCTION
 
 
 def test_no_private_entry_point_permits_a_jump_the_lifecycle_table_forbids() -> None:
