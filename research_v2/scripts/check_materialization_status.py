@@ -19,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DIAG = REPO_ROOT / "research_v2" / "artifacts" / "diagnostics"
 OUT_DIR = DIAG / "factor_daily_materialization"
 TARGET_DATABASE = "dfs://QuantResearchV2Test"
-YEARS = [2020, 2021, 2022, 2023, 2024, 2025]
+YEARS = list(range(2014, 2026))
 EXPECTED_FACTORS = 17
 
 
