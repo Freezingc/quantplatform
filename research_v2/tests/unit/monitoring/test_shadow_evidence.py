@@ -1,17 +1,28 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import stat
+from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pytest
 
 from research_v2.monitoring.shadow import (
+    ShadowEvidence,
     ShadowEvidenceVerifier,
     ShadowQualificationStatus,
     ShadowRuntimeDay,
     ShadowRuntimeDayStore,
+    ShadowRuntimeDayVerifier,
     ShadowTradingCalendar,
     ShadowTradingCalendarStore,
+    ShadowTradingCalendarVerifier,
+    _canonical_json,
+    _shadow_calendar_signature,
+    _shadow_evidence_signature,
+    _shadow_runtime_day_signature,
     build_shadow_evidence,
     evaluate_shadow_qualification,
     write_shadow_evidence,
@@ -22,6 +33,11 @@ _MODEL_ID = "sha256:" + "a" * 64
 _RUNTIME_KEY = "trusted-runtime-key"
 _EVIDENCE_KEY = "trusted-evidence-key"
 _CALENDAR_KEY = "trusted-calendar-key"
+
+
+def _content_hash_of(payload: object) -> str:
+    """The content address every shadow document id is supposed to be."""
+    return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
 
 
 @pytest.fixture(autouse=True)
@@ -48,13 +64,14 @@ def _calendar(root: Path, dates: tuple[date, ...]) -> ShadowTradingCalendar:
 def _report(
     signal_date: date,
     *,
+    model_id: str = _MODEL_ID,
     psi_error: bool = False,
     pipeline_status: str = "SUCCESS",
     prediction_published: bool = True,
 ) -> ShadowDailyReport:
     return build_shadow_daily_report(
         signal_date=signal_date,
-        model_id=_MODEL_ID,
+        model_id=model_id,
         model_version=1,
         pipeline_status=pipeline_status,
         prediction_published=prediction_published,
@@ -76,6 +93,7 @@ def _day(
     store: ShadowRuntimeDayStore,
     signal_date: date,
     *,
+    model_id: str = _MODEL_ID,
     model_status: str = "SHADOW",
     shadow_pointer_model_id: str | None = _MODEL_ID,
     shadow_pointer_model_version: int | None = 1,
@@ -87,6 +105,7 @@ def _day(
     return store.issue(
         _report(
             signal_date,
+            model_id=model_id,
             psi_error=psi_error,
             pipeline_status=pipeline_status,
             prediction_published=prediction_published,
@@ -428,3 +447,251 @@ def test_the_psi_run_is_consecutive_and_not_a_total(tmp_path: Path) -> None:
     assert qualification.max_consecutive_psi_errors == 1
     assert qualification.valid_day_count == 60
     assert qualification.status is ShadowQualificationStatus.READY_FOR_REVIEW
+
+
+# --- what the other three signed documents bind ------------------------------
+#
+# The signature check on each of these is pinned: an untrusted writer is refused for the
+# calendar and the runtime day, and removing any compare_digest kills a test. What was not
+# pinned is what each signature BINDS -- the payload's own content hash, the id the document
+# is stored under, the exact key set, the issued record, and the exclusivity and mode of the
+# file the issuer writes. Each test below forges a document that is correctly signed by the
+# trusted key and therefore passes every signature check, so only the clause under test can
+# refuse it.
+
+
+def _stored(root: Path, name: str) -> dict:
+    return json.loads((root / f"{name}.json").read_text(encoding="utf-8"))
+
+
+def _write_forgery(root: Path, document_id: str, document: dict) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    (root / f"{document_id}.json").write_text(
+        _canonical_json(document) + "\n", encoding="utf-8"
+    )
+
+
+def test_a_calendar_stored_under_a_foreign_id_or_with_extra_fields_is_refused(
+    tmp_path: Path,
+) -> None:
+    """The calendar id must be its payload's hash, and the payload must hold nothing else.
+
+    The calendar is what decides which days a shadow qualification is measured over, so a
+    document that is correctly signed but stored under an id that is not its content hash
+    -- or that carries an extra field nobody validated -- is the case the signature check
+    cannot see.
+    """
+    root = tmp_path / "calendar"
+    dates = _trading_dates(date(2026, 1, 2), 5)
+    calendar = _calendar(root, dates)
+    payload = _stored(root, calendar.calendar_id)["payload"]
+    # Guard the guard: the genuine document really is content-addressed.
+    assert calendar.calendar_id == _content_hash_of(payload)
+
+    verifier = ShadowTradingCalendarVerifier.from_environment(root)
+    bogus = "0" * 64
+    _write_forgery(
+        root,
+        bogus,
+        {
+            "calendar_id": bogus,
+            "payload": payload,
+            "signature": _shadow_calendar_signature(_CALENDAR_KEY.encode(), bogus, payload),
+        },
+    )
+    with pytest.raises(ValueError, match="signature verification failed"):
+        verifier.verify(ShadowTradingCalendar(bogus))
+
+    extra_root = tmp_path / "calendar-extra"
+    extra_payload = {**payload, "surprise": 1}
+    extra_id = _content_hash_of(extra_payload)
+    _write_forgery(
+        extra_root,
+        extra_id,
+        {
+            "calendar_id": extra_id,
+            "payload": extra_payload,
+            "signature": _shadow_calendar_signature(
+                _CALENDAR_KEY.encode(), extra_id, extra_payload
+            ),
+        },
+    )
+    with pytest.raises(ValueError, match="calendar is invalid"):
+        ShadowTradingCalendarVerifier.from_environment(extra_root).verify(
+            ShadowTradingCalendar(extra_id)
+        )
+
+
+def test_a_runtime_day_stored_under_a_foreign_id_is_refused(tmp_path: Path) -> None:
+    """A runtime day's payload must hash to the id it is stored and presented under.
+
+    Forged with the trusted runtime key, so the signature check passes and the payload is
+    otherwise a genuine day; only the content-hash comparison can refuse it.
+    """
+    root = tmp_path / "runtime"
+    store = ShadowRuntimeDayStore(root, signing_key=_RUNTIME_KEY.encode())
+    day = _day(store, date(2026, 1, 2))
+    payload = _stored(root, day.runtime_day_id)["payload"]
+    assert day.runtime_day_id == _content_hash_of(payload)
+
+    bogus = "0" * 64
+    _write_forgery(
+        root,
+        bogus,
+        {
+            "runtime_day_id": bogus,
+            "payload": payload,
+            "signature": _shadow_runtime_day_signature(_RUNTIME_KEY.encode(), bogus, payload),
+        },
+    )
+
+    with pytest.raises(ValueError, match="signature verification failed"):
+        ShadowRuntimeDayVerifier.from_environment(root).verify(
+            ShadowRuntimeDay(bogus, _MODEL_ID)
+        )
+
+
+def _issued_evidence(base: Path) -> tuple[ShadowEvidence, Path]:
+    """Sixty clean shadow days, qualified and issued as signed readiness evidence."""
+    runtime_root = base / "runtime"
+    calendar_root = base / "calendar"
+    evidence_root = base / "evidence"
+    store = ShadowRuntimeDayStore(runtime_root, signing_key=_RUNTIME_KEY.encode())
+    dates = _trading_dates(date(2026, 1, 2), 60)
+    calendar = _calendar(calendar_root, dates)
+    for signal_date in dates:
+        _day(store, signal_date)
+    evidence = build_shadow_evidence(
+        _MODEL_ID,
+        runtime_root=runtime_root,
+        evidence_root=evidence_root,
+        calendar=calendar,
+        calendar_root=calendar_root,
+    )
+    return evidence, evidence_root
+
+
+def test_readiness_evidence_must_hash_to_its_id_and_match_its_issued_record(
+    tmp_path: Path,
+) -> None:
+    """Two refusals on the document the pointer switch actually consumes.
+
+    Tampering with the issued record after the fact is caught by comparing the presented
+    bytes against it; presenting a payload re-signed under an id that is not its content
+    hash is caught before the signature is even considered. Both were unpinned, and this is
+    the evidence that authorises a shadow pointer switch.
+    """
+    genuine, root = _issued_evidence(tmp_path / "genuine")
+    verifier = ShadowEvidenceVerifier.from_environment(root)
+    assert verifier.verify(genuine) is None  # control: the genuine article verifies
+
+    record = root / ".issued" / f"{genuine.evidence_id}.json"
+    record.write_text(genuine.to_json() + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="does not match its issued record"):
+        verifier.verify(genuine)
+
+    source, forged_root = _issued_evidence(tmp_path / "forged")
+    bogus = "0" * 64
+    assert bogus != source.evidence_id
+    forged = ShadowEvidence(
+        bogus,
+        source.payload,
+        _shadow_evidence_signature(_EVIDENCE_KEY.encode(), bogus, source.payload),
+    )
+    (forged_root / ".issued").mkdir(parents=True, exist_ok=True)
+    (forged_root / ".issued" / f"{bogus}.json").write_text(
+        forged.to_json(), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="does not match evidence_id"):
+        ShadowEvidenceVerifier.from_environment(forged_root).verify(forged)
+
+
+def test_issued_shadow_documents_are_exclusive_and_owner_only(tmp_path: Path) -> None:
+    """Issuance is write-once at 0o600, and both are invisible to every workflow test.
+
+    Re-issuing the same calendar produces the same id and therefore the same path; without
+    O_EXCL that silently overwrites a document other approvals may already cite, and no
+    behaviour in the workflow changes either way, which is why only an explicit assertion
+    holds it.
+    """
+    root = tmp_path / "calendar"
+    dates = _trading_dates(date(2026, 1, 2), 5)
+    calendar = _calendar(root, dates)
+    path = root / f"{calendar.calendar_id}.json"
+
+    assert stat.S_IMODE(path.stat().st_mode) == 0o600
+    with pytest.raises(FileExistsError, match="immutable"):
+        _calendar(root, dates)
+
+
+def test_a_runtime_day_presented_under_another_model_is_refused(tmp_path: Path) -> None:
+    """The record's model must equal the model the day is presented for.
+
+    ``records_for_model`` filters by model before verifying, so this clause never fires on
+    that path -- which is exactly why it needs its own test: the verifier is public, and
+    without the clause a caller who presents another model's day id under their own model
+    gets that day's facts back as though they were theirs.
+    """
+    root = tmp_path / "runtime"
+    store = ShadowRuntimeDayStore(root, signing_key=_RUNTIME_KEY.encode())
+    day = _day(store, date(2026, 1, 2))
+    verifier = ShadowRuntimeDayVerifier.from_environment(root)
+    assert verifier.verify(day).model_id == _MODEL_ID  # control
+
+    with pytest.raises(ValueError, match="does not match its immutable record"):
+        verifier.verify(ShadowRuntimeDay(day.runtime_day_id, "sha256:" + "b" * 64))
+
+
+def test_qualification_ignores_other_models_days_in_a_shared_runtime_directory(
+    tmp_path: Path,
+) -> None:
+    """``records_for_model`` skips other models' records instead of choking on them.
+
+    Measured, and the difference is not silent: with the filter removed the verifier is
+    handed another model's record and refuses it, so a runtime directory holding two
+    models' days -- which is what the store's flat layout produces -- would fail
+    qualification outright instead of counting only the days belonging to the model being
+    qualified. This is also the clause that made chain 11's SH-A redundant, so pinning it
+    is what keeps that classification true.
+    """
+    runtime_root = tmp_path / "runtime"
+    calendar_root = tmp_path / "calendar"
+    store = ShadowRuntimeDayStore(runtime_root, signing_key=_RUNTIME_KEY.encode())
+    dates = _trading_dates(date(2026, 1, 2), 60)
+    calendar = _calendar(calendar_root, dates)
+    other = "sha256:" + "b" * 64
+    for signal_date in dates:
+        _day(store, signal_date)
+        _day(store, signal_date, model_id=other)
+
+    qualification = evaluate_shadow_qualification(
+        _MODEL_ID,
+        runtime_root=runtime_root,
+        calendar=calendar,
+        calendar_root=calendar_root,
+    )
+
+    assert qualification.valid_day_count == 60
+    assert qualification.status is ShadowQualificationStatus.READY_FOR_REVIEW
+
+
+def test_readiness_evidence_with_a_forged_signature_is_refused(tmp_path: Path) -> None:
+    """The HMAC is checked even when the issued record has been rewritten to match it.
+
+    Forging the signature alone would be refused by the record comparison, so a test that
+    stopped there would pin the wrong clause. Rewriting the record to match the forgery
+    leaves the HMAC as the only thing standing between a made-up signature and accepted
+    readiness evidence -- which is the entire reason it is an HMAC rather than a hash.
+    """
+    genuine, root = _issued_evidence(tmp_path / "evidence")
+    verifier = ShadowEvidenceVerifier.from_environment(root)
+    assert verifier.verify(genuine) is None  # control
+
+    forged = replace(genuine, signature="0" * 64)
+    (root / ".issued" / f"{genuine.evidence_id}.json").write_text(
+        forged.to_json(), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="signature verification failed"):
+        verifier.verify(forged)
