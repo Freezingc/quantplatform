@@ -1062,6 +1062,88 @@ def test_signatures_are_hmac_sha256_and_compared_in_constant_time() -> None:
     assert "!= expected" not in source
 
 
+_AUTHORITY_KEY = b"locked-test-authority-key"
+
+
+def _unlock_stage(root: Path):
+    """Build an authority up to a genuine unlock request that is ready to be approved."""
+    preregistration_store = LockedTestPreregistrationStore(
+        root / "preregistrations", signing_key=b"preregistration-key"
+    )
+    preregistration = _preregistration()
+    issued = preregistration_store.issue(preregistration)
+    registry = _shadow_registry(preregistration, root)
+    _, maturity_calendar, watermark = _maturity_evidence(root)
+    identities = _operator_identities(root)
+    authority = LockedTestAuthority(
+        root / "locked-test-authority",
+        preregistration_store=preregistration_store,
+        registry=registry,
+        maturity_calendar=maturity_calendar,
+        maturity_evidence_root=root / "maturity",
+        operator_identity_root=root / "operator-identities",
+        signing_key=_AUTHORITY_KEY,
+        access_signing_key=b"locked-test-access-key",
+        clock=lambda: datetime(2027, 1, 12, tzinfo=UTC),
+    )
+    request = authority.request_unlock(
+        issued,
+        applicant=identities.issue(actor_id="research-principal", role="research-owner"),
+        current_date=date(2027, 1, 12),
+        watermark=watermark,
+    )
+    approver = identities.issue(actor_id="risk-principal", role="risk-approver")
+    evidence_root = root / "shadow-evidence"
+    evidence = _ready_shadow_evidence(evidence_root, preregistration.model_id)
+    return authority, request, approver, evidence, evidence_root
+
+
+def test_an_unlock_request_with_an_empty_watermark_id_is_refused(tmp_path: Path) -> None:
+    """The watermark id in a request must be a real one, not merely a signed-over blank.
+
+    This is the half of the ``_verify_request`` clause that the S-F mutation deliberately
+    preserved, measured separately afterwards and found unpinned. ``request_unlock``
+    validates its watermark argument before it signs, so an empty id cannot arrive by
+    accident: it takes a request forged with the authority's own signing key and a record
+    written at the forged id's path -- the same threat model as the operator-identity
+    invariant above, where the point is not that forgery is possible but that a
+    well-formed forgery is the last thing standing between an empty precondition and an
+    approved capability.
+    """
+    clean = _unlock_stage(tmp_path / "clean")
+    # Control: a genuine request from an identically built authority really is approvable.
+    assert (
+        clean[0].approve(
+            clean[1], approver=clean[2], shadow_evidence=clean[3], shadow_evidence_root=clean[4]
+        )
+        is not None
+    )
+
+    authority, request, approver, evidence, evidence_root = _unlock_stage(tmp_path / "forged")
+    blanked = replace(request, label_watermark_id="")
+    payload = blanked.payload()
+    request_id = _content_hash(payload)
+    forged = replace(
+        blanked,
+        request_id=request_id,
+        signature=_signature(_AUTHORITY_KEY, request_id, payload),
+    )
+    record = (
+        tmp_path / "forged" / "locked-test-authority" / "requests" / f"{request_id}.json"
+    )
+    record.parent.mkdir(parents=True, exist_ok=True)
+    record.write_text(forged.to_json(), encoding="utf-8")
+    # Guard the guard: the forgery is self-consistent, so only the clause under test can
+    # tell it apart from a real request.
+    assert forged.request_id == _content_hash(forged.payload())
+    assert forged.label_watermark_id == ""
+
+    with pytest.raises(ValueError, match="does not match preregistration"):
+        authority.approve(
+            forged, approver=approver, shadow_evidence=evidence, shadow_evidence_root=evidence_root
+        )
+
+
 def test_an_operator_identity_is_accepted_only_under_its_own_content_hash(
     tmp_path: Path,
 ) -> None:

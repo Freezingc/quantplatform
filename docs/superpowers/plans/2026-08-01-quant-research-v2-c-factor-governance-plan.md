@@ -7357,3 +7357,123 @@ golden 那一类更脆：**任何一次有意的指标变更之后都要重新�
    隔离评价器与它的 stdout 抑制。
 4. **把归属矩阵自动化**（续六十一第 2 条，仍未做）。
 5. 其余同前：约 1,530 个测试函数在已审计的九条链之外从未做过变异测量。
+
+## 勾选审计续六十四（2026-09-07 08:1X）：**先关掉上一轮登记的第一条（S-O）**——钉子落下后死因是 `DID NOT RAISE`，即**变异之下那条伪造的解锁请求被真的批准、能力被真的发放**；**再开链 10 = 生产指针的 CAS 切换** `registry/active_pointer.py`（本 session 唯一还没碰过的、会改变线上消费者读什么的组件）
+
+### 一、S-O：从"已测出存活"到"钉住"，以及它的死因说明的事
+
+续六十三末尾把 `request.label_watermark_id == ""` 那半边单独测了一次（S-O），结果是**存活**，
+并按 S-C 的骨架登记为下一轮的第一条钉子。本轮把它做完：
+
+- 新测试 `test_an_unlock_request_with_an_empty_watermark_id_is_refused`，
+  以及一个把 authority 搭到"手里有一条真实、可批准的解锁请求"为止的夹具 `_unlock_stage`。
+- **控制半段与断言半段都在**：先证明一条真实请求**确实可以被批准**，
+  再证明一条 **watermark id 为空、但 `request_id` 与签名都对该空值自洽、且记录已写到对应路径**的伪造请求**被拒**。
+- **实测死因**：control PASS → mutated **`Failed: DID NOT RAISE <class 'ValueError'>`** → restored PASS。
+  **`DID NOT RAISE` 在这里不是"没抛出正确的异常"，而是"整条批准走完了"**：
+  变异之下 `authority.approve(...)` **返回了一个 capability**。
+  **即那一句空值检查，是"一条 watermark 为空的已签名请求"与"一次被授权读取 2026 标签的能力"之间唯一的一步。**
+- 威胁模型与 S-C 同级、同样如实写明：造出这条请求需要 authority 的签名钥匙，
+  且 `request_unlock` 在签名之前就校验 watermark（续六十三已实测），**故它不是意外可达的路径**；
+  钉它是为了"格式正确的伪造不会恰好通过"，不是为了声称存在一条现实攻击路径。
+- `tests/unit/registry/test_locked_test.py`：**27 → 28 个测试**。
+  重跑链 9 第二片的全量 harness 以确认这条新测试没有改变其它结论：
+  **基线 147 passed（146 + 1）、14 个变异仍为 11 杀 3 存活（S-F / S-G / S-K）、还原后逐字节相同**。
+  日志 `mutation_locked_test_signing_after_watermark_pin.txt`。
+  **S-F 仍然存活是正确的**：它的变异刻意保留了 watermark 那半边，故新测试在 S-F 之下照样通过——
+  **这也反过来印证了续六十三对 S-F 的定性（可证冗余）不是靠新测试"顺手"成立的。**
+
+### 二、链 10 首轮：16 个变异，**6 杀 10 存活**（基线 147 passed）
+
+- **杀掉 6 条**：**P-A**（`model_version` 绑定产物契约）、**P-B**（生产指针要求 PRODUCTION 状态）、
+  **P-D**（**生产批准必须匹配本产物摘要**）、**P-F**（shadow 批准必须匹配本产物摘要）、
+  **P-O**（`compare_and_swap` 的 CAS 前置）、**P-P**（指针版本递增）。
+- **存活 10 条**：**P-C、P-G、P-H、P-I、P-K、P-L、P-M、P-N、P-Q、P-R**。
+
+**形状很清楚**：**存储的原子性是被钉住的**（P-O 由并发测试杀、P-P 由 3 个测试杀），
+**而"谁有资格被指向"几乎全没被钉**——10 条存活里 8 条在 `PointerEligibilityGuard` 或 rollback 的比较上。
+**而且又是一处半钉**：`compare_and_swap` 的 CAS 前置被钉住（P-O killed），
+**`rollback` 里同一形状的前置没有**（P-R survived）——**而回滚恰恰是事故压力下执行的那个操作**。
+
+**P-D 的死因与归属都值得单记**：死因是 `Failed: DID NOT RAISE`——
+**变异之下，一份为别的产物签发的生产批准真的授权了这次切换**。它被杀了，
+**但杀手不在本文件的套件里**，而是
+`tests/unit/registry/test_locked_test.py::test_production_pointer_accepts_only_the_signed_approval_for_its_exact_artifact`。
+**这条测试的名字说的就是指针的性质，却住在锁定测试的文件里**（因为它需要锁定测试结果那套机器来造批准）。
+**这是续六十一那份归属矩阵的第五个案例，而且是其中最"名实错位"的一个。**
+
+### 三、补的 6 条测试（`test_active_pointer.py`：10 → 16）
+
+1. `test_shadow_pointer_refuses_an_approval_signed_for_a_different_model`（**P-E**，本轮补进变异集的那条）——
+   **构造成"只有这一条能拒"**：批准签给 _B，但携带 **_A 的产物摘要**与 **_A 的 walk-forward 证据哈希**，
+   于是另两处匹配都通过。**实测：去掉这一句，切换被授权——线上消费者开始按一份签给 _B 的批准读 _A。**
+2. `test_shadow_pointer_refuses_an_approval_bound_to_another_models_evidence`（**P-G**）——
+   **这里有一个夹具陷阱，值得记下来**：`_registry()` 用**同一份 GateEvidence** 晋级 _A/_B/_C，
+   **故三个模型记录在案的 walk-forward 哈希完全相同**，"拿 _B 的哈希"根本不外来。
+   第一版就是这么写的，结果 `DID NOT RAISE`——**不是代码没拒，是夹具没造出外来性**。
+   改成一个任何晋级都没产生过的哈希 `"9"*64` 之后才成立。
+3. `test_a_draft_model_is_refused_by_the_status_clause_not_by_a_later_one`（**P-L**）——
+   **如实写明**：把 DRAFT 加进合格状态集**并不能真的让草稿通过**，
+   因为草稿没有 WALK_FORWARD_PASSED 事件、记录哈希集合为空，下一条会拒（**实测，非推断**）；
+   **它改变的是操作员看到哪一句错误**，而那两句把人指向完全相反的方向，故按文案钉住。
+4. `test_shadow_readiness_evidence_must_carry_a_valid_signature`（**P-M**）——
+   伪造件保留正确的 `evidence_id` 与 payload、**只改 HMAC**，故所有结构性检查都过、**只有签名能拒**。
+   **实测：去掉那一次 verify 调用，一份没人签过的就绪证据就能授权切换。**
+5. `test_the_pointer_target_digest_must_be_a_well_formed_evidence_id`（**P-K**）
+6. `test_a_repeated_switch_is_refused_and_a_stale_rollback_changes_nothing`（**P-Q + P-R**）——
+   **P-R 的死因是"该返回 None 的地方改抛异常"**：调用方把 `None` 读作"别人已经动过指针"，
+   变异之后它拿到的是一个异常——**在回滚这条最需要可靠的路径上改变了契约**。
+
+### 四、5 条存活为什么不钉（每条都有依据，其中两条的依据是"上游已被钉住"）
+
+- **P-H（PSI ≥ 3）与 P-I（READY_FOR_REVIEW）**：**与上游冗余，而上游是被钉住的**。
+  `ShadowEvidenceStore.issue` → `_validate_shadow_evidence_payload` **在签发时就拒绝**
+  `max_errors >= 3` 与非 READY_FOR_REVIEW（实测：分别抛
+  `shadow evidence cannot be generated while review is required` 与
+  `shadow evidence requires READY_FOR_REVIEW qualification`），
+  **故 guard 里那两句在合法签发的证据上永远够不到**；伪造的证据则由 P-M 那道签名检查拦下（现已钉）。
+  **上游那两条本身有钉子**：`tests/unit/monitoring/test_shadow_evidence.py:153`
+  （`pytest.raises(ValueError, match="READY_FOR_REVIEW")`）与 `:163`
+  （`test_three_consecutive_valid_shadow_psi_errors_require_review_even_after_sixty_days`）。
+  **这是本 session 第一次出现"存活项因为上游已有钉子而不必钉"，而且上游钉子是查过的、不是假定的。**
+  **顺带记下一个只读代码会误判的事实**：两处阈值都是 `>= 3`，
+  但**生效的那一处在 shadow 的签发端**，指针 guard 里那句是第二道；
+  **只看 `active_pointer.py` 的人会以为"2 次连续 PSI 错误是这里放行的"，实际是上游决定的。**
+- **P-C（生产批准签给别的模型）**：**是 P-E 的生产孪生**，同样真、同样只在生产路径上。
+  **不在本轮钉，成本写明**：造一份"已验证的生产批准"需要一份**通过锁定测试的结果**
+  ——`ProductionDeploymentApprovalStore.issue(result, actor=…)` 会先 `verify(result)`，
+  再要求 registry 里该模型处于 LOCKED_TEST_PASSED——
+  那套机器在 `test_locked_test.py` 里（`_signed_result`），**搬到指针套件是 30+ 行的跨文件夹具**。
+  **这是一次明确的推迟，不是遗漏**：P-D（同一处的产物匹配半边）已经证明这条路径可测，
+  只是它的钉子住在别的文件里。
+- **P-N（追加后的 evidence_ids 再校验一次）**：**按构造不可达**。被追加的两个 id
+  （`approval_id`、`shadow_evidence_id`）**都来自刚刚验签通过的文档**，其形态由各自的验签方保证；
+  调用方自己传进来的那部分**在更早的 `_validate_evidence` 里已经校验过**。
+  **故不存在能区分两者的输入**——与链 5 的 W-A、链 9 的 S-F 同类。
+
+### 五、门槛与证据（全部实测）
+
+- **定向**（只跑 `test_active_pointer.py`，**0.8s/次**）：control **16 passed** →
+  **12 killed**（每条带杀手与死因）→ **5 存活（P-C / P-D / P-H / P-I / P-N）** → restored **16 passed**；
+  `active_pointer.py` **还原后逐字节相同**。日志 `mutation_active_pointer_targeted_with_killers.txt`。
+  **注意 P-D 在这个范围里是存活的**，在全范围里被 `test_locked_test.py` 杀掉——
+  **这是"定向 harness 必须写清范围"的第二个实例**（第一个是续五十九的 R-J）。
+- **全量 harness**（17 个变异，含本轮补进的 P-E）：**基线 153 passed**，
+  **13 杀 4 存活（P-C / P-H / P-I / P-N）**，还原后逐字节相同并复跑通过。
+  日志 `mutation_active_pointer_after_pins.txt`；首轮日志 `mutation_active_pointer_first_round.txt`。
+- **全量门槛**：`pytest tests -q` → **1684 passed / 45 skipped**（续六十三的 1678 + 本轮 6 条，skipped 未变）；
+  `ruff check src tests` 清；`mypy src` **158 文件清**。
+- **只改测试**：对 `research_v2/src`、`research_v2/scripts` 的 `git diff --stat` **为空**。
+- **未写任何数据库**；**未碰** `materialization_status.{json,md}`；**未释放** `/tmp/frozen_chain_hold.txt`；
+  **链 2 仍未重启**；**裁决 2/3/4 与决定 A–N 全部仍开放**。
+
+### 六、下一轮候选（按本轮结果排序，非承诺）
+
+1. **把 P-D 的钉子搬回指针套件，并连带钉住 P-C**：需要把"造一份通过锁定测试的结果 + 一份生产批准"
+   这套夹具抽成可跨文件复用的东西。**这是归属矩阵的第五个案例，也是最名实错位的一个。**
+2. **`monitoring/shadow.py`（1026 行）**：本轮已经两次靠它的上游校验解释存活项（P-H / P-I），
+   **但那两次都是"查过它有测试"，不是"测过它"**——按本 session 自己的标准，这还差一步。
+3. **`locked_test.py` 剩余部分**：一次性能力的发放与消费状态机、成熟度守卫与交易日历、
+   隔离评价器与它的 stdout 抑制。
+4. **把归属矩阵自动化**（续六十一第 2 条，仍未做）。
+5. 其余同前：约 1,530 个测试函数在已审计的十条链之外从未做过变异测量。

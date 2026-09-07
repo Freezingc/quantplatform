@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from threading import Barrier
@@ -445,3 +446,259 @@ def test_unconfigured_v1_consumer_has_no_pointer_or_switch_side_effect(tmp_path:
     assert update is not None
     assert store.get("legacy-v1-consumer", "production") is None
     assert store.history("legacy-v1-consumer", "production") == ()
+
+
+# --- who is allowed to be pointed at -----------------------------------------
+#
+# The store's atomicity was already pinned: dropping the compare in compare_and_swap
+# and freezing the pointer version both die on the concurrency and CAS tests. What was
+# not pinned is almost the whole eligibility guard -- ten of this round's sixteen
+# mutations survived, and eight of the ten are in PointerEligibilityGuard or in the
+# rollback's own compare. Each test below isolates one refusal, and each is built so
+# that the clause under test is the ONLY thing standing between the input and a switch.
+
+_DIGESTS = {_A: "1" * 64, _B: "2" * 64, _C: "3" * 64}
+
+
+def _shadow_stage(tmp_path: Path):
+    """Put _A into SHADOW and return everything a qualified shadow switch needs."""
+    registry = _registry()
+    approval_root = tmp_path / "approvals"
+    approval = _approval(registry, approval_root, _A, _DIGESTS[_A])
+    assert approval.shadow_approval is not None
+    registry.enter_shadow(_A, approval=approval.shadow_approval, approval_root=approval_root)
+    shadow_root = tmp_path / "shadow-evidence"
+    evidence = _ready_shadow_evidence(shadow_root, _A, max_psi_errors=1)
+    bundle = PointerSwitchEvidence(
+        shadow_approval=approval.shadow_approval,
+        shadow_approval_root=approval_root,
+        shadow_evidence=evidence,
+        shadow_evidence_root=shadow_root,
+    )
+    return registry, bundle
+
+
+def _switch(store: ActiveModelPointerStore, bundle: PointerSwitchEvidence, *, reason: str):
+    return store.compare_and_swap(
+        consumer_id="paper-sim",
+        environment="shadow",
+        expected_current=None,
+        model_id=_A,
+        model_version=1,
+        actor="operator-a",
+        reason=reason,
+        evidence=bundle,
+        run_id=_RUN_ID,
+    )
+
+
+def test_shadow_pointer_refuses_an_approval_signed_for_a_different_model(
+    tmp_path: Path,
+) -> None:
+    """An approval naming another model must not authorise this one's pointer.
+
+    Built so the model match is the only thing that can refuse it: the approval is issued
+    for _B but carries _A's artifact digest AND _A's walk-forward evidence hash, so both
+    of the other two matches pass. Measured -- with the model match removed the switch is
+    authorised and a live consumer starts reading _A under an approval signed for _B.
+    The production path has the same clause (P-C) and is filed rather than pinned here,
+    because reaching it needs a signed locked-test result.
+    """
+    registry = _registry()
+    root = tmp_path / "approvals"
+    cross_model = ShadowDeploymentApprovalStore(root, signing_key=_APPROVAL_KEY.encode()).issue(
+        model_id=_B,
+        actor="risk-approver",
+        walk_forward_evidence_hash=registry.history(_A)[-1].evidence_hashes[0],
+        artifact_bundle_hash=_DIGESTS[_A],
+        inference_contract_hash="d" * 64,
+        v2test_drill_hash="e" * 64,
+        rollback_plan_hash="f" * 64,
+    )
+    store = _store(registry, _DIGESTS)
+
+    with pytest.raises(ValueError, match="approval model does not match pointer target"):
+        store.compare_and_swap(
+            consumer_id="paper-sim",
+            environment="shadow",
+            expected_current=None,
+            model_id=_A,
+            model_version=1,
+            actor="operator-a",
+            reason="cross-model approval",
+            evidence=PointerSwitchEvidence(
+                shadow_approval=cross_model, shadow_approval_root=root
+            ),
+            run_id=_RUN_ID,
+        )
+
+
+def test_shadow_pointer_refuses_an_approval_bound_to_another_models_evidence(
+    tmp_path: Path,
+) -> None:
+    """The approval must cite the walk-forward evidence actually on record for THIS model.
+
+    Issued for _A with _A's artifact digest but citing a walk-forward evidence hash that is
+    on nobody's record, so the model and artifact matches both pass and only this clause
+    can refuse. Note that _registry() promotes all three models from one identical
+    GateEvidence, so their recorded hashes are equal and "another model's hash" would not
+    be foreign at all -- the hash has to be one no promotion ever produced. This clause is
+    also what makes a DRAFT unreachable: a draft has no WALK_FORWARD_PASSED event, so the
+    set of hashes on record for it is empty.
+    """
+    registry = _registry()
+    root = tmp_path / "approvals"
+    wrong_evidence = ShadowDeploymentApprovalStore(
+        root, signing_key=_APPROVAL_KEY.encode()
+    ).issue(
+        model_id=_A,
+        actor="risk-approver",
+        walk_forward_evidence_hash="9" * 64,
+        artifact_bundle_hash=_DIGESTS[_A],
+        inference_contract_hash="d" * 64,
+        v2test_drill_hash="e" * 64,
+        rollback_plan_hash="f" * 64,
+    )
+    store = _store(registry, _DIGESTS)
+
+    with pytest.raises(ValueError, match="does not match walk-forward evidence"):
+        store.compare_and_swap(
+            consumer_id="paper-sim",
+            environment="shadow",
+            expected_current=None,
+            model_id=_A,
+            model_version=1,
+            actor="operator-a",
+            reason="foreign walk-forward evidence",
+            evidence=PointerSwitchEvidence(
+                shadow_approval=wrong_evidence, shadow_approval_root=root
+            ),
+            run_id=_RUN_ID,
+        )
+
+
+def test_a_draft_model_is_refused_by_the_status_clause_not_by_a_later_one(
+    tmp_path: Path,
+) -> None:
+    """Which clause refuses matters: "not eligible yet" and "approval does not match" differ.
+
+    Adding DRAFT to the eligible statuses cannot actually let a draft through, because a
+    draft has no walk-forward evidence hash on record and the next clause refuses it --
+    measured, not assumed. But it changes WHICH error an operator gets, and those two
+    errors send them in opposite directions, so the status clause is pinned by its message.
+    """
+    registry = ModelRegistry()
+    registry.register_draft(_A, actor="trainer")
+    root = tmp_path / "approvals"
+    approval = ShadowDeploymentApprovalStore(root, signing_key=_APPROVAL_KEY.encode()).issue(
+        model_id=_A,
+        actor="risk-approver",
+        walk_forward_evidence_hash="9" * 64,
+        artifact_bundle_hash=_DIGESTS[_A],
+        inference_contract_hash="d" * 64,
+        v2test_drill_hash="e" * 64,
+        rollback_plan_hash="f" * 64,
+    )
+    store = _store(registry, _DIGESTS)
+
+    with pytest.raises(ValueError, match="requires at least a WALK_FORWARD_PASSED model"):
+        store.compare_and_swap(
+            consumer_id="paper-sim",
+            environment="shadow",
+            expected_current=None,
+            model_id=_A,
+            model_version=1,
+            actor="operator-a",
+            reason="draft is not eligible",
+            evidence=PointerSwitchEvidence(shadow_approval=approval, shadow_approval_root=root),
+            run_id=_RUN_ID,
+        )
+
+
+def test_shadow_readiness_evidence_must_carry_a_valid_signature(tmp_path: Path) -> None:
+    """Readiness evidence is verified, not merely well shaped.
+
+    The forged copy keeps a correct evidence_id and a correct payload -- only the HMAC is
+    wrong -- so every structural check passes and the signature is the only refusal. With
+    the verification call removed this switch is authorised on evidence nobody signed.
+    """
+    registry, genuine = _shadow_stage(tmp_path / "genuine")
+    assert _switch(_store(registry, _DIGESTS), genuine, reason="genuine evidence") is not None
+
+    registry, bundle = _shadow_stage(tmp_path / "forged")
+    assert bundle.shadow_evidence is not None
+    forged = PointerSwitchEvidence(
+        shadow_approval=bundle.shadow_approval,
+        shadow_approval_root=bundle.shadow_approval_root,
+        shadow_evidence=replace(bundle.shadow_evidence, signature="0" * 64),
+        shadow_evidence_root=bundle.shadow_evidence_root,
+    )
+
+    with pytest.raises(ValueError, match="signature verification failed"):
+        _switch(_store(registry, _DIGESTS), forged, reason="forged evidence")
+
+
+def test_the_pointer_target_digest_must_be_a_well_formed_evidence_id(tmp_path: Path) -> None:
+    """The bundle digest is re-validated here even though the store produced it."""
+    registry = _registry()
+    root = tmp_path / "approvals"
+    approval = _approval(registry, root, _A, _DIGESTS[_A])
+    store = _store(registry, {_A: "not-a-digest", **{_B: _DIGESTS[_B], _C: _DIGESTS[_C]}})
+
+    with pytest.raises(ValueError, match="artifact digest is invalid"):
+        store.compare_and_swap(
+            consumer_id="paper-sim",
+            environment="shadow",
+            expected_current=None,
+            model_id=_A,
+            model_version=1,
+            actor="operator-a",
+            reason="malformed digest",
+            evidence=approval,
+            run_id=_RUN_ID,
+        )
+
+
+def test_a_repeated_switch_is_refused_and_a_stale_rollback_changes_nothing(
+    tmp_path: Path,
+) -> None:
+    """Two store-level refusals that the switch path's tests do not reach.
+
+    Re-switching to the model version already targeted must raise rather than mint a new
+    pointer version for the same target. And a rollback whose ``expected_current`` does
+    not match what is live must decline by returning None -- measured: with the rollback's
+    compare removed it proceeds to the event check and raises instead, so a caller that
+    treats None as "someone else already moved the pointer" gets an exception instead.
+    """
+    registry, bundle = _shadow_stage(tmp_path)
+    store = _store(registry, _DIGESTS)
+    update = _switch(store, bundle, reason="initial switch")
+    assert update is not None
+
+    with pytest.raises(ValueError, match="already targets this model version"):
+        store.compare_and_swap(
+            consumer_id="paper-sim",
+            environment="shadow",
+            expected_current=update.pointer,
+            model_id=_A,
+            model_version=1,
+            actor="operator-a",
+            reason="duplicate switch",
+            evidence=bundle,
+            run_id=_RUN_ID,
+        )
+
+    assert (
+        store.rollback(
+            consumer_id="paper-sim",
+            environment="shadow",
+            expected_current=None,
+            event_id=update.event.event_id,
+            actor="operator-b",
+            reason="stale rollback",
+            evidence=bundle,
+            run_id=_RUN_ID,
+        )
+        is None
+    )
+    assert store.get("paper-sim", "shadow") == update.pointer
