@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 
 import pandas as pd
 
@@ -13,19 +13,22 @@ from research_v2.evaluation.walk_forward import (
 
 
 def _dataset(role: str, fold_id: str, dataset_id: str, signal_date: date) -> BaselineDataset:
+    # Two dates per dataset so four folds clear the >5 valid-day OOS gate.
+    dates = [signal_date] * 30 + [signal_date + timedelta(days=1)] * 30
+    codes = [f"S{index:03d}" for index in range(30)]
     features = pd.DataFrame(
         {
-            "signal_date": [signal_date] * 30,
-            "ts_code": [f"S{index:03d}" for index in range(30)],
-            "f1": [float(index) for index in range(30)],
+            "signal_date": dates,
+            "ts_code": codes * 2,
+            "f1": [float(index) for index in range(30)] * 2,
         }
     )
     labels = pd.DataFrame(
         {
-            "signal_date": [signal_date] * 30,
-            "ts_code": [f"S{index:03d}" for index in range(30)],
-            "raw_return_5d": [float(index) for index in range(30)],
-            "label_valid": [True] * 30,
+            "signal_date": dates,
+            "ts_code": codes * 2,
+            "raw_return_5d": [float(index) for index in range(30)] * 2,
+            "label_valid": [True] * 60,
         }
     )
     return BaselineDataset(role, fold_id, dataset_id, features, labels)
@@ -53,7 +56,7 @@ class _Candidate:
         return _Fitted(self._baseline_id)
 
 
-def test_walk_forward_baselines_runs_six_winners_and_marks_g4_not_applicable() -> None:
+def test_walk_forward_baselines_runs_four_winners_and_marks_g4_not_applicable() -> None:
     load_counts = {fold_id: 0 for fold_id in ORDINARY_TEST_FOLDS}
     folds: dict[str, BaselineFold] = {}
     for index, fold_id in enumerate(ORDINARY_TEST_FOLDS, start=1):
@@ -64,7 +67,7 @@ def test_walk_forward_baselines_runs_six_winners_and_marks_g4_not_applicable() -
             f"{fold_id}-validation",
             date(2018 + index, 1, 2),
         )
-        test = _dataset("TEST", fold_id, f"{fold_id}-test", date(2019 + index, 1, 2))
+        test = _dataset("TEST", fold_id, f"{fold_id}-test", date(2021 + index, 1, 2))
 
         def load_test(fold_id: str = fold_id, test: BaselineDataset = test) -> BaselineDataset:
             load_counts[fold_id] += 1
@@ -89,7 +92,7 @@ def test_walk_forward_baselines_runs_six_winners_and_marks_g4_not_applicable() -
     )
 
     assert set(result.fold_results) == set(ORDINARY_TEST_FOLDS)
-    assert [record.selected_baseline_id for record in result.selection_records] == ["B0"] * 6
+    assert [record.selected_baseline_id for record in result.selection_records] == ["B0"] * 4
     assert load_counts == {fold_id: 1 for fold_id in ORDINARY_TEST_FOLDS}
-    assert result.evaluation.summary.valid_day_count == 6
+    assert result.evaluation.summary.valid_day_count == 8
     assert result.evaluation.gate_report.results["G4"].status.value == "NOT_APPLICABLE"

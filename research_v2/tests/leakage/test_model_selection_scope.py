@@ -36,12 +36,12 @@ def _selection_inputs(tmp_path: Path) -> tuple[
 ]:
     store = DatasetArtifactStore(tmp_path / "validation-datasets")
     frame = pd.DataFrame(
-        {"signal_date": [date(2019, 1, 2)], "ts_code": ["S000"], "value": [1.0]}
+        {"signal_date": [date(2021, 1, 2)], "ts_code": ["S000"], "value": [1.0]}
     )
     manifest = build_dataset_manifest(
         frame,
         business_keys=("signal_date", "ts_code"),
-        metadata={"dataset_role": "VALIDATION", "fold_id": "F01"},
+        metadata={"dataset_role": "VALIDATION", "fold_id": "F1"},
     )
     store.write(manifest, {"validation": frame}, preprocessing={})
     provenance_root = tmp_path / "validation-provenance"
@@ -49,12 +49,12 @@ def _selection_inputs(tmp_path: Path) -> tuple[
         provenance_root,
         store,
         signing_key=_PROVENANCE_KEY,
-    ).issue(dataset_id=manifest.dataset_id, outer_fold_id="F01")
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128, 256)})
+    ).issue(dataset_id=manifest.dataset_id, outer_fold_id="F1")
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128, 256)})
     inner = [
         InnerFoldValidation(trial.config_hash, fold, 20260801, 0.02, provenance)
         for trial in trials
-        for fold in ("I01", "I02", "I03")
+        for fold in ("I01", "I02")
     ]
     outer = {
         trial.config_hash: OuterValidationScore(0.03, 2.5, 64, provenance)

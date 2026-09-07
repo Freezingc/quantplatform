@@ -1,4 +1,4 @@
-"""Strict F01-F06 walk-forward assembly and validation-first baseline orchestration."""
+"""Strict F1-F4 walk-forward assembly and validation-first baseline orchestration."""
 
 from __future__ import annotations
 
@@ -15,10 +15,19 @@ from research_v2.baselines.orchestration import (
     build_default_baseline_candidates,
     run_baseline_fold,
 )
+from research_v2.datasets.splits import annual_folds
 from research_v2.evaluation.model_evaluator import FrozenOosEvaluation, evaluate_frozen_oos
 
-ORDINARY_TEST_FOLDS = ("F01", "F02", "F03", "F04", "F05", "F06")
-_ORDINARY_TEST_YEARS = dict(zip(ORDINARY_TEST_FOLDS, range(2020, 2026), strict=True))
+# The ordinary (non-locked) evaluation folds and their test years are DERIVED from
+# datasets.splits.annual_folds -- the single source of truth for the fold contract --
+# rather than restated here. Restating them is exactly how this module kept requiring
+# F01-F06 after the v2 contract moved the grid to F1-F4 (it then rejected the v2
+# baseline run with "missing folds: F01..F06; unexpected folds: F1..F4"). Deriving them
+# means the next fold-contract change cannot strand this gate the same way.
+ORDINARY_TEST_FOLDS = tuple(fold.fold_id for fold in annual_folds() if not fold.locked)
+_ORDINARY_TEST_YEARS = {
+    fold.fold_id: fold.test_years[0] for fold in annual_folds() if not fold.locked
+}
 
 
 @dataclass(frozen=True)
@@ -41,7 +50,7 @@ def evaluate_walk_forward_oos(
     minimum_cross_section: int = 30,
     is_baseline: bool = False,
 ) -> FrozenOosEvaluation:
-    """Evaluate exactly F01-F06 together; 2026 FINAL is outside this path."""
+    """Evaluate exactly the ordinary folds (F1-F4) together; 2026 FINAL is outside this path."""
     _require_ordinary_fold_set(folds)
     candidate_predictions, labels, baseline_predictions = _assemble_oos_frames(folds)
     return evaluate_frozen_oos(

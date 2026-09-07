@@ -63,7 +63,7 @@ def test_trials_are_fold_bound_content_ordered_and_capped() -> None:
 
 
 def test_scheduler_and_selection_reject_mixed_fold_trials(tmp_path: object) -> None:
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128, 256)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128, 256)})
     mixed = replace(trials[1], fold_id="F02")
 
     with pytest.raises(ValueError, match="one fold"):
@@ -95,7 +95,7 @@ def test_scheduler_rejects_more_than_thirty_declared_trials(tmp_path: object) ->
 def test_trial_scheduler_records_exclusive_gpu_leases_and_completion_audit(
     tmp_path: object,
 ) -> None:
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128)})
     scheduler = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
 
     first = scheduler.lease_next(worker_id="worker-a", gpu_id="gpu-0")
@@ -117,7 +117,7 @@ def test_trial_scheduler_atomically_rejects_concurrent_leases_on_one_gpu(
     tmp_path: object,
 ) -> None:
     scheduler = TrialScheduler(
-        build_pre_registered_trials("M1", "F01", {"hidden": (64, 128, 256)}),
+        build_pre_registered_trials("M1", "F1", {"hidden": (64, 128, 256)}),
         lease_root=tmp_path / "leases",  # type: ignore[operator]
     )
 
@@ -138,7 +138,7 @@ def test_trial_scheduler_atomically_rejects_concurrent_leases_on_one_gpu(
 def test_trial_scheduler_shares_gpu_and_trial_claims_across_scheduler_instances(
     tmp_path: object,
 ) -> None:
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128, 256)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128, 256)})
     first = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
     second = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
 
@@ -153,7 +153,7 @@ def test_trial_scheduler_shares_gpu_and_trial_claims_across_scheduler_instances(
 def test_trial_scheduler_cannot_reissue_a_trial_completed_by_another_instance(
     tmp_path: object,
 ) -> None:
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64,)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64,)})
     first = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
     second = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
 
@@ -167,7 +167,7 @@ def test_trial_scheduler_cannot_reissue_a_trial_completed_by_another_instance(
 def test_trial_scheduler_reclaims_an_expired_lease_after_a_worker_crash(
     tmp_path: object,
 ) -> None:
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64,)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64,)})
     started_at = datetime(2026, 8, 27, 12, tzinfo=UTC)
     first = TrialScheduler(
         trials,
@@ -196,11 +196,11 @@ def test_trial_scheduler_uses_host_global_gpu_exclusivity_across_experiment_root
     tmp_path: object,
 ) -> None:
     first = TrialScheduler(
-        build_pre_registered_trials("M1", "F01", {"hidden": (64,)}),
+        build_pre_registered_trials("M1", "F1", {"hidden": (64,)}),
         lease_root=tmp_path / "experiment-a",  # type: ignore[operator]
     )
     second = TrialScheduler(
-        build_pre_registered_trials("M2", "F01", {"hidden": (64,)}),
+        build_pre_registered_trials("M2", "F1", {"hidden": (64,)}),
         lease_root=tmp_path / "experiment-b",  # type: ignore[operator]
     )
 
@@ -215,7 +215,7 @@ def test_trial_scheduler_uses_host_global_gpu_exclusivity_across_experiment_root
 def test_trial_scheduler_reads_shared_audit_events_from_all_scheduler_instances(
     tmp_path: object,
 ) -> None:
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128)})
     first = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
     second = TrialScheduler(trials, lease_root=tmp_path / "leases")  # type: ignore[operator]
 
@@ -236,7 +236,7 @@ def test_trial_scheduler_can_finish_a_completion_interrupted_after_its_marker(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     scheduler = TrialScheduler(
-        build_pre_registered_trials("M1", "F01", {"hidden": (64,)}),
+        build_pre_registered_trials("M1", "F1", {"hidden": (64,)}),
         lease_root=tmp_path / "leases",  # type: ignore[operator]
     )
     lease = scheduler.lease_next(worker_id="worker-a", gpu_id="gpu-0")
@@ -254,7 +254,7 @@ def test_trial_scheduler_can_finish_a_completion_interrupted_after_its_marker(
 
 def test_trial_audit_publication_is_exclusive_under_concurrent_writers(tmp_path: object) -> None:
     scheduler = TrialScheduler(
-        build_pre_registered_trials("M1", "F01", {"hidden": (64,)}),
+        build_pre_registered_trials("M1", "F1", {"hidden": (64,)}),
         lease_root=tmp_path / "leases",  # type: ignore[operator]
     )
 
@@ -275,7 +275,7 @@ def test_trial_scheduler_writes_an_immutable_content_addressed_experiment_audit(
     tmp_path: object,
 ) -> None:
     scheduler = TrialScheduler(
-        build_pre_registered_trials("M1", "F01", {"hidden": (64,)}),
+        build_pre_registered_trials("M1", "F1", {"hidden": (64,)}),
         lease_root=tmp_path / "leases",  # type: ignore[operator]
     )
     lease = scheduler.lease_next(worker_id="worker-a", gpu_id="gpu-0")
@@ -286,17 +286,17 @@ def test_trial_scheduler_writes_an_immutable_content_addressed_experiment_audit(
     payload = json.loads(path.read_text(encoding="utf-8"))
 
     assert path.name.endswith(".json")
-    assert payload["fold_id"] == "F01"
+    assert payload["fold_id"] == "F1"
     assert payload["events"][-1]["event"] == "COMPLETED"
     with pytest.raises(FileExistsError):
         scheduler.write_audit(tmp_path / "audits")  # type: ignore[operator]
 
 
-def test_model_selection_uses_three_inner_folds_then_outer_validation_tie_breaks(
+def test_model_selection_uses_two_inner_folds_then_outer_validation_tie_breaks(
     tmp_path: object,
 ) -> None:
     validation_store, validation, provenance_root = _validation_provenance(tmp_path)
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128, 256, 512)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128, 256, 512)})
     inner = [
         InnerFoldValidation(
             trial.config_hash,
@@ -306,7 +306,7 @@ def test_model_selection_uses_three_inner_folds_then_outer_validation_tie_breaks
             validation,
         )
         for trial, score in zip(trials, (0.05, 0.04, 0.03, 0.01), strict=True)
-        for inner_fold in ("I01", "I02", "I03")
+        for inner_fold in ("I01", "I02")
     ]
     outer = {
         trials[0].config_hash: OuterValidationScore(
@@ -329,7 +329,7 @@ def test_model_selection_uses_three_inner_folds_then_outer_validation_tie_breaks
     )
 
     assert winner.config_hash == trials[1].config_hash
-    with pytest.raises(ValueError, match="three inner"):
+    with pytest.raises(ValueError, match="two inner"):
         select_model_config(
             trials,
             inner[:-1],
@@ -341,7 +341,7 @@ def test_model_selection_uses_three_inner_folds_then_outer_validation_tie_breaks
 
 def test_model_selection_requires_three_inner_candidates(tmp_path: object) -> None:
     validation_store, validation, provenance_root = _validation_provenance(tmp_path)
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128)})
     inner = [
         InnerFoldValidation(
             trial.config_hash,
@@ -351,7 +351,7 @@ def test_model_selection_requires_three_inner_candidates(tmp_path: object) -> No
             validation,
         )
         for trial in trials
-        for fold in ("I01", "I02", "I03")
+        for fold in ("I01", "I02")
     ]
     outer = {
         trial.config_hash: OuterValidationScore(
@@ -373,12 +373,12 @@ def test_model_selection_requires_three_inner_candidates(tmp_path: object) -> No
 def test_model_selection_rejects_test_evidence_and_is_invariant_to_future_labels(
     tmp_path: object,
 ) -> None:
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128, 256)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128, 256)})
     validation_store, validation, provenance_root = _validation_provenance(tmp_path)
     inner = [
         InnerFoldValidation(trial.config_hash, fold, 20260801, 0.02, validation)
         for trial in trials
-        for fold in ("I01", "I02", "I03")
+        for fold in ("I01", "I02")
     ]
     outer = {
         trial.config_hash: OuterValidationScore(0.02, 2.1, 64, validation)
@@ -437,7 +437,7 @@ def test_model_selection_rejects_a_validation_artifact_from_the_test_year(
             validation_store,
             "VALIDATION",
             provenance_root=tmp_path / "provenance",  # type: ignore[operator]
-            year=2020,
+            year=2022,
         )
 
 
@@ -445,7 +445,7 @@ def test_model_selection_rejects_provenance_signed_with_an_untrusted_key(
     tmp_path: object,
 ) -> None:
     validation_store, legitimate, _ = _validation_provenance(tmp_path)
-    trials = build_pre_registered_trials("M1", "F01", {"hidden": (64, 128, 256)})
+    trials = build_pre_registered_trials("M1", "F1", {"hidden": (64, 128, 256)})
     attacker_root = tmp_path / "attacker-provenance"  # type: ignore[operator]
     forged = ValidationProvenanceStore(
         attacker_root,
@@ -453,12 +453,12 @@ def test_model_selection_rejects_provenance_signed_with_an_untrusted_key(
         signing_key=b"untrusted-key",
     ).issue(
         dataset_id=legitimate.dataset_id,
-        outer_fold_id="F01",
+        outer_fold_id="F1",
     )
     inner = [
         InnerFoldValidation(trial.config_hash, fold, 20260801, 0.02, forged)
         for trial in trials
-        for fold in ("I01", "I02", "I03")
+        for fold in ("I01", "I02")
     ]
     outer = {
         trial.config_hash: OuterValidationScore(0.02, 2.1, 64, forged)
@@ -491,7 +491,7 @@ def _write_provenance(
     dataset_role: str,
     *,
     provenance_root: Path,
-    year: int = 2019,
+    year: int = 2021,
 ) -> tuple[DatasetArtifactStore, ValidationProvenance, Path]:
     frame = pd.DataFrame(
         {"signal_date": [date(year, 1, 2)], "ts_code": ["S000"], "value": [1.0]}
@@ -499,12 +499,12 @@ def _write_provenance(
     manifest = build_dataset_manifest(
         frame,
         business_keys=("signal_date", "ts_code"),
-        metadata={"dataset_role": dataset_role, "fold_id": "F01"},
+        metadata={"dataset_role": dataset_role, "fold_id": "F1"},
     )
     store.write(manifest, {"validation": frame}, preprocessing={})
     provenance = ValidationProvenanceStore(
         provenance_root,
         store,
         signing_key=_PROVENANCE_KEY,
-    ).issue(dataset_id=manifest.dataset_id, outer_fold_id="F01")
+    ).issue(dataset_id=manifest.dataset_id, outer_fold_id="F1")
     return store, provenance, provenance_root

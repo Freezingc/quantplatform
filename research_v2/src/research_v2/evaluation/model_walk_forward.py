@@ -1,4 +1,4 @@
-"""Verified F01-F06 candidate-model evaluation against frozen best-simple evidence."""
+"""Verified F1-F4 candidate-model evaluation against frozen best-simple evidence."""
 
 from __future__ import annotations
 

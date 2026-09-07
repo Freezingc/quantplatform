@@ -22,16 +22,18 @@ from research_v2.reporting.experiment import build_experiment_report
 
 def _oos_fold(year: int, fold_index: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     signal_date = date(year, 1, 2)
+    # Two test dates per fold so four folds clear the >5 valid-day OOS gate.
+    dates = [signal_date] * 30 + [date(year, 1, 3)] * 30
     keys = {
-        "signal_date": [signal_date] * 30,
-        "ts_code": [f"S{index:03d}" for index in range(30)],
+        "signal_date": dates,
+        "ts_code": [f"S{index:03d}" for index in range(30)] * 2,
     }
     dataset_id = f"dataset-{year}"
-    fold_id = f"F{fold_index:02d}"
+    fold_id = f"F{fold_index}"
     labels = pd.DataFrame(
         {
             **keys,
-            "raw_return_5d": [float(index) for index in range(30)],
+            "raw_return_5d": [float(index) for index in range(30)] * 2,
             "label_valid": True,
             "fold_id": fold_id,
             "dataset_id": dataset_id,
@@ -40,7 +42,7 @@ def _oos_fold(year: int, fold_index: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     predictions = pd.DataFrame(
         {
             **keys,
-            "score": [float(index + fold_index) for index in range(30)],
+            "score": [float(index + fold_index) for index in range(30)] * 2,
             "model_id": "candidate",
             "fold_id": fold_id,
             "dataset_id": dataset_id,
@@ -53,8 +55,8 @@ def test_experiment_report_contains_fold_and_overall_evidence() -> None:
     oos_folds = {}
     fold_results: dict[str, BaselineFoldResult] = {}
     selections: list[BaselineSelectionRecord] = []
-    for fold_index, fold_id in enumerate(("F01", "F02", "F03", "F04", "F05", "F06"), start=1):
-        prediction, labels = _oos_fold(2019 + fold_index, fold_index)
+    for fold_index, fold_id in enumerate(("F1", "F2", "F3", "F4"), start=1):
+        prediction, labels = _oos_fold(2021 + fold_index, fold_index)
         oos_folds[fold_id] = OosFold(
             candidate_predictions=prediction,
             labels=labels,
@@ -136,10 +138,10 @@ def test_experiment_report_contains_fold_and_overall_evidence() -> None:
     payload = report.payload
     assert payload["experiment_id"] == "sha256:" + "a" * 64
     assert set(payload["folds"]) == set(oos_folds)
-    assert set(payload["folds"]["F01"]["baselines"]) == {"B0", "B1", "B2", "B3"}
-    assert payload["folds"]["F01"]["baselines"]["B0"]["test"]["evaluated"] is True
-    assert payload["folds"]["F01"]["baselines"]["B1"]["test"]["evaluated"] is False
-    assert len(payload["overall_oos"]["yearly_summary"]) == 6
+    assert set(payload["folds"]["F1"]["baselines"]) == {"B0", "B1", "B2", "B3"}
+    assert payload["folds"]["F1"]["baselines"]["B0"]["test"]["evaluated"] is True
+    assert payload["folds"]["F1"]["baselines"]["B1"]["test"]["evaluated"] is False
+    assert len(payload["overall_oos"]["yearly_summary"]) == 4
     assert payload["overall_oos"]["hac"]["max_lags"] == 5
     assert set(payload["overall_oos"]["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
     assert payload["overall_oos"]["score_health"]["daily"][0]["coverage"] == 1.0

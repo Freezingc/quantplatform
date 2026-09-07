@@ -10,12 +10,12 @@ from research_v2.cli.app import app
 def test_baseline_run_emits_plan_then_fails_closed() -> None:
     result = CliRunner().invoke(
         app,
-        ["baseline", "run", "--fold", "F01", "--models", "B0,B1,B2,B3"],
+        ["baseline", "run", "--fold", "F1", "--models", "B0,B1,B2,B3"],
     )
 
     assert result.exit_code == 2
     assert json.loads(result.stdout.splitlines()[0]) == {
-        "fold_id": "F01",
+        "fold_id": "F1",
         "models": ["B0", "B1", "B2", "B3"],
         "role": "TRAIN_VALIDATION",
     }
@@ -29,7 +29,7 @@ def test_baseline_run_rejects_final_and_incomplete_candidates() -> None:
     )
     incomplete = CliRunner().invoke(
         app,
-        ["baseline", "run", "--fold", "F01", "--models", "B0,B1"],
+        ["baseline", "run", "--fold", "F1", "--models", "B0,B1"],
     )
 
     assert final.exit_code == 2
@@ -45,7 +45,7 @@ def test_baseline_run_rejects_unknown_fold() -> None:
     )
 
     assert result.exit_code == 2
-    assert "F01" in result.stdout and "F06" in result.stdout
+    assert "F1" in result.stdout and "F4" in result.stdout
 
 
 def test_evaluate_and_report_commands_validate_scope_before_backend() -> None:
@@ -57,7 +57,7 @@ def test_evaluate_and_report_commands_validate_scope_before_backend() -> None:
             "--experiment-id",
             "sha256:" + "b" * 64,
             "--folds",
-            "F01,F02,F03,F04,F05,F06",
+            "F1,F2,F3,F4",
         ],
     )
     report = CliRunner().invoke(

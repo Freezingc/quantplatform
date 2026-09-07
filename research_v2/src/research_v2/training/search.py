@@ -23,14 +23,18 @@ from typing import Literal
 
 import pandas as pd
 
+from research_v2.datasets.splits import annual_folds
 from research_v2.datasets.storage import DatasetArtifactStore
 
-_INNER_FOLDS = ("I01", "I02", "I03")
+# Two inner folds under the v2 four-year outer train window (was three under 5y).
+_INNER_FOLDS = ("I01", "I02")
 _INNER_SEED = 20260801
 _VALIDATION_PROVENANCE_KEY_ENV = "QRV2_VALIDATION_PROVENANCE_HMAC_KEY"
-_OUTER_VALIDATION_YEAR_BY_FOLD = dict(
-    zip(("F01", "F02", "F03", "F04", "F05", "F06"), range(2019, 2025), strict=True)
-)
+# Derived from the single fold-contract source rather than restated, so the map
+# cannot drift the way the hardcoded F01-F06 tuple did.
+_OUTER_VALIDATION_YEAR_BY_FOLD = {
+    fold.fold_id: fold.validation_years[0] for fold in annual_folds() if not fold.locked
+}
 _HOST_GPU_LOCK_ROOT = Path(tempfile.gettempdir()) / "quant-research-v2-gpu-leases"
 _DEFAULT_LEASE_DURATION = timedelta(hours=4)
 
@@ -70,7 +74,7 @@ class ValidationProvenance:
     def verify(self, store: DatasetArtifactStore) -> None:
         expected_year = _OUTER_VALIDATION_YEAR_BY_FOLD.get(self.outer_fold_id)
         if expected_year is None:
-            raise ValueError("validation provenance requires an ordinary F01-F06 fold")
+            raise ValueError("validation provenance requires an ordinary F1-F4 fold")
         metadata = store.load_metadata(self.dataset_id)
         if metadata.get("dataset_role") != "VALIDATION":
             raise ValueError("validation provenance requires a verified VALIDATION artifact")
@@ -639,7 +643,7 @@ def _inner_validation_means(
         )
         grouped[value.config_hash][value.inner_fold_id] = value.rank_ic
     if any(set(folds) != set(_INNER_FOLDS) for folds in grouped.values()):
-        raise ValueError("each trial requires three inner folds for selection")
+        raise ValueError("each trial requires two inner folds for selection")
     return {
         config_hash: sum(scores.values()) / len(scores) for config_hash, scores in grouped.items()
     }

@@ -19,7 +19,7 @@ def plan_model_train(family: str, fold: str) -> None:
         typer.echo("FINAL test is locked and cannot enter the ordinary model command")
         raise typer.Exit(code=2)
     if fold not in ORDINARY_TEST_FOLDS:
-        typer.echo("model train fold must be one of F01,F02,F03,F04,F05,F06")
+        typer.echo("model train fold must be one of F1,F2,F3,F4")
         raise typer.Exit(code=2)
     if family != "M1":
         typer.echo(

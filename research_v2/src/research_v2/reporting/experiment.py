@@ -59,7 +59,7 @@ def build_experiment_report(
     """Build one report without recomputing or averaging the underlying OOS metrics."""
     validate_experiment_id(experiment_id)
     if set(result.fold_results) != set(ORDINARY_TEST_FOLDS):
-        raise ValueError("experiment report requires exactly F01-F06 fold results")
+        raise ValueError("experiment report requires exactly F1-F4 fold results")
     if len(result.selection_records) != len(ORDINARY_TEST_FOLDS):
         raise ValueError("experiment report requires one selection record per ordinary fold")
     metadata = fold_metadata or {}

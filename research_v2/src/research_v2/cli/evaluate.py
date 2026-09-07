@@ -24,7 +24,7 @@ def evaluate_walk_forward(
         raise typer.Exit(code=2) from error
     fold_ids = tuple(item.strip() for item in folds.split(",") if item.strip())
     if set(fold_ids) != set(ORDINARY_TEST_FOLDS) or len(fold_ids) != len(ORDINARY_TEST_FOLDS):
-        typer.echo("walk-forward evaluation requires exactly F01,F02,F03,F04,F05,F06")
+        typer.echo("walk-forward evaluation requires exactly F1,F2,F3,F4")
         raise typer.Exit(code=2)
     if compare != "best-simple":
         typer.echo("walk-forward evaluation requires --compare best-simple")

@@ -153,7 +153,7 @@ def registry_promote(
 @evaluate_app.command("walk-forward")
 def evaluate_walk_forward_command(
     experiment_id: str = typer.Option(..., "--experiment-id"),
-    folds: str = typer.Option("F01,F02,F03,F04,F05,F06", "--folds"),
+    folds: str = typer.Option("F1,F2,F3,F4", "--folds"),
     compare: str = typer.Option("best-simple", "--compare"),
 ) -> None:
     evaluate_walk_forward(experiment_id, folds, compare=compare)

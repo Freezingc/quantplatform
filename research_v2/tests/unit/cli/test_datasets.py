@@ -21,7 +21,7 @@ def test_dataset_inspect_and_verify_read_immutable_artifact(
     manifest = build_dataset_manifest(
         frame,
         business_keys=("signal_date", "ts_code"),
-        metadata={"fold_id": "F01"},
+        metadata={"fold_id": "F1"},
     )
     DatasetArtifactStore(root).write(manifest, {"train": frame}, preprocessing={})
     monkeypatch.setenv("QRV2_ARTIFACT_ROOT", str(root))  # type: ignore[attr-defined]
