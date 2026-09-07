@@ -212,7 +212,7 @@ def _assemble_oos_frames(
             labels_frame,
             f"{fold_id} candidate predictions and labels",
         )
-        _require_matching_keys(
+        _require_baseline_covered_by_candidate(
             candidate,
             baseline,
             f"{fold_id} candidate and baseline predictions",
@@ -270,6 +270,25 @@ def _require_matching_keys(left: pd.DataFrame, right: pd.DataFrame, name: str) -
     right_keys = right.loc[:, keys].sort_values(keys, kind="mergesort").reset_index(drop=True)
     if not left_keys.equals(right_keys):
         raise ValueError(f"{name} do not contain identical business keys")
+
+
+def _require_baseline_covered_by_candidate(
+    candidate: pd.DataFrame, baseline: pd.DataFrame, name: str
+) -> None:
+    """The candidate must cover at least the baseline's test rows, not necessarily equal them.
+
+    A candidate that scores more of the test cross-section than the baseline -- M0 with
+    allow_nan scores the sparse rows the dense baseline skips -- is legitimate, and
+    evaluate_frozen_oos already restricts both to their common keys via
+    _match_prediction_coverage before computing the G4 delta. Requiring IDENTICAL keys
+    here rejected exactly that case. What must not happen is the candidate covering FEWER
+    of the baseline's rows, because then the delta would silently lose baseline coverage.
+    """
+    keys = ["signal_date", "ts_code"]
+    candidate_keys = set(map(tuple, candidate.loc[:, keys].itertuples(index=False, name=None)))
+    baseline_keys = set(map(tuple, baseline.loc[:, keys].itertuples(index=False, name=None)))
+    if not baseline_keys.issubset(candidate_keys):
+        raise ValueError(f"{name}: baseline rows are not all covered by the candidate")
 
 
 def _labels_with_lineage(
