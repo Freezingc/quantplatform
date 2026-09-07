@@ -192,3 +192,101 @@ def test_lgbm_inner_grid_does_not_consult_outer_validation_labels() -> None:
         fitted_a.model.predict(train.features),
         fitted_b.model.predict(train.features),
     )
+def _seed_fixture() -> tuple[pd.DataFrame, pd.DataFrame]:
+    rng = np.random.default_rng(7)
+    feature_rows: list[dict[str, object]] = []
+    label_rows: list[dict[str, object]] = []
+    for day_offset in range(6):
+        signal_date = date(2020, 3, 2) + timedelta(days=day_offset)
+        for index in range(40):
+            feature_rows.append(
+                {
+                    "signal_date": signal_date,
+                    "ts_code": f"S{index:03d}",
+                    "f1": float(rng.standard_normal()),
+                    "f2": float(rng.standard_normal()),
+                }
+            )
+            label_rows.append(
+                {
+                    "signal_date": signal_date,
+                    "ts_code": f"S{index:03d}",
+                    "raw_return_5d": float(rng.standard_normal()),
+                    "label_valid": True,
+                }
+            )
+    return pd.DataFrame(feature_rows), pd.DataFrame(label_rows)
+
+
+def test_lgbm_ranker_seed_kwarg_keeps_fit_deterministic() -> None:
+    """The M0 three-seed contract needs per-seed fits that are reproducible."""
+    features, labels = _seed_fixture()
+    kwargs = {
+        "factor_order": ("f1", "f2"),
+        "role": "TRAIN",
+        "num_boost_round": 20,
+        "hyperparameters": LGBMHyperparameters(
+            num_leaves=15, max_depth=4, learning_rate=0.05, min_child_samples=10
+        ),
+        "seed": 20260802,
+    }
+
+    first = LGBMRankerBaseline.fit(features, labels, **kwargs)
+    second = LGBMRankerBaseline.fit(features, labels, **kwargs)
+
+    assert first.booster.model_to_string() == second.booster.model_to_string()
+
+
+def test_lgbm_ranker_seed_changes_the_fit_when_feature_fraction_below_one() -> None:
+    """Seeds must actually vary the model, or the three-seed contract is vacuous."""
+    rng = np.random.default_rng(11)
+    feature_rows: list[dict[str, object]] = []
+    label_rows: list[dict[str, object]] = []
+    for day_offset in range(6):
+        signal_date = date(2020, 3, 2) + timedelta(days=day_offset)
+        for index in range(40):
+            feature_rows.append(
+                {
+                    "signal_date": signal_date,
+                    "ts_code": f"S{index:03d}",
+                    **{name: float(rng.standard_normal()) for name in ("f1", "f2", "f3", "f4")},
+                }
+            )
+            label_rows.append(
+                {
+                    "signal_date": signal_date,
+                    "ts_code": f"S{index:03d}",
+                    "raw_return_5d": float(rng.standard_normal()),
+                    "label_valid": True,
+                }
+            )
+    features = pd.DataFrame(feature_rows)
+    labels = pd.DataFrame(label_rows)
+    hyperparameters = LGBMHyperparameters(
+        num_leaves=15,
+        max_depth=4,
+        learning_rate=0.05,
+        min_child_samples=10,
+        feature_fraction=0.5,
+    )
+    fitted = {
+        seed: LGBMRankerBaseline.fit(
+            features,
+            labels,
+            factor_order=("f1", "f2", "f3", "f4"),
+            role="TRAIN",
+            num_boost_round=20,
+            hyperparameters=hyperparameters,
+            seed=seed,
+        )
+        for seed in (20260801, 20260802, 20260803)
+    }
+    predictions = {seed: model.predict(features) for seed, model in fitted.items()}
+
+    # Guard the guard: the fixture is informative enough that all three seeds diverge,
+    # so a vacuous seed contract fails loudly here instead of passing silently.
+    # (A two-feature fixture lets two seeds collide on the same feature-subset
+    # sequence, which is a fixture degeneracy, not a vacuous seed contract.)
+    assert not np.allclose(predictions[20260801], predictions[20260802])
+    assert not np.allclose(predictions[20260801], predictions[20260803])
+    assert not np.allclose(predictions[20260802], predictions[20260803])

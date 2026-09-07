@@ -29,12 +29,19 @@ class LGBMHyperparameters:
     max_depth: int
     learning_rate: float
     min_child_samples: int
+    feature_fraction: float = 1.0
+    bagging_fraction: float = 1.0
+    bagging_freq: int = 0
 
     def __post_init__(self) -> None:
         if self.num_leaves < 1 or self.max_depth < 1 or self.min_child_samples < 1:
             raise ValueError("LightGBM tree parameters must be positive")
         if self.learning_rate <= 0 or not np.isfinite(self.learning_rate):
             raise ValueError("LightGBM learning_rate must be finite and positive")
+        if not 0 < self.feature_fraction <= 1 or not 0 < self.bagging_fraction <= 1:
+            raise ValueError("LightGBM sampling fractions must lie in (0, 1]")
+        if self.bagging_freq < 0:
+            raise ValueError("LightGBM bagging_freq cannot be negative")
 
 
 _DIRECT_FIT_DEFAULTS = LGBMHyperparameters(
@@ -81,6 +88,7 @@ class LGBMRankerBaseline:
         evaluation_features: pd.DataFrame | None = None,
         evaluation_labels: pd.DataFrame | None = None,
         early_stopping_patience: int = LGBM_EARLY_STOPPING_PATIENCE,
+        seed: int | None = None,
     ) -> LGBMRankerBaseline:
         """Fit LambdaRank only on TRAIN data, with one ranking group per date."""
         if role != "TRAIN":
@@ -94,6 +102,8 @@ class LGBMRankerBaseline:
         ):
             raise ValueError("factor_order or training parameters are invalid")
         selected_parameters = hyperparameters or _DIRECT_FIT_DEFAULTS
+        if seed is not None and (not isinstance(seed, int) or seed < 0):
+            raise ValueError("LightGBM seed must be a non-negative int")
         _validate_feature_schema(features, factor_order)
         normalized_features = _normalize_dates(features)
         normalized_labels = _normalize_dates(labels)
@@ -132,7 +142,7 @@ class LGBMRankerBaseline:
                 group=evaluation_groups,
                 reference=dataset,
             )
-        params = _training_parameters(selected_parameters)
+        params = _training_parameters(selected_parameters, seed=seed)
         callbacks: list[Callable[..., Any]] = (
             [lgb.early_stopping(early_stopping_patience, verbose=False)]
             if evaluation_set is not None
@@ -361,8 +371,18 @@ def _relevance_and_groups(
     return np.clip(relevance, 0, 4).astype(np.int32), group_sizes
 
 
-def _training_parameters(parameters: LGBMHyperparameters) -> dict[str, object]:
-    return {
+def _training_parameters(
+    parameters: LGBMHyperparameters, *, seed: int | None = None
+) -> dict[str, object]:
+    """LightGBM params; the base dict is bit-identical to the B3 contract.
+
+    Sampling keys are added only when a config actually enables sampling, so the
+    frozen B3 baseline trains on exactly the parameters it was reviewed with. The
+    M0 candidate passes a per-seed value (and optionally feature_fraction < 1) so
+    its three-seed contract measures stochastic-training variance instead of
+    fitting the same deterministic model three times.
+    """
+    params: dict[str, object] = {
         "boosting_type": "gbdt",
         "deterministic": True,
         "feature_pre_filter": False,
@@ -377,3 +397,13 @@ def _training_parameters(parameters: LGBMHyperparameters) -> dict[str, object]:
         "seed": 20260801,
         "verbosity": -1,
     }
+    if seed is not None:
+        params["seed"] = seed
+        params["feature_fraction_seed"] = seed
+        params["bagging_seed"] = seed
+    if parameters.feature_fraction != 1.0:
+        params["feature_fraction"] = parameters.feature_fraction
+    if parameters.bagging_fraction != 1.0:
+        params["bagging_fraction"] = parameters.bagging_fraction
+        params["bagging_freq"] = parameters.bagging_freq
+    return params

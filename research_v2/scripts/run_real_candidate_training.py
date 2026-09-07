@@ -1,4 +1,4 @@
-"""Real-data candidate model training driver (M1 -> M2 -> M3).
+"""Real-data candidate model training driver (M0 -> M1 -> M2 -> M3).
 
 Task 2 skeleton: enforces the E-plan execution order and the fold-matched
 baseline artifact contract; dataset assembly reuses walk_forward_common so
@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import json
 import os
 from collections.abc import Callable, Mapping, Sequence
@@ -23,6 +24,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any, cast
 
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 import torch
@@ -38,6 +40,7 @@ from walk_forward_factor_daily import (
     factor_source_plan,
 )
 
+from research_v2.baselines.lgbm_ranker import LGBMHyperparameters, LGBMRankerBaseline
 from research_v2.baselines.orchestration import (
     BaselineSelectionRecord,
     BaselineValidationScore,
@@ -57,7 +60,7 @@ from research_v2.evaluation.selection_evidence import (
     SelectionEvidenceStore,
 )
 from research_v2.inference.artifact_loader import load_inference_artifact
-from research_v2.models.base import predictions_to_frame
+from research_v2.models.base import ModelSignature, predictions_to_frame
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import (
@@ -76,8 +79,9 @@ from research_v2.training.temporal_batches import build_temporal_training_batche
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
 ORDINARY_FOLDS: tuple[str, ...] = ("F01", "F02", "F03", "F04", "F05", "F06")
-MODEL_FAMILIES: tuple[str, ...] = ("M1", "M2", "M3")
+MODEL_FAMILIES: tuple[str, ...] = ("M0", "M1", "M2", "M3")
 FAMILY_ORDER_PREREQUISITES: dict[str, tuple[str, ...]] = {
+    "M0": (),
     "M1": (),
     "M2": ("M1",),
     "M3": ("M1", "M2"),
@@ -812,6 +816,462 @@ def train_m2_smoke(workspace: Path) -> dict[str, Any]:
             },
         },
         "note": "smoke orchestration evidence only; never model passing evidence",
+    }
+
+
+M0_NUM_BOOST_ROUND = 500
+M0_EARLY_STOPPING_PATIENCE = 50
+M0_SMOKE_NUM_BOOST_ROUND = 64
+M0_FAMILY_NAME = "LGBM_RANKER"
+M0_MODEL_CODE_VERSION = "lgbm-ranker-1"
+
+
+def m0_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
+    """M0 (LightGBM LambdaRank) search space: 24 configs, within the 30-trial E7 budget.
+
+    feature_fraction is fixed below 1 so the three REQUIRED_SEEDS train genuinely
+    different boosters and the seed ensemble measures stochastic-training variance
+    (pinned in tests/unit/baselines/test_lgbm_ranker_baseline.py); with the fully
+    deterministic B3 recipe the three seeds would be three copies of one model and
+    the seed ensemble would be vacuous.
+    """
+    grid: list[dict[str, Any]] = [
+        {
+            "num_leaves": num_leaves,
+            "max_depth": max_depth,
+            "learning_rate": learning_rate,
+            "min_child_samples": min_child_samples,
+            "feature_fraction": 0.85,
+        }
+        for num_leaves in (15, 31, 63)
+        for max_depth in (4, 6)
+        for learning_rate in (0.03, 0.05)
+        for min_child_samples in (50, 200)
+    ]
+    return grid if max_configs is None else grid[:max_configs]
+
+
+def _m0_hyperparameters(config_payload: Mapping[str, Any]) -> LGBMHyperparameters:
+    return LGBMHyperparameters(
+        num_leaves=int(config_payload["num_leaves"]),
+        max_depth=int(config_payload["max_depth"]),
+        learning_rate=float(config_payload["learning_rate"]),
+        min_child_samples=int(config_payload["min_child_samples"]),
+        feature_fraction=float(config_payload.get("feature_fraction", 1.0)),
+    )
+
+
+def _m0_fit(
+    config_payload: Mapping[str, Any],
+    factor_order: tuple[str, ...],
+    train_frame: pd.DataFrame,
+    validation_frame: pd.DataFrame | None,
+    *,
+    seed: int,
+    num_boost_round: int = M0_NUM_BOOST_ROUND,
+) -> LGBMRankerBaseline:
+    """Fit one seeded LambdaRank booster on TRAIN, early-stopped on VALIDATION.
+
+    ``validation_frame=None`` trains the full ``num_boost_round`` without early
+    stopping. The smoke uses that: on the trivially separable synthetic frames a
+    ranker early-stops at a one-tree model, whose handful of distinct scores then
+    trips the OOS score-health gate -- a degeneracy of the data, not of the
+    machinery. The early-stopping branch itself is covered by the reviewed
+    baseline's own tests; full runs always pass a validation frame.
+    """
+    keys = ["signal_date", "ts_code"]
+    evaluation_features = None
+    evaluation_labels = None
+    if validation_frame is not None:
+        evaluation_features = validation_frame.loc[:, keys + list(factor_order)]
+        evaluation_labels = validation_frame.loc[:, keys + ["raw_return_5d", "label_valid"]]
+    return LGBMRankerBaseline.fit(
+        train_frame.loc[:, keys + list(factor_order)],
+        train_frame.loc[:, keys + ["raw_return_5d", "label_valid"]],
+        factor_order=factor_order,
+        role="TRAIN",
+        num_boost_round=num_boost_round,
+        minimum_cross_section=30,
+        hyperparameters=_m0_hyperparameters(config_payload),
+        evaluation_features=evaluation_features,
+        evaluation_labels=evaluation_labels,
+        early_stopping_patience=M0_EARLY_STOPPING_PATIENCE,
+        seed=seed,
+    )
+
+
+def _m0_percentile_frame(
+    model: LGBMRankerBaseline,
+    frame: pd.DataFrame,
+    factor_order: tuple[str, ...],
+) -> pd.DataFrame:
+    """Per-date percentile ranks of one booster -- the predictions_to_frame contract."""
+    keys = ["signal_date", "ts_code"]
+    scores = model.predict(frame.loc[:, keys + list(factor_order)])
+    frame_out = frame.loc[:, keys].copy()
+    frame_out["percentile_rank"] = scores.to_numpy(dtype=float)
+    frame_out["percentile_rank"] = frame_out.groupby("signal_date")[
+        "percentile_rank"
+    ].rank(pct=True)
+    return frame_out
+
+
+def _m0_seed_mean_scores(
+    models_by_seed: Mapping[int, LGBMRankerBaseline],
+    frame: pd.DataFrame,
+    factor_order: tuple[str, ...],
+) -> pd.DataFrame:
+    """Seed-mean percentile scores averaged on business keys, never positionally."""
+    keys = ["signal_date", "ts_code"]
+    merged: pd.DataFrame | None = None
+    rank_columns: list[str] = []
+    for seed in REQUIRED_SEEDS:
+        column = f"seed_rank_{seed}"
+        percentile = _m0_percentile_frame(models_by_seed[seed], frame, factor_order).rename(
+            columns={"percentile_rank": column}
+        )
+        merged = (
+            percentile
+            if merged is None
+            else merged.merge(percentile, on=keys, validate="one_to_one")
+        )
+        rank_columns.append(column)
+    if merged is None:
+        raise ValueError("at least one seed model is required")
+    merged["score"] = merged.loc[:, rank_columns].mean(axis=1)
+    return merged.loc[:, [*keys, "score"]]
+
+
+def _m0_save_booster(model: LGBMRankerBaseline, path: Path) -> None:
+    """Persist one fitted booster; the frozen dataclass stores the booster as ``object``."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    cast("lgb.Booster", model.booster).save_model(str(path))
+
+
+def _m0_signature(config_payload: Mapping[str, Any], factor_count: int) -> dict[str, object]:
+    config_hash = hashlib.sha256(
+        json.dumps(dict(config_payload), separators=(",", ":"), sort_keys=True).encode()
+    ).hexdigest()
+    return asdict(
+        ModelSignature(
+            model_family=M0_FAMILY_NAME,
+            raw_factor_count=factor_count,
+            config_hash=config_hash,
+        )
+    )
+
+
+def _m0_load_booster(
+    bundle_store: ModelArtifactBundleStore, model_id: str, seed: int
+) -> LGBMRankerBaseline:
+    """Load one seeded booster back from the verified bundle, never from training memory."""
+    if not bundle_store.verify(model_id):
+        raise ValueError(f"model bundle failed verification: {model_id}")
+    root = bundle_store.bundle_path(model_id)
+    feature_order = json.loads((root / "feature_order.json").read_text(encoding="utf-8"))
+    booster = lgb.Booster(model_file=str(root / f"seed-{seed}.pt"))
+    return LGBMRankerBaseline(
+        factor_order=tuple(str(name) for name in feature_order["feature_order"]),
+        booster=booster,
+        num_boost_round=int(booster.num_trees()),
+    )
+
+
+def _m0_write_bundle(
+    model_store: ModelArtifactBundleStore,
+    model_id: str,
+    *,
+    dataset_id: str,
+    config_payload: Mapping[str, Any],
+    factor_order: tuple[str, ...],
+    seed_checkpoints: Mapping[int, Path],
+    ensemble_predictions: pd.DataFrame,
+) -> None:
+    model_store.write(
+        model_id,
+        model_card={
+            "family": M0_FAMILY_NAME,
+            "dataset_id": dataset_id,
+            "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": M0_MODEL_CODE_VERSION,
+        },
+        config=dict(config_payload, raw_factor_count=len(factor_order)),
+        signature=_m0_signature(config_payload, len(factor_order)),
+        feature_order=factor_order,
+        preprocessing={"state_hash": "identity"},
+        seed_checkpoints=seed_checkpoints,
+        validation_predictions=ensemble_predictions,
+    )
+
+
+def train_m0_smoke(workspace: Path) -> dict[str, Any]:
+    """M0 orchestration smoke: the same ensemble + bundle + frozen-gate path as M1/M3."""
+    frames = build_smoke_frames(SMOKE_FACTOR_COUNT)
+    factor_order = tuple(f"f{index:02d}" for index in range(SMOKE_FACTOR_COUNT))
+    config_payload = m0_config_grid()[0]
+    seed_checkpoints: dict[int, Path] = {}
+    seed_validation_predictions: dict[int, pd.DataFrame] = {}
+    seed_rank_ic: dict[int, float] = {}
+    for seed in REQUIRED_SEEDS:
+        model = _m0_fit(
+            config_payload,
+            factor_order,
+            frames["train"],
+            None,
+            seed=seed,
+            num_boost_round=M0_SMOKE_NUM_BOOST_ROUND,
+        )
+        checkpoint_path = workspace / "checkpoints" / f"smoke-m0-{seed}" / "booster.txt"
+        _m0_save_booster(model, checkpoint_path)
+        seed_checkpoints[seed] = checkpoint_path
+        predictions = _m0_percentile_frame(model, frames["validation"], factor_order)
+        seed_validation_predictions[seed] = predictions
+        seed_rank_ic[seed] = _validation_rank_ic(predictions, frames["validation"])
+    ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)
+    bundle_store = ModelArtifactBundleStore(workspace / "models")
+    model_id = "smoke-m0"
+    _m0_write_bundle(
+        bundle_store,
+        model_id,
+        dataset_id="smoke-train",
+        config_payload=config_payload,
+        factor_order=factor_order,
+        seed_checkpoints=seed_checkpoints,
+        ensemble_predictions=ensemble.predictions.rename(
+            columns={"ensemble_score": "percentile_rank"}
+        ),
+    )
+    loaded = {seed: _m0_load_booster(bundle_store, model_id, seed) for seed in REQUIRED_SEEDS}
+    candidate_predictions = _m0_seed_mean_scores(loaded, frames["test"], factor_order)
+    evaluation = evaluate_frozen_oos(
+        candidate_predictions,
+        frames["labels"],
+        baseline_predictions=frames["baseline_predictions"],
+        role="TEST",
+        minimum_cross_section=30,
+    )
+    return {
+        "family": "M0",
+        "mode": "smoke",
+        "seed_validation_rank_ic": seed_rank_ic,
+        "worst_seed": ensemble.worst_seed,
+        "oos": {
+            "valid_day_count": evaluation.summary.valid_day_count,
+            "mean_rank_ic": evaluation.summary.mean_rank_ic,
+            "hac_t_statistic": evaluation.hac.t_statistic,
+            "baseline_mean_rank_ic": evaluation.baseline_mean_rank_ic,
+            "delta_rank_ic": evaluation.delta_rank_ic,
+            "gates": {
+                gate: result.status.value
+                for gate, result in evaluation.gate_report.results.items()
+            },
+        },
+        "note": "smoke orchestration evidence only; never model passing evidence",
+    }
+
+
+def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
+    """Full real-data M0 (LightGBM LambdaRank) pipeline.
+
+    Same assembly -> publication -> per-fold constrained search -> final bundles ->
+    signed evidence chain -> frozen TEST predictions -> G1-G6 walk-forward gates
+    as the torch cross-section families; the torch loop and batch machinery are
+    replaced by the date-grouped LambdaRank fit from the reviewed B3 baseline.
+    LightGBM has no FoldPreprocessor step: the tree ensemble is invariant to the
+    monotone per-feature transforms it applies, and the bundle records
+    preprocessing={"state_hash": "identity"} so the contract stays explicit.
+    """
+    context = setup_full_run_context(args)
+    workspace = context.workspace
+    dataset_store = context.dataset_store
+    model_store = context.model_store
+    selection_store = context.selection_store
+    prediction_store = context.prediction_store
+    baseline_report = context.baseline_report
+    baseline_predictions = context.baseline_predictions
+    holder = context.holder
+    resolver = context.resolver
+    versions = context.versions
+    factor_members = context.factor_members
+    factor_order = context.factor_order
+    extract = context.extract
+    configs = m0_config_grid(args.max_configs)
+
+    oos_folds: dict[str, ModelOosFold] = {}
+    fold_reports: list[dict[str, Any]] = []
+
+    for fold_id in ORDINARY_FOLDS:
+        train = extract(holder, resolver, fold_id, "train", factor_members, versions)
+        validation = extract(holder, resolver, fold_id, "validation", factor_members, versions)
+        test = extract(holder, resolver, fold_id, "test", factor_members, versions)
+        frames = {"train": train, "validation": validation, "test": test}
+        dataset_id = publish_fold_dataset(dataset_store, fold_id, frames, versions, factor_order)
+        train_dataset_id = f"{dataset_id}:train"
+        validation_dataset_id = f"{dataset_id}:validation"
+
+        entry = next(e for e in baseline_report["selections"] if e["fold_id"] == fold_id)
+        baseline_evidence_id = _existing_evidence_id(
+            workspace / "selections", selection_store, "baseline", fold_id, dataset_id
+        )
+        if baseline_evidence_id is None:
+            baseline_evidence = selection_store.write_baseline_selection(
+                record=reconstruct_baseline_record(entry),
+                test_dataset_id=dataset_id,
+            )
+            baseline_evidence_id = baseline_evidence.evidence_id
+
+        search_results: list[dict[str, Any]] = []
+        for config_index, config_payload in enumerate(configs):
+            seed_validation_predictions: dict[int, pd.DataFrame] = {}
+            seed_rank_ic: dict[int, float] = {}
+            for seed in REQUIRED_SEEDS:
+                model = _m0_fit(config_payload, factor_order, train, validation, seed=seed)
+                predictions = _m0_percentile_frame(model, validation, factor_order)
+                seed_validation_predictions[seed] = predictions
+                seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+            ensemble = build_seed_ensemble(
+                seed_validation_predictions, validation_rank_ic=seed_rank_ic
+            )
+            ensemble_predictions = ensemble.predictions.rename(
+                columns={"ensemble_score": "percentile_rank"}
+            )
+            ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
+            search_results.append(
+                {
+                    "config": config_payload,
+                    "ensemble_validation_rank_ic": ensemble_rank_ic,
+                    "seed_validation_rank_ic": seed_rank_ic,
+                    "worst_seed": ensemble.worst_seed,
+                }
+            )
+            print(
+                f"  {fold_id} config {config_index + 1}/{len(configs)}: "
+                f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
+                flush=True,
+            )
+        best = max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])
+        best_config = best["config"]
+
+        seed_checkpoints: dict[int, Path] = {}
+        seed_validation_predictions = {}
+        seed_rank_ic = {}
+        for seed in REQUIRED_SEEDS:
+            model = _m0_fit(best_config, factor_order, train, validation, seed=seed)
+            checkpoint_path = (
+                workspace / "checkpoints" / f"m0-{fold_id.lower()}-final-{seed}" / "booster.txt"
+            )
+            _m0_save_booster(model, checkpoint_path)
+            seed_checkpoints[seed] = checkpoint_path
+            predictions = _m0_percentile_frame(model, validation, factor_order)
+            seed_validation_predictions[seed] = predictions
+            seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+        ensemble = build_seed_ensemble(
+            seed_validation_predictions, validation_rank_ic=seed_rank_ic
+        )
+        model_id = f"m0-{fold_id.lower()}"
+        _m0_write_bundle(
+            model_store,
+            model_id,
+            dataset_id=dataset_id,
+            config_payload=best_config,
+            factor_order=factor_order,
+            seed_checkpoints=seed_checkpoints,
+            ensemble_predictions=ensemble.predictions.rename(
+                columns={"ensemble_score": "percentile_rank"}
+            ),
+        )
+
+        model_evidence_id = _existing_evidence_id(
+            workspace / "selections", selection_store, "model", fold_id, dataset_id
+        )
+        if model_evidence_id is None:
+            model_evidence = selection_store.write_model_selection(
+                fold_id=fold_id,
+                model_family="M0",
+                model_artifact_id=model_id,
+                model_bundle_digest=model_store.bundle_digest(model_id),
+                training_dataset_id=train_dataset_id,
+                validation_dataset_id=validation_dataset_id,
+                test_dataset_id=dataset_id,
+                baseline_selection_id=baseline_evidence_id,
+                validation_rank_ic=float(best["ensemble_validation_rank_ic"]),
+            )
+            model_evidence_id = model_evidence.evidence_id
+
+        loaded = {seed: _m0_load_booster(model_store, model_id, seed) for seed in REQUIRED_SEEDS}
+        candidate_scores = _m0_seed_mean_scores(loaded, test, factor_order)
+        candidate_artifact = prediction_store.write(
+            selection_id=model_evidence_id,
+            kind="candidate",
+            fold_id=fold_id,
+            dataset_id=dataset_id,
+            model_id=model_id,
+            scores=candidate_scores,
+            selections=selection_store,
+        )
+        baseline_scores = baseline_predictions[fold_id].loc[
+            :, ["signal_date", "ts_code", "score"]
+        ]
+        baseline_artifact = prediction_store.write(
+            selection_id=baseline_evidence_id,
+            kind="best_simple",
+            fold_id=fold_id,
+            dataset_id=dataset_id,
+            model_id=str(entry["selected_baseline_id"]),
+            scores=baseline_scores,
+            selections=selection_store,
+        )
+        oos_folds[fold_id] = ModelOosFold(
+            model_selection_id=model_evidence_id,
+            candidate_prediction_id=candidate_artifact.prediction_id,
+            best_simple_prediction_id=baseline_artifact.prediction_id,
+        )
+        fold_reports.append(
+            {
+                "fold_id": fold_id,
+                "dataset_id": dataset_id,
+                "model_id": model_id,
+                "best_config": best_config,
+                "search_results": search_results,
+                "baseline_selection_id": baseline_evidence_id,
+                "model_selection_id": model_evidence_id,
+            }
+        )
+        print(f"  {fold_id} complete: model={model_id}", flush=True)
+
+    result = evaluate_model_walk_forward(
+        oos_folds,
+        dataset_store=dataset_store,
+        model_store=model_store,
+        selection_root=workspace / "selections",
+        prediction_root=workspace / "predictions",
+        minimum_cross_section=30,
+    )
+    evaluation = result.evaluation
+    return {
+        "family": "M0",
+        "mode": "full",
+        "folds": fold_reports,
+        "oos": {
+            "valid_day_count": evaluation.summary.valid_day_count,
+            "mean_rank_ic": evaluation.summary.mean_rank_ic,
+            "icir": evaluation.summary.icir,
+            "hac_t_statistic": evaluation.hac.t_statistic,
+            "baseline_mean_rank_ic": evaluation.baseline_mean_rank_ic,
+            "delta_rank_ic": evaluation.delta_rank_ic,
+            "yearly_mean_rank_ic": {
+                str(year): value for year, value in evaluation.yearly_mean_rank_ic.items()
+            },
+            "gates": {
+                gate: {
+                    "status": gate_result.status.value,
+                    "observed_value": gate_result.observed_value,
+                    "threshold": gate_result.threshold,
+                }
+                for gate, gate_result in sorted(evaluation.gate_report.results.items())
+            },
+            "all_passed": evaluation.gate_report.all_passed,
+        },
     }
 
 
@@ -1610,7 +2070,9 @@ def main() -> None:
         # guard applies to real training runs, not to test harnesses.
         workspace = args.report.parent / f"smoke_workspace_{args.family.lower()}"
         workspace.mkdir(parents=True, exist_ok=True)
-        if args.family == "M1":
+        if args.family == "M0":
+            report = train_m0_smoke(workspace)
+        elif args.family == "M1":
             report = train_m1_smoke(workspace)
         elif args.family == "M2":
             report = train_m2_smoke(workspace)
@@ -1632,7 +2094,9 @@ def main() -> None:
     if args.workspace is None:
         raise SystemExit("--workspace is required for full runs")
     load_baseline_predictions(Path(args.baseline_artifacts))
-    if args.family == "M1":
+    if args.family == "M0":
+        report = run_full_m0(args)
+    elif args.family == "M1":
         report = run_full_m1(args)
     elif args.family == "M2":
         report = run_full_m2(args)

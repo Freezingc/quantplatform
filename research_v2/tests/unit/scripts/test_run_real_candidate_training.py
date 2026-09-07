@@ -71,6 +71,11 @@ def test_family_order_guard_allows_m1() -> None:
     MODULE.validate_family_order("M1", prior_families_passed=())
 
 
+def test_family_order_guard_allows_m0() -> None:
+    """M0 is the ML-first entry point and has no E-plan prerequisites."""
+    MODULE.validate_family_order("M0", prior_families_passed=())
+
+
 def test_family_order_guard_blocks_m2_without_evidence() -> None:
     with pytest.raises(ValueError, match="M1"):
         MODULE.validate_family_order("M2", prior_families_passed=())
@@ -144,6 +149,20 @@ def test_m3_smoke_pipeline_end_to_end(tmp_path: Path) -> None:
     assert set(oos["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
     assert oos["baseline_mean_rank_ic"] is not None
     assert set(report["seed_validation_rank_ic"]) == set(MODULE.REQUIRED_SEEDS)
+
+
+def test_m0_smoke_pipeline_end_to_end(tmp_path: Path) -> None:
+    """M0 (LightGBM LambdaRank candidate) orchestration evidence on synthetic frames."""
+    report = MODULE.train_m0_smoke(tmp_path)
+    assert report["family"] == "M0"
+    assert report["mode"] == "smoke"
+    oos = report["oos"]
+    assert oos["valid_day_count"] == 8
+    assert set(oos["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
+    assert all(status in {"PASS", "FAIL", "NOT_APPLICABLE"} for status in oos["gates"].values())
+    assert oos["baseline_mean_rank_ic"] is not None
+    assert set(report["seed_validation_rank_ic"]) == set(MODULE.REQUIRED_SEEDS)
+    assert report["worst_seed"] in MODULE.REQUIRED_SEEDS
 
 
 def _fold_frames() -> dict[str, pd.DataFrame]:
@@ -254,6 +273,7 @@ def test_issue_baseline_selection_evidence_signs_and_verifies(tmp_path: Path) ->
 
 def test_config_grids_respect_e7_budget() -> None:
     """E7: at most 30 configs per family search."""
+    assert len(MODULE.m0_config_grid()) == 24 <= 30
     assert len(MODULE.m1_config_grid()) == 27 <= 30
     assert len(MODULE.m2_config_grid()) == 24 <= 30
     assert len(MODULE.m3_config_grid()) == 16 <= 30

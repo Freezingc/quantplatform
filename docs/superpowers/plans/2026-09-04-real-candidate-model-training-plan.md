@@ -449,3 +449,54 @@ validation RankIC** 的输入，且 6 处中有 2 处产出**喂给 G1–G6 的�
 **不重构的理由**：它会在可能重启 M1 之前改动 config 选择路径的来源，而等价性论证已成立；
 记录在此以便后续如需统一时有据可依。
 勾选仅改动 `- [ ]` → `- [x]`，已用 diff 核验**除复选框外零字符变化**。
+
+## 勾选审计与实测偏差记录（2026-09-07 16:00）：新增 M0（LightGBM LambdaRank）候选家族
+
+**起因（owner 指示，2026-09-07）**：因子端初步冻结约 15 个高质量因子（最终名单待 owner 通知）。
+鉴于因子数量有限，**首版候选不采用过于复杂的深度学习模型，改用机器学习模型**；
+但执行仍遵循本计划的纪律（TDD、smoke、G1–G6、工件与证据链）。
+**这是对本计划「M1 Residual MLP 先行」顺序的一次 owner 授权的偏离**：
+新增家族 **M0**（无前置，`FAMILY_ORDER_PREREQUISITES["M0"]=()`），M1→M2→M3 的既有顺序不变。
+
+**实现（复用既有接缝，不另造一套）**：
+
+- 模型直接复用**已评审的 B3 基线** `baselines/lgbm_ranker.py` 的 `LGBMRankerBaseline`
+  （LambdaRank、按交易日分组、label_gain 0–4）——**候选与基线用同一个训练实现**，
+  差别只在候选走「逐折受限搜索 × 3 种子集成 × bundle × 签名证据链 × 冻结预测 × G1–G6」。
+- 基线模块**最小扩展**（`LGBMHyperparameters` 增加 `feature_fraction/bagging_fraction/bagging_freq`，
+  `fit()` 增加可选 `seed`；`_training_parameters` 仅在非默认时追加采样键）：
+  **B3 的参数逐位不变**（基线 7 测试全过）。新增 2 条基线测试：
+  同种子复现确定性、feature_fraction<1 时三种子确实发散（**否则三种子契约形同虚设**；
+  第二条曾因 2 特征夹具退化为「种子 801/803 恰好撞同一特征子集序列」而假失败，
+  改成 4 特征夹具后三种子全部发散）。
+- 驱动新增：家族表 M0、`m0_config_grid`（**24 ≤ 30**，`feature_fraction=0.85` 使种子契约非虚设）、
+  `_m0_fit/_m0_percentile_frame/_m0_seed_mean_scores/_m0_signature/_m0_save_booster/_m0_load_booster/_m0_write_bundle`、
+  `train_m0_smoke`、`run_full_m0`。**下游全部复用、模型无关**：
+  `publish_fold_dataset`、签名证据链、`FrozenPredictionStore`、`evaluate_model_walk_forward`（读冻结预测算 G1–G6）。
+  **与 torch 家族的两处刻意不同**：(1) 无 `FoldPreprocessor`——树对逐特征单调变换不变，
+  bundle 记 `preprocessing={"state_hash":"identity"}` 使契约显式；(2) TEST 预测从**已验证 bundle**
+  读回 booster（`lgb.Booster(model_file=bundle/seed-N.pt)`），不读训练内存——
+  与 `load_inference_artifact` 的「从冻结工件预测」纪律同义。
+- **smoke 刻意不带早停**：合成数据对 ranker 过于可分，早停会让模型塌缩成 1 棵树，
+  其分数的每日唯一值 <10，**恰好触发 OOS 分数健康门**——那是数据的退化、不是机制的缺陷；
+  早停分支本身由基线自带测试覆盖，全量运行始终带验证帧早停。smoke 用固定 64 轮、无验证集。
+
+**验证（全部实测）**：`--family M0 --smoke` 端到端走通（valid_day_count=8、六门齐算；
+G3/G4/G5 在合成数据上 FAIL 属预期，因「基线」是真 alpha 而 M0 只见带噪特征）。
+`pytest tests -q` → **1709 passed / 45 skipped**（1705 + 本轮 4 条）；
+`ruff check src tests` 清、`ruff check scripts/run_real_candidate_training.py` 清；
+`mypy src` 158 文件清；脚本 mypy 仅剩**既有** `walk_forward_common.py:20` dolphindb stub 报错（非本轮引入）。
+
+**当前未做 / 等待输入（按依赖排序，非承诺）**：
+
+1. **因子名单**（owner 待定，约 15 个）：watch-pair 评审建议移除 405/398（**待授权**，W1/裁决 4 (iii)），
+   契约 `factor_set_frozen_v1.json` 现仍为 17。名单定后只需改 `FROZEN_FACTOR_SET_V1` 元组 + 契约
+   （保持一致）；模型 `raw_factor_count=len(factor_order)` 自动跟随；数据集缓存键含因子集，自动重建。
+   `configs/models/*.yaml` 的 `raw_factor_count_min: 15`：最终 ≥15 不动、<15 需改一行。
+2. **基线须按新因子集重算**：现 `baseline_oos/` 工件是 **legacy 14 因子源**（OOS mean RankIC 0.0864、
+   逐折赢家 B3）；G4 要求候选比**同一因子集**的 fold-matched 基线高 0.005，故换集后须以
+   `--factor-source frozen` 重跑基线（参照 Task 1.6，约 17h）**再跑 M0 全量**，否则 G4 失真。
+3. **M0 全量运行**：`--family M0 --factor-source frozen`，估计每折 24 configs × 3 种子 + 3 终拟合
+   ≈ 数百次快速拟合，CPU 单线程数小时量级（远低于 M1 的 42.7 天）。
+4. **R8 未动**：M1 崩溃遗留的 13 个检查点仍在（`m1-f01-*`）；M0 用独立前缀 `m0-*`，**不与之碰撞**；
+   M1 链是否重启（裁决 2/3 + R8）仍开放，与 M0 无依赖。
