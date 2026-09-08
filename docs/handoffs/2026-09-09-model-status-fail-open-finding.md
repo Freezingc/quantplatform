@@ -2,7 +2,7 @@
 
 > 生成：2026-09-09 · 分支 `codex/publish-quant-platform` · 提交 `e0e0f55`
 > 严重性：**平台级完整性缺口**，早于 M0R，影响全部 5 个候选家族
-> 状态：**服务授权缺口已在两侧闭合**（`e0e0f55`、`aa8dab6`）；同类排查共找到 **3 处**恒真/可绕过的守卫——2 处已让其**显形**（`b9eb666`，§4.1），1 处已**直接修严**（`17ece95`，§4.2）。前两处的根源仍未除：彻底修复需先由所有者定义 `split_id` 与 `code_version`（§5 第 5–6 步）
+> 状态：同类排查共找到 **4 处**恒真/可绕过的守卫——2 处已**显形**（`b9eb666`，§4.1）、2 处已**直接修严**（`17ece95` §4.2、`37b6c44` §4.3）；服务授权缺口已在**两侧闭合**（`e0e0f55`、`aa8dab6`）；并补上了证据链缺失的最后一环——**从「归属」到「复现」**（`04c5acd`，§4.4）。§4.1 两处的根源仍未除：需先由所有者定义 `split_id` 与 `code_version`（§5 第 5–6 步）
 
 ## 1. 发现过程与复现
 
@@ -145,6 +145,35 @@ if model_code_version is not None and (not isinstance(...) or expected != model_
 
 新增 4 个测试：省略 `model_code_version` 被拒、携带别的家族的版本被拒、未知家族按家族信息被拒、以及把 torch 侧的版本 allowlist 映射本身钉住（改映射必须是有意的行为）。
 
+## 4.3 第四处：空契约伪装成「已校验」（提交 `37b6c44`）
+
+`_validate_inference_contract` 对空映射的循环体不执行，于是 `expected_inference_contract={}` **通过校验**；而上一轮新增的 `unverified_bindings` 判据是 `is None`，所以空契约会把 `inference_contract` 从未校验列表里**移除**。
+
+实测：把 card 的 8 个契约字段全部剔除后，传空契约加载成功，且报告 `unverified_bindings == ('factor_set_status',)` ——即**加载器主动声称它校验了一个它没校验的绑定**。这比原来的静默跳过更糟，因为新字段本该让缺口显形。
+
+已改为：空契约直接拒绝（`inference contract must name at least one field to verify`），且 `unverified_bindings` **独立地**把空视为未校验——报告方不依赖校验方先跑过。
+
+## 4.4 证据链证明的是「归属」，不是「复现」（提交 `04c5acd`）
+
+审计证据链时确认它每一环都闭合：预测工件的分数 bytes 被签名；`_require_candidate_evidence` 把预测的 selection id / model id / fold / dataset 与冻结选择逐一对上；`_require_verified_model_bundle` 把该选择的 bundle 摘要与重新哈希的 bundle 对上。
+
+**但这条链证明的是「这些分数被记录在这个 bundle 名下」，而不是「这些分数确由这个 bundle 算出」。** 持有信任根的人可以在正确的 metadata 下签署任意分数 bytes，而现有每一道检查都会通过。
+
+唯一能闭合它的是**重算**，而重算的前提都成立：bundle 不可变、TEST 分片是不可变的已验证工件、打分是确定性的。新增 `verify_candidate_predictions_reproduce`：重新派生该运行的注册表身份（会重哈希并校验四折全部 bundle）→ 要求该身份已晋级 → 在服务路径的授权下加载每折 bundle → 对该折冻结 TEST 分片打分 → 与签名的候选工件**逐值比对**。任何差异、缺行、多行都是拒绝，**且没有容差参数**（精确相等，一个 ulp 也算差异）。
+
+真实工件实跑，两个已晋级工作区都精确复现：
+
+| 工作区 | F1 | F2 | F3 | F4 | 合计 |
+|---|---|---|---|---|---|
+| `m0r_v2` | 804,575 行 | 882,426 | 932,167 | 938,594 | **3,557,762 行，每折 max\|diff\| = 0.0** |
+| `m0r_v3` | 同上 | 同上 | 同上 | 同上 | 同上 |
+
+范围限定在 LightGBM 家族（其打分是 bundle 与帧的纯函数）。torch 家族还需要该运行的 `FoldPreprocessor` 状态与 batch 构造，而那些住在候选驱动脚本里、不在库中，因此**明确拒绝并说明原因**，而不是静默跳过——一个悄悄少覆盖的验证器，与「报告了自己没检查的绑定」是同一个错误。
+
+比对逻辑被抽成 `_compare_scores`，使其**非恒真性**可在无需签名工作区的前提下测试。这一点在此处比别处更要紧：**一个永远通过的验证器比没有验证器更糟，因为它把「从未检查」变成了「检查过且一致」**。11 个测试钉住：正常路径、6 行中改 1 行、一个 ulp 的差异、缺行、多行、行序无关、4 种畸形帧拒绝、以及让 join 真正成立（而非静默为空）的键类型对齐。
+
+另加 `scripts/verify_prediction_reproduction.py`，任何工作区都可审计，任何差异都非零退出，可直接当门禁用。**刻意没有接进训练驱动**：重算每折数据集哈希使其耗时以分钟计（四折约 25 分钟），那是审计成本，不该默认加到每次运行上。
+
 ## 5. 建议的处置顺序
 
 1. **（已完成，`e0e0f55`）** LightGBM 侧闭合 + `verify_run_promotion` 原语 + 真实工件验证。
@@ -159,4 +188,4 @@ if model_code_version is not None and (not isinstance(...) or expected != model_
 
 本次改动只新增与收紧，未放松任何检查；未修改任何已有 bundle、摘要或注册表条目；未修改因子集契约；零数据库写入；未触碰 2026 锁定段与 `materialization_status.{json,md}`。
 
-门禁：ruff clean、mypy 162 文件、pytest **1839 passed / 45 skipped**（四次修复合计 +19 测试）。
+门禁：ruff clean、mypy 163 文件、pytest **1852 passed / 45 skipped**（六次修复合计 +32 测试）。
