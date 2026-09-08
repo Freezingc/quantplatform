@@ -273,10 +273,51 @@ CLI 重算出的 `evidence_hash` 与文档的 sha256 **完全一致**，所以�
 | 取得 WALK_FORWARD_PASSED 所需的全部证据 | ✅ **已完成**（9.2、9.3） |
 | 模型的注册表身份（model_id） | ✅ **已完成**（9.5） |
 | 晋级 CLI 的校验路径 | ✅ **已用真实工件验证**（9.5，dry-run 通过） |
-| **注册表持久化后端** | ❌ **唯一剩余的工程缺口**。`ModelRegistry` 目前是纯内存的（"persistence adapters must retain every transition event"），CLI 在没有后端时 fail-closed 拒绝写入。这个拒绝是正确行为，不应绕过；需要新建一个 append-only、签名、保留每一次转换事件的持久化适配器，并把 `promote` 接上去 |
-| SHADOW 及之后 | 🔒 治理步骤。需要锁定测试段（2026），而 2026 全程未物化、禁止读取；且 `pointer switch/rollback` 同样因无后端而 fail-closed |
+| 注册表持久化后端 | ✅ **已完成**（9.7） |
+| **在注册表里记录 M0R 为 WALK_FORWARD_PASSED** | ✅ **已完成**（9.8），用真实工件、真实 CLI |
+| SHADOW 及之后 | 🔒 治理步骤，**未做**。`enter_shadow` 需要 `ShadowDeploymentApproval`（评估方签发），再往后需要锁定测试段（2026），而 2026 全程未物化、禁止读取；`pointer switch/rollback` 需要独立的 pointer 后端 |
 
-### 9.7 顺带修掉的陈旧契约文案
+### 9.7 注册表持久化后端（补上最后一个工程缺口）
+
+`ModelRegistry` 一直是纯内存的，其 docstring 早就写明「persistence adapters must retain every transition event」，但适配器从不存在，所以 `qr-v2 registry promote` 只能校验、重算、打印，然后拒绝——一个六门全过的模型**无处可记**。
+
+新增 `research_v2/registry/registry_store.py`，沿用本仓其它证据存储的既有约定：内容寻址、HMAC 签名（同一信任根）、原子写入、写后不可变。每个模型两个文件：
+
+```
+<root>/models/<hex>/events.jsonl   每一次转换事件一行签名规范 JSON，append-only，写入后 flush + fsync
+<root>/models/<hex>/record.json    当前状态的签名快照，用 os.replace 原子替换
+```
+
+**事件日志是权威，快照只是便利。** 打开存储时校验每一行事件签名、走一遍链条确认每个事件的 `previous_status` 等于前一个事件的 `new_status`，然后要求快照状态等于最后一个事件的状态。最后这一步与签名校验**不重复**，且有专门测试钉住：持有信任根的人可以把改过的快照重新签名，若没有这道交叉校验，他就能在没有任何转换事件的情况下把 DRAFT 标成 PRODUCTION。顺序也有讲究——日志行先 fsync 再移动快照，所以两步之间崩溃只会让快照过期，不会让日志失真。
+
+`ModelRegistry.restore` 是接缝。它**不重放校验转换**，这是决定而非省略：每次转换在写入时已按其证据校验过，而 WALK_FORWARD_PASSED 之后的状态需要 `_RegistryWorkflowProof`——那是不可伪造的进程内令牌，**原则上就无法从磁盘重建**。restore 校验的是持久化状态本身：身份格式、状态枚举、与已注册父模型的 lineage 一致性、链条不断裂、哈希格式、历史必须始于 DRAFT。
+
+CLI 侧：新增 `registry register`（`promote_walk_forward` 只接受已处于 DRAFT 的模型，此前生命周期**没有入口**）；`promote` 新增 `--actor`（被保留的事件若不记录是谁造成的，就不成审计链），且**仅在会改动状态的路径上强制**——dry-run 不产生任何记录，也就不需要归属。后端位置来自 `QRV2_MODEL_REGISTRY_ROOT`，**没有默认值**：晋级不应在没人指定的地方悄悄生成一个注册表，否则两个操作者会得到两个关于「生产上是什么」的真相来源。未配置时 CLI 仍照旧拒绝，只是现在会说出缺的是哪个变量。
+
+### 9.8 真实晋级已执行
+
+用真实的 M0R 工件、真实的 CLI，不是夹具：
+
+```
+qr-v2 registry register --model-id sha256:32315c89…788b --actor codex-m0r-track
+  → status=DRAFT, transition_events=1
+
+qr-v2 registry promote  --model-id sha256:32315c89…788b \
+                        --to WALK_FORWARD_PASSED \
+                        --evidence …/m0r_v2/promotion_evidence.json \
+                        --actor codex-m0r-track
+  → gate_statuses G1..G6 全 PASS
+    evidence_hash 92b000c0d246556baf6dd077abe9e5f926ea69fd5840998c6af594b78b0c6d48
+    status=WALK_FORWARD_PASSED, transition_events=2, 退出码 0
+```
+
+重新打开存储独立复核：1 个模型、状态 `WALK_FORWARD_PASSED`、2 条事件（`None → DRAFT`、`DRAFT → WALK_FORWARD_PASSED`，各带 actor 与 UTC 时间戳，晋级事件携带 1 个 evidence hash），`events.jsonl` 恰为 2 行。
+
+落盘位置：`/data/zhangyudong/qrv2_research_artifacts/model_registry/`。
+
+> 这个根目录是我选的**提案位置**（与其它工件同处 `qrv2_research_artifacts/` 下）。若你希望换地方或暂不保留，删除该目录即可完全回滚——它不被任何其它工件引用。
+
+### 9.9 顺带修掉的陈旧契约文案
 
 排查「与已修缺陷同类」的陈旧硬编码时，在驱动脚本里发现两处仍描述已退役的 F01–F06 折结构的帮助文本：`--baseline-artifacts` 写着 `(F01..F06)`，`--folds` 写着 `(default all six)`。均已改为按当前契约描述。`src/` 下没有同类问题（命中的都是解释历史的注释）。
 
