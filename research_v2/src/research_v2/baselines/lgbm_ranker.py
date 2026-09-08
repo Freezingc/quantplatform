@@ -37,6 +37,10 @@ class LGBMHyperparameters:
     # is hundreds of fits on ~2.3M rows and single-threaded that is not viable.
     # Determinism is pinned per thread count by a dedicated test.
     num_threads: int = 1
+    # L2 leaf-weight regularization (lambda_l2 in LightGBM). Default 0.0 keeps the
+    # reviewed B3 parameter dict bit-identical; the M0 refined search varies it,
+    # since shrinking leaf weights is the standard lever for weak, noisy signals.
+    lambda_l2: float = 0.0
 
     def __post_init__(self) -> None:
         if self.num_leaves < 1 or self.max_depth < 1 or self.min_child_samples < 1:
@@ -49,6 +53,8 @@ class LGBMHyperparameters:
             raise ValueError("LightGBM bagging_freq cannot be negative")
         if self.num_threads < 1:
             raise ValueError("LightGBM num_threads must be at least one")
+        if self.lambda_l2 < 0 or not np.isfinite(self.lambda_l2):
+            raise ValueError("LightGBM lambda_l2 must be finite and non-negative")
 
 
 _DIRECT_FIT_DEFAULTS = LGBMHyperparameters(
@@ -424,6 +430,8 @@ def _training_parameters(
         params["seed"] = seed
         params["feature_fraction_seed"] = seed
         params["bagging_seed"] = seed
+    if parameters.lambda_l2 != 0.0:
+        params["lambda_l2"] = parameters.lambda_l2
     if parameters.feature_fraction != 1.0:
         params["feature_fraction"] = parameters.feature_fraction
     if parameters.bagging_fraction != 1.0:

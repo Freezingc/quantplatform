@@ -107,6 +107,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--baseline-report", type=Path, default=None)
     parser.add_argument("--workspace", type=Path, default=None)
     parser.add_argument("--max-configs", type=int, default=None)
+    parser.add_argument(
+        "--grid",
+        choices=("base", "refined"),
+        default="base",
+        help="M0 config grid: base (24-capacity) or refined (24 with lambda_l2 sweep)",
+    )
     parser.add_argument("--max-epochs", type=int, default=100)
     parser.add_argument(
         "--factor-source",
@@ -856,6 +862,32 @@ def m0_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
     return grid if max_configs is None else grid[:max_configs]
 
 
+def m0_refined_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
+    """Refined M0 search: L2 regularization around the winning capacity region.
+
+    The base 24-config grid found the best at delta +0.00364 (below the +0.005 G4 bar),
+    with F1 needing num_leaves=63 and the strong folds at num_leaves=15. This refined
+    grid holds that winning capacity region and varies lambda_l2 (the standard lever for
+    weak, noisy signals like the sparse factors'), which the base grid never touched.
+    24 configs, within the 30-trial E7 budget.
+    """
+    grid: list[dict[str, Any]] = [
+        {
+            "num_leaves": num_leaves,
+            "max_depth": max_depth,
+            "learning_rate": learning_rate,
+            "min_child_samples": 200,
+            "feature_fraction": 0.85,
+            "lambda_l2": lambda_l2,
+        }
+        for num_leaves in (15, 63)
+        for max_depth in (4, 6)
+        for learning_rate in (0.03, 0.05)
+        for lambda_l2 in (0.0, 1.0, 10.0)
+    ]
+    return grid if max_configs is None else grid[:max_configs]
+
+
 def _m0_hyperparameters(config_payload: Mapping[str, Any]) -> LGBMHyperparameters:
     return LGBMHyperparameters(
         num_leaves=int(config_payload["num_leaves"]),
@@ -864,6 +896,7 @@ def _m0_hyperparameters(config_payload: Mapping[str, Any]) -> LGBMHyperparameter
         min_child_samples=int(config_payload["min_child_samples"]),
         feature_fraction=float(config_payload.get("feature_fraction", 1.0)),
         num_threads=M0_NUM_THREADS,
+        lambda_l2=float(config_payload.get("lambda_l2", 0.0)),
     )
 
 
@@ -1106,7 +1139,8 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
     factor_members = context.factor_members
     factor_order = context.factor_order
     extract = context.extract
-    configs = m0_config_grid(args.max_configs)
+    grid_fn = m0_refined_config_grid if getattr(args, "grid", "base") == "refined" else m0_config_grid
+    configs = grid_fn(args.max_configs)
 
     oos_folds: dict[str, ModelOosFold] = {}
     fold_reports: list[dict[str, Any]] = []

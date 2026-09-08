@@ -274,6 +274,7 @@ def test_issue_baseline_selection_evidence_signs_and_verifies(tmp_path: Path) ->
 def test_config_grids_respect_e7_budget() -> None:
     """E7: at most 30 configs per family search."""
     assert len(MODULE.m0_config_grid()) == 24 <= 30
+    assert len(MODULE.m0_refined_config_grid()) == 24 <= 30
     assert len(MODULE.m1_config_grid()) == 27 <= 30
     assert len(MODULE.m2_config_grid()) == 24 <= 30
     assert len(MODULE.m3_config_grid()) == 16 <= 30
