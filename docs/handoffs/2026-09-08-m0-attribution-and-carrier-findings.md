@@ -233,15 +233,52 @@ G4 是**配对比较**：候选与基线取 `signal_date × ts_code` 交集后�
 
 **注意两个天数不是同一个量**：report 的 `valid_day_count = 945`（产出可用 RankIC 的天数），证据的 `valid_test_day_count = 969`（截面足够宽、可打分的标签天数），二者之比正是 G6 = 0.9752。交叉核对刻意不比较这两个数，否则每一次真实运行都会被误判为不一致。
 
-### 9.4 途中修掉的两个既有阻塞（都不是 M0R 引入的）
+### 9.4 途中修掉的三个既有阻塞（都不是 M0R 引入的）
 
 1. **`MODEL_FAMILIES` 有两份定义。** 驱动加了 M0R，评估器 `model_walk_forward.py` 的副本没加，于是一次跑完全部四折、写完全部 bundle 与签名证据的运行（`m0r_v1`，46 分钟）在最后一步 `evaluate_model_walk_forward` 崩掉。已改为驱动**导入**评估器的那一份，并加测试钉住「驱动能跑的家族必须被评估器准入 + 其 model-card 家族名必须在映射表里」（变异验证：还原缺陷该测试失败）。
 2. **注册表的证据解析器硬编码 2020–2025。** 那是已退役的 F01–F06 折的测试年；当前 F1–F4 契约的测试年是 2022–2025，于是**任何 v2 候选都无法晋级**，与得分无关、与家族无关。这正是 `fd55d2d` 在 `evaluate_oos_gates` 修过的同一类陈旧区间缺陷，只是漏掉了喂给它的那个 loader。已改为从折契约推导（变异验证：还原硬编码后 7 个测试失败，含 CLI 的 `registry promote` 测试）。
 3. **注册表只有消费方、没有生产方。** `load_walk_forward_evidence` 要求的文档格式无人产出，驱动的 report 形状第一个字段就被拒。已补 `promotion_evidence.py`（见 9.1）。生成证据不是信任决策：注册表会从文档里的原始数值**重新推导** G1–G6，从不读取被上报的门状态，所以写这个文件无法让不合格模型晋级；不合格的候选在生成阶段就抛错。
 
-### 9.5 生命周期还剩什么
+### 9.5 model_id 铸造与晋级 CLI 的端到端验证
 
-`ModelStatus` 的路径是 `DRAFT → WALK_FORWARD_PASSED → SHADOW → LOCKED_TEST_APPROVED → LOCKED_TEST_PASSED → PRODUCTION`。本次完成的是**取得 WALK_FORWARD_PASSED 所需的全部证据**。再往后需要锁定测试段（2026），而 2026 全程 🔒 未物化、禁止读取——那是治理步骤，不在本轨道单方面推进。
+证据文档产出后仍缺一环：注册表用**单个** `sha256:<64 hex>` 标识一个模型，而走查训练的是**每折一个** bundle（`m0r-f1..f4`），此前没有任何代码把四折映射成一个 id，`register_draft` / `promote_walk_forward` 在生产代码里**从未被调用过**（只有测试调用）。
+
+已补：
+
+- `derive_walk_forward_model_id(bundle_digests)` —— 只对**已验证的四折 bundle 摘要**做规范 JSON 哈希，不接受任何调用方提供的元数据。这样铸造可以安全地发生在信任边界之外：每个 bundle 摘要已覆盖该 bundle 内全部文件（config、feature_order、含 family 与 model_code_version 的 model_card、signature、三个 seed checkpoint、验证预测），所以两次运行得到同一 id 当且仅当它们产出了同样的模型。
+- `walk_forward_model_id(workspace, report)` —— 工作区入口。它调用 `bundle_digest`，而该方法会**重新哈希并校验每个文件**，因此「取 id」本身就是一次完整性检查：被篡改或截断的 bundle 会在这里抛错，而不是产出一个看起来合理的身份。
+
+对真实 M0R 工件验证：
+
+```
+model_id = sha256:32315c89fb9a65b8ceab193036fc3a0a870d24f2e6d99c6ff74049dccc75788b
+
+qr-v2 registry promote --to WALK_FORWARD_PASSED --evidence <promotion_evidence.json> --dry-run
+  → 退出码 0
+    evidence_hash = 92b000c0d246556baf6dd077abe9e5f926ea69fd5840998c6af594b78b0c6d48
+    gate_statuses = G1..G6 全 PASS
+
+同一命令去掉 --dry-run
+  → 退出码 2，"registry persistence backend is not configured; refusing to promote"
+```
+
+CLI 重算出的 `evidence_hash` 与文档的 sha256 **完全一致**，所以从「训练出的 booster」到「经过门校验的晋级请求」这条路径已用真实工件走通。
+
+### 9.6 生命周期还剩什么
+
+`ModelStatus` 的路径是 `DRAFT → WALK_FORWARD_PASSED → SHADOW → LOCKED_TEST_APPROVED → LOCKED_TEST_PASSED → PRODUCTION`。
+
+| 阶段 | 状态 |
+|---|---|
+| 取得 WALK_FORWARD_PASSED 所需的全部证据 | ✅ **已完成**（9.2、9.3） |
+| 模型的注册表身份（model_id） | ✅ **已完成**（9.5） |
+| 晋级 CLI 的校验路径 | ✅ **已用真实工件验证**（9.5，dry-run 通过） |
+| **注册表持久化后端** | ❌ **唯一剩余的工程缺口**。`ModelRegistry` 目前是纯内存的（"persistence adapters must retain every transition event"），CLI 在没有后端时 fail-closed 拒绝写入。这个拒绝是正确行为，不应绕过；需要新建一个 append-only、签名、保留每一次转换事件的持久化适配器，并把 `promote` 接上去 |
+| SHADOW 及之后 | 🔒 治理步骤。需要锁定测试段（2026），而 2026 全程未物化、禁止读取；且 `pointer switch/rollback` 同样因无后端而 fail-closed |
+
+### 9.7 顺带修掉的陈旧契约文案
+
+排查「与已修缺陷同类」的陈旧硬编码时，在驱动脚本里发现两处仍描述已退役的 F01–F06 折结构的帮助文本：`--baseline-artifacts` 写着 `(F01..F06)`，`--folds` 写着 `(default all six)`。均已改为按当前契约描述。`src/` 下没有同类问题（命中的都是解释历史的注释）。
 
 ## 10. 已完成的本轨道交付
 

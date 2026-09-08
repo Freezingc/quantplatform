@@ -108,14 +108,20 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--baseline-artifacts",
         type=Path,
         default=None,
-        help="directory with fold-matched baseline OOS parquet artifacts (F01..F06)",
+        help=(
+            "directory with fold-matched baseline OOS parquet artifacts, one <fold>.parquet "
+            "per ordinary fold (F1..F4 under the current contract)"
+        ),
     )
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument(
         "--folds",
         default=",".join(ORDINARY_FOLDS),
-        help="comma-separated subset of ordinary folds (default all six)",
+        help=(
+            "comma-separated subset of ordinary folds "
+            "(default: every ordinary fold the contract defines)"
+        ),
     )
     parser.add_argument("--baseline-report", type=Path, default=None)
     parser.add_argument("--workspace", type=Path, default=None)
