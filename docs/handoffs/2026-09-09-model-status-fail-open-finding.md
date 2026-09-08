@@ -181,6 +181,21 @@ if model_code_version is not None and (not isinstance(...) or expected != model_
 3. **（需协调，仍未做）** 重命名 card 的 `model_status` 为真话，并同步更新两个加载器、5 个写入点与相关测试；接受 bundle 摘要与派生 model_id 变化，重跑一次链并在注册表里登记新身份（旧条目标记为被取代）。
 4. **（已完成，`b9eb666`）** 让两处永不触发的守卫显形：`unverified_bindings` 由两个加载器共同计算并随加载结果返回。
 5. **（需所有者定义，仍未做）** 定义 `split_id` 与 `code_version` 的语义与权威来源，并决定 `factor_set_id` / `universe_id` / `label_id` 各由谁提供。这是**前置条件**：在这两个字段有定义之前，推理契约无法被写进工件，`inference_contract_hash` 也就无从取值。
+
+   本轮排查已把可确定的部分确定下来，供决策时直接用：
+
+   | 字段 | 仓内权威来源 | 结论 |
+   |---|---|---|
+   | `universe_id` | `configs/universe/cn_liquid_a.yaml` → `universe_id: cn_liquid_a` | ✅ 已有既定常量 |
+   | `label_id` | `materializers/labels.py` 默认 `label_id="forward_open_5d"`；`quality/latest.py` 用 `"forward_open_5d:v1"` | ✅ 已有既定值 |
+   | `universe_version` / `label_version` / `factor_daily` 版本 | 数据集 manifest 的 `metadata.data_versions`（三张表的逐分区内容哈希） | ✅ 已随工件持久化 |
+   | `factor_set_id` | `factors/factor_sets.py:create_factor_set` 由成员身份算出的内容哈希 | ✅ 可派生（需成员四元组） |
+   | `split_id` | 折契约 `datasets/splits.py:annual_folds()` 存在，但**无 id 字符串**；`factor_set_frozen_v2.json` 有 `fold_structure` 描述串 | ⚠️ 需决定：用描述串，还是对折契约取内容哈希 |
+   | `code_version` | **全仓无生产方** | ⚠️ 需决定 |
+
+   一条有约束力的推导：**`code_version` 不可取 git commit sha。** bundle 摘要是 card 字节的内容哈希，而派生的 model_id 又是四折 bundle 摘要的哈希；若 card 内含 git sha，则**每一次提交都会改变每个 bundle 摘要与 model_id**，跨运行的可复现性（§9.10 的「两次全量跑逐字节一致」）将不再成立——已记录的那两次之所以逐字节相同，正因为它们发生在同一个提交上。因此 `code_version` 应当是与 `model_code_version`（`lgbm-rankreg-1`）同类的**人工递增标签**，测试夹具里的 `"research-code-1"` 也正是这个形状。
+
+   另外可参考：夹具 `_INFERENCE_CONTRACT` 里的 `universe_id="cn_liquid_a"` 与 `label_id="forward_open_5d"` 与上述真实来源**逐字相符**，说明该夹具当初是按真实意图值写的，其余三个（`factor-set-1`、`walk-forward-1`、`research-code-1`）则是同一「人工递增标签」约定的占位。
 6. **（依赖第 5 步）** 把契约字段写入 model card（5 个写入点），并把 `factor_set_status` 与 `expected_inference_contract` 改为强制。与第 3 步同批做，因为它们同样会改变 bundle 摘要与派生 model_id，应一次重跑、一次重新登记，而不是分两次付这个代价。
 7. **（文档）** `inference_contract_hash` 的契约文档应当把「服务授权来自注册表而非工件自述」与「加载结果必须报告未校验的绑定」写成显式要求——见 `2026-09-09-m0r-shadow-readiness-spec.md` §2.1。
 
