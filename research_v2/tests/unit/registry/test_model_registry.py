@@ -11,6 +11,7 @@ from research_v2.evaluation.gates import (
     GateEvidence,
     GateStatus,
     ScoreHealthEvidence,
+    _ordinary_test_years,
     evaluate_oos_gates,
 )
 from research_v2.monitoring.shadow import ShadowDeploymentApprovalStore
@@ -25,6 +26,10 @@ from research_v2.registry.model_registry import (
     validate_model_id,
 )
 
+# The fold contract's ordinary test years (F1-F4 -> 2022-2025). Fixtures derive from it so
+# they cannot silently pin the retired F01-F06 range again.
+CONTRACT_YEARS = _ordinary_test_years()
+
 MODEL_ID = "sha256:" + "a" * 64
 CHILD_MODEL_ID = "sha256:" + "b" * 64
 
@@ -33,7 +38,7 @@ def _evidence(*, valid_score_days: int = 6) -> GateEvidence:
     return GateEvidence(
         mean_rank_ic=0.04,
         hac_t_statistic=2.5,
-        yearly_mean_rank_ic={year: 0.04 for year in range(2020, 2026)},
+        yearly_mean_rank_ic={year: 0.04 for year in CONTRACT_YEARS},
         candidate_delta_rank_ic=0.006,
         valid_test_day_count=6,
         score_health=tuple(
@@ -166,7 +171,7 @@ def _write_evidence(tmp_path: Path, name: str = "walk_forward.json", **overrides
         "gate_evidence": {
             "mean_rank_ic": 0.04,
             "hac_t_statistic": 2.5,
-            "yearly_mean_rank_ic": {str(year): 0.04 for year in range(2020, 2026)},
+            "yearly_mean_rank_ic": {str(year): 0.04 for year in CONTRACT_YEARS},
             "candidate_delta_rank_ic": 0.006,
             "valid_test_day_count": 6,
             "score_health": [
@@ -292,7 +297,7 @@ def test_evidence_hash_is_independent_of_yearly_insertion_order() -> None:
     forward = _evidence()
     reversed_years = replace(
         forward,
-        yearly_mean_rank_ic={year: 0.04 for year in reversed(range(2020, 2026))},
+        yearly_mean_rank_ic={year: 0.04 for year in reversed(CONTRACT_YEARS)},
     )
     # Guard the guard: equal content, genuinely different insertion order.
     assert forward.yearly_mean_rank_ic == reversed_years.yearly_mean_rank_ic
@@ -642,3 +647,48 @@ def test_the_lifecycle_table_is_the_reviewed_policy() -> None:
         ModelStatus.PRODUCTION: frozenset({ModelStatus.RETIRED}),
         ModelStatus.RETIRED: frozenset(),
     } == _ALLOWED_TRANSITIONS
+
+
+def _gate_evidence_payload(yearly: dict[str, float]) -> dict[str, object]:
+    return {
+        "mean_rank_ic": 0.04,
+        "hac_t_statistic": 2.5,
+        "yearly_mean_rank_ic": yearly,
+        "candidate_delta_rank_ic": 0.006,
+        "valid_test_day_count": 6,
+        "score_health": [
+            {"coverage": 0.95, "unique_score_count": 30, "score_std": 0.1} for _ in range(6)
+        ],
+    }
+
+
+def test_walk_forward_evidence_accepts_the_current_fold_contract_years(tmp_path: Path) -> None:
+    """The F1-F4 contract's ordinary test years are 2022-2025; promotion accepts exactly those.
+
+    A v2 candidate that passes all six gates must actually be promotable. Before the loader
+    derived its required years from the fold contract it demanded 2020-2025, so this document
+    -- the only shape the current contract can produce -- was rejected and nothing trained
+    under F1-F4 could ever reach the registry.
+    """
+    assert CONTRACT_YEARS == (2022, 2023, 2024, 2025)
+    path = _write_evidence(tmp_path)
+    evidence, digest, report = load_walk_forward_evidence(path)
+    assert set(evidence.yearly_mean_rank_ic) == set(CONTRACT_YEARS)
+    assert len(digest) == 64
+    assert all(result.status is GateStatus.PASS for result in report.results.values())
+
+
+def test_walk_forward_evidence_rejects_the_retired_fold_grid_years(tmp_path: Path) -> None:
+    """2020-2025 belongs to the retired F01-F06 grid and must not be promotable."""
+    stale = _gate_evidence_payload({str(year): 0.04 for year in range(2020, 2026)})
+    path = _write_evidence(tmp_path, gate_evidence=stale)
+    with pytest.raises(ValueError, match="yearly values for 2022-2025"):
+        load_walk_forward_evidence(path)
+
+
+def test_walk_forward_evidence_rejects_a_missing_contract_year(tmp_path: Path) -> None:
+    """Fail closed on partial coverage: a candidate cannot drop its worst test year."""
+    partial = _gate_evidence_payload({str(year): 0.04 for year in CONTRACT_YEARS[:-1]})
+    path = _write_evidence(tmp_path, gate_evidence=partial)
+    with pytest.raises(ValueError, match="yearly values for 2022-2025"):
+        load_walk_forward_evidence(path)

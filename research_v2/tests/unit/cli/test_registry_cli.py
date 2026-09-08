@@ -6,6 +6,7 @@ import json
 from typer.testing import CliRunner
 
 from research_v2.cli.app import app
+from research_v2.evaluation.gates import _ordinary_test_years
 
 
 def _walk_forward_evidence() -> dict[str, object]:
@@ -15,7 +16,7 @@ def _walk_forward_evidence() -> dict[str, object]:
         "gate_evidence": {
             "mean_rank_ic": 0.04,
             "hac_t_statistic": 2.5,
-            "yearly_mean_rank_ic": {str(year): 0.04 for year in range(2020, 2026)},
+            "yearly_mean_rank_ic": {str(year): 0.04 for year in _ordinary_test_years()},
             "candidate_delta_rank_ic": 0.006,
             "valid_test_day_count": 6,
             "score_health": [

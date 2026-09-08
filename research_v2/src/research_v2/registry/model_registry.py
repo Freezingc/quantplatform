@@ -19,6 +19,7 @@ from research_v2.evaluation.gates import (
     GateReport,
     GateStatus,
     ScoreHealthEvidence,
+    _ordinary_test_years,
     evaluate_oos_gates,
 )
 from research_v2.monitoring.shadow import (
@@ -413,8 +414,18 @@ def _parse_gate_evidence(payload: dict[str, object]) -> GateEvidence:
         _parse_year(year): _finite_number(value, "yearly_mean_rank_ic")
         for year, value in yearly_raw.items()
     }
-    if set(yearly) != set(range(2020, 2026)):
-        raise ValueError("walk-forward evidence must contain yearly values for 2020-2025")
+    # Derived from the fold contract, never hardcoded. This demanded 2020-2025 -- the test
+    # years of the retired F01-F06 grid -- so evidence from the current F1-F4 contract (test
+    # years 2022-2025) was rejected outright and NO v2 candidate could be promoted, however
+    # it scored. That is the same stale-range bug commit fd55d2d fixed in evaluate_oos_gates,
+    # in the one place that fix did not reach: the gates themselves were already deriving
+    # their required years from the contract, while the loader feeding them was not.
+    required_years = set(_ordinary_test_years())
+    if set(yearly) != required_years:
+        raise ValueError(
+            "walk-forward evidence must contain yearly values for "
+            f"{min(required_years)}-{max(required_years)}"
+        )
     health = tuple(_parse_score_health(item) for item in health_raw)
     valid_day_count = payload["valid_test_day_count"]
     if (
