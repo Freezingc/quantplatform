@@ -498,3 +498,49 @@ def test_evaluation_load_carries_no_promotion_claim(tmp_path: Path) -> None:
     )
     assert loaded.promotion_model_id == ""
     assert loaded.promotion_status == ""
+
+
+# ---------- which bindings a load actually verified ----------
+
+
+def test_a_production_shaped_card_reports_both_bindings_unverified(tmp_path: Path) -> None:
+    """The driver writes four card fields; the contract guards need nine. Say so, don't imply more.
+
+    ``_write_residual_bundle`` defaults to a card carrying every _INFERENCE_CONTRACT field, which
+    is NOT what the candidate driver writes -- it writes dataset_id, family, model_status and
+    model_code_version and nothing else. Excluding the contract fields reproduces the production
+    shape, and the load must report that neither the factor-set nor the contract binding fired.
+    """
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path, model_card_exclusions=tuple(_INFERENCE_CONTRACT)
+    )
+    loaded = load_bundle_for_evaluation(
+        store, model_id, expected_dataset_id="dataset-1",
+        expected_feature_order=feature_order, expected_preprocessor_hash="pre-1",
+        device=torch.device("cpu"),
+    )
+    assert loaded.unverified_bindings == ("factor_set_status", "inference_contract")
+
+
+def test_a_complete_card_reports_no_unverified_bindings(tmp_path: Path) -> None:
+    store, model_id, feature_order = _write_residual_bundle(tmp_path)
+    loaded = load_bundle_for_evaluation(
+        store, model_id, expected_dataset_id="dataset-1",
+        expected_feature_order=feature_order, expected_preprocessor_hash="pre-1",
+        device=torch.device("cpu"), expected_inference_contract=_INFERENCE_CONTRACT,
+    )
+    assert loaded.unverified_bindings == ()
+
+
+def test_supplying_only_the_contract_still_leaves_the_factor_set_unverified(tmp_path: Path) -> None:
+    """factor_set_status is a separate guard; a contract does not silently cover for it."""
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path, model_card_exclusions=("factor_set_status",)
+    )
+    contract = {k: v for k, v in _INFERENCE_CONTRACT.items() if k != "factor_set_status"}
+    loaded = load_bundle_for_evaluation(
+        store, model_id, expected_dataset_id="dataset-1",
+        expected_feature_order=feature_order, expected_preprocessor_hash="pre-1",
+        device=torch.device("cpu"), expected_inference_contract=contract,
+    )
+    assert loaded.unverified_bindings == ("factor_set_status",)

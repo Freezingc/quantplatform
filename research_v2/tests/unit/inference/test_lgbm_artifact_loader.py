@@ -288,3 +288,46 @@ def test_load_refuses_a_bundle_outside_the_authorised_run(tmp_path: Path) -> Non
     store = _write_bundle(tmp_path, model_id="other-run-f1")
     with pytest.raises(ValueError, match="does not belong to promoted run"):
         _load(store, model_id="other-run-f1")
+
+
+def test_unverified_bindings_are_reported(tmp_path: Path) -> None:
+    """A production-shaped card leaves both bindings unchecked, and the result says so."""
+    store = _write_bundle(tmp_path)
+    loaded = _load(store)
+    assert loaded.unverified_bindings == ("factor_set_status", "inference_contract")
+
+
+def test_a_bundle_the_driver_actually_wrote_reports_both_bindings_unverified(
+    tmp_path: Path,
+) -> None:
+    """Tripwire on the divergence between the test fixtures and what the chain produces.
+
+    The torch loader's fixtures write every _INFERENCE_CONTRACT field into the card, so the
+    contract guards look exercised while never firing on a real artifact. This loads a bundle
+    written by the driver's own bundle writer and pins what it actually omits. If the driver ever
+    starts writing the contract, this fails and the assertion should be tightened, not deleted.
+    """
+    import importlib.util
+    import sys
+
+    scripts = Path(__file__).resolve().parents[3] / "scripts"
+    sys.path.insert(0, str(scripts))
+    spec = importlib.util.spec_from_file_location(
+        "driver_for_card_shape", scripts / "run_real_candidate_training.py")
+    assert spec is not None and spec.loader is not None
+    driver = importlib.util.module_from_spec(spec)
+    sys.modules["driver_for_card_shape"] = driver
+    spec.loader.exec_module(driver)
+
+    driver.train_m0r_smoke(tmp_path)
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    card = json.loads((store.bundle_path("smoke-m0r") / "model_card.json").read_text())
+    assert set(card) == {"family", "dataset_id", "model_status", "model_code_version"}, (
+        "the driver's model card changed shape; re-examine which inference bindings it supports"
+    )
+    loaded = load_lgbm_inference_artifact(
+        store, "smoke-m0r", expected_dataset_id="smoke-train",
+        expected_feature_order=tuple(f"f{i:02d}" for i in range(15)),
+        promoted_run=_promoted("smoke-m0r", "b", "c", "d"),
+    )
+    assert loaded.unverified_bindings == ("factor_set_status", "inference_contract")

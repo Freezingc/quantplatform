@@ -53,6 +53,41 @@ class InferenceLoadAudit:
     run_id: str | None
 
 
+def unverified_bindings(
+    model_card: Mapping[str, object],
+    expected_inference_contract: InferenceContract | None,
+) -> tuple[str, ...]:
+    """Name the load-time bindings that could NOT be checked, instead of skipping them silently.
+
+    Two guards in this module are conditional, and for every bundle the chain has ever written
+    both conditions are false, so neither has ever fired:
+
+      ``factor_set_status``   no model card contains the field. The driver writes dataset_id,
+                              family, model_status and model_code_version and nothing else, so
+                              "inference requires a FROZEN factor set" has never been enforced
+                              against a real artifact -- verified across the m0_v3, m0r_v2 and
+                              m0r_v3 workspaces.
+      ``inference_contract``  no production caller passes one; only tests do. So the binding to a
+                              factor set, universe, label version, split and code version is never
+                              checked on the real path either. Two of its eight fields
+                              (``split_id``, ``code_version``) have no producer anywhere in the
+                              repository, so populating them is an ownership decision rather than
+                              a wiring task.
+
+    Neither can simply be made strict today: requiring the field would refuse every existing
+    bundle, including the promoted M0R, and inventing values for two undefined fields would bake
+    guesses into immutable content-addressed artifacts. What this does instead is make the gap
+    impossible to miss -- a loaded artifact states which of its bindings are unverified, so no
+    caller can mistake an unchecked binding for a checked one.
+    """
+    unverified: list[str] = []
+    if model_card.get("factor_set_status") is None:
+        unverified.append("factor_set_status")
+    if expected_inference_contract is None:
+        unverified.append("inference_contract")
+    return tuple(unverified)
+
+
 @dataclass(frozen=True)
 class LoadedInferenceArtifact:
     model_id: str
@@ -63,6 +98,8 @@ class LoadedInferenceArtifact:
     # which is authorised by nothing beyond the bundle's own integrity -- it is not served.
     promotion_model_id: str = ""
     promotion_status: str = ""
+    # Bindings this load could not verify; see unverified_bindings. Empty means every guard fired.
+    unverified_bindings: tuple[str, ...] = ()
 
 
 def load_inference_artifact(
@@ -184,6 +221,7 @@ def load_bundle_for_evaluation(
         model_id=model_id,
         models=tuple(models),
         preprocessing=metadata["preprocessing"],
+        unverified_bindings=unverified_bindings(model_card, expected_inference_contract),
         audit=InferenceLoadAudit(
             model_id=model_id,
             bundle_digest=bundle.digest,

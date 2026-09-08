@@ -41,6 +41,7 @@ from research_v2.inference.artifact_loader import (
     InferenceLoadAudit,
     _model_card_code_version,
     _validate_inference_contract,
+    unverified_bindings,
 )
 from research_v2.models.base import ModelSignature
 from research_v2.registry.promotion_evidence import PromotedRun
@@ -80,6 +81,8 @@ class LoadedLGBMInferenceArtifact:
     promotion_model_id: str
     promotion_status: str
     audit: InferenceLoadAudit | None = None
+    # Bindings this load could not verify; see artifact_loader.unverified_bindings.
+    unverified_bindings: tuple[str, ...] = ()
 
 
 def _config_hash(config_payload: Mapping[str, object]) -> str:
@@ -196,6 +199,7 @@ def load_lgbm_inference_artifact(
         preprocessing=metadata["preprocessing"],
         promotion_model_id=promoted_run.model_id,
         promotion_status=promoted_run.status.value,
+        unverified_bindings=unverified_bindings(model_card, expected_inference_contract),
         audit=InferenceLoadAudit(
             model_id=model_id,
             bundle_digest=bundle.digest,
