@@ -40,11 +40,30 @@
 |---|---|---|---|
 | `walk_forward_evidence_hash` | 本次晋级所依据的走查证据 | ✅ 可 | `64b413507bf453ab78633bba18f74a65de878af4b97221a79b663655b2da0e19` |
 | `artifact_bundle_hash` | 部署用的模型工件包 | ✅ 可（定义见下） | `4c06e98a4b9e3372f98332d0e575dbf7f6bea9bbeb42b467bfbb43aa18dfe3c9` |
-| `inference_contract_hash` | 推理契约 | ❌ **全仓无格式定义** | 需流程所有者定义 |
+| `inference_contract_hash` | 推理契约 | ⚠️ **部分就绪**（见 §2.1） | 加载器已实现；契约文档格式仍需定义 |
 | `v2test_drill_hash` | V2 测试演练 | ❌ **全仓无格式定义**，且演练是**活动**不是文档 | 需流程所有者定义并实际执行 |
 | `rollback_plan_hash` | 回滚方案 | ❌ **全仓无格式定义** | 需流程所有者定义 |
 
 后三项在 `research_v2/` 与 `docs/` 全库检索的结果是：**只作为 `monitoring/shadow.py` 里的待声明字段出现，没有任何模板、schema、先例或产出方**。因此我没有起草它们——凭空发明三类流程工件再去哈希，等于把「有人审阅过」这件事伪造出来，那正是这套签名机制要防止的。
+
+### 2.1 为什么 `inference_contract_hash` 此前无定义：LightGBM 家族根本无法被推理加载
+
+排查这一项时发现的不是「文档缺失」，而是一个真实的工程缺口：`inference/artifact_loader.py` 的 `_allowlisted_factory` 只认 `RESIDUAL_MLP` / `TEMPORAL_GRU` / `SET_ATTENTION`，对其它家族直接抛 `model family is not allowlisted for inference`。也就是说 **M0 与 M0R 都过不了推理加载**——模型过了六道门、进了注册表，却没有任何途径产出预测。这是既有缺口（M0 自加入起就如此），不是 M0R 引入的。
+
+它也不是加一条 allowlist 就能通的：torch 加载器从头到尾是 torch 形状的（返回 `nn.Module`、用 `torch.load(weights_only=True)` 读 `seed-<seed>.pt`、靠重建原型模块比对 `state_dict` 来验证 bundle），而 LightGBM bundle 的同名文件是 **booster 文本**，其 signature 是 config 哈希上的 `ModelSignature` 而非模块的 `artifact_signature()`。
+
+已补齐：新增 `research_v2/src/research_v2/inference/lgbm_artifact_loader.py`，作为**并列**加载器（不改动 torch 加载器，因此 M1/M2/M3 的契约与所有消费方不受影响），沿用同一套纪律：已验证 bundle、家族 allowlist、code version 匹配、dataset/feature_order/preprocessor 交叉校验、`WALK_FORWARD_PASSED` 与 `FROZEN` 要求、三 seed、`InferenceLoadAudit`。契约校验与 code version 读取**复用** torch 模块的实现，所以「推理契约」仍然只有一处定义。
+
+两处校验超出照搬：
+
+- bundle 存储的 config 带 `raw_factor_count`，而 signature 哈希的是**不含**它的搜索 config——照原样哈希永远匹配不上。加载器会剥离并在注释里说明原因。
+- booster 自己的 dump 记录了 `objective`，加载器用它与家族交叉校验：card 写 `LGBM_RANKER` 而 booster 是 `objective=regression` 的 bundle 会被拒为「工件与 card 描述的是两个不同模型」。在两个载体共用同一 bundle 布局之后，这是最要紧的一种错配。
+
+**用真实生产工件验证**：从 `m0r_v2` 加载 `m0r-f4`、对其冻结 TEST 帧打分，与链上存档的候选预测在全部 **938,594 行**上 **max|diff| = 0.0**。所以六门所依据的那些数值，正是这条推理路径会产出的数值。
+
+打分语义（每 booster 先做日内百分位、再三 seed 取均值、按业务键 merge 而非按位置）此前只存在于训练驱动这个**脚本**里，推理侧无从调用；`score_lgbm_artifact` 是它的库内归属，并有测试钉住它与驱动 `_m0_seed_mean_scores` 逐值相等。
+
+因此 `inference_contract_hash` 的现状是：**被声明的对象（可服务的推理路径）已经存在并经验证**，但「契约文档」本身的格式仍需流程所有者定义——那份文档应当描述消费方需要保证什么（特征顺序、宇宙、label 版本、打分语义、设备），而不是替代已实现的加载器。
 
 ### `artifact_bundle_hash` 的定义（提案，待流程所有者批准）
 
@@ -89,7 +108,8 @@ bundle 通过 `ModelArtifactBundleStore.load_verified_bundle` 读取，因此**�
 | `ModelRegistryStore.enter_shadow` | ✅ 已实现，只持久化不决策，全部控制在领域层 |
 | `qr-v2 registry shadow`（含 `--dry-run`） | ✅ 已实现 |
 | 8 个测试（走真实 `ShadowDeploymentApprovalStore`，非桩） | ✅ 含职责分离、错误密钥、证据不匹配、模型不匹配、未过走查、被拒后日志不增长 |
+| LightGBM 推理加载器（M0 与 M0R） | ✅ 已实现，真实工件上逐值复现链上预测（§2.1），16 个测试 |
 | 哈希链衔接 | ✅ 已用真实工件验证（§1） |
 | `artifact_bundle_hash` 定义与取值 | ✅ 已算出并跨两次独立运行验证可复现 |
 
-门禁：ruff clean、mypy 161 文件、pytest 1804 passed / 45 skipped。
+门禁：ruff clean、mypy 162 文件、pytest **1820 passed / 45 skipped**。
