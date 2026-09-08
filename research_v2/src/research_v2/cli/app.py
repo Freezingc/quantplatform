@@ -21,7 +21,7 @@ from research_v2.cli.inference import retry as inference_retry
 from research_v2.cli.inference import status as inference_status
 from research_v2.cli.materialize import emit_plan, plan_factors
 from research_v2.cli.models import plan_model_train
-from research_v2.cli.registry import pointer_app, promote, register
+from research_v2.cli.registry import pointer_app, promote, register, shadow
 from research_v2.cli.reports import report_experiment
 
 app = typer.Typer(no_args_is_help=True)
@@ -159,6 +159,16 @@ def registry_promote(
     dry_run: bool = typer.Option(False, "--dry-run"),
 ) -> None:
     promote(model_id, target, evidence, actor, dry_run)
+
+
+@registry_app.command("shadow")
+def registry_shadow(
+    model_id: str = typer.Option(..., "--model-id"),
+    approval_root: Path = typer.Option(..., "--approval-root"),  # noqa: B008
+    approval_id: str = typer.Option(..., "--approval-id"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+) -> None:
+    shadow(model_id, approval_root, approval_id, dry_run)
 
 
 @evaluate_app.command("walk-forward")

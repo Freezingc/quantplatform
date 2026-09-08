@@ -34,6 +34,7 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
+from research_v2.monitoring.shadow import ShadowDeploymentApproval
 from research_v2.registry.model_registry import (
     ModelRecord,
     ModelRegistry,
@@ -321,6 +322,36 @@ class ModelRegistryStore:
         """Promote a persisted DRAFT on evidence the registry re-derives G1-G6 from."""
         evidence, _, _ = load_walk_forward_evidence(Path(evidence_path))
         record = self._registry.promote_walk_forward(model_id, actor=actor, evidence=evidence)
+        self._append_event(model_id, record)
+        return record
+
+    def enter_shadow(
+        self,
+        model_id: str,
+        *,
+        approval: ShadowDeploymentApproval,
+        approval_root: Path,
+    ) -> ModelRecord:
+        """Record the SHADOW transition for a model an approver has already signed off.
+
+        This persists the transition; it does not decide it. Every control lives in
+        ``ModelRegistry.enter_shadow`` and is enforced there: the model must already be
+        WALK_FORWARD_PASSED, the approval must verify under the evaluator-owned
+        QRV2_SHADOW_APPROVAL_HMAC_KEY, its model_id must match, its
+        ``walk_forward_evidence_hash`` must be one of the hashes recorded on this model's
+        promotion event, QRV2_SHADOW_DEPLOYER_ID must name the operator, and that operator
+        must not be the approver. The store adds nothing to that and relaxes none of it --
+        it only makes the transition survivable, which the in-memory registry alone could not.
+
+        Note what this deliberately does NOT do: it never issues an approval. Issuing one is an
+        attestation by a human holding the evaluator key that four artifacts exist -- the
+        bundle, the inference contract, the v2test drill and the rollback plan -- and the
+        verifier checks those hashes for format and signature, not for content, so nothing here
+        could substitute for that judgement.
+        """
+        record = self._registry.enter_shadow(
+            model_id, approval=approval, approval_root=Path(approval_root)
+        )
         self._append_event(model_id, record)
         return record
 

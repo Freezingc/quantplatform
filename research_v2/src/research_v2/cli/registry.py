@@ -9,6 +9,7 @@ from pathlib import Path
 
 import typer
 
+from research_v2.monitoring.shadow import ShadowDeploymentApproval
 from research_v2.registry.model_registry import (
     ModelStatus,
     load_walk_forward_evidence,
@@ -66,6 +67,56 @@ def register(
                 "lineage_id": record.lineage_id,
                 "model_id": record.model_id,
                 "status": record.status.value,
+                "transition_events": len(store.registry.history(model_id)),
+            },
+            sort_keys=True,
+        )
+    )
+
+
+def shadow(model_id: str, approval_root: Path, approval_id: str, dry_run: bool) -> None:
+    """Record a SHADOW transition the evaluator has already approved.
+
+    The deployer is QRV2_SHADOW_DEPLOYER_ID and must not be the approver; that separation is
+    enforced by the registry, not here. This command only refuses early and legibly when the
+    model id is malformed or the backend is not configured.
+    """
+    try:
+        validate_model_id(model_id)
+    except ValueError as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+    if not approval_id.strip():
+        typer.echo("--approval-id is required: the signed approval this transition rests on")
+        raise typer.Exit(code=2)
+    plan = {
+        "approval_id": approval_id,
+        "approval_root": str(approval_root),
+        "dry_run": dry_run,
+        "model_id": model_id,
+        "to": ModelStatus.SHADOW.value,
+    }
+    typer.echo(json.dumps(plan, sort_keys=True))
+    if dry_run:
+        return
+    store = _configured_store("enter shadow")
+    try:
+        record = store.enter_shadow(
+            model_id,
+            approval=ShadowDeploymentApproval(approval_id, model_id),
+            approval_root=approval_root,
+        )
+    except (RegistryStoreError, ValueError, OSError) as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+    typer.echo(
+        json.dumps(
+            {
+                "approval_id": approval_id,
+                "dry_run": False,
+                "model_id": model_id,
+                "status": record.status.value,
+                "to": ModelStatus.SHADOW.value,
                 "transition_events": len(store.registry.history(model_id)),
             },
             sort_keys=True,

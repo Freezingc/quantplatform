@@ -15,6 +15,10 @@ from pathlib import Path
 
 import pytest
 
+# the CLI tests at the bottom of this module exercise the same transitions through typer
+from typer.testing import CliRunner
+
+from research_v2.cli.app import app
 from research_v2.evaluation.gates import GateEvidence, ScoreHealthEvidence
 from research_v2.registry.model_registry import (
     ModelRecord,
@@ -89,6 +93,12 @@ def failing_evidence_path(tmp_path: Path) -> Path:
 
 def _open(root: Path) -> ModelRegistryStore:
     return ModelRegistryStore(root, signing_key=KEY)
+
+
+def _configure_backend(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Point the CLI at a throwaway registry root signed with the test trust root."""
+    monkeypatch.setenv(REGISTRY_ROOT_ENV, str(tmp_path / "registry"))
+    monkeypatch.setenv("QRV2_SELECTION_EVIDENCE_HMAC_KEY", KEY.decode("utf-8"))
 
 
 def test_register_draft_round_trips_through_a_reopen(tmp_path: Path) -> None:
@@ -340,3 +350,171 @@ def test_restore_rejects_inconsistent_persisted_state() -> None:
     )
     with pytest.raises(ValueError, match="parent model is absent"):
         ModelRegistry.restore({OTHER_ID: child}, {OTHER_ID: (child_event,)})
+
+
+# ---------- SHADOW: the store persists the transition, the registry decides it ----------
+
+APPROVER = "evaluator-alice"
+DEPLOYER = "operator-bob"
+SHADOW_KEY = b"shadow-approval-key"
+FOUR_ATTESTATIONS = {
+    "artifact_bundle_hash": "1" * 64,
+    "inference_contract_hash": "2" * 64,
+    "v2test_drill_hash": "3" * 64,
+    "rollback_plan_hash": "4" * 64,
+}
+
+
+def _promoted_store(tmp_path: Path, evidence_path: Path) -> ModelRegistryStore:
+    store = _open(tmp_path)
+    store.register_draft(MODEL_ID, actor="researcher")
+    store.promote_walk_forward(MODEL_ID, actor="researcher", evidence_path=evidence_path)
+    return store
+
+
+def _walk_forward_hash(evidence_path: Path) -> str:
+    from research_v2.registry.model_registry import (
+        _gate_evidence_hash,
+        load_walk_forward_evidence,
+    )
+
+    evidence, _, report = load_walk_forward_evidence(evidence_path)
+    return _gate_evidence_hash(evidence, report)
+
+
+def _issue_approval(
+    tmp_path: Path, *, walk_forward_hash: str, actor: str = APPROVER, model_id: str = MODEL_ID
+):
+    from research_v2.monitoring.shadow import ShadowDeploymentApprovalStore
+
+    root = tmp_path / "shadow_approvals"
+    store = ShadowDeploymentApprovalStore(root, signing_key=SHADOW_KEY)
+    approval = store.issue(
+        model_id=model_id,
+        actor=actor,
+        walk_forward_evidence_hash=walk_forward_hash,
+        **FOUR_ATTESTATIONS,
+    )
+    return approval, root
+
+
+def _shadow_env(monkeypatch: pytest.MonkeyPatch, deployer: str = DEPLOYER) -> None:
+    monkeypatch.setenv("QRV2_SHADOW_APPROVAL_HMAC_KEY", SHADOW_KEY.decode("utf-8"))
+    monkeypatch.setenv("QRV2_SHADOW_DEPLOYER_ID", deployer)
+
+
+def test_enter_shadow_persists_the_transition(
+    tmp_path: Path, evidence_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = _promoted_store(tmp_path, evidence_path)
+    approval, root = _issue_approval(tmp_path, walk_forward_hash=_walk_forward_hash(evidence_path))
+    _shadow_env(monkeypatch)
+
+    record = store.enter_shadow(MODEL_ID, approval=approval, approval_root=root)
+    assert record.status is ModelStatus.SHADOW
+
+    reopened = _open(tmp_path)
+    assert reopened.registry.get(MODEL_ID).status is ModelStatus.SHADOW
+    history = reopened.registry.history(MODEL_ID)
+    assert [event.new_status for event in history] == [
+        ModelStatus.DRAFT,
+        ModelStatus.WALK_FORWARD_PASSED,
+        ModelStatus.SHADOW,
+    ]
+    # the deployer, not the approver, is recorded as the actor of this transition
+    assert history[-1].actor == DEPLOYER
+    assert history[-1].evidence_hashes == (approval.approval_id,)
+    log = tmp_path / "models" / HEX_DIR / "events.jsonl"
+    assert log.read_text(encoding="utf-8").count("\n") == 3
+
+
+def test_enter_shadow_refuses_when_the_deployer_is_the_approver(
+    tmp_path: Path, evidence_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Separation of duties is the control; the store must not become a way around it."""
+    store = _promoted_store(tmp_path, evidence_path)
+    approval, root = _issue_approval(tmp_path, walk_forward_hash=_walk_forward_hash(evidence_path))
+    _shadow_env(monkeypatch, deployer=APPROVER)
+
+    with pytest.raises(ValueError, match="separate from the approver"):
+        store.enter_shadow(MODEL_ID, approval=approval, approval_root=root)
+    log = tmp_path / "models" / HEX_DIR / "events.jsonl"
+    assert log.read_text(encoding="utf-8").count("\n") == 2, "a refused transition appended"
+    assert _open(tmp_path).registry.get(MODEL_ID).status is ModelStatus.WALK_FORWARD_PASSED
+
+
+def test_enter_shadow_refuses_an_approval_for_other_evidence(
+    tmp_path: Path, evidence_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The approval must rest on the very evidence this model was promoted on."""
+    store = _promoted_store(tmp_path, evidence_path)
+    approval, root = _issue_approval(tmp_path, walk_forward_hash="f" * 64)
+    _shadow_env(monkeypatch)
+    with pytest.raises(ValueError, match="does not match walk-forward evidence"):
+        store.enter_shadow(MODEL_ID, approval=approval, approval_root=root)
+
+
+def test_enter_shadow_refuses_an_approval_for_a_different_model(
+    tmp_path: Path, evidence_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = _promoted_store(tmp_path, evidence_path)
+    approval, root = _issue_approval(
+        tmp_path, walk_forward_hash=_walk_forward_hash(evidence_path), model_id=OTHER_ID
+    )
+    _shadow_env(monkeypatch)
+    with pytest.raises(ValueError, match="does not match"):
+        store.enter_shadow(MODEL_ID, approval=approval, approval_root=root)
+
+
+def test_enter_shadow_refuses_a_model_that_never_passed_walk_forward(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = _open(tmp_path)
+    store.register_draft(MODEL_ID, actor="researcher")
+    approval, root = _issue_approval(tmp_path, walk_forward_hash="f" * 64)
+    _shadow_env(monkeypatch)
+    with pytest.raises(ValueError, match="only WALK_FORWARD_PASSED"):
+        store.enter_shadow(MODEL_ID, approval=approval, approval_root=root)
+
+
+def test_enter_shadow_refuses_an_approval_signed_with_the_wrong_key(
+    tmp_path: Path, evidence_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The approval key is evaluator-owned; the trust root that signs evidence must not work."""
+    store = _promoted_store(tmp_path, evidence_path)
+    approval, root = _issue_approval(tmp_path, walk_forward_hash=_walk_forward_hash(evidence_path))
+    monkeypatch.setenv("QRV2_SHADOW_APPROVAL_HMAC_KEY", "not-the-evaluator-key")
+    monkeypatch.setenv("QRV2_SHADOW_DEPLOYER_ID", DEPLOYER)
+    with pytest.raises(ValueError, match="signature verification failed"):
+        store.enter_shadow(MODEL_ID, approval=approval, approval_root=root)
+
+
+def test_cli_shadow_dry_run_prints_the_plan_and_writes_nothing(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _configure_backend(monkeypatch, tmp_path)
+    result = CliRunner().invoke(
+        app,
+        [
+            "registry", "shadow", "--model-id", MODEL_ID,
+            "--approval-root", str(tmp_path / "approvals"),
+            "--approval-id", "e" * 64, "--dry-run",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    plan = json.loads(result.stdout)
+    assert plan["dry_run"] is True and plan["to"] == "SHADOW"
+    assert not (tmp_path / "registry").exists()
+
+
+def test_cli_shadow_requires_an_approval_id(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _configure_backend(monkeypatch, tmp_path)
+    result = CliRunner().invoke(
+        app,
+        [
+            "registry", "shadow", "--model-id", MODEL_ID,
+            "--approval-root", str(tmp_path / "approvals"), "--approval-id", "   ",
+        ],
+    )
+    assert result.exit_code == 2
+    assert "--approval-id is required" in result.stdout
