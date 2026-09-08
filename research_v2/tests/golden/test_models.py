@@ -10,7 +10,10 @@ import pandas as pd
 import pytest
 import torch
 
-from research_v2.inference.artifact_loader import load_bundle_for_evaluation
+from research_v2.inference.artifact_loader import (
+    _MODEL_CODE_VERSIONS,
+    load_bundle_for_evaluation,
+)
 from research_v2.models.base import FeatureBatch, TemporalFeatureBatch
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -54,6 +57,7 @@ def test_cpu_golden_outputs_and_artifact_reconstruction(tmp_path: Path, case: st
             "dataset_id": f"{model_id}-dataset",
             "family": family,
             "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": _MODEL_CODE_VERSIONS[family],
         },
         config=config,
         signature=asdict(model.artifact_signature()),

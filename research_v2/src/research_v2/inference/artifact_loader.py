@@ -265,13 +265,17 @@ def _allowlisted_factory(
     config: Mapping[str, object],
 ) -> Callable[[], nn.Module]:
     family = model_card.get("family")
+    # Both checks are mandatory, not conditional on the field being present. The code-version
+    # check used to read `if model_code_version is not None and ...`, so a card that simply
+    # omitted the field skipped it entirely and loaded -- verified: such a bundle loads, and its
+    # audit then reports the inference contract's research `code_version` as if it were the model
+    # code version, because _model_card_code_version falls back across the two fields. An
+    # artifact of unstated provenance must be refused, not loaded with a borrowed identity.
+    if not isinstance(family, str) or family not in _MODEL_CODE_VERSIONS:
+        raise ValueError("model family is not allowlisted for inference")
+    expected_code_version = _MODEL_CODE_VERSIONS[family]
     model_code_version = model_card.get("model_code_version")
-    expected_code_version = (
-        _MODEL_CODE_VERSIONS.get(family) if isinstance(family, str) else None
-    )
-    if model_code_version is not None and (
-        not isinstance(model_code_version, str) or expected_code_version != model_code_version
-    ):
+    if not isinstance(model_code_version, str) or model_code_version != expected_code_version:
         raise ValueError("model_code_version is not allowlisted for model family")
     if family == "RESIDUAL_MLP":
         residual = _residual_config(config)

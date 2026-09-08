@@ -45,6 +45,7 @@ def test_allowlisted_loader_reads_only_verified_three_seed_state_dicts(tmp_path:
             "dataset_id": "dataset-1",
             "family": "RESIDUAL_MLP",
             "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": "residual-mlp-1",
         },
         config={"raw_factor_count": 15, "hidden_dim": 16, "num_blocks": 1, "dropout": 0.1},
         signature=asdict(model.artifact_signature()),
@@ -114,6 +115,7 @@ def test_allowlisted_loader_reconstructs_gru_and_set_attention_bundles(tmp_path:
                 "dataset_id": f"{model_id}-dataset",
                 "family": family,
                 "model_status": "WALK_FORWARD_PASSED",
+                "model_code_version": artifact_loader._MODEL_CODE_VERSIONS[family],
             },
             config=config,
             signature=asdict(model.artifact_signature()),
@@ -429,6 +431,7 @@ def _write_mlp_bundle(tmp_path: Path, model_id: str = "model-1") -> ModelArtifac
             "dataset_id": "dataset-1",
             "family": "RESIDUAL_MLP",
             "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": "residual-mlp-1",
         },
         config={"raw_factor_count": 15, "hidden_dim": 16, "num_blocks": 1, "dropout": 0.1},
         signature=asdict(model.artifact_signature()),
@@ -511,8 +514,12 @@ def test_a_production_shaped_card_reports_both_bindings_unverified(tmp_path: Pat
     model_code_version and nothing else. Excluding the contract fields reproduces the production
     shape, and the load must report that neither the factor-set nor the contract binding fired.
     """
+    # Production writes exactly four card fields: dataset_id, family, model_status and
+    # model_code_version. model_code_version is part of _INFERENCE_CONTRACT but is NOT omitted by
+    # the driver, so excluding it here would model an artifact the chain never produces.
     store, model_id, feature_order = _write_residual_bundle(
-        tmp_path, model_card_exclusions=tuple(_INFERENCE_CONTRACT)
+        tmp_path,
+        model_card_exclusions=tuple(set(_INFERENCE_CONTRACT) - {"model_code_version"}),
     )
     loaded = load_bundle_for_evaluation(
         store, model_id, expected_dataset_id="dataset-1",
@@ -544,3 +551,59 @@ def test_supplying_only_the_contract_still_leaves_the_factor_set_unverified(tmp_
         device=torch.device("cpu"), expected_inference_contract=contract,
     )
     assert loaded.unverified_bindings == ("factor_set_status",)
+
+
+# ---------- family and code version are both mandatory, not conditional ----------
+
+
+def test_a_card_omitting_model_code_version_is_refused(tmp_path: Path) -> None:
+    """This used to load: the check was `if model_code_version is not None and ...`.
+
+    Omitting the field skipped the allowlist entirely, and the audit then reported the inference
+    contract's research code_version as though it were the model's, because
+    _model_card_code_version falls back across the two fields. An artifact of unstated provenance
+    must be refused rather than loaded with a borrowed identity.
+    """
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path, model_card_exclusions=("model_code_version",)
+    )
+    with pytest.raises(ValueError, match="model_code_version is not allowlisted"):
+        load_bundle_for_evaluation(
+            store, model_id, expected_dataset_id="dataset-1",
+            expected_feature_order=feature_order, expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"),
+        )
+
+
+def test_a_card_with_a_foreign_code_version_is_refused(tmp_path: Path) -> None:
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path, model_card_overrides={"model_code_version": "temporal-gru-1"}
+    )
+    with pytest.raises(ValueError, match="model_code_version is not allowlisted"):
+        load_bundle_for_evaluation(
+            store, model_id, expected_dataset_id="dataset-1",
+            expected_feature_order=feature_order, expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"),
+        )
+
+
+def test_an_unknown_family_is_refused_by_name(tmp_path: Path) -> None:
+    """The family message must stay accurate now that the family is checked first."""
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path,
+        model_card_overrides={"family": "LGBM_RANKREG", "model_code_version": "lgbm-rankreg-1"},
+    )
+    with pytest.raises(ValueError, match="model family is not allowlisted"):
+        load_bundle_for_evaluation(
+            store, model_id, expected_dataset_id="dataset-1",
+            expected_feature_order=feature_order, expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"),
+        )
+
+
+def test_the_torch_code_version_allowlist_is_pinned() -> None:
+    assert artifact_loader._MODEL_CODE_VERSIONS == {
+        "RESIDUAL_MLP": "residual-mlp-1",
+        "TEMPORAL_GRU": "temporal-gru-1",
+        "SET_ATTENTION": "set-attention-1",
+    }
