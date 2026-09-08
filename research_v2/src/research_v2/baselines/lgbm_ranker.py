@@ -136,6 +136,15 @@ class LGBMRankerBaseline:
         values = _finite_matrix(joined, factor_order, allow_nan=allow_nan)
         raw_target = pd.to_numeric(joined["raw_return_5d"], errors="coerce")
         relevance, group_sizes = _relevance_and_groups(joined, raw_target)
+        # Build the Dataset INSIDE fit; never hoist or cache it across calls. Reusing one
+        # lgb.Dataset object for several lgb.train calls silently changes the fitted model.
+        # Measured on fold F1 (2,283,604 prepared rows, feature_fraction=0.85, num_threads=16,
+        # early stopping against the validation year): a Dataset shared across the three
+        # REQUIRED_SEEDS reproduced the seed-20260801 booster but grew 79 and 64 trees for
+        # seeds 20260802/20260803, where fresh Datasets grow the 2 and 2 the chain records.
+        # It is not a NaN effect -- the 9 dense factors (1.9% NaN) diverge too, seeds 2/3
+        # going 1->46 and 72->35 trees -- and it does not appear below ~18k rows, so no
+        # fixture-scale unit test can catch it. This comment is the only guard.
         dataset = lgb.Dataset(values, label=relevance.astype(float), group=group_sizes)
         evaluation_set: lgb.Dataset | None = None
         if (evaluation_features is None) != (evaluation_labels is None):
