@@ -9,6 +9,7 @@ cross-check that equated them would reject every real run.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -23,9 +24,11 @@ from research_v2.evaluation.gates import (
 from research_v2.evaluation.hac import HACMeanTest
 from research_v2.evaluation.model_evaluator import FrozenOosEvaluation
 from research_v2.evaluation.rank_ic import RankICSummary
+from research_v2.registry import promotion_evidence
 from research_v2.registry.model_registry import (
     build_walk_forward_evidence_document,
     load_walk_forward_evidence,
+    validate_model_id,
 )
 from research_v2.registry.promotion_evidence import (
     REQUIRED_TRUST_ROOT_ENV,
@@ -34,6 +37,7 @@ from research_v2.registry.promotion_evidence import (
     _load_full_report,
     _prediction_ids_by_fold_and_kind,
     emit_promotion_evidence,
+    walk_forward_model_id,
 )
 
 # The v2 fold contract: 969 label days wide enough to score, 945 of them producing a usable
@@ -101,7 +105,11 @@ def _report_from(evidence: GateEvidence) -> dict[str, object]:
         "family": "M0R",
         "mode": "full",
         "folds": [
-            {"fold_id": fold, "model_selection_id": f"sel-{fold.lower()}"}
+            {
+                "fold_id": fold,
+                "model_id": f"m0r-{fold.lower()}",
+                "model_selection_id": f"sel-{fold.lower()}",
+            }
             for fold in ("F1", "F2", "F3", "F4")
         ],
         "oos": {
@@ -315,3 +323,66 @@ def test_emit_refuses_a_workspace_missing_a_fold_prediction(
         _write_prediction_manifest(root, f"{fold.lower()}-base", fold, "best_simple")
     with pytest.raises(PromotionEvidenceError, match="best_simple"):
         emit_promotion_evidence(tmp_path, report_path, tmp_path / "promotion_evidence.json")
+
+
+class _FakeBundleStore:
+    """Stands in for ModelArtifactBundleStore so the fold mapping can be tested directly."""
+
+    consulted: list[str] = []
+
+    def __init__(self, root: Path) -> None:
+        self.root = root
+
+    def bundle_digest(self, model_id: str) -> str:
+        type(self).consulted.append(model_id)
+        return hashlib.sha256(model_id.encode("utf-8")).hexdigest()
+
+
+def test_walk_forward_model_id_derives_from_every_ordinary_fold(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One registry id for four per-fold bundles, derived from the verified digests."""
+    _FakeBundleStore.consulted = []
+    monkeypatch.setattr(promotion_evidence, "ModelArtifactBundleStore", _FakeBundleStore)
+    report_path = tmp_path / "report.json"
+    report_path.write_text(json.dumps(_report_from(_passing_evidence())), encoding="utf-8")
+
+    model_id = walk_forward_model_id(tmp_path, report_path)
+    validate_model_id(model_id)  # must not raise
+    assert sorted(_FakeBundleStore.consulted) == ["m0r-f1", "m0r-f2", "m0r-f3", "m0r-f4"]
+    # deterministic: the same workspace always names the same model
+    assert walk_forward_model_id(tmp_path, report_path) == model_id
+
+
+def test_walk_forward_model_id_refuses_a_partial_workspace(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Three folds is not a walk-forward candidate; the id must not be mintable anyway."""
+    monkeypatch.setattr(promotion_evidence, "ModelArtifactBundleStore", _FakeBundleStore)
+    report = _report_from(_passing_evidence())
+    report["folds"] = [entry for entry in report["folds"] if entry["fold_id"] != "F4"]
+    report_path = tmp_path / "report.json"
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    with pytest.raises(PromotionEvidenceError, match="expected"):
+        walk_forward_model_id(tmp_path, report_path)
+
+
+def test_walk_forward_model_id_refuses_a_fold_without_a_bundle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(promotion_evidence, "ModelArtifactBundleStore", _FakeBundleStore)
+    report = _report_from(_passing_evidence())
+    folds = report["folds"]
+    assert isinstance(folds, list)
+    del folds[0]["model_id"]
+    report_path = tmp_path / "report.json"
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    with pytest.raises(PromotionEvidenceError, match="fold_id/model_id"):
+        walk_forward_model_id(tmp_path, report_path)
+
+
+def test_walk_forward_model_id_refuses_a_smoke_report(tmp_path: Path) -> None:
+    report_path = tmp_path / "smoke.json"
+    report_path.write_text(json.dumps({"family": "M0R", "mode": "smoke"}), encoding="utf-8")
+    with pytest.raises(PromotionEvidenceError, match="full run report"):
+        walk_forward_model_id(tmp_path, report_path)

@@ -22,6 +22,7 @@ from research_v2.registry.model_registry import (
     ModelStatus,
     _gate_evidence_hash,
     _issue_registry_workflow_proof,
+    derive_walk_forward_model_id,
     load_walk_forward_evidence,
     validate_model_id,
 )
@@ -692,3 +693,45 @@ def test_walk_forward_evidence_rejects_a_missing_contract_year(tmp_path: Path) -
     path = _write_evidence(tmp_path, gate_evidence=partial)
     with pytest.raises(ValueError, match="yearly values for 2022-2025"):
         load_walk_forward_evidence(path)
+
+
+def test_derived_model_id_is_deterministic_and_well_formed() -> None:
+    digests = {"F1": "a" * 64, "F2": "b" * 64, "F3": "c" * 64, "F4": "d" * 64}
+    model_id = derive_walk_forward_model_id(digests)
+    validate_model_id(model_id)  # must not raise
+    assert model_id == derive_walk_forward_model_id(digests)
+    assert model_id.startswith("sha256:") and len(model_id) == len("sha256:") + 64
+
+
+def test_derived_model_id_does_not_depend_on_fold_insertion_order() -> None:
+    """The id is a canonical function of the bundles, so key order cannot move it."""
+    forward = {"F1": "a" * 64, "F2": "b" * 64, "F3": "c" * 64, "F4": "d" * 64}
+    reversed_orders = dict(reversed(list(forward.items())))
+    assert list(forward) != list(reversed_orders)
+    assert derive_walk_forward_model_id(forward) == derive_walk_forward_model_id(reversed_orders)
+
+
+def test_derived_model_id_changes_with_any_fold_bundle() -> None:
+    base = {"F1": "a" * 64, "F2": "b" * 64, "F3": "c" * 64, "F4": "d" * 64}
+    identity = derive_walk_forward_model_id(base)
+    for fold in base:
+        changed = dict(base)
+        changed[fold] = "e" * 64
+        assert derive_walk_forward_model_id(changed) != identity, fold
+    # dropping a fold is a different model too, not a subset that hashes the same
+    assert derive_walk_forward_model_id({k: v for k, v in base.items() if k != "F4"}) != identity
+
+
+@pytest.mark.parametrize(
+    ("digests", "match"),
+    [
+        pytest.param({}, "at least one fold", id="empty"),
+        pytest.param({"F1": "not-hex"}, "SHA-256 hex digest", id="malformed_digest"),
+        pytest.param({"F1": "A" * 64}, "SHA-256 hex digest", id="uppercase_digest"),
+        pytest.param({"F1": "a" * 63}, "SHA-256 hex digest", id="short_digest"),
+        pytest.param({"  ": "a" * 64}, "fold_id cannot be empty", id="blank_fold"),
+    ],
+)
+def test_derived_model_id_refuses_bad_input(digests: dict[str, str], match: str) -> None:
+    with pytest.raises(ValueError, match=match):
+        derive_walk_forward_model_id(digests)

@@ -32,6 +32,7 @@ from research_v2.evaluation.model_walk_forward import (
 from research_v2.evaluation.walk_forward import ORDINARY_TEST_FOLDS
 from research_v2.registry.model_registry import (
     build_walk_forward_evidence_document,
+    derive_walk_forward_model_id,
     load_walk_forward_evidence,
 )
 from research_v2.training.model_bundle import ModelArtifactBundleStore
@@ -182,6 +183,37 @@ def _cross_check_against_report(report: dict[str, object], out_path: Path) -> No
             )
 
 
+def walk_forward_model_id(workspace: Path, report_path: Path) -> str:
+    """Derive the registry model_id for a completed walk-forward run.
+
+    The registry names a model by one ``sha256:<64 hex>`` id while a walk-forward run trains
+    one bundle per ordinary fold, so the id has to be minted from the folds. It is derived from
+    the *verified* bundle digests -- ``bundle_digest`` re-hashes and re-checks every file -- so
+    asking for the id is itself an integrity check on the four models, and a tampered or
+    truncated bundle raises here rather than producing a plausible-looking identity.
+    """
+    report = _load_full_report(report_path)
+    folds_in_report = report.get("folds")
+    if not isinstance(folds_in_report, list):
+        raise PromotionEvidenceError("run report has no folds list")
+    store = ModelArtifactBundleStore(workspace / "models")
+    digests: dict[str, str] = {}
+    for entry in folds_in_report:
+        if not isinstance(entry, dict):
+            raise PromotionEvidenceError("run report fold entry is not an object")
+        fold_id = entry.get("fold_id")
+        model_artifact = entry.get("model_id")
+        if not isinstance(fold_id, str) or not isinstance(model_artifact, str):
+            raise PromotionEvidenceError("run report fold entry lacks fold_id/model_id")
+        digests[fold_id] = store.bundle_digest(model_artifact)
+    if set(digests) != set(ORDINARY_TEST_FOLDS):
+        raise PromotionEvidenceError(
+            f"workspace holds bundles for {sorted(digests)}, expected "
+            f"{list(ORDINARY_TEST_FOLDS)}"
+        )
+    return derive_walk_forward_model_id(digests)
+
+
 def emit_promotion_evidence(
     workspace: Path,
     report_path: Path,
@@ -253,6 +285,7 @@ def emit_promotion_evidence(
     _cross_check_against_report(report, out_path)
     evidence, digest, gate_report = load_walk_forward_evidence(out_path)
     return {
+        "model_id": walk_forward_model_id(workspace, report_path),
         "model_family": result.model_family,
         "evidence_path": str(out_path),
         "evidence_sha256": digest,

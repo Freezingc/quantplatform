@@ -7,6 +7,7 @@ import json
 import math
 import os
 import re
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -524,6 +525,37 @@ def validate_model_id(model_id: str) -> None:
         raise ValueError("model_id must be sha256:<64 lowercase hex characters>")
 
 
+def derive_walk_forward_model_id(bundle_digests: Mapping[str, str]) -> str:
+    """Mint the registry model_id for a walk-forward candidate from its verified bundles.
+
+    A walk-forward run trains one bundle per ordinary fold, but the registry -- and the shadow
+    and pointer subsystems that consume a model_id -- identify a model by a single
+    ``sha256:<64 hex>`` value. Nothing derived that value, so a candidate that passed all six
+    gates had no name to be registered under and ``register_draft`` could not be called.
+
+    The id is a deterministic function of the verified per-fold bundle digests and of nothing
+    else, which is what makes it safe to mint outside a trusted boundary. Each bundle digest
+    already covers every file in its bundle -- config, feature order, the model card carrying
+    family and model_code_version, the signature, all three seed checkpoints and the validation
+    predictions -- so two runs yield the same id only if they produced the same models, and a
+    caller cannot shift the id with metadata the artifacts do not already pin.
+    """
+    if not isinstance(bundle_digests, Mapping) or not bundle_digests:
+        raise ValueError("a walk-forward model id requires at least one fold bundle digest")
+    normalized: dict[str, str] = {}
+    for fold_id, digest in bundle_digests.items():
+        _validate_text(fold_id, "fold_id")
+        if not isinstance(digest, str) or not _EVIDENCE_HASH.fullmatch(digest):
+            raise ValueError(f"bundle digest for {fold_id} must be a SHA-256 hex digest")
+        normalized[fold_id] = digest
+    payload = json.dumps(
+        {"bundle_digests": normalized}, ensure_ascii=True, separators=(",", ":"), sort_keys=True
+    )
+    model_id = "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    validate_model_id(model_id)
+    return model_id
+
+
 def _validate_text(value: str, name: str) -> None:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{name} cannot be empty")
@@ -537,6 +569,7 @@ def _validate_evidence_hashes(values: tuple[str, ...]) -> None:
 
 
 __all__ = [
+    "derive_walk_forward_model_id",
     "ModelRecord",
     "ModelRegistry",
     "ModelStatus",
