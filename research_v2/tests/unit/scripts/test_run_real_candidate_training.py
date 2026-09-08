@@ -655,3 +655,31 @@ def test_m0_grid_still_honours_the_grid_flag() -> None:
     assert all("lambda_l2" in config for config in refined)
     # both stay inside the E7 budget of 30 trials per fold
     assert max(len(base), len(refined), len(MODULE.m0r_config_grid())) <= 30
+
+
+def test_every_runnable_family_is_admitted_by_the_walk_forward_evaluator() -> None:
+    """A family the driver trains but the evaluator rejects fails only after the whole run.
+
+    This is a real failure, not a hypothetical: M0R was added to the driver's family list
+    while research_v2.evaluation.model_walk_forward kept its own copy without it, so a
+    completed four-fold run (~46 min of training, all bundles and signed evidence written)
+    died at the final evaluate_model_walk_forward step on "requires one supported model
+    family". The driver now imports that tuple instead of redeclaring it, and this pins the
+    rest of the admission path -- the E-plan prerequisite table and the model-card family
+    names the evaluator matches against each bundle.
+    """
+    from research_v2.evaluation.model_walk_forward import (
+        _MODEL_CARD_FAMILIES,
+        MODEL_FAMILIES,
+    )
+
+    assert MODULE.MODEL_FAMILIES is MODEL_FAMILIES, "the driver redeclared the admission list"
+    for family in MODULE.MODEL_FAMILIES:
+        assert family in MODULE.FAMILY_ORDER_PREREQUISITES
+        assert family in _MODEL_CARD_FAMILIES
+    for spec in (MODULE.M0_SPEC, MODULE.M0R_SPEC):
+        assert spec.family in MODEL_FAMILIES
+        assert spec.family_name in _MODEL_CARD_FAMILIES[spec.family], (
+            f"{spec.family} bundles are written with family={spec.family_name}, which the "
+            "evaluator would reject as not matching the frozen model selection"
+        )

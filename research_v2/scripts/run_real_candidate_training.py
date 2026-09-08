@@ -52,6 +52,7 @@ from research_v2.datasets.splits import SplitResolver
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.evaluation.model_evaluator import evaluate_frozen_oos
 from research_v2.evaluation.model_walk_forward import (
+    MODEL_FAMILIES,
     ModelOosFold,
     evaluate_model_walk_forward,
 )
@@ -80,7 +81,9 @@ from research_v2.training.temporal_batches import build_temporal_training_batche
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
 ORDINARY_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
-MODEL_FAMILIES: tuple[str, ...] = ("M0", "M0R", "M1", "M2", "M3")
+# MODEL_FAMILIES is imported from research_v2.evaluation.model_walk_forward, which is the
+# evaluator's admission list. Do not redeclare it here: a family this driver accepts but the
+# evaluator does not trains for an hour and then fails at the final gate step.
 FAMILY_ORDER_PREREQUISITES: dict[str, tuple[str, ...]] = {
     "M0": (),
     # M0R is an alternative CARRIER for the same LightGBM candidate slot, not a later stage

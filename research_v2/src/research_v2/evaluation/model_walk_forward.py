@@ -23,9 +23,15 @@ from research_v2.evaluation.walk_forward import (
 )
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
-MODEL_FAMILIES = ("M0", "M1", "M2", "M3")
+# One source of truth for which model families the walk-forward evaluator will accept, and
+# which model-card family names each may carry. The candidate driver imports this tuple
+# instead of keeping its own copy: the two lists drifted when M0R was added to the driver
+# only, and a completed four-fold run then died at the evaluation step on
+# "requires one supported model family" after an hour of training.
+MODEL_FAMILIES = ("M0", "M0R", "M1", "M2", "M3")
 _MODEL_CARD_FAMILIES = {
     "M0": {"M0", "LGBM_RANKER"},
+    "M0R": {"M0R", "LGBM_RANKREG"},
     "M1": {"M1", "RESIDUAL_MLP"},
     "M2": {"M2", "TEMPORAL"},
     "M3": {"M3", "SET_ATTENTION"},
