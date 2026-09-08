@@ -2,7 +2,7 @@
 
 > 生成：2026-09-09 · 分支 `codex/publish-quant-platform` · 提交 `e0e0f55`
 > 严重性：**平台级完整性缺口**，早于 M0R，影响全部 5 个候选家族
-> 状态：**LightGBM 侧与 torch 侧均已闭合**（提交 `e0e0f55`、`aa8dab6`）；仅剩 §5 第 3 步（重命名 card 字段）需协调，因为它会改变 bundle 摘要
+> 状态：**服务授权缺口已在两侧闭合**（`e0e0f55`、`aa8dab6`）；同类排查又找到两处永不触发的守卫，已让其**显形**（`b9eb666`），但**根源未除**——彻底修复需先由所有者定义 `split_id` 与 `code_version`（§4.1、§5 第 5–6 步）
 
 ## 1. 发现过程与复现
 
@@ -92,15 +92,50 @@ all_passed = False
 
 把 `model_status` 改成真话（例如 `BUNDLE_FINALIZED`）在语义上更干净，但会改变**每个 bundle 的摘要** → 改变每个派生的 model_id → 使**已经晋级并记录在注册表里的那条 M0R 条目**成为孤儿，也会使我已记录的「两次全量跑逐字节一致」的可复现性证据与新契约下的重跑不可比。这应该是一次有意为之、协调好的契约变更，而不是顺带改。
 
+## 4.1 同类排查又找到两处永不触发的守卫（提交 `b9eb666`）
+
+`model_status` 是靠问「这个检查到底证明了什么」找到的。用同一个问题扫一遍晋级→服务路径，又找到两处，**都对任何真实工件从未生效过**：
+
+| 守卫 | 代码意图 | 为何从不触发 |
+|---|---|---|
+| `factor_set_status` | 「inference requires a FROZEN factor set」 | 检查以字段存在为前提，而**没有任何工作区的 model card 含该字段**（已核 `m0_v3`、`m0r_v2`、`m0r_v3`）。驱动只写 `dataset_id`、`family`、`model_status`、`model_code_version` 四个字段 |
+| `expected_inference_contract` | 绑定 factor set / universe / label 版本 / split / code version | **没有任何生产调用方传入**，只有测试传。对真实 bundle 传入契约会得到 `model card inference contract field is missing: factor_set_id`——说明校验逻辑本身有效，而链上产出的任何工件**都不可能满足它** |
+
+### 为什么一直没被发现：夹具与生产的背离
+
+torch 加载器自己的夹具 `_write_residual_bundle` 把 `**_INFERENCE_CONTRACT`（全部 9 个字段）写进它构造的每张 card。于是这些守卫在测试里「有覆盖」、全绿，而生产写入方一个字段都不写。**一个按系统从不产出的工件形状建模的测试套件，会对从不执行的检查报告通过。**
+
+### 为什么没有直接改成强制
+
+- 强制要求 `factor_set_status`：会拒绝**所有现存 bundle**，包括已晋级的 M0R。
+- 填充推理契约：需要目前不存在的值。`build_inference_manifest` 是把 `universe_id`、`factor_set_id`、`input_versions` 作为**调用方传入**的参数，并不派生它们；而 `split_id` 与 `code_version` 在**全仓没有任何生产方**。把发明出来的值写进不可变的内容寻址工件比留空更糟——工件是永久的，而一个看起来合理的猜测与一个真正的决定无法区分。
+
+### 实际做法：让缺口无法被忽略
+
+新增单一共享定义 `unverified_bindings(model_card, expected_inference_contract)`，两个加载器都计算它，两个返回类型都携带它（**空元组表示每道守卫都真的触发了**）。调用方不再可能把一个未校验的绑定误认为已校验，审阅者从加载结果就能看出「哪些没有被确立」。
+
+真实工件验证（非夹具）：在注册表授权下加载 `m0r_v2` 的 `m0r-f4`，返回
+
+```
+unverified_bindings == ('factor_set_status', 'inference_contract')
+```
+
+未改变任何 bundle 摘要，因此派生 model_id 与已晋级的注册表条目均不受影响。
+
+新增 5 个测试，其中一个是**绊线**：加载由驱动自己的 bundle 写入器产出的 bundle，断言其 card 仍恰好是那四个字段、且两个绑定都被报告为未校验。若驱动哪天开始写契约，该测试会失败——届时应当**收紧**断言而不是删掉它，因为「夹具与生产的背离」正是需要持续可见的东西。
+
 ## 5. 建议的处置顺序
 
 1. **（已完成，`e0e0f55`）** LightGBM 侧闭合 + `verify_run_promotion` 原语 + 真实工件验证。
 2. **（已完成，`aa8dab6`）** torch 加载器拆成 load-to-evaluate / load-to-serve，4 个驱动调用点与 14 处测试调用点改用前者，服务路径改用后者。
 3. **（需协调，仍未做）** 重命名 card 的 `model_status` 为真话，并同步更新两个加载器、5 个写入点与相关测试；接受 bundle 摘要与派生 model_id 变化，重跑一次链并在注册表里登记新身份（旧条目标记为被取代）。
-4. **（文档）** `inference_contract_hash`（SHADOW 的声明工件之一）的契约文档应当把「服务授权来自注册表而非工件自述」写成一条显式要求——见 `2026-09-09-m0r-shadow-readiness-spec.md` §2.1。
+4. **（已完成，`b9eb666`）** 让两处永不触发的守卫显形：`unverified_bindings` 由两个加载器共同计算并随加载结果返回。
+5. **（需所有者定义，仍未做）** 定义 `split_id` 与 `code_version` 的语义与权威来源，并决定 `factor_set_id` / `universe_id` / `label_id` 各由谁提供。这是**前置条件**：在这两个字段有定义之前，推理契约无法被写进工件，`inference_contract_hash` 也就无从取值。
+6. **（依赖第 5 步）** 把契约字段写入 model card（5 个写入点），并把 `factor_set_status` 与 `expected_inference_contract` 改为强制。与第 3 步同批做，因为它们同样会改变 bundle 摘要与派生 model_id，应一次重跑、一次重新登记，而不是分两次付这个代价。
+7. **（文档）** `inference_contract_hash` 的契约文档应当把「服务授权来自注册表而非工件自述」与「加载结果必须报告未校验的绑定」写成显式要求——见 `2026-09-09-m0r-shadow-readiness-spec.md` §2.1。
 
 ## 6. 边界声明
 
 本次改动只新增与收紧，未放松任何检查；未修改任何已有 bundle、摘要或注册表条目；未修改因子集契约；零数据库写入；未触碰 2026 锁定段与 `materialization_status.{json,md}`。
 
-门禁：ruff clean、mypy 162 文件、pytest **1830 passed / 45 skipped**（两次修复合计 +10 测试）。
+门禁：ruff clean、mypy 162 文件、pytest **1835 passed / 45 skipped**（三次修复合计 +15 测试）。
