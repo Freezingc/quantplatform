@@ -83,7 +83,9 @@ def unverified_bindings(
     unverified: list[str] = []
     if model_card.get("factor_set_status") is None:
         unverified.append("factor_set_status")
-    if expected_inference_contract is None:
+    # Empty counts as unverified: a contract naming no fields establishes nothing. The loader
+    # refuses one outright, so this is defence in depth for any path that bypasses it.
+    if not expected_inference_contract:
         unverified.append("inference_contract")
     return tuple(unverified)
 
@@ -240,6 +242,13 @@ def _validate_inference_contract(
 ) -> None:
     if expected is None:
         return
+    if not expected:
+        # An empty contract checks nothing, and accepting it would let a caller turn the
+        # "inference_contract" entry off in unverified_bindings without verifying anything --
+        # the loader would then actively misreport an unchecked binding as checked. Verified
+        # before this guard existed: passing {} loaded a card stripped of all eight contract
+        # fields and reported unverified_bindings == ("factor_set_status",) alone.
+        raise ValueError("inference contract must name at least one field to verify")
     unsupported = [
         key for key in expected if not isinstance(key, str) or key not in _INFERENCE_CONTRACT_FIELDS
     ]

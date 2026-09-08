@@ -607,3 +607,37 @@ def test_the_torch_code_version_allowlist_is_pinned() -> None:
         "TEMPORAL_GRU": "temporal-gru-1",
         "SET_ATTENTION": "set-attention-1",
     }
+
+
+def test_an_empty_inference_contract_is_refused(tmp_path: Path) -> None:
+    """A contract naming no fields verifies nothing and must not look like it verified something.
+
+    Before this was refused, passing {} loaded a card stripped of every contract field and
+    reported unverified_bindings == ("factor_set_status",) -- dropping inference_contract from the
+    list, i.e. the loader actively claimed a binding it had not checked.
+    """
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path,
+        model_card_exclusions=tuple(set(_INFERENCE_CONTRACT) - {"model_code_version"}),
+    )
+    with pytest.raises(ValueError, match="at least one field"):
+        load_bundle_for_evaluation(
+            store, model_id, expected_dataset_id="dataset-1",
+            expected_feature_order=feature_order, expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"), expected_inference_contract={},
+        )
+
+
+def test_unverified_bindings_treats_an_empty_contract_as_unverified(tmp_path: Path) -> None:
+    """Defence in depth: the reporter must not depend on the validator having run first."""
+    store, model_id, feature_order = _write_residual_bundle(tmp_path)
+    card = {"family": "RESIDUAL_MLP", "model_code_version": "residual-mlp-1"}
+    assert artifact_loader.unverified_bindings(card, None) == (
+        "factor_set_status", "inference_contract",
+    )
+    assert artifact_loader.unverified_bindings(card, {}) == (
+        "factor_set_status", "inference_contract",
+    )
+    complete = dict(card, factor_set_status="FROZEN")
+    assert artifact_loader.unverified_bindings(complete, {"factor_set_id": "fs"}) == ()
+    assert artifact_loader.unverified_bindings(complete, {}) == ("inference_contract",)
