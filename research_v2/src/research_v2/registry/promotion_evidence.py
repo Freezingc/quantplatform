@@ -21,8 +21,11 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
-from typing import cast
+from types import MappingProxyType
+from typing import TYPE_CHECKING, cast
 
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.evaluation.model_walk_forward import (
@@ -31,11 +34,27 @@ from research_v2.evaluation.model_walk_forward import (
 )
 from research_v2.evaluation.walk_forward import ORDINARY_TEST_FOLDS
 from research_v2.registry.model_registry import (
+    ModelStatus,
     build_walk_forward_evidence_document,
     derive_walk_forward_model_id,
     load_walk_forward_evidence,
 )
 from research_v2.training.model_bundle import ModelArtifactBundleStore
+
+if TYPE_CHECKING:
+    from research_v2.registry.registry_store import ModelRegistryStore
+
+# Lifecycle states that mean "this run earned the right to be served". DRAFT has not been
+# evaluated, RETIRED has been withdrawn, and LOCKED_TEST_FAILED is a terminal refusal.
+SERVABLE_STATUSES = frozenset(
+    {
+        ModelStatus.WALK_FORWARD_PASSED,
+        ModelStatus.SHADOW,
+        ModelStatus.LOCKED_TEST_APPROVED,
+        ModelStatus.LOCKED_TEST_PASSED,
+        ModelStatus.PRODUCTION,
+    }
+)
 
 EVIDENCE_SCHEMA_VERSION = 1
 EVIDENCE_ROLE = "ORDINARY_TEST"
@@ -212,6 +231,79 @@ def walk_forward_model_id(workspace: Path, report_path: Path) -> str:
             f"{list(ORDINARY_TEST_FOLDS)}"
         )
     return derive_walk_forward_model_id(digests)
+
+
+@dataclass(frozen=True)
+class PromotedRun:
+    """A walk-forward run whose lifecycle status was verified against the registry.
+
+    ``model_id`` is the registry identity derived from the run's four verified bundle digests;
+    ``fold_artifact_ids`` maps each ordinary fold to the bundle that run trained, so a caller can
+    check that the specific bundle it is about to load belongs to this promoted run rather than to
+    some other run sharing the workspace.
+    """
+
+    model_id: str
+    status: ModelStatus
+    fold_artifact_ids: Mapping[str, str]
+
+
+def verify_run_promotion(
+    workspace: Path,
+    report_path: Path,
+    registry: ModelRegistryStore,
+    *,
+    servable_statuses: frozenset[ModelStatus] = SERVABLE_STATUSES,
+) -> PromotedRun:
+    """Prove a run is promoted, using the registry rather than anything the run said about itself.
+
+    This exists because the model card's ``model_status`` field cannot serve as that proof. The
+    candidate driver writes ``"model_status": "WALK_FORWARD_PASSED"`` into every bundle at five
+    sites, and it must write the bundle before the OOS evaluation runs, because that evaluation
+    consumes the frozen predictions the bundle produces. So the field is true by construction for
+    every bundle of every run, including runs that failed G4: the m0_v3 workspace, whose report
+    says ``all_passed: false`` at delta +0.004202, carries cards reading WALK_FORWARD_PASSED on all
+    four folds, and an inference loader that gates on that field gates on nothing.
+
+    The registry is the only authority that can answer the question, because it is the only place
+    the status was derived from recomputed gates instead of asserted by the artifact's producer.
+    """
+    report = _load_full_report(report_path)
+    folds_in_report = report.get("folds")
+    if not isinstance(folds_in_report, list):
+        raise PromotionEvidenceError("run report has no folds list")
+    fold_artifact_ids: dict[str, str] = {}
+    for entry in folds_in_report:
+        if not isinstance(entry, dict):
+            raise PromotionEvidenceError("run report fold entry is not an object")
+        fold_id = entry.get("fold_id")
+        model_artifact = entry.get("model_id")
+        if not isinstance(fold_id, str) or not isinstance(model_artifact, str):
+            raise PromotionEvidenceError("run report fold entry lacks fold_id/model_id")
+        fold_artifact_ids[fold_id] = model_artifact
+    if set(fold_artifact_ids) != set(ORDINARY_TEST_FOLDS):
+        raise PromotionEvidenceError(
+            f"run report covers {sorted(fold_artifact_ids)}, expected "
+            f"{list(ORDINARY_TEST_FOLDS)}"
+        )
+    # Deriving the id re-hashes and re-verifies all four bundles, so a tampered bundle fails here.
+    model_id = walk_forward_model_id(workspace, report_path)
+    try:
+        record = registry.registry.get(model_id)
+    except ValueError as error:
+        raise PromotionEvidenceError(
+            f"run is not registered in the model registry, so it cannot be served: {error}"
+        ) from error
+    if record.status not in servable_statuses:
+        raise PromotionEvidenceError(
+            f"model {model_id} is {record.status.value}, which is not a servable status "
+            f"(one of {sorted(status.value for status in servable_statuses)})"
+        )
+    return PromotedRun(
+        model_id=model_id,
+        status=record.status,
+        fold_artifact_ids=MappingProxyType(fold_artifact_ids),
+    )
 
 
 def emit_promotion_evidence(

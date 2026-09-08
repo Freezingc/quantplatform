@@ -43,6 +43,7 @@ from research_v2.inference.artifact_loader import (
     _validate_inference_contract,
 )
 from research_v2.models.base import ModelSignature
+from research_v2.registry.promotion_evidence import PromotedRun
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
@@ -64,13 +65,20 @@ _PREPROCESSING_IDENTITY = "identity"
 
 @dataclass(frozen=True)
 class LoadedLGBMInferenceArtifact:
-    """Three verified seed boosters plus everything needed to score a frame reproducibly."""
+    """Three verified seed boosters plus everything needed to score a frame reproducibly.
+
+    ``promotion_model_id`` and ``promotion_status`` record which registry entry authorised this
+    load, so a loaded artifact carries its own authority rather than leaving the caller to
+    remember whether it checked.
+    """
 
     model_id: str
     family: str
     factor_order: tuple[str, ...]
     boosters: Mapping[int, lgb.Booster]
     preprocessing: Mapping[str, object]
+    promotion_model_id: str
+    promotion_status: str
     audit: InferenceLoadAudit | None = None
 
 
@@ -89,8 +97,28 @@ def load_lgbm_inference_artifact(
     expected_preprocessor_hash: str = _PREPROCESSING_IDENTITY,
     expected_inference_contract: InferenceContract | None = None,
     run_id: str | None = None,
+    promoted_run: PromotedRun | None = None,
 ) -> LoadedLGBMInferenceArtifact:
-    """Load an M0 or M0R bundle only after full integrity, allowlist and contract checks."""
+    """Load an M0 or M0R bundle only after full integrity, allowlist and contract checks.
+
+    ``promoted_run`` is what authorises the load, and omitting it is refused. The bundle's own
+    ``model_status`` card field cannot play that role: the driver writes
+    ``WALK_FORWARD_PASSED`` into every bundle before the OOS evaluation exists, so it is true by
+    construction even for runs that failed G4 -- verified on the real m0_v3 workspace, whose
+    report says ``all_passed: false`` at delta +0.004202 while all four of its cards read
+    WALK_FORWARD_PASSED. Authority therefore comes from ``verify_run_promotion``, which asks the
+    registry, and the requested bundle must be one of that promoted run's four fold artifacts.
+    """
+    if promoted_run is None:
+        raise ValueError(
+            "loading a LightGBM bundle for inference requires a PromotedRun verified against the "
+            "model registry; the bundle's own model_status card field is not promotion evidence"
+        )
+    if model_id not in set(promoted_run.fold_artifact_ids.values()):
+        raise ValueError(
+            f"bundle {model_id} does not belong to promoted run {promoted_run.model_id}, whose "
+            f"fold artifacts are {sorted(promoted_run.fold_artifact_ids.values())}"
+        )
     bundle = store.load_verified_bundle(model_id)
     metadata = store.load_metadata_from_bundle(
         bundle,
@@ -101,8 +129,10 @@ def load_lgbm_inference_artifact(
     )
     model_card = metadata["model_card"]
     _validate_inference_contract(model_card, expected_inference_contract)
+    # A bundle-shape check, NOT promotion proof -- see the docstring. Kept because a bundle that
+    # never went through the walk-forward writer is not a candidate artifact at all.
     if model_card.get("model_status") != "WALK_FORWARD_PASSED":
-        raise ValueError("inference requires a WALK_FORWARD_PASSED model")
+        raise ValueError("model bundle was not produced by the walk-forward candidate writer")
     factor_set_status = model_card.get("factor_set_status")
     if factor_set_status is not None and factor_set_status != "FROZEN":
         raise ValueError("inference requires a FROZEN factor set")
@@ -164,6 +194,8 @@ def load_lgbm_inference_artifact(
         factor_order=factor_order,
         boosters=MappingProxyType(boosters),
         preprocessing=metadata["preprocessing"],
+        promotion_model_id=promoted_run.model_id,
+        promotion_status=promoted_run.status.value,
         audit=InferenceLoadAudit(
             model_id=model_id,
             bundle_digest=bundle.digest,

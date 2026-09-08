@@ -24,6 +24,8 @@ from research_v2.inference.lgbm_artifact_loader import (
     score_lgbm_artifact,
 )
 from research_v2.models.base import ModelSignature
+from research_v2.registry.model_registry import ModelStatus
+from research_v2.registry.promotion_evidence import PromotedRun
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
@@ -103,9 +105,20 @@ def _write_bundle(
     return store
 
 
-def _load(store, model_id="m0r-f1", dataset_id="ds:train", order=FACTORS, **kw):
+def _promoted(*artifact_ids: str) -> PromotedRun:
+    """A registry-verified authorisation naming the bundles it covers."""
+    ids = artifact_ids or ("m0r-f1", "m0r-f2", "m0r-f3", "m0r-f4")
+    return PromotedRun(
+        model_id="sha256:" + "a" * 64,
+        status=ModelStatus.WALK_FORWARD_PASSED,
+        fold_artifact_ids=dict(zip(("F1", "F2", "F3", "F4"), ids, strict=True)),
+    )
+
+
+def _load(store, model_id="m0r-f1", dataset_id="ds:train", order=FACTORS, promoted=None, **kw):
     return load_lgbm_inference_artifact(
-        store, model_id, expected_dataset_id=dataset_id, expected_feature_order=order, **kw)
+        store, model_id, expected_dataset_id=dataset_id, expected_feature_order=order,
+        promoted_run=_promoted() if promoted is None else promoted, **kw)
 
 
 @pytest.fixture
@@ -131,9 +144,11 @@ def test_loads_a_verified_bundle_with_all_three_seeds(rankreg_store) -> None:
 def test_ranker_family_is_allowlisted_too(tmp_path: Path) -> None:
     """M0 had the same gap; a loader that served only M0R would make them incomparable."""
     store = _write_bundle(tmp_path, model_id="m0-f1", family="LGBM_RANKER", carrier="lambdarank")
-    loaded = _load(store, model_id="m0-f1")
+    loaded = _load(store, model_id="m0-f1", promoted=_promoted("m0-f1", "m0-f2", "m0-f3", "m0-f4"))
     assert loaded.family == "LGBM_RANKER"
     assert loaded.audit is not None and loaded.audit.code_version == "lgbm-ranker-1"
+    assert loaded.promotion_status == "WALK_FORWARD_PASSED"
+    assert loaded.promotion_model_id == "sha256:" + "a" * 64
 
 
 def test_scoring_matches_the_walk_forward_driver_value_for_value(
@@ -202,7 +217,10 @@ def test_scores_are_bounded_percentiles_and_never_degenerate(rankreg_store) -> N
     [
         pytest.param({"dataset_id": "other:train"}, "dataset_id", id="wrong_dataset"),
         pytest.param({"preprocessor": "not-identity"}, "preprocessor", id="wrong_preprocessor"),
-        pytest.param({"status": "DRAFT"}, "WALK_FORWARD_PASSED", id="not_promoted"),
+        # model_status is a bundle-shape marker, not promotion proof, so what this case really
+        # asserts is that a bundle the walk-forward writer never produced is refused.
+        pytest.param({"status": "DRAFT"}, "walk-forward candidate writer",
+                     id="not_a_walk_forward_bundle"),
         pytest.param({"code_version": "lgbm-rankreg-999"}, "model_code_version",
                      id="wrong_code_version"),
         pytest.param({"family": "RESIDUAL_MLP", "carrier": "rankreg",
@@ -255,3 +273,18 @@ def test_scoring_refuses_a_bad_frame(rankreg_store) -> None:
     infinite.loc[0, "f01"] = np.inf
     with pytest.raises(ValueError, match="infinite"):
         score_lgbm_artifact(loaded, infinite)
+
+
+def test_load_refuses_without_a_registry_verified_authorisation(rankreg_store) -> None:
+    """The card's model_status cannot authorise a load; it is true for every bundle ever written."""
+    with pytest.raises(ValueError, match="requires a PromotedRun"):
+        load_lgbm_inference_artifact(
+            rankreg_store, "m0r-f1", expected_dataset_id="ds:train",
+            expected_feature_order=FACTORS)
+
+
+def test_load_refuses_a_bundle_outside_the_authorised_run(tmp_path: Path) -> None:
+    """An authorisation for one run must not serve another run's bundles."""
+    store = _write_bundle(tmp_path, model_id="other-run-f1")
+    with pytest.raises(ValueError, match="does not belong to promoted run"):
+        _load(store, model_id="other-run-f1")

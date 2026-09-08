@@ -26,6 +26,7 @@ from research_v2.evaluation.model_evaluator import FrozenOosEvaluation
 from research_v2.evaluation.rank_ic import RankICSummary
 from research_v2.registry import promotion_evidence
 from research_v2.registry.model_registry import (
+    ModelStatus,
     build_walk_forward_evidence_document,
     load_walk_forward_evidence,
     validate_model_id,
@@ -386,3 +387,82 @@ def test_walk_forward_model_id_refuses_a_smoke_report(tmp_path: Path) -> None:
     report_path.write_text(json.dumps({"family": "M0R", "mode": "smoke"}), encoding="utf-8")
     with pytest.raises(PromotionEvidenceError, match="full run report"):
         walk_forward_model_id(tmp_path, report_path)
+
+
+# ---------- verify_run_promotion: the authority the loaders must consult ----------
+
+REGISTRY_MODEL_ID = "sha256:" + "a1" * 32
+
+
+def _registry_with(tmp_path: Path, *, promote: bool, evidence_path: Path):
+    from research_v2.registry.registry_store import ModelRegistryStore
+
+    store = ModelRegistryStore(tmp_path / "registry", signing_key=b"registry-key")
+    store.register_draft(REGISTRY_MODEL_ID, actor="researcher")
+    if promote:
+        store.promote_walk_forward(
+            REGISTRY_MODEL_ID, actor="researcher", evidence_path=evidence_path
+        )
+    return store
+
+
+def _report_path(tmp_path: Path) -> Path:
+    path = tmp_path / "report.json"
+    path.write_text(json.dumps(_report_from(_passing_evidence())), encoding="utf-8")
+    return path
+
+
+def test_verify_run_promotion_accepts_a_promoted_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    evidence = tmp_path / "promotion_evidence.json"
+    evidence.write_text(json.dumps(_passing_document_for_registry()), encoding="utf-8")
+    registry = _registry_with(tmp_path, promote=True, evidence_path=evidence)
+    monkeypatch.setattr(promotion_evidence, "walk_forward_model_id", lambda w, r: REGISTRY_MODEL_ID)
+
+    run = promotion_evidence.verify_run_promotion(tmp_path, _report_path(tmp_path), registry)
+    assert run.model_id == REGISTRY_MODEL_ID
+    assert run.status is ModelStatus.WALK_FORWARD_PASSED
+    assert sorted(run.fold_artifact_ids.values()) == ["m0r-f1", "m0r-f2", "m0r-f3", "m0r-f4"]
+
+
+def test_verify_run_promotion_refuses_a_draft(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Registered but never evaluated is not servable."""
+    evidence = tmp_path / "promotion_evidence.json"
+    evidence.write_text(json.dumps(_passing_document_for_registry()), encoding="utf-8")
+    registry = _registry_with(tmp_path, promote=False, evidence_path=evidence)
+    monkeypatch.setattr(promotion_evidence, "walk_forward_model_id", lambda w, r: REGISTRY_MODEL_ID)
+    with pytest.raises(PromotionEvidenceError, match="DRAFT, which is not a servable status"):
+        promotion_evidence.verify_run_promotion(tmp_path, _report_path(tmp_path), registry)
+
+
+def test_verify_run_promotion_refuses_an_unregistered_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """This is exactly the m0_v3 case: a real run that failed G4 and was never registered."""
+    from research_v2.registry.registry_store import ModelRegistryStore
+
+    registry = ModelRegistryStore(tmp_path / "registry", signing_key=b"registry-key")
+    monkeypatch.setattr(promotion_evidence, "walk_forward_model_id", lambda w, r: REGISTRY_MODEL_ID)
+    with pytest.raises(PromotionEvidenceError, match="not registered in the model registry"):
+        promotion_evidence.verify_run_promotion(tmp_path, _report_path(tmp_path), registry)
+
+
+def test_verify_run_promotion_refuses_a_partial_fold_set(tmp_path: Path) -> None:
+    report = _report_from(_passing_evidence())
+    report["folds"] = [entry for entry in report["folds"] if entry["fold_id"] != "F3"]
+    path = tmp_path / "report.json"
+    path.write_text(json.dumps(report), encoding="utf-8")
+    from research_v2.registry.registry_store import ModelRegistryStore
+
+    registry = ModelRegistryStore(tmp_path / "registry", signing_key=b"registry-key")
+    with pytest.raises(PromotionEvidenceError, match="expected"):
+        promotion_evidence.verify_run_promotion(tmp_path, path, registry)
+
+
+def _passing_document_for_registry() -> dict[str, object]:
+    from research_v2.registry.model_registry import build_walk_forward_evidence_document
+
+    return build_walk_forward_evidence_document(_evaluation(_passing_evidence()))
