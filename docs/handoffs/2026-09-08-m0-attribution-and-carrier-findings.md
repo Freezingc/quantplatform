@@ -321,6 +321,25 @@ qr-v2 registry promote  --model-id sha256:32315c89…788b \
 
 排查「与已修缺陷同类」的陈旧硬编码时，在驱动脚本里发现两处仍描述已退役的 F01–F06 折结构的帮助文本：`--baseline-artifacts` 写着 `(F01..F06)`，`--folds` 写着 `(default all six)`。均已改为按当前契约描述。`src/` 下没有同类问题（命中的都是解释历史的注释）。
 
+### 9.10 可复现性：两次独立全量跑逐字节一致
+
+`m0r_v2`（01:54 启动）与 `m0r_v3`（03:32 启动）是两次完全独立的生产链全量运行，相隔约 2.5 小时、各自使用独立工作区。逐层比对：
+
+| 比对对象 | 结果 |
+|---|---|
+| `report.json` | **逐字节一致**（`cmp` 无输出） |
+| `oos` 块 / `folds` 块 | 完全相同；delta 均为 `0.009149095118820283`，`all_passed` 均为 `true` |
+| 四折验证年 RankIC | 0.0679 / 0.0987 / 0.0894 / 0.1032，两次**逐一相同** |
+| 4 个 model bundle 的**每个文件** sha256 | 全部一致（含三个 seed 的 booster、config、model_card、signature、feature_order、preprocessing、验证预测） |
+| dataset id（4）、prediction id（8）、selection id（4+4） | id 集合完全一致 |
+| `promotion_evidence.json` | **逐字节一致**，sha256 两次均为 `92b000c0d246556baf6dd077abe9e5f926ea69fd5840998c6af594b78b0c6d48` |
+
+`m0r_v3` 还顺带验证了驱动的**内联**证据生成接线：它在写完 report 后自动产出了 `promotion_evidence.json`，摘要与 `m0r_v2` 用独立 CLI 补跑出来的那份逐字节相同。
+
+这条比对链的意义在于：`derive_walk_forward_model_id` 的输入是四折 bundle 摘要，而 bundle 摘要已被证明可复现，因此**注册表里那个 model_id（`sha256:32315c89…788b`）也是可复现的身份**，不是某一次运行的偶然产物。任何人在同一数据版本上重跑都会得到同一个 id、同一份证据、同一条晋级记录。
+
+> `m0r_v1` 是那次因家族准入列表不同步而崩在评估步骤的运行，其四折训练产物完整保留作为该缺陷的现场证据；它没有 report.json。
+
 ## 10. 已完成的本轨道交付
 
 - `research_v2/src/research_v2/baselines/lgbm_ranker.py`：在 Dataset 构造处加入带实测数据的注释守卫（第 6 节的 hazard 无法用单元测试捕获）。
