@@ -18,6 +18,7 @@ import contextlib
 import hashlib
 import json
 import os
+import sys
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import date
@@ -63,6 +64,11 @@ from research_v2.evaluation.selection_evidence import (
 )
 from research_v2.inference.artifact_loader import load_inference_artifact
 from research_v2.models.base import ModelSignature, predictions_to_frame
+from research_v2.registry.promotion_evidence import (
+    PROMOTION_EVIDENCE_FILENAME,
+    PromotionEvidenceError,
+    emit_promotion_evidence,
+)
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import (
@@ -2318,6 +2324,38 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def _maybe_emit_promotion_evidence(args: argparse.Namespace, report: dict[str, Any]) -> None:
+    """Turn a gate-passing run into something the lifecycle registry can actually consume.
+
+    ``load_walk_forward_evidence`` is the only route from WALK_FORWARD_PASSED onward and it
+    does not read this driver's report shape, so a run that passed all six gates still could
+    not be promoted. Emission re-verifies the signed artifacts from disk rather than trusting
+    the in-memory numbers, and cross-checks them against the report just written.
+
+    Only a passing run emits: a failing one has nothing to promote, and writing a document the
+    registry would reject anyway would just invite someone to hand-edit it.
+    """
+    oos = report.get("oos")
+    if not isinstance(oos, dict) or oos.get("all_passed") is not True:
+        print("promotion evidence not emitted: the run did not pass all six gates")
+        return
+    if args.workspace is None:
+        print("promotion evidence not emitted: no --workspace to re-verify against")
+        return
+    secret = os.environ.get("QRV2_SELECTION_EVIDENCE_HMAC_KEY", "")
+    out_path = Path(args.workspace) / PROMOTION_EVIDENCE_FILENAME
+    try:
+        summary = emit_promotion_evidence(
+            Path(args.workspace), args.report, out_path, signing_key=secret.encode("utf-8")
+        )
+    except (PromotionEvidenceError, ValueError) as error:
+        # The report is already on disk, so nothing is lost -- but a run that passed the gates
+        # and still cannot produce registry evidence is a real failure, not a warning.
+        print(f"promotion evidence emission FAILED: {error}", file=sys.stderr)
+        raise SystemExit(3) from error
+    print(f"promotion evidence: {json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True)}")
+
+
 def main() -> None:
     args = parse_args()
     if args.smoke:
@@ -2367,6 +2405,7 @@ def main() -> None:
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report["oos"], ensure_ascii=False, indent=2))
     print(f"full run complete; report={args.report}")
+    _maybe_emit_promotion_evidence(args, report)
 
 
 if __name__ == '__main__':

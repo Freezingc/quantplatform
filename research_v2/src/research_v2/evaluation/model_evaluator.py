@@ -34,6 +34,7 @@ class FrozenOosEvaluation:
     yearly_mean_rank_ic: dict[int, float]
     baseline_mean_rank_ic: float | None
     delta_rank_ic: float | None
+    gate_evidence: GateEvidence
     gate_report: GateReport
     yearly_summary: pd.DataFrame
 
@@ -112,6 +113,10 @@ def evaluate_frozen_oos(
         yearly_mean_rank_ic=yearly,
         baseline_mean_rank_ic=baseline_mean,
         delta_rank_ic=delta,
+        # Exposed so the registry's promotion-evidence document can be rendered from the exact
+        # inputs the gates were computed from, instead of being reassembled -- and possibly
+        # reassembled differently -- by a caller that only has the summary numbers.
+        gate_evidence=evidence,
         gate_report=evaluate_oos_gates(evidence, is_baseline=is_baseline),
         yearly_summary=yearly_summary,
     )

@@ -22,6 +22,7 @@ from research_v2.evaluation.gates import (
     _ordinary_test_years,
     evaluate_oos_gates,
 )
+from research_v2.evaluation.model_evaluator import FrozenOosEvaluation
 from research_v2.monitoring.shadow import (
     ShadowDeploymentApproval,
     ShadowDeploymentApprovalVerifier,
@@ -378,6 +379,41 @@ def load_walk_forward_evidence(path: Path) -> tuple[GateEvidence, str, GateRepor
     evidence = _parse_gate_evidence(cast(dict[str, object], payload))
     report = validate_walk_forward_evidence(evidence)
     return evidence, hashlib.sha256(raw).hexdigest(), report
+
+
+def build_walk_forward_evidence_document(evaluation: FrozenOosEvaluation) -> dict[str, object]:
+    """Render a completed ordinary-OOS evaluation as the registry's promotion evidence.
+
+    ``load_walk_forward_evidence`` is the only route into the lifecycle registry, and nothing
+    in the codebase produced the document it consumes: the candidate driver writes a
+    human-facing report whose shape the loader rejects on the first field. This is that
+    missing producer, and it is the last gap between "passed all six gates" and "promotable".
+
+    The output is safe to treat as untrusted input, because the registry does not trust it.
+    ``load_walk_forward_evidence`` re-derives G1-G6 from these raw numbers through
+    ``validate_walk_forward_evidence`` and never reads a reported gate status, so emitting a
+    document cannot promote a model that does not actually pass.
+    """
+    evidence = evaluation.gate_evidence
+    if evidence.candidate_delta_rank_ic is None:
+        raise ValueError(
+            "promotion evidence requires a candidate delta against a baseline; a baseline's "
+            "own walk-forward run is not promotable evidence"
+        )
+    return {
+        "schema_version": 1,
+        "role": "ORDINARY_TEST",
+        "gate_evidence": {
+            "mean_rank_ic": evidence.mean_rank_ic,
+            "hac_t_statistic": evidence.hac_t_statistic,
+            "yearly_mean_rank_ic": {
+                str(year): value for year, value in evidence.yearly_mean_rank_ic.items()
+            },
+            "candidate_delta_rank_ic": evidence.candidate_delta_rank_ic,
+            "valid_test_day_count": evidence.valid_test_day_count,
+            "score_health": [asdict(item) for item in evidence.score_health],
+        },
+    }
 
 
 def validate_walk_forward_evidence(evidence: GateEvidence) -> GateReport:

@@ -19,7 +19,7 @@ from research_v2.baselines.orchestration import (
     BaselineTestEvaluation,
     BaselineValidationScore,
 )
-from research_v2.evaluation.gates import GateReport, GateResult, GateStatus
+from research_v2.evaluation.gates import GateEvidence, GateReport, GateResult, GateStatus
 from research_v2.evaluation.hac import HACMeanTest
 from research_v2.evaluation.model_evaluator import FrozenOosEvaluation
 from research_v2.evaluation.rank_ic import RankICSummary
@@ -61,6 +61,13 @@ def _evaluation(gate_report: GateReport) -> FrozenOosEvaluation:
         yearly_mean_rank_ic={2020: 0.04},
         baseline_mean_rank_ic=None,
         delta_rank_ic=None,
+        gate_evidence=GateEvidence(
+            mean_rank_ic=0.04,
+            hac_t_statistic=2.1,
+            yearly_mean_rank_ic={2020: 0.04},
+            candidate_delta_rank_ic=None,
+            valid_test_day_count=1,
+        ),
         gate_report=gate_report,
         yearly_summary=daily,
     )
