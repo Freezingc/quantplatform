@@ -11,7 +11,7 @@ import pytest
 import torch
 
 import research_v2.inference.artifact_loader as artifact_loader
-from research_v2.inference.artifact_loader import load_inference_artifact
+from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
@@ -55,7 +55,7 @@ def test_allowlisted_loader_reads_only_verified_three_seed_state_dicts(tmp_path:
             {"signal_date": ["2025-01-02"], "ts_code": ["a"], "percentile_rank": [0.5]}
         ),
     )
-    loaded = load_inference_artifact(
+    loaded = load_bundle_for_evaluation(
         store,
         "model-1",
         expected_dataset_id="dataset-1",
@@ -125,7 +125,7 @@ def test_allowlisted_loader_reconstructs_gru_and_set_attention_bundles(tmp_path:
             ),
         )
 
-        loaded = load_inference_artifact(
+        loaded = load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id=f"{model_id}-dataset",
@@ -153,7 +153,7 @@ def test_contract_mismatch_is_rejected_before_model_construction(
 
     monkeypatch.setattr(artifact_loader, "_allowlisted_factory", fail_factory)
     with pytest.raises(ValueError, match=field):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id="dataset-1",
@@ -178,7 +178,7 @@ def test_missing_requested_contract_field_is_rejected_before_model_construction(
 
     monkeypatch.setattr(artifact_loader, "_allowlisted_factory", fail_factory)
     with pytest.raises(ValueError, match="factor_set_id"):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id="dataset-1",
@@ -196,7 +196,7 @@ def test_non_frozen_factor_set_is_rejected(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValueError, match="FROZEN"):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id="dataset-1",
@@ -213,7 +213,7 @@ def test_unknown_model_code_version_is_rejected(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValueError, match="model_code_version"):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id="dataset-1",
@@ -236,7 +236,7 @@ def test_tampered_bundle_is_rejected_before_model_construction(
 
     monkeypatch.setattr(artifact_loader, "_allowlisted_factory", fail_factory)
     with pytest.raises(ValueError, match="integrity"):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id="dataset-1",
@@ -258,7 +258,7 @@ def test_missing_seed_is_rejected_before_model_construction(
 
     monkeypatch.setattr(artifact_loader, "_allowlisted_factory", fail_factory)
     with pytest.raises(ValueError, match="integrity"):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id="dataset-1",
@@ -296,7 +296,7 @@ def test_seed_state_schema_is_verified_before_device_load(
     _refresh_checksums(store.bundle_path(model_id))
 
     with pytest.raises(ValueError, match=expected_message):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id="dataset-1",
@@ -308,7 +308,7 @@ def test_seed_state_schema_is_verified_before_device_load(
 
 def test_loader_records_non_sensitive_load_audit_metadata(tmp_path: Path) -> None:
     store, model_id, feature_order = _write_residual_bundle(tmp_path)
-    loaded = load_inference_artifact(
+    loaded = load_bundle_for_evaluation(
         store,
         model_id,
         expected_dataset_id="dataset-1",
@@ -346,7 +346,7 @@ def test_loader_uses_one_verified_bundle_snapshot_for_seed_bytes(
 
     monkeypatch.setattr(store, "bundle_path", forbidden_path_lookup)
 
-    loaded = load_inference_artifact(
+    loaded = load_bundle_for_evaluation(
         store,
         model_id,
         expected_dataset_id="dataset-1",
@@ -408,3 +408,93 @@ def _refresh_checksums(root: Path) -> None:
     ]
     lines = [f"{_sha256(path)}  {path.name}" for path in sorted(entries)]
     (root / "checksums.sha256").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+# ---------- serving path: promotion authority comes from the registry, not the card ----------
+
+_ORDER = tuple(f"f{index}" for index in range(15))
+
+
+def _write_mlp_bundle(tmp_path: Path, model_id: str = "model-1") -> ModelArtifactBundleStore:
+    model = ResidualMLP(ResidualMLPConfig(raw_factor_count=15, hidden_dim=16, num_blocks=1))
+    seeds = {}
+    for seed in REQUIRED_SEEDS:
+        path = tmp_path / f"seed-{model_id}-{seed}.pt"
+        torch.save({"model_state_dict": model.state_dict()}, path)
+        seeds[seed] = path
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    store.write(
+        model_id,
+        model_card={
+            "dataset_id": "dataset-1",
+            "family": "RESIDUAL_MLP",
+            "model_status": "WALK_FORWARD_PASSED",
+        },
+        config={"raw_factor_count": 15, "hidden_dim": 16, "num_blocks": 1, "dropout": 0.1},
+        signature=asdict(model.artifact_signature()),
+        feature_order=_ORDER,
+        preprocessing={"state_hash": "pre-1"},
+        seed_checkpoints=seeds,
+        validation_predictions=pd.DataFrame(
+            {"signal_date": ["2025-01-02"], "ts_code": ["a"], "percentile_rank": [0.5]}
+        ),
+    )
+    return store
+
+
+def _promoted(*artifact_ids: str):
+    from research_v2.registry.model_registry import ModelStatus
+    from research_v2.registry.promotion_evidence import PromotedRun
+
+    ids = artifact_ids or ("model-1", "model-2", "model-3", "model-4")
+    return PromotedRun(
+        model_id="sha256:" + "a" * 64,
+        status=ModelStatus.WALK_FORWARD_PASSED,
+        fold_artifact_ids=dict(zip(("F1", "F2", "F3", "F4"), ids, strict=True)),
+    )
+
+
+def test_serving_load_refuses_without_registry_verified_promotion(tmp_path: Path) -> None:
+    """The card says WALK_FORWARD_PASSED for every bundle ever written, so it proves nothing."""
+    store = _write_mlp_bundle(tmp_path)
+    with pytest.raises(ValueError, match="requires a PromotedRun"):
+        artifact_loader.load_inference_artifact(
+            store, "model-1", expected_dataset_id="dataset-1",
+            expected_feature_order=_ORDER, expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"),
+        )
+
+
+def test_serving_load_refuses_a_bundle_outside_the_authorised_run(tmp_path: Path) -> None:
+    """One promoted run's authority must not serve another run's bundles."""
+    store = _write_mlp_bundle(tmp_path, model_id="other-run-f1")
+    with pytest.raises(ValueError, match="does not belong to promoted run"):
+        artifact_loader.load_inference_artifact(
+            store, "other-run-f1", expected_dataset_id="dataset-1",
+            expected_feature_order=_ORDER, expected_preprocessor_hash="pre-1",
+            device=torch.device("cpu"), promoted_run=_promoted(),
+        )
+
+
+def test_serving_load_records_the_authority_that_permitted_it(tmp_path: Path) -> None:
+    store = _write_mlp_bundle(tmp_path)
+    loaded = artifact_loader.load_inference_artifact(
+        store, "model-1", expected_dataset_id="dataset-1",
+        expected_feature_order=_ORDER, expected_preprocessor_hash="pre-1",
+        device=torch.device("cpu"), promoted_run=_promoted(),
+    )
+    assert len(loaded.models) == 3
+    assert loaded.promotion_model_id == "sha256:" + "a" * 64
+    assert loaded.promotion_status == "WALK_FORWARD_PASSED"
+
+
+def test_evaluation_load_carries_no_promotion_claim(tmp_path: Path) -> None:
+    """The driver's pre-evaluation load must not look like an authorised serving load."""
+    store = _write_mlp_bundle(tmp_path)
+    loaded = load_bundle_for_evaluation(
+        store, "model-1", expected_dataset_id="dataset-1",
+        expected_feature_order=_ORDER, expected_preprocessor_hash="pre-1",
+        device=torch.device("cpu"),
+    )
+    assert loaded.promotion_model_id == ""
+    assert loaded.promotion_status == ""

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import io
 from collections.abc import Callable, Mapping
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime
 from types import MappingProxyType
 from typing import TypeAlias, cast
@@ -15,6 +15,7 @@ from torch import nn
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
+from research_v2.registry.promotion_evidence import PromotedRun
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
@@ -58,6 +59,10 @@ class LoadedInferenceArtifact:
     models: tuple[nn.Module, ...]
     preprocessing: Mapping[str, object]
     audit: InferenceLoadAudit | None = None
+    # Which registry entry authorised this load, and its status. Empty for an evaluation load,
+    # which is authorised by nothing beyond the bundle's own integrity -- it is not served.
+    promotion_model_id: str = ""
+    promotion_status: str = ""
 
 
 def load_inference_artifact(
@@ -70,8 +75,69 @@ def load_inference_artifact(
     device: torch.device,
     expected_inference_contract: InferenceContract | None = None,
     run_id: str | None = None,
+    promoted_run: PromotedRun | None = None,
 ) -> LoadedInferenceArtifact:
-    """Load known model classes only after full bundle and reconstruction-contract checks."""
+    """Load a bundle FOR SERVING, which requires registry-verified promotion.
+
+    ``promoted_run`` is mandatory and the bundle must be one of that run's four fold artifacts.
+    The model card's own ``model_status`` cannot substitute: the candidate driver writes
+    ``WALK_FORWARD_PASSED`` into every bundle before the OOS evaluation exists, so it is true by
+    construction even for runs that failed G4 -- the m0_v3 workspace, whose report says
+    ``all_passed: false``, carries that value on all four folds. Authority comes from the registry,
+    which is the only place the status was derived from recomputed gates rather than asserted by
+    the artifact's producer. See
+    docs/handoffs/2026-09-09-model-status-fail-open-finding.md.
+
+    To load a bundle in order to EVALUATE it -- which is what the candidate driver does when it
+    re-reads its own frozen bundle to produce the TEST predictions the gates then score -- use
+    ``load_bundle_for_evaluation``. That is a different operation with different authority, and
+    conflating the two is what made the check vacuous.
+    """
+    if promoted_run is None:
+        raise ValueError(
+            "serving a model requires a PromotedRun verified against the model registry; use "
+            "load_bundle_for_evaluation to load a bundle for evaluation instead"
+        )
+    if model_id not in set(promoted_run.fold_artifact_ids.values()):
+        raise ValueError(
+            f"bundle {model_id} does not belong to promoted run {promoted_run.model_id}, whose "
+            f"fold artifacts are {sorted(promoted_run.fold_artifact_ids.values())}"
+        )
+    loaded = load_bundle_for_evaluation(
+        store,
+        model_id,
+        expected_dataset_id=expected_dataset_id,
+        expected_feature_order=expected_feature_order,
+        expected_preprocessor_hash=expected_preprocessor_hash,
+        device=device,
+        expected_inference_contract=expected_inference_contract,
+        run_id=run_id,
+    )
+    return replace(
+        loaded,
+        promotion_model_id=promoted_run.model_id,
+        promotion_status=promoted_run.status.value,
+    )
+
+
+def load_bundle_for_evaluation(
+    store: ModelArtifactBundleStore,
+    model_id: str,
+    *,
+    expected_dataset_id: str,
+    expected_feature_order: tuple[str, ...],
+    expected_preprocessor_hash: str,
+    device: torch.device,
+    expected_inference_contract: InferenceContract | None = None,
+    run_id: str | None = None,
+) -> LoadedInferenceArtifact:
+    """Load known model classes only after full bundle and reconstruction-contract checks.
+
+    This is the load-to-evaluate path: the candidate driver uses it to re-read a bundle it just
+    froze, so that the TEST predictions the gates score provably come from the persisted artifact
+    rather than from training memory. At that moment no gate verdict exists yet, so nothing here
+    claims or checks promotion. It is NOT a serving path -- see ``load_inference_artifact``.
+    """
     bundle = store.load_verified_bundle(model_id)
     metadata = store.load_metadata_from_bundle(
         bundle,
@@ -82,8 +148,12 @@ def load_inference_artifact(
     )
     model_card = metadata["model_card"]
     _validate_inference_contract(model_card, expected_inference_contract)
+    # A bundle-shape marker, NOT promotion proof: the driver writes this literal before the OOS
+    # evaluation exists, so it is true for every bundle of every run, including runs that failed
+    # G4. It is kept because a bundle the walk-forward writer never produced is not a candidate
+    # artifact at all. Promotion is checked in load_inference_artifact, against the registry.
     if model_card.get("model_status") != "WALK_FORWARD_PASSED":
-        raise ValueError("inference requires a WALK_FORWARD_PASSED model")
+        raise ValueError("model bundle was not produced by the walk-forward candidate writer")
     factor_set_status = model_card.get("factor_set_status")
     if factor_set_status is not None and factor_set_status != "FROZEN":
         raise ValueError("inference requires a FROZEN factor set")

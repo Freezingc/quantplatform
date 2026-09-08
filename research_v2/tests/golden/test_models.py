@@ -10,7 +10,7 @@ import pandas as pd
 import pytest
 import torch
 
-from research_v2.inference.artifact_loader import load_inference_artifact
+from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.base import FeatureBatch, TemporalFeatureBatch
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -64,7 +64,7 @@ def test_cpu_golden_outputs_and_artifact_reconstruction(tmp_path: Path, case: st
             {"signal_date": ["2025-01-02"], "ts_code": ["a"], "percentile_rank": [0.5]}
         ),
     )
-    loaded = load_inference_artifact(
+    loaded = load_bundle_for_evaluation(
         store,
         model_id,
         expected_dataset_id=f"{model_id}-dataset",
@@ -76,7 +76,7 @@ def test_cpu_golden_outputs_and_artifact_reconstruction(tmp_path: Path, case: st
         reconstructed = loaded.models[0](batch)
     assert torch.allclose(reconstructed, scores, rtol=0.0, atol=1e-6)
     with pytest.raises(ValueError, match="feature_order"):
-        load_inference_artifact(
+        load_bundle_for_evaluation(
             store,
             model_id,
             expected_dataset_id=f"{model_id}-dataset",

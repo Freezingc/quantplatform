@@ -20,7 +20,7 @@ import torch
 
 from research_v2.evaluation.model_evaluator import FrozenOosEvaluation, evaluate_frozen_oos
 from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
-from research_v2.inference.artifact_loader import load_inference_artifact
+from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.base import FeatureBatch, TemporalFeatureBatch
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -378,7 +378,7 @@ def _run_smoke_pipeline(family: str, tmp_path: Path) -> FrozenOosEvaluation:
             validation_predictions=validation_predictions,
         )
 
-    loaded = load_inference_artifact(
+    loaded = load_bundle_for_evaluation(
         bundle_store,
         model_id,
         expected_dataset_id="synthetic-train",

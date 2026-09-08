@@ -68,7 +68,7 @@ from research_v2.evaluation.selection_evidence import (
     FrozenPredictionStore,
     SelectionEvidenceStore,
 )
-from research_v2.inference.artifact_loader import load_inference_artifact
+from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.base import ModelSignature, predictions_to_frame
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -482,7 +482,7 @@ def _train_cross_section_smoke(
             columns={"ensemble_score": "percentile_rank"}
         ),
     )
-    loaded = load_inference_artifact(
+    loaded = load_bundle_for_evaluation(
         bundle_store,
         model_id,
         expected_dataset_id="smoke-train",
@@ -804,7 +804,7 @@ def train_m2_smoke(workspace: Path) -> dict[str, Any]:
             columns={"ensemble_score": "percentile_rank"}
         ),
     )
-    loaded = load_inference_artifact(
+    loaded = load_bundle_for_evaluation(
         bundle_store,
         model_id,
         expected_dataset_id="smoke-train",
@@ -1864,7 +1864,7 @@ def _run_full_cross_section(
             model_evidence_id = model_evidence.evidence_id
 
         # Frozen TEST predictions: candidate (verified bundle) + best_simple (baseline).
-        loaded = load_inference_artifact(
+        loaded = load_bundle_for_evaluation(
             model_store,
             model_id,
             expected_dataset_id=dataset_id,
@@ -2256,7 +2256,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             )
             model_evidence_id = model_evidence.evidence_id
 
-        loaded = load_inference_artifact(
+        loaded = load_bundle_for_evaluation(
             model_store,
             model_id,
             expected_dataset_id=dataset_id,
