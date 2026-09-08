@@ -2,7 +2,7 @@
 
 > 生成：2026-09-09 · 分支 `codex/publish-quant-platform` · 提交 `e0e0f55`
 > 严重性：**平台级完整性缺口**，早于 M0R，影响全部 5 个候选家族
-> 状态：LightGBM 侧已闭合并用真实工件验证；**torch 侧（M1/M2/M3）仍未闭合**，需要一次协调的契约变更
+> 状态：**LightGBM 侧与 torch 侧均已闭合**（提交 `e0e0f55`、`aa8dab6`）；仅剩 §5 第 3 步（重命名 card 字段）需协调，因为它会改变 bundle 摘要
 
 ## 1. 发现过程与复现
 
@@ -67,16 +67,26 @@ all_passed = False
 
 最后一条是关键：没有「折→工件」绑定，一个被晋级运行的授权就能服务任何工作区里的任何 bundle。
 
-## 4. 未闭合的部分（torch 侧，M1/M2/M3）
+## 4. torch 侧（M1/M2/M3）：已闭合
 
-`inference/artifact_loader.py` 有**完全相同**的漏洞，但没有一并修，原因是它有 **4 个调用点在驱动内部**（`run_real_candidate_training.py` 的 485、807、1867、2259 行）：驱动写完全 bundle 后立刻用它重新加载、以产出冻结 TEST 预测——**这是一次合法的「评估前加载」**，模型并没有被服务，而此时门也确实还没算。给服务路径设计的检查不能把它挡掉。
+`inference/artifact_loader.py` 曾有**完全相同**的漏洞。它没有和 LightGBM 侧一起修，是因为它有 **4 个调用点在驱动内部**（`run_real_candidate_training.py` 的 485、807、1867、2259 行）：驱动写完全 bundle 后立刻用它重新加载、以产出冻结 TEST 预测——**这是一次合法的「评估前加载」**，模型并没有被服务，而此时门也确实还没算。给服务路径设计的检查不能把它挡掉。
 
-正确修法是把两种用途分开：
+已按「把两种用途分开」实施（提交 `aa8dab6`），而不是放松任何一边：
 
-- **load-to-evaluate**：驱动内部用，不要求晋级（模型正在被评估，不是被服务）；
-- **load-to-serve**：要求注册表验证的 `PromotedRun`，与 LightGBM 侧同构。
+| 函数 | 用途 | 晋级要求 | 返回的授权字段 |
+|---|---|---|---|
+| `load_bundle_for_evaluation` | 驱动内部：重读刚冻结的 bundle，使门所打分的 TEST 预测可证明来自持久化工件而非训练内存 | **无**（此刻门的结论尚不存在） | `promotion_model_id=""`、`promotion_status=""` |
+| `load_inference_artifact` | **服务** | 强制要求 `verify_run_promotion` 产出的 `PromotedRun`，且被加载的 bundle 必须在该运行的四折工件之内 | 记录授权它的注册表 id 与状态 |
 
-这涉及 torch 加载器的公开签名、4 个驱动调用点、以及 `tests/unit/inference/test_artifact_loader.py` 等消费方，是一次**协调的契约变更**，不适合作为顺带改动塞进一个已经在改推理层的提交里。
+评估路径保留了原有的全部检查（bundle 完整性、allowlist、code version、dataset、feature order、preprocessor hash、推理契约、state_dict 重建），只是**不再声称也不携带**任何晋级判断——因此一次评估加载不可能被误认为一次已授权的服务加载。
+
+公开的 `load_inference_artifact` 名字保持不变，所以原本就在「请求加载推理工件」的调用方现在得到了这个名字一直隐含的那道检查。card 字段在读取处被归位为「bundle 形状标记」，而那句误导性的报错 `inference requires a WALK_FORWARD_PASSED model` 已删除——它正是该字段无法支撑的那个断言。
+
+调用点迁移：驱动 4 处，3 个测试文件共 14 处（每一处都是「建 bundle 再加载以检查重建」，不是服务）。
+
+**未改变任何 bundle 摘要**，因此派生的 model_id 不变、已晋级的 M0R 注册表条目不受影响：这一步是拆分函数与归位检查，不重写任何工件。
+
+超出测试套件的验证：改名后两个驱动 smoke 均端到端跑通（`--family M0R --smoke`、`--family M1 --smoke`，各退出码 0）。新增 4 个测试：无 `PromotedRun` 时服务被拒、bundle 不在授权运行内时服务被拒、服务成功时记录授权来源、评估加载不携带任何晋级声明。
 
 ### 也没有改 card 字段本身
 
@@ -84,13 +94,13 @@ all_passed = False
 
 ## 5. 建议的处置顺序
 
-1. **（已完成）** LightGBM 侧闭合 + `verify_run_promotion` 原语 + 真实工件验证。
-2. **（建议下一步）** 把 torch 加载器拆成 load-to-evaluate / load-to-serve，4 个驱动调用点改用前者，服务路径改用后者。这一步不需要任何治理输入。
-3. **（需协调）** 重命名 card 的 `model_status` 为真话，并同步更新两个加载器、5 个写入点与相关测试；接受 bundle 摘要与派生 model_id 变化，重跑一次链并在注册表里登记新身份（旧条目标记为被取代）。
+1. **（已完成，`e0e0f55`）** LightGBM 侧闭合 + `verify_run_promotion` 原语 + 真实工件验证。
+2. **（已完成，`aa8dab6`）** torch 加载器拆成 load-to-evaluate / load-to-serve，4 个驱动调用点与 14 处测试调用点改用前者，服务路径改用后者。
+3. **（需协调，仍未做）** 重命名 card 的 `model_status` 为真话，并同步更新两个加载器、5 个写入点与相关测试；接受 bundle 摘要与派生 model_id 变化，重跑一次链并在注册表里登记新身份（旧条目标记为被取代）。
 4. **（文档）** `inference_contract_hash`（SHADOW 的声明工件之一）的契约文档应当把「服务授权来自注册表而非工件自述」写成一条显式要求——见 `2026-09-09-m0r-shadow-readiness-spec.md` §2.1。
 
 ## 6. 边界声明
 
 本次改动只新增与收紧，未放松任何检查；未修改任何已有 bundle、摘要或注册表条目；未修改因子集契约；零数据库写入；未触碰 2026 锁定段与 `materialization_status.{json,md}`。
 
-门禁：ruff clean、mypy 162 文件、pytest **1826 passed / 45 skipped**（本次 +6 测试）。
+门禁：ruff clean、mypy 162 文件、pytest **1830 passed / 45 skipped**（两次修复合计 +10 测试）。
