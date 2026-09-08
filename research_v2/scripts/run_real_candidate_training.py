@@ -1,4 +1,10 @@
-"""Real-data candidate model training driver (M0 -> M1 -> M2 -> M3).
+"""Real-data candidate model training driver (M0, M0R, M1 -> M2 -> M3).
+
+M0 and M0R are two carriers for the same LightGBM candidate slot and are alternatives, not
+stages: M0 is the frozen LambdaRank recipe, M0R regresses the per-day return percentile rank.
+Neither is a prerequisite for the other, and the E-plan ordering M1 -> M2 -> M3 is unchanged.
+M0R exists because the LambdaRank carrier caps out below the G4 bar; see
+docs/handoffs/2026-09-08-m0-attribution-and-carrier-findings.md.
 
 Task 2 skeleton: enforces the E-plan execution order and the fold-matched
 baseline artifact contract; dataset assembly reuses walk_forward_common so
@@ -130,7 +136,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--grid",
         choices=("base", "refined"),
         default="base",
-        help="M0 config grid: base (24-capacity) or refined (24 with lambda_l2 sweep)",
+        help=(
+            "M0 config grid: base (24-capacity) or refined (24 with lambda_l2 sweep). "
+            "Ignored by M0R, whose grid is pinned to the single config its +0.009149 was "
+            "measured at, so that number carries no validation-selection bias"
+        ),
     )
     parser.add_argument("--max-epochs", type=int, default=100)
     parser.add_argument(
