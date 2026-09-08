@@ -28,6 +28,7 @@ from research_v2.registry.model_registry import (
     load_walk_forward_evidence,
 )
 from research_v2.registry.promotion_evidence import (
+    REQUIRED_TRUST_ROOT_ENV,
     PromotionEvidenceError,
     _cross_check_against_report,
     _load_full_report,
@@ -270,17 +271,40 @@ def test_report_must_be_a_full_run(tmp_path: Path) -> None:
         _load_full_report(tmp_path / "absent.json")
 
 
-def test_emit_requires_a_signing_key(tmp_path: Path) -> None:
+def test_emit_names_every_missing_trust_root_variable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The stores are built from the environment, so say which variable is absent.
+
+    Both names are required and hold the same key by design; a run that exports only one used
+    to fail deep inside the evaluator with a message that did not say which artifact it was
+    reading, which is how the first attempt at emitting the M0R evidence ended.
+    """
     report = tmp_path / "report.json"
     report.write_text(json.dumps(_report_from(_passing_evidence())), encoding="utf-8")
-    with pytest.raises(PromotionEvidenceError, match="signing key"):
-        emit_promotion_evidence(
-            tmp_path, report, tmp_path / "promotion_evidence.json", signing_key=b""
-        )
+    out = tmp_path / "promotion_evidence.json"
+
+    for name in REQUIRED_TRUST_ROOT_ENV:
+        monkeypatch.delenv(name, raising=False)
+    with pytest.raises(PromotionEvidenceError) as both_missing:
+        emit_promotion_evidence(tmp_path, report, out)
+    for name in REQUIRED_TRUST_ROOT_ENV:
+        assert name in str(both_missing.value)
+
+    monkeypatch.setenv(REQUIRED_TRUST_ROOT_ENV[0], "trust-root")
+    with pytest.raises(PromotionEvidenceError) as one_missing:
+        emit_promotion_evidence(tmp_path, report, out)
+    assert REQUIRED_TRUST_ROOT_ENV[1] in str(one_missing.value)
+    assert REQUIRED_TRUST_ROOT_ENV[0] not in str(one_missing.value)
+    assert not out.exists(), "no document may be written before re-verification succeeds"
 
 
-def test_emit_refuses_a_workspace_missing_a_fold_prediction(tmp_path: Path) -> None:
+def test_emit_refuses_a_workspace_missing_a_fold_prediction(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Fail closed on an incomplete workspace rather than emitting partial evidence."""
+    for name in REQUIRED_TRUST_ROOT_ENV:
+        monkeypatch.setenv(name, "trust-root")
     report_path = tmp_path / "report.json"
     report_path.write_text(json.dumps(_report_from(_passing_evidence())), encoding="utf-8")
     root = tmp_path / "predictions"
@@ -290,6 +314,4 @@ def test_emit_refuses_a_workspace_missing_a_fold_prediction(tmp_path: Path) -> N
     for fold in ("F1", "F2", "F3"):
         _write_prediction_manifest(root, f"{fold.lower()}-base", fold, "best_simple")
     with pytest.raises(PromotionEvidenceError, match="best_simple"):
-        emit_promotion_evidence(
-            tmp_path, report_path, tmp_path / "promotion_evidence.json", signing_key=b"trust-root"
-        )
+        emit_promotion_evidence(tmp_path, report_path, tmp_path / "promotion_evidence.json")

@@ -64,11 +64,6 @@ from research_v2.evaluation.selection_evidence import (
 )
 from research_v2.inference.artifact_loader import load_inference_artifact
 from research_v2.models.base import ModelSignature, predictions_to_frame
-from research_v2.registry.promotion_evidence import (
-    PROMOTION_EVIDENCE_FILENAME,
-    PromotionEvidenceError,
-    emit_promotion_evidence,
-)
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import (
@@ -76,6 +71,11 @@ from research_v2.models.temporal import (
     TemporalGRUConfig,
     TemporalTCN,
     TemporalTCNConfig,
+)
+from research_v2.registry.promotion_evidence import (
+    PROMOTION_EVIDENCE_FILENAME,
+    PromotionEvidenceError,
+    emit_promotion_evidence,
 )
 from research_v2.training.artifacts import CheckpointStore
 from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
@@ -2342,12 +2342,9 @@ def _maybe_emit_promotion_evidence(args: argparse.Namespace, report: dict[str, A
     if args.workspace is None:
         print("promotion evidence not emitted: no --workspace to re-verify against")
         return
-    secret = os.environ.get("QRV2_SELECTION_EVIDENCE_HMAC_KEY", "")
     out_path = Path(args.workspace) / PROMOTION_EVIDENCE_FILENAME
     try:
-        summary = emit_promotion_evidence(
-            Path(args.workspace), args.report, out_path, signing_key=secret.encode("utf-8")
-        )
+        summary = emit_promotion_evidence(Path(args.workspace), args.report, out_path)
     except (PromotionEvidenceError, ValueError) as error:
         # The report is already on disk, so nothing is lost -- but a run that passed the gates
         # and still cannot produce registry evidence is a real failure, not a warning.

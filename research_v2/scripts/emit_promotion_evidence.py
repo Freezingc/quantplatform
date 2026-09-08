@@ -5,17 +5,17 @@
     --report    /data/zhangyudong/qrv2_research_artifacts/m0r_v2/report.json \
     --out       /data/zhangyudong/qrv2_research_artifacts/m0r_v2/promotion_evidence.json
 
-Requires QRV2_SELECTION_EVIDENCE_HMAC_KEY (the single trust root that signs both selection and
-prediction evidence). Reads only the workspace, never the database, so it can be pointed at a
-run that finished before this tool existed. Exits non-zero if the workspace is incomplete or
-if the candidate does not pass all six gates -- a failing run produces no document.
+Requires both QRV2_SELECTION_EVIDENCE_HMAC_KEY and QRV2_PREDICTION_EVIDENCE_HMAC_KEY, which
+hold the same single trust root by design. Reads only the workspace, never the database, so it
+can be pointed at a run that finished before this tool existed. Exits non-zero if the workspace
+is incomplete or if the candidate does not pass all six gates -- a failing run produces no
+document.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -43,15 +43,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    secret = os.environ.get("QRV2_SELECTION_EVIDENCE_HMAC_KEY", "")
-    if not secret:
-        print("QRV2_SELECTION_EVIDENCE_HMAC_KEY is required", file=sys.stderr)
-        return 2
     out_path = args.out if args.out is not None else args.workspace / PROMOTION_EVIDENCE_FILENAME
     try:
-        summary = emit_promotion_evidence(
-            args.workspace, args.report, out_path, signing_key=secret.encode("utf-8")
-        )
+        summary = emit_promotion_evidence(args.workspace, args.report, out_path)
     except (PromotionEvidenceError, ValueError) as error:
         print(f"promotion evidence not emitted: {error}", file=sys.stderr)
         return 1

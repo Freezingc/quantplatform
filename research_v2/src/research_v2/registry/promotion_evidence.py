@@ -20,6 +20,7 @@ that does not actually pass; a failing candidate raises here instead of producin
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import cast
 
@@ -38,6 +39,25 @@ from research_v2.training.model_bundle import ModelArtifactBundleStore
 EVIDENCE_SCHEMA_VERSION = 1
 EVIDENCE_ROLE = "ORDINARY_TEST"
 PROMOTION_EVIDENCE_FILENAME = "promotion_evidence.json"
+# evaluate_model_walk_forward builds its selection and prediction stores from the environment,
+# so the trust root has to be configured before this module can re-verify anything. Both names
+# are checked up front because the design is one trust root: the driver signs predictions with
+# the selection key, and a run that exports only one of them fails deep inside the evaluator
+# with a message that does not say which artifact it was reading.
+REQUIRED_TRUST_ROOT_ENV = (
+    "QRV2_SELECTION_EVIDENCE_HMAC_KEY",
+    "QRV2_PREDICTION_EVIDENCE_HMAC_KEY",
+)
+
+
+def _require_trust_root() -> None:
+    missing = [name for name in REQUIRED_TRUST_ROOT_ENV if not os.environ.get(name, "")]
+    if missing:
+        raise PromotionEvidenceError(
+            "promotion evidence re-verification requires the trust root: "
+            + ", ".join(missing)
+            + " must be set (both hold the same key by design)"
+        )
 
 
 class PromotionEvidenceError(ValueError):
@@ -167,17 +187,19 @@ def emit_promotion_evidence(
     report_path: Path,
     out_path: Path,
     *,
-    signing_key: bytes,
     minimum_cross_section: int = 30,
 ) -> dict[str, object]:
     """Re-verify a completed run and write its registry promotion-evidence document.
 
-    Raises ``PromotionEvidenceError`` if the workspace is incomplete or inconsistent, and
-    whatever ``load_walk_forward_evidence`` raises -- a ``ValueError`` naming the failed gates
-    -- if the candidate does not actually pass, so a failing run never yields a document.
+    Requires the trust root in the environment (see ``REQUIRED_TRUST_ROOT_ENV``); the stores
+    that verify signatures are built from it inside ``evaluate_model_walk_forward``.
+
+    Raises ``PromotionEvidenceError`` if the trust root is missing or the workspace is
+    incomplete or inconsistent, and whatever ``load_walk_forward_evidence`` raises -- a
+    ``ValueError`` naming the failed gates -- if the candidate does not actually pass, so a
+    failing run never yields a document.
     """
-    if not isinstance(signing_key, bytes) or not signing_key:
-        raise PromotionEvidenceError("promotion evidence requires a non-empty signing key")
+    _require_trust_root()
     report = _load_full_report(report_path)
     folds_in_report = report.get("folds")
     if not isinstance(folds_in_report, list):
