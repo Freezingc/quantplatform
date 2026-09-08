@@ -2,7 +2,7 @@
 
 > 生成：2026-09-09 · 分支 `codex/publish-quant-platform` · 提交 `e0e0f55`
 > 严重性：**平台级完整性缺口**，早于 M0R，影响全部 5 个候选家族
-> 状态：**服务授权缺口已在两侧闭合**（`e0e0f55`、`aa8dab6`）；同类排查又找到两处永不触发的守卫，已让其**显形**（`b9eb666`），但**根源未除**——彻底修复需先由所有者定义 `split_id` 与 `code_version`（§4.1、§5 第 5–6 步）
+> 状态：**服务授权缺口已在两侧闭合**（`e0e0f55`、`aa8dab6`）；同类排查共找到 **3 处**恒真/可绕过的守卫——2 处已让其**显形**（`b9eb666`，§4.1），1 处已**直接修严**（`17ece95`，§4.2）。前两处的根源仍未除：彻底修复需先由所有者定义 `split_id` 与 `code_version`（§5 第 5–6 步）
 
 ## 1. 发现过程与复现
 
@@ -124,6 +124,27 @@ unverified_bindings == ('factor_set_status', 'inference_contract')
 
 新增 5 个测试，其中一个是**绊线**：加载由驱动自己的 bundle 写入器产出的 bundle，断言其 card 仍恰好是那四个字段、且两个绑定都被报告为未校验。若驱动哪天开始写契约，该测试会失败——届时应当**收紧**断言而不是删掉它，因为「夹具与生产的背离」正是需要持续可见的东西。
 
+## 4.2 第三处：省略 `model_code_version` 即可跳过 allowlist（提交 `17ece95`）
+
+torch 加载器的 `_allowlisted_factory` 原本写作：
+
+```python
+if model_code_version is not None and (not isinstance(...) or expected != model_code_version):
+    raise ValueError("model_code_version is not allowlisted for model family")
+```
+
+于是**只要 card 里不含这个字段，整条 allowlist 就被跳过并成功加载**。已在真实夹具上验证。更糟的是随后 `audit.code_version` 报告的是 `research-code-1`——那是推理契约里的**研究代码版本**，不是模型代码版本，因为 `_model_card_code_version` 按 `("code_version", "model_code_version")` 顺序回退。**一个来源不明的工件不仅被接受，还被用另一个字段的身份描述了。**
+
+已改为家族与版本**都强制**，并先查家族以保持报错准确（未知家族报 `model family is not allowlisted for inference`，而不是被说成版本问题）。LightGBM 加载器本来就是严格的——这正是两个加载器对同一种缺失行为不一致的原因。
+
+**未改变任何生产工件**：驱动在全部 5 个 card 写入点都写了 `model_code_version`，所以链上产出的每个 bundle 都满足更严的检查。已用注册表授权加载 `m0r_v2` 的 `m0r-f4` 确认仍可加载，且 `code_version` 现在正确报告 `lgbm-rankreg-1`。摘要未变，派生 model_id 与注册表条目不受影响。
+
+### 夹具与生产的背离是双向的
+
+这次改动动到 3 个测试夹具，方向值得记下：它们比生产**更不完整**（card 只写 `dataset_id`、`family`、`model_status`）。这与 §4.1 的背离正好相反——那里夹具比生产**更完整**，于是测了永不触发的守卫。**夹具若不按系统真实写入的形状建模，两个方向都会误报覆盖情况。**
+
+新增 4 个测试：省略 `model_code_version` 被拒、携带别的家族的版本被拒、未知家族按家族信息被拒、以及把 torch 侧的版本 allowlist 映射本身钉住（改映射必须是有意的行为）。
+
 ## 5. 建议的处置顺序
 
 1. **（已完成，`e0e0f55`）** LightGBM 侧闭合 + `verify_run_promotion` 原语 + 真实工件验证。
@@ -138,4 +159,4 @@ unverified_bindings == ('factor_set_status', 'inference_contract')
 
 本次改动只新增与收紧，未放松任何检查；未修改任何已有 bundle、摘要或注册表条目；未修改因子集契约；零数据库写入；未触碰 2026 锁定段与 `materialization_status.{json,md}`。
 
-门禁：ruff clean、mypy 162 文件、pytest **1835 passed / 45 skipped**（三次修复合计 +15 测试）。
+门禁：ruff clean、mypy 162 文件、pytest **1839 passed / 45 skipped**（四次修复合计 +19 测试）。
