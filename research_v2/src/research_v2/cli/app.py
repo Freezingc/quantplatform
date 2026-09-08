@@ -21,7 +21,7 @@ from research_v2.cli.inference import retry as inference_retry
 from research_v2.cli.inference import status as inference_status
 from research_v2.cli.materialize import emit_plan, plan_factors
 from research_v2.cli.models import plan_model_train
-from research_v2.cli.registry import pointer_app, promote
+from research_v2.cli.registry import pointer_app, promote, register
 from research_v2.cli.reports import report_experiment
 
 app = typer.Typer(no_args_is_help=True)
@@ -140,14 +140,25 @@ def model_train(
     plan_model_train(family, fold)
 
 
+@registry_app.command("register")
+def registry_register(
+    model_id: str = typer.Option(..., "--model-id"),
+    actor: str = typer.Option("", "--actor"),
+    parent_model_id: str | None = typer.Option(None, "--parent-model-id"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+) -> None:
+    register(model_id, actor, parent_model_id, dry_run)
+
+
 @registry_app.command("promote")
 def registry_promote(
     model_id: str = typer.Option(..., "--model-id"),
     target: str = typer.Option(..., "--to"),
     evidence: Path = typer.Option(..., "--evidence"),  # noqa: B008
+    actor: str = typer.Option("", "--actor"),
     dry_run: bool = typer.Option(False, "--dry-run"),
 ) -> None:
-    promote(model_id, target, evidence, dry_run)
+    promote(model_id, target, evidence, actor, dry_run)
 
 
 @evaluate_app.command("walk-forward")

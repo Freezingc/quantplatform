@@ -14,14 +14,78 @@ from research_v2.registry.model_registry import (
     load_walk_forward_evidence,
     validate_model_id,
 )
+from research_v2.registry.registry_store import ModelRegistryStore, RegistryStoreError
 
 pointer_app = typer.Typer(no_args_is_help=True)
 _CONSUMER_ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
 _EVIDENCE_ID = re.compile(r"^[0-9a-f]{64}$")
 
 
-def promote(model_id: str, target: str, evidence: Path, dry_run: bool) -> None:
-    """Recalculate G1-G6 from immutable evidence before a registry backend is contacted."""
+def register(
+    model_id: str, actor: str, parent_model_id: str | None, dry_run: bool
+) -> None:
+    """Record a DRAFT model so a later promotion has something to promote.
+
+    ``promote_walk_forward`` only accepts a model already in DRAFT, so without this command the
+    lifecycle has no entry point. The model_id is content-addressed; for a walk-forward
+    candidate it comes from ``derive_walk_forward_model_id`` over the run's verified per-fold
+    bundle digests, never from a name someone chose.
+    """
+    try:
+        validate_model_id(model_id)
+        if parent_model_id is not None:
+            validate_model_id(parent_model_id)
+    except ValueError as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+    if not actor.strip():
+        typer.echo("--actor is required: every retained transition event names who caused it")
+        raise typer.Exit(code=2)
+    plan = {
+        "actor": actor,
+        "dry_run": dry_run,
+        "model_id": model_id,
+        "parent_model_id": parent_model_id,
+        "status": ModelStatus.DRAFT.value,
+    }
+    typer.echo(json.dumps(plan, sort_keys=True))
+    if dry_run:
+        return
+    store = _configured_store("register")
+    try:
+        record = store.register_draft(
+            model_id, actor=actor, parent_model_id=parent_model_id
+        )
+    except (RegistryStoreError, ValueError) as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+    typer.echo(
+        json.dumps(
+            {
+                "actor": actor,
+                "lineage_id": record.lineage_id,
+                "model_id": record.model_id,
+                "status": record.status.value,
+                "transition_events": len(store.registry.history(model_id)),
+            },
+            sort_keys=True,
+        )
+    )
+
+
+def _configured_store(operation: str) -> ModelRegistryStore:
+    """Open the persisted registry, or refuse and say exactly what is missing."""
+    try:
+        return ModelRegistryStore.from_environment()
+    except RegistryStoreError as error:
+        typer.echo(
+            f"registry persistence backend is not configured; refusing to {operation}: {error}"
+        )
+        raise typer.Exit(code=2) from error
+
+
+def promote(model_id: str, target: str, evidence: Path, actor: str, dry_run: bool) -> None:
+    """Recalculate G1-G6 from immutable evidence, then record the transition if a backend exists."""
     if target != ModelStatus.WALK_FORWARD_PASSED.value:
         typer.echo("this registry command only permits --to WALK_FORWARD_PASSED")
         raise typer.Exit(code=2)
@@ -42,9 +106,32 @@ def promote(model_id: str, target: str, evidence: Path, dry_run: bool) -> None:
     }
     typer.echo(json.dumps(payload, sort_keys=True))
     if dry_run:
+        # A dry run computes and changes nothing, so it needs no actor: there is no event to
+        # attribute. The mutating path refuses without one.
         return
-    typer.echo("registry persistence backend is not configured; refusing to promote")
-    raise typer.Exit(code=2)
+    if not actor.strip():
+        typer.echo("--actor is required: every retained transition event names who caused it")
+        raise typer.Exit(code=2)
+    store = _configured_store("promote")
+    try:
+        record = store.promote_walk_forward(model_id, actor=actor, evidence_path=evidence)
+    except (RegistryStoreError, ValueError) as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=2) from error
+    typer.echo(
+        json.dumps(
+            {
+                "actor": actor,
+                "dry_run": False,
+                "evidence_hash": evidence_hash,
+                "model_id": model_id,
+                "status": record.status.value,
+                "to": target,
+                "transition_events": len(store.registry.history(model_id)),
+            },
+            sort_keys=True,
+        )
+    )
 
 
 @pointer_app.command("plan")

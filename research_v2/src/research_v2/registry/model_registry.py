@@ -148,6 +148,74 @@ class ModelRegistry:
         self._records: dict[str, ModelRecord] = {}
         self._history: dict[str, list[TransitionEvent]] = {}
 
+    @classmethod
+    def restore(
+        cls,
+        records: Mapping[str, ModelRecord],
+        histories: Mapping[str, tuple[TransitionEvent, ...]],
+    ) -> ModelRegistry:
+        """Rebuild a registry from persisted state whose signatures were already verified.
+
+        Transitions are deliberately NOT re-validated. Each was validated against its evidence
+        when it was written, and the later lifecycle states require ``_RegistryWorkflowProof``
+        objects that are unforgeable in-process tokens -- they cannot be reconstructed from disk
+        even in principle, so replaying history through the transition methods is impossible
+        rather than merely inconvenient. What this does validate is everything about the
+        persisted state itself: identity format, status membership, lineage agreement with the
+        registered parent, and an unbroken event chain whose last status is the record's status.
+        A store that hands over state failing any of those is corrupt and must not become live.
+        """
+        if set(records) != set(histories):
+            raise ValueError("registry restore requires one event history per record")
+        restored = cls()
+        for model_id, record in records.items():
+            validate_model_id(model_id)
+            if record.model_id != model_id:
+                raise ValueError(f"persisted record names a different model: {model_id}")
+            if not isinstance(record.status, ModelStatus):
+                raise ValueError(f"persisted status is not a ModelStatus: {model_id}")
+            if record.parent_model_id is None:
+                if record.lineage_id != model_id:
+                    raise ValueError(f"root model lineage_id must equal its model_id: {model_id}")
+            else:
+                validate_model_id(record.parent_model_id)
+                parent = records.get(record.parent_model_id)
+                if parent is None:
+                    raise ValueError(f"persisted parent model is absent: {record.parent_model_id}")
+                if record.lineage_id != parent.lineage_id:
+                    raise ValueError(f"derived model lineage disagrees with its parent: {model_id}")
+            events = histories[model_id]
+            if not events:
+                raise ValueError(f"persisted model has no transition events: {model_id}")
+            previous: ModelStatus | None = None
+            for position, event in enumerate(events):
+                if event.model_id != model_id:
+                    raise ValueError(f"transition event names a different model: {model_id}")
+                if event.previous_status is not previous:
+                    raise ValueError(
+                        f"transition event chain is broken at position {position}: {model_id}"
+                    )
+                if not isinstance(event.new_status, ModelStatus):
+                    raise ValueError(f"transition event status is invalid: {model_id}")
+                _validate_text(event.actor, "actor")
+                _validate_text(event.reason, "reason")
+                _validate_evidence_hashes(event.evidence_hashes)
+                previous = event.new_status
+            if previous is not record.status:
+                raise ValueError(
+                    f"persisted status disagrees with the last transition event: {model_id}"
+                )
+            first = events[0]
+            if first.previous_status is not None or first.new_status is not ModelStatus.DRAFT:
+                raise ValueError(f"persisted history must begin at DRAFT: {model_id}")
+            restored._records[model_id] = record
+            restored._history[model_id] = list(events)
+        return restored
+
+    def model_ids(self) -> tuple[str, ...]:
+        """Every registered model id, sorted, so a store can enumerate what it persisted."""
+        return tuple(sorted(self._records))
+
     def register_draft(
         self,
         model_id: str,
