@@ -7,6 +7,7 @@ fail-closed. Actual training wiring lands in Tasks 3-4.
 
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import json
 import sys
@@ -523,3 +524,134 @@ def test_percentile_frame_scores_in_eval_mode_when_handed_a_train_mode_model() -
     assert scorer.modes_at_call == [False, False], (
         "scores were produced while the model was still in training mode"
     )
+
+
+def test_family_order_guard_allows_m0r() -> None:
+    """M0R is an alternative carrier for the same slot, not a later E-plan stage."""
+    MODULE.validate_family_order("M0R", prior_families_passed=())
+
+
+def test_m0r_is_a_registered_family_with_m0_prerequisites() -> None:
+    assert "M0R" in MODULE.MODEL_FAMILIES
+    assert MODULE.FAMILY_ORDER_PREREQUISITES["M0R"] == ()
+    # the E-plan order for the torch families is untouched
+    assert MODULE.FAMILY_ORDER_PREREQUISITES["M2"] == ("M1",)
+    assert MODULE.FAMILY_ORDER_PREREQUISITES["M3"] == ("M1", "M2")
+
+
+def test_m0r_spec_leaves_the_m0_contract_untouched() -> None:
+    """M0's family name, code version and ids must not move, or its evidence is invalidated."""
+    m0, m0r = MODULE.M0_SPEC, MODULE.M0R_SPEC
+    assert (m0.family, m0.family_name, m0.model_code_version) == (
+        "M0", "LGBM_RANKER", "lgbm-ranker-1",
+    )
+    assert m0.model_id_prefix == "m0" and m0.carrier == "lambdarank"
+    assert m0.fit is MODULE._m0_fit
+    assert (m0r.family, m0r.family_name, m0r.model_code_version) == (
+        "M0R", "LGBM_RANKREG", "lgbm-rankreg-1",
+    )
+    assert m0r.model_id_prefix == "m0r" and m0r.carrier == "rankreg"
+    assert m0r.fit is MODULE._m0r_fit
+    # distinct prefixes are what keep the two families' bundles from colliding in one workspace
+    assert m0.model_id_prefix != m0r.model_id_prefix
+
+
+def test_full_run_wrappers_dispatch_their_own_spec() -> None:
+    seen: list[object] = []
+
+    def _record(args: object, spec: object) -> dict[str, object]:
+        seen.append(spec)
+        return {"family": spec.family}  # type: ignore[attr-defined]
+
+    original = MODULE._run_full_lightgbm_family
+    MODULE._run_full_lightgbm_family = _record
+    try:
+        assert MODULE.run_full_m0(None)["family"] == "M0"
+        assert MODULE.run_full_m0r(None)["family"] == "M0R"
+    finally:
+        MODULE._run_full_lightgbm_family = original
+    assert [spec.family for spec in seen] == ["M0", "M0R"]
+    assert [spec.carrier for spec in seen] == ["lambdarank", "rankreg"]
+
+
+def test_m0r_smoke_pipeline_end_to_end(tmp_path: Path) -> None:
+    """M0R (rank-regression carrier) orchestration evidence on the same synthetic frames."""
+    report = MODULE.train_m0r_smoke(tmp_path)
+    assert report["family"] == "M0R"
+    assert report["mode"] == "smoke"
+    oos = report["oos"]
+    # >= 7, not == 8 like the M0 smoke: this fixture is 40 trivially separable names a day,
+    # and regressing the per-day percentile rank fits it so closely that many names share a
+    # leaf, leaving 9-14 distinct scores per day where LambdaRank leaves 27-34. One day lands
+    # on 9 and trips the score-health floor of unique_score_count >= 10, so that day is
+    # correctly reported unevaluable. It is a degeneracy of the 40-name synthetic fixture, not
+    # of the carrier: on the real frozen-v2 folds (2400-3800 names a day) M0R scored G6
+    # 0.9752, the same 945/969 valid days as M0, and passed all six gates. The bound stays
+    # here so a collapse to zero days still fails loudly.
+    assert oos["valid_day_count"] >= 7
+    assert set(oos["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6"}
+    assert oos["baseline_mean_rank_ic"] is not None
+    assert set(report["seed_validation_rank_ic"]) == set(MODULE.REQUIRED_SEEDS)
+    assert report["worst_seed"] in MODULE.REQUIRED_SEEDS
+    assert "never model passing evidence" in report["note"]
+
+
+def test_m0r_bundle_round_trips_as_the_rankreg_carrier(tmp_path: Path) -> None:
+    """The bundle a promotion run reads back must reconstruct the right baseline type."""
+    MODULE.train_m0r_smoke(tmp_path)
+    store = MODULE.ModelArtifactBundleStore(tmp_path / "models")
+    card = json.loads((store.bundle_path("smoke-m0r") / "model_card.json").read_text())
+    assert card["family"] == "LGBM_RANKREG"
+    assert card["model_code_version"] == "lgbm-rankreg-1"
+    for seed in MODULE.REQUIRED_SEEDS:
+        loaded = MODULE._m0_load_booster(store, "smoke-m0r", seed, carrier="rankreg")
+        assert isinstance(loaded, MODULE.LGBMRankRegBaseline)
+        # the six sparse frozen-v2 factors are ~50% NaN, so a reloaded booster that rejected
+        # NaN would raise on the first TEST row
+        assert loaded.allow_nan is True
+
+
+def test_m0_bundle_still_round_trips_as_the_ranker(tmp_path: Path) -> None:
+    """Adding M0R must not change what an M0 bundle reconstructs into."""
+    MODULE.train_m0_smoke(tmp_path)
+    store = MODULE.ModelArtifactBundleStore(tmp_path / "models")
+    card = json.loads((store.bundle_path("smoke-m0") / "model_card.json").read_text())
+    assert card["family"] == "LGBM_RANKER"
+    assert card["model_code_version"] == "lgbm-ranker-1"
+    loaded = MODULE._m0_load_booster(store, "smoke-m0", MODULE.REQUIRED_SEEDS[0])
+    assert isinstance(loaded, MODULE.LGBMRankerBaseline)
+    assert loaded.allow_nan is True
+
+
+def test_m0r_grid_is_pinned_to_the_single_measured_config() -> None:
+    """M0R searches nothing on purpose: its +0.00915 was measured with no validation search.
+
+    A 24-config search is what makes M0's +0.004202 an optimistic maximum over draws selected
+    on one validation year per fold. Pinning the grid keeps the production number free of that
+    bias and comparable to the measurement that motivated the carrier.
+    """
+    grid = MODULE.m0r_config_grid()
+    assert grid == [MODULE.M0R_MEASURED_CONFIG]
+    assert len(grid) == 1
+    assert grid[0] == {
+        "num_leaves": 15, "max_depth": 4, "learning_rate": 0.05,
+        "min_child_samples": 200, "feature_fraction": 0.85, "lambda_l2": 0.0,
+    }
+    # --grid is an M0-only knob; it must not move M0R's space
+    for choice in ("base", "refined"):
+        args = argparse.Namespace(grid=choice, max_configs=None)
+        assert MODULE.M0R_SPEC.grid(args, None) == grid
+        assert MODULE.M0R_SPEC.grid(args, 1) == grid
+
+
+def test_m0_grid_still_honours_the_grid_flag() -> None:
+    """Wiring M0R through the shared runner must not change M0's two 24-config grids."""
+    base = MODULE.M0_SPEC.grid(argparse.Namespace(grid="base"), None)
+    refined = MODULE.M0_SPEC.grid(argparse.Namespace(grid="refined"), None)
+    assert base == MODULE.m0_config_grid()
+    assert refined == MODULE.m0_refined_config_grid()
+    assert len(base) == 24 == len(refined)
+    assert not any("lambda_l2" in config for config in base)
+    assert all("lambda_l2" in config for config in refined)
+    # both stay inside the E7 budget of 30 trials per fold
+    assert max(len(base), len(refined), len(MODULE.m0r_config_grid())) <= 30

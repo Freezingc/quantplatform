@@ -22,7 +22,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import lightgbm as lgb
 import numpy as np
@@ -41,6 +41,7 @@ from walk_forward_factor_daily import (
 )
 
 from research_v2.baselines.lgbm_ranker import LGBMHyperparameters, LGBMRankerBaseline
+from research_v2.baselines.lgbm_rankreg import LGBMRankRegBaseline
 from research_v2.baselines.orchestration import (
     BaselineSelectionRecord,
     BaselineValidationScore,
@@ -79,9 +80,12 @@ from research_v2.training.temporal_batches import build_temporal_training_batche
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
 ORDINARY_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
-MODEL_FAMILIES: tuple[str, ...] = ("M0", "M1", "M2", "M3")
+MODEL_FAMILIES: tuple[str, ...] = ("M0", "M0R", "M1", "M2", "M3")
 FAMILY_ORDER_PREREQUISITES: dict[str, tuple[str, ...]] = {
     "M0": (),
+    # M0R is an alternative CARRIER for the same LightGBM candidate slot, not a later stage
+    # of the E-plan, so like M0 it has no predecessors. M1/M2/M3 ordering is untouched.
+    "M0R": (),
     "M1": (),
     "M2": ("M1",),
     "M3": ("M1", "M2"),
@@ -836,6 +840,24 @@ M0_SMOKE_NUM_BOOST_ROUND = 64
 M0_FAMILY_NAME = "LGBM_RANKER"
 M0_MODEL_CODE_VERSION = "lgbm-ranker-1"
 
+# M0R: the rank-regression carrier. Same frozen-v2 factor set, same folds, same three-seed
+# percentile-mean ensemble, same bundle and evidence machinery as M0 -- only the objective,
+# the target and the early-stopping metric differ. It exists because the LambdaRank carrier
+# caps out below the G4 bar: at one fixed config over the chain's 3,417,963 paired TEST rows
+# M0 reaches delta +0.00109 and M0R reaches +0.00915, and with no validation search at all
+# M0R passes every gate (G1 0.094376, G2 12.905, G3 1.00, G4 +0.009149, G5 0.2791, G6 0.9752)
+# where M0 needed a 24-config per-fold search to reach +0.004202 and still failed G4.
+# Mechanism and the negative results: docs/handoffs/
+# 2026-09-08-m0-attribution-and-carrier-findings.md. M0 and the B0-B3 baseline contract are
+# deliberately left bit-identical, so no existing bundle digest or evidence is disturbed.
+M0R_FAMILY_NAME = "LGBM_RANKREG"
+M0R_MODEL_CODE_VERSION = "lgbm-rankreg-1"
+M0R_MODEL_ID_PREFIX = "m0r"
+M0R_SMOKE_NUM_BOOST_ROUND = 64
+
+LightGBMCarrier = Literal["lambdarank", "rankreg"]
+AnyLightGBMBaseline = LGBMRankerBaseline | LGBMRankRegBaseline
+
 
 def m0_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
     """M0 (LightGBM LambdaRank) search space: 24 configs, within the 30-trial E7 budget.
@@ -886,6 +908,48 @@ def m0_refined_config_grid(max_configs: int | None = None) -> list[dict[str, Any
         for lambda_l2 in (0.0, 1.0, 10.0)
     ]
     return grid if max_configs is None else grid[:max_configs]
+
+
+# The config every M0R number in the attribution handoff was measured at: num_leaves 15,
+# max_depth 4, lr 0.05, min_child_samples 200, feature_fraction 0.85, lambda_l2 0. It is the
+# modal winner of the M0 refined grid (3 of 4 folds), reused unchanged so the two carriers are
+# compared at one point in hyperparameter space rather than each at its own searched optimum.
+M0R_MEASURED_CONFIG: dict[str, Any] = {
+    "num_leaves": 15,
+    "max_depth": 4,
+    "learning_rate": 0.05,
+    "min_child_samples": 200,
+    "feature_fraction": 0.85,
+    "lambda_l2": 0.0,
+}
+
+
+def m0r_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
+    """M0R search space: one config, deliberately.
+
+    A 24-config search is what makes M0's +0.004202 optimistic -- it is the maximum over 24
+    draws selected on a single validation year per fold, and the same protocol measured on a
+    different factor subset picked a config with the better validation score and the worse
+    test delta (F1 dense9: val 0.06141 -> test +0.00243, against +0.00389 for an untuned
+    config). M0R's +0.00915 was measured with no search at all, so pinning the grid to that
+    one config is what keeps the production run's number free of validation-selection bias
+    and directly comparable to the measurement that motivated the carrier. It is 1 trial
+    against the E7 budget of 30, so it is inside the budget by construction rather than by
+    trimming. A tuned M0R search is a legitimate follow-up; it just has to be reported as
+    the biased quantity that it is.
+    """
+    grid = [dict(M0R_MEASURED_CONFIG)]
+    return grid if max_configs is None else grid[:max_configs]
+
+
+def _m0_grid(args: argparse.Namespace, max_configs: int | None) -> list[dict[str, Any]]:
+    grid_fn = m0_refined_config_grid if getattr(args, "grid", "base") == "refined" else m0_config_grid
+    return grid_fn(max_configs)
+
+
+def _m0r_grid(args: argparse.Namespace, max_configs: int | None) -> list[dict[str, Any]]:
+    del args  # --grid selects between M0's two LambdaRank grids; M0R has one pinned config
+    return m0r_config_grid(max_configs)
 
 
 def _m0_hyperparameters(config_payload: Mapping[str, Any]) -> LGBMHyperparameters:
@@ -940,8 +1004,89 @@ def _m0_fit(
     )
 
 
+def _m0r_fit(
+    config_payload: Mapping[str, Any],
+    factor_order: tuple[str, ...],
+    train_frame: pd.DataFrame,
+    validation_frame: pd.DataFrame | None,
+    *,
+    seed: int,
+    num_boost_round: int = M0_NUM_BOOST_ROUND,
+) -> LGBMRankRegBaseline:
+    """Fit one seeded rank-regression booster on TRAIN, early-stopped on VALIDATION RankIC.
+
+    The mirror of ``_m0_fit`` for the M0R carrier: same rows, same config schema, same seed
+    contract, but the target is the per-day percentile rank of ``raw_return_5d`` under
+    ``objective=regression`` and early stopping watches the daily RankIC feval instead of
+    LambdaRank's default ndcg@1..5. ``validation_frame=None`` trains the full
+    ``num_boost_round`` with no early stopping, which is what the smoke uses.
+    """
+    keys = ["signal_date", "ts_code"]
+    evaluation_features = None
+    evaluation_labels = None
+    if validation_frame is not None:
+        evaluation_features = validation_frame.loc[:, keys + list(factor_order)]
+        evaluation_labels = validation_frame.loc[:, keys + ["raw_return_5d", "label_valid"]]
+    return LGBMRankRegBaseline.fit(
+        train_frame.loc[:, keys + list(factor_order)],
+        train_frame.loc[:, keys + ["raw_return_5d", "label_valid"]],
+        factor_order=factor_order,
+        role="TRAIN",
+        num_boost_round=num_boost_round,
+        minimum_cross_section=30,
+        hyperparameters=_m0_hyperparameters(config_payload),
+        evaluation_features=evaluation_features,
+        evaluation_labels=evaluation_labels,
+        early_stopping_patience=M0_EARLY_STOPPING_PATIENCE,
+        seed=seed,
+        allow_nan=True,
+    )
+
+
+@dataclass(frozen=True)
+class _LightGBMFamilySpec:
+    """Everything that differs between the two LightGBM candidate carriers.
+
+    Both carriers share the assembly, publication, per-fold search, three-seed ensemble,
+    bundle, signed-evidence and G1-G6 paths; only these fields and the fit function vary.
+    Keeping the difference in one frozen value is what stops the two families from drifting
+    into two copies of a 200-line pipeline.
+    """
+
+    family: str
+    family_name: str
+    model_code_version: str
+    model_id_prefix: str
+    carrier: LightGBMCarrier
+    fit: Callable[..., AnyLightGBMBaseline]
+    smoke_num_boost_round: int
+    grid: Callable[[argparse.Namespace, int | None], list[dict[str, Any]]]
+
+
+M0_SPEC = _LightGBMFamilySpec(
+    family="M0",
+    family_name=M0_FAMILY_NAME,
+    model_code_version=M0_MODEL_CODE_VERSION,
+    model_id_prefix="m0",
+    carrier="lambdarank",
+    fit=_m0_fit,
+    smoke_num_boost_round=M0_SMOKE_NUM_BOOST_ROUND,
+    grid=_m0_grid,
+)
+M0R_SPEC = _LightGBMFamilySpec(
+    family="M0R",
+    family_name=M0R_FAMILY_NAME,
+    model_code_version=M0R_MODEL_CODE_VERSION,
+    model_id_prefix=M0R_MODEL_ID_PREFIX,
+    carrier="rankreg",
+    fit=_m0r_fit,
+    smoke_num_boost_round=M0R_SMOKE_NUM_BOOST_ROUND,
+    grid=_m0r_grid,
+)
+
+
 def _m0_percentile_frame(
-    model: LGBMRankerBaseline,
+    model: AnyLightGBMBaseline,
     frame: pd.DataFrame,
     factor_order: tuple[str, ...],
 ) -> pd.DataFrame:
@@ -957,7 +1102,7 @@ def _m0_percentile_frame(
 
 
 def _m0_seed_mean_scores(
-    models_by_seed: Mapping[int, LGBMRankerBaseline],
+    models_by_seed: Mapping[int, AnyLightGBMBaseline],
     frame: pd.DataFrame,
     factor_order: tuple[str, ...],
 ) -> pd.DataFrame:
@@ -982,19 +1127,24 @@ def _m0_seed_mean_scores(
     return merged.loc[:, [*keys, "score"]]
 
 
-def _m0_save_booster(model: LGBMRankerBaseline, path: Path) -> None:
+def _m0_save_booster(model: AnyLightGBMBaseline, path: Path) -> None:
     """Persist one fitted booster; the frozen dataclass stores the booster as ``object``."""
     path.parent.mkdir(parents=True, exist_ok=True)
     cast("lgb.Booster", model.booster).save_model(str(path))
 
 
-def _m0_signature(config_payload: Mapping[str, Any], factor_count: int) -> dict[str, object]:
+def _m0_signature(
+    config_payload: Mapping[str, Any],
+    factor_count: int,
+    *,
+    family_name: str = M0_FAMILY_NAME,
+) -> dict[str, object]:
     config_hash = hashlib.sha256(
         json.dumps(dict(config_payload), separators=(",", ":"), sort_keys=True).encode()
     ).hexdigest()
     return asdict(
         ModelSignature(
-            model_family=M0_FAMILY_NAME,
+            model_family=family_name,
             raw_factor_count=factor_count,
             config_hash=config_hash,
         )
@@ -1002,18 +1152,28 @@ def _m0_signature(config_payload: Mapping[str, Any], factor_count: int) -> dict[
 
 
 def _m0_load_booster(
-    bundle_store: ModelArtifactBundleStore, model_id: str, seed: int
-) -> LGBMRankerBaseline:
+    bundle_store: ModelArtifactBundleStore,
+    model_id: str,
+    seed: int,
+    *,
+    carrier: LightGBMCarrier = "lambdarank",
+) -> AnyLightGBMBaseline:
     """Load one seeded booster back from the verified bundle, never from training memory."""
     if not bundle_store.verify(model_id):
         raise ValueError(f"model bundle failed verification: {model_id}")
     root = bundle_store.bundle_path(model_id)
     feature_order = json.loads((root / "feature_order.json").read_text(encoding="utf-8"))
     booster = lgb.Booster(model_file=str(root / f"seed-{seed}.pt"))
+    loaded_order = tuple(str(name) for name in feature_order["feature_order"])
+    loaded_rounds = int(booster.num_trees())
+    if carrier == "rankreg":
+        return LGBMRankRegBaseline(
+            factor_order=loaded_order, booster=booster, num_boost_round=loaded_rounds
+        )
     return LGBMRankerBaseline(
-        factor_order=tuple(str(name) for name in feature_order["feature_order"]),
+        factor_order=loaded_order,
         booster=booster,
-        num_boost_round=int(booster.num_trees()),
+        num_boost_round=loaded_rounds,
         # M0 is the candidate family that consumes the six sparse factors, so the
         # frozen boosters must keep consuming NaN natively after being read back
         # from the bundle (the default False would raise on the first NaN at TEST).
@@ -1030,17 +1190,21 @@ def _m0_write_bundle(
     factor_order: tuple[str, ...],
     seed_checkpoints: Mapping[int, Path],
     ensemble_predictions: pd.DataFrame,
+    family_name: str = M0_FAMILY_NAME,
+    model_code_version: str = M0_MODEL_CODE_VERSION,
 ) -> None:
     model_store.write(
         model_id,
         model_card={
-            "family": M0_FAMILY_NAME,
+            "family": family_name,
             "dataset_id": dataset_id,
             "model_status": "WALK_FORWARD_PASSED",
-            "model_code_version": M0_MODEL_CODE_VERSION,
+            "model_code_version": model_code_version,
         },
         config=dict(config_payload, raw_factor_count=len(factor_order)),
-        signature=_m0_signature(config_payload, len(factor_order)),
+        signature=_m0_signature(
+            config_payload, len(factor_order), family_name=family_name
+        ),
         feature_order=factor_order,
         preprocessing={"state_hash": "identity"},
         seed_checkpoints=seed_checkpoints,
@@ -1048,8 +1212,8 @@ def _m0_write_bundle(
     )
 
 
-def train_m0_smoke(workspace: Path) -> dict[str, Any]:
-    """M0 orchestration smoke: the same ensemble + bundle + frozen-gate path as M1/M3."""
+def _train_lightgbm_smoke(workspace: Path, spec: _LightGBMFamilySpec) -> dict[str, Any]:
+    """Orchestration smoke for either LightGBM carrier: ensemble + bundle + frozen-gate path."""
     frames = build_smoke_frames(SMOKE_FACTOR_COUNT)
     factor_order = tuple(f"f{index:02d}" for index in range(SMOKE_FACTOR_COUNT))
     config_payload = m0_config_grid()[0]
@@ -1057,15 +1221,17 @@ def train_m0_smoke(workspace: Path) -> dict[str, Any]:
     seed_validation_predictions: dict[int, pd.DataFrame] = {}
     seed_rank_ic: dict[int, float] = {}
     for seed in REQUIRED_SEEDS:
-        model = _m0_fit(
+        model = spec.fit(
             config_payload,
             factor_order,
             frames["train"],
             None,
             seed=seed,
-            num_boost_round=M0_SMOKE_NUM_BOOST_ROUND,
+            num_boost_round=spec.smoke_num_boost_round,
         )
-        checkpoint_path = workspace / "checkpoints" / f"smoke-m0-{seed}" / "booster.txt"
+        checkpoint_path = (
+            workspace / "checkpoints" / f"smoke-{spec.model_id_prefix}-{seed}" / "booster.txt"
+        )
         _m0_save_booster(model, checkpoint_path)
         seed_checkpoints[seed] = checkpoint_path
         predictions = _m0_percentile_frame(model, frames["validation"], factor_order)
@@ -1073,7 +1239,7 @@ def train_m0_smoke(workspace: Path) -> dict[str, Any]:
         seed_rank_ic[seed] = _validation_rank_ic(predictions, frames["validation"])
     ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)
     bundle_store = ModelArtifactBundleStore(workspace / "models")
-    model_id = "smoke-m0"
+    model_id = f"smoke-{spec.model_id_prefix}"
     _m0_write_bundle(
         bundle_store,
         model_id,
@@ -1084,8 +1250,13 @@ def train_m0_smoke(workspace: Path) -> dict[str, Any]:
         ensemble_predictions=ensemble.predictions.rename(
             columns={"ensemble_score": "percentile_rank"}
         ),
+        family_name=spec.family_name,
+        model_code_version=spec.model_code_version,
     )
-    loaded = {seed: _m0_load_booster(bundle_store, model_id, seed) for seed in REQUIRED_SEEDS}
+    loaded = {
+        seed: _m0_load_booster(bundle_store, model_id, seed, carrier=spec.carrier)
+        for seed in REQUIRED_SEEDS
+    }
     candidate_predictions = _m0_seed_mean_scores(loaded, frames["test"], factor_order)
     evaluation = evaluate_frozen_oos(
         candidate_predictions,
@@ -1095,7 +1266,7 @@ def train_m0_smoke(workspace: Path) -> dict[str, Any]:
         minimum_cross_section=30,
     )
     return {
-        "family": "M0",
+        "family": spec.family,
         "mode": "smoke",
         "seed_validation_rank_ic": seed_rank_ic,
         "worst_seed": ensemble.worst_seed,
@@ -1114,8 +1285,20 @@ def train_m0_smoke(workspace: Path) -> dict[str, Any]:
     }
 
 
-def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
-    """Full real-data M0 (LightGBM LambdaRank) pipeline.
+def train_m0_smoke(workspace: Path) -> dict[str, Any]:
+    """M0 orchestration smoke: the same ensemble + bundle + frozen-gate path as M1/M3."""
+    return _train_lightgbm_smoke(workspace, M0_SPEC)
+
+
+def train_m0r_smoke(workspace: Path) -> dict[str, Any]:
+    """M0R orchestration smoke: the rank-regression carrier through the same path."""
+    return _train_lightgbm_smoke(workspace, M0R_SPEC)
+
+
+def _run_full_lightgbm_family(
+    args: argparse.Namespace, spec: _LightGBMFamilySpec
+) -> dict[str, Any]:
+    """Full real-data pipeline shared by the M0 (LambdaRank) and M0R (rank-regression) carriers.
 
     Same assembly -> publication -> per-fold constrained search -> final bundles ->
     signed evidence chain -> frozen TEST predictions -> G1-G6 walk-forward gates
@@ -1139,8 +1322,7 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
     factor_members = context.factor_members
     factor_order = context.factor_order
     extract = context.extract
-    grid_fn = m0_refined_config_grid if getattr(args, "grid", "base") == "refined" else m0_config_grid
-    configs = grid_fn(args.max_configs)
+    configs = spec.grid(args, args.max_configs)
 
     oos_folds: dict[str, ModelOosFold] = {}
     fold_reports: list[dict[str, Any]] = []
@@ -1170,7 +1352,7 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
             seed_validation_predictions: dict[int, pd.DataFrame] = {}
             seed_rank_ic: dict[int, float] = {}
             for seed in REQUIRED_SEEDS:
-                model = _m0_fit(config_payload, factor_order, train, validation, seed=seed)
+                model = spec.fit(config_payload, factor_order, train, validation, seed=seed)
                 predictions = _m0_percentile_frame(model, validation, factor_order)
                 seed_validation_predictions[seed] = predictions
                 seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
@@ -1201,9 +1383,12 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
         seed_validation_predictions = {}
         seed_rank_ic = {}
         for seed in REQUIRED_SEEDS:
-            model = _m0_fit(best_config, factor_order, train, validation, seed=seed)
+            model = spec.fit(best_config, factor_order, train, validation, seed=seed)
             checkpoint_path = (
-                workspace / "checkpoints" / f"m0-{fold_id.lower()}-final-{seed}" / "booster.txt"
+                workspace
+                / "checkpoints"
+                / f"{spec.model_id_prefix}-{fold_id.lower()}-final-{seed}"
+                / "booster.txt"
             )
             _m0_save_booster(model, checkpoint_path)
             seed_checkpoints[seed] = checkpoint_path
@@ -1213,7 +1398,7 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
         ensemble = build_seed_ensemble(
             seed_validation_predictions, validation_rank_ic=seed_rank_ic
         )
-        model_id = f"m0-{fold_id.lower()}"
+        model_id = f"{spec.model_id_prefix}-{fold_id.lower()}"
         _m0_write_bundle(
             model_store,
             model_id,
@@ -1224,6 +1409,8 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
             ensemble_predictions=ensemble.predictions.rename(
                 columns={"ensemble_score": "percentile_rank"}
             ),
+            family_name=spec.family_name,
+            model_code_version=spec.model_code_version,
         )
 
         model_evidence_id = _existing_evidence_id(
@@ -1232,7 +1419,7 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
         if model_evidence_id is None:
             model_evidence = selection_store.write_model_selection(
                 fold_id=fold_id,
-                model_family="M0",
+                model_family=spec.family,
                 model_artifact_id=model_id,
                 model_bundle_digest=model_store.bundle_digest(model_id),
                 training_dataset_id=train_dataset_id,
@@ -1243,7 +1430,10 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
             )
             model_evidence_id = model_evidence.evidence_id
 
-        loaded = {seed: _m0_load_booster(model_store, model_id, seed) for seed in REQUIRED_SEEDS}
+        loaded = {
+            seed: _m0_load_booster(model_store, model_id, seed, carrier=spec.carrier)
+            for seed in REQUIRED_SEEDS
+        }
         candidate_scores = _m0_seed_mean_scores(loaded, test, factor_order)
         candidate_artifact = prediction_store.write(
             selection_id=model_evidence_id,
@@ -1294,7 +1484,7 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
     )
     evaluation = result.evaluation
     return {
-        "family": "M0",
+        "family": spec.family,
         "mode": "full",
         "folds": fold_reports,
         "oos": {
@@ -1318,6 +1508,23 @@ def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
             "all_passed": evaluation.gate_report.all_passed,
         },
     }
+
+
+def run_full_m0(args: argparse.Namespace) -> dict[str, Any]:
+    """Full real-data M0 (LightGBM LambdaRank) pipeline."""
+    return _run_full_lightgbm_family(args, M0_SPEC)
+
+
+def run_full_m0r(args: argparse.Namespace) -> dict[str, Any]:
+    """Full real-data M0R (LightGBM rank-regression) pipeline.
+
+    Identical to M0 in every respect the evidence chain cares about -- same frozen-v2 factor
+    set, same F1-F4 folds, same published datasets, same 24-config search budget, same
+    three-seed percentile-mean ensemble, same signed selection/model/prediction bundles, same
+    G1-G6 gates against the same best_simple baseline -- and different only in the carrier.
+    That is the point: the two reports are directly comparable fold by fold.
+    """
+    return _run_full_lightgbm_family(args, M0R_SPEC)
 
 
 def m1_config_grid(max_configs: int | None = None) -> list[dict[str, float | int]]:
@@ -2117,6 +2324,8 @@ def main() -> None:
         workspace.mkdir(parents=True, exist_ok=True)
         if args.family == "M0":
             report = train_m0_smoke(workspace)
+        elif args.family == "M0R":
+            report = train_m0r_smoke(workspace)
         elif args.family == "M1":
             report = train_m1_smoke(workspace)
         elif args.family == "M2":
@@ -2141,6 +2350,8 @@ def main() -> None:
     load_baseline_predictions(Path(args.baseline_artifacts))
     if args.family == "M0":
         report = run_full_m0(args)
+    elif args.family == "M0R":
+        report = run_full_m0r(args)
     elif args.family == "M1":
         report = run_full_m1(args)
     elif args.family == "M2":
