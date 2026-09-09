@@ -683,3 +683,56 @@ def test_every_runnable_family_is_admitted_by_the_walk_forward_evaluator() -> No
             f"{spec.family} bundles are written with family={spec.family_name}, which the "
             "evaluator would reject as not matching the frozen model selection"
         )
+
+
+def test_torch_seed_helper_seeds_before_constructing_the_model(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Seeding must precede model construction, or the first seed is irreproducible.
+
+    run_validation_governed_training seeds, but it runs after the factory, so the initial weights
+    came from whatever the global RNG held on entry: for the first seed that is the process's
+    entropy-seeded state, for later seeds the state the previous iteration left behind. Measured on
+    the M1 smoke before the fix -- seeds 20260802 and 20260803 were identical across four runs
+    (0.828893 / 0.830957) while 20260801 ranged over 0.7289-0.8527. One irreproducible seed of
+    three is enough to make the ensemble, the config selected on it, and every gate number
+    downstream irreproducible. After the fix all four family smokes are byte-identical run to run.
+    """
+    from types import SimpleNamespace
+
+    from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
+    from research_v2.training.artifacts import CheckpointStore
+
+    events: list[tuple[str, object]] = []
+    monkeypatch.setattr(
+        MODULE, "configure_reproducibility", lambda seed: events.append(("seed", seed))
+    )
+
+    def fake_run(*args: object, **kwargs: object) -> object:
+        events.append(("train", kwargs["seed"]))
+        return SimpleNamespace(checkpoint_ids=["ckpt-0"])
+
+    monkeypatch.setattr(MODULE, "run_validation_governed_training", fake_run)
+
+    def factory(config: object, order: tuple[str, ...]) -> object:
+        events.append(("construct", None))
+        return ResidualMLP(
+            ResidualMLPConfig(raw_factor_count=len(order), hidden_dim=4, num_blocks=1)
+        )
+
+    MODULE._train_cross_section_seed(
+        {},
+        ("f0", "f1"),
+        {},
+        {},
+        seed=20260802,
+        checkpoint_store=CheckpointStore(tmp_path / "checkpoints"),
+        checkpoint_prefix="prefix",
+        train_dataset_id="ds:train",
+        validation_dataset_id="ds:validation",
+        max_epochs=1,
+        model_factory=factory,
+    )
+    assert [kind for kind, _ in events] == ["seed", "construct", "train"]
+    assert events[0] == ("seed", 20260802)
+    assert events[1] == ("train", 20260802) or events[2] == ("train", 20260802)

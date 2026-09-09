@@ -96,6 +96,7 @@ from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.runner import run_validation_governed_training
+from research_v2.training.seeds import configure_reproducibility
 from research_v2.training.static_batches import build_static_training_batches
 from research_v2.training.temporal_batches import build_temporal_training_batches
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
@@ -375,6 +376,16 @@ def _train_cross_section_smoke(
     seed_rank_ic: dict[int, float] = {}
     prototype = model_factory()
     for seed in REQUIRED_SEEDS:
+        # Seed BEFORE constructing the model. run_validation_governed_training seeds too, but it
+        # runs after model_factory(), so the initial weights were being drawn from whatever the
+        # global RNG held on entry. For the first seed that is the process's entropy-seeded state,
+        # i.e. different on every run; for later seeds it is the state the previous iteration's
+        # configure_reproducibility left behind, i.e. reproducible. That asymmetry was measured on
+        # the M1 smoke: seeds 20260802 and 20260803 gave identical validation RankIC across four
+        # runs (0.828893 / 0.830957) while 20260801 ranged over 0.7289-0.8527. One irreproducible
+        # seed out of three is enough to make the ensemble, the config selected on it, and every
+        # downstream gate number irreproducible too.
+        configure_reproducibility(seed)
         model = model_factory()
         optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
         run = run_validation_governed_training(
@@ -699,6 +710,7 @@ def train_m2_smoke(workspace: Path) -> dict[str, Any]:
     seed_rank_ic: dict[int, float] = {}
     prototype = TemporalGRU(config)
     for seed in REQUIRED_SEEDS:
+        configure_reproducibility(seed)  # seed before init; see _train_cross_section_smoke
         model = TemporalGRU(config)
         optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
         run = run_validation_governed_training(
@@ -1549,6 +1561,8 @@ def _train_cross_section_seed(
     model_factory: Any,
     learning_rate: float = 0.003,
 ) -> tuple[torch.nn.Module, Path]:
+    # Seed before init, not only before training: see _train_cross_section_smoke.
+    configure_reproducibility(seed)
     model = model_factory(config_payload, factor_order)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
     run = run_validation_governed_training(
@@ -2076,6 +2090,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             seed_validation_predictions: dict[int, pd.DataFrame] = {}
             seed_rank_ic: dict[int, float] = {}
             for seed in REQUIRED_SEEDS:
+                configure_reproducibility(seed)  # seed before init; see the smoke helper
                 model = _m2_model_factory(config_payload, factor_order)
                 optimizer = torch.optim.AdamW(
                     model.parameters(), lr=float(config_payload["learning_rate"])
@@ -2130,6 +2145,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         seed_validation_predictions = {}
         seed_rank_ic = {}
         for seed in REQUIRED_SEEDS:
+            configure_reproducibility(seed)  # seed before init; see the smoke helper
             model = _m2_model_factory(best_config, factor_order)
             optimizer = torch.optim.AdamW(
                 model.parameters(), lr=float(best_config["learning_rate"])
