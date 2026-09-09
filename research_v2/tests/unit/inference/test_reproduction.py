@@ -8,22 +8,31 @@ alongside the happy path, including exactness -- there is no float tolerance to 
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from datetime import date
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import pytest
+import torch
 
+from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.inference import reproduction
+from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.inference.reproduction import (
     FoldReproduction,
     ReproductionError,
     _compare_scores,
     _normalized,
 )
+from research_v2.inference.torch_scoring import concat_date_scores, prepare_frame, score_batch
+from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.registry.registry_store import RegistryStoreError
+from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
+from research_v2.training.static_batches import build_static_training_batches
 
 KEYS = ["signal_date", "ts_code"]
 DAYS = [date(2025, 1, 2), date(2025, 1, 3)]
@@ -421,3 +430,189 @@ def test_a_preprocessing_artifact_without_a_usable_hash_is_refused(
     bundle = _bundle("RESIDUAL_MLP", store=ModelArtifactBundleStore(tmp_path))
     with pytest.raises(ReproductionError, match="records no preprocessor state hash"):
         reproduction._recorded_preprocessor_hash(bundle)
+
+
+# ---------------------------------------------------------------------------------------------
+# The static torch path against a genuine bundle: real weights, real fitted preprocessing state,
+# real forward passes. Everything above this line stubs the loader; this is what the m1_v2 audit
+# will do on production artifacts, exercised here so the chain is known to close before then.
+# ---------------------------------------------------------------------------------------------
+
+_TWO_FACTORS = ("factor_a", "factor_b")
+_TWO_DAYS = (date(2025, 1, 2), date(2025, 1, 3))
+_STOCKS_PER_DAY = 32
+
+
+def _real_bundle(tmp_path: Path) -> tuple[ModelArtifactBundleStore, str, str]:
+    """Write a three-seed RESIDUAL_MLP bundle the way the driver does, weights and state alike."""
+    rng = np.random.default_rng(7)
+    fitting_frame = pd.DataFrame({name: rng.standard_normal(256) for name in _TWO_FACTORS})
+    fitted = FoldPreprocessor(factor_order=_TWO_FACTORS)
+    fitted.fit(fitting_frame, role="TRAIN")
+    config: dict[str, Any] = {
+        "raw_factor_count": len(_TWO_FACTORS),
+        "hidden_dim": 8,
+        "num_blocks": 1,
+        "dropout": 0.0,
+    }
+    seed_checkpoints: dict[int, Path] = {}
+    prototype: ResidualMLP | None = None
+    for seed in REQUIRED_SEEDS:
+        torch.manual_seed(seed)
+        model = ResidualMLP(ResidualMLPConfig(**config))
+        prototype = model if prototype is None else prototype
+        path = tmp_path / f"seed-{seed}.pt"
+        torch.save({"model_state_dict": model.state_dict()}, path)
+        seed_checkpoints[seed] = path
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    assert prototype is not None
+    store.write(
+        "m1-f1",
+        model_card={
+            "dataset_id": "ds-1",
+            "family": "RESIDUAL_MLP",
+            "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": "residual-mlp-1",
+        },
+        config=config,
+        signature=asdict(prototype.artifact_signature()),
+        feature_order=_TWO_FACTORS,
+        preprocessing={
+            "state_hash": fitted.state_hash,
+            "state_payload": fitted.state_payload(),
+        },
+        seed_checkpoints=seed_checkpoints,
+        validation_predictions=pd.DataFrame(
+            {"signal_date": ["2025-01-02"], "ts_code": ["a"], "percentile_rank": [0.5]}
+        ),
+    )
+    return store, "m1-f1", fitted.state_hash
+
+
+def _real_frame(*, labels: float | None = None) -> pd.DataFrame:
+    """A PIT-shaped TEST frame wide enough for the batch builder's 30-stock minimum per date."""
+    rng = np.random.default_rng(11)
+    rows: list[dict[str, Any]] = []
+    for day in _TWO_DAYS:
+        for index in range(_STOCKS_PER_DAY):
+            # The label draw happens whether or not it is used, so a frame built with a constant
+            # label consumes the same random numbers as one with real labels and differs from it in
+            # the label column only. Otherwise "scores do not depend on labels" would be comparing
+            # two different factor matrices and passing or failing for the wrong reason.
+            drawn = float(rng.standard_normal()) * 0.01
+            row: dict[str, Any] = {
+                "signal_date": day,
+                "ts_code": f"S{index:03d}",
+                "raw_return_5d": drawn if labels is None else labels,
+                "label_valid": True,
+            }
+            for name in _TWO_FACTORS:
+                row[name] = float(rng.standard_normal())
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def _torch_bundle(tmp_path: Path, test: pd.DataFrame) -> reproduction._FoldBundle:
+    store, model_id, _ = _real_bundle(tmp_path)
+    return reproduction._FoldBundle(
+        fold_id="F1",
+        model_artifact_id=model_id,
+        family="RESIDUAL_MLP",
+        dataset_id="ds-1",
+        factor_order=_TWO_FACTORS,
+        store=store,
+        test=test,
+    )
+
+
+def test_the_static_torch_path_closes_on_a_real_bundle(tmp_path: Path) -> None:
+    scores = reproduction._recompute_static_torch(_torch_bundle(tmp_path, _real_frame()))
+    assert set(scores.columns) == {"signal_date", "ts_code", "score"}
+    assert len(scores) == len(_TWO_DAYS) * _STOCKS_PER_DAY
+    assert not scores.duplicated(["signal_date", "ts_code"]).any()
+    for _, group in scores.groupby("signal_date"):
+        assert len(group) == _STOCKS_PER_DAY
+        assert group["score"].between(0.0, 1.0).all()
+        assert group["score"].nunique() > 1, "a collapsed cross-section is not a ranking"
+
+
+def test_the_recomputation_is_a_function_of_the_bundle_and_the_frame(tmp_path: Path) -> None:
+    """Exact determinism is the whole claim: an audit that drifted could not accuse anyone."""
+    bundle = _torch_bundle(tmp_path, _real_frame())
+    first = reproduction._recompute_static_torch(bundle)
+    second = reproduction._recompute_static_torch(bundle)
+    pd.testing.assert_frame_equal(first, second, check_exact=True)
+
+
+def test_the_audit_scores_the_seed_ensemble_and_not_one_convenient_seed(tmp_path: Path) -> None:
+    store, model_id, state_hash = _real_bundle(tmp_path)
+    test = _real_frame()
+    loaded = load_bundle_for_evaluation(
+        store,
+        model_id,
+        expected_dataset_id="ds-1",
+        expected_feature_order=_TWO_FACTORS,
+        expected_preprocessor_hash=state_hash,
+        device=torch.device("cpu"),
+    )
+    assert loaded.preprocessor is not None
+    batches = build_static_training_batches(
+        prepare_frame(test.assign(raw_return_5d=0.0), loaded.preprocessor, _TWO_FACTORS),
+        factor_order=_TWO_FACTORS,
+    )
+    expected = concat_date_scores(loaded.models, batches)
+    bundle = reproduction._FoldBundle(
+        fold_id="F1",
+        model_artifact_id=model_id,
+        family="RESIDUAL_MLP",
+        dataset_id="ds-1",
+        factor_order=_TWO_FACTORS,
+        store=store,
+        test=test,
+    )
+    audited = reproduction._recompute_static_torch(bundle)
+    merged = expected.merge(
+        audited, on=["signal_date", "ts_code"], suffixes=("_expected", "_audited"),
+        validate="one_to_one",
+    )
+    assert len(merged) == len(expected)
+    assert float((merged["score_expected"] - merged["score_audited"]).abs().max()) == 0.0
+    # And the ensemble is not degenerate: three identically-initialised seeds would make the mean
+    # equal to any one seed, which would hide a scorer that only ran the first.
+    day = _TWO_DAYS[0]
+    ranks = [
+        score_batch(model, batches[day])
+        .set_index("ts_code")["percentile_rank"]
+        .sort_index()
+        .to_numpy()
+        for model in loaded.models
+    ]
+    assert not all(np.array_equal(ranks[0], other) for other in ranks[1:])
+
+
+def test_the_label_column_is_zeroed_so_an_unusable_test_label_cannot_drop_rows(
+    tmp_path: Path,
+) -> None:
+    """The driver scores TEST with raw_return_5d zeroed; the audit has to do the same.
+
+    A frozen TEST split whose forward returns are not yet knowable carries a non-finite label, and
+    the batch builder keeps only rows with a finite target. Zeroing the column is what makes the
+    row set a property of the universe rather than of the labels -- drop the assignment and this
+    frame scores zero rows instead of sixty-four.
+    """
+    unusable = _real_frame(labels=float("nan"))
+    scores = reproduction._recompute_static_torch(_torch_bundle(tmp_path, unusable))
+    assert len(scores) == len(_TWO_DAYS) * _STOCKS_PER_DAY
+
+
+def test_the_scores_do_not_depend_on_the_stored_labels_at_all(tmp_path: Path) -> None:
+    # Separate roots: a bundle is immutable, so the two frames cannot share one workspace.
+    (tmp_path / "real").mkdir()
+    (tmp_path / "zeroed").mkdir()
+    real = reproduction._recompute_static_torch(
+        _torch_bundle(tmp_path / "real", _real_frame())
+    )
+    zeroed = reproduction._recompute_static_torch(
+        _torch_bundle(tmp_path / "zeroed", _real_frame(labels=0.0))
+    )
+    pd.testing.assert_frame_equal(real, zeroed, check_exact=True)
