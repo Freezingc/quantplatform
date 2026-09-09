@@ -69,8 +69,12 @@ _BUSINESS_KEYS = ("signal_date", "ts_code")
 # Families whose score is a pure function of (bundle, frozen frame): one row per
 # (signal_date, ts_code), no history window, so the frozen TEST split is a sufficient input.
 _STATIC_TORCH_FAMILIES = frozenset({"RESIDUAL_MLP", "SET_ATTENTION"})
-# M2 scores a 20-day history window per row, which the frozen TEST split does not contain.
-_TEMPORAL_TORCH_FAMILIES = frozenset({"TEMPORAL_GRU"})
+# M2 scores a 20-day history window per row, which the frozen TEST split does not contain. The
+# family is named by the WINNING config (the grid searches GRU and TCN alike, and the card reads
+# TEMPORAL_<choice>), so both spellings have to be refused for the same stated reason -- otherwise
+# a TCN run would fall through to "not allowlisted", which reads like an omission rather than a
+# contract difference.
+_TEMPORAL_TORCH_FAMILIES = frozenset({"TEMPORAL_GRU", "TEMPORAL_TCN"})
 # Reported when the derived identity is absent from the registry, which is the normal state of a
 # run that failed a gate and was never promoted. Informational: it authorises serving nothing.
 _UNREGISTERED = "UNREGISTERED"

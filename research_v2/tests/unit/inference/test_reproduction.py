@@ -283,13 +283,15 @@ def test_the_static_torch_families_route_to_the_torch_scorer_only(
     assert calls["lgbm"] == []
 
 
-def test_the_temporal_family_is_refused_with_the_reason_it_cannot_be_reproduced(
-    monkeypatch: pytest.MonkeyPatch,
+@pytest.mark.parametrize("family", ["TEMPORAL_GRU", "TEMPORAL_TCN"])
+def test_the_temporal_families_are_refused_with_the_reason_they_cannot_be_reproduced(
+    family: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A silent skip would report a fold as reproduced that was never scored."""
+    """A silent skip would report a fold as reproduced that was never scored. M2's card is named by
+    the winning config, so the TCN spelling has to be refused for the same reason as the GRU one."""
     calls = _recorders(monkeypatch)
     with pytest.raises(ReproductionError, match="20-day history window"):
-        reproduction._recompute_fold_scores(_bundle("TEMPORAL_GRU"))
+        reproduction._recompute_fold_scores(_bundle(family))
     assert calls == {"lgbm": [], "torch": []}
 
 
