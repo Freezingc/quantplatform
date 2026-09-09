@@ -13,11 +13,13 @@ import json
 import sys
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import pytest
 import torch
 
+from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.static_batches import build_static_training_batches
 
@@ -759,8 +761,6 @@ def test_the_resume_handle_is_bound_to_this_fold_and_this_run(tmp_path: Path) ->
         fold_id="F2",
         family="RESIDUAL_MLP",
         model_code_version="residual-mlp-1",
-        model_id="m1-f2",
-        model_store=ModelArtifactBundleStore(tmp_path / "models"),
         train_dataset_id="ds-2:train",
         validation_dataset_id="ds-2:validation",
         factor_order=("f00", "f01"),
@@ -781,8 +781,6 @@ def test_the_resume_handle_logs_refusals_to_the_run_transcript(
         fold_id="F1",
         family="RESIDUAL_MLP",
         model_code_version="residual-mlp-1",
-        model_id="m1-f1",
-        model_store=ModelArtifactBundleStore(tmp_path / "models"),
         train_dataset_id="ds:train",
         validation_dataset_id="ds:validation",
         factor_order=("f00",),
@@ -802,8 +800,6 @@ def test_an_ordinary_run_does_not_gain_a_line_per_config(
         fold_id="F1",
         family="RESIDUAL_MLP",
         model_code_version="residual-mlp-1",
-        model_id="m1-f1",
-        model_store=ModelArtifactBundleStore(tmp_path / "models"),
         train_dataset_id="ds:train",
         validation_dataset_id="ds:validation",
         factor_order=("f00",),
@@ -846,46 +842,348 @@ def test_all_three_search_loops_consult_the_resume_handle() -> None:
     """Wiring check: a handle built but never asked would leave the risk exactly where it was."""
     source = SCRIPT_PATH.read_text(encoding="utf-8")
     assert source.count("resume = _search_resume(") == 3
-    assert source.count("resume.adopt(config_index, config_payload") == 3
+    # Three from the search loops, plus the one fold adoption uses to rebuild search_results.
+    assert source.count("resume.adopt(config_index, config_payload") == 4
     assert source.count("resume.persist(config_index, config_payload, result") == 3
     assert "early_stopping_patience=10" not in source
 
 
-def test_resume_refuses_a_fold_whose_bundle_already_exists(tmp_path: Path) -> None:
-    """A completed fold cannot be re-run in place, so the refusal has to come before the fitting.
+# --- fold-level adoption: the half of resume that crosses a fold boundary ---
 
-    Without it a resumed run adopts the search records, retrains the fold's three final fits, and
-    only then dies on the immutable bundle write -- hours later, with no explanation at the point
-    where the decision was actually made.
+FACTOR_ORDER_2 = ("f00", "f01")
+CONFIG_0: dict[str, Any] = {
+    "hidden_dim": 64,
+    "num_blocks": 1,
+    "dropout": 0.0,
+    "learning_rate": 0.003,
+}
+BUDGET_100: dict[str, Any] = {"max_epochs": 100}
+
+
+def _completed_fold(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    signed_digest: str | None = None,
+    write_evidence: bool = True,
+    write_records: bool = True,
+    indexed_kinds: tuple[str, ...] = ("candidate", "best_simple"),
+) -> dict[str, Any]:
+    """Build a REAL completed fold: verified bundle, signed evidence, indexed predictions, records.
+
+    Nothing here is a stub of the thing being checked -- the bundle is written through the same
+    immutable store the driver uses, the evidence is signed and loaded back through its verifier,
+    and the search records go through the same persistence the search loop uses. Only the
+    prediction index is faked, because it is a library function with its own tests and faking it is
+    what makes "one of the two artifacts is missing" expressible at all.
     """
-    store = ModelArtifactBundleStore(tmp_path / "models")
-    (tmp_path / "models" / "m1-f1").mkdir(parents=True)
-    with pytest.raises(SystemExit, match="cannot adopt completed fold F1"):
-        MODULE._refuse_completed_fold_under_resume(
-            _smoke_args("--resume"), store, fold_id="F1", model_id="m1-f1"
+    from research_v2.evaluation.selection_evidence import SelectionEvidenceStore
+
+    dataset_id = "ds-1"
+    model_id = "m1-f1"
+    configs = [CONFIG_0]
+    seed_files: dict[int, Path] = {}
+    for seed in REQUIRED_SEEDS:
+        path = tmp_path / f"seed-{seed}.pt"
+        path.write_bytes(b"weights")
+        seed_files[seed] = path
+    model_store = ModelArtifactBundleStore(tmp_path / "models")
+    model_store.write(
+        model_id,
+        model_card={
+            "dataset_id": dataset_id,
+            "family": "RESIDUAL_MLP",
+            "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": "residual-mlp-1",
+        },
+        config=dict(CONFIG_0, raw_factor_count=len(FACTOR_ORDER_2)),
+        signature={"model_family": "RESIDUAL_MLP", "raw_factor_count": 2, "config_hash": "c"},
+        feature_order=FACTOR_ORDER_2,
+        preprocessing={"state_hash": "identity"},
+        seed_checkpoints=seed_files,
+        validation_predictions=pd.DataFrame(
+            {"signal_date": ["2025-01-02"], "ts_code": ["a"], "percentile_rank": [0.5]}
+        ),
+    )
+    selection_store = SelectionEvidenceStore(tmp_path / "selections", signing_key=b"unit-key")
+    baseline_evidence_id = ""
+    model_evidence_id = ""
+    if write_evidence:
+        baseline_entry = {
+            "fold_id": "F1",
+            "selected_baseline_id": "B2",
+            "validation_scores": [
+                {
+                    "baseline_id": baseline_id,
+                    "mean_rank_ic": 0.02 if baseline_id == "B2" else 0.01,
+                    "valid_day_count": 240,
+                    "invalid_day_count": 2,
+                }
+                for baseline_id in ("B0", "B1", "B2", "B3")
+            ],
+            "unselected_reasons": [
+                [baseline_id, "LOWER_VALIDATION_RANKIC"]
+                for baseline_id in ("B0", "B1", "B3")
+            ],
+        }
+        baseline = selection_store.write_baseline_selection(
+            record=MODULE.reconstruct_baseline_record(baseline_entry),
+            test_dataset_id=dataset_id,
         )
+        baseline_evidence_id = baseline.evidence_id
+        model_evidence = selection_store.write_model_selection(
+            fold_id="F1",
+            model_family="M1",
+            model_artifact_id=model_id,
+            model_bundle_digest=(
+                model_store.bundle_digest(model_id)
+                if signed_digest is None
+                else signed_digest
+            ),
+            training_dataset_id=f"{dataset_id}:train",
+            validation_dataset_id=f"{dataset_id}:validation",
+            test_dataset_id=dataset_id,
+            baseline_selection_id=baseline_evidence_id,
+            validation_rank_ic=0.1057,
+        )
+        model_evidence_id = model_evidence.evidence_id
+    monkeypatch.setattr(
+        MODULE,
+        "_prediction_ids_by_fold_and_kind",
+        lambda workspace: {("F1", kind): f"pred-{kind}" for kind in indexed_kinds},
+    )
+    resume = MODULE._search_resume(
+        _smoke_args("--resume"),
+        tmp_path,
+        fold_id="F1",
+        family="RESIDUAL_MLP",
+        model_code_version="residual-mlp-1",
+        train_dataset_id=f"{dataset_id}:train",
+        validation_dataset_id=f"{dataset_id}:validation",
+        factor_order=FACTOR_ORDER_2,
+        runtime={"torch_version": "2.4.1"},
+    )
+    if write_records:
+        for index, config in enumerate(configs):
+            resume.persist(
+                index,
+                config,
+                {
+                    "config": config,
+                    "ensemble_validation_rank_ic": 0.1057,
+                    "seed_validation_rank_ic": {seed: 0.1 for seed in REQUIRED_SEEDS},
+                    "worst_seed": sorted(REQUIRED_SEEDS)[0],
+                },
+                budget=BUDGET_100,
+            )
+    return {
+        "workspace": tmp_path,
+        "model_store": model_store,
+        "selection_store": selection_store,
+        "resume": resume,
+        "configs": configs,
+        "dataset_id": dataset_id,
+        "model_id": model_id,
+        "baseline_evidence_id": baseline_evidence_id,
+        "model_evidence_id": model_evidence_id,
+    }
 
 
-def test_an_ordinary_run_is_unaffected_by_a_pre_existing_bundle(tmp_path: Path) -> None:
-    """The guard exists for --resume only; a fresh run's own workspace handling must not change."""
-    store = ModelArtifactBundleStore(tmp_path / "models")
-    (tmp_path / "models" / "m1-f1").mkdir(parents=True)
-    MODULE._refuse_completed_fold_under_resume(
-        _smoke_args(), store, fold_id="F1", model_id="m1-f1"
+def _adoption(state: dict[str, Any], **overrides: Any) -> Any:
+    kwargs: dict[str, Any] = {
+        "fold_id": "F1",
+        "model_id": state["model_id"],
+        "dataset_id": state["dataset_id"],
+        "train_dataset_id": f"{state['dataset_id']}:train",
+        "validation_dataset_id": f"{state['dataset_id']}:validation",
+        "factor_order": FACTOR_ORDER_2,
+        "configs": state["configs"],
+        "budget_for": lambda _config: BUDGET_100,
+    }
+    kwargs.update(overrides)
+    return MODULE._fold_adoption(
+        state["workspace"],
+        state["model_store"],
+        state["selection_store"],
+        state["resume"],
+        **kwargs,
     )
 
 
-def test_resume_is_allowed_when_the_fold_has_not_written_a_bundle(tmp_path: Path) -> None:
-    store = ModelArtifactBundleStore(tmp_path / "models")
-    MODULE._refuse_completed_fold_under_resume(
-        _smoke_args("--resume"), store, fold_id="F1", model_id="m1-f1"
+def test_a_completed_fold_is_adopted_with_its_report_entry_rebuilt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = _completed_fold(tmp_path, monkeypatch)
+    adopted = _adoption(state).fold
+    assert adopted is not None
+    entry = adopted.report_entry
+    assert entry["fold_id"] == "F1"
+    assert entry["model_id"] == "m1-f1"
+    assert entry["dataset_id"] == "ds-1"
+    # best_config comes from the winning record, so it is the payload the fresh search would have
+    # selected -- not a copy read back out of the bundle.
+    assert entry["best_config"] == CONFIG_0
+    assert len(entry["search_results"]) == 1
+    assert entry["baseline_selection_id"] == state["baseline_evidence_id"]
+    assert entry["model_selection_id"] == state["model_evidence_id"]
+    assert adopted.oos_fold.model_selection_id == state["model_evidence_id"]
+    assert adopted.oos_fold.candidate_prediction_id == "pred-candidate"
+    assert adopted.oos_fold.best_simple_prediction_id == "pred-best_simple"
+
+
+def test_adoption_refuses_a_bundle_that_no_longer_re_verifies(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The re-hash is the first check: a byte changed on disk ends the question immediately."""
+    state = _completed_fold(tmp_path, monkeypatch)
+    seed = tmp_path / "models" / "m1-f1" / "seed-20260801.pt"
+    seed.write_bytes(seed.read_bytes() + b"x")
+    adoption = _adoption(state)
+    assert adoption.fold is None
+    assert "does not re-verify" in adoption.reason
+
+
+def test_adoption_refuses_a_bundle_from_another_dataset(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = _completed_fold(tmp_path, monkeypatch)
+    adoption = _adoption(state, dataset_id="ds-2")
+    assert adoption.fold is None
+    assert "dataset_id" in adoption.reason
+
+
+def test_adoption_refuses_a_bundle_fitted_on_another_factor_order(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = _completed_fold(tmp_path, monkeypatch)
+    adoption = _adoption(state, factor_order=("f00",))
+    assert adoption.fold is None
+    assert "factor order" in adoption.reason
+
+
+def test_adoption_refuses_evidence_that_binds_a_different_digest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The signed digest is what ties the evidence to THESE bytes, so it has to be compared."""
+    state = _completed_fold(tmp_path, monkeypatch, signed_digest="0" * 64)
+    adoption = _adoption(state)
+    assert adoption.fold is None
+    assert "bundle digest" in adoption.reason
+
+
+def test_adoption_refuses_a_fold_whose_selection_evidence_is_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = _completed_fold(tmp_path, monkeypatch, write_evidence=False)
+    adoption = _adoption(state)
+    assert adoption.fold is None
+    assert "selection evidence" in adoption.reason
+
+
+@pytest.mark.parametrize(
+    "indexed",
+    [("candidate",), ("best_simple",), ()],
+    ids=["no_best_simple", "no_candidate", "none"],
+)
+def test_adoption_refuses_a_fold_missing_a_signed_prediction(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, indexed: tuple[str, ...]
+) -> None:
+    state = _completed_fold(tmp_path, monkeypatch, indexed_kinds=indexed)
+    adoption = _adoption(state)
+    assert adoption.fold is None
+    assert "prediction artifacts" in adoption.reason
+
+
+def test_adoption_refuses_a_fold_whose_search_cannot_be_reconstructed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Without every config's record there is no search_results, so there is no report entry."""
+    state = _completed_fold(tmp_path, monkeypatch, write_records=False)
+    adoption = _adoption(state)
+    assert adoption.fold is None
+    assert "search record" in adoption.reason
+
+
+def test_a_fold_with_no_bundle_is_neither_adopted_nor_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The ordinary case: nothing frozen yet, so the fold trains. Adoption must not fire."""
+    state = _completed_fold(tmp_path, monkeypatch)
+    empty = ModelArtifactBundleStore(tmp_path / "other-models")
+    assert (
+        MODULE._adopt_completed_fold(
+            _smoke_args("--resume"),
+            tmp_path,
+            empty,
+            state["selection_store"],
+            state["resume"],
+            fold_id="F1",
+            model_id="m1-f1",
+            dataset_id="ds-1",
+            train_dataset_id="ds-1:train",
+            validation_dataset_id="ds-1:validation",
+            factor_order=FACTOR_ORDER_2,
+            configs=state["configs"],
+            budget_for=lambda _config: BUDGET_100,
+        )
+        is None
     )
 
 
-def test_every_search_loop_passes_its_own_model_id_to_the_guard() -> None:
-    """The id formula is written once per loop; the guard and the bundle write must agree on it."""
+def test_an_unadoptable_completed_fold_is_refused_before_any_fitting(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Refusing up front is the whole point: the alternative is hours of fitting then a crash."""
+    state = _completed_fold(tmp_path, monkeypatch, signed_digest="0" * 64)
+    with pytest.raises(SystemExit) as exit_info:
+        MODULE._adopt_completed_fold(
+            _smoke_args("--resume"),
+            tmp_path,
+            state["model_store"],
+            state["selection_store"],
+            state["resume"],
+            fold_id="F1",
+            model_id="m1-f1",
+            dataset_id="ds-1",
+            train_dataset_id="ds-1:train",
+            validation_dataset_id="ds-1:validation",
+            factor_order=FACTOR_ORDER_2,
+            configs=state["configs"],
+            budget_for=lambda _config: BUDGET_100,
+        )
+    message = str(exit_info.value)
+    assert "bundle digest" in message
+    assert "immutable" in message
+
+
+def test_a_completed_fold_without_resume_is_refused_with_the_way_forward(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = _completed_fold(tmp_path, monkeypatch)
+    with pytest.raises(SystemExit) as exit_info:
+        MODULE._adopt_completed_fold(
+            _smoke_args(),
+            tmp_path,
+            state["model_store"],
+            state["selection_store"],
+            state["resume"],
+            fold_id="F1",
+            model_id="m1-f1",
+            dataset_id="ds-1",
+            train_dataset_id="ds-1:train",
+            validation_dataset_id="ds-1:validation",
+            factor_order=FACTOR_ORDER_2,
+            configs=state["configs"],
+            budget_for=lambda _config: BUDGET_100,
+        )
+    assert "--resume" in str(exit_info.value)
+
+
+def test_every_search_loop_adopts_completed_folds_before_fitting() -> None:
+    """Wiring: a helper no loop calls leaves the trap exactly where it was."""
     source = SCRIPT_PATH.read_text(encoding="utf-8")
-    assert source.count("model_id=model_id,\n            model_store=model_store,") == 3
+    assert source.count("adopted_fold = _adopt_completed_fold(") == 3
+    assert source.count("fold_reports.append(adopted_fold.report_entry)") == 3
     assert source.count('model_id = f"{spec.model_id_prefix}-{fold_id.lower()}"') == 1
     assert source.count('model_id = f"{family.lower()}-{fold_id.lower()}"') == 1
     assert source.count('model_id = f"m2-{fold_id.lower()}"') == 1

@@ -89,6 +89,7 @@ from research_v2.models.temporal import (
 from research_v2.registry.promotion_evidence import (
     PROMOTION_EVIDENCE_FILENAME,
     PromotionEvidenceError,
+    _prediction_ids_by_fold_and_kind,
     emit_promotion_evidence,
 )
 from research_v2.training.artifacts import CheckpointStore
@@ -1288,8 +1289,6 @@ def _search_resume(
     fold_id: str,
     family: str,
     model_code_version: str,
-    model_id: str,
-    model_store: ModelArtifactBundleStore,
     train_dataset_id: str,
     validation_dataset_id: str,
     factor_order: tuple[str, ...],
@@ -1302,7 +1301,6 @@ def _search_resume(
     at fold 1 config 0 seed 1 -- on a multi-day run, losing all of it. Records are persisted by
     every full run and adopted only under ``--resume``, so the default path is unchanged.
     """
-    _refuse_completed_fold_under_resume(args, model_store, fold_id=fold_id, model_id=model_id)
     return SearchResume(
         workspace=workspace,
         fold_id=fold_id,
@@ -1317,33 +1315,188 @@ def _search_resume(
     )
 
 
-def _refuse_completed_fold_under_resume(
+@dataclass(frozen=True)
+class _AdoptedFold:
+    """One already-frozen fold's outcome, reconstructed from artifacts this run re-verified."""
+
+    report_entry: dict[str, Any]
+    oos_fold: ModelOosFold
+
+
+@dataclass(frozen=True)
+class _FoldAdoption:
+    """The adoption decision plus, when it is a refusal, the reason -- never both."""
+
+    fold: _AdoptedFold | None = None
+    reason: str = ""
+
+
+def _adopt_completed_fold(
     args: argparse.Namespace,
+    workspace: Path,
     model_store: ModelArtifactBundleStore,
+    selection_store: SelectionEvidenceStore,
+    resume: SearchResume,
     *,
     fold_id: str,
     model_id: str,
-) -> None:
-    """Refuse ``--resume`` before any fitting when a fold already wrote its immutable bundle.
+    dataset_id: str,
+    train_dataset_id: str,
+    validation_dataset_id: str,
+    factor_order: tuple[str, ...],
+    configs: Sequence[Mapping[str, Any]],
+    budget_for: Callable[[Mapping[str, Any]], Mapping[str, Any]],
+) -> _AdoptedFold | None:
+    """Skip a fold whose artifacts are already frozen in this workspace, or refuse before fitting.
 
-    Config-search records make the SEARCH resumable, which is where the hours are. They do not
-    make a COMPLETED fold re-runnable in the same workspace: ``ModelArtifactBundleStore.write``
-    refuses an existing model id, and the prediction index refuses a second candidate for one
-    fold. Adopting a finished fold -- verifying its bundle, its signed selection evidence and
-    both signed prediction artifacts, then skipping it whole -- is not implemented yet, so
-    without this guard a resumed run would adopt the search records, retrain the fold's three
-    final fits, and only then die on the bundle write. Refusing before the work instead of after
-    it is the difference between an operator reading a reason and an operator losing a day.
+    A bundle is immutable and the prediction index refuses a second candidate for one fold, so a
+    fold that already finished cannot be retrained in place: without this the run would redo the
+    fold's three final fits -- hours -- and then die on the bundle write. Adoption is therefore not
+    an optimisation layered on top of resume, it is the only way ``--resume`` can cross a fold
+    boundary at all.
+
+    Adoption still requires ``--resume``. Without it a pre-existing bundle is refused before any
+    fitting too, because the outcome is the same crash either way and an operator deserves the
+    reason at the start of the run rather than hours into it.
+
+    Nothing here is trusted. The bundle is re-hashed, the signed model-selection evidence is loaded
+    through its verifier and its ``model_bundle_digest`` is compared to that re-hash, its three
+    dataset ids and its baseline evidence id are compared to this run's, the bundle's own card and
+    feature order are compared to this fold's dataset and factor order, both signed prediction
+    artifacts must be indexed for this fold, and every config's search record must be adoptable
+    under the same bindings the search itself uses. The report entry is then REBUILT from those
+    records -- including ``best_config`` via the same ``max`` over grid order the fresh search uses
+    -- so a resumed run's report is the report a fresh run would have written, not an approximation
+    of it. Adopting skips recomputation only; the walk-forward evaluation still loads and verifies
+    the bundle, the selections and the predictions itself, so no check is bypassed.
     """
+    if not model_store.bundle_path(model_id).exists():
+        return None
     if not bool(getattr(args, "resume", False)):
-        return
-    if model_store.bundle_path(model_id).exists():
         raise SystemExit(
-            f"--resume cannot adopt completed fold {fold_id}: bundle {model_id} already exists in "
-            "this workspace and a bundle is immutable. Config-search resume covers an interruption "
-            "inside a fold's search; adopting a finished fold is not implemented. Point "
-            "--workspace at a fresh directory to start over."
+            f"fold {fold_id} already wrote bundle {model_id} into this workspace, and a bundle is "
+            "immutable, so it cannot be retrained here. Pass --resume to adopt it if its artifacts "
+            "verify, or point --workspace at a fresh directory to start over."
         )
+    adoption = _fold_adoption(
+        workspace,
+        model_store,
+        selection_store,
+        resume,
+        fold_id=fold_id,
+        model_id=model_id,
+        dataset_id=dataset_id,
+        train_dataset_id=train_dataset_id,
+        validation_dataset_id=validation_dataset_id,
+        factor_order=factor_order,
+        configs=configs,
+        budget_for=budget_for,
+    )
+    if adoption.fold is None:
+        raise SystemExit(
+            f"fold {fold_id} already wrote bundle {model_id} into this workspace, and a bundle is "
+            f"immutable, so it cannot be retrained here, and --resume cannot adopt it either: "
+            f"{adoption.reason}. Point --workspace at a fresh directory to start over."
+        )
+    return adoption.fold
+
+
+def _fold_adoption(
+    workspace: Path,
+    model_store: ModelArtifactBundleStore,
+    selection_store: SelectionEvidenceStore,
+    resume: SearchResume,
+    *,
+    fold_id: str,
+    model_id: str,
+    dataset_id: str,
+    train_dataset_id: str,
+    validation_dataset_id: str,
+    factor_order: tuple[str, ...],
+    configs: Sequence[Mapping[str, Any]],
+    budget_for: Callable[[Mapping[str, Any]], Mapping[str, Any]],
+) -> _FoldAdoption:
+    """Every check adoption rests on, as a reason rather than an exception, so each is testable."""
+    if not model_store.verify(model_id):
+        return _FoldAdoption(reason="its bundle does not re-verify")
+    bundle_root = model_store.bundle_path(model_id)
+    card = json.loads((bundle_root / "model_card.json").read_text(encoding="utf-8"))
+    recorded_dataset = card.get("dataset_id")
+    if recorded_dataset not in (dataset_id, f"{dataset_id}:train"):
+        return _FoldAdoption(
+            reason=(
+                f"its bundle records dataset_id {recorded_dataset!r}, which is neither this "
+                f"fold's {dataset_id!r} nor its train split"
+            )
+        )
+    order_document = json.loads((bundle_root / "feature_order.json").read_text(encoding="utf-8"))
+    recorded_order = order_document.get("feature_order")
+    if not isinstance(recorded_order, list) or tuple(recorded_order) != tuple(factor_order):
+        return _FoldAdoption(reason="its bundle was fitted on a different factor order")
+    baseline_selection_id = _existing_evidence_id(
+        workspace / "selections", selection_store, "baseline", fold_id, dataset_id
+    )
+    model_selection_id = _existing_evidence_id(
+        workspace / "selections", selection_store, "model", fold_id, dataset_id
+    )
+    if baseline_selection_id is None or model_selection_id is None:
+        return _FoldAdoption(reason="its signed selection evidence is missing")
+    evidence = selection_store.load_model_selection(model_selection_id)
+    if evidence.model_artifact_id != model_id:
+        return _FoldAdoption(
+            reason=f"its signed evidence names {evidence.model_artifact_id}, not {model_id}"
+        )
+    digest = model_store.bundle_digest(model_id)
+    if evidence.model_bundle_digest != digest:
+        return _FoldAdoption(
+            reason=(
+                "its signed evidence binds bundle digest "
+                f"{evidence.model_bundle_digest}, but the bundle on disk re-hashes to {digest}"
+            )
+        )
+    if (
+        evidence.test_dataset_id != dataset_id
+        or evidence.training_dataset_id != train_dataset_id
+        or evidence.validation_dataset_id != validation_dataset_id
+    ):
+        return _FoldAdoption(reason="its signed evidence binds different dataset ids")
+    if evidence.baseline_selection_id != baseline_selection_id:
+        return _FoldAdoption(reason="its signed evidence names a different baseline selection")
+    prediction_ids = _prediction_ids_by_fold_and_kind(workspace)
+    candidate_id = prediction_ids.get((fold_id, "candidate"))
+    best_simple_id = prediction_ids.get((fold_id, "best_simple"))
+    if candidate_id is None or best_simple_id is None:
+        return _FoldAdoption(reason="its signed prediction artifacts are not indexed")
+    search_results: list[dict[str, Any]] = []
+    for config_index, config_payload in enumerate(configs):
+        lookup = resume.adopt(config_index, config_payload, budget=budget_for(config_payload))
+        if lookup.record is None:
+            return _FoldAdoption(
+                reason=(
+                    f"config {config_index} has no adoptable search record ({lookup.reason}), so "
+                    "the search that selected this bundle cannot be reconstructed"
+                )
+            )
+        search_results.append(lookup.record)
+    best = max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])
+    return _FoldAdoption(
+        fold=_AdoptedFold(
+            report_entry={
+                "fold_id": fold_id,
+                "dataset_id": dataset_id,
+                "model_id": model_id,
+                "best_config": best["config"],
+                "search_results": search_results,
+                "baseline_selection_id": baseline_selection_id,
+                "model_selection_id": model_selection_id,
+            },
+            oos_fold=ModelOosFold(
+                model_selection_id=model_selection_id,
+                candidate_prediction_id=candidate_id,
+                best_simple_prediction_id=best_simple_id,
+            ),
+        )
+    )
 
 
 def _torch_search_budget(max_epochs: int) -> dict[str, Any]:
@@ -1431,13 +1584,31 @@ def _run_full_lightgbm_family(
             fold_id=fold_id,
             family=spec.family_name,
             model_code_version=spec.model_code_version,
-            model_id=model_id,
-            model_store=model_store,
             train_dataset_id=train_dataset_id,
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
             runtime={"lightgbm_version": lgb.__version__},
         )
+        adopted_fold = _adopt_completed_fold(
+            args,
+            workspace,
+            model_store,
+            selection_store,
+            resume,
+            fold_id=fold_id,
+            model_id=model_id,
+            dataset_id=dataset_id,
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            configs=configs,
+            budget_for=_lightgbm_search_budget,
+        )
+        if adopted_fold is not None:
+            fold_reports.append(adopted_fold.report_entry)
+            oos_folds[fold_id] = adopted_fold.oos_fold
+            print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
+            continue
         for config_index, config_payload in enumerate(configs):
             budget = _lightgbm_search_budget(config_payload)
             adopted = resume.adopt(config_index, config_payload, budget=budget)
@@ -1844,14 +2015,32 @@ def _run_full_cross_section(
             fold_id=fold_id,
             family=family_name,
             model_code_version=model_code_version,
-            model_id=model_id,
-            model_store=model_store,
             train_dataset_id=train_dataset_id,
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
             runtime=torch_runtime_bindings(),
         )
         torch_budget = _torch_search_budget(max_epochs)
+        adopted_fold = _adopt_completed_fold(
+            args,
+            workspace,
+            model_store,
+            selection_store,
+            resume,
+            fold_id=fold_id,
+            model_id=model_id,
+            dataset_id=dataset_id,
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            configs=configs,
+            budget_for=lambda _config: torch_budget,
+        )
+        if adopted_fold is not None:
+            fold_reports.append(adopted_fold.report_entry)
+            oos_folds[fold_id] = adopted_fold.oos_fold
+            print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
+            continue
         for config_index, config_payload in enumerate(configs):
             adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
             if adopted.record is not None:
@@ -2245,14 +2434,32 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             fold_id=fold_id,
             family="M2",
             model_code_version="m2-temporal-search",
-            model_id=model_id,
-            model_store=model_store,
             train_dataset_id=train_dataset_id,
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
             runtime=torch_runtime_bindings(),
         )
         torch_budget = _torch_search_budget(max_epochs)
+        adopted_fold = _adopt_completed_fold(
+            args,
+            workspace,
+            model_store,
+            selection_store,
+            resume,
+            fold_id=fold_id,
+            model_id=model_id,
+            dataset_id=dataset_id,
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            configs=configs,
+            budget_for=lambda _config: torch_budget,
+        )
+        if adopted_fold is not None:
+            fold_reports.append(adopted_fold.report_entry)
+            oos_folds[fold_id] = adopted_fold.oos_fold
+            print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
+            continue
         for config_index, config_payload in enumerate(configs):
             adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
             if adopted.record is not None:
