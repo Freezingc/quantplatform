@@ -244,6 +244,25 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       处置：**未做任何变更**（不改 device、不改线程数、不改 max_epochs、不打断运行中的链）——
       以上任一项都会改变数值口径或已裁决偏差，属人工裁决项；本节仅记录实测事实供裁决。
 
+      **续跑风险已缓解（2026-09-09，`504aa89` / `79f6a8f` / `97eb150`；上面「未做任何变更」的
+      裁决项——device、线程数、max_epochs——一个都没动，本节只增加能力，不改数值口径）**：
+      每次全量运行现在都把「每（折, 配置）的搜索结果」写入 `workspace/search/<fold>/`
+      （临时文件写入后 rename，中断不会留下半条记录）；`--resume` 时才**采纳**，默认路径逐字不变。
+      采纳条件覆盖全部影响数值的输入：内容寻址的 train/validation dataset id、因子序、家族与
+      code version、配置内容哈希、**逐配置的有效预算**（LightGBM 侧含 `_m0_hyperparameters`
+      填的库内默认值——配置哈希看不见它们，而 `model_code_version` 是人工标签、默认值变了它不会变）、
+      以及运行时描述符（torch 版本与 intra/inter-op 线程数：线程数不敏感于速度但改变 checkpoint
+      摘要，故必须绑定；**钉住**线程数仍属裁决 2，此处只观测与绑定）。
+      折级采纳同样落地：bundle 重哈希、签名 model 证据的 `model_bundle_digest` 与该重哈希比对、
+      三个 dataset id 与 baseline 证据 id 比对、card 与 feature_order 比对、两个签名预测工件必须在索引中、
+      且每个配置的搜索记录都可采纳——报告的 `search_results` 与 `best_config` 由这些记录**按原网格顺序
+      用同一个 `max` 重建**，因此续跑运行的报告是新跑一遍会写出的那份报告，而不是它的近似。
+      判据可检验：两次独立全量跑（`m0r_v2` 与 `m0r_v3`）的 `report.json` **逐字节相同**（5,723 字节），
+      所以「续跑后报告逐字节一致」是能证伪的验收条件。
+      采纳只跳过**重算**，不跳过任何校验：走查评价仍自行加载并校验 bundle、选择证据与预测工件。
+      未采纳时的处置是**开跑前拒绝**（bundle 不可变、同折不允许两个 candidate 预测），
+      而不是几小时后崩在 bundle 写入上。
+
 - [ ] **3.5 判定归档**：通过则渲染判定文档到
   `docs/reports/<date>-m1-real-candidate-walk-forward.md`（复用判定器模式），
   更新主计划 10.2；失败则归档失败报告并分析（不得用 2026 数据补救）。
