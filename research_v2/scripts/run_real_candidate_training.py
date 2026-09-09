@@ -96,6 +96,7 @@ from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.runner import run_validation_governed_training
+from research_v2.training.search_resume import SearchResume, torch_runtime_bindings
 from research_v2.training.seeds import configure_reproducibility
 from research_v2.training.static_batches import build_static_training_batches
 from research_v2.training.temporal_batches import build_temporal_training_batches
@@ -152,6 +153,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument("--max-epochs", type=int, default=100)
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help=(
+            "adopt a fold's persisted per-config search records instead of retraining them. "
+            "Records are written by every full run; adopting them is opt-in, and a record is "
+            "refused (and the config trained) unless its datasets, factor order, effective "
+            "budget, family, code version, config and runtime all still match this run"
+        ),
+    )
     parser.add_argument(
         "--factor-source",
         choices=FACTOR_SOURCES,
@@ -1270,6 +1281,64 @@ def train_m0r_smoke(workspace: Path) -> dict[str, Any]:
     return _train_lightgbm_smoke(workspace, M0R_SPEC)
 
 
+def _search_resume(
+    args: argparse.Namespace,
+    workspace: Path,
+    *,
+    fold_id: str,
+    family: str,
+    model_code_version: str,
+    train_dataset_id: str,
+    validation_dataset_id: str,
+    factor_order: tuple[str, ...],
+    runtime: Mapping[str, object],
+) -> SearchResume:
+    """One fold's search-record handle, logging into the transcript the run already writes.
+
+    The search loop had no resume at any granularity: ``_existing_evidence_id`` makes the evidence
+    writes idempotent but nothing skips the search, so an interruption at fold 3 config 20 restarted
+    at fold 1 config 0 seed 1 -- on a multi-day run, losing all of it. Records are persisted by
+    every full run and adopted only under ``--resume``, so the default path is unchanged.
+    """
+    return SearchResume(
+        workspace=workspace,
+        fold_id=fold_id,
+        family=family,
+        model_code_version=model_code_version,
+        train_dataset_id=train_dataset_id,
+        validation_dataset_id=validation_dataset_id,
+        factor_order=factor_order,
+        runtime=runtime,
+        enabled=bool(getattr(args, "resume", False)),
+        log=lambda message: print(message, flush=True),
+    )
+
+
+def _torch_search_budget(max_epochs: int) -> dict[str, Any]:
+    """The torch fit's length and stopping rule, which the config payload does not carry."""
+    return {
+        "max_epochs": max_epochs,
+        "early_stopping_patience": TORCH_EARLY_STOPPING_PATIENCE,
+    }
+
+
+def _lightgbm_search_budget(config_payload: Mapping[str, Any]) -> dict[str, Any]:
+    """The effective LightGBM budget: the round/patience constants plus the fitted hyperparameters.
+
+    ``_m0_hyperparameters`` fills in library-side defaults the config payload never names
+    (``bagging_fraction``, ``bagging_freq``, ``feature_fraction``, ``lambda_l2``, ``num_threads``),
+    and ``model_code_version`` is a hand-maintained label that does not move when those defaults do.
+    Binding the effective values is what stops a record produced under different defaults from being
+    adopted as if it were this run's result.
+    """
+    return {
+        "num_boost_round": M0_NUM_BOOST_ROUND,
+        "early_stopping_patience": M0_EARLY_STOPPING_PATIENCE,
+        "minimum_cross_section": 30,
+        "hyperparameters": asdict(_m0_hyperparameters(config_payload)),
+    }
+
+
 def _run_full_lightgbm_family(
     args: argparse.Namespace, spec: _LightGBMFamilySpec
 ) -> dict[str, Any]:
@@ -1323,7 +1392,23 @@ def _run_full_lightgbm_family(
             baseline_evidence_id = baseline_evidence.evidence_id
 
         search_results: list[dict[str, Any]] = []
+        resume = _search_resume(
+            args,
+            workspace,
+            fold_id=fold_id,
+            family=spec.family_name,
+            model_code_version=spec.model_code_version,
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            runtime={"lightgbm_version": lgb.__version__},
+        )
         for config_index, config_payload in enumerate(configs):
+            budget = _lightgbm_search_budget(config_payload)
+            adopted = resume.adopt(config_index, config_payload, budget=budget)
+            if adopted.record is not None:
+                search_results.append(adopted.record)
+                continue
             seed_validation_predictions: dict[int, pd.DataFrame] = {}
             seed_rank_ic: dict[int, float] = {}
             for seed in REQUIRED_SEEDS:
@@ -1338,14 +1423,14 @@ def _run_full_lightgbm_family(
                 columns={"ensemble_score": "percentile_rank"}
             )
             ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
-            search_results.append(
-                {
-                    "config": config_payload,
-                    "ensemble_validation_rank_ic": ensemble_rank_ic,
-                    "seed_validation_rank_ic": seed_rank_ic,
-                    "worst_seed": ensemble.worst_seed,
-                }
-            )
+            result: dict[str, Any] = {
+                "config": config_payload,
+                "ensemble_validation_rank_ic": ensemble_rank_ic,
+                "seed_validation_rank_ic": seed_rank_ic,
+                "worst_seed": ensemble.worst_seed,
+            }
+            search_results.append(result)
+            resume.persist(config_index, config_payload, result, budget=budget)
             print(
                 f"  {fold_id} config {config_index + 1}/{len(configs)}: "
                 f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
@@ -1546,6 +1631,15 @@ def _existing_evidence_id(
     return None
 
 
+TORCH_EARLY_STOPPING_PATIENCE = 10
+"""Validation patience for every torch fit, search and final alike.
+
+A single constant because the resume budget binds it: a per-call literal would let the persisted
+record claim a stopping rule the code no longer uses, and adoption would then be comparing a number
+nobody reads.
+"""
+
+
 def _train_cross_section_seed(
     config_payload: Mapping[str, Any],
     factor_order: tuple[str, ...],
@@ -1574,7 +1668,9 @@ def _train_cross_section_seed(
         validation_view=DatasetView(
             role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
         ),
-        trainer_config=TrainerConfig(max_epochs=max_epochs, early_stopping_patience=10),
+        trainer_config=TrainerConfig(
+            max_epochs=max_epochs, early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE
+        ),
         seed=seed,
         checkpoint_store=checkpoint_store,
         checkpoint_prefix=checkpoint_prefix,
@@ -1707,7 +1803,23 @@ def _run_full_cross_section(
 
         # Constrained config search: per config, three-seed validation ensemble RankIC.
         search_results: list[dict[str, Any]] = []
+        resume = _search_resume(
+            args,
+            workspace,
+            fold_id=fold_id,
+            family=family_name,
+            model_code_version=model_code_version,
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            runtime=torch_runtime_bindings(),
+        )
+        torch_budget = _torch_search_budget(max_epochs)
         for config_index, config_payload in enumerate(configs):
+            adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
+            if adopted.record is not None:
+                search_results.append(adopted.record)
+                continue
             seed_validation_predictions: dict[int, pd.DataFrame] = {}
             seed_rank_ic: dict[int, float] = {}
             for seed in REQUIRED_SEEDS:
@@ -1735,14 +1847,14 @@ def _run_full_cross_section(
                 columns={"ensemble_score": "percentile_rank"}
             )
             ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
-            search_results.append(
-                {
-                    "config": config_payload,
-                    "ensemble_validation_rank_ic": ensemble_rank_ic,
-                    "seed_validation_rank_ic": seed_rank_ic,
-                    "worst_seed": ensemble.worst_seed,
-                }
-            )
+            result: dict[str, Any] = {
+                "config": config_payload,
+                "ensemble_validation_rank_ic": ensemble_rank_ic,
+                "seed_validation_rank_ic": seed_rank_ic,
+                "worst_seed": ensemble.worst_seed,
+            }
+            search_results.append(result)
+            resume.persist(config_index, config_payload, result, budget=torch_budget)
             print(
                 f"  {fold_id} config {config_index + 1}/{len(configs)}: "
                 f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
@@ -2086,7 +2198,27 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         test_batches = _temporal_panel_batches(test_panel, factor_order, test_dates)
 
         search_results: list[dict[str, Any]] = []
+        # M2's card family and code version are derived from the WINNING config (TEMPORAL_GRU or
+        # TEMPORAL_TCN), so neither is knowable per fold before the search runs. The config payload
+        # carries the family choice and the config hash binds it; these two labels only keep M2's
+        # records separate from every other family's.
+        resume = _search_resume(
+            args,
+            workspace,
+            fold_id=fold_id,
+            family="M2",
+            model_code_version="m2-temporal-search",
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            runtime=torch_runtime_bindings(),
+        )
+        torch_budget = _torch_search_budget(max_epochs)
         for config_index, config_payload in enumerate(configs):
+            adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
+            if adopted.record is not None:
+                search_results.append(adopted.record)
+                continue
             seed_validation_predictions: dict[int, pd.DataFrame] = {}
             seed_rank_ic: dict[int, float] = {}
             for seed in REQUIRED_SEEDS:
@@ -2105,7 +2237,8 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                         role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
                     ),
                     trainer_config=TrainerConfig(
-                        max_epochs=max_epochs, early_stopping_patience=10
+                        max_epochs=max_epochs,
+                        early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
                     ),
                     seed=seed,
                     checkpoint_store=checkpoint_store,
@@ -2125,14 +2258,14 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                 columns={"ensemble_score": "percentile_rank"}
             )
             ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
-            search_results.append(
-                {
-                    "config": config_payload,
-                    "ensemble_validation_rank_ic": ensemble_rank_ic,
-                    "seed_validation_rank_ic": seed_rank_ic,
-                    "worst_seed": ensemble.worst_seed,
-                }
-            )
+            result: dict[str, Any] = {
+                "config": config_payload,
+                "ensemble_validation_rank_ic": ensemble_rank_ic,
+                "seed_validation_rank_ic": seed_rank_ic,
+                "worst_seed": ensemble.worst_seed,
+            }
+            search_results.append(result)
+            resume.persist(config_index, config_payload, result, budget=torch_budget)
             print(
                 f"  {fold_id} config {config_index + 1}/{len(configs)}: "
                 f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
@@ -2159,7 +2292,10 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                 validation_view=DatasetView(
                     role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
                 ),
-                trainer_config=TrainerConfig(max_epochs=max_epochs, early_stopping_patience=10),
+                trainer_config=TrainerConfig(
+                    max_epochs=max_epochs,
+                    early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                ),
                 seed=seed,
                 checkpoint_store=checkpoint_store,
                 checkpoint_prefix=f"m2-{fold_id.lower()}-final-{seed}",

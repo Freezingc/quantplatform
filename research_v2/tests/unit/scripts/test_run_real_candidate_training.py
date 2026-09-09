@@ -736,3 +736,109 @@ def test_torch_seed_helper_seeds_before_constructing_the_model(
     assert [kind for kind, _ in events] == ["seed", "construct", "train"]
     assert events[0] == ("seed", 20260802)
     assert events[1] == ("train", 20260802) or events[2] == ("train", 20260802)
+
+
+# --- search resume: the loop had no fold- or config-level resume, so any interruption restarted ---
+
+
+def _smoke_args(*extra: str) -> argparse.Namespace:
+    return MODULE.parse_args(["--family", "M1", "--smoke", "--report", "/tmp/r.json", *extra])
+
+
+def test_resume_is_opt_in_and_defaults_to_off() -> None:
+    """Adopting must never be the default, or a fresh run could inherit another run's search."""
+    assert _smoke_args().resume is False
+    assert _smoke_args("--resume").resume is True
+
+
+def test_the_resume_handle_is_bound_to_this_fold_and_this_run(tmp_path: Path) -> None:
+    handle = MODULE._search_resume(
+        _smoke_args("--resume"),
+        tmp_path,
+        fold_id="F2",
+        family="RESIDUAL_MLP",
+        model_code_version="residual-mlp-1",
+        train_dataset_id="ds-2:train",
+        validation_dataset_id="ds-2:validation",
+        factor_order=("f00", "f01"),
+        runtime={"torch_version": "2.4.1"},
+    )
+    assert handle.record_path(0, {"hidden_dim": 64}).parent == tmp_path / "search" / "F2"
+    adopted = handle.adopt(0, {"hidden_dim": 64}, budget={"max_epochs": 100})
+    assert adopted.record is None
+
+
+def test_the_resume_handle_logs_refusals_to_the_run_transcript(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A transcript that does not say why a config was trained again is unauditable."""
+    handle = MODULE._search_resume(
+        _smoke_args("--resume"),
+        tmp_path,
+        fold_id="F1",
+        family="RESIDUAL_MLP",
+        model_code_version="residual-mlp-1",
+        train_dataset_id="ds:train",
+        validation_dataset_id="ds:validation",
+        factor_order=("f00",),
+        runtime={},
+    )
+    handle.adopt(0, {"hidden_dim": 64}, budget={"max_epochs": 100})
+    assert "not resumable" in capsys.readouterr().out
+
+
+def test_an_ordinary_run_does_not_gain_a_line_per_config(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Without --resume the transcript must be byte-for-byte what it was before this existed."""
+    handle = MODULE._search_resume(
+        _smoke_args(),
+        tmp_path,
+        fold_id="F1",
+        family="RESIDUAL_MLP",
+        model_code_version="residual-mlp-1",
+        train_dataset_id="ds:train",
+        validation_dataset_id="ds:validation",
+        factor_order=("f00",),
+        runtime={},
+    )
+    assert handle.adopt(0, {"hidden_dim": 64}, budget={"max_epochs": 100}).record is None
+    assert capsys.readouterr().out == ""
+
+
+def test_the_torch_budget_binds_the_stopping_rule_the_trainer_uses() -> None:
+    """One constant, referenced by both the fit and the record, so the binding cannot drift."""
+    budget = MODULE._torch_search_budget(100)
+    assert budget == {
+        "max_epochs": 100,
+        "early_stopping_patience": MODULE.TORCH_EARLY_STOPPING_PATIENCE,
+    }
+    assert MODULE._torch_search_budget(50) != budget
+
+
+def test_the_lightgbm_budget_carries_defaults_the_config_never_names() -> None:
+    """The reason to bind effective hyperparameters: a config hash cannot see a library default."""
+    config = {
+        "num_leaves": 31,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "min_child_samples": 200,
+    }
+    budget = MODULE._lightgbm_search_budget(config)
+    assert budget["num_boost_round"] == MODULE.M0_NUM_BOOST_ROUND
+    assert budget["early_stopping_patience"] == MODULE.M0_EARLY_STOPPING_PATIENCE
+    assert budget["minimum_cross_section"] == 30
+    hyperparameters = budget["hyperparameters"]
+    assert hyperparameters["num_threads"] == MODULE.M0_NUM_THREADS
+    for defaulted in ("bagging_fraction", "bagging_freq", "lambda_l2", "feature_fraction"):
+        assert defaulted not in config
+        assert defaulted in hyperparameters
+
+
+def test_all_three_search_loops_consult_the_resume_handle() -> None:
+    """Wiring check: a handle built but never asked would leave the risk exactly where it was."""
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count("resume = _search_resume(") == 3
+    assert source.count("resume.adopt(config_index, config_payload") == 3
+    assert source.count("resume.persist(config_index, config_payload, result") == 3
+    assert "early_stopping_patience=10" not in source
