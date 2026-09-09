@@ -67,6 +67,8 @@
 
 该契约文档还应写入一条显式要求：**服务授权来自注册表，不来自工件自述**。原因是随后发现的一个平台级缺口——model card 的 `model_status` 由驱动在评估之前硬编码写入，对每个运行的每个 bundle 恒为真，因此拿它当晋级判据的两个加载器实际上不设防；一个 G4 FAIL 的运行（`m0_v3`）的 bundle 能被正常加载。LightGBM 侧已改为强制要求注册表验证的 `PromotedRun`，torch 侧仍待协调变更。完整记录见 `docs/handoffs/2026-09-09-model-status-fail-open-finding.md`。
 
+该契约文档还应写入第二条显式要求：**加载结果必须报告它没有校验的绑定**。契约字段（`factor_set_id` / `universe_id` / `label_id` / `split_id` / `code_version` 等）目前在 card 上尚无生产方，因此加载器对它们的校验**不可能触发**；一个只说「加载成功」的返回值会把「从未校验」与「校验通过」压成同一个信号。实现侧已就位：单一共享定义 `unverified_bindings(model_card, expected_inference_contract)` 由两个加载器共同计算，两个返回类型都携带它，**空元组的含义是每道守卫都真的触发了**；报告方独立判定，不依赖校验方先跑过（空契约既被校验方拒绝，也被报告方独立视为未校验）。契约文档因此需要规定消费方的义务：读到非空的 `unverified_bindings` 时，不得把该次加载当作契约已确立。完整记录见 `docs/handoffs/2026-09-09-model-status-fail-open-finding.md` §3。
+
 ### `artifact_bundle_hash` 的定义（提案，待流程所有者批准）
 
 覆盖四折**已验证** bundle 的完整内容，而不只是它们的摘要：
