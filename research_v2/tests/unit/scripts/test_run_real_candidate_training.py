@@ -18,6 +18,7 @@ import pandas as pd
 import pytest
 import torch
 
+from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.static_batches import build_static_training_batches
 
 SCRIPT_PATH = (
@@ -758,6 +759,8 @@ def test_the_resume_handle_is_bound_to_this_fold_and_this_run(tmp_path: Path) ->
         fold_id="F2",
         family="RESIDUAL_MLP",
         model_code_version="residual-mlp-1",
+        model_id="m1-f2",
+        model_store=ModelArtifactBundleStore(tmp_path / "models"),
         train_dataset_id="ds-2:train",
         validation_dataset_id="ds-2:validation",
         factor_order=("f00", "f01"),
@@ -778,6 +781,8 @@ def test_the_resume_handle_logs_refusals_to_the_run_transcript(
         fold_id="F1",
         family="RESIDUAL_MLP",
         model_code_version="residual-mlp-1",
+        model_id="m1-f1",
+        model_store=ModelArtifactBundleStore(tmp_path / "models"),
         train_dataset_id="ds:train",
         validation_dataset_id="ds:validation",
         factor_order=("f00",),
@@ -797,6 +802,8 @@ def test_an_ordinary_run_does_not_gain_a_line_per_config(
         fold_id="F1",
         family="RESIDUAL_MLP",
         model_code_version="residual-mlp-1",
+        model_id="m1-f1",
+        model_store=ModelArtifactBundleStore(tmp_path / "models"),
         train_dataset_id="ds:train",
         validation_dataset_id="ds:validation",
         factor_order=("f00",),
@@ -842,3 +849,43 @@ def test_all_three_search_loops_consult_the_resume_handle() -> None:
     assert source.count("resume.adopt(config_index, config_payload") == 3
     assert source.count("resume.persist(config_index, config_payload, result") == 3
     assert "early_stopping_patience=10" not in source
+
+
+def test_resume_refuses_a_fold_whose_bundle_already_exists(tmp_path: Path) -> None:
+    """A completed fold cannot be re-run in place, so the refusal has to come before the fitting.
+
+    Without it a resumed run adopts the search records, retrains the fold's three final fits, and
+    only then dies on the immutable bundle write -- hours later, with no explanation at the point
+    where the decision was actually made.
+    """
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    (tmp_path / "models" / "m1-f1").mkdir(parents=True)
+    with pytest.raises(SystemExit, match="cannot adopt completed fold F1"):
+        MODULE._refuse_completed_fold_under_resume(
+            _smoke_args("--resume"), store, fold_id="F1", model_id="m1-f1"
+        )
+
+
+def test_an_ordinary_run_is_unaffected_by_a_pre_existing_bundle(tmp_path: Path) -> None:
+    """The guard exists for --resume only; a fresh run's own workspace handling must not change."""
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    (tmp_path / "models" / "m1-f1").mkdir(parents=True)
+    MODULE._refuse_completed_fold_under_resume(
+        _smoke_args(), store, fold_id="F1", model_id="m1-f1"
+    )
+
+
+def test_resume_is_allowed_when_the_fold_has_not_written_a_bundle(tmp_path: Path) -> None:
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    MODULE._refuse_completed_fold_under_resume(
+        _smoke_args("--resume"), store, fold_id="F1", model_id="m1-f1"
+    )
+
+
+def test_every_search_loop_passes_its_own_model_id_to_the_guard() -> None:
+    """The id formula is written once per loop; the guard and the bundle write must agree on it."""
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count("model_id=model_id,\n            model_store=model_store,") == 3
+    assert source.count('model_id = f"{spec.model_id_prefix}-{fold_id.lower()}"') == 1
+    assert source.count('model_id = f"{family.lower()}-{fold_id.lower()}"') == 1
+    assert source.count('model_id = f"m2-{fold_id.lower()}"') == 1

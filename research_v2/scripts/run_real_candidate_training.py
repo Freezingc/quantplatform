@@ -1288,6 +1288,8 @@ def _search_resume(
     fold_id: str,
     family: str,
     model_code_version: str,
+    model_id: str,
+    model_store: ModelArtifactBundleStore,
     train_dataset_id: str,
     validation_dataset_id: str,
     factor_order: tuple[str, ...],
@@ -1300,6 +1302,7 @@ def _search_resume(
     at fold 1 config 0 seed 1 -- on a multi-day run, losing all of it. Records are persisted by
     every full run and adopted only under ``--resume``, so the default path is unchanged.
     """
+    _refuse_completed_fold_under_resume(args, model_store, fold_id=fold_id, model_id=model_id)
     return SearchResume(
         workspace=workspace,
         fold_id=fold_id,
@@ -1312,6 +1315,35 @@ def _search_resume(
         enabled=bool(getattr(args, "resume", False)),
         log=lambda message: print(message, flush=True),
     )
+
+
+def _refuse_completed_fold_under_resume(
+    args: argparse.Namespace,
+    model_store: ModelArtifactBundleStore,
+    *,
+    fold_id: str,
+    model_id: str,
+) -> None:
+    """Refuse ``--resume`` before any fitting when a fold already wrote its immutable bundle.
+
+    Config-search records make the SEARCH resumable, which is where the hours are. They do not
+    make a COMPLETED fold re-runnable in the same workspace: ``ModelArtifactBundleStore.write``
+    refuses an existing model id, and the prediction index refuses a second candidate for one
+    fold. Adopting a finished fold -- verifying its bundle, its signed selection evidence and
+    both signed prediction artifacts, then skipping it whole -- is not implemented yet, so
+    without this guard a resumed run would adopt the search records, retrain the fold's three
+    final fits, and only then die on the bundle write. Refusing before the work instead of after
+    it is the difference between an operator reading a reason and an operator losing a day.
+    """
+    if not bool(getattr(args, "resume", False)):
+        return
+    if model_store.bundle_path(model_id).exists():
+        raise SystemExit(
+            f"--resume cannot adopt completed fold {fold_id}: bundle {model_id} already exists in "
+            "this workspace and a bundle is immutable. Config-search resume covers an interruption "
+            "inside a fold's search; adopting a finished fold is not implemented. Point "
+            "--workspace at a fresh directory to start over."
+        )
 
 
 def _torch_search_budget(max_epochs: int) -> dict[str, Any]:
@@ -1392,12 +1424,15 @@ def _run_full_lightgbm_family(
             baseline_evidence_id = baseline_evidence.evidence_id
 
         search_results: list[dict[str, Any]] = []
+        model_id = f"{spec.model_id_prefix}-{fold_id.lower()}"
         resume = _search_resume(
             args,
             workspace,
             fold_id=fold_id,
             family=spec.family_name,
             model_code_version=spec.model_code_version,
+            model_id=model_id,
+            model_store=model_store,
             train_dataset_id=train_dataset_id,
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
@@ -1458,7 +1493,6 @@ def _run_full_lightgbm_family(
         ensemble = build_seed_ensemble(
             seed_validation_predictions, validation_rank_ic=seed_rank_ic
         )
-        model_id = f"{spec.model_id_prefix}-{fold_id.lower()}"
         _m0_write_bundle(
             model_store,
             model_id,
@@ -1803,12 +1837,15 @@ def _run_full_cross_section(
 
         # Constrained config search: per config, three-seed validation ensemble RankIC.
         search_results: list[dict[str, Any]] = []
+        model_id = f"{family.lower()}-{fold_id.lower()}"
         resume = _search_resume(
             args,
             workspace,
             fold_id=fold_id,
             family=family_name,
             model_code_version=model_code_version,
+            model_id=model_id,
+            model_store=model_store,
             train_dataset_id=train_dataset_id,
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
@@ -1890,7 +1927,6 @@ def _run_full_cross_section(
             seed_validation_predictions, validation_rank_ic=seed_rank_ic
         )
         prototype = model_factory(best_config, factor_order)
-        model_id = f"{family.lower()}-{fold_id.lower()}"
         model_store.write(
             model_id,
             model_card={
@@ -2202,12 +2238,15 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         # TEMPORAL_TCN), so neither is knowable per fold before the search runs. The config payload
         # carries the family choice and the config hash binds it; these two labels only keep M2's
         # records separate from every other family's.
+        model_id = f"m2-{fold_id.lower()}"
         resume = _search_resume(
             args,
             workspace,
             fold_id=fold_id,
             family="M2",
             model_code_version="m2-temporal-search",
+            model_id=model_id,
+            model_store=model_store,
             train_dataset_id=train_dataset_id,
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
@@ -2310,7 +2349,6 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             seed_validation_predictions, validation_rank_ic=seed_rank_ic
         )
         prototype = _m2_model_factory(best_config, factor_order)
-        model_id = f"m2-{fold_id.lower()}"
         model_store.write(
             model_id,
             model_card={
