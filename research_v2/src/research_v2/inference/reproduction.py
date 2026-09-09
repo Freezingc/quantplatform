@@ -13,51 +13,96 @@ closes it, and it is cheap: the bundle is immutable, the TEST frame is an immuta
 artifact, and the scoring rule is deterministic.
 
 This module does the recomputation. It re-derives the run's registry identity (which re-hashes and
-re-verifies all four bundles), requires that identity to be promoted, loads each fold's bundle
-through the serving path under that authorisation, scores the fold's frozen TEST split, and compares
-value for value against the signed candidate prediction artifact. Any mismatch is a refusal.
+re-verifies all four bundles), loads each fold's bundle through the EVALUATION path, scores the
+fold's frozen TEST split the way the candidate driver scored it, and compares value for value
+against the signed candidate prediction artifact. Any mismatch is a refusal.
 
-Scope: the LightGBM families (M0, M0R), whose scoring is a pure function of the bundle and the
-frame. The torch families additionally need the run's FoldPreprocessor state and batch construction
-to reproduce a score, which lives in the candidate driver rather than in a library, so they are
-refused with an explicit reason instead of being silently skipped.
+This is an audit, not a serving authorisation, so it deliberately does not require the run to be
+promoted. Requiring promotion would exclude the runs most worth auditing: a run that failed a gate
+still wrote signed candidate predictions out of real bundles, and "did those scores come from those
+bundles" is precisely the question a failed run leaves open. The registry status is therefore looked
+up and reported, never enforced, and the promotion-gated serving path (``load_inference_artifact`` /
+``load_lgbm_inference_artifact``) is untouched by this module.
+
+Scope: the LightGBM families (M0, M0R) and the static torch families (M1 RESIDUAL_MLP, M3
+SET_ATTENTION), whose score is a pure function of the bundle and the frozen frame. M2 TEMPORAL_GRU
+is refused with an explicit reason -- reproducing it needs the historical panel and the 20-day
+window construction, which is a different input contract rather than a different scorer.
 """
 
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
+import torch
 
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.evaluation.selection_evidence import (
     FrozenPredictionStore,
     SelectionEvidenceVerifier,
 )
+from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.inference.lgbm_artifact_loader import (
     LGBM_MODEL_CODE_VERSIONS,
-    load_lgbm_inference_artifact,
+    load_lgbm_bundle_for_evaluation,
     score_lgbm_artifact,
 )
+from research_v2.inference.torch_scoring import concat_date_scores, prepare_frame
 from research_v2.registry.promotion_evidence import (
     _load_full_report,
     _prediction_ids_by_fold_and_kind,
-    verify_run_promotion,
+    walk_forward_model_id,
 )
 from research_v2.training.model_bundle import ModelArtifactBundleStore
+from research_v2.training.static_batches import build_static_training_batches
 
 if TYPE_CHECKING:
     from research_v2.registry.registry_store import ModelRegistryStore
 
 _BUSINESS_KEYS = ("signal_date", "ts_code")
+# Families whose score is a pure function of (bundle, frozen frame): one row per
+# (signal_date, ts_code), no history window, so the frozen TEST split is a sufficient input.
+_STATIC_TORCH_FAMILIES = frozenset({"RESIDUAL_MLP", "SET_ATTENTION"})
+# M2 scores a 20-day history window per row, which the frozen TEST split does not contain.
+_TEMPORAL_TORCH_FAMILIES = frozenset({"TEMPORAL_GRU"})
+# Reported when the derived identity is absent from the registry, which is the normal state of a
+# run that failed a gate and was never promoted. Informational: it authorises serving nothing.
+_UNREGISTERED = "UNREGISTERED"
 
 
 class ReproductionError(ValueError):
     """A run's stored predictions are not what its bundles produce, and how they differ."""
+
+
+@dataclass(frozen=True)
+class RunIdentity:
+    """The run's registry identity plus the lifecycle status the registry actually holds for it.
+
+    ``status`` is reported and never enforced. ``UNREGISTERED`` means the id derived from the four
+    verified bundle digests is not in the registry at all. Neither value authorises serving.
+    """
+
+    model_id: str
+    status: str
+
+
+@dataclass(frozen=True)
+class _FoldBundle:
+    """Everything one fold's recomputation needs, read from the bundle and the run report."""
+
+    fold_id: str
+    model_artifact_id: str
+    family: str
+    dataset_id: str
+    factor_order: tuple[str, ...]
+    store: ModelArtifactBundleStore
+    test: pd.DataFrame
 
 
 @dataclass(frozen=True)
@@ -77,10 +122,12 @@ def verify_candidate_predictions_reproduce(
 ) -> dict[str, object]:
     """Recompute every fold's candidate scores from its bundle and compare to the signed artifact.
 
-    Raises ``ReproductionError`` on any difference, on a row-set difference, on a run that is not
-    promoted, and for families this module cannot yet reproduce.
+    Raises ``ReproductionError`` on any score difference, on a row-set difference, and for families
+    this module cannot reproduce. Raises ``PromotionEvidenceError`` when the report does not cover
+    exactly the four ordinary folds or a bundle will not re-hash. It does NOT raise on a run that is
+    unpromoted, unregistered or rejected: the registry status is reported in the summary instead.
     """
-    promoted = verify_run_promotion(workspace, report_path, registry)
+    identity = _run_identity(workspace, report_path, registry)
     report = _load_full_report(report_path)
     folds_in_report = report.get("folds")
     if not isinstance(folds_in_report, list):
@@ -99,8 +146,8 @@ def verify_candidate_predictions_reproduce(
         ):
             raise ReproductionError("run report fold entry lacks fold_id/model_id/dataset_id")
         fold_meta[fold_id] = {"model_id": model_artifact, "dataset_id": dataset_id}
-    if set(fold_meta) != set(promoted.fold_artifact_ids):
-        raise ReproductionError("run report folds disagree with the promoted run's folds")
+    # Four-fold coverage is already enforced: deriving the identity above read this same report's
+    # folds and refuses unless they are exactly the four ordinary ones.
 
     prediction_ids = _prediction_ids_by_fold_and_kind(workspace)
     dataset_store = DatasetArtifactStore(workspace / "datasets")
@@ -112,31 +159,19 @@ def verify_candidate_predictions_reproduce(
     for fold_id in sorted(fold_meta):
         meta = fold_meta[fold_id]
         model_artifact = meta["model_id"]
-        if promoted.fold_artifact_ids[fold_id] != model_artifact:
-            raise ReproductionError(
-                f"{fold_id} report names {model_artifact} but the promoted run names "
-                f"{promoted.fold_artifact_ids[fold_id]}"
-            )
-        card_path = model_store.bundle_path(model_artifact) / "model_card.json"
-        card = json.loads(card_path.read_text(encoding="utf-8"))
-        family = card.get("family")
-        if family not in LGBM_MODEL_CODE_VERSIONS:
-            raise ReproductionError(
-                f"{fold_id} bundle family {family!r} cannot be reproduced by this verifier: the "
-                "torch families need the run's FoldPreprocessor state and batch construction, "
-                "which live in the candidate driver rather than in a library"
-            )
-        test = dataset_store.load_split(
-            meta["dataset_id"], "test", expected_fold_id=fold_id
+        card = _model_card(model_store, model_artifact)
+        bundle = _FoldBundle(
+            fold_id=fold_id,
+            model_artifact_id=model_artifact,
+            family=_family_of(card, fold_id),
+            dataset_id=_checked_card_dataset_id(card, meta["dataset_id"], fold_id=fold_id),
+            factor_order=_feature_order(model_store, model_artifact),
+            store=model_store,
+            test=dataset_store.load_split(
+                meta["dataset_id"], "test", expected_fold_id=fold_id
+            ),
         )
-        loaded = load_lgbm_inference_artifact(
-            model_store,
-            model_artifact,
-            expected_dataset_id=f"{meta['dataset_id']}:train",
-            expected_feature_order=_feature_order(model_store, model_artifact),
-            promoted_run=promoted,
-        )
-        recomputed = score_lgbm_artifact(loaded, test)
+        recomputed = _recompute_fold_scores(bundle)
         try:
             candidate_id = prediction_ids[(fold_id, "candidate")]
         except KeyError as error:
@@ -146,14 +181,19 @@ def verify_candidate_predictions_reproduce(
         stored = predictions.load(candidate_id, selections=selections).scores
 
         results.append(
-            _compare_scores(recomputed, stored, fold_id=fold_id, model_artifact_id=model_artifact,
-                            family=str(family))
+            _compare_scores(
+                recomputed,
+                stored,
+                fold_id=fold_id,
+                model_artifact_id=model_artifact,
+                family=bundle.family,
+            )
         )
     if not results:
         raise ReproductionError("no folds were reproduced")
     return {
-        "model_id": promoted.model_id,
-        "status": promoted.status.value,
+        "model_id": identity.model_id,
+        "registry_status": identity.status,
         "folds": [
             {
                 "fold_id": item.fold_id,
@@ -168,6 +208,149 @@ def verify_candidate_predictions_reproduce(
         "total_rows": sum(item.row_count for item in results),
         "reproduced": True,
     }
+
+
+def _run_identity(workspace: Path, report_path: Path, registry: ModelRegistryStore) -> RunIdentity:
+    """Derive the run's registry identity and read its lifecycle status WITHOUT enforcing it.
+
+    Deriving the id re-hashes and re-verifies all four bundles, so the audit keeps that integrity
+    check whether or not the run was ever promoted. The registry lookup is the part that must not
+    raise: a run that failed a gate is normally absent from the registry, and refusing to audit it
+    would exempt exactly the predictions nobody has checked. A ``RegistryStoreError`` from opening a
+    corrupt registry is deliberately not swallowed -- only "this id is not registered" is.
+    """
+    model_id = walk_forward_model_id(workspace, report_path)
+    model_registry = registry.registry
+    try:
+        record = model_registry.get(model_id)
+    except ValueError:
+        return RunIdentity(model_id=model_id, status=_UNREGISTERED)
+    return RunIdentity(model_id=model_id, status=record.status.value)
+
+
+def _model_card(store: ModelArtifactBundleStore, model_artifact_id: str) -> Mapping[str, object]:
+    path = store.bundle_path(model_artifact_id) / "model_card.json"
+    try:
+        card = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as error:
+        raise ReproductionError(
+            f"{model_artifact_id} has no readable model card: {error}"
+        ) from error
+    if not isinstance(card, dict):
+        raise ReproductionError(f"{model_artifact_id} model card is not an object")
+    return card
+
+
+def _family_of(card: Mapping[str, object], fold_id: str) -> str:
+    family = card.get("family")
+    if not isinstance(family, str) or not family:
+        raise ReproductionError(f"{fold_id} bundle model card records no usable family")
+    return family
+
+
+def _checked_card_dataset_id(
+    card: Mapping[str, object], report_dataset_id: str, *, fold_id: str
+) -> str:
+    """Return the bundle's own dataset id after proving it is derived from the report's.
+
+    The two writers disagree by design: the LightGBM path records the TRAIN split it fitted on
+    (``<dataset>:train``) while the torch path records the bare TEST dataset id. Both are
+    legitimate, so the check is membership rather than equality -- but membership of a two-element
+    set built from this fold's report entry, which still rejects a bundle dropped in from another
+    run or another fold. The accepted value is then what the loader is asked to match, so the
+    loader's own dataset check compares the card against something the report vouches for.
+    """
+    recorded = card.get("dataset_id")
+    train_variant = f"{report_dataset_id}:train"
+    if not isinstance(recorded, str) or recorded not in (report_dataset_id, train_variant):
+        raise ReproductionError(
+            f"{fold_id} bundle records dataset_id {recorded!r}, which is neither the report's "
+            f"{report_dataset_id!r} nor its train split {train_variant!r}"
+        )
+    return recorded
+
+
+def _recorded_preprocessor_hash(bundle: _FoldBundle) -> str:
+    """Read the preprocessor state hash the bundle itself records.
+
+    Passing a bundle's own recorded value as the expectation looks circular and is not: the loader
+    restores the fitted state from the persisted payload, re-derives the hash from what it rebuilt,
+    and compares the two, so a payload edited after the bundle was written is refused there. What
+    this cannot catch is a hash and payload replaced together, and nothing short of the run's own
+    training record can -- the guarantee here is that the stored scores are what THIS bundle
+    computes, which is the guarantee the attribution chain does not provide.
+    """
+    path = bundle.store.bundle_path(bundle.model_artifact_id) / "preprocessing.json"
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as error:
+        raise ReproductionError(
+            f"{bundle.model_artifact_id} has no readable preprocessing artifact: {error}"
+        ) from error
+    state_hash = document.get("state_hash") if isinstance(document, dict) else None
+    if not isinstance(state_hash, str) or not state_hash:
+        raise ReproductionError(f"{bundle.model_artifact_id} records no preprocessor state hash")
+    return state_hash
+
+
+def _recompute_fold_scores(bundle: _FoldBundle) -> pd.DataFrame:
+    """Route one fold to the scorer that owns its family, refusing the rest by name."""
+    family = bundle.family
+    if family in LGBM_MODEL_CODE_VERSIONS:
+        return _recompute_lgbm(bundle)
+    if family in _STATIC_TORCH_FAMILIES:
+        return _recompute_static_torch(bundle)
+    if family in _TEMPORAL_TORCH_FAMILIES:
+        raise ReproductionError(
+            f"{bundle.fold_id} bundle family {family!r} cannot be reproduced by this verifier: a "
+            "temporal model scores a 20-day history window per row, so reproducing it needs the "
+            "historical panel and the window construction, not just the frozen TEST frame"
+        )
+    raise ReproductionError(
+        f"{bundle.fold_id} bundle family {family!r} is not allowlisted for reproduction"
+    )
+
+
+def _recompute_lgbm(bundle: _FoldBundle) -> pd.DataFrame:
+    loaded = load_lgbm_bundle_for_evaluation(
+        bundle.store,
+        bundle.model_artifact_id,
+        expected_dataset_id=bundle.dataset_id,
+        expected_feature_order=bundle.factor_order,
+    )
+    return score_lgbm_artifact(loaded, bundle.test)
+
+
+def _recompute_static_torch(bundle: _FoldBundle) -> pd.DataFrame:
+    """Recompute a static torch fold's scores by repeating the driver's own scoring path.
+
+    Every step mirrors ``scripts/run_real_candidate_training.py``: load the bundle for evaluation
+    against the preprocessor hash the bundle records, put the frozen TEST frame through the
+    train-fitted preprocessing with the label column zeroed (the driver does the same, because the
+    batch builder requires a target column and scoring must not be able to read it), build one
+    date-isolated batch per signal date, then average the three seeds' within-date percentile ranks.
+    Substituting any step with an equivalent-looking one yields a different scorer, and the
+    comparison below is exact, so that would be caught rather than tolerated.
+    """
+    loaded = load_bundle_for_evaluation(
+        bundle.store,
+        bundle.model_artifact_id,
+        expected_dataset_id=bundle.dataset_id,
+        expected_feature_order=bundle.factor_order,
+        expected_preprocessor_hash=_recorded_preprocessor_hash(bundle),
+        device=torch.device("cpu"),
+    )
+    preprocessor = loaded.preprocessor
+    if preprocessor is None:
+        raise ReproductionError(
+            f"{bundle.fold_id} torch bundle restored no preprocessing state, so the frozen TEST "
+            "frame cannot be put into the space its weights were trained in"
+        )
+    prepared = prepare_frame(
+        bundle.test.assign(raw_return_5d=0.0), preprocessor, bundle.factor_order
+    )
+    batches = build_static_training_batches(prepared, factor_order=bundle.factor_order)
+    return concat_date_scores(loaded.models, batches)
 
 
 def _compare_scores(
@@ -250,5 +433,6 @@ def _normalized(frame: pd.DataFrame, label: str) -> pd.DataFrame:
 __all__ = [
     "FoldReproduction",
     "ReproductionError",
+    "RunIdentity",
     "verify_candidate_predictions_reproduce",
 ]

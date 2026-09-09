@@ -7,17 +7,23 @@ alongside the happy path, including exactness -- there is no float tolerance to 
 
 from __future__ import annotations
 
+import json
 from datetime import date
+from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import pytest
 
+from research_v2.inference import reproduction
 from research_v2.inference.reproduction import (
     FoldReproduction,
     ReproductionError,
     _compare_scores,
     _normalized,
 )
+from research_v2.registry.registry_store import RegistryStoreError
+from research_v2.training.model_bundle import ModelArtifactBundleStore
 
 KEYS = ["signal_date", "ts_code"]
 DAYS = [date(2025, 1, 2), date(2025, 1, 3)]
@@ -112,3 +118,304 @@ def test_normalized_aligns_key_types_so_the_join_is_real() -> None:
     left = _normalized(frame, "recomputed")
     right = _normalized(as_timestamps, "stored")
     assert _compare(left, right).row_count == 6
+
+
+# ---------------------------------------------------------------------------------------------
+# The audit's authority: the registry status is reported, never enforced.
+# ---------------------------------------------------------------------------------------------
+
+
+class _StubRecord:
+    def __init__(self, status: str) -> None:
+        self.status = _StubStatus(status)
+
+
+class _StubStatus:
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+
+class _StubRegistry:
+    def __init__(self, records: dict[str, _StubRecord]) -> None:
+        self._records = records
+
+    def get(self, model_id: str) -> _StubRecord:
+        try:
+            return self._records[model_id]
+        except KeyError as error:
+            raise ValueError(f"unknown model {model_id}") from error
+
+
+class _StubStore:
+    def __init__(self, records: dict[str, _StubRecord]) -> None:
+        self.registry = _StubRegistry(records)
+
+
+class _CorruptStore:
+    @property
+    def registry(self) -> Any:
+        raise RegistryStoreError("registry signature does not verify")
+
+
+def _identity(store: Any, monkeypatch: pytest.MonkeyPatch) -> reproduction.RunIdentity:
+    monkeypatch.setattr(
+        reproduction, "walk_forward_model_id", lambda workspace, report: "sha256:" + "a" * 64
+    )
+    return reproduction._run_identity(Path("/unused"), Path("/unused/report.json"), store)
+
+
+def test_an_unregistered_run_is_reported_rather_than_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The runs worth auditing most are the ones that failed a gate and never reached registry."""
+    identity = _identity(_StubStore({}), monkeypatch)
+    assert identity.model_id == "sha256:" + "a" * 64
+    assert identity.status == "UNREGISTERED"
+
+
+@pytest.mark.parametrize("status", ["DRAFT", "WALK_FORWARD_PASSED", "RETIRED"])
+def test_a_registered_run_reports_the_status_the_registry_holds(
+    status: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    model_id = "sha256:" + "a" * 64
+    identity = _identity(_StubStore({model_id: _StubRecord(status)}), monkeypatch)
+    assert identity.status == status
+
+
+def test_a_corrupt_registry_is_not_reported_as_unregistered(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Swallowing RegistryStoreError would turn "cannot open the registry" into "not registered"."""
+    with pytest.raises(RegistryStoreError, match="signature does not verify"):
+        _identity(_CorruptStore(), monkeypatch)
+
+
+# ---------------------------------------------------------------------------------------------
+# The bundle must belong to this fold's report entry.
+# ---------------------------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("recorded", ["ds-1", "ds-1:train"])
+def test_a_card_dataset_id_derived_from_the_report_is_accepted(recorded: str) -> None:
+    """LightGBM records the train split it fitted on; torch records the bare test dataset id."""
+    card = {"dataset_id": recorded}
+    assert reproduction._checked_card_dataset_id(card, "ds-1", fold_id="F1") == recorded
+
+
+@pytest.mark.parametrize("recorded", ["ds-2", "ds-1:test", "ds-11:train", "", None, 7])
+def test_a_card_dataset_id_from_anywhere_else_is_refused(recorded: object) -> None:
+    card = {"dataset_id": recorded}
+    with pytest.raises(ReproductionError, match="F1 bundle records dataset_id") as info:
+        reproduction._checked_card_dataset_id(card, "ds-1", fold_id="F1")
+    message = str(info.value)
+    assert "'ds-1'" in message and "'ds-1:train'" in message
+
+
+@pytest.mark.parametrize("card", [{}, {"dataset_id": 7}, {"family": "LGBM_RANKER"}])
+def test_a_card_without_a_dataset_id_is_refused(card: dict[str, object]) -> None:
+    with pytest.raises(ReproductionError, match="dataset_id"):
+        reproduction._checked_card_dataset_id(card, "ds-1", fold_id="F1")
+
+
+@pytest.mark.parametrize("card", [{}, {"family": ""}, {"family": 7}, {"family": None}])
+def test_a_card_without_a_usable_family_is_refused(card: dict[str, object]) -> None:
+    with pytest.raises(ReproductionError, match="F1 bundle model card records no usable family"):
+        reproduction._family_of(card, "F1")
+
+
+# ---------------------------------------------------------------------------------------------
+# Family routing: each family reaches its own scorer, and nothing else.
+# ---------------------------------------------------------------------------------------------
+
+
+def _bundle(
+    family: str,
+    *,
+    dataset_id: str = "ds-1",
+    test: pd.DataFrame | None = None,
+    store: ModelArtifactBundleStore | None = None,
+) -> reproduction._FoldBundle:
+    return reproduction._FoldBundle(
+        fold_id="F1",
+        model_artifact_id="m1-f1",
+        family=family,
+        dataset_id=dataset_id,
+        factor_order=("f1", "f2"),
+        store=store if store is not None else ModelArtifactBundleStore(Path("/nonexistent-models")),
+        test=_scores([0.25, 0.5, 0.75]) if test is None else test,
+    )
+
+
+def _recorders(monkeypatch: pytest.MonkeyPatch) -> dict[str, list[Any]]:
+    """Replace both scorers with recorders, so routing is observable and nothing heavy runs."""
+    calls: dict[str, list[Any]] = {"lgbm": [], "torch": []}
+
+    def lgbm(bundle: reproduction._FoldBundle) -> pd.DataFrame:
+        calls["lgbm"].append(bundle)
+        return _scores([0.25, 0.5, 0.75])
+
+    def static_torch(bundle: reproduction._FoldBundle) -> pd.DataFrame:
+        calls["torch"].append(bundle)
+        return _scores([0.25, 0.5, 0.75])
+
+    monkeypatch.setattr(reproduction, "_recompute_lgbm", lgbm)
+    monkeypatch.setattr(reproduction, "_recompute_static_torch", static_torch)
+    return calls
+
+
+@pytest.mark.parametrize("family", ["LGBM_RANKER", "LGBM_RANKREG"])
+def test_the_lgbm_families_route_to_the_lgbm_scorer_only(
+    family: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _recorders(monkeypatch)
+    reproduction._recompute_fold_scores(_bundle(family))
+    assert len(calls["lgbm"]) == 1
+    assert calls["torch"] == []
+
+
+@pytest.mark.parametrize("family", ["RESIDUAL_MLP", "SET_ATTENTION"])
+def test_the_static_torch_families_route_to_the_torch_scorer_only(
+    family: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _recorders(monkeypatch)
+    reproduction._recompute_fold_scores(_bundle(family))
+    assert len(calls["torch"]) == 1
+    assert calls["lgbm"] == []
+
+
+def test_the_temporal_family_is_refused_with_the_reason_it_cannot_be_reproduced(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A silent skip would report a fold as reproduced that was never scored."""
+    calls = _recorders(monkeypatch)
+    with pytest.raises(ReproductionError, match="20-day history window"):
+        reproduction._recompute_fold_scores(_bundle("TEMPORAL_GRU"))
+    assert calls == {"lgbm": [], "torch": []}
+
+
+@pytest.mark.parametrize("family", ["SOMETHING_NEW", "residual_mlp", "LGBM"])
+def test_an_unallowlisted_family_is_refused_by_name(
+    family: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _recorders(monkeypatch)
+    with pytest.raises(ReproductionError, match="not allowlisted for reproduction") as info:
+        reproduction._recompute_fold_scores(_bundle(family))
+    assert repr(family) in str(info.value)
+    assert calls == {"lgbm": [], "torch": []}
+
+
+def test_the_lgbm_path_loads_for_evaluation_and_passes_no_promotion(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The serving loader refuses an unpromoted run, so the audit must not go through it."""
+    captured: dict[str, Any] = {}
+    scores = _scores([0.25, 0.5, 0.75])
+
+    def fake_load(store: Any, model_id: str, **kwargs: Any) -> object:
+        captured.update(kwargs)
+        captured["model_id"] = model_id
+        return object()
+
+    monkeypatch.setattr(reproduction, "load_lgbm_bundle_for_evaluation", fake_load)
+    monkeypatch.setattr(reproduction, "score_lgbm_artifact", lambda loaded, frame: scores)
+    out = reproduction._recompute_lgbm(_bundle("LGBM_RANKREG", dataset_id="ds-1:train"))
+    assert out is scores
+    assert captured["model_id"] == "m1-f1"
+    assert captured["expected_dataset_id"] == "ds-1:train"
+    assert captured["expected_feature_order"] == ("f1", "f2")
+    assert "promoted_run" not in captured
+
+
+# ---------------------------------------------------------------------------------------------
+# The torch path must repeat the driver's scoring steps, not a similar-looking ones.
+# ---------------------------------------------------------------------------------------------
+
+
+class _StubLoaded:
+    def __init__(self, preprocessor: object, models: tuple[object, ...] = ()) -> None:
+        self.preprocessor = preprocessor
+        self.models = models
+
+
+def test_the_torch_path_repeats_the_driver_scoring_steps(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Load for evaluation on cpu, zero the label, preprocess, batch per date, average the seeds."""
+    test = _scores([0.25, 0.5, 0.75]).assign(label_valid=True)
+    steps: list[tuple[str, Any]] = []
+    preprocessor = object()
+    models = (object(), object(), object())
+    prepared = _scores([0.1, 0.2, 0.3])
+    batches = {date(2025, 1, 2): object()}
+
+    def fake_load(store: Any, model_id: str, **kwargs: Any) -> _StubLoaded:
+        steps.append(("load", kwargs))
+        return _StubLoaded(preprocessor, models)
+
+    def fake_prepare(frame: pd.DataFrame, fitted: Any, factor_order: tuple[str, ...]) -> Any:
+        steps.append(("prepare", (frame, fitted, factor_order)))
+        return prepared
+
+    def fake_batches(frame: Any, *, factor_order: tuple[str, ...]) -> Any:
+        steps.append(("batches", (frame, factor_order)))
+        return batches
+
+    def fake_concat(loaded_models: Any, built: Any) -> pd.DataFrame:
+        steps.append(("concat", (loaded_models, built)))
+        return _scores([0.25, 0.5, 0.75])
+
+    monkeypatch.setattr(reproduction, "load_bundle_for_evaluation", fake_load)
+    monkeypatch.setattr(reproduction, "prepare_frame", fake_prepare)
+    monkeypatch.setattr(reproduction, "build_static_training_batches", fake_batches)
+    monkeypatch.setattr(reproduction, "concat_date_scores", fake_concat)
+    monkeypatch.setattr(reproduction, "_recorded_preprocessor_hash", lambda bundle: "state-h")
+
+    reproduction._recompute_static_torch(_bundle("RESIDUAL_MLP", test=test))
+
+    assert [name for name, _ in steps] == ["load", "prepare", "batches", "concat"]
+    load_kwargs = steps[0][1]
+    assert load_kwargs["expected_preprocessor_hash"] == "state-h"
+    assert str(load_kwargs["device"]) == "cpu"
+    assert load_kwargs["expected_feature_order"] == ("f1", "f2")
+
+    prepared_frame, fitted, factor_order = steps[1][1]
+    assert fitted is preprocessor
+    assert factor_order == ("f1", "f2")
+    # The driver scores with the label column zeroed: the batch builder requires a target, and
+    # scoring must not be able to read the thing being predicted.
+    assert (prepared_frame["raw_return_5d"] == 0.0).all()
+    assert list(prepared_frame["ts_code"]) == list(test["ts_code"])
+
+    assert steps[2][1] == (prepared, ("f1", "f2"))
+    assert steps[3][1] == (models, batches)
+
+
+def test_a_torch_bundle_that_restored_no_preprocessing_state_is_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Weights without the fitted state cannot put a frame into the space they were trained in."""
+    monkeypatch.setattr(
+        reproduction, "load_bundle_for_evaluation", lambda *a, **k: _StubLoaded(None)
+    )
+    monkeypatch.setattr(reproduction, "_recorded_preprocessor_hash", lambda bundle: "state-h")
+    with pytest.raises(ReproductionError, match="restored no preprocessing state"):
+        reproduction._recompute_static_torch(_bundle("SET_ATTENTION"))
+
+
+def test_a_bundle_with_no_readable_preprocessing_artifact_is_refused(tmp_path: Path) -> None:
+    bundle = _bundle("RESIDUAL_MLP", store=ModelArtifactBundleStore(tmp_path))
+    with pytest.raises(ReproductionError, match="no readable preprocessing artifact"):
+        reproduction._recorded_preprocessor_hash(bundle)
+
+
+@pytest.mark.parametrize("payload", [{"state_hash": ""}, {"state_hash": 7}, {}, []])
+def test_a_preprocessing_artifact_without_a_usable_hash_is_refused(
+    payload: object, tmp_path: Path
+) -> None:
+    """An empty or absent hash would let a bundle with no fitted state reach the loader."""
+    bundle_root = tmp_path / "m1-f1"
+    bundle_root.mkdir(parents=True)
+    (bundle_root / "preprocessing.json").write_text(json.dumps(payload), encoding="utf-8")
+    bundle = _bundle("RESIDUAL_MLP", store=ModelArtifactBundleStore(tmp_path))
+    with pytest.raises(ReproductionError, match="records no preprocessor state hash"):
+        reproduction._recorded_preprocessor_hash(bundle)

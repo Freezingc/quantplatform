@@ -9,10 +9,15 @@ signed, the prediction's selection id / model id / fold / dataset are matched ag
 selection, and that selection's bundle digest is matched against a re-hashed bundle. Nothing in it
 proves the scores are what the bundle COMPUTES. This does, by recomputation.
 
-Requires QRV2_MODEL_REGISTRY_ROOT plus the selection and prediction trust-root keys, because the
-run must be promoted in the registry before its bundles may be loaded through the serving path.
-Read-only against the workspace: it writes nothing. Exits non-zero on any difference, so it is
-usable as a gate.
+Requires QRV2_MODEL_REGISTRY_ROOT plus the selection and prediction trust-root keys. The registry is
+consulted to REPORT the run's lifecycle status, not to authorise the audit: bundles are loaded
+through the evaluation path, so a run that failed a gate is auditable too and an unregistered one is
+reported as UNREGISTERED rather than refused. Read-only against the workspace: it writes nothing.
+Exits non-zero on any difference, so it is usable as a gate.
+
+Covers the LightGBM families (M0, M0R) and the static torch families (M1, M3). M2 TEMPORAL_GRU is
+refused by name, because reproducing it needs the historical panel and its 20-day window rather than
+the frozen TEST frame alone.
 
 Expect minutes, not seconds: each fold's dataset split is re-hashed in full before it is scored.
 """

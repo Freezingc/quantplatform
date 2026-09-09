@@ -27,7 +27,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from types import MappingProxyType
 from typing import Literal
@@ -122,6 +122,43 @@ def load_lgbm_inference_artifact(
             f"bundle {model_id} does not belong to promoted run {promoted_run.model_id}, whose "
             f"fold artifacts are {sorted(promoted_run.fold_artifact_ids.values())}"
         )
+    loaded = load_lgbm_bundle_for_evaluation(
+        store,
+        model_id,
+        expected_dataset_id=expected_dataset_id,
+        expected_feature_order=expected_feature_order,
+        expected_preprocessor_hash=expected_preprocessor_hash,
+        expected_inference_contract=expected_inference_contract,
+        run_id=run_id,
+    )
+    return replace(
+        loaded,
+        promotion_model_id=promoted_run.model_id,
+        promotion_status=promoted_run.status.value,
+    )
+
+
+def load_lgbm_bundle_for_evaluation(
+    store: ModelArtifactBundleStore,
+    model_id: str,
+    *,
+    expected_dataset_id: str,
+    expected_feature_order: tuple[str, ...],
+    expected_preprocessor_hash: str = _PREPROCESSING_IDENTITY,
+    expected_inference_contract: InferenceContract | None = None,
+    run_id: str | None = None,
+) -> LoadedLGBMInferenceArtifact:
+    """Load an M0 or M0R bundle in order to EVALUATE it, which requires no promotion.
+
+    The sibling of ``artifact_loader.load_bundle_for_evaluation``: every integrity, allowlist,
+    code-version, booster-objective, signature and metadata check is the same, and only the
+    registry authorisation is absent. The returned artifact therefore carries empty
+    ``promotion_model_id`` and ``promotion_status``, so a caller cannot mistake it for a servable
+    model. Two things genuinely need this: the reproduction audit, which must be able to score the
+    bundles of a run that FAILED a gate because those are the predictions nobody has checked, and
+    any evaluation that re-reads a bundle it just froze. Serving still goes through
+    ``load_lgbm_inference_artifact``, which still refuses without a ``PromotedRun``.
+    """
     bundle = store.load_verified_bundle(model_id)
     metadata = store.load_metadata_from_bundle(
         bundle,
@@ -197,8 +234,8 @@ def load_lgbm_inference_artifact(
         factor_order=factor_order,
         boosters=MappingProxyType(boosters),
         preprocessing=metadata["preprocessing"],
-        promotion_model_id=promoted_run.model_id,
-        promotion_status=promoted_run.status.value,
+        promotion_model_id="",
+        promotion_status="",
         unverified_bindings=unverified_bindings(model_card, expected_inference_contract),
         audit=InferenceLoadAudit(
             model_id=model_id,
@@ -275,6 +312,7 @@ __all__ = [
     "LGBM_FAMILY_OBJECTIVES",
     "LGBM_MODEL_CODE_VERSIONS",
     "LoadedLGBMInferenceArtifact",
+    "load_lgbm_bundle_for_evaluation",
     "load_lgbm_inference_artifact",
     "score_lgbm_artifact",
 ]
