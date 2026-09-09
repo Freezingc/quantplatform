@@ -12,6 +12,7 @@ from typing import TypeAlias, cast
 import torch
 from torch import nn
 
+from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
@@ -100,6 +101,9 @@ class LoadedInferenceArtifact:
     # which is authorised by nothing beyond the bundle's own integrity -- it is not served.
     promotion_model_id: str = ""
     promotion_status: str = ""
+    # The fitted preprocessing restored from the bundle, so a caller can put a new frame into the
+    # space these weights were trained in. Weights plus a state hash are not a servable model.
+    preprocessor: FoldPreprocessor | None = None
     # Bindings this load could not verify; see unverified_bindings. Empty means every guard fired.
     unverified_bindings: tuple[str, ...] = ()
 
@@ -201,6 +205,16 @@ def load_bundle_for_evaluation(
     expected_signature = asdict(prototype.artifact_signature())
     if dict(metadata["signature"]) != expected_signature:
         raise ValueError("model bundle signature does not match reconstructed model contract")
+    preprocessor = _restored_preprocessor(metadata["preprocessing"])
+    # The state's own factor order must be the bundle's feature order. Both are checked against
+    # the caller's expectation separately, but comparing them to each other is what catches a
+    # bundle assembled from one run's weights and another run's preprocessing -- each half would
+    # pass its own check while transform() silently scored the wrong columns.
+    if preprocessor.fitted_factor_order != tuple(expected_feature_order):
+        raise ValueError(
+            "model bundle preprocessor state was fitted on a different factor order than the "
+            "bundle's feature order"
+        )
     reference_state = cast(Mapping[str, torch.Tensor], prototype.state_dict())
     seed_states: dict[int, Mapping[str, torch.Tensor]] = {}
     for seed in REQUIRED_SEEDS:
@@ -223,6 +237,7 @@ def load_bundle_for_evaluation(
         model_id=model_id,
         models=tuple(models),
         preprocessing=metadata["preprocessing"],
+        preprocessor=preprocessor,
         unverified_bindings=unverified_bindings(model_card, expected_inference_contract),
         audit=InferenceLoadAudit(
             model_id=model_id,
@@ -234,6 +249,27 @@ def load_bundle_for_evaluation(
             run_id=run_id,
         ),
     )
+
+
+def _restored_preprocessor(preprocessing: Mapping[str, object]) -> FoldPreprocessor:
+    """Restore the fitted preprocessing state a torch bundle must carry to be servable.
+
+    Refusing a bundle that records only the hash is the point: such a bundle loads its weights
+    fine and then cannot transform anything, which is a model that looks deployable and is not.
+    The restore recomputes the hash from what it rebuilt and compares it to the recorded one, so
+    a payload edited after the bundle was written is rejected here rather than silently shifting
+    every score downstream.
+    """
+    state_hash = preprocessing.get("state_hash")
+    if not isinstance(state_hash, str) or not state_hash:
+        raise ValueError("model bundle records no preprocessor state hash")
+    state_payload = preprocessing.get("state_payload")
+    if not isinstance(state_payload, Mapping):
+        raise ValueError(
+            "model bundle records a preprocessor state hash but not the state itself, so it "
+            "cannot transform a frame and cannot be served"
+        )
+    return FoldPreprocessor.restore(state_payload, expected_state_hash=state_hash)
 
 
 def _validate_inference_contract(

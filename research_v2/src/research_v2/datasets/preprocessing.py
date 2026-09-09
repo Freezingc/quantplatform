@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Literal
 
@@ -26,6 +27,70 @@ class FactorPreprocessingState:
 class PreprocessedBatch:
     values: pd.DataFrame
     missing_mask: pd.DataFrame
+
+
+_STATE_FIELDS = frozenset({"lower", "upper", "median", "iqr", "constant"})
+_SETTING_FIELDS = frozenset(
+    {"lower_quantile", "upper_quantile", "minimum_iqr", "transformed_clip"}
+)
+
+
+def _digest_state_payload(payload: Mapping[str, object]) -> str:
+    return hashlib.sha256(
+        json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
+    ).hexdigest()
+
+
+def _restored_factor_order(value: object) -> tuple[str, ...]:
+    if (
+        not isinstance(value, list)
+        or not value
+        or not all(isinstance(name, str) and name for name in value)
+        or len(set(value)) != len(value)
+    ):
+        raise ValueError("preprocessing state factor_order must be unique non-empty names")
+    return tuple(value)
+
+
+def _restored_float(value: object, name: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"preprocessing state {name} must be a number")
+    number = float(value)
+    if not np.isfinite(number):
+        raise ValueError(f"preprocessing state {name} must be finite")
+    return number
+
+
+def _restored_settings(value: object) -> dict[str, float]:
+    if not isinstance(value, Mapping) or set(value) != _SETTING_FIELDS:
+        raise ValueError("preprocessing state settings are invalid")
+    settings = {name: _restored_float(value[name], name) for name in sorted(_SETTING_FIELDS)}
+    if not 0 <= settings["lower_quantile"] < settings["upper_quantile"] <= 1:
+        raise ValueError("winsor quantiles must satisfy 0 <= lower < upper <= 1")
+    return settings
+
+
+def _restored_state(
+    value: object, factor_order: tuple[str, ...]
+) -> dict[str, FactorPreprocessingState]:
+    if not isinstance(value, Mapping) or set(value) != set(factor_order):
+        raise ValueError("preprocessing state must cover exactly the fitted factors")
+    state: dict[str, FactorPreprocessingState] = {}
+    for factor in factor_order:
+        entry = value[factor]
+        if not isinstance(entry, Mapping) or set(entry) != _STATE_FIELDS:
+            raise ValueError(f"preprocessing state for {factor} is invalid")
+        constant = entry["constant"]
+        if not isinstance(constant, bool):
+            raise ValueError(f"preprocessing state constant flag for {factor} must be a bool")
+        state[factor] = FactorPreprocessingState(
+            lower=_restored_float(entry["lower"], f"{factor}.lower"),
+            upper=_restored_float(entry["upper"], f"{factor}.upper"),
+            median=_restored_float(entry["median"], f"{factor}.median"),
+            iqr=_restored_float(entry["iqr"], f"{factor}.iqr"),
+            constant=constant,
+        )
+    return state
 
 
 class FoldPreprocessor:
@@ -51,12 +116,18 @@ class FoldPreprocessor:
         self._transformed_clip = transformed_clip
         self._state: dict[str, FactorPreprocessingState] | None = None
 
-    @property
-    def state_hash(self) -> str:
+    def state_payload(self) -> dict[str, object]:
+        """The fitted state, in exactly the canonical form ``state_hash`` digests.
+
+        This is what a bundle must persist. Recording only the hash -- which is what the
+        candidate driver did -- leaves a model that cannot be served: transforming a new frame
+        needs the fitted bounds, and a hash cannot be inverted into them. The two are published
+        together so the hash binds the payload rather than merely naming it.
+        """
         if self._state is None:
             raise ValueError("preprocessor has not been fitted")
-        payload = {
-            "factor_order": self._factor_order,
+        return {
+            "factor_order": list(self._factor_order),
             "settings": {
                 "lower_quantile": self._lower_quantile,
                 "upper_quantile": self._upper_quantile,
@@ -74,9 +145,42 @@ class FoldPreprocessor:
                 for factor, values in self._state.items()
             },
         }
-        return hashlib.sha256(
-            json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
-        ).hexdigest()
+
+    @property
+    def fitted_factor_order(self) -> tuple[str, ...]:
+        """The factor order this instance was fitted (or restored) with."""
+        return self._factor_order
+
+    @property
+    def state_hash(self) -> str:
+        """SHA-256 over the canonical state payload; the bundle records it beside the payload."""
+        return _digest_state_payload(self.state_payload())
+
+    @classmethod
+    def restore(
+        cls, payload: Mapping[str, object], *, expected_state_hash: str
+    ) -> FoldPreprocessor:
+        """Rebuild a fitted preprocessor from persisted state, bound to its recorded hash.
+
+        The hash is recomputed over the payload the REBUILT object produces, not over the bytes
+        handed in, so a payload that parses but canonicalises differently cannot pass. Restoring
+        is what makes a persisted torch bundle servable: without it a consumer holds weights and
+        a hash, and no way to put a new frame into the space the weights were trained in.
+        """
+        if not isinstance(expected_state_hash, str) or not expected_state_hash:
+            raise ValueError("restoring a preprocessor requires the recorded state hash")
+        if set(payload) != {"factor_order", "settings", "state"}:
+            raise ValueError("preprocessing state payload fields are invalid")
+        factor_order = _restored_factor_order(payload["factor_order"])
+        settings = _restored_settings(payload["settings"])
+        state = _restored_state(payload["state"], factor_order)
+        restored = cls(factor_order=factor_order, **settings)
+        restored._state = state
+        if restored.state_hash != expected_state_hash:
+            raise ValueError(
+                "persisted preprocessing state does not match its recorded state hash"
+            )
+        return restored
 
     def fit(self, frame: pd.DataFrame, *, role: FitRole) -> None:
         """Fit once from TRAIN observations only."""

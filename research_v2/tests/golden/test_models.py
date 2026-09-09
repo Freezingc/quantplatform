@@ -6,10 +6,12 @@ from datetime import date
 from pathlib import Path
 from typing import cast
 
+import numpy as np
 import pandas as pd
 import pytest
 import torch
 
+from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.inference.artifact_loader import (
     _MODEL_CODE_VERSIONS,
     load_bundle_for_evaluation,
@@ -24,6 +26,15 @@ from research_v2.training.model_bundle import ModelArtifactBundleStore
 _GOLDEN_ROOT = Path(__file__).with_name("data")
 _BATCH_PATH = _GOLDEN_ROOT / "model_batch.pt"
 _EXPECTED_PATH = _GOLDEN_ROOT / "expected_model_outputs.json"
+
+
+def _fitted_preprocessing(factor_order: tuple[str, ...]) -> dict[str, object]:
+    """A real fitted state, because that is what the driver persists and the loader restores."""
+    rng = np.random.default_rng(0)
+    frame = pd.DataFrame({name: rng.standard_normal(64) for name in factor_order})
+    fitted = FoldPreprocessor(factor_order=factor_order)
+    fitted.fit(frame, role="TRAIN")
+    return {"state_hash": fitted.state_hash, "state_payload": fitted.state_payload()}
 
 
 @pytest.mark.parametrize("case", ("M1", "M2_GRU", "M3"))
@@ -51,6 +62,8 @@ def test_cpu_golden_outputs_and_artifact_reconstruction(tmp_path: Path, case: st
     store = ModelArtifactBundleStore(tmp_path / "models")
     model_id = f"golden-{case.lower()}"
     feature_order = tuple(cast(list[str], expected["feature_order"]))
+    preprocessing = _fitted_preprocessing(feature_order)
+    preprocessor_hash = str(preprocessing["state_hash"])
     store.write(
         model_id,
         model_card={
@@ -62,7 +75,7 @@ def test_cpu_golden_outputs_and_artifact_reconstruction(tmp_path: Path, case: st
         config=config,
         signature=asdict(model.artifact_signature()),
         feature_order=feature_order,
-        preprocessing={"state_hash": f"{model_id}-preprocessor"},
+        preprocessing=preprocessing,
         seed_checkpoints=checkpoints,
         validation_predictions=pd.DataFrame(
             {"signal_date": ["2025-01-02"], "ts_code": ["a"], "percentile_rank": [0.5]}
@@ -73,7 +86,7 @@ def test_cpu_golden_outputs_and_artifact_reconstruction(tmp_path: Path, case: st
         model_id,
         expected_dataset_id=f"{model_id}-dataset",
         expected_feature_order=feature_order,
-        expected_preprocessor_hash=f"{model_id}-preprocessor",
+        expected_preprocessor_hash=preprocessor_hash,
         device=torch.device("cpu"),
     )
     with torch.no_grad():
@@ -85,7 +98,7 @@ def test_cpu_golden_outputs_and_artifact_reconstruction(tmp_path: Path, case: st
             model_id,
             expected_dataset_id=f"{model_id}-dataset",
             expected_feature_order=tuple(reversed(feature_order)),
-            expected_preprocessor_hash=f"{model_id}-preprocessor",
+            expected_preprocessor_hash=preprocessor_hash,
             device=torch.device("cpu"),
         )
 

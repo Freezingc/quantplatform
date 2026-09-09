@@ -378,6 +378,23 @@ def _mean_seed_percentile_scores(
     return merged.loc[:, [*keys, "score"]]
 
 
+def _preprocessing_artifact(preprocessor: FoldPreprocessor) -> dict[str, object]:
+    """Persist the fitted preprocessing state beside its hash, not the hash alone.
+
+    Recording only ``state_hash`` -- which is what these four bundle writes did -- left a torch
+    bundle that could not be served: putting a new frame into the space the weights were trained
+    in needs the fitted winsor bounds, median and IQR per factor, and a hash cannot be inverted
+    into them. The loader restores from this payload and re-derives the hash from what it
+    rebuilt, so the two cannot drift apart. The LightGBM bundles are unaffected and keep
+    ``{"state_hash": "identity"}``, because a tree ensemble is invariant to the monotone
+    per-feature transforms and genuinely has no state.
+    """
+    return {
+        "state_hash": preprocessor.state_hash,
+        "state_payload": preprocessor.state_payload(),
+    }
+
+
 def _concat_date_scores(
     models: Sequence[torch.nn.Module], batches: Mapping[date, PredictionBatch]
 ) -> pd.DataFrame:
@@ -476,7 +493,7 @@ def _train_cross_section_smoke(
         config=config_payload,
         signature=asdict(prototype.artifact_signature()),
         feature_order=factor_order,
-        preprocessing={"state_hash": preprocessor.state_hash},
+        preprocessing=_preprocessing_artifact(preprocessor),
         seed_checkpoints=seed_checkpoints,
         validation_predictions=ensemble.predictions.rename(
             columns={"ensemble_score": "percentile_rank"}
@@ -798,7 +815,7 @@ def train_m2_smoke(workspace: Path) -> dict[str, Any]:
         config=config_payload,
         signature=asdict(prototype.artifact_signature()),
         feature_order=factor_order,
-        preprocessing={"state_hash": preprocessor.state_hash},
+        preprocessing=_preprocessing_artifact(preprocessor),
         seed_checkpoints=seed_checkpoints,
         validation_predictions=ensemble.predictions.rename(
             columns={"ensemble_score": "percentile_rank"}
@@ -1838,7 +1855,7 @@ def _run_full_cross_section(
             config=dict(best_config, raw_factor_count=len(factor_order)),
             signature=asdict(prototype.artifact_signature()),
             feature_order=factor_order,
-            preprocessing={"state_hash": preprocessor.state_hash},
+            preprocessing=_preprocessing_artifact(preprocessor),
             seed_checkpoints=seed_checkpoints,
             validation_predictions=ensemble.predictions.rename(
                 columns={"ensemble_score": "percentile_rank"}
@@ -2232,7 +2249,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             config=dict(best_config, raw_factor_count=len(factor_order)),
             signature=asdict(prototype.artifact_signature()),
             feature_order=factor_order,
-            preprocessing={"state_hash": preprocessor.state_hash},
+            preprocessing=_preprocessing_artifact(preprocessor),
             seed_checkpoints=seed_checkpoints,
             validation_predictions=ensemble.predictions.rename(
                 columns={"ensemble_score": "percentile_rank"}

@@ -18,6 +18,7 @@ import pandas as pd
 import pytest
 import torch
 
+from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.evaluation.model_evaluator import FrozenOosEvaluation, evaluate_frozen_oos
 from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
 from research_v2.inference.artifact_loader import load_bundle_for_evaluation
@@ -52,6 +53,15 @@ _TEST_DAYS = [
     date(2024, 1, 16),
     date(2024, 1, 17),
 ]
+
+
+def _fitted_preprocessing(factor_order: tuple[str, ...]) -> dict[str, object]:
+    """A real fitted state, because that is what the driver persists and the loader restores."""
+    rng = np.random.default_rng(0)
+    frame = pd.DataFrame({name: rng.standard_normal(64) for name in factor_order})
+    fitted = FoldPreprocessor(factor_order=factor_order)
+    fitted.fit(frame, role="TRAIN")
+    return {"state_hash": fitted.state_hash, "state_payload": fitted.state_payload()}
 
 
 def _codes() -> tuple[str, ...]:
@@ -343,6 +353,9 @@ def _run_smoke_pipeline(family: str, tmp_path: Path) -> FrozenOosEvaluation:
 
     bundle_store = ModelArtifactBundleStore(tmp_path / "models")
     model_id = f"smoke-{family.lower()}"
+    feature_order = tuple(f"f{index:02d}" for index in range(factor_count))
+    preprocessing = _fitted_preprocessing(feature_order)
+    preprocessor_hash = str(preprocessing["state_hash"])
     bundle_store.write(
         model_id,
         model_card={
@@ -357,8 +370,8 @@ def _run_smoke_pipeline(family: str, tmp_path: Path) -> FrozenOosEvaluation:
         },
         config=config_payload,
         signature=asdict(prototype.artifact_signature()),
-        feature_order=tuple(f"f{index:02d}" for index in range(factor_count)),
-        preprocessing={"state_hash": "sha256:" + "0" * 64},
+        feature_order=feature_order,
+        preprocessing=preprocessing,
         seed_checkpoints=seed_checkpoints,
         validation_predictions=validation_predictions,
     )
@@ -372,8 +385,8 @@ def _run_smoke_pipeline(family: str, tmp_path: Path) -> FrozenOosEvaluation:
             },
             config=config_payload,
             signature=asdict(prototype.artifact_signature()),
-            feature_order=tuple(f"f{index:02d}" for index in range(factor_count)),
-            preprocessing={"state_hash": "sha256:" + "0" * 64},
+            feature_order=feature_order,
+            preprocessing=preprocessing,
             seed_checkpoints=seed_checkpoints,
             validation_predictions=validation_predictions,
         )
@@ -382,8 +395,8 @@ def _run_smoke_pipeline(family: str, tmp_path: Path) -> FrozenOosEvaluation:
         bundle_store,
         model_id,
         expected_dataset_id="synthetic-train",
-        expected_feature_order=tuple(f"f{index:02d}" for index in range(factor_count)),
-        expected_preprocessor_hash="sha256:" + "0" * 64,
+        expected_feature_order=feature_order,
+        expected_preprocessor_hash=preprocessor_hash,
         device=torch.device("cpu"),
     )
     assert len(loaded.models) == len(REQUIRED_SEEDS)
