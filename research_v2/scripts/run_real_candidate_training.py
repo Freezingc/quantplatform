@@ -69,6 +69,14 @@ from research_v2.evaluation.selection_evidence import (
     SelectionEvidenceStore,
 )
 from research_v2.inference.artifact_loader import load_bundle_for_evaluation
+from research_v2.inference.torch_scoring import (
+    PredictionBatch,
+    concat_date_scores as _concat_date_scores,
+    mean_seed_percentile_scores as _mean_seed_percentile_scores,
+    percentile_frame as _percentile_frame,
+    prepare_frame as _prepare_frame,
+    score_batch as _score_batch,
+)
 from research_v2.models.base import ModelSignature, predictions_to_frame
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -314,70 +322,6 @@ def _validation_rank_ic(predictions: pd.DataFrame, labels: pd.DataFrame) -> floa
     return float(summarize_rank_ic(daily).mean_rank_ic)
 
 
-PredictionBatch = TrainingBatch | TemporalTrainingBatch
-
-
-def _score_batch(model: torch.nn.Module, batch: PredictionBatch) -> pd.DataFrame:
-    """Score one date-isolated batch through the shared padding-dropping contract.
-
-    ``predictions_to_frame`` is the same function the inference predictor and the
-    validation-governed training loop already use: it keeps only ``stock_mask``
-    positions, rejects non-finite scores for valid stocks, and ranks within each
-    date. Reading ``batch.inputs.ts_codes`` directly instead emits one row per
-    padding slot -- every one of them keyed ``ts_code=""`` -- and ranks the real
-    stocks against a denominator that grows with the padding, which differs on
-    every date narrower than the segment's widest one. That combination is what
-    killed the 2026-09-05 full M1 run after 7h58m of training with "seed
-    predictions contain duplicate business keys", and it would have biased the
-    validation RankIC that selects the winning config even when it did not crash.
-    """
-    with torch.no_grad():
-        scores = cast(torch.Tensor, model(batch.inputs))
-    return predictions_to_frame(batch.inputs, scores)
-
-
-def _percentile_frame(
-    model: torch.nn.Module, batches: Mapping[date, PredictionBatch]
-) -> pd.DataFrame:
-    """Per-seed within-date percentile ranks for a whole segment, padding dropped."""
-    model.eval()
-    frames = [_score_batch(model, batches[day]) for day in sorted(batches)]
-    if not frames:
-        raise ValueError("no batches to predict on")
-    combined = pd.concat(frames, ignore_index=True)
-    return combined.loc[:, ["signal_date", "ts_code", "percentile_rank"]]
-
-
-def _mean_seed_percentile_scores(
-    models: Sequence[torch.nn.Module], batch: PredictionBatch
-) -> pd.DataFrame:
-    """Average the seed percentile ranks of one date, aligned on business keys.
-
-    ``predictions_to_frame`` sorts each date by score, so two seeds generally emit
-    their rows in different orders and averaging the columns positionally would
-    blend different stocks. ``validate="one_to_one"`` turns any residual key
-    duplication into an error here rather than inside the OOS evaluation.
-    """
-    if not models:
-        raise ValueError("at least one seed model is required")
-    keys = ["signal_date", "ts_code"]
-    frames = [_score_batch(model, batch) for model in models]
-    merged = frames[0].loc[:, [*keys, "percentile_rank"]]
-    for index, frame in enumerate(frames[1:], start=1):
-        merged = merged.merge(
-            frame.loc[:, [*keys, "percentile_rank"]].rename(
-                columns={"percentile_rank": f"seed_rank_{index}"}
-            ),
-            on=keys,
-            validate="one_to_one",
-        )
-    rank_columns = [
-        "percentile_rank", *(f"seed_rank_{index}" for index in range(1, len(frames)))
-    ]
-    merged["score"] = merged.loc[:, rank_columns].mean(axis=1)
-    return merged.loc[:, [*keys, "score"]]
-
-
 def _preprocessing_artifact(preprocessor: FoldPreprocessor) -> dict[str, object]:
     """Persist the fitted preprocessing state beside its hash, not the hash alone.
 
@@ -395,33 +339,10 @@ def _preprocessing_artifact(preprocessor: FoldPreprocessor) -> dict[str, object]
     }
 
 
-def _concat_date_scores(
-    models: Sequence[torch.nn.Module], batches: Mapping[date, PredictionBatch]
-) -> pd.DataFrame:
-    """Seed-mean percentile scores for every date of a segment, in date order."""
-    if not batches:
-        raise ValueError("no batches to predict on")
-    return pd.concat(
-        [_mean_seed_percentile_scores(models, batches[day]) for day in sorted(batches)],
-        ignore_index=True,
-    )
-
-
 def _predict_validation_percentiles(
     model: torch.nn.Module, validation_batches: Mapping[date, TrainingBatch]
 ) -> pd.DataFrame:
     return _percentile_frame(model, validation_batches)
-
-
-def _prepare_frame(
-    frame: pd.DataFrame, preprocessor: FoldPreprocessor, factor_order: tuple[str, ...]
-) -> pd.DataFrame:
-    """Apply the train-fitted preprocessor and re-join business keys and labels."""
-    transformed = preprocessor.transform(frame.loc[:, list(factor_order)])
-    keys = ["signal_date", "ts_code"]
-    extras = [c for c in ("raw_return_5d", "label_valid") if c in frame.columns]
-    base = frame.loc[:, keys + extras].reset_index(drop=True)
-    return pd.concat([base, transformed.values.reset_index(drop=True)], axis=1)
 
 
 def _train_cross_section_smoke(
