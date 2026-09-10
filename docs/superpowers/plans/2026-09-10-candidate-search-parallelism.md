@@ -143,13 +143,52 @@ models, only their checkpoint paths and their validation scoring.
 - [x] Mutation-check: renaming the parallel branch's checkpoint prefix kills exactly the test that pins serial/parallel prefix equality.
 - [x] Full gate: `ruff check src tests` clean, `mypy src` 169 files clean, `pytest tests -q` **2004 passed / 45 skipped**.
 
-**Still open after Task 6:** seed-level granularity for the SEARCH. With `--max-configs 1` -- the
-shape of the zero-tuning comparison runs, and what M0R's +0.009149 was measured at -- there is one
-config per fold, so `capped_worker_count` returns 1 and the search itself stays serial; only its
-final fits now parallelise. For a 24-config grid this is worth ~4% and is not the next lever.
+**Taken by Task 7 below:** seed-level granularity for the SEARCH.
 
-**Not yet verified end to end:** the parallel path has real spawned-worker tests at library level and
-source-level wiring assertions in the driver, but no full real-data run has used it. A 1-config
-parallel M1 run would take ~30 h to prove it (the search stays serial at one config), which is longer
-than the serial run it would validate; the natural first real use is the M2 run, which cannot finish
-serially at all.
+### Task 7: Seed-level search granularity for narrow grids (2026-09-10 increment)
+
+**Why:** with `--max-configs 1` -- the shape of every zero-tuning comparison run, and what M0R's
++0.009149 was measured at -- there is one config per fold, so `capped_worker_count` returned 1 and
+the search stayed serial even with `--parallel-workers 48`. Task 6 parallelised the final fits, which
+took such a run from six serial fits per fold to four; splitting the search's unit of work to
+(config, seed) takes it to two parallel rounds, i.e. **3x**, and it is what makes an end-to-end
+validation of the whole parallel path cost ~12 h instead of ~30 h.
+
+**Rule:** per fold, adopt what the search records cover, then use config-level tasks when the
+remaining configs can fill the workers (`len(unadopted) >= workers`) and seed-level tasks otherwise.
+Config-level keeps the smaller return payload (scalars only); seed-level returns each seed's
+validation predictions so the parent can build the ensemble, which is affordable precisely because
+it is chosen only when there are few configs. Both write the same records and the same checkpoint
+names, so a workspace does not record which granularity produced it.
+
+**Interfaces:**
+
+- `_ensemble_from_seed_fits(fits, config_payload, validation_labels) -> dict` -- rebuilds one config's
+  search result from seed fits that ran in other processes, in the serial loop's exact shape, and
+  refuses a seed set that is not exactly `REQUIRED_SEEDS`.
+- `_constant_budget(budget)` -- a named factory for the torch families' config-independent budget,
+  replacing a lambda whose type mypy could not infer at a binding site.
+
+**Steps:**
+
+- [x] Write failing tests for `_ensemble_from_seed_fits`: the result shape and its four keys, `worst_seed`
+      is the lowest-RankIC seed, an incomplete seed set is refused, an unknown seed is refused.
+- [x] Implement the seed-level branch in both torch search loops, indexed `config_index * len(REQUIRED_SEEDS) + slot`
+      and decoded by integer division, so grid order is restored by the existing `_ordered_search_results`.
+- [x] Mutation-check: weakening the seed-set guard to a subset test turns the refusal into a downstream
+      `KeyError`, and the incomplete-seed test fails.
+- [x] Clean the driver's mypy output while in it: `MYPYPATH=src mypy scripts/run_real_candidate_training.py`
+      now reports **zero errors in the driver** (was 13 -- six from today's parallel wiring, six pre-existing
+      `ModelWalkForwardResult` name reuse, plus the third-party `dolphindb` stub note which is not ours).
+      The gate is `mypy src`, which never covered `scripts/`, so none of these were being caught.
+- [x] Full gate: `ruff check src tests` clean, `mypy src` 169 files clean, `pytest tests -q`
+      **2008 passed / 45 skipped**.
+
+**Still open:** no full real-data run has used any parallel path. The library level has real spawned
+workers (static and temporal, config-level and seed-level, including three-seed reassembly through
+`build_seed_ensemble`) and the driver level has source-wiring assertions, but the end-to-end proof is
+a run. Task 7 is what made that proof affordable: a 1-config M1 run with `--parallel-workers 3
+--torch-threads 1` is now ~12 h rather than ~30 h, and it would simultaneously validate the parallel
+path and produce an M1 candidate under a pinned, declared thread lineage. Starting it is a decision
+about numeric lineage (adjudication 2 in the compute brief), not an engineering one, so it has not
+been started unilaterally.

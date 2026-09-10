@@ -859,10 +859,12 @@ def test_both_torch_families_parallelise_their_final_three_seeds() -> None:
     M2's measured ~8.6h per fit they are half the fold.
     """
     source = SCRIPT_PATH.read_text(encoding="utf-8")
-    assert source.count("run_task=run_cross_section_seed_task,") == 1
-    assert source.count("run_task=run_temporal_seed_task,") == 1
-    assert source.count("CrossSectionSeedTask(") == 1
-    assert source.count("TemporalSeedTask(") == 1
+    # Two call sites each since seed-level search landed: the narrow-grid search branch and the
+    # final three-seed fit.
+    assert source.count("run_task=run_cross_section_seed_task,") == 2
+    assert source.count("run_task=run_temporal_seed_task,") == 2
+    assert source.count("CrossSectionSeedTask(") == 2
+    assert source.count("TemporalSeedTask(") == 2
 
 
 def test_the_parallel_and_serial_final_fits_write_the_same_checkpoint_names() -> None:
@@ -870,6 +872,84 @@ def test_the_parallel_and_serial_final_fits_write_the_same_checkpoint_names() ->
     source = SCRIPT_PATH.read_text(encoding="utf-8")
     assert source.count('checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-final-{seed}"') == 2
     assert source.count('checkpoint_prefix=f"m2-{fold_id.lower()}-final-{seed}"') == 2
+
+
+# --- seed-level search granularity: what makes a one-config grid parallel at all ---
+
+
+def _seed_fits(rank_ics: dict[int, float]) -> dict[int, dict[str, object]]:
+    """Fake per-seed worker results: the shape run_*_seed_task actually returns."""
+    codes = [f"S{index:03d}" for index in range(32)]
+    fits: dict[int, dict[str, object]] = {}
+    for seed, value in rank_ics.items():
+        fits[seed] = {
+            "seed": seed,
+            "checkpoint_path": f"/unused/{seed}/checkpoint.pt",
+            "predictions": pd.DataFrame(
+                {
+                    "signal_date": [date(2025, 1, 2)] * 32,
+                    "ts_code": codes,
+                    # A rotation, so each seed really ranks the cross-section differently.
+                    "percentile_rank": [
+                        (index + seed) % 32 / 31.0 for index in range(32)
+                    ],
+                }
+            ),
+            "validation_rank_ic": value,
+        }
+    return fits
+
+
+LABELS = pd.DataFrame(
+    {
+        "signal_date": [date(2025, 1, 2)] * 32,
+        "ts_code": [f"S{index:03d}" for index in range(32)],
+        "raw_return_5d": [(index % 7) / 100.0 for index in range(32)],
+        "label_valid": [True] * 32,
+    }
+)
+CONFIG_PAYLOAD: dict[str, Any] = {"hidden_dim": 64, "learning_rate": 0.003}
+
+
+def test_seed_fits_reassemble_into_the_serial_result_shape() -> None:
+    """The record and the report entry must not depend on which granularity produced them."""
+    rank_ics = {20260801: 0.081, 20260802: 0.094, 20260803: 0.077}
+    result = MODULE._ensemble_from_seed_fits(
+        _seed_fits(rank_ics), CONFIG_PAYLOAD, LABELS
+    )
+    assert set(result) == {
+        "config",
+        "ensemble_validation_rank_ic",
+        "seed_validation_rank_ic",
+        "worst_seed",
+    }
+    assert result["config"] == CONFIG_PAYLOAD
+    assert result["seed_validation_rank_ic"] == rank_ics
+    assert result["worst_seed"] == min(rank_ics, key=lambda seed: rank_ics[seed])
+    assert isinstance(result["ensemble_validation_rank_ic"], float)
+
+
+def test_an_incomplete_seed_set_is_refused_rather_than_ensembled() -> None:
+    """Selecting on two seeds out of three is the same error as selecting from a partial grid."""
+    partial = _seed_fits({20260801: 0.081, 20260802: 0.094})
+    with pytest.raises(ValueError, match="expected all of"):
+        MODULE._ensemble_from_seed_fits(partial, CONFIG_PAYLOAD, LABELS)
+
+
+def test_an_unknown_seed_is_refused_too() -> None:
+    bogus = _seed_fits({20260801: 0.081, 20260802: 0.094, 99999999: 0.077})
+    with pytest.raises(ValueError, match="expected all of"):
+        MODULE._ensemble_from_seed_fits(bogus, CONFIG_PAYLOAD, LABELS)
+
+
+def test_both_torch_families_drop_to_seed_granularity_on_a_narrow_grid() -> None:
+    """Wiring: the rule that makes a --max-configs 1 run parallel, in both torch families."""
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count("if len(unadopted) >= execution.workers:") == 2
+    assert source.count("index=config_index * len(REQUIRED_SEEDS) + slot,") == 2
+    assert source.count("index // len(REQUIRED_SEEDS)") == 2
+
+
 def test_ordered_search_results_restore_grid_order_after_parallel_completion() -> None:
     """Selecting directly from completion order would make ties timing-dependent."""
     first = {"config": {"hidden_dim": 64}, "ensemble_validation_rank_ic": 0.1}
@@ -973,7 +1053,13 @@ def test_all_three_search_loops_consult_the_resume_handle() -> None:
     assert source.count("resume = _search_resume(") == 3
     # Three serial loops, the M1/M3 and M2 parallel preflights, and one fold adoption rebuild.
     assert source.count("resume.adopt(config_index, config_payload") == 6
-    assert source.count("resume.persist(config_index, config_payload, result") == 3
+    # Counted on the call prefix: the variable it persists is named per path (result in the
+    # LightGBM loop, serial_result in the two torch serial loops, ensemble_result in the
+    # seed-level branches), and what matters is that every path persists exactly once.
+    assert source.count("resume.persist(config_index, config_payload,") == 3
+    # Seven persist sites: LightGBM serial, and for each torch family the config-level parallel
+    # branch, the seed-level parallel branch and the serial loop.
+    assert source.count("resume.persist(") == 7
     assert "early_stopping_patience=10" not in source
 
 

@@ -1824,7 +1824,7 @@ def _run_full_lightgbm_family(
         )
         print(f"  {fold_id} complete: model={model_id}", flush=True)
 
-    result = evaluate_model_walk_forward(
+    walk_forward = evaluate_model_walk_forward(
         oos_folds,
         dataset_store=dataset_store,
         model_store=model_store,
@@ -1832,7 +1832,7 @@ def _run_full_lightgbm_family(
         prediction_root=workspace / "predictions",
         minimum_cross_section=30,
     )
-    evaluation = result.evaluation
+    evaluation = walk_forward.evaluation
     return {
         "family": spec.family,
         "mode": "full",
@@ -1982,6 +1982,55 @@ def _ordered_search_results(
             raise ValueError("parallel search result does not match its configuration")
         ordered.append(result)
     return ordered
+
+
+def _ensemble_from_seed_fits(
+    fits: Mapping[int, Mapping[str, object]],
+    config_payload: Mapping[str, Any],
+    validation_labels: pd.DataFrame,
+) -> dict[str, Any]:
+    """Assemble one config's search result from seed fits that ran in other processes.
+
+    The shape returned is the serial loop's shape exactly, because it becomes both a search record
+    and a report entry, and a resumed run has to be able to adopt a record written by either
+    granularity interchangeably. Refusing an incomplete seed set rather than ensembling whatever
+    arrived is the scheduler's rule applied one level down: selecting from a partial grid is
+    invalid, and so is selecting on two seeds out of three.
+    """
+    if set(fits) != set(REQUIRED_SEEDS):
+        raise ValueError(
+            f"seed-level search returned seeds {sorted(fits)}, expected all of "
+            f"{sorted(REQUIRED_SEEDS)}"
+        )
+    predictions = {seed: cast(pd.DataFrame, fits[seed]["predictions"]) for seed in REQUIRED_SEEDS}
+    rank_ic = {seed: cast(float, fits[seed]["validation_rank_ic"]) for seed in REQUIRED_SEEDS}
+    ensemble = build_seed_ensemble(predictions, validation_rank_ic=rank_ic)
+    ensemble_predictions = ensemble.predictions.rename(
+        columns={"ensemble_score": "percentile_rank"}
+    )
+    return {
+        "config": dict(config_payload),
+        "ensemble_validation_rank_ic": _validation_rank_ic(ensemble_predictions, validation_labels),
+        "seed_validation_rank_ic": rank_ic,
+        "worst_seed": ensemble.worst_seed,
+    }
+
+
+def _constant_budget(
+    budget: Mapping[str, Any],
+) -> Callable[[Mapping[str, Any]], Mapping[str, Any]]:
+    """A per-config budget function for families whose budget does not depend on the config.
+
+    The torch families' budget is the epoch and stopping contract, identical for every config, so
+    the callable ignores its argument. Written as a named factory rather than a lambda with a
+    default argument because mypy cannot infer the type of that lambda, and an unannotated callable
+    at a binding site is how a check stops being one.
+    """
+
+    def budget_for(_config: Mapping[str, Any]) -> Mapping[str, Any]:
+        return budget
+
+    return budget_for
 
 
 @dataclass(frozen=True)
@@ -2135,7 +2184,7 @@ def _run_full_cross_section(
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
             configs=configs,
-            budget_for=lambda _config, budget=torch_budget: budget,
+            budget_for=_constant_budget(torch_budget),
         )
         if adopted_fold is not None:
             fold_reports.append(adopted_fold.report_entry)
@@ -2143,48 +2192,108 @@ def _run_full_cross_section(
             print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
             continue
         execution = _parallel_execution(args)
-        configs_to_run: Sequence[tuple[int, Mapping[str, Any]]] = tuple(enumerate(configs))
+        configs_to_run: Sequence[tuple[int, dict[str, Any]]] = tuple(enumerate(configs))
         if execution.workers > 1:
             if execution.torch_threads is None:
                 raise AssertionError("parallel execution validation did not require torch threads")
             completed: dict[int, dict[str, Any]] = {}
-            pending_tasks: list[SearchTask] = []
+            unadopted: list[tuple[int, dict[str, Any]]] = []
             for config_index, config_payload in enumerate(configs):
                 adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
                 if adopted.record is not None:
                     completed[config_index] = adopted.record
                     continue
-                task = CrossSectionConfigTask(
-                    family=cast(Literal["M1", "M3"], family),
-                    config_index=config_index,
-                    config_payload=config_payload,
-                    factor_order=factor_order,
-                    train_batches=train_batches,
-                    validation_batches=validation_batches,
-                    validation_labels=validation,
-                    checkpoint_root=checkpoint_store._root,
-                    checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-c{config_index}",
-                    train_dataset_id=train_dataset_id,
-                    validation_dataset_id=validation_dataset_id,
-                    max_epochs=max_epochs,
-                    early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
-                    torch_threads=execution.torch_threads,
-                )
-                pending_tasks.append(SearchTask(index=config_index, payload={"task": task}))
-            for config_index, result in run_parallel_search(
-                pending_tasks,
-                workers=execution.workers,
-                run_task=run_cross_section_config_task,
-            ):
-                completed[config_index] = cast(dict[str, Any], result)
-                resume.persist(
-                    config_index,
-                    configs[config_index],
-                    completed[config_index],
-                    budget=torch_budget,
-                )
+                unadopted.append((config_index, config_payload))
+            if len(unadopted) >= execution.workers:
+                pending_tasks = [
+                    SearchTask(
+                        index=config_index,
+                        payload={
+                            "task": CrossSectionConfigTask(
+                                family=cast(Literal["M1", "M3"], family),
+                                config_index=config_index,
+                                config_payload=config_payload,
+                                factor_order=factor_order,
+                                train_batches=train_batches,
+                                validation_batches=validation_batches,
+                                validation_labels=validation,
+                                checkpoint_root=checkpoint_store._root,
+                                checkpoint_prefix=(
+                                    f"{family.lower()}-{fold_id.lower()}-c{config_index}"
+                                ),
+                                train_dataset_id=train_dataset_id,
+                                validation_dataset_id=validation_dataset_id,
+                                max_epochs=max_epochs,
+                                early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                                torch_threads=execution.torch_threads,
+                            )
+                        },
+                    )
+                    for config_index, config_payload in unadopted
+                ]
+                for config_index, parallel_result in run_parallel_search(
+                    pending_tasks,
+                    workers=execution.workers,
+                    run_task=run_cross_section_config_task,
+                ):
+                    completed[config_index] = cast(dict[str, Any], parallel_result)
+                    resume.persist(
+                        config_index,
+                        configs[config_index],
+                        completed[config_index],
+                        budget=torch_budget,
+                    )
+            else:
+                # A grid narrower than the worker count cannot fill them at config granularity, and
+                # that is the shape of every zero-tuning comparison run -- one config, chosen so the
+                # number carries no validation-selection bias. Splitting the unit of work to
+                # (config, seed) is what turns six serial fits per fold into two parallel rounds.
+                seed_tasks = [
+                    SearchTask(
+                        index=config_index * len(REQUIRED_SEEDS) + slot,
+                        payload={
+                            "task": CrossSectionSeedTask(
+                                family=cast(Literal["M1", "M3"], family),
+                                config_payload=config_payload,
+                                factor_order=factor_order,
+                                seed=seed,
+                                train_batches=train_batches,
+                                validation_batches=validation_batches,
+                                validation_labels=validation,
+                                checkpoint_root=checkpoint_store._root,
+                                checkpoint_prefix=(
+                                    f"{family.lower()}-{fold_id.lower()}"
+                                    f"-c{config_index}-{seed}"
+                                ),
+                                train_dataset_id=train_dataset_id,
+                                validation_dataset_id=validation_dataset_id,
+                                max_epochs=max_epochs,
+                                early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                                torch_threads=execution.torch_threads,
+                            )
+                        },
+                    )
+                    for config_index, config_payload in unadopted
+                    for slot, seed in enumerate(REQUIRED_SEEDS)
+                ]
+                fits_by_config: dict[int, dict[int, Mapping[str, object]]] = {}
+                for index, fitted in run_parallel_search(
+                    seed_tasks,
+                    workers=execution.workers,
+                    run_task=run_cross_section_seed_task,
+                ):
+                    seed = int(cast(int, fitted["seed"]))
+                    fits_by_config.setdefault(index // len(REQUIRED_SEEDS), {})[seed] = fitted
+                for config_index, config_payload in unadopted:
+                    ensemble_result = _ensemble_from_seed_fits(
+                        fits_by_config.get(config_index, {}), config_payload, validation
+                    )
+                    completed[config_index] = ensemble_result
+                    resume.persist(
+                        config_index, config_payload, ensemble_result, budget=torch_budget
+                    )
             search_results = _ordered_search_results(configs, completed)
-            for config_index in (task.index for task in pending_tasks):
+            for config_index, _ in unadopted:
                 result = search_results[config_index]
                 print(
                     f"  {fold_id} config {config_index + 1}/{len(configs)}: "
@@ -2225,14 +2334,14 @@ def _run_full_cross_section(
                 columns={"ensemble_score": "percentile_rank"}
             )
             ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
-            result: dict[str, Any] = {
+            serial_result: dict[str, Any] = {
                 "config": config_payload,
                 "ensemble_validation_rank_ic": ensemble_rank_ic,
                 "seed_validation_rank_ic": seed_rank_ic,
                 "worst_seed": ensemble.worst_seed,
             }
-            search_results.append(result)
-            resume.persist(config_index, config_payload, result, budget=torch_budget)
+            search_results.append(serial_result)
+            resume.persist(config_index, config_payload, serial_result, budget=torch_budget)
             print(
                 f"  {fold_id} config {config_index + 1}/{len(configs)}: "
                 f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
@@ -2399,7 +2508,7 @@ def _run_full_cross_section(
         )
         print(f"  {fold_id} complete: model={model_id}", flush=True)
 
-    result = evaluate_model_walk_forward(
+    walk_forward = evaluate_model_walk_forward(
         oos_folds,
         dataset_store=dataset_store,
         model_store=model_store,
@@ -2407,7 +2516,7 @@ def _run_full_cross_section(
         prediction_root=workspace / "predictions",
         minimum_cross_section=30,
     )
-    evaluation = result.evaluation
+    evaluation = walk_forward.evaluation
     return {
         "family": family,
         "mode": "full",
@@ -2647,7 +2756,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
             configs=configs,
-            budget_for=lambda _config, budget=torch_budget: budget,
+            budget_for=_constant_budget(torch_budget),
         )
         if adopted_fold is not None:
             fold_reports.append(adopted_fold.report_entry)
@@ -2655,7 +2764,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
             continue
         execution = _parallel_execution(args)
-        configs_to_run: Sequence[tuple[int, Mapping[str, Any]]] = tuple(enumerate(configs))
+        configs_to_run: Sequence[tuple[int, dict[str, Any]]] = tuple(enumerate(configs))
         fold_spec: TemporalFoldSpec | None = None
         if execution.workers > 1:
             if execution.torch_threads is None:
@@ -2676,38 +2785,90 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                 torch_threads=execution.torch_threads,
             )
             completed: dict[int, dict[str, Any]] = {}
-            pending_tasks: list[SearchTask] = []
+            unadopted: list[tuple[int, dict[str, Any]]] = []
             for config_index, config_payload in enumerate(configs):
                 adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
                 if adopted.record is not None:
                     completed[config_index] = adopted.record
                     continue
-                task = TemporalConfigTask(
-                    config_index=config_index,
-                    config_payload=config_payload,
-                    fold=fold_spec,
-                    train_dataset_id=train_dataset_id,
-                    validation_dataset_id=validation_dataset_id,
-                    checkpoint_root=checkpoint_store._root,
-                    checkpoint_prefix=f"m2-{fold_id.lower()}-c{config_index}",
-                    max_epochs=max_epochs,
-                    early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
-                )
-                pending_tasks.append(SearchTask(index=config_index, payload={"task": task}))
-            for config_index, result in run_parallel_search(
-                pending_tasks,
-                workers=execution.workers,
-                run_task=run_temporal_config_task,
-            ):
-                completed[config_index] = cast(dict[str, Any], result)
-                resume.persist(
-                    config_index,
-                    configs[config_index],
-                    completed[config_index],
-                    budget=torch_budget,
-                )
+                unadopted.append((config_index, config_payload))
+            if len(unadopted) >= execution.workers:
+                pending_tasks = [
+                    SearchTask(
+                        index=config_index,
+                        payload={
+                            "task": TemporalConfigTask(
+                                config_index=config_index,
+                                config_payload=config_payload,
+                                fold=fold_spec,
+                                train_dataset_id=train_dataset_id,
+                                validation_dataset_id=validation_dataset_id,
+                                checkpoint_root=checkpoint_store._root,
+                                checkpoint_prefix=f"m2-{fold_id.lower()}-c{config_index}",
+                                max_epochs=max_epochs,
+                                early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                            )
+                        },
+                    )
+                    for config_index, config_payload in unadopted
+                ]
+                for config_index, parallel_result in run_parallel_search(
+                    pending_tasks,
+                    workers=execution.workers,
+                    run_task=run_temporal_config_task,
+                ):
+                    completed[config_index] = cast(dict[str, Any], parallel_result)
+                    resume.persist(
+                        config_index,
+                        configs[config_index],
+                        completed[config_index],
+                        budget=torch_budget,
+                    )
+            else:
+                # A grid narrower than the worker count cannot fill them at config granularity.
+                # For M2 that case is not hypothetical: each worker rebuilds the fold's temporal
+                # panels once and reuses them, so splitting to (config, seed) costs one extra
+                # reconstruction per worker and turns six serial fits per fold into two rounds.
+                seed_tasks = [
+                    SearchTask(
+                        index=config_index * len(REQUIRED_SEEDS) + slot,
+                        payload={
+                            "task": TemporalSeedTask(
+                                config_payload=config_payload,
+                                seed=seed,
+                                fold=fold_spec,
+                                train_dataset_id=train_dataset_id,
+                                validation_dataset_id=validation_dataset_id,
+                                checkpoint_root=checkpoint_store._root,
+                                checkpoint_prefix=(
+                                    f"m2-{fold_id.lower()}-c{config_index}-{seed}"
+                                ),
+                                max_epochs=max_epochs,
+                                early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                            )
+                        },
+                    )
+                    for config_index, config_payload in unadopted
+                    for slot, seed in enumerate(REQUIRED_SEEDS)
+                ]
+                fits_by_config: dict[int, dict[int, Mapping[str, object]]] = {}
+                for index, fitted in run_parallel_search(
+                    seed_tasks,
+                    workers=execution.workers,
+                    run_task=run_temporal_seed_task,
+                ):
+                    seed = int(cast(int, fitted["seed"]))
+                    fits_by_config.setdefault(index // len(REQUIRED_SEEDS), {})[seed] = fitted
+                for config_index, config_payload in unadopted:
+                    ensemble_result = _ensemble_from_seed_fits(
+                        fits_by_config.get(config_index, {}), config_payload, validation
+                    )
+                    completed[config_index] = ensemble_result
+                    resume.persist(
+                        config_index, config_payload, ensemble_result, budget=torch_budget
+                    )
             search_results = _ordered_search_results(configs, completed)
-            for config_index in (task.index for task in pending_tasks):
+            for config_index, _ in unadopted:
                 result = search_results[config_index]
                 print(
                     f"  {fold_id} config {config_index + 1}/{len(configs)}: "
@@ -2760,14 +2921,14 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                 columns={"ensemble_score": "percentile_rank"}
             )
             ensemble_rank_ic = _validation_rank_ic(ensemble_predictions, validation)
-            result: dict[str, Any] = {
+            serial_result: dict[str, Any] = {
                 "config": config_payload,
                 "ensemble_validation_rank_ic": ensemble_rank_ic,
                 "seed_validation_rank_ic": seed_rank_ic,
                 "worst_seed": ensemble.worst_seed,
             }
-            search_results.append(result)
-            resume.persist(config_index, config_payload, result, budget=torch_budget)
+            search_results.append(serial_result)
+            resume.persist(config_index, config_payload, serial_result, budget=torch_budget)
             print(
                 f"  {fold_id} config {config_index + 1}/{len(configs)}: "
                 f"ensemble validation RankIC={ensemble_rank_ic:.4f}",
@@ -2928,7 +3089,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         )
         print(f"  {fold_id} complete: model={model_id}", flush=True)
 
-    result = evaluate_model_walk_forward(
+    walk_forward = evaluate_model_walk_forward(
         oos_folds,
         dataset_store=dataset_store,
         model_store=model_store,
@@ -2936,7 +3097,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         prediction_root=workspace / "predictions",
         minimum_cross_section=30,
     )
-    evaluation = result.evaluation
+    evaluation = walk_forward.evaluation
     return {
         "family": "M2",
         "mode": "full",
