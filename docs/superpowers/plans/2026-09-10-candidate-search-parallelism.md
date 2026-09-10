@@ -201,3 +201,38 @@ starts a **new numeric lineage** -- threads pinned to 1 and recorded in every se
 runtime descriptor, which is the substance of adjudication 2 in the compute brief -- so its numbers
 are comparable to themselves and NOT to `m1_v2`'s, and promoting anything from it still needs that
 adjudication recorded. The serial run remains the one whose verdict answers the M1-vs-M0R question.
+
+## 实测记录（2026-09-10 22:00–22:30，`m1_parallel_v1` 与串行 `m1_v2` 同时在跑）
+
+**1. 线程数对速度中性，在真实 v2 数据上复现。** 串行运行（52 线程）相邻 epoch 检查点间隔 5m37s
+（21:08:28 → 21:14:05 → 21:19:41）；并行运行的三个 worker（各 1 线程、三路并发）epoch-1 检查点落在
+22:04:08 / 22:04:38 / 22:06:41，即单 epoch 约 4–6 分钟。两者同量级，所以 3× 加速不是靠降线程换来的，
+也没有被降线程吃掉。计划 §3.4 早前的基准是在旧的小折上测的（1/4/8 线程 81.56–81.80 s），这是第一次
+在 230 万行的 v2 折上验证同一条结论。
+
+**2. 种子级并行在真实数据上跑通。** 启动 6 分钟内观测到三个 spawned worker 并发训练 F1 的三个搜索 seed，
+各自写出自己的检查点（`m1-f1-c0-<seed>-seed-<seed>-epoch-N`），互不覆盖。
+
+**3. 钉线程确实生效，并且写进了证据工件。** worker 的 checkpoint manifest 记录
+`torch_intraop_threads: 1`、`torch_interop_threads: 1`；串行运行同一位置记录 52。
+
+**4. 两个谱系的差异被量化了——这是裁决 2 的关键输入。** 同一折、同一配置、同一 seed、同一 epoch：
+
+| 谱系 | epoch-1 验证 RankIC | checkpoint sha256（前 12 位） |
+|---|---|---|
+| 并行，threads=1 | 0.049795006597773174 | `85e9b4a35585` |
+| 串行，threads=52 | 0.04979499815492084 | `f1205743b37a` |
+
+指标相差 **8.4e-9**（G4 门槛 5e-3，小 6 个数量级），而**权重摘要完全不同**。三条含义：科学结论上两者
+等价；工件上两者不可互换（派生 model_id 不同，跨谱系不存在逐位复现）；所以搜索记录绑定线程数是必要的
+而非过度谨慎。反过来也说明钉线程的代价是**一次性且单向的**：一旦选定某个值，此后所有运行都必须用同一
+个值，否则「两次全量跑逐字节相同」这条既有性质（`m0r_v2`/`m0r_v3`/三次 M0R 复验共 5 份同 md5 报告）
+就不再成立。
+
+**5. 折级并行不是下一个杠杆（修正 Task 7 末尾的说法）。** 存储层已核实可并发写：选择证据与冻结预测都是
+**内容寻址 + `tempfile.mkdtemp` 后 `rename` 原子落盘**，不同折写的是互不相交的 id，所以并发写在存储层是
+安全的。但吞吐上不成立：总工作量与 worker 数都不变，配置级并行已经吃满机器时再按折拆分不会更快——24 配置
+× 3 seed = 72 次拟合，无论切成 24 个配置任务还是 72 个种子任务交给 24 个 worker，都是 3 轮。折级并行只对
+**窄网格**有意义（1 配置时一折只有 3 个 seed，3 个 worker 就是天花板，四折仍一个接一个），而窄网格是载体
+对比运行的形状，不是 M2/M3 正式运行的形状。因此 M2 时长的真正杠杆是**能开多少 worker**，即每个时序 worker
+的内存占用与重建成本。
