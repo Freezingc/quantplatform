@@ -52,6 +52,7 @@ import torch
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.evaluation.selection_evidence import (
     FrozenPredictionStore,
+    ModelSelectionEvidence,
     SelectionEvidenceVerifier,
 )
 from research_v2.inference.artifact_loader import load_bundle_for_evaluation
@@ -242,6 +243,106 @@ def _run_identity(workspace: Path, report_path: Path, registry: ModelRegistrySto
     except ValueError:
         return RunIdentity(model_id=model_id, status=_UNREGISTERED)
     return RunIdentity(model_id=model_id, status=record.status.value)
+
+
+def verify_fold_predictions_reproduce(workspace: Path, fold_id: str) -> dict[str, object]:
+    """Audit ONE fold, without the run report and without the other three bundles.
+
+    The whole-run verifier needs ``report.json`` and all four bundles, so a run that is still
+    training its last fold -- or that was interrupted in it -- cannot be audited at all. Its
+    completed folds are exactly the ones worth checking early: a divergence found at hour four costs
+    a restart, and the same divergence found at hour forty costs the verdict.
+
+    Everything the report would have supplied is taken from signed evidence instead. The model
+    selection for this fold names the bundle and the TEST dataset, and its ``model_bundle_digest``
+    is compared against a re-hash of that bundle, so the fold being audited is the fold the chain
+    says was frozen -- not merely whichever directory happens to be named ``m1-f1``.
+    """
+    selections = SelectionEvidenceVerifier.from_environment(workspace / "selections")
+    evidence_id, evidence = _signed_model_evidence(workspace, selections, fold_id)
+    model_store = ModelArtifactBundleStore(workspace / "models")
+    model_artifact = evidence.model_artifact_id
+    digest = model_store.bundle_digest(model_artifact)
+    if evidence.model_bundle_digest != digest:
+        raise ReproductionError(
+            f"{fold_id} signed evidence binds bundle digest {evidence.model_bundle_digest}, but "
+            f"bundle {model_artifact} re-hashes to {digest}"
+        )
+    card = _model_card(model_store, model_artifact)
+    family = _family_of(card, fold_id)
+    dataset_id = _checked_card_dataset_id(card, evidence.test_dataset_id, fold_id=fold_id)
+    dataset_store = DatasetArtifactStore(workspace / "datasets")
+    bundle = _FoldBundle(
+        fold_id=fold_id,
+        model_artifact_id=model_artifact,
+        family=family,
+        dataset_id=dataset_id,
+        report_dataset_id=evidence.test_dataset_id,
+        factor_order=_feature_order(model_store, model_artifact),
+        store=model_store,
+        workspace=workspace,
+        test=dataset_store.load_split(
+            evidence.test_dataset_id, "test", expected_fold_id=fold_id
+        ),
+    )
+    recomputed = _recompute_fold_scores(bundle)
+    prediction_ids = _prediction_ids_by_fold_and_kind(workspace)
+    try:
+        candidate_id = prediction_ids[(fold_id, "candidate")]
+    except KeyError as error:
+        raise ReproductionError(
+            f"{fold_id} has no signed candidate prediction artifact"
+        ) from error
+    predictions = FrozenPredictionStore.from_environment(workspace / "predictions")
+    stored = predictions.load(candidate_id, selections=selections).scores
+    result = _compare_scores(
+        recomputed,
+        stored,
+        fold_id=fold_id,
+        model_artifact_id=model_artifact,
+        family=family,
+    )
+    return {
+        "fold_id": fold_id,
+        "model_artifact_id": model_artifact,
+        "model_selection_id": evidence_id,
+        "candidate_prediction_id": candidate_id,
+        "bundle_digest": digest,
+        "family": family,
+        "row_count": result.row_count,
+        "max_absolute_difference": result.max_absolute_difference,
+        "identical": result.identical,
+        "reproduced": True,
+    }
+
+
+def _signed_model_evidence(
+    workspace: Path, selections: SelectionEvidenceVerifier, fold_id: str
+) -> tuple[str, ModelSelectionEvidence]:
+    """The one signed model selection for this fold, or a refusal that says what was found.
+
+    Two selections for one fold is not a case to pick between: it means the workspace holds two
+    runs' worth of evidence for the same fold, and auditing either one would be auditing a guess.
+    """
+    directory = workspace / "selections" / "model"
+    found: list[tuple[str, ModelSelectionEvidence]] = []
+    if directory.exists():
+        for path in sorted(directory.glob("*.json")):
+            try:
+                evidence = selections.load_model_selection(path.stem)
+            except ValueError:
+                continue
+            if evidence.fold_id == fold_id:
+                found.append((path.stem, evidence))
+    if not found:
+        raise ReproductionError(f"{fold_id} has no signed model selection evidence")
+    if len(found) > 1:
+        identities = ", ".join(identity for identity, _ in found)
+        raise ReproductionError(
+            f"{fold_id} has {len(found)} signed model selections ({identities}); this auditor "
+            "will not choose between them"
+        )
+    return found[0]
 
 
 def _model_card(store: ModelArtifactBundleStore, model_artifact_id: str) -> Mapping[str, object]:
@@ -488,4 +589,5 @@ __all__ = [
     "ReproductionError",
     "RunIdentity",
     "verify_candidate_predictions_reproduce",
+    "verify_fold_predictions_reproduce",
 ]

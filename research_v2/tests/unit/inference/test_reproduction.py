@@ -810,3 +810,95 @@ def test_scoring_is_bitwise_stable_across_thread_counts(tmp_path: Path) -> None:
         assert np.array_equal(runs[0], runs[1])
     finally:
         torch.set_num_threads(original)
+
+
+# ---------------------------------------------------------------------------------------------
+# Per-fold auditing: a run still in flight has no report and no fourth bundle, and its finished
+# folds are the ones worth checking hours before the verdict rather than at it.
+# ---------------------------------------------------------------------------------------------
+
+
+class _StubEvidence:
+    def __init__(self, fold_id: str, model_artifact_id: str = "m1-f1") -> None:
+        self.fold_id = fold_id
+        self.model_artifact_id = model_artifact_id
+        self.test_dataset_id = "ds-1"
+        self.model_bundle_digest = "0" * 64
+
+
+class _StubVerifier:
+    """Stands in for the signed-evidence verifier; the scan and refusals are under test here."""
+
+    def __init__(self, evidence: dict[str, object], unsigned: tuple[str, ...] = ()) -> None:
+        self._evidence = evidence
+        self._unsigned = unsigned
+
+    def load_model_selection(self, evidence_id: str) -> object:
+        if evidence_id in self._unsigned:
+            raise ValueError("signature does not verify")
+        return self._evidence[evidence_id]
+
+
+def _selection_directory(tmp_path: Path, ids: tuple[str, ...]) -> Path:
+    directory = tmp_path / "selections" / "model"
+    directory.mkdir(parents=True, exist_ok=True)
+    for evidence_id in ids:
+        (directory / f"{evidence_id}.json").write_text("{}", encoding="utf-8")
+    return directory
+
+
+def test_a_fold_with_one_signed_selection_is_identified(tmp_path: Path) -> None:
+    _selection_directory(tmp_path, ("ev-1",))
+    verifier = _StubVerifier({"ev-1": _StubEvidence("F1")})
+    evidence_id, evidence = reproduction._signed_model_evidence(tmp_path, verifier, "F1")
+    assert evidence_id == "ev-1"
+    assert evidence.model_artifact_id == "m1-f1"
+
+
+def test_a_fold_with_no_signed_selection_is_refused(tmp_path: Path) -> None:
+    _selection_directory(tmp_path, ("ev-1",))
+    verifier = _StubVerifier({"ev-1": _StubEvidence("F2")})
+    with pytest.raises(ReproductionError, match="F1 has no signed model selection evidence"):
+        reproduction._signed_model_evidence(tmp_path, verifier, "F1")
+
+
+def test_a_missing_selection_directory_is_refused_not_treated_as_empty(tmp_path: Path) -> None:
+    with pytest.raises(ReproductionError, match="no signed model selection evidence"):
+        reproduction._signed_model_evidence(tmp_path, _StubVerifier({}), "F1")
+
+
+def test_two_signed_selections_for_one_fold_are_refused_rather_than_chosen_between(
+    tmp_path: Path,
+) -> None:
+    """Picking one would be auditing a guess about which run this workspace holds."""
+    _selection_directory(tmp_path, ("ev-1", "ev-2"))
+    verifier = _StubVerifier({"ev-1": _StubEvidence("F1"), "ev-2": _StubEvidence("F1")})
+    with pytest.raises(ReproductionError, match="will not choose between them") as info:
+        reproduction._signed_model_evidence(tmp_path, verifier, "F1")
+    assert "ev-1" in str(info.value) and "ev-2" in str(info.value)
+
+
+def test_an_evidence_file_whose_signature_fails_is_skipped(tmp_path: Path) -> None:
+    _selection_directory(tmp_path, ("ev-bad", "ev-good"))
+    verifier = _StubVerifier(
+        {"ev-bad": _StubEvidence("F1"), "ev-good": _StubEvidence("F1")}, unsigned=("ev-bad",)
+    )
+    evidence_id, _ = reproduction._signed_model_evidence(tmp_path, verifier, "F1")
+    assert evidence_id == "ev-good"
+
+
+def test_a_per_fold_audit_refuses_a_bundle_the_signed_evidence_does_not_vouch_for(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The digest cross-check is what makes this an audit of the frozen fold, not of a directory
+    that happens to be named m1-f1."""
+    _selection_directory(tmp_path, ("ev-1",))
+    _real_bundle(tmp_path)
+    verifier = _StubVerifier({"ev-1": _StubEvidence("F1")})  # digest "0"*64, i.e. wrong
+    monkeypatch.setattr(
+        reproduction.SelectionEvidenceVerifier,
+        "from_environment",
+        classmethod(lambda cls, root: verifier),
+    )
+    with pytest.raises(ReproductionError, match="re-hashes to"):
+        reproduction.verify_fold_predictions_reproduce(tmp_path, "F1")
