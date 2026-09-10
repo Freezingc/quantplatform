@@ -37,6 +37,14 @@ def _raising_result(payload: Mapping[str, object]) -> dict[str, object]:
     raise RuntimeError(f"worker failed for {payload['value']}")
 
 
+def _maybe_failing_result(payload: Mapping[str, object]) -> dict[str, object]:
+    """Sleep, then either return or fail, so completion order is controllable from the payload."""
+    time.sleep(float(payload.get("delay_seconds", 0.0)))
+    if payload.get("fail"):
+        raise RuntimeError(f"worker failed for {payload['value']}")
+    return {"value": int(payload["value"])}
+
+
 def test_parallel_search_restores_grid_order_after_reverse_completion() -> None:
     """Removing index sorting would select/tie-break based on scheduler timing."""
     tasks = (
@@ -123,6 +131,45 @@ def test_parallel_search_propagates_a_worker_exception() -> None:
         )
 
 
+def test_results_are_handed_over_as_they_land_and_not_only_at_the_end() -> None:
+    seen: list[tuple[int, dict[str, object]]] = []
+    tasks = (
+        SearchTask(index=0, payload={"value": 10, "delay_seconds": 0.30}),
+        SearchTask(index=1, payload={"value": 20, "delay_seconds": 0.0}),
+    )
+    results = run_parallel_search(
+        tasks,
+        workers=2,
+        run_task=_maybe_failing_result,
+        on_result=lambda index, result: seen.append((index, result)),
+    )
+    # The callback sees completion order; the return value is still canonical index order.
+    assert [index for index, _ in seen] == [1, 0]
+    assert results == [(0, {"value": 10}), (1, {"value": 20})]
+
+
+def test_a_later_failure_does_not_discard_the_results_that_already_landed() -> None:
+    """The property that keeps one bad worker from costing a whole fold.
+
+    ``run_parallel_search`` must still raise -- selecting from a partial grid is invalid -- but a
+    24-configuration M2 round is twenty-odd hours of fits, and results collected only at the end
+    would all be thrown away by one failure at hour twenty. Handed over as they land, they get
+    persisted, and --resume then has something to adopt.
+    """
+    seen: list[int] = []
+    tasks = (
+        SearchTask(index=0, payload={"value": 10, "delay_seconds": 0.0}),
+        SearchTask(index=1, payload={"value": 20, "delay_seconds": 0.0}),
+        SearchTask(index=2, payload={"value": 30, "delay_seconds": 0.30, "fail": True}),
+    )
+    with pytest.raises(RuntimeError, match="worker failed for 30"):
+        run_parallel_search(
+            tasks,
+            workers=3,
+            run_task=_maybe_failing_result,
+            on_result=lambda index, result: seen.append(index),
+        )
+    assert sorted(seen) == [0, 1]
 def test_spawned_cross_section_worker_returns_a_complete_three_seed_result(tmp_path) -> None:
     """A package-level worker must survive spawn, not merely work in the parent process."""
     def frame(day: date) -> pd.DataFrame:

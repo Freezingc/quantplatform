@@ -196,11 +196,19 @@ def run_parallel_search(
     *,
     workers: int,
     run_task: SearchTaskRunner,
+    on_result: Callable[[int, dict[str, object]], None] | None = None,
 ) -> list[tuple[int, dict[str, object]]]:
     """Run independent tasks in spawned processes and restore canonical index order.
 
     The parent receives every result before returning. A failed child is deliberately
     allowed to raise through ``future.result``: selecting from a partial grid is invalid.
+
+    ``on_result`` is called with each result as it lands, before any later failure is raised. That
+    is not a convenience hook: the caller persists search records there, so a round that fails part
+    way keeps every configuration that finished instead of losing the fold's whole search. Results
+    collected only at the end are discarded by the raise, and on a 24-configuration temporal round
+    that is twenty-odd hours of fits lost to one bad worker -- with nothing for ``--resume`` to
+    adopt on the restart.
     """
     task_list = tuple(tasks)
     if len({task.index for task in task_list}) != len(task_list):
@@ -226,6 +234,8 @@ def run_parallel_search(
             if not isinstance(result, dict):
                 raise TypeError("parallel search worker must return a dictionary")
             completed.append((futures[future], result))
+            if on_result is not None:
+                on_result(futures[future], result)
     return sorted(completed, key=lambda item: item[0])
 
 

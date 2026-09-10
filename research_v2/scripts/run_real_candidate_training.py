@@ -1691,6 +1691,57 @@ def _search_granularity(unadopted_count: int, workers: int) -> Literal["config",
     )
 
 
+def _record_persister(
+    resume: SearchResume,
+    configs: Sequence[Mapping[str, Any]],
+    budget: Mapping[str, Any],
+) -> Callable[[int, dict[str, object]], None]:
+    """Persist each configuration's search record the moment its result lands.
+
+    Persisting after the round instead would mean a worker failure discards every configuration that
+    finished, because ``run_parallel_search`` raises as soon as one child dies and results collected
+    only at the end are lost with it. On a 24-configuration temporal round that is twenty-odd hours
+    of fits, and ``--resume`` would have nothing to adopt on the restart -- the exact situation
+    resume exists for.
+    """
+
+    def persist(index: int, result: dict[str, object]) -> None:
+        resume.persist(index, configs[index], cast(dict[str, Any], result), budget=budget)
+
+    return persist
+
+
+def _seed_result_collector(
+    resume: SearchResume,
+    configs: Sequence[Mapping[str, Any]],
+    budget: Mapping[str, Any],
+    validation_labels: pd.DataFrame,
+    fits_by_config: dict[int, dict[int, Mapping[str, object]]],
+    records: dict[int, dict[str, Any]],
+) -> Callable[[int, dict[str, object]], None]:
+    """Aggregate seed-level results per configuration and persist each one as soon as it is whole.
+
+    A seed-level round cannot persist on arrival the way a config-level one can, because the record
+    is the config's three-seed ensemble and no single seed result contains it. So the record is
+    written at the moment the third seed of a configuration lands -- which is what keeps a narrow
+    grid's round from being all-or-nothing, and lets the post-round loop read finished records
+    instead of recomputing them.
+    """
+
+    def collect(index: int, fitted: dict[str, object]) -> None:
+        config_index = index // len(REQUIRED_SEEDS)
+        seed = int(cast(int, fitted["seed"]))
+        fits = fits_by_config.setdefault(config_index, {})
+        fits[seed] = fitted
+        if set(fits) != set(REQUIRED_SEEDS):
+            return
+        record = _ensemble_from_seed_fits(fits, configs[config_index], validation_labels)
+        records[config_index] = record
+        resume.persist(config_index, configs[config_index], record, budget=budget)
+
+    return collect
+
+
 def _lightgbm_search_budget(config_payload: Mapping[str, Any]) -> dict[str, Any]:
     """The effective LightGBM budget: the round/patience constants plus the fitted hyperparameters.
 
@@ -2339,14 +2390,9 @@ def _run_full_cross_section(
                     pending_tasks,
                     workers=execution.workers,
                     run_task=run_cross_section_config_task,
+                    on_result=_record_persister(resume, configs, torch_budget),
                 ):
                     completed[config_index] = cast(dict[str, Any], parallel_result)
-                    resume.persist(
-                        config_index,
-                        configs[config_index],
-                        completed[config_index],
-                        budget=torch_budget,
-                    )
             else:
                 # A grid narrower than the worker count cannot fill them at config granularity, and
                 # that is the shape of every zero-tuning comparison run -- one config, chosen so the
@@ -2381,21 +2427,17 @@ def _run_full_cross_section(
                     for slot, seed in enumerate(REQUIRED_SEEDS)
                 ]
                 fits_by_config: dict[int, dict[int, Mapping[str, object]]] = {}
-                for index, fitted in run_parallel_search(
+                seed_records: dict[int, dict[str, Any]] = {}
+                run_parallel_search(
                     seed_tasks,
                     workers=execution.workers,
                     run_task=run_cross_section_seed_task,
-                ):
-                    seed = int(cast(int, fitted["seed"]))
-                    fits_by_config.setdefault(index // len(REQUIRED_SEEDS), {})[seed] = fitted
-                for config_index, config_payload in unadopted:
-                    ensemble_result = _ensemble_from_seed_fits(
-                        fits_by_config.get(config_index, {}), config_payload, validation
-                    )
-                    completed[config_index] = ensemble_result
-                    resume.persist(
-                        config_index, config_payload, ensemble_result, budget=torch_budget
-                    )
+                    on_result=_seed_result_collector(
+                        resume, configs, torch_budget, validation, fits_by_config, seed_records
+                    ),
+                )
+                for config_index, _config in unadopted:
+                    completed[config_index] = seed_records[config_index]
             search_results = _ordered_search_results(configs, completed)
             for config_index, _ in unadopted:
                 result = search_results[config_index]
@@ -2927,14 +2969,9 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                     pending_tasks,
                     workers=execution.workers,
                     run_task=run_temporal_config_task,
+                    on_result=_record_persister(resume, configs, torch_budget),
                 ):
                     completed[config_index] = cast(dict[str, Any], parallel_result)
-                    resume.persist(
-                        config_index,
-                        configs[config_index],
-                        completed[config_index],
-                        budget=torch_budget,
-                    )
             else:
                 # A grid narrower than the worker count cannot fill them at config granularity.
                 # For M2 that case is not hypothetical: each worker rebuilds the fold's temporal
@@ -2963,21 +3000,17 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                     for slot, seed in enumerate(REQUIRED_SEEDS)
                 ]
                 fits_by_config: dict[int, dict[int, Mapping[str, object]]] = {}
-                for index, fitted in run_parallel_search(
+                seed_records: dict[int, dict[str, Any]] = {}
+                run_parallel_search(
                     seed_tasks,
                     workers=execution.workers,
                     run_task=run_temporal_seed_task,
-                ):
-                    seed = int(cast(int, fitted["seed"]))
-                    fits_by_config.setdefault(index // len(REQUIRED_SEEDS), {})[seed] = fitted
-                for config_index, config_payload in unadopted:
-                    ensemble_result = _ensemble_from_seed_fits(
-                        fits_by_config.get(config_index, {}), config_payload, validation
-                    )
-                    completed[config_index] = ensemble_result
-                    resume.persist(
-                        config_index, config_payload, ensemble_result, budget=torch_budget
-                    )
+                    on_result=_seed_result_collector(
+                        resume, configs, torch_budget, validation, fits_by_config, seed_records
+                    ),
+                )
+                for config_index, _config in unadopted:
+                    completed[config_index] = seed_records[config_index]
             search_results = _ordered_search_results(configs, completed)
             for config_index, _ in unadopted:
                 result = search_results[config_index]

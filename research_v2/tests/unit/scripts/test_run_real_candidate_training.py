@@ -1032,7 +1032,79 @@ def test_both_torch_families_drop_to_seed_granularity_on_a_narrow_grid() -> None
     assert source.count("_search_granularity(len(unadopted), execution.workers)") == 2
     assert source.count('if granularity == "config":') == 2
     assert source.count("index=config_index * len(REQUIRED_SEEDS) + slot,") == 2
-    assert source.count("index // len(REQUIRED_SEEDS)") == 2
+    assert source.count("index // len(REQUIRED_SEEDS)") == 1
+
+
+def test_both_parallel_search_branches_persist_incrementally() -> None:
+    """Wiring: without on_result, one dead worker costs the whole round's finished fits."""
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count("on_result=_record_persister(resume, configs, torch_budget),") == 2
+    assert source.count("on_result=_seed_result_collector(") == 2
+
+
+class _RecordingResume:
+    def __init__(self) -> None:
+        self.calls: list[tuple[Any, ...]] = []
+
+    def persist(self, index: int, config: Any, result: Any, budget: Any) -> None:
+        self.calls.append((index, config, result, budget))
+
+
+def test_the_config_level_persister_writes_one_record_per_result() -> None:
+    resume = _RecordingResume()
+    configs = [{"hidden_dim": 64}, {"hidden_dim": 128}]
+    persist = MODULE._record_persister(resume, configs, {"max_epochs": 100})
+    result = {"config": configs[1], "ensemble_validation_rank_ic": 0.2}
+    persist(1, result)
+    assert resume.calls == [(1, configs[1], result, {"max_epochs": 100})]
+
+
+def test_the_seed_collector_persists_only_when_a_configuration_is_whole() -> None:
+    """A record is a three-seed ensemble, so no single seed result may write one on its own."""
+    resume = _RecordingResume()
+    fits: dict[int, dict[int, Any]] = {}
+    records: dict[int, dict[str, Any]] = {}
+    configs = [{"hidden_dim": 64, "learning_rate": 0.003}]
+    collect = MODULE._seed_result_collector(
+        resume, configs, {"max_epochs": 100}, LABELS, fits, records
+    )
+    seeds = list(REQUIRED_SEEDS)
+    fake = _seed_fits({seeds[0]: 0.081, seeds[1]: 0.094, seeds[2]: 0.077})
+    for slot, seed in enumerate(seeds[:-1]):
+        collect(slot, fake[seed])
+        assert resume.calls == []
+        assert records == {}
+    collect(len(seeds) - 1, fake[seeds[-1]])
+    assert len(resume.calls) == 1
+    index, config, record, budget = resume.calls[0]
+    assert index == 0
+    assert config == configs[0]
+    assert budget == {"max_epochs": 100}
+    assert record["worst_seed"] == seeds[2]
+    assert records[0] is record
+
+
+def test_the_seed_collector_separates_interleaved_configurations() -> None:
+    """Two configurations' seeds arrive interleaved; each record must hold only its own three."""
+    resume = _RecordingResume()
+    fits: dict[int, dict[int, Any]] = {}
+    records: dict[int, dict[str, Any]] = {}
+    configs = [{"hidden_dim": 64}, {"hidden_dim": 128}]
+    collect = MODULE._seed_result_collector(
+        resume, configs, {"max_epochs": 100}, LABELS, fits, records
+    )
+    seeds = list(REQUIRED_SEEDS)
+    first = _seed_fits({seeds[0]: 0.081, seeds[1]: 0.094, seeds[2]: 0.077})
+    second = _seed_fits({seeds[0]: 0.05, seeds[1]: 0.06, seeds[2]: 0.04})
+    width = len(seeds)
+    for slot, seed in enumerate(seeds):
+        collect(1 * width + slot, second[seed])
+        collect(0 * width + slot, first[seed])
+    assert len(resume.calls) == 2
+    assert set(records) == {0, 1}
+    assert [call[1] for call in sorted(resume.calls, key=lambda item: item[0])] == configs
+    assert records[0]["worst_seed"] == seeds[2]
+    assert records[1]["worst_seed"] == seeds[2]
 
 
 def test_a_fully_adopted_fold_does_not_crash_the_granularity_choice() -> None:
@@ -1182,9 +1254,9 @@ def test_all_three_search_loops_consult_the_resume_handle() -> None:
     # LightGBM loop, serial_result in the two torch serial loops, ensemble_result in the
     # seed-level branches), and what matters is that every path persists exactly once.
     assert source.count("resume.persist(config_index, config_payload,") == 3
-    # Seven persist sites: LightGBM serial, and for each torch family the config-level parallel
-    # branch, the seed-level parallel branch and the serial loop.
-    assert source.count("resume.persist(") == 7
+    # Five persist sites: the three serial loops, plus the two incremental callbacks the parallel
+    # branches hand to the scheduler so a mid-round failure cannot discard finished work.
+    assert source.count("resume.persist(") == 5
     assert "early_stopping_patience=10" not in source
 
 
