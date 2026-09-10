@@ -7,7 +7,9 @@ alongside the happy path, including exactness -- there is no float tolerance to 
 
 from __future__ import annotations
 
+import importlib.util
 import json
+import sys
 from dataclasses import asdict
 from datetime import date
 from pathlib import Path
@@ -775,41 +777,127 @@ def test_the_temporal_row_set_is_the_labelled_subset(tmp_path: Path) -> None:
     assert not scores["ts_code"].isin(unlabelled_codes).any()
 
 
-def test_scoring_is_bitwise_stable_across_thread_counts(tmp_path: Path) -> None:
-    """Why the audit may compare exactly without pinning threads.
+# ---------------------------------------------------------------------------------------------
+# Scoring under the thread count the run trained under. A forward pass on an UNTRAINED model looked
+# bitwise identical across thread counts, and a test asserting that was kept here until a real
+# trained bundle disproved it: auditing m1_v2's F1 (trained at 52 threads) from a process pinned to
+# 1 differs by 4.9e-05 over 803,572 rows, and F2 by 4.7e-05 over 881,863. Those are rank inversions
+# between near-tied stocks, not rounding. So the audit pins itself to the count the run recorded,
+# and these tests pin that behaviour instead of the false generalisation.
+# ---------------------------------------------------------------------------------------------
 
-    Training is NOT thread-stable -- the plan measured three distinct checkpoint digests at 1/4/8
-    threads, which is why the search records bind the count. A forward pass is, so an audit run on a
-    host with a different core count still reproduces a run trained elsewhere. Measured rather than
-    assumed, because a torch upgrade could change it and the failure would look like tampering.
-    """
-    store, model_id, state_hash = _real_bundle(tmp_path)
-    loaded = load_bundle_for_evaluation(
-        store,
-        model_id,
-        expected_dataset_id="ds-1",
-        expected_feature_order=_TWO_FACTORS,
-        expected_preprocessor_hash=state_hash,
-        device=torch.device("cpu"),
+
+def _write_checkpoints(tmp_path: Path, counts: list[object]) -> None:
+    for index, count in enumerate(counts):
+        directory = tmp_path / "checkpoints" / f"m1-f1-final-{index}"
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / "manifest.json").write_text(
+            json.dumps({"metadata": {"torch_intraop_threads": count}}), encoding="utf-8"
+        )
+
+
+def test_recorded_run_threads_reads_what_the_run_itself_wrote(tmp_path: Path) -> None:
+    _write_checkpoints(tmp_path, [52, 52, 52])
+    assert reproduction.recorded_run_threads(tmp_path) == 52
+    _write_checkpoints(tmp_path / "other", [1, 1])
+    assert reproduction.recorded_run_threads(tmp_path / "other") == 1
+
+
+def test_a_workspace_without_checkpoints_records_no_thread_count(tmp_path: Path) -> None:
+    assert reproduction.recorded_run_threads(tmp_path) is None
+    (tmp_path / "checkpoints" / "m1-f1-final-1").mkdir(parents=True)
+    assert reproduction.recorded_run_threads(tmp_path) is None
+
+
+def test_a_workspace_mixing_lineages_is_refused_rather_than_audited(tmp_path: Path) -> None:
+    """One run, one lineage: a mixture means the workspace is not one run and picking a count
+    would silently decide which half of it gets audited."""
+    _write_checkpoints(tmp_path, [52, 1])
+    with pytest.raises(ReproductionError, match="mixes execution lineages"):
+        reproduction.recorded_run_threads(tmp_path)
+
+
+@pytest.mark.parametrize("count", [None, "52", 0, -1, True])
+def test_a_manifest_without_a_usable_count_is_skipped(tmp_path: Path, count: object) -> None:
+    _write_checkpoints(tmp_path, [count, 52])
+    assert reproduction.recorded_run_threads(tmp_path) == 52
+
+
+def test_a_corrupt_manifest_is_skipped_not_fatal(tmp_path: Path) -> None:
+    directory = tmp_path / "checkpoints" / "m1-f1-final-1"
+    directory.mkdir(parents=True)
+    (directory / "manifest.json").write_text("not json", encoding="utf-8")
+    _write_checkpoints(tmp_path, [52])
+    assert reproduction.recorded_run_threads(tmp_path) == 52
+
+
+AUDIT_SCRIPT = (
+    Path(__file__).resolve().parents[3] / "scripts" / "verify_prediction_reproduction.py"
+)
+
+
+def _load_audit_module() -> Any:
+    spec = importlib.util.spec_from_file_location("verify_prediction_reproduction", AUDIT_SCRIPT)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["verify_prediction_reproduction"] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+AUDIT = _load_audit_module()
+
+
+def test_the_audit_pins_itself_to_the_count_the_run_recorded(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The whole fix: a 1-thread run must be audited at 1 thread, not at the auditing host's."""
+    _write_checkpoints(tmp_path, [1, 1])
+    pinned: list[int] = []
+    monkeypatch.setattr(AUDIT, "configure_torch_threads", pinned.append)
+    monkeypatch.setattr(AUDIT, "audit_runtime_threads", lambda: 52)
+    args = AUDIT.parse_args(["--workspace", str(tmp_path), "--fold", "F1"])
+    assert AUDIT._pin_scoring_threads(args) == 1
+    assert pinned == [1]
+
+
+def test_an_explicit_count_overrides_the_recorded_one(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_checkpoints(tmp_path, [52])
+    pinned: list[int] = []
+    monkeypatch.setattr(AUDIT, "configure_torch_threads", pinned.append)
+    monkeypatch.setattr(AUDIT, "audit_runtime_threads", lambda: 52)
+    args = AUDIT.parse_args(
+        ["--workspace", str(tmp_path), "--fold", "F1", "--torch-threads", "4"]
     )
-    assert loaded.preprocessor is not None
-    batches = build_static_training_batches(
-        prepare_frame(
-            _real_frame().assign(raw_return_5d=0.0), loaded.preprocessor, _TWO_FACTORS
-        ),
-        factor_order=_TWO_FACTORS,
-    )
-    day = _TWO_DAYS[0]
-    original = torch.get_num_threads()
-    try:
-        runs = []
-        for threads in (1, max(2, min(original, 8))):
-            torch.set_num_threads(threads)
-            scored = score_batch(loaded.models[0], batches[day])
-            runs.append(scored.sort_values("ts_code").to_numpy())
-        assert np.array_equal(runs[0], runs[1])
-    finally:
-        torch.set_num_threads(original)
+    assert AUDIT._pin_scoring_threads(args) == 4
+    assert pinned == [4]
+
+
+def test_matching_the_host_default_does_not_reconfigure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Inter-op threads can only be set once per process, so do not touch them needlessly."""
+    _write_checkpoints(tmp_path, [52])
+
+    def refuse(count: int) -> None:
+        raise AssertionError("must not reconfigure when the host already matches")
+
+    monkeypatch.setattr(AUDIT, "configure_torch_threads", refuse)
+    monkeypatch.setattr(AUDIT, "audit_runtime_threads", lambda: 52)
+    args = AUDIT.parse_args(["--workspace", str(tmp_path), "--fold", "F1"])
+    assert AUDIT._pin_scoring_threads(args) == 52
+
+
+def test_no_recorded_count_falls_back_to_the_host_default_and_says_so(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The LightGBM workspaces record no torch count; that is a fallback, not an error."""
+    monkeypatch.setattr(AUDIT, "audit_runtime_threads", lambda: 52)
+    args = AUDIT.parse_args(["--workspace", str(tmp_path), "--fold", "F1"])
+    assert AUDIT._pin_scoring_threads(args) is None
+    assert "host default of 52" in capsys.readouterr().out
 
 
 # ---------------------------------------------------------------------------------------------

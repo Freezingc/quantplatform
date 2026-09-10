@@ -30,11 +30,14 @@ families (M1 RESIDUAL_MLP, M3 SET_ATTENTION) score a frozen frame directly; the 
 panel, so they rebuild it from the same published splits through the one library function the driver
 itself calls. An audit that rebuilt the panel its own way would only ever be agreeing with itself.
 
-Exact equality is safe here without pinning threads, and that is measured rather than assumed: a
-forward pass is bitwise identical at 1, 4, 16 and 52 intra-op threads, so an audit on a host with a
-different core count still reproduces. TRAINING is not thread-stable -- three distinct checkpoint
-digests at 1/4/8 threads -- which is why the search records bind the thread count and this module
-does not have to.
+Exact equality requires the audit to score under the thread count the run was TRAINED under, and
+that was learned the hard way. An untrained model's forward pass looked bitwise identical at
+1, 4, 16 and 52 intra-op threads, which suggested thread count did not matter here; a real trained
+bundle says otherwise -- auditing a 52-thread fold at 1 thread differs by 4.9e-05 across 803,572
+rows, which is rank inversions between near-tied stocks rather than rounding. So
+``recorded_run_threads`` reads the count the run's own checkpoint manifests record and the audit
+process pins itself to it before scoring. An audit that ran at the host default would accuse an
+honest run, and on a host whose core count differs from the producer's it would accuse every run.
 """
 
 from __future__ import annotations
@@ -68,6 +71,7 @@ from research_v2.registry.promotion_evidence import (
     walk_forward_model_id,
 )
 from research_v2.training.model_bundle import ModelArtifactBundleStore
+from research_v2.training.seeds import describe_runtime_environment
 from research_v2.training.static_batches import build_static_training_batches
 from research_v2.training.temporal_search import TemporalFoldSpec, temporal_test_batches
 
@@ -358,6 +362,46 @@ def _model_card(store: ModelArtifactBundleStore, model_artifact_id: str) -> Mapp
     return card
 
 
+def recorded_run_threads(workspace: Path) -> int | None:
+    """The intra-op thread count this run's fits recorded, or None if it recorded none.
+
+    Read from the run's own checkpoint manifests, which the training runner writes for every
+    checkpoint. Two refusals rather than a guess: a workspace whose checkpoints record more than one
+    count mixes lineages and cannot be audited as one run, and a manifest that records the field as
+    something other than a positive integer is skipped rather than trusted.
+
+    Callers that audit through this module directly must pin the process to the returned value
+    before scoring -- ``scripts/verify_prediction_reproduction.py`` does, at startup, so that both
+    thread pools are set before any parallel work has begun.
+    """
+    root = workspace / "checkpoints"
+    counts: set[int] = set()
+    if not root.exists():
+        return None
+    for manifest in sorted(root.glob("*/manifest.json")):
+        try:
+            document = json.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        metadata = document.get("metadata") if isinstance(document, dict) else None
+        threads = metadata.get("torch_intraop_threads") if isinstance(metadata, dict) else None
+        if isinstance(threads, int) and not isinstance(threads, bool) and threads > 0:
+            counts.add(threads)
+    if not counts:
+        return None
+    if len(counts) > 1:
+        raise ReproductionError(
+            f"this workspace's checkpoints record {len(counts)} different torch thread counts "
+            f"({sorted(counts)}), so it mixes execution lineages and cannot be audited as one run"
+        )
+    return next(iter(counts))
+
+
+def audit_runtime_threads() -> int:
+    """The intra-op thread count this process is currently scoring under, for the audit record."""
+    return int(describe_runtime_environment().torch_intraop_threads)
+
+
 def _family_of(card: Mapping[str, object], fold_id: str) -> str:
     family = card.get("family")
     if not isinstance(family, str) or not family:
@@ -588,6 +632,8 @@ __all__ = [
     "FoldReproduction",
     "ReproductionError",
     "RunIdentity",
+    "audit_runtime_threads",
+    "recorded_run_threads",
     "verify_candidate_predictions_reproduce",
     "verify_fold_predictions_reproduce",
 ]
