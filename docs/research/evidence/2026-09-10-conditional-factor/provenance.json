@@ -1,0 +1,49 @@
+{
+  "generated_on": "2026-09-10",
+  "generated_from_machine": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+  "repository_head_at_review": "e3769d1",
+  "files": [
+    {
+      "repo_path": "docs/research/evidence/2026-09-10-conditional-factor/experiment/rankreg_subsets.json",
+      "original_machine_path": "/tmp/es_metric_diag/rankreg_subsets.json",
+      "sha256": "10618f69af351a1a81e8e2c8014b4d9ab864248d5a7093d8449c6b205ebcbe22",
+      "bytes": 4016
+    },
+    {
+      "repo_path": "docs/research/evidence/2026-09-10-conditional-factor/experiment/run_rankreg_subsets.py",
+      "original_machine_path": "/tmp/es_metric_diag/run_rankreg_subsets.py",
+      "sha256": "41931618246abfe050437fafa93f896faba757615992ea9ab90b51790b8ee560",
+      "bytes": 6872
+    },
+    {
+      "repo_path": "docs/research/evidence/2026-09-10-conditional-factor/experiment/run_config_robustness.py",
+      "original_machine_path": "/tmp/es_metric_diag/run_config_robustness.py",
+      "sha256": "da6b492537129d0c1c8109e4a514417f6b2296d3f7d27da1e2c84cfb8d0f7376",
+      "bytes": 7666
+    },
+    {
+      "repo_path": "docs/research/evidence/2026-09-10-conditional-factor/experiment/ablation_result.json",
+      "original_machine_path": "/tmp/es_metric_diag/ablation_result.json",
+      "sha256": "5b71dc37cf5130dd43e8b3a8be695d098438d95e3155f38252b4943ba1baf298",
+      "bytes": 4588
+    },
+    {
+      "repo_path": "docs/research/evidence/2026-09-10-conditional-factor/experiment/carrier_result.json",
+      "original_machine_path": "/tmp/es_metric_diag/carrier_result.json",
+      "sha256": "e591407f7efb75baef1ba2c4779cde66a919caae3ef16a503bf9d937c9a3c471",
+      "bytes": 7291
+    },
+    {
+      "repo_path": "docs/research/evidence/2026-09-10-conditional-factor/production/m0r_v2_report.json",
+      "original_machine_path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/report.json",
+      "sha256": "d16b5708c4cdc96130080e17ea6f6d3e2b2ae48e5dad23c88cf0d07591a0701a",
+      "bytes": 5723
+    },
+    {
+      "repo_path": "docs/research/evidence/2026-09-10-conditional-factor/literature/url_checks.json",
+      "original_machine_path": "/tmp/quant_direction_review_20260910/final_link_checks.json",
+      "sha256": "ba5a9a971722a0a6f15897d51df88f9d492c74812e99843e1b4e7f592c7d7a87",
+      "bytes": 1795
+    }
+  ]
+}

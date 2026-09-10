@@ -1,0 +1,86 @@
+[
+  {
+    "id": "alphaforge",
+    "url": "https://arxiv.org/html/2406.18394v5",
+    "http_status": 200,
+    "bytes": 203221
+  },
+  {
+    "id": "master",
+    "url": "https://arxiv.org/html/2312.15235v1",
+    "http_status": 200,
+    "bytes": 199573
+  },
+  {
+    "id": "tra",
+    "url": "https://arxiv.org/html/2106.12950v2",
+    "http_status": 200,
+    "bytes": 237658
+  },
+  {
+    "id": "doubleadapt",
+    "url": "https://arxiv.org/html/2306.09862v3",
+    "http_status": 200,
+    "bytes": 455051
+  },
+  {
+    "id": "neumiss",
+    "url": "https://arxiv.org/html/2007.01627v4",
+    "http_status": 200,
+    "bytes": 673323
+  },
+  {
+    "id": "imputation",
+    "url": "https://arxiv.org/html/2106.00311v2",
+    "http_status": 200,
+    "bytes": 624091
+  },
+  {
+    "id": "stablemiss",
+    "url": "https://arxiv.org/html/2305.11197v1",
+    "http_status": 200,
+    "bytes": 477928
+  },
+  {
+    "id": "robust_missing",
+    "url": "https://arxiv.org/html/2406.16484v1",
+    "http_status": 200,
+    "bytes": 478019
+  },
+  {
+    "id": "mirrams",
+    "url": "https://arxiv.org/html/2507.08280v2",
+    "http_status": 200,
+    "bytes": 1040974
+  },
+  {
+    "id": "dams",
+    "url": "https://arxiv.org/html/2211.02093v3",
+    "http_status": 200,
+    "bytes": 954002
+  },
+  {
+    "id": "gaillard2014",
+    "url": "https://proceedings.mlr.press/v35/gaillard14.html",
+    "http_status": 200,
+    "bytes": 15895
+  },
+  {
+    "id": "temperature",
+    "url": "https://arxiv.org/html/2506.15216v2",
+    "http_status": 200,
+    "bytes": 375231
+  },
+  {
+    "id": "backtest",
+    "url": "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+    "http_status": 200,
+    "bytes": 1145522
+  },
+  {
+    "id": "alphag_opd",
+    "url": "https://arxiv.org/abs/2608.01303",
+    "http_status": 200,
+    "bytes": 42966
+  }
+]

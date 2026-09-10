@@ -1,0 +1,132 @@
+{
+  "review_date": "2026-09-10",
+  "note": "Papers were read from these exact versioned URLs. Full third-party PDF/HTML copies were deliberately NOT vendored into the repository (copyright and repo size); re-fetch the URL and compare retrieved_content_sha256 to confirm the same text was reviewed.",
+  "papers": [
+    {
+      "id": "alphaforge",
+      "title": "AlphaForge: A Framework to Mine and Dynamically Combine Formulaic Alpha Factors",
+      "url": "https://arxiv.org/html/2406.18394v5",
+      "publication_status": "AAAI 2025; author page confirms",
+      "review_depth": "Alpha Combination and experiments",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "a675e8ba774b8110bf596de5f03bea9a8214b38a62e488243d47b50dda078488"
+    },
+    {
+      "id": "master",
+      "title": "MASTER: Market-Guided Stock Transformer for Stock Price Forecasting",
+      "url": "https://arxiv.org/html/2312.15235v1",
+      "publication_status": "AAAI 2024; author page confirms",
+      "review_depth": "Market-Guided Gating and experiments",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "cf3f1af4887d3f7ef935463cd1172df2813487671cd472025a2a9afb9fca183e"
+    },
+    {
+      "id": "tra",
+      "title": "Learning Multiple Stock Trading Patterns with Temporal Routing Adaptor and Optimal Transport",
+      "url": "https://arxiv.org/html/2106.12950v2",
+      "publication_status": "KDD 2021; author page confirms",
+      "review_depth": "Sections 5.1-5.3",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "3040848adb5163b25ae9024547dfd2bc996dae2f526af55e0f84459825d620cb"
+    },
+    {
+      "id": "doubleadapt",
+      "title": "DoubleAdapt: A Meta-learning Approach to Incremental Learning for Stock Trend Forecasting",
+      "url": "https://arxiv.org/html/2306.09862v3",
+      "publication_status": "KDD 2023; author page confirms",
+      "review_depth": "Sections 2-5, 6.1",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "19f27c34a38780c016d94bbf0ddab3f74dca7101991f2f78c2d40a8e973de9ed"
+    },
+    {
+      "id": "neumiss",
+      "title": "NeuMiss networks: differentiable programming for supervised learning with missing values",
+      "url": "https://arxiv.org/html/2007.01627v4",
+      "publication_status": "NeurIPS 2020; arXiv journal reference confirms",
+      "review_depth": "Sections 2, 3.3-3.4",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "b953cf313b9ad86ea1954a57859901548e80ed8d89d426cbb313f71a84e24483"
+    },
+    {
+      "id": "imputation",
+      "title": "What's a good imputation to predict with missing values?",
+      "url": "https://arxiv.org/html/2106.00311v2",
+      "publication_status": "2021 author manuscript; final venue not independently checked",
+      "review_depth": "Sections 3.2-4",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "3e8c92ea8ef61027fab95843fc4fb53b5f1ad2a5fe5fd4610523150d10e1c6a2"
+    },
+    {
+      "id": "stablemiss",
+      "title": "Prediction with Incomplete Data under Agnostic Mask Distribution Shift",
+      "url": "https://arxiv.org/html/2305.11197v1",
+      "publication_status": "2023 author manuscript; final venue not independently checked",
+      "review_depth": "Sections 3.1-4",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "a70f64092c3d425385ed9689a76832134ab1519773a5d031e40f2403b583a73e"
+    },
+    {
+      "id": "robust_missing",
+      "title": "Robust prediction under missingness shifts",
+      "url": "https://arxiv.org/html/2406.16484v1",
+      "publication_status": "2024 author manuscript; final venue not independently checked",
+      "review_depth": "Sections 3-5",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "0c0b863872fb660c3e148113b24b75a7c65be671de940f743147a857843b1535"
+    },
+    {
+      "id": "mirrams",
+      "title": "MIRRAMS: Learning Robust Tabular Models under Unseen Missingness Shifts",
+      "url": "https://arxiv.org/html/2507.08280v2",
+      "publication_status": "2025 author manuscript; final venue not independently checked",
+      "review_depth": "Notations and Definitions, MI robustness conditions, loss derivation",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "d78e785325bc9169633de1cb2e56727b14a73ab7921b59440597763ca29a8824"
+    },
+    {
+      "id": "dams",
+      "title": "Domain Adaptation under Missingness Shift",
+      "url": "https://arxiv.org/html/2211.02093v3",
+      "publication_status": "2022 initial manuscript, 2023 revision; final venue not independently checked",
+      "review_depth": "Problem setup and statements in Sections 3-6",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "3e956eb3fe8b715dedb32174164c523f6cdc696f010091276417cd5f423079d5"
+    },
+    {
+      "id": "gaillard2014",
+      "title": "A second-order bound with excess losses",
+      "url": "https://proceedings.mlr.press/v35/gaillard14.html",
+      "publication_status": "COLT 2014; publisher confirms",
+      "review_depth": "PDF Sections 2 and 4; no independent proof verification",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "df33026c53290cecf5ba423bbbe36397163816b6ff2e155e7e1ca8438a63e33e"
+    },
+    {
+      "id": "temperature",
+      "title": "Contribution of expert aggregation to temperature prediction Part II: second-order bounds with sleeping experts",
+      "url": "https://arxiv.org/html/2506.15216v2",
+      "publication_status": "2025 initial manuscript, 2026-07-13 v2; final venue not independently checked",
+      "review_depth": "Sections 2-4, especially 3.4 and 4.1",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "ff46c2ba650d665cb8425f560767612bd73cbb6a068ca46b3c7320c21d278fc7"
+    },
+    {
+      "id": "backtest",
+      "title": "The Probability of Backtest Overfitting",
+      "url": "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+      "publication_status": "Author-hosted manuscript revised February 2015",
+      "review_depth": "Introduction and Section 2",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "d8bfbadaaedb430d9dec929646d92f3580fdf18238f34121ae7738fa1c69a63d"
+    },
+    {
+      "id": "alphag_opd",
+      "title": "AlphaG-OPD: Reliability-Gated Sibling Counterfactuals for On-Policy Distillation in Symbolic Alpha Factor Discovery",
+      "url": "https://arxiv.org/abs/2608.01303",
+      "publication_status": "2026-08-02 preprint; final venue not independently checked",
+      "review_depth": "Abstract and metadata only",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "703ac2391db392c2e6d2399bf45155f3a113d1856d98b5e156231aee7f7073f5"
+    }
+  ]
+}
