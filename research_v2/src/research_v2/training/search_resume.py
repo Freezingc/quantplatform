@@ -151,8 +151,14 @@ class SearchResume:
         # later run reads as a result. A truncated document would fail to parse and be refused, but
         # atomicity means the reader never sees one at all.
         temporary = path.with_name(path.name + ".partial")
+        # NOT sort_keys: the stored config has to come back in the grid's own key order, because the
+        # report's best_config is this dict and the driver writes the report unsorted. Sorting here
+        # is invisible to every comparison -- Python dict equality ignores order, and the record's
+        # filename is bound to config_hash, which sorts separately -- but it made a resumed run's
+        # report differ from a fresh run's at the first config key while being semantically
+        # identical. Byte-identity is the acceptance criterion, so the order is part of the payload.
         temporary.write_text(
-            json.dumps(document, sort_keys=True, indent=2, ensure_ascii=True), encoding="utf-8"
+            json.dumps(document, indent=2, ensure_ascii=True), encoding="utf-8"
         )
         temporary.replace(path)
         return path
@@ -243,7 +249,8 @@ def _validated_result(result: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(worst, int) or isinstance(worst, bool) or worst not in REQUIRED_SEEDS:
         raise ValueError("worst_seed must be one of the required seeds")
     return {
-        "config": _json_safe(dict(config)),
+        # Insertion order preserved on purpose; see persist. Comparison stays order-insensitive.
+        "config": dict(config),
         "ensemble_validation_rank_ic": ensemble,
         "seed_validation_rank_ic": seed_map,
         "worst_seed": worst,

@@ -97,6 +97,36 @@ def test_json_stringifies_integer_seed_keys_and_the_restore_puts_them_back(
     assert isinstance(record["worst_seed"], int)
 
 
+def test_the_record_preserves_the_config_key_order(tmp_path: Path) -> None:
+    """The report's best_config IS this dict, so the record must not reorder it.
+
+    Sorting the stored document is invisible to every comparison here -- dict equality ignores
+    order -- and the unit suite passed with it. But the driver writes its report unsorted, so a
+    resumed run emitted its config alphabetised while a fresh run emitted grid order: two reports
+    that were semantically identical and differed at byte 230. Found by the end-to-end check on a
+    real M0R workspace, not by these tests, which is why the byte-level claim is pinned here now.
+    """
+    ordered = {
+        "num_leaves": 15,
+        "max_depth": 4,
+        "learning_rate": 0.05,
+        "feature_fraction": 0.85,
+    }
+    _resume(tmp_path).persist(0, ordered, dict(RESULT, config=ordered), budget=BUDGET)
+    record = _adopt(tmp_path, config=ordered).record
+    assert record is not None
+    assert list(record["config"]) == list(ordered)
+    assert json.loads(json.dumps(record["config"])) == ordered
+
+
+def test_the_record_path_is_canonical_in_the_config_not_in_its_key_order(tmp_path: Path) -> None:
+    """Dropping sort_keys from the document must not destabilise which record a config maps to."""
+    resume = _resume(tmp_path)
+    one = {"num_leaves": 15, "max_depth": 4}
+    other = {"max_depth": 4, "num_leaves": 15}
+    assert resume.record_path(0, one) == resume.record_path(0, other)
+
+
 def test_a_disabled_run_still_persists_but_never_adopts(tmp_path: Path) -> None:
     """Recording is unconditional; adopting is opt-in, so default behaviour cannot change."""
     path = _persisted(tmp_path, enabled=False)
