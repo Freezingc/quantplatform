@@ -27,9 +27,20 @@ the winning config). A temporal fold's TEST scores come from a 20-day window pan
 rebuilds that panel from the same three published splits through the one library function the
 driver itself calls.
 
-Exact equality needs no thread pinning, and that is measured: a forward pass is bitwise identical at
-1, 4, 16 and 52 intra-op threads. Training is not thread-stable, which is why the search records
-bind the count and this audit does not have to.
+Exact equality needs the thread count, and that is measured rather than assumed. On a trained
+production bundle (m1_v2 F1, RESIDUAL_MLP, 803,572 rows) a forward pass is bitwise identical at 1,
+2, 4 and 8 intra-op threads but differs at 16 (4.805844e-05) and at 52 (4.923683e-05) -- and 16 and
+52 differ from each other too. The threshold sits between 8 and 16; four levels at exactly 0 rules
+out error growing continuously with the count. The magnitude is rank inversions between near-tied
+stocks, not last-bit rounding. Past that threshold there is no single correct score, only the score
+the run computed at the count it recorded, so this audit pins itself to that count -- read from the
+run's own checkpoint manifests by ``recorded_run_threads``, which refuses a workspace that mixes
+more than one -- and reports ``scored_under_torch_threads``. Scoring at the host default instead
+reports a difference that is not a defect. An earlier revision of this docstring claimed the
+opposite; that measurement was taken on an UNTRAINED model and the test asserting it has been
+deleted. Why an untrained model is clean is not established -- what is established is the contrast:
+clean untrained, not clean trained. Training is not thread-stable either, which is why the search
+records bind the count as well.
 
 Expect minutes, not seconds: each fold's dataset split is re-hashed in full before it is scored.
 """
