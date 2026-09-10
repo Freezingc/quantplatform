@@ -15,6 +15,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import pytest
 import torch
@@ -762,6 +763,93 @@ def test_parallel_workers_require_explicit_torch_thread_count() -> None:
         MODULE._parallel_execution(args)
 
 
+def _family_args(family: str, *extra: str) -> argparse.Namespace:
+    return MODULE.parse_args(
+        ["--family", family, "--smoke", "--report", "/tmp/r.json", *extra]
+    )
+
+
+@pytest.mark.parametrize("family", ["M1", "M2", "M3"])
+def test_the_torch_families_may_search_in_parallel(family: str) -> None:
+    execution = MODULE._parallel_execution(
+        _family_args(family, "--parallel-workers", "8", "--torch-threads", "1")
+    )
+    assert execution.workers == 8
+    assert execution.torch_threads == 1
+
+
+@pytest.mark.parametrize("family", ["M0", "M0R"])
+def test_the_lightgbm_carriers_stay_serial(family: str) -> None:
+    """Their fits are minutes, not hours, and they already pin num_threads per fit."""
+    with pytest.raises(SystemExit, match="M1, M2 and M3"):
+        MODULE._parallel_execution(
+            _family_args(family, "--parallel-workers", "8", "--torch-threads", "1")
+        )
+
+
+def test_a_serial_invocation_keeps_the_host_observed_runtime() -> None:
+    """No --torch-threads means no pinning, so a legacy run's numerics are untouched."""
+    execution = MODULE._parallel_execution(_family_args("M1"))
+    assert execution.workers == 1
+    assert execution.torch_threads is None
+
+
+def test_the_temporal_budget_carries_the_window_contract() -> None:
+    """A 20-day window and a 10-day one are different models, so the record has to bind it."""
+    from research_v2.training import temporal_search
+
+    budget = MODULE._temporal_search_budget(100)
+    assert budget == {
+        "max_epochs": 100,
+        "early_stopping_patience": MODULE.TORCH_EARLY_STOPPING_PATIENCE,
+        "history_length": temporal_search.HISTORY_LENGTH,
+        "minimum_valid_history_length": temporal_search.MINIMUM_VALID_HISTORY_LENGTH,
+    }
+    assert budget["history_length"] == 20
+    assert budget["minimum_valid_history_length"] == 15
+
+
+def test_the_driver_panel_builder_uses_the_same_window_as_the_worker() -> None:
+    """One definition of the window, or the serial loop and the spawned worker select on
+    different models while both call it the same search."""
+    from research_v2.training.temporal_batches import build_temporal_training_batches
+    from research_v2.training.temporal_search import temporal_panel_batches
+
+    rng = np.random.default_rng(5)
+    days = [date(2025, 1, day) for day in range(1, 31)]
+    rows = [
+        {
+            "signal_date": day,
+            "ts_code": f"S{stock:03d}",
+            "raw_return_5d": float(rng.standard_normal()) * 0.01,
+            "label_valid": True,
+            "f00": float(rng.standard_normal()),
+        }
+        for day in days
+        for stock in range(32)
+    ]
+    frame = pd.DataFrame(rows)
+    allowed = set(days)
+    driver_built = MODULE._temporal_panel_batches(frame, ("f00",), allowed)
+    library_built = temporal_panel_batches(frame, ("f00",), allowed)
+    direct = build_temporal_training_batches(
+        frame, factor_order=("f00",), history_length=20, minimum_valid_history_length=15
+    )
+    assert set(driver_built) == set(library_built) == set(direct)
+    assert set(driver_built) == {day for day in days if day >= date(2025, 1, 15)}
+    for day in driver_built:
+        assert torch.equal(
+            driver_built[day].inputs.features, direct[day].inputs.features
+        )
+
+
+def test_the_m2_search_routes_through_the_temporal_worker() -> None:
+    """Wiring: an unrouted M2 stays a 161-day serial search whatever the flag says."""
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count("run_task=run_temporal_config_task,") == 1
+    assert source.count("fold_spec = TemporalFoldSpec(") == 1
+    assert source.count("torch_budget = _temporal_search_budget(max_epochs)") == 1
+    assert "history_length=20," not in source
 def test_ordered_search_results_restore_grid_order_after_parallel_completion() -> None:
     """Selecting directly from completion order would make ties timing-dependent."""
     first = {"config": {"hidden_dim": 64}, "ensemble_validation_rank_ic": 0.1}
@@ -863,8 +951,8 @@ def test_all_three_search_loops_consult_the_resume_handle() -> None:
     """Wiring check: a handle built but never asked would leave the risk exactly where it was."""
     source = SCRIPT_PATH.read_text(encoding="utf-8")
     assert source.count("resume = _search_resume(") == 3
-    # Three serial loops, one M1/M3 parallel preflight, and one fold adoption rebuild.
-    assert source.count("resume.adopt(config_index, config_payload") == 5
+    # Three serial loops, the M1/M3 and M2 parallel preflights, and one fold adoption rebuild.
+    assert source.count("resume.adopt(config_index, config_payload") == 6
     assert source.count("resume.persist(config_index, config_payload, result") == 3
     assert "early_stopping_patience=10" not in source
 

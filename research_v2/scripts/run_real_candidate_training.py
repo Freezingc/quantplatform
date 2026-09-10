@@ -110,6 +110,13 @@ from research_v2.training.search_resume import SearchResume, torch_runtime_bindi
 from research_v2.training.seeds import configure_reproducibility, configure_torch_threads
 from research_v2.training.static_batches import build_static_training_batches
 from research_v2.training.temporal_batches import build_temporal_training_batches
+from research_v2.training.temporal_search import (
+    HISTORY_LENGTH,
+    MINIMUM_VALID_HISTORY_LENGTH,
+    TemporalConfigTask,
+    TemporalFoldSpec,
+    run_temporal_config_task,
+)
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
 ORDINARY_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
@@ -231,8 +238,11 @@ def _parallel_execution(args: argparse.Namespace) -> _ParallelExecution:
         raise SystemExit("torch-threads must be a positive integer")
     if workers > 1 and threads is None:
         raise SystemExit("parallel-workers above one requires explicit --torch-threads")
-    if workers > 1 and args.family not in {"M1", "M3"}:
-        raise SystemExit("parallel-workers is supported only for M1 and M3 config search")
+    if workers > 1 and args.family not in {"M1", "M2", "M3"}:
+        raise SystemExit(
+            "parallel-workers is supported only for the M1, M2 and M3 torch config searches; "
+            "the LightGBM carriers fit in minutes and already pin their own thread count"
+        )
     return _ParallelExecution(workers=workers, torch_threads=threads)
 
 
@@ -1561,6 +1571,23 @@ def _torch_search_budget(max_epochs: int) -> dict[str, Any]:
     }
 
 
+def _temporal_search_budget(max_epochs: int) -> dict[str, Any]:
+    """M2's budget: the fit length plus the window contract its batches are built under.
+
+    The window is part of the budget and not of the config payload, and it changes results as much
+    as the epoch count does -- a 20-day window and a 10-day one are different models. Leaving it
+    out would let a record produced under one window be adopted by a run using another, which is
+    the same class of vacuous binding the effective-hyperparameter entry exists to prevent. Both
+    values are imported from the module the worker builds batches with, so the serial loop, the
+    spawned worker and the record cannot disagree about them.
+    """
+    return dict(
+        _torch_search_budget(max_epochs),
+        history_length=HISTORY_LENGTH,
+        minimum_valid_history_length=MINIMUM_VALID_HISTORY_LENGTH,
+    )
+
+
 def _lightgbm_search_budget(config_payload: Mapping[str, Any]) -> dict[str, Any]:
     """The effective LightGBM budget: the round/patience constants plus the fitted hyperparameters.
 
@@ -2472,8 +2499,8 @@ def _temporal_panel_batches(
     batches = build_temporal_training_batches(
         panel,
         factor_order=factor_order,
-        history_length=20,
-        minimum_valid_history_length=15,
+        history_length=HISTORY_LENGTH,
+        minimum_valid_history_length=MINIMUM_VALID_HISTORY_LENGTH,
     )
     return {day: batch for day, batch in batches.items() if day in allowed_dates}
 
@@ -2560,7 +2587,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             factor_order=factor_order,
             runtime=torch_runtime_bindings(),
         )
-        torch_budget = _torch_search_budget(max_epochs)
+        torch_budget = _temporal_search_budget(max_epochs)
         adopted_fold = _adopt_completed_fold(
             args,
             workspace,
@@ -2581,7 +2608,68 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             oos_folds[fold_id] = adopted_fold.oos_fold
             print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
             continue
-        for config_index, config_payload in enumerate(configs):
+        execution = _parallel_execution(args)
+        configs_to_run: Sequence[tuple[int, Mapping[str, Any]]] = tuple(enumerate(configs))
+        if execution.workers > 1:
+            if execution.torch_threads is None:
+                raise AssertionError("parallel execution validation did not require torch threads")
+            # The task carries identifiers, not batches: an M2 batch holds a 20-day window per row
+            # and the validation panel is train+validation concatenated, so each worker rebuilds
+            # the fold's panels once from the published dataset artifact and reuses them for every
+            # configuration it is handed. temporal_fold_batches is the tested equivalence point.
+            fold_spec = TemporalFoldSpec(
+                workspace=workspace,
+                fold_id=fold_id,
+                dataset_id=dataset_id,
+                factor_order=factor_order,
+                preprocessing={
+                    "state_hash": preprocessor.state_hash,
+                    "state_payload": preprocessor.state_payload(),
+                },
+                torch_threads=execution.torch_threads,
+            )
+            completed: dict[int, dict[str, Any]] = {}
+            pending_tasks: list[SearchTask] = []
+            for config_index, config_payload in enumerate(configs):
+                adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
+                if adopted.record is not None:
+                    completed[config_index] = adopted.record
+                    continue
+                task = TemporalConfigTask(
+                    config_index=config_index,
+                    config_payload=config_payload,
+                    fold=fold_spec,
+                    train_dataset_id=train_dataset_id,
+                    validation_dataset_id=validation_dataset_id,
+                    checkpoint_root=checkpoint_store._root,
+                    checkpoint_prefix=f"m2-{fold_id.lower()}-c{config_index}",
+                    max_epochs=max_epochs,
+                    early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                )
+                pending_tasks.append(SearchTask(index=config_index, payload={"task": task}))
+            for config_index, result in run_parallel_search(
+                pending_tasks,
+                workers=execution.workers,
+                run_task=run_temporal_config_task,
+            ):
+                completed[config_index] = cast(dict[str, Any], result)
+                resume.persist(
+                    config_index,
+                    configs[config_index],
+                    completed[config_index],
+                    budget=torch_budget,
+                )
+            search_results = _ordered_search_results(configs, completed)
+            for config_index in (task.index for task in pending_tasks):
+                result = search_results[config_index]
+                print(
+                    f"  {fold_id} config {config_index + 1}/{len(configs)}: "
+                    f"ensemble validation RankIC={result['ensemble_validation_rank_ic']:.4f}",
+                    flush=True,
+                )
+            configs_to_run = ()
+
+        for config_index, config_payload in configs_to_run:
             adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
             if adopted.record is not None:
                 search_results.append(adopted.record)

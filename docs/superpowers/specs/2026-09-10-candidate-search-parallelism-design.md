@@ -8,6 +8,10 @@ Accelerate the expensive validation-config search for the CPU cross-sectional ca
 
 This first delivery covers only M1 (`RESIDUAL_MLP`) and M3 (`SET_ATTENTION`). M2 has a temporal-batch and device-selection contract, while M0/M0R use LightGBM-specific fitting; they remain serial and are not silently routed through the new scheduler.
 
+**Increment (2026-09-10, after Tasks 1-4):** M2 (`TEMPORAL_GRU` / `TEMPORAL_TCN`) is now routed through the same scheduler under the same explicit opt-in, in `training/temporal_search.py`. The scheduler needed no change -- it is index-addressed and family-agnostic -- but the payload did: a temporal batch holds a 20-day window per row and the validation panel is train+validation concatenated, so carrying batches per task would be gigabytes each. An M2 task therefore carries identifiers only (workspace, fold, published dataset id, factor order, fitted preprocessing state) and each worker rebuilds the fold's panels and batches once, caching them for every configuration it is handed. That reconstruction is a tested equivalence, not an assumption: a worker that built a slightly different panel would report a validation RankIC for a different model than the parent finally fits.
+
+M0/M0R remain serial and are still refused by `--parallel-workers`: their fits are minutes rather than hours and they already pin `num_threads` per fit, so there is nothing to win and a real risk of perturbing a contract that is bit-reproduced.
+
 A legacy invocation remains serial and retains host-observed Torch thread counts. Parallel execution is explicit opt-in and belongs to a new workspace/run lineage.
 
 ## CLI and numerical contract
@@ -27,8 +31,9 @@ The parent is the only durable writer of search records: it calls `SearchResume.
 - Spawned processes only; no thread pool and no forked Torch runtime.
 - Cap worker count at the number of unadopted configs in the fold.
 - Propagate any worker exception and do not select from a partial grid.
-- M0, M0R, and M2 behavior stays unchanged.
+- M0 and M0R behavior stays unchanged; M2 stays serial unless `--parallel-workers` is given.
 - Results are canonical by config index, never completion order.
+- The window contract (20-day history, 15-day minimum) has one definition, imported by the driver's serial panel builder, the spawned worker, and M2's search-record budget -- so a resumed run cannot adopt a record produced under a different window.
 
 ## Verification
 

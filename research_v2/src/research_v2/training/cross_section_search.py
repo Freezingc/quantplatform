@@ -11,7 +11,6 @@ from typing import Any, Literal
 import pandas as pd
 import torch
 
-from research_v2.evaluation.rank_ic import compute_daily_rank_ic, summarize_rank_ic
 from research_v2.inference.torch_scoring import percentile_frame
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
@@ -19,6 +18,7 @@ from research_v2.training.artifacts import CheckpointStore
 from research_v2.training.batches import TrainingBatch
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.runner import run_validation_governed_training
+from research_v2.training.search_metrics import validation_rank_ic
 from research_v2.training.seeds import configure_reproducibility, configure_torch_threads
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
@@ -82,7 +82,7 @@ def run_cross_section_config_task(payload: Mapping[str, object]) -> dict[str, ob
         )
         predictions = percentile_frame(model, task.validation_batches)
         seed_validation_predictions[seed] = predictions
-        seed_rank_ic[seed] = _validation_rank_ic(predictions, task.validation_labels)
+        seed_rank_ic[seed] = validation_rank_ic(predictions, task.validation_labels)
     ensemble = build_seed_ensemble(
         seed_validation_predictions,
         validation_rank_ic=seed_rank_ic,
@@ -92,7 +92,7 @@ def run_cross_section_config_task(payload: Mapping[str, object]) -> dict[str, ob
     )
     return {
         "config": dict(task.config_payload),
-        "ensemble_validation_rank_ic": _validation_rank_ic(
+        "ensemble_validation_rank_ic": validation_rank_ic(
             ensemble_predictions,
             task.validation_labels,
         ),
@@ -137,22 +137,6 @@ def _model(
             )
         )
     raise ValueError(f"unsupported parallel cross-section family: {family}")
-
-
-def _validation_rank_ic(predictions: pd.DataFrame, labels: pd.DataFrame) -> float:
-    merged = predictions.merge(
-        labels.loc[:, ["signal_date", "ts_code", "raw_return_5d", "label_valid"]],
-        on=["signal_date", "ts_code"],
-        how="inner",
-    )
-    daily = compute_daily_rank_ic(
-        merged.loc[:, ["signal_date", "ts_code", "percentile_rank"]].rename(
-            columns={"percentile_rank": "score"}
-        ),
-        merged.loc[:, ["signal_date", "ts_code", "raw_return_5d", "label_valid"]],
-        minimum_cross_section=30,
-    )
-    return float(summarize_rank_ic(daily).mean_rank_ic)
 
 
 __all__ = ["CrossSectionConfigTask", "CrossSectionFamily", "run_cross_section_config_task"]

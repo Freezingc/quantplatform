@@ -85,3 +85,43 @@
 - [x] Run `python -m pytest tests/unit/evaluation -q` (`72 passed`; two pre-existing pandas FutureWarnings).
 - [x] Run `ruff check src tests scripts/run_real_candidate_training.py` (`All checks passed!`).
 - [x] Run `git diff --check`, record exact results, and commit with `docs(training): record parallel search verification`.
+
+### Task 5: Route the M2 temporal search through the same scheduler (2026-09-10 increment)
+
+**Why:** Tasks 1-4 left M2 serial because of its temporal-batch contract. M2 is also the family
+that cannot afford to stay serial -- measured ~8.6 h per fit and ~161 days for the family, so it is
+the one search that will never finish without concurrency. The blocker was never the scheduler
+(index-addressed, family-agnostic); it was the payload. A temporal batch holds a 20-day window per
+row and the validation panel is train+validation concatenated, so per-task batches would be
+gigabytes each.
+
+**Files:**
+
+- Add: `research_v2/src/research_v2/training/search_metrics.py`, `research_v2/src/research_v2/training/temporal_search.py`, `research_v2/tests/unit/training/test_temporal_search.py`.
+- Modify: `research_v2/src/research_v2/training/cross_section_search.py`, `research_v2/scripts/run_real_candidate_training.py`, `research_v2/tests/unit/scripts/test_run_real_candidate_training.py`, the design spec.
+
+**Interfaces:**
+
+- `search_metrics.validation_rank_ic(predictions, labels) -> float` -- the number the winning config is selected by, in one place. It had two copies (the driver's serial loops and the M1/M3 worker); three would have been three chances for "the model the search selected" to mean something different from "the model the parent fits".
+- `temporal_search.TemporalFoldSpec / TemporalFoldBatches / TemporalConfigTask`, `temporal_fold_batches(spec)` (cached per worker), `temporal_panel_batches`, `temporal_model`, `run_temporal_config_task(payload)`.
+- `HISTORY_LENGTH = 20` / `MINIMUM_VALID_HISTORY_LENGTH = 15` -- the window contract, imported by the driver's serial `_temporal_panel_batches` too.
+- `_temporal_search_budget(max_epochs)` -- M2's record budget: fit length **plus the window**, because a 20-day and a 10-day window are different models and neither is in the config payload.
+
+**Steps:**
+
+- [x] Write failing tests: the worker rebuilds bitwise the batches the parent would build (against a real published dataset artifact), the validation window reaches back into train (day 21, the split's first day, has a batch only if the panel was concatenated -- and day 15 as the first eligible train date pins that the 15-day minimum counts the signal date itself), one fold is built once per worker, the task payload stays under a 100 KB budget, GRU/TCN follow the config, and a real spawned worker returns a complete three-seed result.
+- [x] Run them and confirm the missing-module failure.
+- [x] Implement `search_metrics` and `temporal_search`; point `cross_section_search` at the shared metric and delete its private copy.
+- [x] Route the M2 search through `run_parallel_search` when `--parallel-workers > 1`, adopting and persisting search records exactly as the M1/M3 parallel path does, and restore grid order through the existing `_ordered_search_results` before the existing `max` selection.
+- [x] Bind the window contract into M2's budget and make the driver's serial panel builder read the same constants, so serial loop, spawned worker and records cannot disagree about the window.
+- [x] Allow M2 in `_parallel_execution`; keep M0/M0R refused, with the reason in the message.
+- [x] Mutation-check: hardcoding the driver's window back to a literal, and dropping `history_length` from the budget, each kill exactly the test that pins them.
+- [x] Full gate: `ruff check src tests` clean, `mypy src` **169 files** clean, `pytest tests -q` **1997 passed / 45 skipped**.
+
+**Still open (not done by this task):** seed-level task granularity. With `--max-configs 1` -- which
+is what the zero-tuning comparison runs use, and what M0R's +0.009149 was measured at -- there is
+one config per fold, so `capped_worker_count` returns 1 and the parallel path gives no speedup at
+all. The three seeds of a fit group are independent, so splitting the task granularity to
+(config, seed) is what makes a 1-config run 3x faster; for M2's 24-config grid the config-level
+granularity already saturates. Per-task payloads stay small either way once batches are rebuilt
+worker-side, which is what this task established.
