@@ -8,6 +8,7 @@ import torch
 
 from research_v2.training.seeds import (
     UNSEEDED,
+    configure_torch_threads,
     configure_reproducibility,
     describe_runtime_environment,
 )
@@ -99,3 +100,9 @@ def test_environment_records_the_torch_thread_configuration() -> None:
     finally:
         torch.set_num_threads(original)
     assert configure_reproducibility(20260801).torch_intraop_threads == original
+
+
+def test_explicit_torch_thread_configuration_rejects_zero() -> None:
+    """A non-positive worker budget must fail before Torch can start training."""
+    with pytest.raises(ValueError, match="positive"):
+        configure_torch_threads(0)

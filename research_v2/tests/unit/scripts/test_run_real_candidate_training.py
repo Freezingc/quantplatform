@@ -754,6 +754,14 @@ def test_resume_is_opt_in_and_defaults_to_off() -> None:
     assert _smoke_args("--resume").resume is True
 
 
+def test_parallel_workers_require_explicit_torch_thread_count() -> None:
+    """Parallel workers without a declared numerical runtime must be rejected."""
+    args = _smoke_args("--parallel-workers", "2")
+
+    with pytest.raises(SystemExit, match="torch-threads"):
+        MODULE._parallel_execution(args)
+
+
 def test_the_resume_handle_is_bound_to_this_fold_and_this_run(tmp_path: Path) -> None:
     handle = MODULE._search_resume(
         _smoke_args("--resume"),

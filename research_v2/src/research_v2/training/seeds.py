@@ -52,6 +52,20 @@ def configure_reproducibility(seed: int) -> ReproducibilityEnvironment:
     return _capture(seed)
 
 
+def configure_torch_threads(thread_count: int) -> None:
+    """Pin both Torch CPU thread pools before a new execution lineage starts.
+
+    The counts affect floating-point reduction order and therefore checkpoint
+    bytes. Callers must deliberately opt into this before a model is
+    constructed; the ordinary observed-runtime path deliberately never calls
+    this helper.
+    """
+    if isinstance(thread_count, bool) or not isinstance(thread_count, int) or thread_count < 1:
+        raise ValueError("torch thread count must be a positive integer")
+    torch.set_num_threads(thread_count)
+    torch.set_num_interop_threads(thread_count)
+
+
 def describe_runtime_environment() -> ReproducibilityEnvironment:
     """Report the numerics-affecting runtime while changing nothing.
 

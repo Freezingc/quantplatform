@@ -98,7 +98,7 @@ from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.runner import run_validation_governed_training
 from research_v2.training.search_resume import SearchResume, torch_runtime_bindings
-from research_v2.training.seeds import configure_reproducibility
+from research_v2.training.seeds import configure_reproducibility, configure_torch_threads
 from research_v2.training.static_batches import build_static_training_batches
 from research_v2.training.temporal_batches import build_temporal_training_batches
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
@@ -155,6 +155,24 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--max-epochs", type=int, default=100)
     parser.add_argument(
+        "--parallel-workers",
+        type=int,
+        default=1,
+        help=(
+            "maximum spawned workers for M1/M3 validation config search; "
+            "defaults to one, which preserves the legacy serial path"
+        ),
+    )
+    parser.add_argument(
+        "--torch-threads",
+        type=int,
+        default=None,
+        help=(
+            "explicit Torch intra-op and inter-op thread count for a new execution lineage; "
+            "required when --parallel-workers exceeds one"
+        ),
+    )
+    parser.add_argument(
         "--resume",
         action="store_true",
         help=(
@@ -184,6 +202,29 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         ),
     )
     return parser.parse_args(list(argv) if argv is not None else None)
+
+
+@dataclass(frozen=True)
+class _ParallelExecution:
+    workers: int
+    torch_threads: int | None
+
+
+def _parallel_execution(args: argparse.Namespace) -> _ParallelExecution:
+    """Validate explicit parallel search settings without perturbing legacy runs."""
+    workers = args.parallel_workers
+    threads = args.torch_threads
+    if isinstance(workers, bool) or not isinstance(workers, int) or workers < 1:
+        raise SystemExit("parallel-workers must be a positive integer")
+    if threads is not None and (
+        isinstance(threads, bool) or not isinstance(threads, int) or threads < 1
+    ):
+        raise SystemExit("torch-threads must be a positive integer")
+    if workers > 1 and threads is None:
+        raise SystemExit("parallel-workers above one requires explicit --torch-threads")
+    if workers > 1 and args.family not in {"M1", "M3"}:
+        raise SystemExit("parallel-workers is supported only for M1 and M3 config search")
+    return _ParallelExecution(workers=workers, torch_threads=threads)
 
 
 def load_baseline_predictions(directory: Path) -> dict[str, pd.DataFrame]:
@@ -2706,6 +2747,9 @@ def _maybe_emit_promotion_evidence(args: argparse.Namespace, report: dict[str, A
 
 def main() -> None:
     args = parse_args()
+    execution = _parallel_execution(args)
+    if execution.torch_threads is not None:
+        configure_torch_threads(execution.torch_threads)
     if args.smoke:
         # Smoke mode verifies orchestration only; the E-plan execution order
         # guard applies to real training runs, not to test harnesses.
