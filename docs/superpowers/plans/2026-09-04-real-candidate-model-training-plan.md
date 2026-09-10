@@ -292,6 +292,53 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
   超出 30 预算 → 按 E7「受限搜索」先以验证集 RankIC 粗筛到 ≤30 再精评；
   粗筛规则写入报告）。
 - [ ] **4.2 M2 全量运行 + 判定归档**（同 3.4/3.5）。
+
+      **发射包（2026-09-10 23:40 备好；参数全部取自当晚实测，发射时不需要重新推导）**
+
+      前置：M1 必须六道门全过——顺序守卫会自己读 `--prior-report` 里的报告，失败报告与 smoke 报告一律拒绝。
+
+      **M2 没有串行选项。** 按计划的 8.60 h/拟合，一折 24 配置 × 3 seed + 3 次最终拟合 = 75 次拟合 ≈ 645 h，
+      四折 ≈ 107 天（计划 §3.4 的全链估算 161 天，同量级）。所以「启动 M2」这件事本身就等于采用**钉线程的并行
+      谱系**（`--torch-threads 1`），也就是裁决 2；发射前应把它记录为已裁决偏差。这**不影响 G4 的可比性**：
+      折匹配基线是冻结的 LightGBM 工件、其 `num_threads` 早已钉死，所以候选减基线是「钉线程谱系的 torch 候选」
+      对「未变的基线」，两侧口径各自自洽；受影响的是与其它 torch 运行的**逐位**可比性。
+
+      worker 数取 **19 而不是 20**：内存护栏现在把父进程也计入，20 × 21.6 GiB = 432 GiB 单看能过 447.3 GiB 的
+      90% 余量，但时序父进程自己持有 train/validation/test 三段预处理帧与三套批次（含把三段拼起来的 test 面板），
+      加上它就过了。19 路与 20 路的轮数相同（`ceil(72/19) = ceil(72/20) = 4`），所以时长不变、余量更安全。
+
+```bash
+KEY=$(cat /data/zhangyudong/qrv2_research_artifacts/secrets/selection_evidence_hmac.key)
+setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENCE_HMAC_KEY="$KEY" \
+  QRV2_MODEL_REGISTRY_ROOT=/data/zhangyudong/qrv2_research_artifacts/model_registry \
+  /data/zhangyudong/.conda/envs/quantyd/bin/python scripts/run_real_candidate_training.py \
+  --family M2 \
+  --baseline-artifacts /data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos \
+  --baseline-report /data/zhangyudong/qrv2_research_artifacts/baseline_v2/report.json \
+  --workspace /data/zhangyudong/qrv2_research_artifacts/m2_v1 \
+  --report /data/zhangyudong/qrv2_research_artifacts/m2_v1/report.json \
+  --factor-source frozen_v2 \
+  --prior-report M1=/data/zhangyudong/qrv2_research_artifacts/m1_v2/report.json \
+  --parallel-workers 19 --torch-threads 1 --worker-memory-gb 21.6 --resume \
+  > /data/zhangyudong/qrv2_research_artifacts/m2_v1.log 2>&1 &
+```
+
+      `--resume` 从第一次就带上：新工作区没有记录，采纳为空、行为与不带等同；一旦中断，重启即采纳已完成的配置
+      与已完成的折（折级采纳要求 bundle 重哈希、签名证据的 `model_bundle_digest` 与该重哈希一致、两个签名预测
+      工件在索引中、且每个配置的搜索记录都可采纳）。
+
+      **首折必须读的三项遥测**——这是全链里唯一还靠外推的数字，M2 在 19 路下的并发降级从未实测：
+
+      1. **单 epoch 成本**：由检查点时间戳算，与单 worker 期望值比（计划实测 1301.3 ms/train日 × 约 1220 训练日
+         ≈ 26.5 min/epoch）。静态家族在 3 路下降级约 1.00×，但 M2 的单 worker 面板大得多，19 路未知。
+      2. **worker 实际 RSS** 对 21.6 GiB 估算的偏差（`ps -o rss` 打在 spawned worker 上；F1 实测 16.8 GiB，
+         21.6 是按 F4 行数等比外推的）。
+      3. **40 分钟的面板重建是否每 worker 只发生一次**（缓存命中）。若每个任务都重建，说明缓存键写错了，
+         那会让每折多出几十小时。
+
+      若第 1 项的降级超过约 1.5×，直接杀掉、用更少 worker 重启：`--resume` 把这件事的代价从「全部重来」降到
+      「只重跑未完成的部分」。预计时长：搜索 4 轮 × 8.6 h + 每 worker 一次 40 min 重建 + 最终拟合 1 轮
+      ≈ **44 h/折，四折约 7.4 天**。
 - [x] **4.3 M3 分支 + 合成 smoke**（32 组合 ≤30 不成立时同 4.1 粗筛规则）。
 - [ ] **4.4 M3 全量运行 + 判定归档**。
 
