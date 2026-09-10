@@ -794,6 +794,64 @@ def test_a_serial_invocation_keeps_the_host_observed_runtime() -> None:
     assert execution.torch_threads is None
 
 
+def test_a_worker_count_that_cannot_fit_is_refused_with_the_count_that_can(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """48 temporal workers on this host is an OOM kill hours in, not a startup error."""
+    monkeypatch.setattr(MODULE, "available_memory_gb", lambda: 497.0)
+    args = _family_args(
+        "M2", "--parallel-workers", "48", "--torch-threads", "1", "--worker-memory-gb", "25"
+    )
+    with pytest.raises(SystemExit) as info:
+        MODULE._check_worker_memory(args, MODULE._parallel_execution(args))
+    message = str(info.value)
+    assert "1200.0 GiB" in message
+    assert "largest safe worker count is 17" in message
+
+
+def test_a_worker_count_that_fits_is_allowed_and_recorded(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(MODULE, "available_memory_gb", lambda: 497.0)
+    args = _family_args(
+        "M2", "--parallel-workers", "17", "--torch-threads", "1", "--worker-memory-gb", "25"
+    )
+    MODULE._check_worker_memory(args, MODULE._parallel_execution(args))
+    assert "worker memory budget: 17 x 25.0 GiB" in capsys.readouterr().out
+
+
+def test_an_undeclared_footprint_prints_the_margin_instead_of_refusing(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A new precondition must not turn an existing invocation into a failure."""
+    monkeypatch.setattr(MODULE, "available_memory_gb", lambda: 497.0)
+    args = _family_args("M1", "--parallel-workers", "8", "--torch-threads", "1")
+    MODULE._check_worker_memory(args, MODULE._parallel_execution(args))
+    out = capsys.readouterr().out
+    assert "62.1 GiB per worker" in out
+    assert "--worker-memory-gb" in out
+
+
+def test_a_declared_footprint_without_readable_memory_is_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Silently skipping a check the operator asked for is how the guard stops being one."""
+    monkeypatch.setattr(MODULE, "available_memory_gb", lambda: None)
+    args = _family_args(
+        "M1", "--parallel-workers", "4", "--torch-threads", "1", "--worker-memory-gb", "10"
+    )
+    with pytest.raises(SystemExit, match="MemAvailable could not be read"):
+        MODULE._check_worker_memory(args, MODULE._parallel_execution(args))
+
+
+def test_a_serial_run_is_neither_checked_nor_printed(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # available_memory_gb returning None would raise if it were consulted at all.
+    monkeypatch.setattr(MODULE, "available_memory_gb", lambda: None)
+    args = _family_args("M1", "--worker-memory-gb", "25")
+    MODULE._check_worker_memory(args, MODULE._parallel_execution(args))
+    assert capsys.readouterr().out == ""
 def test_the_temporal_budget_carries_the_window_contract() -> None:
     """A 20-day window and a 10-day one are different models, so the record has to bind it."""
     from research_v2.training import temporal_search
@@ -945,7 +1003,8 @@ def test_an_unknown_seed_is_refused_too() -> None:
 def test_both_torch_families_drop_to_seed_granularity_on_a_narrow_grid() -> None:
     """Wiring: the rule that makes a --max-configs 1 run parallel, in both torch families."""
     source = SCRIPT_PATH.read_text(encoding="utf-8")
-    assert source.count("if len(unadopted) >= execution.workers:") == 2
+    assert source.count("granularity = search_granularity(") == 2
+    assert source.count('if granularity == "config":') == 2
     assert source.count("index=config_index * len(REQUIRED_SEEDS) + slot,") == 2
     assert source.count("index // len(REQUIRED_SEEDS)") == 2
 

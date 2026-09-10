@@ -106,7 +106,13 @@ from research_v2.training.cross_section_search import (
 )
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.model_bundle import ModelArtifactBundleStore
-from research_v2.training.parallel_search import SearchTask, run_parallel_search
+from research_v2.training.parallel_search import (
+    SearchTask,
+    available_memory_gb,
+    run_parallel_search,
+    search_granularity,
+    worker_memory_budget,
+)
 from research_v2.training.runner import run_validation_governed_training
 from research_v2.training.search_resume import SearchResume, torch_runtime_bindings
 from research_v2.training.seeds import configure_reproducibility, configure_torch_threads
@@ -194,6 +200,18 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--worker-memory-gb",
+        type=float,
+        default=None,
+        help=(
+            "gibibytes each spawned worker is expected to hold, checked against MemAvailable "
+            "before the run starts. A temporal worker holds the fold's window panels and a static "
+            "one the batches it was handed, so this is a property of the family and the fold, not "
+            "a guess: measure it once and pass it, or a run that does not fit is killed by the OOM "
+            "picker hours in instead of refused at startup"
+        ),
+    )
+    parser.add_argument(
         "--resume",
         action="store_true",
         help=(
@@ -249,6 +267,56 @@ def _parallel_execution(args: argparse.Namespace) -> _ParallelExecution:
             "the LightGBM carriers fit in minutes and already pin their own thread count"
         )
     return _ParallelExecution(workers=workers, torch_threads=threads)
+
+
+def _check_worker_memory(args: argparse.Namespace, execution: _ParallelExecution) -> None:
+    """Refuse a worker count that cannot fit in this host's memory, before hours are spent.
+
+    The failure being prevented is the expensive kind. A worker that does not fit is not refused at
+    startup, it is picked off by the kernel's OOM killer hours into a multi-day run, and the
+    operator is left to restart it with --resume. Declaring the footprint turns that into an
+    arithmetic check at second zero, and the refusal states the largest worker count that does fit
+    because that is always the next question.
+
+    Undeclared is allowed -- this is a new precondition and an existing invocation must not start
+    failing -- but then the margin is printed rather than checked, so the number is at least in the
+    transcript before the run commits to it.
+    """
+    if execution.workers <= 1:
+        return
+    available = available_memory_gb()
+    declared = getattr(args, "worker_memory_gb", None)
+    if declared is None:
+        if available is not None:
+            print(
+                f"parallel workers={execution.workers} with no declared footprint: "
+                f"MemAvailable={available:.1f} GiB, i.e. {available / execution.workers:.1f} GiB "
+                "per worker. Pass --worker-memory-gb to make that a checked precondition.",
+                flush=True,
+            )
+        return
+    if available is None:
+        raise SystemExit(
+            "--worker-memory-gb was given but MemAvailable could not be read, so the request "
+            "cannot be checked; drop the flag to run without the check"
+        )
+    budget = worker_memory_budget(
+        workers=execution.workers,
+        per_worker_gb=float(declared),
+        available_gb=available,
+    )
+    if not budget.fits:
+        raise SystemExit(
+            f"{budget.workers} workers x {budget.per_worker_gb:.1f} GiB = "
+            f"{budget.required_gb:.1f} GiB, but MemAvailable is {budget.available_gb:.1f} GiB and "
+            f"the run may commit 90% of it. The largest safe worker count is "
+            f"{budget.safe_workers}."
+        )
+    print(
+        f"worker memory budget: {budget.workers} x {budget.per_worker_gb:.1f} GiB = "
+        f"{budget.required_gb:.1f} GiB of {budget.available_gb:.1f} GiB available",
+        flush=True,
+    )
 
 
 def load_baseline_predictions(directory: Path) -> dict[str, pd.DataFrame]:
@@ -2205,7 +2273,15 @@ def _run_full_cross_section(
                     completed[config_index] = adopted.record
                     continue
                 unadopted.append((config_index, config_payload))
-            if len(unadopted) >= execution.workers:
+            # Chosen by makespan, not by whether the workers look busy: a config task is three
+            # fits that cannot be split once dispatched, so a grid that overruns the worker count
+            # by one config pays a whole extra round of three.
+            granularity = search_granularity(
+                config_count=len(unadopted),
+                workers=execution.workers,
+                seeds_per_config=len(REQUIRED_SEEDS),
+            )
+            if granularity == "config":
                 pending_tasks = [
                     SearchTask(
                         index=config_index,
@@ -2798,7 +2874,12 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                     completed[config_index] = adopted.record
                     continue
                 unadopted.append((config_index, config_payload))
-            if len(unadopted) >= execution.workers:
+            granularity = search_granularity(
+                config_count=len(unadopted),
+                workers=execution.workers,
+                seeds_per_config=len(REQUIRED_SEEDS),
+            )
+            if granularity == "config":
                 pending_tasks = [
                     SearchTask(
                         index=config_index,
@@ -3164,6 +3245,7 @@ def _maybe_emit_promotion_evidence(args: argparse.Namespace, report: dict[str, A
 def main() -> None:
     args = parse_args()
     execution = _parallel_execution(args)
+    _check_worker_memory(args, execution)
     if execution.torch_threads is not None:
         configure_torch_threads(execution.torch_threads)
     if args.smoke:

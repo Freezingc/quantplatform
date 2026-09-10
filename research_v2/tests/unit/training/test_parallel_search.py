@@ -20,7 +20,9 @@ from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.parallel_search import (
     SearchTask,
     capped_worker_count,
+    granularity_makespans,
     run_parallel_search,
+    search_granularity,
 )
 from research_v2.training.static_batches import build_static_training_batches
 
@@ -52,6 +54,65 @@ def test_parallel_search_caps_requested_workers_to_the_available_tasks() -> None
     assert capped_worker_count(task_count=1, requested_workers=48) == 1
 
 
+@pytest.mark.parametrize(
+    ("configs", "workers", "expected", "why"),
+    [
+        pytest.param(24, 20, "seed", "24 configs over 20 workers leaves a 4-config second round",
+                     id="m2_grid_memory_capped_workers"),
+        pytest.param(24, 24, "config", "one round either way; config tasks are fewer and smaller",
+                     id="grid_exactly_fills_workers"),
+        pytest.param(
+            24, 48, "seed", "surplus workers idle under 3-fit tasks: 2 rounds beats 1x3",
+            id="more_workers_than_configs",
+        ),
+        pytest.param(24, 72, "seed", "one round either way, but a seed task is one fit not three",
+                     id="surplus_workers_one_round_each"),
+        pytest.param(4, 4, "config", "tie at three fit-times goes to the coarser task",
+                     id="tie_at_four_workers"),
+        pytest.param(1, 3, "seed", "a one-config grid cannot fill three workers at config level",
+                     id="single_config_three_workers"),
+        pytest.param(1, 1, "config", "one worker, one config: nothing to split",
+                     id="single_config_single_worker"),
+        pytest.param(2, 3, "seed", "six fits over three workers is two rounds, not two of three",
+                     id="two_configs_three_workers"),
+        pytest.param(3, 3, "config", "tie goes to the coarser granularity",
+                     id="tie_goes_to_config"),
+    ],
+)
+def test_the_granularity_choice_minimises_makespan_not_worker_occupancy(
+    configs: int, workers: int, expected: str, why: str
+) -> None:
+    """A config task is three fits and cannot be split, so filling the workers is the wrong test.
+
+    The measured case is M2: 24 configs, and 20 workers because F4's window panels put each worker
+    at ~21.6 GiB. Config-level runs ceil(24/20)=2 rounds of three fits = six fit-times; seed-level
+    runs ceil(72/20)=4 rounds of one = four fit-times, a third less wall clock on a multi-day run.
+    """
+    assert search_granularity(
+        config_count=configs, workers=workers, seeds_per_config=3
+    ) == expected, why
+
+
+def test_the_granularity_makespan_arithmetic_is_exposed_not_hidden() -> None:
+    """The two candidate makespans are part of the contract, so a change is reviewable."""
+    assert granularity_makespans(config_count=24, workers=20, seeds_per_config=3) == (6, 4)
+    assert granularity_makespans(config_count=24, workers=24, seeds_per_config=3) == (3, 3)
+    assert granularity_makespans(config_count=1, workers=3, seeds_per_config=3) == (3, 1)
+
+
+@pytest.mark.parametrize(
+    ("configs", "workers", "seeds"),
+    [
+        pytest.param(0, 4, 3, id="no_configs"),
+        pytest.param(4, 0, 3, id="no_workers"),
+        pytest.param(4, 4, 0, id="no_seeds"),
+    ],
+)
+def test_a_degenerate_granularity_request_is_refused(
+    configs: int, workers: int, seeds: int
+) -> None:
+    with pytest.raises(ValueError):
+        search_granularity(config_count=configs, workers=workers, seeds_per_config=seeds)
 def test_parallel_search_propagates_a_worker_exception() -> None:
     """Swallowing a worker failure would let the parent choose from a partial grid."""
     with pytest.raises(RuntimeError, match="worker failed for 10"):

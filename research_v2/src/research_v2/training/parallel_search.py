@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from multiprocessing import get_context
+from pathlib import Path
+from typing import Literal
+
+MEMORY_HEADROOM = 0.9
+"""Fraction of MemAvailable a run may commit to workers.
+
+Not 1.0: the parent process holds its own copy of the fold's frames and batches, the page cache is
+doing real work for the dataset reads, and a host at 100% committed does not fail gracefully -- it
+picks a victim.
+"""
 
 
 @dataclass(frozen=True)
@@ -26,6 +37,126 @@ def capped_worker_count(*, task_count: int, requested_workers: int) -> int:
     if isinstance(requested_workers, bool) or requested_workers < 1:
         raise ValueError("requested workers must be a positive integer")
     return min(task_count, requested_workers)
+
+
+def granularity_makespans(
+    *, config_count: int, workers: int, seeds_per_config: int
+) -> tuple[int, int]:
+    """Both candidate makespans in fit-times: ``(config-level, seed-level)``.
+
+    A config-level task is ``seeds_per_config`` fits that one worker runs back to back and that
+    cannot be split once dispatched; a seed-level task is one fit. Wall clock is therefore rounds
+    times task length -- ``ceil(configs / workers) * seeds`` against ``ceil(configs * seeds /
+    workers)`` -- and the two diverge whenever the configs do not divide evenly into the workers,
+    which is exactly the case that "fill the workers" reasoning gets wrong.
+    """
+    _validate_granularity_inputs(
+        config_count=config_count, workers=workers, seeds_per_config=seeds_per_config
+    )
+    config_rounds = math.ceil(config_count / workers)
+    seed_rounds = math.ceil(config_count * seeds_per_config / workers)
+    return config_rounds * seeds_per_config, seed_rounds
+
+
+def search_granularity(
+    *, config_count: int, workers: int, seeds_per_config: int
+) -> Literal["config", "seed"]:
+    """Pick the task granularity with the shorter makespan; ties go to the coarser one.
+
+    The measured case is M2: 24 configurations, but 20 workers because F4's window panels put each
+    worker at ~21.6 GiB and the host has ~497 GiB. Config-level runs two rounds of three fits --
+    six fit-times, because the four configs left over still cost a whole round -- while seed-level
+    runs four rounds of one fit. A third less wall clock on a multi-day run, from choosing the unit
+    of work by arithmetic instead of by whether the workers look busy.
+
+    Coarse wins ties: it dispatches a third as many tasks, returns scalars instead of per-seed
+    prediction frames, and keeps one worker per configuration.
+    """
+    config_span, seed_span = granularity_makespans(
+        config_count=config_count, workers=workers, seeds_per_config=seeds_per_config
+    )
+    return "config" if config_span <= seed_span else "seed"
+
+
+def _validate_granularity_inputs(
+    *, config_count: int, workers: int, seeds_per_config: int
+) -> None:
+    if config_count < 1:
+        raise ValueError("config_count must be positive")
+    if workers < 1:
+        raise ValueError("workers must be positive")
+    if seeds_per_config < 1:
+        raise ValueError("seeds_per_config must be positive")
+
+
+def available_memory_gb(path: Path = Path("/proc/meminfo")) -> float | None:
+    """MemAvailable in gibibytes, or None when the host does not publish it.
+
+    MemAvailable and not MemFree: on a host that has been reading hundreds of gigabytes of parquet,
+    the reclaimable cache is memory a spawned worker can actually have. MemFree here is ~125 GiB
+    against ~497 GiB available, so reading the wrong line would refuse runs that fit comfortably --
+    a guard that cries wolf gets disabled, and then it guards nothing.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    for line in text.splitlines():
+        if not line.startswith("MemAvailable:"):
+            continue
+        fields = line.split()
+        if len(fields) < 2:
+            return None
+        try:
+            kibibytes = int(fields[1])
+        except ValueError:
+            return None
+        return kibibytes / (1024 * 1024)
+    return None
+
+
+@dataclass(frozen=True)
+class WorkerMemoryBudget:
+    """Whether N workers each holding G GiB fit in what the host has, and how many would."""
+
+    workers: int
+    per_worker_gb: float
+    available_gb: float
+    required_gb: float
+    safe_workers: int
+    fits: bool
+
+
+def worker_memory_budget(
+    *,
+    workers: int,
+    per_worker_gb: float,
+    available_gb: float,
+    headroom: float = MEMORY_HEADROOM,
+) -> WorkerMemoryBudget:
+    """Arithmetic the run should do before it starts, not the kernel's OOM killer should do later.
+
+    ``safe_workers`` is returned alongside the verdict because the operator's next question is
+    always "then how many", and a refusal that does not answer it just gets retried by guesswork.
+    """
+    if workers < 1:
+        raise ValueError("workers must be a positive integer")
+    if per_worker_gb <= 0:
+        raise ValueError("per_worker_gb must be a positive number")
+    if available_gb <= 0:
+        raise ValueError("available_gb must be a positive number")
+    if not 0 < headroom <= 1:
+        raise ValueError("headroom must be in (0, 1]")
+    limit = float(available_gb) * headroom
+    required = workers * float(per_worker_gb)
+    return WorkerMemoryBudget(
+        workers=workers,
+        per_worker_gb=float(per_worker_gb),
+        available_gb=float(available_gb),
+        required_gb=required,
+        safe_workers=max(0, int(limit // float(per_worker_gb))),
+        fits=required <= limit,
+    )
 
 
 def run_parallel_search(
@@ -66,4 +197,15 @@ def run_parallel_search(
     return sorted(completed, key=lambda item: item[0])
 
 
-__all__ = ["SearchTask", "SearchTaskRunner", "capped_worker_count", "run_parallel_search"]
+__all__ = [
+    "MEMORY_HEADROOM",
+    "SearchTask",
+    "SearchTaskRunner",
+    "WorkerMemoryBudget",
+    "available_memory_gb",
+    "capped_worker_count",
+    "granularity_makespans",
+    "run_parallel_search",
+    "search_granularity",
+    "worker_memory_budget",
+]
