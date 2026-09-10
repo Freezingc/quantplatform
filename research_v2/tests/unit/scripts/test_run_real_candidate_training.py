@@ -762,6 +762,19 @@ def test_parallel_workers_require_explicit_torch_thread_count() -> None:
         MODULE._parallel_execution(args)
 
 
+def test_ordered_search_results_restore_grid_order_after_parallel_completion() -> None:
+    """Selecting directly from completion order would make ties timing-dependent."""
+    first = {"config": {"hidden_dim": 64}, "ensemble_validation_rank_ic": 0.1}
+    second = {"config": {"hidden_dim": 128}, "ensemble_validation_rank_ic": 0.1}
+
+    ordered = MODULE._ordered_search_results(
+        [{"hidden_dim": 64}, {"hidden_dim": 128}],
+        {1: second, 0: first},
+    )
+
+    assert ordered == [first, second]
+
+
 def test_the_resume_handle_is_bound_to_this_fold_and_this_run(tmp_path: Path) -> None:
     handle = MODULE._search_resume(
         _smoke_args("--resume"),
@@ -850,8 +863,8 @@ def test_all_three_search_loops_consult_the_resume_handle() -> None:
     """Wiring check: a handle built but never asked would leave the risk exactly where it was."""
     source = SCRIPT_PATH.read_text(encoding="utf-8")
     assert source.count("resume = _search_resume(") == 3
-    # Three from the search loops, plus the one fold adoption uses to rebuild search_results.
-    assert source.count("resume.adopt(config_index, config_payload") == 4
+    # Three serial loops, one M1/M3 parallel preflight, and one fold adoption rebuild.
+    assert source.count("resume.adopt(config_index, config_payload") == 5
     assert source.count("resume.persist(config_index, config_payload, result") == 3
     assert "early_stopping_patience=10" not in source
 

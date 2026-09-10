@@ -94,8 +94,13 @@ from research_v2.registry.promotion_evidence import (
 )
 from research_v2.training.artifacts import CheckpointStore
 from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
+from research_v2.training.cross_section_search import (
+    CrossSectionConfigTask,
+    run_cross_section_config_task,
+)
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.model_bundle import ModelArtifactBundleStore
+from research_v2.training.parallel_search import SearchTask, run_parallel_search
 from research_v2.training.runner import run_validation_governed_training
 from research_v2.training.search_resume import SearchResume, torch_runtime_bindings
 from research_v2.training.seeds import configure_reproducibility, configure_torch_threads
@@ -1924,6 +1929,22 @@ def _train_cross_section_seed(
     return model, checkpoint_store._root / run.checkpoint_ids[-1] / "checkpoint.pt"
 
 
+def _ordered_search_results(
+    configs: Sequence[Mapping[str, Any]], completed: Mapping[int, dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Restore canonical grid order before the existing stable best-config selection."""
+    expected_indexes = set(range(len(configs)))
+    if set(completed) != expected_indexes:
+        raise ValueError("parallel search did not produce every configuration result")
+    ordered: list[dict[str, Any]] = []
+    for config_index, config_payload in enumerate(configs):
+        result = completed[config_index]
+        if result.get("config") != dict(config_payload):
+            raise ValueError("parallel search result does not match its configuration")
+        ordered.append(result)
+    return ordered
+
+
 @dataclass(frozen=True)
 class _FullRunContext:
     workspace: Path
@@ -2082,7 +2103,58 @@ def _run_full_cross_section(
             oos_folds[fold_id] = adopted_fold.oos_fold
             print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
             continue
-        for config_index, config_payload in enumerate(configs):
+        execution = _parallel_execution(args)
+        configs_to_run: Sequence[tuple[int, Mapping[str, Any]]] = tuple(enumerate(configs))
+        if execution.workers > 1:
+            if execution.torch_threads is None:
+                raise AssertionError("parallel execution validation did not require torch threads")
+            completed: dict[int, dict[str, Any]] = {}
+            pending_tasks: list[SearchTask] = []
+            for config_index, config_payload in enumerate(configs):
+                adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
+                if adopted.record is not None:
+                    completed[config_index] = adopted.record
+                    continue
+                task = CrossSectionConfigTask(
+                    family=cast(Literal["M1", "M3"], family),
+                    config_index=config_index,
+                    config_payload=config_payload,
+                    factor_order=factor_order,
+                    train_batches=train_batches,
+                    validation_batches=validation_batches,
+                    validation_labels=validation,
+                    checkpoint_root=checkpoint_store._root,
+                    checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-c{config_index}",
+                    train_dataset_id=train_dataset_id,
+                    validation_dataset_id=validation_dataset_id,
+                    max_epochs=max_epochs,
+                    early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                    torch_threads=execution.torch_threads,
+                )
+                pending_tasks.append(SearchTask(index=config_index, payload={"task": task}))
+            for config_index, result in run_parallel_search(
+                pending_tasks,
+                workers=execution.workers,
+                run_task=run_cross_section_config_task,
+            ):
+                completed[config_index] = cast(dict[str, Any], result)
+                resume.persist(
+                    config_index,
+                    configs[config_index],
+                    completed[config_index],
+                    budget=torch_budget,
+                )
+            search_results = _ordered_search_results(configs, completed)
+            for config_index in (task.index for task in pending_tasks):
+                result = search_results[config_index]
+                print(
+                    f"  {fold_id} config {config_index + 1}/{len(configs)}: "
+                    f"ensemble validation RankIC={result['ensemble_validation_rank_ic']:.4f}",
+                    flush=True,
+                )
+            configs_to_run = ()
+
+        for config_index, config_payload in configs_to_run:
             adopted = resume.adopt(config_index, config_payload, budget=torch_budget)
             if adopted.record is not None:
                 search_results.append(adopted.record)
