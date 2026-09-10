@@ -32,7 +32,9 @@ from research_v2.training.temporal_batches import build_temporal_training_batche
 from research_v2.training.temporal_search import (
     TemporalConfigTask,
     TemporalFoldSpec,
+    TemporalSeedTask,
     run_temporal_config_task,
+    run_temporal_seed_task,
     temporal_fold_batches,
     temporal_model,
 )
@@ -237,3 +239,58 @@ def test_a_spawned_temporal_worker_returns_a_complete_three_seed_result(tmp_path
     assert math.isfinite(float(result["ensemble_validation_rank_ic"]))
     assert int(result["worst_seed"]) in {20260801, 20260802, 20260803}
     assert (tmp_path / "checkpoints").exists()
+
+
+def _seed_task(tmp_path: Path, spec: TemporalFoldSpec, seed: int, ids: tuple[str, str]):
+    return TemporalSeedTask(
+        config_payload={"family": "GRU", "hidden_dim": 4, "dropout": 0.0, "learning_rate": 0.001},
+        seed=seed,
+        fold=spec,
+        train_dataset_id=ids[0],
+        validation_dataset_id=ids[1],
+        checkpoint_root=tmp_path / "checkpoints",
+        checkpoint_prefix=f"m2-f1-final-{seed}",
+        max_epochs=1,
+        early_stopping_patience=10,
+    )
+
+
+def test_a_spawned_temporal_seed_worker_hands_back_a_checkpoint(tmp_path: Path) -> None:
+    """The M2 final fit is three seeds; parallelising it means the parent freezes weights it never
+    trained, so the checkpoint path has to come back and point at a real file."""
+    spec, train_id, validation_id = _published_fold(tmp_path)
+    seed = 20260802
+    task = _seed_task(tmp_path, spec, seed, (train_id, validation_id))
+    results = run_parallel_search(
+        (SearchTask(index=seed, payload={"task": task}),),
+        workers=1,
+        run_task=run_temporal_seed_task,
+    )
+    index, result = results[0]
+    assert index == seed
+    assert result["seed"] == seed
+    path = Path(str(result["checkpoint_path"]))
+    assert path.is_file()
+    assert path.parent.name.startswith(f"m2-f1-final-{seed}-seed-{seed}-epoch-")
+    assert math.isfinite(float(result["validation_rank_ic"]))
+
+
+def test_three_spawned_temporal_seed_fits_reassemble_into_the_seed_ensemble(tmp_path: Path) -> None:
+    from research_v2.training.ensemble import build_seed_ensemble
+
+    spec, train_id, validation_id = _published_fold(tmp_path)
+    tasks = tuple(
+        SearchTask(
+            index=seed,
+            payload={"task": _seed_task(tmp_path, spec, seed, (train_id, validation_id))},
+        )
+        for seed in (20260801, 20260802, 20260803)
+    )
+    results = run_parallel_search(tasks, workers=3, run_task=run_temporal_seed_task)
+    predictions = {seed: result["predictions"] for seed, result in results}
+    rank_ic = {seed: float(result["validation_rank_ic"]) for seed, result in results}
+    ensemble = build_seed_ensemble(predictions, validation_rank_ic=rank_ic)
+    assert ensemble.worst_seed in {20260801, 20260802, 20260803}
+    paths = {str(result["checkpoint_path"]) for _, result in results}
+    assert len(paths) == 3
+    assert all(Path(path).is_file() for path in paths)

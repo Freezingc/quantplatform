@@ -118,10 +118,38 @@ gigabytes each.
 - [x] Mutation-check: hardcoding the driver's window back to a literal, and dropping `history_length` from the budget, each kill exactly the test that pins them.
 - [x] Full gate: `ruff check src tests` clean, `mypy src` **169 files** clean, `pytest tests -q` **1997 passed / 45 skipped**.
 
-**Still open (not done by this task):** seed-level task granularity. With `--max-configs 1` -- which
-is what the zero-tuning comparison runs use, and what M0R's +0.009149 was measured at -- there is
-one config per fold, so `capped_worker_count` returns 1 and the parallel path gives no speedup at
-all. The three seeds of a fit group are independent, so splitting the task granularity to
-(config, seed) is what makes a 1-config run 3x faster; for M2's 24-config grid the config-level
-granularity already saturates. Per-task payloads stay small either way once batches are rebuilt
-worker-side, which is what this task established.
+**Still open after Task 5:** the FINAL three-seed fit was still serial, and on a fold whose grid
+already saturates the workers it was the only serial part left -- three fits out of a 24-config M2
+fold's ~52 hours, i.e. half the fold at M2's measured ~8.6 h per fit. Taken by Task 6 below.
+
+### Task 6: Parallelise the final three-seed fit (2026-09-10 increment)
+
+**Why:** config-level parallelism accelerates the search only. The three final fits that produce the
+frozen bundle ran serially afterwards in every family, so a fold whose 24-config grid already filled
+the workers still paid three full fit-times at the end. They are independent by construction -- same
+config, three seeds, `REQUIRED_SEEDS` is a fail-closed contract -- and the parent does not need the
+models, only their checkpoint paths and their validation scoring.
+
+**Interfaces:**
+
+- `cross_section_search.CrossSectionSeedTask` / `run_cross_section_seed_task`, `temporal_search.TemporalSeedTask` / `run_temporal_seed_task`, both returning `{seed, checkpoint_path, predictions, validation_rank_ic}`.
+- `_fit_one_seed` / `_fit_one_temporal_seed`: one seeded fit, defined ONCE and used by both the config-level worker (which loops the three seeds itself) and the seed-level worker (which the parent loops across processes). Returning the checkpoint path is what lets the parent freeze a bundle from a fit it never ran.
+
+**Steps:**
+
+- [x] Write failing tests: a spawned seed worker hands back a checkpoint that exists on disk under the same `<prefix>-seed-<seed>-epoch-<n>` name the serial path produces, and three spawned seed fits reassemble through `build_seed_ensemble` into a real ensemble with three distinct checkpoints -- for the static families and for M2.
+- [x] Refactor both config-level workers onto the shared single-seed fit; their existing spawned-worker tests stay green unchanged, which is the evidence the refactor preserved behaviour.
+- [x] Route the final fits of `_run_full_cross_section` (M1/M3) and `run_full_m2` through `run_parallel_search` when `--parallel-workers > 1`, indexed by seed; the serial path stays the default and keeps the identical checkpoint prefixes, so a bundle's provenance cannot depend on the worker count.
+- [x] Mutation-check: renaming the parallel branch's checkpoint prefix kills exactly the test that pins serial/parallel prefix equality.
+- [x] Full gate: `ruff check src tests` clean, `mypy src` 169 files clean, `pytest tests -q` **2004 passed / 45 skipped**.
+
+**Still open after Task 6:** seed-level granularity for the SEARCH. With `--max-configs 1` -- the
+shape of the zero-tuning comparison runs, and what M0R's +0.009149 was measured at -- there is one
+config per fold, so `capped_worker_count` returns 1 and the search itself stays serial; only its
+final fits now parallelise. For a 24-config grid this is worth ~4% and is not the next lever.
+
+**Not yet verified end to end:** the parallel path has real spawned-worker tests at library level and
+source-level wiring assertions in the driver, but no full real-data run has used it. A 1-config
+parallel M1 run would take ~30 h to prove it (the search stays serial at one config), which is longer
+than the serial run it would validate; the natural first real use is the M2 run, which cannot finish
+serially at all.

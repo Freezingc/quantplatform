@@ -3,15 +3,20 @@ from __future__ import annotations
 import math
 import time
 from collections.abc import Mapping
+from dataclasses import replace
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from research_v2.training.cross_section_search import (
     CrossSectionConfigTask,
+    CrossSectionSeedTask,
     run_cross_section_config_task,
+    run_cross_section_seed_task,
 )
+from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.parallel_search import (
     SearchTask,
     capped_worker_count,
@@ -100,3 +105,101 @@ def test_spawned_cross_section_worker_returns_a_complete_three_seed_result(tmp_p
     assert result["config"] == task.config_payload
     assert set(result["seed_validation_rank_ic"]) == {20260801, 20260802, 20260803}
     assert math.isfinite(float(result["ensemble_validation_rank_ic"]))
+
+
+def _static_frames() -> tuple[pd.DataFrame, pd.DataFrame]:
+    def frame(day: date) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "signal_date": [day] * 30,
+                "ts_code": [f"S{index:03d}" for index in range(30)],
+                "raw_return_5d": [float(index) for index in range(30)],
+                "label_valid": [True] * 30,
+                "f00": [float(index) for index in range(30)],
+            }
+        )
+
+    return frame(date(2020, 1, 2)), frame(date(2020, 1, 3))
+
+
+def _seed_task(tmp_path: Path, seed: int) -> CrossSectionSeedTask:
+    train, validation = _static_frames()
+    return CrossSectionSeedTask(
+        family="M1",
+        config_payload={"hidden_dim": 8, "num_blocks": 1, "dropout": 0.0},
+        factor_order=("f00",),
+        seed=seed,
+        train_batches=build_static_training_batches(train, factor_order=("f00",)),
+        validation_batches=build_static_training_batches(validation, factor_order=("f00",)),
+        validation_labels=validation,
+        checkpoint_root=tmp_path / "checkpoints",
+        checkpoint_prefix=f"m1-f1-final-{seed}",
+        train_dataset_id="train",
+        validation_dataset_id="validation",
+        max_epochs=1,
+        early_stopping_patience=10,
+        torch_threads=1,
+    )
+
+
+def test_a_spawned_seed_worker_hands_back_a_checkpoint_the_parent_can_freeze(tmp_path) -> None:
+    """The parent writes the bundle from these paths, so a fit it did not run must still be
+    persistable -- a worker that trained the weights and kept the path would leave an ensemble
+    that could be scored but never frozen."""
+    seed = 20260802
+    results = run_parallel_search(
+        (SearchTask(index=seed, payload={"task": _seed_task(tmp_path, seed)}),),
+        workers=1,
+        run_task=run_cross_section_seed_task,
+    )
+    index, result = results[0]
+    assert index == seed
+    assert result["seed"] == seed
+    path = Path(str(result["checkpoint_path"]))
+    assert path.is_file()
+    # The naming contract the serial final fits produce, and the one the bundle write relies on.
+    assert path.parent.name.startswith(f"m1-f1-final-{seed}-seed-{seed}-epoch-")
+    assert math.isfinite(float(result["validation_rank_ic"]))
+    predictions = result["predictions"]
+    assert {"signal_date", "ts_code", "percentile_rank"}.issubset(predictions.columns)
+    assert len(predictions) == 30
+
+
+def test_three_spawned_seed_fits_reassemble_into_the_seed_ensemble(tmp_path) -> None:
+    """The whole claim of parallelising the final fit: the parent can do everything the serial
+    loop did -- ensemble, worst seed, three checkpoint paths -- from results it did not compute."""
+    tasks = tuple(
+        SearchTask(index=seed, payload={"task": _seed_task(tmp_path, seed)})
+        for seed in REQUIRED_SEEDS
+    )
+    results = run_parallel_search(
+        tasks, workers=len(REQUIRED_SEEDS), run_task=run_cross_section_seed_task
+    )
+    assert [index for index, _ in results] == list(REQUIRED_SEEDS)
+    predictions = {seed: result["predictions"] for seed, result in results}
+    rank_ic = {seed: float(result["validation_rank_ic"]) for seed, result in results}
+    ensemble = build_seed_ensemble(predictions, validation_rank_ic=rank_ic)
+    assert ensemble.worst_seed in set(REQUIRED_SEEDS)
+    assert not ensemble.predictions.empty
+    assert all(Path(str(result["checkpoint_path"])).is_file() for _, result in results)
+    # Distinct seeds must not collapse into one another's weights.
+    assert len({str(result["checkpoint_path"]) for _, result in results}) == len(REQUIRED_SEEDS)
+
+
+def test_a_seed_task_of_a_different_seed_is_a_different_fit(tmp_path) -> None:
+    """Guard against a worker ignoring its seed and returning whichever fit it happened to run."""
+    first, second = _seed_task(tmp_path, 20260801), _seed_task(tmp_path, 20260802)
+    assert replace(first, seed=20260802).seed == second.seed
+    results = dict(
+        run_parallel_search(
+            (
+                SearchTask(index=20260801, payload={"task": first}),
+                SearchTask(index=20260802, payload={"task": second}),
+            ),
+            workers=2,
+            run_task=run_cross_section_seed_task,
+        )
+    )
+    assert results[20260801]["seed"] == 20260801
+    assert results[20260802]["seed"] == 20260802
+    assert str(results[20260801]["checkpoint_path"]) != str(results[20260802]["checkpoint_path"])

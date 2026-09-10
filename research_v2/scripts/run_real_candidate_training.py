@@ -100,7 +100,9 @@ from research_v2.training.artifacts import CheckpointStore
 from research_v2.training.batches import TemporalTrainingBatch, TrainingBatch
 from research_v2.training.cross_section_search import (
     CrossSectionConfigTask,
+    CrossSectionSeedTask,
     run_cross_section_config_task,
+    run_cross_section_seed_task,
 )
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble
 from research_v2.training.model_bundle import ModelArtifactBundleStore
@@ -115,7 +117,9 @@ from research_v2.training.temporal_search import (
     MINIMUM_VALID_HISTORY_LENGTH,
     TemporalConfigTask,
     TemporalFoldSpec,
+    TemporalSeedTask,
     run_temporal_config_task,
+    run_temporal_seed_task,
 )
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
@@ -2241,25 +2245,67 @@ def _run_full_cross_section(
         seed_checkpoints: dict[int, Path] = {}
         seed_validation_predictions = {}
         seed_rank_ic = {}
-        for seed in REQUIRED_SEEDS:
-            model, checkpoint_path = _train_cross_section_seed(
-                best_config,
-                factor_order,
-                train_batches,
-                validation_batches,
-                seed=seed,
-                checkpoint_store=checkpoint_store,
-                checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-final-{seed}",
-                train_dataset_id=train_dataset_id,
-                validation_dataset_id=validation_dataset_id,
-                max_epochs=max_epochs,
-                model_factory=model_factory,
-                learning_rate=float(best_config.get("learning_rate", 0.003)),
-            )
-            seed_checkpoints[seed] = checkpoint_path
-            predictions = _predict_validation_percentiles(model, validation_batches)
-            seed_validation_predictions[seed] = predictions
-            seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+        if execution.workers > 1:
+            if execution.torch_threads is None:
+                raise AssertionError("parallel execution validation did not require torch threads")
+            # The three final fits are independent, and on a fold whose grid already saturated the
+            # workers they are the only serial part left. Same fit, same checkpoint layout, same
+            # ensemble: the workers hand back the checkpoint paths, which is what the bundle write
+            # consumes, so the parent freezes weights it did not train itself.
+            final_tasks = [
+                SearchTask(
+                    index=seed,
+                    payload={
+                        "task": CrossSectionSeedTask(
+                            family=cast(Literal["M1", "M3"], family),
+                            config_payload=best_config,
+                            factor_order=factor_order,
+                            seed=seed,
+                            train_batches=train_batches,
+                            validation_batches=validation_batches,
+                            validation_labels=validation,
+                            checkpoint_root=checkpoint_store._root,
+                            checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-final-{seed}",
+                            train_dataset_id=train_dataset_id,
+                            validation_dataset_id=validation_dataset_id,
+                            max_epochs=max_epochs,
+                            early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                            torch_threads=execution.torch_threads,
+                        )
+                    },
+                )
+                for seed in REQUIRED_SEEDS
+            ]
+            for seed, fitted in run_parallel_search(
+                final_tasks,
+                workers=execution.workers,
+                run_task=run_cross_section_seed_task,
+            ):
+                seed_checkpoints[seed] = Path(str(fitted["checkpoint_path"]))
+                seed_validation_predictions[seed] = cast(
+                    pd.DataFrame, fitted["predictions"]
+                )
+                seed_rank_ic[seed] = cast(float, fitted["validation_rank_ic"])
+        else:
+            for seed in REQUIRED_SEEDS:
+                model, checkpoint_path = _train_cross_section_seed(
+                    best_config,
+                    factor_order,
+                    train_batches,
+                    validation_batches,
+                    seed=seed,
+                    checkpoint_store=checkpoint_store,
+                    checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-final-{seed}",
+                    train_dataset_id=train_dataset_id,
+                    validation_dataset_id=validation_dataset_id,
+                    max_epochs=max_epochs,
+                    model_factory=model_factory,
+                    learning_rate=float(best_config.get("learning_rate", 0.003)),
+                )
+                seed_checkpoints[seed] = checkpoint_path
+                predictions = _predict_validation_percentiles(model, validation_batches)
+                seed_validation_predictions[seed] = predictions
+                seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
         ensemble = build_seed_ensemble(
             seed_validation_predictions, validation_rank_ic=seed_rank_ic
         )
@@ -2610,6 +2656,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             continue
         execution = _parallel_execution(args)
         configs_to_run: Sequence[tuple[int, Mapping[str, Any]]] = tuple(enumerate(configs))
+        fold_spec: TemporalFoldSpec | None = None
         if execution.workers > 1:
             if execution.torch_threads is None:
                 raise AssertionError("parallel execution validation did not require torch threads")
@@ -2732,35 +2779,68 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         seed_checkpoints: dict[int, Path] = {}
         seed_validation_predictions = {}
         seed_rank_ic = {}
-        for seed in REQUIRED_SEEDS:
-            configure_reproducibility(seed)  # seed before init; see the smoke helper
-            model = _m2_model_factory(best_config, factor_order)
-            optimizer = torch.optim.AdamW(
-                model.parameters(), lr=float(best_config["learning_rate"])
-            )
-            run = run_validation_governed_training(
-                model,
-                optimizer,
-                train_batches=train_batches,
-                validation_batches=validation_batches,
-                train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id=train_dataset_id),
-                validation_view=DatasetView(
-                    role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
-                ),
-                trainer_config=TrainerConfig(
-                    max_epochs=max_epochs,
-                    early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
-                ),
-                seed=seed,
-                checkpoint_store=checkpoint_store,
-                checkpoint_prefix=f"m2-{fold_id.lower()}-final-{seed}",
-            )
-            seed_checkpoints[seed] = (
-                workspace / "checkpoints" / run.checkpoint_ids[-1] / "checkpoint.pt"
-            )
-            predictions = _predict_temporal_validation_percentiles(model, validation_batches)
-            seed_validation_predictions[seed] = predictions
-            seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
+        if execution.workers > 1:
+            if execution.torch_threads is None or fold_spec is None:
+                raise AssertionError("parallel execution validation did not require torch threads")
+            # For a fold whose 24-config grid already saturated the workers, these three fits are
+            # the only serial part left, and at M2's measured ~8.6h per fit they are half the fold.
+            final_tasks = [
+                SearchTask(
+                    index=seed,
+                    payload={
+                        "task": TemporalSeedTask(
+                            config_payload=best_config,
+                            seed=seed,
+                            fold=fold_spec,
+                            train_dataset_id=train_dataset_id,
+                            validation_dataset_id=validation_dataset_id,
+                            checkpoint_root=checkpoint_store._root,
+                            checkpoint_prefix=f"m2-{fold_id.lower()}-final-{seed}",
+                            max_epochs=max_epochs,
+                            early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                        )
+                    },
+                )
+                for seed in REQUIRED_SEEDS
+            ]
+            for seed, fitted in run_parallel_search(
+                final_tasks,
+                workers=execution.workers,
+                run_task=run_temporal_seed_task,
+            ):
+                seed_checkpoints[seed] = Path(str(fitted["checkpoint_path"]))
+                seed_validation_predictions[seed] = cast(pd.DataFrame, fitted["predictions"])
+                seed_rank_ic[seed] = cast(float, fitted["validation_rank_ic"])
+        else:
+            for seed in REQUIRED_SEEDS:
+                configure_reproducibility(seed)  # seed before init; see the smoke helper
+                model = _m2_model_factory(best_config, factor_order)
+                optimizer = torch.optim.AdamW(
+                    model.parameters(), lr=float(best_config["learning_rate"])
+                )
+                run = run_validation_governed_training(
+                    model,
+                    optimizer,
+                    train_batches=train_batches,
+                    validation_batches=validation_batches,
+                    train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id=train_dataset_id),
+                    validation_view=DatasetView(
+                        role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
+                    ),
+                    trainer_config=TrainerConfig(
+                        max_epochs=max_epochs,
+                        early_stopping_patience=TORCH_EARLY_STOPPING_PATIENCE,
+                    ),
+                    seed=seed,
+                    checkpoint_store=checkpoint_store,
+                    checkpoint_prefix=f"m2-{fold_id.lower()}-final-{seed}",
+                )
+                seed_checkpoints[seed] = (
+                    workspace / "checkpoints" / run.checkpoint_ids[-1] / "checkpoint.pt"
+                )
+                predictions = _predict_temporal_validation_percentiles(model, validation_batches)
+                seed_validation_predictions[seed] = predictions
+                seed_rank_ic[seed] = _validation_rank_ic(predictions, validation)
         ensemble = build_seed_ensemble(
             seed_validation_predictions, validation_rank_ic=seed_rank_ic
         )

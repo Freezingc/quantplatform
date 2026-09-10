@@ -850,6 +850,26 @@ def test_the_m2_search_routes_through_the_temporal_worker() -> None:
     assert source.count("fold_spec = TemporalFoldSpec(") == 1
     assert source.count("torch_budget = _temporal_search_budget(max_epochs)") == 1
     assert "history_length=20," not in source
+
+
+def test_both_torch_families_parallelise_their_final_three_seeds() -> None:
+    """Wiring: the search is only half a fold; the final fits were the serial half that remained.
+
+    On a fold whose grid already saturates the workers they are the ONLY serial part left, and at
+    M2's measured ~8.6h per fit they are half the fold.
+    """
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count("run_task=run_cross_section_seed_task,") == 1
+    assert source.count("run_task=run_temporal_seed_task,") == 1
+    assert source.count("CrossSectionSeedTask(") == 1
+    assert source.count("TemporalSeedTask(") == 1
+
+
+def test_the_parallel_and_serial_final_fits_write_the_same_checkpoint_names() -> None:
+    """One prefix per path would make a bundle's provenance depend on the worker count."""
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count('checkpoint_prefix=f"{family.lower()}-{fold_id.lower()}-final-{seed}"') == 2
+    assert source.count('checkpoint_prefix=f"m2-{fold_id.lower()}-final-{seed}"') == 2
 def test_ordered_search_results_restore_grid_order_after_parallel_completion() -> None:
     """Selecting directly from completion order would make ties timing-dependent."""
     first = {"config": {"hidden_dim": 64}, "ensemble_validation_rank_ic": 0.1}

@@ -24,7 +24,9 @@ The existing Torch runtime descriptor records the selected counts, so `SearchRes
 
 For each fold, the parent prepares the same preprocessed train/validation batches as the serial implementation. Each unadopted configuration becomes one spawned-process task. The task trains all required seeds, writes only its config/seed-namespaced checkpoints, and returns its small validation result.
 
-The parent is the only durable writer of search records: it calls `SearchResume.persist` as results arrive, rebuilds `search_results` by increasing config index, and retains the current `max` selection rule. It alone does final three-seed fitting, bundle/evidence/prediction writes, and F1-F4 OOS aggregation.
+The parent is the only durable writer of search records: it calls `SearchResume.persist` as results arrive, rebuilds `search_results` by increasing config index, and retains the current `max` selection rule. It alone does bundle/evidence/prediction writes and F1-F4 OOS aggregation.
+
+**Increment (2026-09-10):** the final three-seed fit is parallel too, in both the static and the temporal families. Config-level parallelism accelerated the search only, so a fold whose grid already filled the workers still paid three full fit-times at the end -- half of a 24-config M2 fold. The three fits are independent by construction and the parent needs only their checkpoint paths and validation scoring, so a seed-level task returns exactly those and the parent freezes the bundle from weights it did not train itself. One seeded fit now has a single definition per family, shared by the config-level worker (which loops the seeds) and the seed-level worker (which the parent loops across processes); both paths write the identical checkpoint names, so a bundle's provenance cannot depend on the worker count.
 
 ## Safety requirements
 

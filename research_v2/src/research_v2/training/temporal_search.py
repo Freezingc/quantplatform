@@ -182,36 +182,25 @@ def run_temporal_config_task(payload: Mapping[str, object]) -> dict[str, object]
     if not isinstance(task, TemporalConfigTask):
         raise ValueError("parallel temporal search task is malformed")
     _configure_worker_threads(task.fold.torch_threads)
+    # Cached, so this costs nothing per seed below; it is here for the labels the ensemble is
+    # scored against, which stay in the parent's hands rather than travelling per seed.
     fold = temporal_fold_batches(task.fold)
-    checkpoint_store = CheckpointStore(task.checkpoint_root)
     seed_validation_predictions: dict[int, pd.DataFrame] = {}
     seed_rank_ic: dict[int, float] = {}
     for seed in REQUIRED_SEEDS:
-        configure_reproducibility(seed)
-        model = temporal_model(task.config_payload, task.fold.factor_order)
-        optimizer = torch.optim.AdamW(
-            model.parameters(), lr=float(task.config_payload["learning_rate"])
-        )
-        run_validation_governed_training(
-            model,
-            optimizer,
-            train_batches=fold.train_batches,
-            validation_batches=fold.validation_batches,
-            train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id=task.train_dataset_id),
-            validation_view=DatasetView(
-                role=DatasetRole.VALIDATION, dataset_id=task.validation_dataset_id
-            ),
-            trainer_config=TrainerConfig(
-                max_epochs=task.max_epochs,
-                early_stopping_patience=task.early_stopping_patience,
-            ),
+        fitted = _fit_one_temporal_seed(
+            config_payload=task.config_payload,
             seed=seed,
-            checkpoint_store=checkpoint_store,
+            fold=task.fold,
+            train_dataset_id=task.train_dataset_id,
+            validation_dataset_id=task.validation_dataset_id,
+            checkpoint_root=task.checkpoint_root,
             checkpoint_prefix=f"{task.checkpoint_prefix}-{seed}",
+            max_epochs=task.max_epochs,
+            early_stopping_patience=task.early_stopping_patience,
         )
-        predictions = percentile_frame(model, fold.validation_batches)
-        seed_validation_predictions[seed] = predictions
-        seed_rank_ic[seed] = validation_rank_ic(predictions, fold.validation_labels)
+        seed_validation_predictions[seed] = fitted.predictions
+        seed_rank_ic[seed] = fitted.validation_rank_ic
     ensemble = build_seed_ensemble(
         seed_validation_predictions, validation_rank_ic=seed_rank_ic
     )
@@ -226,6 +215,107 @@ def run_temporal_config_task(payload: Mapping[str, object]) -> dict[str, object]
         "seed_validation_rank_ic": seed_rank_ic,
         "worst_seed": ensemble.worst_seed,
     }
+
+
+@dataclass(frozen=True)
+class TemporalSeedFit:
+    """One seeded temporal fit's durable output: its checkpoint and its validation scoring."""
+
+    seed: int
+    checkpoint_path: Path
+    predictions: pd.DataFrame
+    validation_rank_ic: float
+
+
+@dataclass(frozen=True)
+class TemporalSeedTask:
+    """One seed of the selected configuration -- the unit the M2 final fit parallelises over.
+
+    Carries the fold spec rather than batches, so a worker spawned for a final fit rebuilds the
+    panels exactly as one spawned for a search trial does, and the cache means a worker that runs
+    several of them pays for the reconstruction once.
+    """
+
+    config_payload: Mapping[str, Any]
+    seed: int
+    fold: TemporalFoldSpec
+    train_dataset_id: str
+    validation_dataset_id: str
+    checkpoint_root: Path
+    checkpoint_prefix: str
+    max_epochs: int
+    early_stopping_patience: int
+
+
+def run_temporal_seed_task(payload: Mapping[str, object]) -> dict[str, object]:
+    """Train ONE temporal seed in a spawned worker, returning what the bundle write consumes."""
+    task = payload.get("task")
+    if not isinstance(task, TemporalSeedTask):
+        raise ValueError("parallel temporal seed task is malformed")
+    _configure_worker_threads(task.fold.torch_threads)
+    fitted = _fit_one_temporal_seed(
+        config_payload=task.config_payload,
+        seed=task.seed,
+        fold=task.fold,
+        train_dataset_id=task.train_dataset_id,
+        validation_dataset_id=task.validation_dataset_id,
+        checkpoint_root=task.checkpoint_root,
+        checkpoint_prefix=task.checkpoint_prefix,
+        max_epochs=task.max_epochs,
+        early_stopping_patience=task.early_stopping_patience,
+    )
+    return {
+        "seed": fitted.seed,
+        "checkpoint_path": str(fitted.checkpoint_path),
+        "predictions": fitted.predictions,
+        "validation_rank_ic": fitted.validation_rank_ic,
+    }
+
+
+def _fit_one_temporal_seed(
+    *,
+    config_payload: Mapping[str, Any],
+    seed: int,
+    fold: TemporalFoldSpec,
+    train_dataset_id: str,
+    validation_dataset_id: str,
+    checkpoint_root: Path,
+    checkpoint_prefix: str,
+    max_epochs: int,
+    early_stopping_patience: int,
+) -> TemporalSeedFit:
+    """One seeded temporal fit, defined once for the config-level and the seed-level worker."""
+    batches = temporal_fold_batches(fold)
+    configure_reproducibility(seed)
+    model = temporal_model(config_payload, fold.factor_order)
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=float(config_payload["learning_rate"])
+    )
+    checkpoint_store = CheckpointStore(checkpoint_root)
+    run = run_validation_governed_training(
+        model,
+        optimizer,
+        train_batches=batches.train_batches,
+        validation_batches=batches.validation_batches,
+        train_view=DatasetView(role=DatasetRole.TRAIN, dataset_id=train_dataset_id),
+        validation_view=DatasetView(
+            role=DatasetRole.VALIDATION, dataset_id=validation_dataset_id
+        ),
+        trainer_config=TrainerConfig(
+            max_epochs=max_epochs,
+            early_stopping_patience=early_stopping_patience,
+        ),
+        seed=seed,
+        checkpoint_store=checkpoint_store,
+        checkpoint_prefix=checkpoint_prefix,
+    )
+    predictions = percentile_frame(model, batches.validation_batches)
+    return TemporalSeedFit(
+        seed=seed,
+        checkpoint_path=checkpoint_store._root / run.checkpoint_ids[-1] / "checkpoint.pt",
+        predictions=predictions,
+        validation_rank_ic=validation_rank_ic(predictions, batches.validation_labels),
+    )
 
 
 def _restored_preprocessor(spec: TemporalFoldSpec) -> FoldPreprocessor:
@@ -258,7 +348,10 @@ __all__ = [
     "TemporalConfigTask",
     "TemporalFoldBatches",
     "TemporalFoldSpec",
+    "TemporalSeedFit",
+    "TemporalSeedTask",
     "run_temporal_config_task",
+    "run_temporal_seed_task",
     "temporal_fold_batches",
     "temporal_model",
     "temporal_panel_batches",
