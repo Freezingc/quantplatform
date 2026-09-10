@@ -63,11 +63,18 @@ def search_granularity(
 ) -> Literal["config", "seed"]:
     """Pick the task granularity with the shorter makespan; ties go to the coarser one.
 
-    The measured case is M2: 24 configurations, but 20 workers because F4's window panels put each
-    worker at ~21.6 GiB and the host has ~497 GiB. Config-level runs two rounds of three fits --
-    six fit-times, because the four configs left over still cost a whole round -- while seed-level
-    runs four rounds of one fit. A third less wall clock on a multi-day run, from choosing the unit
-    of work by arithmetic instead of by whether the workers look busy.
+    The motivating case is M2: 24 configurations and 3 seeds, so 72 fits. At the 20 workers that
+    fitted the host when a worker held ~21.6 GiB, config-level runs two rounds of three fits --
+    six fit-times, because the four configurations left over still cost a whole round -- while
+    seed-level runs four rounds of one fit. A third less wall clock on a multi-day run, from
+    choosing the unit of work by arithmetic instead of by whether the workers look busy.
+
+    The makespan is a step function of the worker count, so the choice can flip on one worker.
+    After the temporal batch builder was rebuilt -- a worker now holds ~17.5 GiB at F4 and the
+    measured parent ~24.7 GiB, so 24 workers fit where 20 did -- 24 workers make the two
+    granularies tie at three fit-times each and the tie-break below decides, while 23 workers put
+    seed-level back at four. Choosing by arithmetic is what makes that visible before the run
+    instead of after it.
 
     Coarse wins ties: it dispatches a third as many tasks, returns scalars instead of per-seed
     prediction frames, and keeps one worker per configuration.
@@ -119,9 +126,10 @@ def resident_memory_gb(path: Path = Path("/proc/self/status")) -> float | None:
     """This process's resident set in gibibytes, or None when the host does not publish it.
 
     The parent is not a spectator in a temporal run: it holds the prepared train, validation and
-    test frames and all three batch sets, including the test panel that concatenates them, so it can
-    be larger than any single worker. A budget that counted only the workers would pass 20 x 21.6
-    GiB against a 447 GiB ceiling and then be killed for the 30 GiB nobody wrote down.
+    test frames and all three batch sets, including the test panel that concatenates them. Measured
+    on the real F1 fold it peaks at 19.15 GiB against a worker's 13.61 GiB -- 41% larger, because it
+    also carries the 242 TEST batches -- so a budget that counted only the workers would pass
+    20 x 21.6 GiB against a 447 GiB ceiling and then be killed for the parent nobody wrote down.
     """
     try:
         text = path.read_text(encoding="utf-8")
