@@ -8,8 +8,8 @@ import torch
 
 from research_v2.training.seeds import (
     UNSEEDED,
-    configure_torch_threads,
     configure_reproducibility,
+    configure_torch_threads,
     describe_runtime_environment,
 )
 

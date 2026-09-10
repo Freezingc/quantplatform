@@ -70,14 +70,18 @@ from research_v2.evaluation.selection_evidence import (
 )
 from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.inference.torch_scoring import (
-    PredictionBatch,
     concat_date_scores as _concat_date_scores,
-    mean_seed_percentile_scores as _mean_seed_percentile_scores,
-    percentile_frame as _percentile_frame,
-    prepare_frame as _prepare_frame,
-    score_batch as _score_batch,
 )
-from research_v2.models.base import ModelSignature, predictions_to_frame
+from research_v2.inference.torch_scoring import (  # noqa: F401 - script-module compatibility alias
+    mean_seed_percentile_scores as _mean_seed_percentile_scores,
+)
+from research_v2.inference.torch_scoring import (
+    percentile_frame as _percentile_frame,
+)
+from research_v2.inference.torch_scoring import (
+    prepare_frame as _prepare_frame,
+)
+from research_v2.models.base import ModelSignature
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import (
@@ -976,7 +980,11 @@ def m0r_config_grid(max_configs: int | None = None) -> list[dict[str, Any]]:
 
 
 def _m0_grid(args: argparse.Namespace, max_configs: int | None) -> list[dict[str, Any]]:
-    grid_fn = m0_refined_config_grid if getattr(args, "grid", "base") == "refined" else m0_config_grid
+    grid_fn = (
+        m0_refined_config_grid
+        if getattr(args, "grid", "base") == "refined"
+        else m0_config_grid
+    )
     return grid_fn(max_configs)
 
 
@@ -2096,7 +2104,7 @@ def _run_full_cross_section(
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
             configs=configs,
-            budget_for=lambda _config: torch_budget,
+            budget_for=lambda _config, budget=torch_budget: budget,
         )
         if adopted_fold is not None:
             fold_reports.append(adopted_fold.report_entry)
@@ -2566,7 +2574,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             validation_dataset_id=validation_dataset_id,
             factor_order=factor_order,
             configs=configs,
-            budget_for=lambda _config: torch_budget,
+            budget_for=lambda _config, budget=torch_budget: budget,
         )
         if adopted_fold is not None:
             fold_reports.append(adopted_fold.report_entry)
@@ -2814,7 +2822,8 @@ def _maybe_emit_promotion_evidence(args: argparse.Namespace, report: dict[str, A
         # and still cannot produce registry evidence is a real failure, not a warning.
         print(f"promotion evidence emission FAILED: {error}", file=sys.stderr)
         raise SystemExit(3) from error
-    print(f"promotion evidence: {json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True)}")
+    rendered = json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True)
+    print(f"promotion evidence: {rendered}")
 
 
 def main() -> None:

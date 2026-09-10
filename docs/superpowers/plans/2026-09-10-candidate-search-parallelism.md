@@ -35,10 +35,10 @@
 - `configure_torch_threads(thread_count: int) -> None` rejects zero and configures both Torch thread pools.
 - `_parallel_execution(args) -> ParallelExecution` parses/validates explicit opt-in settings.
 
-- [ ] Write failing tests that a parallel run without `--torch-threads` is rejected and a zero thread count is invalid.
-- [ ] Run the two targeted test files and confirm the APIs are absent.
-- [ ] Add the CLI flags, validation helper, and thread setter.
-- [ ] Re-run the targeted tests and commit with `feat(training): declare parallel torch execution settings`.
+- [x] Write failing tests that a parallel run without `--torch-threads` is rejected and a zero thread count is invalid.
+- [x] Run the two targeted test files and confirm the APIs are absent.
+- [x] Add the CLI flags, validation helper, and thread setter.
+- [x] Re-run the targeted tests (`70 passed`) and commit with `feat(training): declare parallel torch execution settings` (`05d3922`).
 
 ### Task 2: Add an ordered spawned scheduler
 
@@ -52,10 +52,10 @@
 - `SearchTask(index: int, payload: Mapping[str, object])` binds every result to one grid position.
 - `run_parallel_search(tasks, workers, run_task) -> list[tuple[int, dict[str, object]]]` uses `multiprocessing.get_context("spawn")`, caps workers to task count, propagates failures, and returns index order.
 
-- [ ] Write failing tests for reverse completion ordering, worker-cap calculation, and worker exception propagation.
-- [ ] Run `python -m pytest tests/unit/training/test_parallel_search.py -q` and confirm the missing-module failure.
-- [ ] Implement the scheduler with `ProcessPoolExecutor` and a spawned context.
-- [ ] Re-run the scheduler tests and commit with `feat(training): add ordered spawned config scheduler`.
+- [x] Write failing tests for reverse completion ordering, worker-cap calculation, and worker exception propagation.
+- [x] Run `python -m pytest tests/unit/training/test_parallel_search.py -q` and confirm the missing-module failure.
+- [x] Implement the scheduler with `ProcessPoolExecutor` and a spawned context.
+- [x] Re-run the scheduler tests (`3 passed`) and commit with `feat(training): add ordered spawned config scheduler` (`0f77b95`).
 
 ### Task 3: Route M1/M3 search trials through the scheduler
 
@@ -67,13 +67,13 @@
 **Interfaces:**
 
 - `CrossSectionConfigTask` contains all three-seed search inputs and a config/seed-unique checkpoint prefix.
-- `_cross_section_config_result(task) -> dict[str, Any]` is module-level and writes no bundle, selection evidence, prediction, or report.
+- `run_cross_section_config_task(payload) -> dict[str, object]` is package-level and writes no bundle, selection evidence, prediction, or report.
 - `_ordered_search_results(configs, completed) -> list[dict[str, Any]]` restores grid order before best-config selection.
 
-- [ ] Write a failing test that reverse-order scheduler results become increasing-index search results.
-- [ ] Run that test and confirm the ordering helper is absent.
-- [ ] Extract the existing three-seed config body into the worker and call the scheduler only for M1/M3 when workers exceed one. Preserve the serial loop for one worker.
-- [ ] Run the complete candidate-driver suite and commit with `feat(training): parallelize cross-sectional config search`.
+- [x] Write a failing test that reverse-order scheduler results become increasing-index search results.
+- [x] Run that test and confirm the ordering helper is absent.
+- [x] Extract the existing three-seed config body into the worker and call the scheduler only for M1/M3 when workers exceed one. Preserve the serial loop for one worker.
+- [x] Run the complete candidate-driver suite (`69 passed`, including a real spawned three-seed worker) and commit with `feat(training): parallelize cross-sectional config search` (`77e8401`).
 
 ### Task 4: Verify the supported surface
 
@@ -81,7 +81,7 @@
 
 - Modify: this plan to check completed steps and record exact commands/results.
 
-- [ ] Run `python -m pytest tests/unit/training/test_reproducibility_seeds.py tests/unit/training/test_parallel_search.py tests/unit/training/test_search_resume.py tests/unit/scripts/test_run_real_candidate_training.py -q`.
-- [ ] Run `python -m pytest tests/unit/evaluation -q`.
-- [ ] Run `ruff check src tests scripts/run_real_candidate_training.py`.
-- [ ] Run `git diff --check`, record exact results, and commit with `docs(training): record parallel search verification`.
+- [x] Run `python -m pytest tests/unit/training/test_reproducibility_seeds.py tests/unit/training/test_parallel_search.py tests/unit/training/test_search_resume.py tests/unit/scripts/test_run_real_candidate_training.py -q` (`108 passed`).
+- [x] Run `python -m pytest tests/unit/evaluation -q` (`72 passed`; two pre-existing pandas FutureWarnings).
+- [x] Run `ruff check src tests scripts/run_real_candidate_training.py` (`All checks passed!`).
+- [x] Run `git diff --check`, record exact results, and commit with `docs(training): record parallel search verification`.

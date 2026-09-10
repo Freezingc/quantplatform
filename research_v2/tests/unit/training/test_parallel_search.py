@@ -6,7 +6,6 @@ from collections.abc import Mapping
 from datetime import date
 
 import pandas as pd
-
 import pytest
 
 from research_v2.training.cross_section_search import (
