@@ -120,6 +120,7 @@ from research_v2.training.temporal_search import (
     TemporalSeedTask,
     run_temporal_config_task,
     run_temporal_seed_task,
+    temporal_test_panel_batches,
 )
 from research_v2.training.trainer import DatasetRole, DatasetView, TrainerConfig
 
@@ -2720,10 +2721,15 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         validation_batches = _temporal_panel_batches(
             validation_panel, factor_order, validation_dates
         )
-        test_panel = pd.concat(
-            [prepared_train, prepared_validation, prepared_test], ignore_index=True
+        # The same composition the reproduction audit rebuilds from the published artifacts, so
+        # the audit and this run cannot disagree about what the TEST panel was.
+        test_batches = temporal_test_panel_batches(
+            prepared_train,
+            prepared_validation,
+            prepared_test,
+            factor_order,
+            test_dates,
         )
-        test_batches = _temporal_panel_batches(test_panel, factor_order, test_dates)
 
         search_results: list[dict[str, Any]] = []
         # M2's card family and code version are derived from the WINNING config (TEMPORAL_GRU or

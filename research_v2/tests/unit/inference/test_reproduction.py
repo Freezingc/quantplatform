@@ -18,7 +18,9 @@ import pandas as pd
 import pytest
 import torch
 
+from research_v2.datasets.manifest import build_split_dataset_manifest
 from research_v2.datasets.preprocessing import FoldPreprocessor
+from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.inference import reproduction
 from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.inference.reproduction import (
@@ -29,6 +31,7 @@ from research_v2.inference.reproduction import (
 )
 from research_v2.inference.torch_scoring import concat_date_scores, prepare_frame, score_batch
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
+from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
 from research_v2.registry.registry_store import RegistryStoreError
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
@@ -243,21 +246,24 @@ def _bundle(
     dataset_id: str = "ds-1",
     test: pd.DataFrame | None = None,
     store: ModelArtifactBundleStore | None = None,
+    workspace: Path | None = None,
 ) -> reproduction._FoldBundle:
     return reproduction._FoldBundle(
         fold_id="F1",
         model_artifact_id="m1-f1",
         family=family,
         dataset_id=dataset_id,
+        report_dataset_id=dataset_id,
         factor_order=("f1", "f2"),
         store=store if store is not None else ModelArtifactBundleStore(Path("/nonexistent-models")),
+        workspace=workspace if workspace is not None else Path("/nonexistent-workspace"),
         test=_scores([0.25, 0.5, 0.75]) if test is None else test,
     )
 
 
 def _recorders(monkeypatch: pytest.MonkeyPatch) -> dict[str, list[Any]]:
     """Replace both scorers with recorders, so routing is observable and nothing heavy runs."""
-    calls: dict[str, list[Any]] = {"lgbm": [], "torch": []}
+    calls: dict[str, list[Any]] = {"lgbm": [], "torch": [], "temporal": []}
 
     def lgbm(bundle: reproduction._FoldBundle) -> pd.DataFrame:
         calls["lgbm"].append(bundle)
@@ -267,8 +273,13 @@ def _recorders(monkeypatch: pytest.MonkeyPatch) -> dict[str, list[Any]]:
         calls["torch"].append(bundle)
         return _scores([0.25, 0.5, 0.75])
 
+    def temporal_torch(bundle: reproduction._FoldBundle) -> pd.DataFrame:
+        calls["temporal"].append(bundle)
+        return _scores([0.25, 0.5, 0.75])
+
     monkeypatch.setattr(reproduction, "_recompute_lgbm", lgbm)
     monkeypatch.setattr(reproduction, "_recompute_static_torch", static_torch)
+    monkeypatch.setattr(reproduction, "_recompute_temporal_torch", temporal_torch)
     return calls
 
 
@@ -279,7 +290,7 @@ def test_the_lgbm_families_route_to_the_lgbm_scorer_only(
     calls = _recorders(monkeypatch)
     reproduction._recompute_fold_scores(_bundle(family))
     assert len(calls["lgbm"]) == 1
-    assert calls["torch"] == []
+    assert calls["torch"] == [] and calls["temporal"] == []
 
 
 @pytest.mark.parametrize("family", ["RESIDUAL_MLP", "SET_ATTENTION"])
@@ -289,19 +300,22 @@ def test_the_static_torch_families_route_to_the_torch_scorer_only(
     calls = _recorders(monkeypatch)
     reproduction._recompute_fold_scores(_bundle(family))
     assert len(calls["torch"]) == 1
-    assert calls["lgbm"] == []
+    assert calls["lgbm"] == [] and calls["temporal"] == []
 
 
 @pytest.mark.parametrize("family", ["TEMPORAL_GRU", "TEMPORAL_TCN"])
-def test_the_temporal_families_are_refused_with_the_reason_they_cannot_be_reproduced(
+def test_the_temporal_families_route_to_the_temporal_scorer(
     family: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A silent skip would report a fold as reproduced that was never scored. M2's card is named by
-    the winning config, so the TCN spelling has to be refused for the same reason as the GRU one."""
+    """M2's card is named by the winning config, so both spellings have to reach the same scorer.
+
+    Routing a temporal bundle to the static scorer would not fail loudly: it would score the frozen
+    TEST frame without its history window and produce numbers that merely look like ranks.
+    """
     calls = _recorders(monkeypatch)
-    with pytest.raises(ReproductionError, match="20-day history window"):
-        reproduction._recompute_fold_scores(_bundle(family))
-    assert calls == {"lgbm": [], "torch": []}
+    reproduction._recompute_fold_scores(_bundle(family))
+    assert len(calls["temporal"]) == 1
+    assert calls["lgbm"] == [] and calls["torch"] == []
 
 
 @pytest.mark.parametrize("family", ["SOMETHING_NEW", "residual_mlp", "LGBM"])
@@ -312,7 +326,7 @@ def test_an_unallowlisted_family_is_refused_by_name(
     with pytest.raises(ReproductionError, match="not allowlisted for reproduction") as info:
         reproduction._recompute_fold_scores(_bundle(family))
     assert repr(family) in str(info.value)
-    assert calls == {"lgbm": [], "torch": []}
+    assert calls == {"lgbm": [], "torch": [], "temporal": []}
 
 
 def test_the_lgbm_path_loads_for_evaluation_and_passes_no_promotion(
@@ -419,7 +433,7 @@ def test_a_bundle_with_no_readable_preprocessing_artifact_is_refused(tmp_path: P
         reproduction._recorded_preprocessor_hash(bundle)
 
 
-@pytest.mark.parametrize("payload", [{"state_hash": ""}, {"state_hash": 7}, {}, []])
+@pytest.mark.parametrize("payload", [{"state_hash": ""}, {"state_hash": 7}, {}])
 def test_a_preprocessing_artifact_without_a_usable_hash_is_refused(
     payload: object, tmp_path: Path
 ) -> None:
@@ -429,6 +443,15 @@ def test_a_preprocessing_artifact_without_a_usable_hash_is_refused(
     (bundle_root / "preprocessing.json").write_text(json.dumps(payload), encoding="utf-8")
     bundle = _bundle("RESIDUAL_MLP", store=ModelArtifactBundleStore(tmp_path))
     with pytest.raises(ReproductionError, match="records no preprocessor state hash"):
+        reproduction._recorded_preprocessor_hash(bundle)
+
+
+def test_a_preprocessing_artifact_that_is_not_an_object_is_refused(tmp_path: Path) -> None:
+    bundle_root = tmp_path / "m1-f1"
+    bundle_root.mkdir(parents=True)
+    (bundle_root / "preprocessing.json").write_text("[]", encoding="utf-8")
+    bundle = _bundle("RESIDUAL_MLP", store=ModelArtifactBundleStore(tmp_path))
+    with pytest.raises(ReproductionError, match="preprocessing artifact is not an object"):
         reproduction._recorded_preprocessor_hash(bundle)
 
 
@@ -519,8 +542,10 @@ def _torch_bundle(tmp_path: Path, test: pd.DataFrame) -> reproduction._FoldBundl
         model_artifact_id=model_id,
         family="RESIDUAL_MLP",
         dataset_id="ds-1",
+        report_dataset_id="ds-1",
         factor_order=_TWO_FACTORS,
         store=store,
+        workspace=tmp_path,
         test=test,
     )
 
@@ -566,8 +591,10 @@ def test_the_audit_scores_the_seed_ensemble_and_not_one_convenient_seed(tmp_path
         model_artifact_id=model_id,
         family="RESIDUAL_MLP",
         dataset_id="ds-1",
+        report_dataset_id="ds-1",
         factor_order=_TWO_FACTORS,
         store=store,
+        workspace=tmp_path,
         test=test,
     )
     audited = reproduction._recompute_static_torch(bundle)
@@ -616,3 +643,170 @@ def test_the_scores_do_not_depend_on_the_stored_labels_at_all(tmp_path: Path) ->
         _torch_bundle(tmp_path / "zeroed", _real_frame(labels=0.0))
     )
     pd.testing.assert_frame_equal(real, zeroed, check_exact=True)
+
+
+# ---------------------------------------------------------------------------------------------
+# The temporal path: a real TemporalGRU bundle over a real published fold, whose TEST scores come
+# from a window panel rather than from the frozen frame alone.
+# ---------------------------------------------------------------------------------------------
+
+_TEMPORAL_TRAIN_DAYS = [date(2025, 1, day) for day in range(1, 21)]
+_TEMPORAL_VALIDATION_DAYS = [date(2025, 1, day) for day in range(21, 31)]
+_TEMPORAL_TEST_DAYS = [date(2025, 2, day) for day in range(1, 6)]
+# Two stocks per TEST date carry an unusable label, so the temporal panel drops them and the
+# remaining thirty sit exactly on the batch builder's per-date minimum.
+_TEMPORAL_UNLABELLED = 2
+
+
+def _temporal_frame(
+    days: list[date], rng: np.random.Generator, *, unlabelled: int = 0
+) -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+    for day in days:
+        for index in range(_STOCKS_PER_DAY):
+            row: dict[str, Any] = {
+                "signal_date": day,
+                "ts_code": f"S{index:03d}",
+                "raw_return_5d": float(rng.standard_normal()) * 0.01,
+                "label_valid": index >= unlabelled,
+            }
+            for name in _TWO_FACTORS:
+                row[name] = float(rng.standard_normal())
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def _temporal_bundle(tmp_path: Path) -> reproduction._FoldBundle:
+    """Publish a fold and freeze a real three-seed TemporalGRU bundle over it."""
+    rng = np.random.default_rng(17)
+    frames = {
+        "train": _temporal_frame(_TEMPORAL_TRAIN_DAYS, rng),
+        "validation": _temporal_frame(_TEMPORAL_VALIDATION_DAYS, rng),
+        "test": _temporal_frame(_TEMPORAL_TEST_DAYS, rng, unlabelled=_TEMPORAL_UNLABELLED),
+    }
+    preprocessor = FoldPreprocessor(factor_order=_TWO_FACTORS)
+    preprocessor.fit(frames["train"].loc[:, list(_TWO_FACTORS)], role="TRAIN")
+    manifest = build_split_dataset_manifest(
+        frames,
+        business_keys=("signal_date", "ts_code"),
+        metadata={
+            "fold_id": "F1",
+            "factor_order": list(_TWO_FACTORS),
+            "data_versions": {"label_daily": {"2025-01": "v1"}},
+        },
+    )
+    DatasetArtifactStore(tmp_path / "datasets").write(
+        manifest, frames, preprocessing={"assembler": "test"}
+    )
+    config: dict[str, Any] = {
+        "raw_factor_count": len(_TWO_FACTORS),
+        "hidden_dim": 4,
+        "dropout": 0.0,
+    }
+    seed_checkpoints: dict[int, Path] = {}
+    prototype: TemporalGRU | None = None
+    for seed in REQUIRED_SEEDS:
+        torch.manual_seed(seed)
+        model = TemporalGRU(TemporalGRUConfig(**config))
+        prototype = model if prototype is None else prototype
+        path = tmp_path / f"seed-{seed}.pt"
+        torch.save({"model_state_dict": model.state_dict()}, path)
+        seed_checkpoints[seed] = path
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    assert prototype is not None
+    store.write(
+        "m2-f1",
+        model_card={
+            "dataset_id": manifest.dataset_id,
+            "family": "TEMPORAL_GRU",
+            "model_status": "WALK_FORWARD_PASSED",
+            "model_code_version": "temporal-gru-1",
+        },
+        config=config,
+        signature=asdict(prototype.artifact_signature()),
+        feature_order=_TWO_FACTORS,
+        preprocessing={
+            "state_hash": preprocessor.state_hash,
+            "state_payload": preprocessor.state_payload(),
+        },
+        seed_checkpoints=seed_checkpoints,
+        validation_predictions=pd.DataFrame(
+            {"signal_date": ["2025-01-21"], "ts_code": ["S002"], "percentile_rank": [0.5]}
+        ),
+    )
+    return reproduction._FoldBundle(
+        fold_id="F1",
+        model_artifact_id="m2-f1",
+        family="TEMPORAL_GRU",
+        dataset_id=manifest.dataset_id,
+        report_dataset_id=manifest.dataset_id,
+        factor_order=_TWO_FACTORS,
+        store=store,
+        workspace=tmp_path,
+        test=frames["test"],
+    )
+
+
+def test_the_temporal_path_closes_on_a_real_bundle(tmp_path: Path) -> None:
+    bundle = _temporal_bundle(tmp_path)
+    scores = reproduction._recompute_temporal_torch(bundle)
+    assert set(scores.columns) == {"signal_date", "ts_code", "score"}
+    days = set(pd.to_datetime(scores["signal_date"]).dt.date)
+    # History-only dates must not leak in: the panel contains train and validation rows too, and
+    # only the filter to the TEST dates keeps this a TEST scoring.
+    assert days == set(_TEMPORAL_TEST_DAYS)
+    labelled = _STOCKS_PER_DAY - _TEMPORAL_UNLABELLED
+    assert len(scores) == len(_TEMPORAL_TEST_DAYS) * labelled
+    pd.testing.assert_frame_equal(
+        scores, reproduction._recompute_temporal_torch(bundle), check_exact=True
+    )
+
+
+def test_the_temporal_row_set_is_the_labelled_subset(tmp_path: Path) -> None:
+    """M2 does not zero the label column, so unlabelled TEST rows never entered the panel.
+
+    That row set belongs to the run being audited. An audit that "helpfully" scored every TEST row
+    would report a row-set difference on every temporal fold and would be right to -- but for the
+    wrong reason, and it would never reproduce a genuine M2 run at all.
+    """
+    scores = reproduction._recompute_temporal_torch(_temporal_bundle(tmp_path))
+    assert len(scores) < len(_TEMPORAL_TEST_DAYS) * _STOCKS_PER_DAY
+    unlabelled_codes = [f"S{index:03d}" for index in range(_TEMPORAL_UNLABELLED)]
+    assert not scores["ts_code"].isin(unlabelled_codes).any()
+
+
+def test_scoring_is_bitwise_stable_across_thread_counts(tmp_path: Path) -> None:
+    """Why the audit may compare exactly without pinning threads.
+
+    Training is NOT thread-stable -- the plan measured three distinct checkpoint digests at 1/4/8
+    threads, which is why the search records bind the count. A forward pass is, so an audit run on a
+    host with a different core count still reproduces a run trained elsewhere. Measured rather than
+    assumed, because a torch upgrade could change it and the failure would look like tampering.
+    """
+    store, model_id, state_hash = _real_bundle(tmp_path)
+    loaded = load_bundle_for_evaluation(
+        store,
+        model_id,
+        expected_dataset_id="ds-1",
+        expected_feature_order=_TWO_FACTORS,
+        expected_preprocessor_hash=state_hash,
+        device=torch.device("cpu"),
+    )
+    assert loaded.preprocessor is not None
+    batches = build_static_training_batches(
+        prepare_frame(
+            _real_frame().assign(raw_return_5d=0.0), loaded.preprocessor, _TWO_FACTORS
+        ),
+        factor_order=_TWO_FACTORS,
+    )
+    day = _TWO_DAYS[0]
+    original = torch.get_num_threads()
+    try:
+        runs = []
+        for threads in (1, max(2, min(original, 8))):
+            torch.set_num_threads(threads)
+            scored = score_batch(loaded.models[0], batches[day])
+            runs.append(scored.sort_values("ts_code").to_numpy())
+        assert np.array_equal(runs[0], runs[1])
+    finally:
+        torch.set_num_threads(original)

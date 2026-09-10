@@ -15,9 +15,14 @@ through the evaluation path, so a run that failed a gate is auditable too and an
 reported as UNREGISTERED rather than refused. Read-only against the workspace: it writes nothing.
 Exits non-zero on any difference, so it is usable as a gate.
 
-Covers the LightGBM families (M0, M0R) and the static torch families (M1, M3). M2 TEMPORAL_GRU is
-refused by name, because reproducing it needs the historical panel and its 20-day window rather than
-the frozen TEST frame alone.
+Covers every family the chain can produce: the LightGBM carriers (M0, M0R), the static torch families
+(M1, M3), and the temporal ones (M2, whose card reads TEMPORAL_GRU or TEMPORAL_TCN after the winning
+config). A temporal fold's TEST scores come from a 20-day window panel, so the audit rebuilds that
+panel from the same three published splits through the one library function the driver itself calls.
+
+Exact equality needs no thread pinning, and that is measured: a forward pass is bitwise identical at
+1, 4, 16 and 52 intra-op threads. Training is not thread-stable, which is why the search records bind
+the count and this audit does not have to.
 
 Expect minutes, not seconds: each fold's dataset split is re-hashed in full before it is scored.
 """

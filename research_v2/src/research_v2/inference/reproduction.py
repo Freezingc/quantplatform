@@ -24,10 +24,17 @@ bundles" is precisely the question a failed run leaves open. The registry status
 up and reported, never enforced, and the promotion-gated serving path (``load_inference_artifact`` /
 ``load_lgbm_inference_artifact``) is untouched by this module.
 
-Scope: the LightGBM families (M0, M0R) and the static torch families (M1 RESIDUAL_MLP, M3
-SET_ATTENTION), whose score is a pure function of the bundle and the frozen frame. M2 TEMPORAL_GRU
-is refused with an explicit reason -- reproducing it needs the historical panel and the 20-day
-window construction, which is a different input contract rather than a different scorer.
+Scope: every family the chain can produce. The LightGBM carriers (M0, M0R) and the static torch
+families (M1 RESIDUAL_MLP, M3 SET_ATTENTION) score a frozen frame directly; the temporal families
+(M2, whose card reads TEMPORAL_GRU or TEMPORAL_TCN after the winning config) need the 20-day window
+panel, so they rebuild it from the same published splits through the one library function the driver
+itself calls. An audit that rebuilt the panel its own way would only ever be agreeing with itself.
+
+Exact equality is safe here without pinning threads, and that is measured rather than assumed: a
+forward pass is bitwise identical at 1, 4, 16 and 52 intra-op threads, so an audit on a host with a
+different core count still reproduces. TRAINING is not thread-stable -- three distinct checkpoint
+digests at 1/4/8 threads -- which is why the search records bind the thread count and this module
+does not have to.
 """
 
 from __future__ import annotations
@@ -61,6 +68,7 @@ from research_v2.registry.promotion_evidence import (
 )
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.static_batches import build_static_training_batches
+from research_v2.training.temporal_search import TemporalFoldSpec, temporal_test_batches
 
 if TYPE_CHECKING:
     from research_v2.registry.registry_store import ModelRegistryStore
@@ -104,8 +112,10 @@ class _FoldBundle:
     model_artifact_id: str
     family: str
     dataset_id: str
+    report_dataset_id: str
     factor_order: tuple[str, ...]
     store: ModelArtifactBundleStore
+    workspace: Path
     test: pd.DataFrame
 
 
@@ -169,8 +179,10 @@ def verify_candidate_predictions_reproduce(
             model_artifact_id=model_artifact,
             family=_family_of(card, fold_id),
             dataset_id=_checked_card_dataset_id(card, meta["dataset_id"], fold_id=fold_id),
+            report_dataset_id=meta["dataset_id"],
             factor_order=_feature_order(model_store, model_artifact),
             store=model_store,
+            workspace=workspace,
             test=dataset_store.load_split(
                 meta["dataset_id"], "test", expected_fold_id=fold_id
             ),
@@ -274,6 +286,22 @@ def _checked_card_dataset_id(
     return recorded
 
 
+def _recorded_preprocessing(bundle: _FoldBundle) -> Mapping[str, object]:
+    """The bundle's own preprocessing document: the state hash with the fitted state beside it."""
+    path = bundle.store.bundle_path(bundle.model_artifact_id) / "preprocessing.json"
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as error:
+        raise ReproductionError(
+            f"{bundle.model_artifact_id} has no readable preprocessing artifact: {error}"
+        ) from error
+    if not isinstance(document, dict):
+        raise ReproductionError(
+            f"{bundle.model_artifact_id} preprocessing artifact is not an object"
+        )
+    return document
+
+
 def _recorded_preprocessor_hash(bundle: _FoldBundle) -> str:
     """Read the preprocessor state hash the bundle itself records.
 
@@ -284,14 +312,7 @@ def _recorded_preprocessor_hash(bundle: _FoldBundle) -> str:
     training record can -- the guarantee here is that the stored scores are what THIS bundle
     computes, which is the guarantee the attribution chain does not provide.
     """
-    path = bundle.store.bundle_path(bundle.model_artifact_id) / "preprocessing.json"
-    try:
-        document = json.loads(path.read_text(encoding="utf-8"))
-    except OSError as error:
-        raise ReproductionError(
-            f"{bundle.model_artifact_id} has no readable preprocessing artifact: {error}"
-        ) from error
-    state_hash = document.get("state_hash") if isinstance(document, dict) else None
+    state_hash = _recorded_preprocessing(bundle).get("state_hash")
     if not isinstance(state_hash, str) or not state_hash:
         raise ReproductionError(f"{bundle.model_artifact_id} records no preprocessor state hash")
     return state_hash
@@ -305,11 +326,7 @@ def _recompute_fold_scores(bundle: _FoldBundle) -> pd.DataFrame:
     if family in _STATIC_TORCH_FAMILIES:
         return _recompute_static_torch(bundle)
     if family in _TEMPORAL_TORCH_FAMILIES:
-        raise ReproductionError(
-            f"{bundle.fold_id} bundle family {family!r} cannot be reproduced by this verifier: a "
-            "temporal model scores a 20-day history window per row, so reproducing it needs the "
-            "historical panel and the window construction, not just the frozen TEST frame"
-        )
+        return _recompute_temporal_torch(bundle)
     raise ReproductionError(
         f"{bundle.fold_id} bundle family {family!r} is not allowlisted for reproduction"
     )
@@ -355,6 +372,38 @@ def _recompute_static_torch(bundle: _FoldBundle) -> pd.DataFrame:
     )
     batches = build_static_training_batches(prepared, factor_order=bundle.factor_order)
     return concat_date_scores(loaded.models, batches)
+
+
+def _recompute_temporal_torch(bundle: _FoldBundle) -> pd.DataFrame:
+    """Recompute a temporal fold's frozen TEST scores by repeating the driver's own path.
+
+    The difference from the static families is the input, not the scorer: a TEST row is scored from
+    a 20-day window, so the panel is train+validation+test concatenated and then filtered to the
+    TEST dates. That composition lives in one library function the driver also calls, which is the
+    only reason this recomputation is evidence about the run rather than about this module.
+
+    The label column is NOT zeroed here, because the driver does not zero it for M2: a temporal TEST
+    row without a usable label never entered the panel, so the stored scores cover the labelled
+    subset. That row set is a property of the run being audited, and normalising it away here would
+    make the audit compare against something the chain never produced.
+    """
+    loaded = load_bundle_for_evaluation(
+        bundle.store,
+        bundle.model_artifact_id,
+        expected_dataset_id=bundle.dataset_id,
+        expected_feature_order=bundle.factor_order,
+        expected_preprocessor_hash=_recorded_preprocessor_hash(bundle),
+        device=torch.device("cpu"),
+    )
+    spec = TemporalFoldSpec(
+        workspace=bundle.workspace,
+        fold_id=bundle.fold_id,
+        dataset_id=bundle.report_dataset_id,
+        factor_order=bundle.factor_order,
+        preprocessing=_recorded_preprocessing(bundle),
+        torch_threads=torch.get_num_threads(),
+    )
+    return concat_date_scores(loaded.models, temporal_test_batches(spec))
 
 
 def _compare_scores(

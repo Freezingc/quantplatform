@@ -152,6 +152,49 @@ def temporal_model(
     )
 
 
+def temporal_test_panel_batches(
+    prepared_train: pd.DataFrame,
+    prepared_validation: pd.DataFrame,
+    prepared_test: pd.DataFrame,
+    factor_order: tuple[str, ...],
+    test_dates: set[date],
+) -> dict[date, TemporalTrainingBatch]:
+    """Windowed TEST batches over the train+validation+test panel.
+
+    A TEST row is scored from a window that reaches back through validation into train, so the
+    panel has to be all three concatenated; filtering to ``test_dates`` afterwards is what keeps a
+    batch from being emitted for a history-only date. One definition, shared by the driver that
+    produces the frozen TEST predictions and the audit that recomputes them -- an audit that
+    rebuilt the panel its own way would only ever be agreeing with itself.
+    """
+    panel = pd.concat(
+        [prepared_train, prepared_validation, prepared_test], ignore_index=True
+    )
+    return temporal_panel_batches(panel, factor_order, test_dates)
+
+
+def temporal_test_batches(spec: TemporalFoldSpec) -> Mapping[date, TemporalTrainingBatch]:
+    """Rebuild one fold's TEST-side batches from published artifacts alone.
+
+    This is the reproduction audit's entry point: it reads the three splits back out of the
+    immutable dataset artifact, restores the fitted preprocessing state the bundle carries, and
+    composes the panel exactly as the driver did when it scored the frozen TEST split.
+    """
+    store = DatasetArtifactStore(spec.workspace / "datasets")
+    preprocessor = _restored_preprocessor(spec)
+    train = store.load_split(spec.dataset_id, "train", expected_fold_id=spec.fold_id)
+    validation = store.load_split(spec.dataset_id, "validation", expected_fold_id=spec.fold_id)
+    test = store.load_split(spec.dataset_id, "test", expected_fold_id=spec.fold_id)
+    test_dates = set(pd.to_datetime(test["signal_date"]).dt.date)
+    return temporal_test_panel_batches(
+        prepare_frame(train, preprocessor, spec.factor_order),
+        prepare_frame(validation, preprocessor, spec.factor_order),
+        prepare_frame(test, preprocessor, spec.factor_order),
+        spec.factor_order,
+        test_dates,
+    )
+
+
 def temporal_fold_batches(spec: TemporalFoldSpec) -> TemporalFoldBatches:
     """Rebuild one fold's temporal batches, once per worker, from published artifacts only."""
     key = spec.cache_key()
@@ -355,4 +398,6 @@ __all__ = [
     "temporal_fold_batches",
     "temporal_model",
     "temporal_panel_batches",
+    "temporal_test_batches",
+    "temporal_test_panel_batches",
 ]
