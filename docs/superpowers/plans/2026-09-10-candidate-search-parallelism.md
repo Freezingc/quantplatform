@@ -151,8 +151,11 @@ models, only their checkpoint paths and their validation scoring.
 +0.009149 was measured at -- there is one config per fold, so `capped_worker_count` returned 1 and
 the search stayed serial even with `--parallel-workers 48`. Task 6 parallelised the final fits, which
 took such a run from six serial fits per fold to four; splitting the search's unit of work to
-(config, seed) takes it to two parallel rounds, i.e. **3x**, and it is what makes an end-to-end
-validation of the whole parallel path cost ~12 h instead of ~30 h.
+(config, seed) takes it to two parallel rounds, i.e. **3x**. At the measured ~2.05 h per fit
+(m1_v2: 18 fits in 37 h) that is 8 fit-times per run instead of 24 -- **~16 h instead of ~49 h** --
+which is what makes an end-to-end validation of the parallel path one overnight run rather than two
+days. Three workers is the ceiling here: a one-config fold holds only three seeds, so the remaining
+lever for this run shape is fold-level parallelism, not more workers.
 
 **Rule:** per fold, adopt what the search records cover, then use config-level tasks when the
 remaining configs can fill the workers (`len(unadopted) >= workers`) and seed-level tasks otherwise.
@@ -184,11 +187,17 @@ names, so a workspace does not record which granularity produced it.
 - [x] Full gate: `ruff check src tests` clean, `mypy src` 169 files clean, `pytest tests -q`
       **2008 passed / 45 skipped**.
 
-**Still open:** no full real-data run has used any parallel path. The library level has real spawned
-workers (static and temporal, config-level and seed-level, including three-seed reassembly through
-`build_seed_ensemble`) and the driver level has source-wiring assertions, but the end-to-end proof is
-a run. Task 7 is what made that proof affordable: a 1-config M1 run with `--parallel-workers 3
---torch-threads 1` is now ~12 h rather than ~30 h, and it would simultaneously validate the parallel
-path and produce an M1 candidate under a pinned, declared thread lineage. Starting it is a decision
-about numeric lineage (adjudication 2 in the compute brief), not an engineering one, so it has not
-been started unilaterally.
+**End-to-end validation launched 2026-09-10 21:52.** The library level had real spawned workers
+(static and temporal, config-level and seed-level, including three-seed reassembly through
+`build_seed_ensemble`) and the driver level had source-wiring assertions, but neither is a run. So a
+full real-data M1 run was started on the parallel path: `--family M1 --parallel-workers 3
+--torch-threads 1 --factor-source frozen_v2 --max-configs 1`, workspace `m1_parallel_v1`, with
+`QRV2_MODEL_REGISTRY_ROOT` pointed at a scratch directory under `/tmp` so nothing it produces can
+reach the real registry, and the serial `m1_v2` run in flight left untouched. Three spawned workers
+were observed training F1's three search seeds concurrently within six minutes of launch.
+
+What that run does and does not settle. It validates the machinery end to end on real data. It also
+starts a **new numeric lineage** -- threads pinned to 1 and recorded in every search record's
+runtime descriptor, which is the substance of adjudication 2 in the compute brief -- so its numbers
+are comparable to themselves and NOT to `m1_v2`'s, and promoting anything from it still needs that
+adjudication recorded. The serial run remains the one whose verdict answers the M1-vs-M0R question.
