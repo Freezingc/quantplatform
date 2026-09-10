@@ -115,9 +115,35 @@ def available_memory_gb(path: Path = Path("/proc/meminfo")) -> float | None:
     return None
 
 
+def resident_memory_gb(path: Path = Path("/proc/self/status")) -> float | None:
+    """This process's resident set in gibibytes, or None when the host does not publish it.
+
+    The parent is not a spectator in a temporal run: it holds the prepared train, validation and
+    test frames and all three batch sets, including the test panel that concatenates them, so it can
+    be larger than any single worker. A budget that counted only the workers would pass 20 x 21.6
+    GiB against a 447 GiB ceiling and then be killed for the 30 GiB nobody wrote down.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    for line in text.splitlines():
+        if not line.startswith("VmRSS:"):
+            continue
+        fields = line.split()
+        if len(fields) < 2:
+            return None
+        try:
+            kibibytes = int(fields[1])
+        except ValueError:
+            return None
+        return kibibytes / (1024 * 1024)
+    return None
+
+
 @dataclass(frozen=True)
 class WorkerMemoryBudget:
-    """Whether N workers each holding G GiB fit in what the host has, and how many would."""
+    """Whether N workers each holding G GiB fit beside the parent, and how many would."""
 
     workers: int
     per_worker_gb: float
@@ -125,6 +151,7 @@ class WorkerMemoryBudget:
     required_gb: float
     safe_workers: int
     fits: bool
+    parent_gb: float = 0.0
 
 
 def worker_memory_budget(
@@ -132,6 +159,7 @@ def worker_memory_budget(
     workers: int,
     per_worker_gb: float,
     available_gb: float,
+    parent_gb: float = 0.0,
     headroom: float = MEMORY_HEADROOM,
 ) -> WorkerMemoryBudget:
     """Arithmetic the run should do before it starts, not the kernel's OOM killer should do later.
@@ -145,17 +173,21 @@ def worker_memory_budget(
         raise ValueError("per_worker_gb must be a positive number")
     if available_gb <= 0:
         raise ValueError("available_gb must be a positive number")
+    if parent_gb < 0:
+        raise ValueError("parent_gb cannot be negative")
     if not 0 < headroom <= 1:
         raise ValueError("headroom must be in (0, 1]")
     limit = float(available_gb) * headroom
-    required = workers * float(per_worker_gb)
+    required = workers * float(per_worker_gb) + float(parent_gb)
+    safe = max(0, int((limit - float(parent_gb)) // float(per_worker_gb)))
     return WorkerMemoryBudget(
         workers=workers,
         per_worker_gb=float(per_worker_gb),
         available_gb=float(available_gb),
         required_gb=required,
-        safe_workers=max(0, int(limit // float(per_worker_gb))),
+        safe_workers=safe,
         fits=required <= limit,
+        parent_gb=float(parent_gb),
     )
 
 
@@ -205,6 +237,7 @@ __all__ = [
     "available_memory_gb",
     "capped_worker_count",
     "granularity_makespans",
+    "resident_memory_gb",
     "run_parallel_search",
     "search_granularity",
     "worker_memory_budget",

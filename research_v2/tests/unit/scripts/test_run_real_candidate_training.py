@@ -799,6 +799,7 @@ def test_a_worker_count_that_cannot_fit_is_refused_with_the_count_that_can(
 ) -> None:
     """48 temporal workers on this host is an OOM kill hours in, not a startup error."""
     monkeypatch.setattr(MODULE, "available_memory_gb", lambda: 497.0)
+    monkeypatch.setattr(MODULE, "resident_memory_gb", lambda: 0.0)
     args = _family_args(
         "M2", "--parallel-workers", "48", "--torch-threads", "1", "--worker-memory-gb", "25"
     )
@@ -809,10 +810,28 @@ def test_a_worker_count_that_cannot_fit_is_refused_with_the_count_that_can(
     assert "largest safe worker count is 17" in message
 
 
+def test_the_parent_process_is_counted_in_the_worker_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """20 workers x 21.6 GiB fits alone; with the temporal parent's own panels it does not."""
+    monkeypatch.setattr(MODULE, "available_memory_gb", lambda: 497.0)
+    monkeypatch.setattr(MODULE, "resident_memory_gb", lambda: 30.0)
+    args = _family_args(
+        "M2", "--parallel-workers", "20", "--torch-threads", "1", "--worker-memory-gb", "21.6"
+    )
+    with pytest.raises(SystemExit) as info:
+        MODULE._check_worker_memory(args, MODULE._parallel_execution(args))
+    message = str(info.value)
+    assert "462.0 GiB" in message
+    assert "this parent's 30.0 GiB" in message
+    assert "largest safe worker count is 19" in message
+
+
 def test_a_worker_count_that_fits_is_allowed_and_recorded(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(MODULE, "available_memory_gb", lambda: 497.0)
+    monkeypatch.setattr(MODULE, "resident_memory_gb", lambda: 0.0)
     args = _family_args(
         "M2", "--parallel-workers", "17", "--torch-threads", "1", "--worker-memory-gb", "25"
     )
@@ -820,11 +839,18 @@ def test_a_worker_count_that_fits_is_allowed_and_recorded(
     assert "worker memory budget: 17 x 25.0 GiB" in capsys.readouterr().out
 
 
+def test_the_memory_check_runs_per_fold_and_not_only_at_startup() -> None:
+    """At startup the parent has loaded nothing, so the check that matters is the per-fold one."""
+    source = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert source.count("_check_worker_memory(args, execution)") == 3
+
+
 def test_an_undeclared_footprint_prints_the_margin_instead_of_refusing(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """A new precondition must not turn an existing invocation into a failure."""
     monkeypatch.setattr(MODULE, "available_memory_gb", lambda: 497.0)
+    monkeypatch.setattr(MODULE, "resident_memory_gb", lambda: 0.0)
     args = _family_args("M1", "--parallel-workers", "8", "--torch-threads", "1")
     MODULE._check_worker_memory(args, MODULE._parallel_execution(args))
     out = capsys.readouterr().out

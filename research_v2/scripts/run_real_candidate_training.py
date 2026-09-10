@@ -109,6 +109,7 @@ from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.parallel_search import (
     SearchTask,
     available_memory_gb,
+    resident_memory_gb,
     run_parallel_search,
     search_granularity,
     worker_memory_budget,
@@ -286,12 +287,18 @@ def _check_worker_memory(args: argparse.Namespace, execution: _ParallelExecution
         return
     available = available_memory_gb()
     declared = getattr(args, "worker_memory_gb", None)
+    # The parent is counted too, and measured rather than assumed: in a temporal run it holds the
+    # prepared train, validation and test frames and all three batch sets, so it can outweigh a
+    # worker. Checking once at startup would measure it before any of that was loaded, which is why
+    # the torch loops call this again per fold, after assembly.
+    parent_gb = resident_memory_gb() or 0.0
     if declared is None:
         if available is not None:
             print(
                 f"parallel workers={execution.workers} with no declared footprint: "
-                f"MemAvailable={available:.1f} GiB, i.e. {available / execution.workers:.1f} GiB "
-                "per worker. Pass --worker-memory-gb to make that a checked precondition.",
+                f"MemAvailable={available:.1f} GiB, this parent holds {parent_gb:.1f} GiB, i.e. "
+                f"{max(0.0, available - parent_gb) / execution.workers:.1f} GiB per worker. "
+                "Pass --worker-memory-gb to make that a checked precondition.",
                 flush=True,
             )
         return
@@ -304,17 +311,20 @@ def _check_worker_memory(args: argparse.Namespace, execution: _ParallelExecution
         workers=execution.workers,
         per_worker_gb=float(declared),
         available_gb=available,
+        parent_gb=parent_gb,
     )
     if not budget.fits:
         raise SystemExit(
-            f"{budget.workers} workers x {budget.per_worker_gb:.1f} GiB = "
-            f"{budget.required_gb:.1f} GiB, but MemAvailable is {budget.available_gb:.1f} GiB and "
-            f"the run may commit 90% of it. The largest safe worker count is "
+            f"{budget.workers} workers x {budget.per_worker_gb:.1f} GiB, plus this parent's "
+            f"{budget.parent_gb:.1f} GiB, is {budget.required_gb:.1f} GiB, but MemAvailable is "
+            f"{budget.available_gb:.1f} GiB and the run may commit 90% of it. The largest safe "
+            f"worker count is "
             f"{budget.safe_workers}."
         )
     print(
-        f"worker memory budget: {budget.workers} x {budget.per_worker_gb:.1f} GiB = "
-        f"{budget.required_gb:.1f} GiB of {budget.available_gb:.1f} GiB available",
+        f"worker memory budget: {budget.workers} x {budget.per_worker_gb:.1f} GiB + parent "
+        f"{budget.parent_gb:.1f} GiB = {budget.required_gb:.1f} GiB of "
+        f"{budget.available_gb:.1f} GiB available",
         flush=True,
     )
 
@@ -2281,6 +2291,7 @@ def _run_full_cross_section(
             print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
             continue
         execution = _parallel_execution(args)
+        _check_worker_memory(args, execution)
         configs_to_run: Sequence[tuple[int, dict[str, Any]]] = tuple(enumerate(configs))
         if execution.workers > 1:
             if execution.torch_threads is None:
@@ -2862,6 +2873,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
             continue
         execution = _parallel_execution(args)
+        _check_worker_memory(args, execution)
         configs_to_run: Sequence[tuple[int, dict[str, Any]]] = tuple(enumerate(configs))
         fold_spec: TemporalFoldSpec | None = None
         if execution.workers > 1:

@@ -16,6 +16,7 @@ import pytest
 
 from research_v2.training.parallel_search import (
     available_memory_gb,
+    resident_memory_gb,
     worker_memory_budget,
 )
 
@@ -23,6 +24,12 @@ MEMINFO = """MemTotal:       659450880 kB
 MemFree:        131072000 kB
 MemAvailable:   521878944 kB
 Buffers:          1024000 kB
+"""
+
+STATUS = """Name:	python
+VmPeak:	31457280 kB
+VmRSS:	31457280 kB
+Threads:	52
 """
 
 
@@ -47,6 +54,39 @@ def test_available_memory_is_none_when_the_host_does_not_publish_it(tmp_path: Pa
     assert available_memory_gb(tmp_path / "absent") is None
     assert available_memory_gb(_meminfo(tmp_path, "MemTotal: 1 kB\n")) is None
     assert available_memory_gb(_meminfo(tmp_path, "MemAvailable:   not-a-number kB\n")) is None
+
+
+def test_resident_memory_reads_this_process_vmrss(tmp_path: Path) -> None:
+    path = tmp_path / "status"
+    path.write_text(STATUS, encoding="utf-8")
+    resident = resident_memory_gb(path)
+    assert resident is not None
+    assert resident == pytest.approx(30.0)
+    assert resident_memory_gb(tmp_path / "absent") is None
+    assert resident_memory_gb(_meminfo(tmp_path, "Name: python\n")) is None
+
+
+def test_the_parent_footprint_counts_against_the_same_ceiling() -> None:
+    """The M2 configuration this guard exists for: 20 workers at the largest fold's footprint.
+
+    20 x 21.6 = 432 GiB fits under the 447.3 GiB of usable headroom on its own, which is exactly
+    how a budget that forgot the parent gets written -- and the temporal parent holds the prepared
+    train, validation and test frames plus all three batch sets, so it is not a rounding error.
+    With a 30 GiB parent the request is 462 GiB and does not fit; nineteen workers do.
+    """
+    without_parent = worker_memory_budget(
+        workers=20, per_worker_gb=21.6, available_gb=497.0
+    )
+    assert without_parent.fits is True
+    with_parent = worker_memory_budget(
+        workers=20, per_worker_gb=21.6, available_gb=497.0, parent_gb=30.0
+    )
+    assert with_parent.fits is False
+    assert with_parent.required_gb == pytest.approx(462.0)
+    assert with_parent.safe_workers == 19
+    assert worker_memory_budget(
+        workers=19, per_worker_gb=21.6, available_gb=497.0, parent_gb=30.0
+    ).fits is True
 
 
 def test_a_budget_that_fits_is_reported_as_fitting() -> None:
