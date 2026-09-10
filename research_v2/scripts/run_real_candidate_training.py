@@ -1661,6 +1661,26 @@ def _temporal_search_budget(max_epochs: int) -> dict[str, Any]:
     )
 
 
+def _search_granularity(unadopted_count: int, workers: int) -> Literal["config", "seed"]:
+    """Which task granularity to dispatch -- or either one, when there is nothing to dispatch.
+
+    A fold whose search records are all adoptable but whose bundle was never written resumes with
+    zero unadopted configs, and that is exactly where a long run is most likely to have been
+    interrupted: after the search, during the final fits. ``search_granularity`` refuses a zero
+    config count, correctly, because a makespan over no work is meaningless -- but the caller still
+    has to reach ``_ordered_search_results`` and then the final fits. Both branches build an empty
+    task list for an empty grid and ``run_parallel_search`` returns immediately, so the label
+    returned here does not matter; what matters is that this does not raise.
+    """
+    if unadopted_count < 1:
+        return "config"
+    return search_granularity(
+        config_count=unadopted_count,
+        workers=workers,
+        seeds_per_config=len(REQUIRED_SEEDS),
+    )
+
+
 def _lightgbm_search_budget(config_payload: Mapping[str, Any]) -> dict[str, Any]:
     """The effective LightGBM budget: the round/patience constants plus the fitted hyperparameters.
 
@@ -2276,11 +2296,7 @@ def _run_full_cross_section(
             # Chosen by makespan, not by whether the workers look busy: a config task is three
             # fits that cannot be split once dispatched, so a grid that overruns the worker count
             # by one config pays a whole extra round of three.
-            granularity = search_granularity(
-                config_count=len(unadopted),
-                workers=execution.workers,
-                seeds_per_config=len(REQUIRED_SEEDS),
-            )
+            granularity = _search_granularity(len(unadopted), execution.workers)
             if granularity == "config":
                 pending_tasks = [
                     SearchTask(
@@ -2874,11 +2890,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                     completed[config_index] = adopted.record
                     continue
                 unadopted.append((config_index, config_payload))
-            granularity = search_granularity(
-                config_count=len(unadopted),
-                workers=execution.workers,
-                seeds_per_config=len(REQUIRED_SEEDS),
-            )
+            granularity = _search_granularity(len(unadopted), execution.workers)
             if granularity == "config":
                 pending_tasks = [
                     SearchTask(

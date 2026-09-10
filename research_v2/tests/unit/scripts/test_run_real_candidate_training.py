@@ -1003,10 +1003,50 @@ def test_an_unknown_seed_is_refused_too() -> None:
 def test_both_torch_families_drop_to_seed_granularity_on_a_narrow_grid() -> None:
     """Wiring: the rule that makes a --max-configs 1 run parallel, in both torch families."""
     source = SCRIPT_PATH.read_text(encoding="utf-8")
-    assert source.count("granularity = search_granularity(") == 2
+    assert source.count("_search_granularity(len(unadopted), execution.workers)") == 2
     assert source.count('if granularity == "config":') == 2
     assert source.count("index=config_index * len(REQUIRED_SEEDS) + slot,") == 2
     assert source.count("index // len(REQUIRED_SEEDS)") == 2
+
+
+def test_a_fully_adopted_fold_does_not_crash_the_granularity_choice() -> None:
+    """Zero unadopted configs is the state a run interrupted during its final fits resumes into.
+
+    The search records are all there, the bundle is not, so fold adoption declines and the search
+    adopts everything -- and a makespan over no work is meaningless, which is why the underlying
+    rule refuses it. The driver has to reach the final fits anyway, so it asks this wrapper instead.
+    """
+    assert MODULE._search_granularity(0, 20) == "config"
+    assert MODULE._search_granularity(0, 1) == "config"
+
+
+def test_the_wrapper_delegates_to_the_makespan_rule_when_there_is_work() -> None:
+    assert MODULE._search_granularity(24, 20) == "seed"
+    assert MODULE._search_granularity(24, 24) == "config"
+    assert MODULE._search_granularity(1, 3) == "seed"
+
+
+def test_dispatching_no_tasks_is_a_no_op_and_not_an_error() -> None:
+    """The guard above is only safe because an empty task list really does nothing."""
+    from research_v2.training.parallel_search import run_parallel_search
+
+    def never_called(payload: Any) -> dict[str, Any]:
+        raise AssertionError("an empty task list must not reach a worker")
+
+    assert run_parallel_search((), workers=20, run_task=never_called) == []
+
+
+def test_a_fully_adopted_grid_still_yields_ordered_search_results() -> None:
+    """The empty-dispatch path still has to produce the grid-ordered list the selection reads."""
+    configs = [{"hidden_dim": 64}, {"hidden_dim": 128}]
+    completed = {
+        1: {"config": {"hidden_dim": 128}, "ensemble_validation_rank_ic": 0.2},
+        0: {"config": {"hidden_dim": 64}, "ensemble_validation_rank_ic": 0.1},
+    }
+    ordered = MODULE._ordered_search_results(configs, completed)
+    assert [entry["config"] for entry in ordered] == configs
+    winner = max(ordered, key=lambda item: item["ensemble_validation_rank_ic"])
+    assert winner["config"] == configs[1]
 
 
 def test_ordered_search_results_restore_grid_order_after_parallel_completion() -> None:
