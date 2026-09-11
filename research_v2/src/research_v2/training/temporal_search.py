@@ -209,10 +209,29 @@ def temporal_fold_batches(spec: TemporalFoldSpec) -> TemporalFoldBatches:
     prepared_validation = prepare_frame(validation, preprocessor, spec.factor_order)
     train_dates = set(pd.to_datetime(train["signal_date"]).dt.date)
     validation_dates = set(pd.to_datetime(validation["signal_date"]).dt.date)
+    # Each name is dropped as soon as it is dead, which is before the windowing rather than at the
+    # end of the function, because the windowing is where the peak is set. Measured stage by stage
+    # on the real F1 fold, temporal_fold_batches reaches 12.77 GiB resident, of which 4.16 GiB is
+    # batch tensors and 2.08 GiB is frames -- and 1.24 GiB of those frames are the raw train split
+    # and the two prepared frames, all three dead by the time the batches are being built but still
+    # bound to a local, so held live through the most allocation-heavy phase. Across 24 workers
+    # that is about 30 GiB committed for nothing, against the 1.7 GiB of margin the M2 launch
+    # arithmetic had.
+    #
+    # ``validation`` is deliberately NOT released: it is returned as validation_labels, which is
+    # what the selection metric scores the ensemble against.
+    del train
     panel = pd.concat([prepared_train, prepared_validation], ignore_index=True)
+    # concat copies, so neither prepared half is needed once the panel exists -- but the train half
+    # is still read by the train windowing below, so only the validation half can go here.
+    del prepared_validation
+    train_batches = temporal_panel_batches(prepared_train, spec.factor_order, train_dates)
+    del prepared_train
+    validation_batches = temporal_panel_batches(panel, spec.factor_order, validation_dates)
+    del panel
     built = TemporalFoldBatches(
-        train_batches=temporal_panel_batches(prepared_train, spec.factor_order, train_dates),
-        validation_batches=temporal_panel_batches(panel, spec.factor_order, validation_dates),
+        train_batches=train_batches,
+        validation_batches=validation_batches,
         validation_labels=validation,
     )
     _FOLD_CACHE[key] = built

@@ -12,8 +12,10 @@ impossible. That is asserted as a byte budget rather than left as a comment.
 
 from __future__ import annotations
 
+import gc
 import math
 import pickle
+import weakref
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -27,6 +29,7 @@ from research_v2.datasets.manifest import build_split_dataset_manifest
 from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.inference.torch_scoring import prepare_frame
+from research_v2.training import temporal_search
 from research_v2.training.parallel_search import SearchTask, run_parallel_search
 from research_v2.training.temporal_batches import build_temporal_training_batches
 from research_v2.training.temporal_search import (
@@ -159,6 +162,96 @@ def test_the_worker_rebuilds_the_batches_the_parent_would_build(tmp_path: Path) 
     for day, batch in built.validation_batches.items():
         assert torch.equal(batch.inputs.features, expected["validation"][day].inputs.features)
     pd.testing.assert_frame_equal(built.validation_labels, expected["labels"])
+
+
+def test_the_frames_only_the_construction_needs_do_not_outlive_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """What a worker holds during its most allocation-heavy phase, measured rather than assumed.
+
+    On the real F1 fold ``temporal_fold_batches`` reaches 12.77 GiB of resident memory, of which
+    4.16 GiB is batch tensors and 2.08 GiB is frames -- and 1.24 GiB of those frames are the raw
+    train split plus the two prepared frames, every one of them dead by the time the batches are
+    being built but still bound to a local, so they are held live through the construction anyway.
+    At 24 workers that is about 30 GiB committed for nothing, against the 1.7 GiB of margin the M2
+    launch arithmetic had.
+
+    Watching the frames after the call returns proves nothing -- every local dies with the call --
+    and the first version of this test did exactly that, so it passed against the unmodified code.
+    What has to be observed is liveness DURING the construction, at the point the peak is set, so
+    the probe samples the weakrefs from inside ``temporal_panel_batches``, once per panel. The
+    phase that matters is the second one: by then the raw train split and both prepared frames are
+    dead in every sense except that a local still names them.
+
+    ``raw_validation`` must NOT be released -- it is returned as ``validation_labels``, which is
+    what the selection metric scores the ensemble against. Asserting both directions is what makes
+    this a statement about the right frames rather than about deleting things.
+    """
+    spec, _, _ = _published_fold(tmp_path)
+    live: dict[str, weakref.ReferenceType[pd.DataFrame]] = {}
+    samples: list[dict[str, bool]] = []
+
+    real_load = DatasetArtifactStore.load_split
+
+    def load_spy(self: DatasetArtifactStore, dataset_id: str, split_name: str, **kwargs: Any):
+        frame = real_load(self, dataset_id, split_name, **kwargs)
+        live[f"raw_{split_name}"] = weakref.ref(frame)
+        return frame
+
+    real_prepare = temporal_search.prepare_frame
+
+    def prepare_spy(
+        frame: pd.DataFrame, preprocessor: Any, factor_order: Any
+    ) -> pd.DataFrame:
+        prepared = real_prepare(frame, preprocessor, factor_order)
+        # Named by the split it was prepared from, recovered by identity from the weakrefs already
+        # recorded, so the two calls cannot be confused by row count.
+        origin = next(
+            (
+                name.removeprefix("raw_")
+                for name, ref in live.items()
+                if name.startswith("raw_") and ref() is frame
+            ),
+            "unknown",
+        )
+        live[f"prepared_{origin}"] = weakref.ref(prepared)
+        return prepared
+
+    real_panel = temporal_search.temporal_panel_batches
+
+    def panel_spy(frame: pd.DataFrame, factor_order: Any, allowed_dates: Any):
+        gc.collect()
+        samples.append({name: ref() is not None for name, ref in live.items()})
+        return real_panel(frame, factor_order, allowed_dates)
+
+    monkeypatch.setattr(DatasetArtifactStore, "load_split", load_spy)
+    monkeypatch.setattr(temporal_search, "prepare_frame", prepare_spy)
+    monkeypatch.setattr(temporal_search, "temporal_panel_batches", panel_spy)
+    built = temporal_fold_batches(spec)
+
+    assert built.train_batches and built.validation_batches
+    assert len(samples) == 2, f"expected the train panel then the validation panel, got {samples}"
+    during_validation = samples[1]
+    assert sorted(during_validation) == [
+        "prepared_train",
+        "prepared_validation",
+        "raw_train",
+        "raw_validation",
+    ], during_validation
+    assert during_validation["raw_train"] is False, (
+        "the raw train split is still held while the validation panel is windowed, though only its "
+        "signal dates were used and they were taken before any batch was built"
+    )
+    assert during_validation["prepared_train"] is False, (
+        "the prepared train frame is still held while the validation panel is windowed, though the "
+        "panel already copied it and the train batches already consumed it"
+    )
+    assert during_validation["prepared_validation"] is False, (
+        "the prepared validation frame is still held though the panel already copied it"
+    )
+    assert during_validation["raw_validation"] is True, (
+        "validation_labels is returned to the caller, so the validation frame must stay alive"
+    )
 
 
 def test_the_validation_panel_reaches_back_into_train(tmp_path: Path) -> None:
