@@ -332,16 +332,21 @@ def _allowlisted_factory(
     model_code_version = model_card.get("model_code_version")
     if not isinstance(model_code_version, str) or model_code_version != expected_code_version:
         raise ValueError("model_code_version is not allowlisted for model family")
-    if family == "RESIDUAL_MLP":
+    # Keyed on the classes' own family attributes, like the map above, rather than on transcribed
+    # literals. The map and this dispatch are two enumerations of the same set inside one module,
+    # and a family present in one but not the other is exactly the omission that made TEMPORAL_TCN
+    # unloadable; test_every_allowlisted_family_has_a_factory_behind_it constructs through here for
+    # every declared family, so the two cannot drift without a test failing.
+    if family == ResidualMLP.model_family:
         residual = _residual_config(config)
         return lambda: ResidualMLP(residual)
-    if family == "TEMPORAL_GRU":
+    if family == TemporalGRU.model_family:
         temporal_gru = _temporal_gru_config(config)
         return lambda: TemporalGRU(temporal_gru)
     if family == TemporalTCN.model_family:
         temporal_tcn = _temporal_tcn_config(config)
         return lambda: TemporalTCN(temporal_tcn)
-    if family == "SET_ATTENTION":
+    if family == SetAttention.model_family:
         set_attention = _set_attention_config(config)
         return lambda: SetAttention(set_attention)
     raise ValueError("model family is not allowlisted for inference")
