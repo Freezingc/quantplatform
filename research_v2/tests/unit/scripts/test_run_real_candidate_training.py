@@ -28,6 +28,7 @@ from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.families import TORCH_FAMILIES
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
+from research_v2.training.search_resume import SearchResume
 from research_v2.training.static_batches import build_static_training_batches
 
 SCRIPT_PATH = (
@@ -1910,3 +1911,107 @@ def test_a_bundle_written_by_the_drivers_own_writers_loads_back(
 
     assert len(loaded.models) == len(REQUIRED_SEEDS), label
     assert all(model.model_family == card_family for model in loaded.models), label
+
+
+_M2_FACTORS = ("f00", "f01", "f02")
+_M2_RUNTIME: dict[str, object] = {
+    "torch_version": "2.6.0+cu124",
+    "torch_intraop_threads": 1,
+    "torch_interop_threads": 1,
+}
+_M2_ENSEMBLE_RANK_IC = 0.0812345678901234
+
+
+def _m2_resume(tmp_path: Path) -> SearchResume:
+    """A resume handle bound the way ``run_full_m2`` binds one, constructed afresh each call."""
+    return SearchResume(
+        workspace=tmp_path,
+        fold_id="F1",
+        family="M2",
+        model_code_version="m2-temporal-search",
+        train_dataset_id="ds-1:train",
+        validation_dataset_id="ds-1:validation",
+        factor_order=_M2_FACTORS,
+        runtime=dict(_M2_RUNTIME),
+        enabled=True,
+    )
+
+
+def _m2_result(config: Any) -> dict[str, Any]:
+    """The exact shape ``run_temporal_config_task`` returns, which is what gets persisted."""
+    return {
+        "config": dict(config),
+        "ensemble_validation_rank_ic": _M2_ENSEMBLE_RANK_IC,
+        "seed_validation_rank_ic": {20260801: 0.0791, 20260802: 0.0812, 20260803: 0.0774},
+        "worst_seed": 20260803,
+    }
+
+
+def test_an_m2_search_record_round_trips_under_its_own_window_contract(tmp_path: Path) -> None:
+    """M2's resume bindings had no test at all, and M2 is the run that most needs resume to work.
+
+    ``tests/unit/training/test_search_resume.py`` pins the primitive thoroughly, but only ever
+    with a static carrier's bindings and a budget of ``{max_epochs, early_stopping_patience}``.
+    M2's budget also carries the window contract, and M2 is a multi-day run for which ``--resume``
+    is the planned way to cross a fold boundary. The cost of getting this wrong is already known
+    and was paid today: ``m1_v2`` had no adoptable records, so its four frozen folds could not be
+    resumed and its verdict had to be recovered out-of-band rather than archived.
+
+    The budget comes from the driver's own ``_temporal_search_budget`` rather than being spelled
+    out, so the window values under test are the ones a real run writes.
+    """
+    config = MODULE.m2_config_grid(None)[0]
+    budget = MODULE._temporal_search_budget(100)
+    _m2_resume(tmp_path).persist(0, config, _m2_result(config), budget=budget)
+
+    lookup = _m2_resume(tmp_path).adopt(0, config, budget=MODULE._temporal_search_budget(100))
+
+    assert lookup.record is not None, lookup.reason
+    assert lookup.record["config"] == dict(config)
+    assert lookup.record["ensemble_validation_rank_ic"] == pytest.approx(_M2_ENSEMBLE_RANK_IC)
+    assert set(lookup.record["seed_validation_rank_ic"]) == set(REQUIRED_SEEDS)
+    assert lookup.record["worst_seed"] == 20260803
+
+
+def test_an_m2_record_from_a_different_window_contract_is_refused(tmp_path: Path) -> None:
+    """The window is in the budget so a record built under another one cannot be adopted.
+
+    This is the reason ``_temporal_search_budget`` adds the window to the budget at all: a 20-day
+    window and a 10-day one are different models, so adopting across them would select out of a
+    mixture of two runs. Nothing tested it, and an untested guard against a silent wrong answer is
+    worth less than the wrong answer, because it also hides that the wrong answer is possible.
+    """
+    config = MODULE.m2_config_grid(None)[0]
+    budget = MODULE._temporal_search_budget(100)
+    assert "history_length" in budget and "minimum_valid_history_length" in budget, (
+        "the window contract must be part of M2's budget; without it a record built under one "
+        "window is adoptable by a run using another, which selects out of a mixture of two models"
+    )
+    _m2_resume(tmp_path).persist(0, config, _m2_result(config), budget=budget)
+
+    narrower = dict(budget, history_length=int(budget["history_length"]) - 10)
+    lookup = _m2_resume(tmp_path).adopt(0, config, budget=narrower)
+
+    assert lookup.record is None
+    assert "budget differs" in (lookup.reason or ""), lookup.reason
+
+
+def test_an_m2_record_cannot_be_adopted_by_the_other_architecture(tmp_path: Path) -> None:
+    """GRU and TCN share a fold and a grid index space, so the config hash is what separates them.
+
+    The M2 grid interleaves both architectures, and a record is filed under ``c{index}-{hash}``. If
+    the hash did not cover the architecture, a resumed run whose grid order shifted could adopt a
+    GRU result for a TCN configuration -- a silently different model, which is the failure mode the
+    resume primitive's own docstring names.
+    """
+    grids = MODULE.m2_config_grid(None)
+    gru = next(config for config in grids if config["family"] == "GRU")
+    tcn = next(config for config in grids if config["family"] == "TCN")
+    index = grids.index(gru)
+    budget = MODULE._temporal_search_budget(100)
+    _m2_resume(tmp_path).persist(index, gru, _m2_result(gru), budget=budget)
+
+    lookup = _m2_resume(tmp_path).adopt(index, tcn, budget=budget)
+
+    assert lookup.record is None
+    assert "no record at" in (lookup.reason or ""), lookup.reason
