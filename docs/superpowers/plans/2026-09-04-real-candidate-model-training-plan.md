@@ -276,6 +276,115 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       未采纳时的处置是**开跑前拒绝**（bundle 不可变、同折不允许两个 candidate 预测），
       而不是几小时后崩在 bundle 写入上。
 
+      **上面 3.4 的发射命令已作废（2026-09-12 01:40 备好发射包，02:20 按实测并发降级重算时间表）：
+      它用的是冻结集链之前的路径（`baseline_oos` 而非 `baseline_v2/baseline_oos`）、没有 `--workspace`、
+      没有 `--factor-source`、没有 `--parallel-workers`，且「预计 6–24 小时」与实测相差约 40–70 倍。
+      按下面的发射包发射。**
+
+      **M1 全网格发射包（单次拟合成本与并发降级因子均为实测，不是外推）**
+
+      **前置：M1 在 `FAMILY_ORDER_PREREQUISITES` 里没有任何前置**（`"M1": ()`），所以全网格运行
+      **不需要 `--prior-report`**。需要的是裁决 2：`--torch-threads` 取哪个值。下面的命令按**钉 1 线程**写，
+      理由是实测的——同一折同配置同三 seed 下，串行 52 线程与并行 1 线程的单次拟合墙钟是
+      **1.46 h 对 1.48 h（+1.4%）**，即静态家族的拟合几乎不吃 intra-op 线程（逐日小 batch 下同步开销主导，
+      与本节 2026-09-05 19:01 设备基准的结论 2「线程数对速度中性」一致），而钉住换来的是身份可移植与
+      「在任意宿主上可被精确审计」——后者已在 `m1_parallel_v1` 四折 3,553,163 行上实测为 `max|diff| 0.0`。
+
+      **单次拟合成本（实测，2026-09-12 00:55–01:40，只读 `m1_v2` 已发布的真实 F1 数据集，1 线程，
+      走驱动自己的 `_train_cross_section_seed` 与 `_m1_model_factory`，`max_epochs=1`）：**
+
+      | 网格单元 | 参数量 | 单 epoch | 相对最小单元 |
+      |---|---|---|---|
+      | `hidden 64 / blocks 1`（config0） | 10,497 | **318.4 s** | 1.00 |
+      | `hidden 128 / blocks 2` | 70,657 | **339.3 s** | 1.07 |
+      | `hidden 256 / blocks 3` | 404,481 | **409.8 s** | 1.29 |
+
+      **参数量差 38.5 倍，单 epoch 只差 1.29 倍**——成本几乎全在逐日循环的固定开销上（F1 有 967 个训练日 +
+      237 个验证日），不在矩阵乘上；这与本节 2026-09-05 19:38 那条独立测量（参数量增 39 倍、
+      CPU 每日成本只增 1.16 倍）互相印证。这**定量地回答了本节早先那句警告**：config0 确实是 27 格里
+      最小的一格、因此是下界，但这个下界只松 **10%（网格均值 348.9 s 对 318.4 s，+9.6%）到 29%（最贵格）**，
+      不是按参数量外推会得到的 4 倍。过两端格点的直线是
+      `epoch_seconds ≈ 310.1 + 0.12983 × (hidden × blocks)`，三个实测点的偏差 0.0% / 1.2% / 0.0%；
+      代入 `hidden × blocks` 的网格均值 298.67 得 **27 格的平均单 epoch = 348.9 s（5.81 min）**。
+
+      **每折的时长**（27 配置 × 3 seed = 81 次拟合；epoch 数取载体运行实测的 16–26 之间、均值 20，
+      即最佳 epoch 6–14 加 patience 10）：单次拟合 ≈ 20 × 348.9 s = **1.94 h**
+      （交叉核对：config0 实测 17–19 epoch × 318.4 s = 1.50–1.68 h，与载体运行的 1.46–1.48 h 一致）。
+
+      **时间表必须乘上并发降级因子——这是 01:40 那版草稿的实质错误**：它按零降级算，把 41 路写成
+      23.3 h ≈ 1.0 天，而实测降级会把它推到 27.8 h ≈ 1.2 天（低估 19%）。降级是**已实测**的：
+      `concurrency_scaling_benchmark.txt`（solo / 16 路 / 48 路同一工作量对照，`OMP_NUM_THREADS=1`、
+      独立 checkpoint 目录、0 失败）给出 **1 路 1.00×、16 路 1.14×、48 路 1.30×**，线性化得
+      `degradation(W) ≈ 1.06 + 0.005 W`（该式在 96 路给出 1.54×，与原基准「~96 路约 1.5×」的外推一致）。
+      轮数与粒度择优不是手算的，下表 `gran` / 粗 / 细三列由驱动自己的
+      `search_granularity` 与 `granularity_makespans` 在 2026-09-12 02:20 直接调用得出（打平取粗）：
+
+      | W | gran | 粗粒度 | 细粒度 | 轮数 | 降级 | 搜索 | 最终拟合 | 单折 | 四折 |
+      |---|---|---|---|---|---|---|---|---|---|
+      | 19 | seed | 6 | 5 | 5 | 1.16× | 11.2 h | 2.0 h | 13.2 h | 53.0 h ≈ 2.2 天 |
+      | 24 | seed | 6 | 4 | 4 | 1.18× | 9.2 h | 2.0 h | 11.2 h | 44.8 h ≈ 1.9 天 |
+      | 27 | config | 3 | 3 | 3 | 1.20× | 7.0 h | 2.0 h | 9.0 h | 36.0 h ≈ 1.5 天 |
+      | **41** | **seed** | 3 | **2** | **2** | **1.27×** | 4.9 h | 2.0 h | 6.9 h | **27.8 h ≈ 1.2 天** |
+      | 81 | seed | 3 | **1** | 1 | 1.47× | 2.8 h | 2.0 h | 4.9 h | 19.5 h ≈ 0.8 天 |
+
+      「最终拟合」一列按 3 个 seed 在飞、降级取 1.05× 算（2.04 h）——它**不随 W 缩小**，所以 W 越大
+      它占单折的比例越高（81 路时已占 42%）。**81 是自然天花板**：81 = 27 × 3 恰好用尽种子级并行，
+      再加 worker 也无轮可减。推荐 **41 路**：约 1.2 天、占 104 核中的 41，且 41 → 81 只再省 8.3 h
+      却把降级从 1.27× 推到 1.47×。
+
+      **与 M2 不同，M1 的约束是核数而不是内存，这一点已用当前宿主实测确认（2026-09-12 02:20，
+      调用驱动自己的 `worker_memory_budget`，parent 取帧释放后实测的 17.07 GiB）：**
+      批次张量只有 **0.27 GiB**（train 0.212 + validation 0.058），派发给 worker 的 pickle 载荷
+      **0.381 GiB**，批次构造 **9.9 s**（M2 的对应数字是 4.16 GiB 与 400 s）。按每 worker 2.5 GiB 声明：
+      `MemAvailable = 515.8 GiB`、可提交上限 `0.9 × 515.8 = 464.2 GiB`，**41 路需 119.6 GiB、
+      81 路需 219.6 GiB，两者 `fits=True`，`safe_workers = 178`**——远超 104 核，即护栏到 81 路都不会拒，
+      核数与轮数才是真约束。注意 2.5 GiB 这个声明值本身是由 0.381 GiB 载荷 + 0.27 GiB 批次 + torch 运行时
+      估的、**不是实测 RSS**；首折要用 `ps -o rss` 打在 spawned worker 上校正（见遥测项 2）。
+
+      ```bash
+      cd /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2
+      KEY=$(cat /data/zhangyudong/qrv2_research_artifacts/secrets/selection_evidence_hmac.key)
+      setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENCE_HMAC_KEY="$KEY" \
+        QRV2_MODEL_REGISTRY_ROOT=/data/zhangyudong/qrv2_research_artifacts/model_registry \
+        /data/zhangyudong/.conda/envs/quantyd/bin/python scripts/run_real_candidate_training.py \
+        --family M1 \
+        --baseline-artifacts /data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos \
+        --baseline-report /data/zhangyudong/qrv2_research_artifacts/baseline_v2/report.json \
+        --workspace /data/zhangyudong/qrv2_research_artifacts/m1_full_v1 \
+        --report /data/zhangyudong/qrv2_research_artifacts/m1_full_v1/report.json \
+        --factor-source frozen_v2 \
+        --parallel-workers 41 --torch-threads 1 --worker-memory-gb 2.5 --resume \
+        > /data/zhangyudong/qrv2_research_artifacts/m1_full_v1.log 2>&1 &
+      ```
+
+      **`cd` 不是可选的**：驱动在 `research_v2/scripts/` 下，而命令里的
+      `scripts/run_real_candidate_training.py` 是相对路径，从仓库根粘贴会在第一秒就死于
+      `can't open file`（M2 发射包同一问题，已一并修正）。
+
+      **不带 `--max-configs`**：默认即全 27 格。`--resume` 从第一次就带上（新工作区采纳为空、
+      行为等同不带；一旦中断，重启即采纳已完成的配置与折）。工作区必须**新开**：`m1_v2` 与
+      `m1_parallel_v1` 里已有 `m1-f1..f4` 的不可变 bundle，在同工作区跑全网格会在第一折就被
+      「bundle 不可变」拒掉。
+
+      **首折必须读的三项遥测**（与 M2 发射包同一套纪律）：
+
+      1. **并发降级是否与 2026-09-05 那条曲线一致**：上表的 1.27×@41 取自 16/48 路实测的线性化，
+         而那次基准跑在**旧折结构的小帧**（40 个训练日）上；新折是 967 训练日 + 237 验证日，
+         内存带宽压力不同，所以 41 路的降级**没有在这个帧尺寸上测过**。由检查点时间戳算单 epoch 成本，
+         与 `348.9 × 1.27 = 443 s` 比。**若超过约 1.5×（即 >523 s/epoch），杀掉、用更少 worker 重启**——
+         `--resume` 把代价从「全部重来」降到「只重跑未完成的部分」，且采纳检查已上提到构造折输入之前
+         （`554b3d0`），重启不会为已完成的折重付预处理与批次构造。
+      2. **worker 实际 RSS** 对 2.5 GiB 声明值的偏差。实测偏大就上调声明值；由于 `safe_workers = 178`，
+         声明值即使翻倍到 5 GiB 也仍不会触发护栏，所以这一项的风险是「预估失真」而不是「运行被拒」。
+      3. **每格的 epoch 数**：20 是从载体运行的 config0 观测（最佳 epoch 6–14 + patience 10）取的均值，
+         其余 26 格的早停点未知。首折跑完即可用真实的 `search_results` 校正整轮预估——这是上表最大的
+         单一不确定项，1.94 h/拟合与它成正比。
+
+      **三处诚实标注的未知**：dropout 对单 epoch 成本的影响没有单独测（三格分别是 0.0/0.1/0.2，
+      与 hidden/blocks 混在一起，无法从这三个点分离出来）；每格的 epoch 数在搜索跑完之前不可知；
+      41 路的降级因子是从另一个帧尺寸外推的。所以「约 1.2 天」是**基于实测单 epoch 成本 + 实测降级曲线 +
+      观测到的 epoch 数区间**的估计，不是保证。
+
 - [ ] **3.5 判定归档**：通过则渲染判定文档到
   `docs/reports/<date>-m1-real-candidate-walk-forward.md`（复用判定器模式），
   更新主计划 10.2；失败则归档失败报告并分析（不得用 2026 数据补救）。
@@ -322,7 +431,8 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       那时 F4 的安全 worker 数是 23、**24 路会被护栏拒**；同样条件下现在安全数是 **25**，24 路有余量地通过
       （497 GiB 下同样是 25）。注意护栏**每折装配后还会再查一次**，所以启动时过得去、到 F4 才拒仍有可能；
       `--resume` 把那种情况的代价降到"重启后采纳已完成的折"。**36 路（下一个台阶，搜索 17.2 h）需要
-      686.7 GiB，超过本机 660 GiB 总量，确定不可达**——24 路是当前足迹下的天花板，这是算术而不是保守估计。
+      686.7 GiB，超过本机 `MemTotal` 629.5 GiB（2026-09-12 02:25 实测；此处原写「660 GiB」，
+      结论不变且更宽裕）→ 确定不可达**——24 路是当前足迹下的天花板，这是算术而不是保守估计。
 
       ```bash
       # 发射前置检查：>=466.0 GiB 才用 24 路，否则退回 19 路（20-23 路没有意义）
@@ -330,6 +440,7 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       ```
 
 ```bash
+cd /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2   # 必需：下面用的是相对路径 scripts/...
 KEY=$(cat /data/zhangyudong/qrv2_research_artifacts/secrets/selection_evidence_hmac.key)
 setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENCE_HMAC_KEY="$KEY" \
   QRV2_MODEL_REGISTRY_ROOT=/data/zhangyudong/qrv2_research_artifacts/model_registry \
@@ -340,7 +451,7 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
   --workspace /data/zhangyudong/qrv2_research_artifacts/m2_v1 \
   --report /data/zhangyudong/qrv2_research_artifacts/m2_v1/report.json \
   --factor-source frozen_v2 \
-  --prior-report M1=/data/zhangyudong/qrv2_research_artifacts/m1_v2/report.json \
+  --prior-report M1=/data/zhangyudong/qrv2_research_artifacts/m1_parallel_v1/report.json \
   --parallel-workers 24 --torch-threads 1 --worker-memory-gb 16.6 --resume \
   > /data/zhangyudong/qrv2_research_artifacts/m2_v1.log 2>&1 &
 ```
@@ -348,6 +459,17 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
       `--resume` 从第一次就带上：新工作区没有记录，采纳为空、行为与不带等同；一旦中断，重启即采纳已完成的配置
       与已完成的折（折级采纳要求 bundle 重哈希、签名证据的 `model_bundle_digest` 与该重哈希一致、两个签名预测
       工件在索引中、且每个配置的搜索记录都可采纳）。
+
+      **`--prior-report` 的路径已在 2026-09-12 01:15 更正（原为 `m1_v2/report.json`）。** 那份报告不存在、也
+      不可能存在：`m1_v2` 早于 `142f8ea`（搜索记录逐条落盘），`search/` 为空，`--resume` 会在任何拟合之前就
+      SystemExit（实测理由：`config 0 has no adoptable search record`），所以它的四个已冻结折永远无法被采纳、
+      报告永远写不出来；它的六道门数值只能由只读路径取回（见交接第 8 节），而只读路径**不产出可归档的
+      report.json**。原路径会让 M2 在发射第一秒就死于 `--prior-report path does not exist`。
+      现在指向 `m1_parallel_v1/report.json`——已核实 `mode=full`、`family=M1`、`oos.all_passed=true`，
+      正是 `prior_families_from_reports` 要求的全部三项。
+      **含义要写明**：为 M2 的顺序前置作保的是**钉 1 线程那条谱系**的 M1。若所有者希望由未钉线程的
+      `m1_v2` 谱系作保，唯一途径是新工作区重跑约 44 小时以产出归档报告；这与裁决 2 是同一个选择。
+      另：`FAMILY_ORDER_PREREQUISITES` 里 **M1 自身没有前置**，所以 M1 的全网格运行不需要任何 `--prior-report`。
 
       **首折必须读的三项遥测**——这是全链里唯一还靠外推的数字，M2 在 19 路下的并发降级从未实测：
 
