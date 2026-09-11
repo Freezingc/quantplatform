@@ -360,6 +360,15 @@ torch 侧全部经由 `families.py` 从类属性派生：`STATIC_TORCH_FAMILIES`
    能让 M2 静默通过前置、进而发射一个数天的运行。
    **这是纯可观测性、不改任何准入语义**（不新增拒绝条件），与本文件已有的先例同一风格——
    未声明 `--worker-memory-gb` 时也是"把数字打印进 transcript"而不是直接拒。
-   格数从报告的 `folds[*].searched_config_count` 取，与 `m1_config_grid(None)` 的长度对比即可。
+   **格数的取法（已核对字段，别写错）**：`report.json` 的 fold 条目里**没有** `searched_config_count`
+   这个字段——它只有 `fold_id / dataset_id / model_id / best_config / search_results /
+   baseline_selection_id / model_selection_id` 七个键。`searched_config_count` 是渲染器
+   `summarize_real_candidate_walk_forward.py` 自己 dataclass 上的派生字段，
+   第 139 行 `searched_config_count=len(search_results)`。
+   所以守卫要读的是 **`len(report["folds"][i]["search_results"])`**，
+   与 `m1_config_grid(None)` 的长度（27）对比。
+   （顺带，这也是对第 1 节那个结论的第四处独立印证：`m1_parallel_v1/report.json` 里
+   每折的 `search_results` 数组**长度就是 1**，唯一那项的 config 是
+   `{hidden_dim:64, num_blocks:1, dropout:0.0}`——不必读 `verdict.md` 也能看出来。）
    做的时候要按本项目的纪律配测试，且**测试要向驱动索取真实输出、不要复述它的约定**
    （那正是六个阻塞项的结构性根因）。
