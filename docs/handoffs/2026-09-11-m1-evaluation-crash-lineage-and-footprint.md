@@ -464,3 +464,32 @@ M2/TCN    REFUSED     同上
 | 6 | 同上，TCN 服务侧 | loader 无 `TEMPORAL_TCN` 条目与工厂分支、builder 无法装配 | **TCN 胜出的 M2** | `9467d63` |
 
 门禁：`ruff check src tests` 与驱动干净、`mypy src` **170** 文件干净、`pytest tests` **2104 passed / 45 skipped**。
+
+## 13. 链条最后一环已在 torch 家族上验证，以及 M2 的 resume 绑定（`140e996`）
+
+**「过了六道门」到「可晋级」之间的最后一环，此前只对 LightGBM 证明过。** 用真实工件只读验证：
+`load_walk_forward_evidence` 接受 `m1_parallel_v1/promotion_evidence.json`，其 sha256
+`f934b5c6464a530d…` 与驱动当时打印的一致，而注册表**自己独立重算**的 G1–G6 六道全 PASS、G4 恰为
+`0.005844602701716051`（与报告逐位一致）。作为对照，`m0r_v2` 的同一环节也重跑了一遍（sha256
+`92b000c0d246556b…`、六道全 PASS、G4 `0.009149095118820283`）。所以这条链对 torch 家族是通的；
+**晋级本身没有执行，仍是所有者的裁决。**
+
+顺带核实了两个消费方**不含**家族白名单，因此不需要改：`registry/promotion_evidence.py` 只记录
+`model_family` / `reported_family`，`summarize_real_candidate_walk_forward.py` 只把 `report["family"]`
+当字符串用。审计侧的 TCN 路由也早已有测试（`test_reproduction.py` 对 `TEMPORAL_GRU` / `TEMPORAL_TCN`
+参数化，且其 docstring 点明了错误路由不会大声失败——它会用没有历史窗口的帧打分，产出「看起来像秩」的数字）。
+
+**M2 的 resume 绑定此前一条测试都没有。** `test_search_resume.py` 把原语钉得很牢，但只用静态载体的绑定与
+`{max_epochs, early_stopping_patience}` 这种预算；M2 的预算还带窗口契约。而这件事的代价今天刚付过：
+`m1_v2` 没有可采纳记录，四个已冻结的折无法 resume，判定只能带外取回而不能归档——放到 M2 上就是数天的运行
+落在同样处境。
+
+补了三条测试，全部用驱动自己的 `_temporal_search_budget` 与 `m2_config_grid`（不再抄第二遍）：记录能持久化并
+被采纳回来（config、集成 RankIC、逐 seed 值、worst seed 都在）；换一个 `history_length` 的记录被拒
+（`budget differs`，这正是「20 天窗口的记录不能被 10 天的运行采纳、否则等于从两个模型的混合里选」那道守卫）；
+同一网格下标下 GRU 的记录不能被 TCN 配置采纳（两种架构共用折与下标空间，只有 config hash 区分它们）。
+
+**这条轴上没有 bug**——往返是通的，所以这是补覆盖，不是第七个阻塞点，照实这么记。变异检验：把窗口字段从
+`_temporal_search_budget` 里去掉，拒绝那条测试失败。第一版变异是以 `KeyError: 'history_length'` 的形式暴露的，
+所以测试现在先断言窗口在预算里并说明理由——**变异应该以它为什么要紧的方式失败，而不是以测试怎么写的这种偶然
+方式失败**。
