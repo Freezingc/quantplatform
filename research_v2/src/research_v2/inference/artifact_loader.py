@@ -13,9 +13,15 @@ import torch
 from torch import nn
 
 from research_v2.datasets.preprocessing import FoldPreprocessor
+from research_v2.models.families import TEMPORAL_CODE_VERSIONS
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
-from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
+from research_v2.models.temporal import (
+    TemporalGRU,
+    TemporalGRUConfig,
+    TemporalTCN,
+    TemporalTCNConfig,
+)
 from research_v2.registry.promotion_evidence import PromotedRun
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
@@ -34,10 +40,14 @@ _INFERENCE_CONTRACT_FIELDS = frozenset(
         "model_code_version",
     }
 )
-_MODEL_CODE_VERSIONS = {
-    "RESIDUAL_MLP": "residual-mlp-1",
-    "TEMPORAL_GRU": "temporal-gru-1",
-    "SET_ATTENTION": "set-attention-1",
+# The temporal entries are derived from the model classes' own family names rather than transcribed,
+# and the map used to hold only TEMPORAL_GRU: run_full_m2 writes f"temporal-{winning family}-1" into
+# the card, so an M2 run whose search picked TCN produced temporal-tcn-1 and was refused here as an
+# unallowlisted family -- it could be trained and audited but never loaded for serving.
+_MODEL_CODE_VERSIONS: dict[str, str] = {
+    ResidualMLP.model_family: "residual-mlp-1",
+    SetAttention.model_family: "set-attention-1",
+    **TEMPORAL_CODE_VERSIONS,
 }
 
 
@@ -201,7 +211,7 @@ def load_bundle_for_evaluation(
     if factor_set_status is not None and factor_set_status != "FROZEN":
         raise ValueError("inference requires a FROZEN factor set")
     factory = _allowlisted_factory(model_card, metadata["config"])
-    prototype = cast(ResidualMLP | TemporalGRU | SetAttention, factory())
+    prototype = cast(ResidualMLP | TemporalGRU | TemporalTCN | SetAttention, factory())
     expected_signature = asdict(prototype.artifact_signature())
     if dict(metadata["signature"]) != expected_signature:
         raise ValueError("model bundle signature does not match reconstructed model contract")
@@ -328,6 +338,9 @@ def _allowlisted_factory(
     if family == "TEMPORAL_GRU":
         temporal_gru = _temporal_gru_config(config)
         return lambda: TemporalGRU(temporal_gru)
+    if family == TemporalTCN.model_family:
+        temporal_tcn = _temporal_tcn_config(config)
+        return lambda: TemporalTCN(temporal_tcn)
     if family == "SET_ATTENTION":
         set_attention = _set_attention_config(config)
         return lambda: SetAttention(set_attention)
@@ -347,6 +360,23 @@ def _residual_config(config: Mapping[str, object]) -> ResidualMLPConfig:
 def _temporal_gru_config(config: Mapping[str, object]) -> TemporalGRUConfig:
     _require_fields(config, {"raw_factor_count", "hidden_dim", "dropout"})
     return TemporalGRUConfig(
+        raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
+        hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
+        dropout=_float_config(config["dropout"], "dropout"),
+    )
+
+
+def _temporal_tcn_config(config: Mapping[str, object]) -> TemporalTCNConfig:
+    """The TCN's card config: the same three fields the GRU carries.
+
+    The dilations are not in here and deliberately so -- ``TemporalTCN`` derives its receptive field
+    from ``(1, 2, 4)`` internally, so the card's config and the signature the bundle records stay in
+    agreement without a fourth field that nothing reads. What matters is that the requirement set
+    matches ``TemporalTCNConfig``'s own fields, or a real bundle would be refused for missing a
+    field it never carried.
+    """
+    _require_fields(config, {"raw_factor_count", "hidden_dim", "dropout"})
+    return TemporalTCNConfig(
         raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
         hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
         dropout=_float_config(config["dropout"], "dropout"),

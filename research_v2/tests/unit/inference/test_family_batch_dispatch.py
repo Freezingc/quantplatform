@@ -10,6 +10,7 @@ from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.inference.builder import build_inference_batch_for_family
 from research_v2.inference.predictor import predict_three_seed_ensemble
 from research_v2.models.base import FeatureBatch, TemporalFeatureBatch
+from research_v2.models.families import TEMPORAL_TORCH_FAMILIES
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
 from research_v2.training.ensemble import REQUIRED_SEEDS
@@ -76,10 +77,39 @@ def test_temporal_family_dispatches_to_temporal_batches() -> None:
     assert batch.history_mask[0].all()
 
 
+@pytest.mark.parametrize("family", sorted(TEMPORAL_TORCH_FAMILIES))
+def test_every_temporal_family_dispatches_to_temporal_batches(family: str) -> None:
+    """Both architectures the M2 grid searches take the same window batch.
+
+    Parametrised over the set derived from the model classes rather than naming one architecture, so
+    a third temporal family has to be dispatched deliberately instead of falling through to the
+    unknown-family refusal by default.
+    """
+    batch = build_inference_batch_for_family(
+        family,
+        _universe(),
+        _factors(),
+        factor_members=_MEMBERS,
+        signal_date=_SIGNAL,
+        preprocessor=_fitted_preprocessor(),
+        history_length=4,
+        minimum_valid_history_length=3,
+    )
+    assert isinstance(batch, TemporalFeatureBatch)
+    assert batch.history_mask[0].all()
+
+
 def test_unknown_family_is_rejected() -> None:
+    """Fail closed on a name no model class declares.
+
+    This test used ``TEMPORAL_TCN`` as its example of an unknown family, which is how the builder's
+    omission of it stayed invisible: ``TemporalTCN.model_family`` is ``TEMPORAL_TCN`` and the M2
+    grid searches it, so the refusal being asserted was the bug, not the contract. Dispatch must
+    still fail closed -- on a family nothing defines.
+    """
     with pytest.raises(ValueError, match="model family"):
         build_inference_batch_for_family(
-            "TEMPORAL_TCN",
+            "NOT_A_FAMILY_ANY_MODEL_DECLARES",
             _universe(),
             _factors(),
             factor_members=_MEMBERS,

@@ -19,6 +19,7 @@ from research_v2.evaluation.selection_evidence import (
     FrozenPredictionStore,
     SelectionEvidenceStore,
 )
+from research_v2.models.families import TEMPORAL_TORCH_FAMILIES
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
@@ -117,6 +118,7 @@ def _write_model_bundle(
     training_dataset_id: str,
     tmp_path: object,
     card_dataset_id: str | None = None,
+    card_family: str = "M1",
 ) -> str:
     checkpoints = {}
     for seed in REQUIRED_SEEDS:
@@ -126,7 +128,7 @@ def _write_model_bundle(
     store.write(
         model_id,
         model_card={
-            "family": "M1",
+            "family": card_family,
             "dataset_id": (
                 training_dataset_id if card_dataset_id is None else card_dataset_id
             ),
@@ -158,6 +160,8 @@ def _fold(
     card_form: Literal["training", "bare", "unrelated"] = "training",
     unlabelled_per_day: int = 0,
     candidate_coverage: _Coverage = "all",
+    selection_family: str = "M1",
+    card_family: str = "M1",
 ) -> ModelOosFold:
     fold_id = f"F{year - 2021}"
     test_dataset_id = _write_dataset(
@@ -183,6 +187,7 @@ def _fold(
         training_dataset_id,
         tmp_path,
         card_dataset_id=card_dataset_id,
+        card_family=card_family,
     )
     baseline = selection_store.write_baseline_selection(
         record=_baseline_record(fold_id),
@@ -190,7 +195,7 @@ def _fold(
     )
     model = selection_store.write_model_selection(
         fold_id=fold_id,
-        model_family="M1",
+        model_family=selection_family,
         model_artifact_id=model_id,
         model_bundle_digest=model_bundle_digest,
         training_dataset_id=training_dataset_id,
@@ -261,6 +266,8 @@ def _folds(
     card_form: Literal["training", "bare", "unrelated"] = "training",
     unlabelled_per_day: int = 0,
     candidate_coverage: _Coverage = "all",
+    selection_family: str = "M1",
+    card_family: str = "M1",
 ) -> tuple[
     dict[str, ModelOosFold],
     DatasetArtifactStore,
@@ -289,6 +296,8 @@ def _folds(
             card_form=card_form,
             unlabelled_per_day=unlabelled_per_day,
             candidate_coverage=candidate_coverage,
+            selection_family=selection_family,
+            card_family=card_family,
         )
         for index in range(1, 5)
     }
@@ -681,6 +690,68 @@ def test_model_walk_forward_still_rejects_a_bundle_naming_an_unrelated_dataset(
     folds, datasets, models, selections, predictions = _folds(tmp_path, card_form="unrelated")
 
     with pytest.raises(ValueError, match="does not match frozen model selection"):
+        evaluate_model_walk_forward(
+            folds,
+            dataset_store=datasets,
+            model_store=models,
+            selection_root=tmp_path / "selections",  # type: ignore[operator]
+            prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+        )
+
+
+@pytest.mark.parametrize("card_family", sorted(TEMPORAL_TORCH_FAMILIES))
+def test_model_walk_forward_accepts_the_family_an_m2_bundle_actually_records(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+    card_family: str,
+) -> None:
+    """M2's card is named by the winning config, and the evaluator used to accept neither spelling.
+
+    ``run_full_m2`` writes ``f"TEMPORAL_{best_config['family']}"`` into the card because the grid
+    searches GRU and TCN alike, so a real M2 bundle records ``TEMPORAL_GRU`` or ``TEMPORAL_TCN``.
+    ``_MODEL_CARD_FAMILIES["M2"]`` held ``{"M2", "TEMPORAL"}`` -- a spelling no writer produces --
+    so every M2 run would have trained for days, frozen and signed four bundles, and then died
+    here on a family mismatch. That is the failure which cost both real M1 runs their verdicts
+    three times over, and the evaluator's own comment above ``MODEL_FAMILIES`` records the same
+    drift having already killed a completed run once, when M0R was added to the driver only.
+
+    Parametrised over the set derived from the model classes rather than naming one architecture, so
+    a third temporal family has to be allowed deliberately.
+    """
+    monkeypatch.setenv(_SELECTION_KEY_ENV, _SELECTION_KEY.decode("utf-8"))
+    folds, datasets, models, selections, predictions = _folds(
+        tmp_path, selection_family="M2", card_family=card_family
+    )
+
+    result = evaluate_model_walk_forward(
+        folds,
+        dataset_store=datasets,
+        model_store=models,
+        selection_root=tmp_path / "selections",  # type: ignore[operator]
+        prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+    )
+
+    assert result.model_family == "M2"
+    assert result.evaluation.delta_rank_ic == pytest.approx(2.0)
+
+
+def test_model_walk_forward_rejects_an_m2_selection_vouching_for_a_static_bundle(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Widening M2's allowlist must not make it accept any torch family.
+
+    The non-triviality guard for the test above: M2 now accepts two architecture names, and the
+    point is that it accepts exactly the two its own bundles can carry. A static carrier's bundle
+    dropped into an M2 selection has to be refused by the same check, or the allowlist has stopped
+    saying anything.
+    """
+    monkeypatch.setenv(_SELECTION_KEY_ENV, _SELECTION_KEY.decode("utf-8"))
+    folds, datasets, models, selections, predictions = _folds(
+        tmp_path, selection_family="M2", card_family="RESIDUAL_MLP"
+    )
+
+    with pytest.raises(ValueError, match="family does not match frozen model selection"):
         evaluate_model_walk_forward(
             folds,
             dataset_store=datasets,

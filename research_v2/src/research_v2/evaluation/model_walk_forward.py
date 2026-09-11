@@ -21,6 +21,7 @@ from research_v2.evaluation.walk_forward import (
     OosFold,
     evaluate_walk_forward_oos,
 )
+from research_v2.models.families import CARRIER_CARD_FAMILIES
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
 # One source of truth for which model families the walk-forward evaluator will accept, and
@@ -29,12 +30,18 @@ from research_v2.training.model_bundle import ModelArtifactBundleStore
 # only, and a completed four-fold run then died at the evaluation step on
 # "requires one supported model family" after an hour of training.
 MODEL_FAMILIES = ("M0", "M0R", "M1", "M2", "M3")
-_MODEL_CARD_FAMILIES = {
+_MODEL_CARD_FAMILIES: dict[str, set[str]] = {
     "M0": {"M0", "LGBM_RANKER"},
     "M0R": {"M0R", "LGBM_RANKREG"},
-    "M1": {"M1", "RESIDUAL_MLP"},
-    "M2": {"M2", "TEMPORAL"},
-    "M3": {"M3", "SET_ATTENTION"},
+    # The torch carriers accept their own label plus whatever architecture names their bundles
+    # actually record, and those names come from the model classes rather than being written out
+    # here a second time. M2's entry used to read {"M2", "TEMPORAL"} while run_full_m2 writes
+    # f"TEMPORAL_{winning family}" -- TEMPORAL_GRU or TEMPORAL_TCN -- so it accepted neither, and
+    # every M2 run would have trained for days and then died here on a family mismatch. That is the
+    # same drift the comment above MODEL_FAMILIES records for M0R, with the same outcome, which is
+    # why the names are derived now instead of transcribed again. Nothing writes "TEMPORAL", so it
+    # is not carried over; tests/unit/models/test_families.py pins this set to the classes.
+    **{carrier: {carrier, *names} for carrier, names in CARRIER_CARD_FAMILIES.items()},
 }
 
 

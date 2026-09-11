@@ -17,7 +17,7 @@ from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
-from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
+from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig, TemporalTCN
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
@@ -628,11 +628,20 @@ def test_an_unknown_family_is_refused_by_name(tmp_path: Path) -> None:
 
 
 def test_the_torch_code_version_allowlist_is_pinned() -> None:
-    assert artifact_loader._MODEL_CODE_VERSIONS == {
-        "RESIDUAL_MLP": "residual-mlp-1",
-        "TEMPORAL_GRU": "temporal-gru-1",
-        "SET_ATTENTION": "set-attention-1",
-    }
+    """Pinned against the model classes, not against a second hand-written dict.
+
+    An exact-equality assertion only guards anything if the expected side comes from somewhere
+    independent of the thing under test. Spelled out as literals on both sides, this test froze the
+    allowlist's omission of ``TEMPORAL_TCN`` and made that omission look intended -- while the M2
+    grid searches ``family: [GRU, TCN]`` and the driver writes ``f"temporal-{family.lower()}-1"``
+    into the card, so a TCN win produces ``temporal-tcn-1`` and could never be loaded.
+    """
+    assert {
+        ResidualMLP.model_family: "residual-mlp-1",
+        SetAttention.model_family: "set-attention-1",
+        TemporalGRU.model_family: "temporal-gru-1",
+        TemporalTCN.model_family: "temporal-tcn-1",
+    } == artifact_loader._MODEL_CODE_VERSIONS
 
 
 def test_an_empty_inference_contract_is_refused(tmp_path: Path) -> None:

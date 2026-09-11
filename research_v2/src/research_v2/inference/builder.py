@@ -11,6 +11,7 @@ import torch
 from research_v2.datasets.builder import FactorInput
 from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.models.base import FeatureBatch, PredictionInputBatch, TemporalFeatureBatch
+from research_v2.models.families import STATIC_TORCH_FAMILIES, TEMPORAL_TORCH_FAMILIES
 
 
 def build_label_free_inference_frame(
@@ -109,8 +110,13 @@ def _require_columns(frame: pd.DataFrame, required: set[str], name: str) -> None
         raise ValueError(f"{name} is missing columns: {missing}")
 
 
-_CROSS_SECTIONAL_FAMILIES = frozenset({"RESIDUAL_MLP", "SET_ATTENTION"})
-_TEMPORAL_FAMILIES = frozenset({"TEMPORAL_GRU"})
+# Derived from the model classes rather than written out here. Both used to be literals and the
+# temporal one held only TEMPORAL_GRU, so a bundle from an M2 run whose search picked TCN could not
+# be batched for scoring at all -- it fell through to the unknown-family refusal below, which reads
+# like an omission rather than a contract difference. tests/unit/models/test_families.py pins these
+# to the classes so a third architecture has to be routed deliberately.
+_CROSS_SECTIONAL_FAMILIES = STATIC_TORCH_FAMILIES
+_TEMPORAL_FAMILIES = TEMPORAL_TORCH_FAMILIES
 
 
 def build_inference_batch_for_family(

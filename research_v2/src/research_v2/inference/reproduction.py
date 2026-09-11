@@ -65,6 +65,7 @@ from research_v2.inference.lgbm_artifact_loader import (
     score_lgbm_artifact,
 )
 from research_v2.inference.torch_scoring import concat_date_scores, prepare_frame
+from research_v2.models.families import STATIC_TORCH_FAMILIES, TEMPORAL_TORCH_FAMILIES
 from research_v2.registry.promotion_evidence import (
     _load_full_report,
     _prediction_ids_by_fold_and_kind,
@@ -81,13 +82,16 @@ if TYPE_CHECKING:
 _BUSINESS_KEYS = ("signal_date", "ts_code")
 # Families whose score is a pure function of (bundle, frozen frame): one row per
 # (signal_date, ts_code), no history window, so the frozen TEST split is a sufficient input.
-_STATIC_TORCH_FAMILIES = frozenset({"RESIDUAL_MLP", "SET_ATTENTION"})
+# Both sets are derived from the model classes rather than written out here; see models/families.py
+# for the three-way drift that motivated it. This module was the one consumer that already had both
+# temporal spellings right, and it says below why both have to be named.
+_STATIC_TORCH_FAMILIES = STATIC_TORCH_FAMILIES
 # M2 scores a 20-day history window per row, which the frozen TEST split does not contain. The
 # family is named by the WINNING config (the grid searches GRU and TCN alike, and the card reads
 # TEMPORAL_<choice>), so both spellings have to be refused for the same stated reason -- otherwise
 # a TCN run would fall through to "not allowlisted", which reads like an omission rather than a
 # contract difference.
-_TEMPORAL_TORCH_FAMILIES = frozenset({"TEMPORAL_GRU", "TEMPORAL_TCN"})
+_TEMPORAL_TORCH_FAMILIES = TEMPORAL_TORCH_FAMILIES
 # Reported when the derived identity is absent from the registry, which is the normal state of a
 # run that failed a gate and was never promoted. Informational: it authorises serving nothing.
 _UNREGISTERED = "UNREGISTERED"
