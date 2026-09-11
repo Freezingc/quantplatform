@@ -20,6 +20,9 @@ import pandas as pd
 import pytest
 import torch
 
+from research_v2.evaluation import model_walk_forward
+from research_v2.inference import artifact_loader
+from research_v2.models.families import TORCH_FAMILIES
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 from research_v2.training.static_batches import build_static_training_batches
@@ -1650,3 +1653,51 @@ def test_adoption_is_decided_before_the_fold_inputs_are_built() -> None:
     assert sorted(checked) == ["_run_full_cross_section", "run_full_m2"], (
         f"expected the two torch fold loops to be checked, found {sorted(checked)}"
     )
+
+
+def test_every_card_the_driver_can_write_is_accepted_downstream() -> None:
+    """The writer and its acceptors, checked against each other through the writer's own code.
+
+    Four blockers in this chain were one mistake seen from four places: a model-card field the
+    driver writes one way and a consumer expects another -- ``dataset_id`` with and without its
+    ``:train`` suffix, and ``family`` as ``TEMPORAL`` against the ``TEMPORAL_GRU``/``TEMPORAL_TCN``
+    the M2 writer actually emits. Each survived for the same reason: the test fixture RESTATED the
+    convention rather than asking the driver for it, so a fixture agreeing with itself looked like
+    the chain agreeing, and two runs that had already trained for days were what finally found them.
+
+    So this asks the driver. It calls the driver's own card builder for every convention the driver
+    declares and hands the result to the two consumers that refuse on mismatch: the walk-forward
+    evaluator's card-family allowlist and the artifact loader's code-version map.
+    """
+    conventions = MODULE.torch_card_conventions()
+    assert conventions, "the driver must declare at least one torch card convention"
+    assert {carrier for carrier, _, _ in conventions} == {"M1", "M2", "M3"}
+    for carrier, card_family, code_version in conventions:
+        card = MODULE.torch_model_card(
+            card_family=card_family,
+            dataset_id="dataset-1",
+            model_code_version=code_version,
+        )
+        assert card["family"] in TORCH_FAMILIES, card
+        assert card["family"] in model_walk_forward._MODEL_CARD_FAMILIES[carrier], card
+        assert (
+            artifact_loader._MODEL_CODE_VERSIONS[card["family"]] == card["model_code_version"]
+        ), card
+
+
+def test_the_m2_card_conventions_cover_every_family_the_grid_searches() -> None:
+    """M2's card is named by the WINNING config, so every grid value needs a convention.
+
+    This is the test whose absence let ``{"M2", "TEMPORAL"}`` sit in the evaluator's allowlist while
+    the driver wrote ``TEMPORAL_GRU``: nothing compared the set of cards the search could produce
+    against the set the evaluator would accept. Deriving the grid's family values rather than naming
+    them keeps a fourth architecture from being searchable but unloadable.
+    """
+    searched = {str(config["family"]) for config in MODULE.m2_config_grid(None)}
+    declared = {
+        family.removeprefix("TEMPORAL_")
+        for carrier, family, _ in MODULE.torch_card_conventions()
+        if carrier == "M2"
+    }
+    assert searched == declared
+    assert searched, "the M2 grid must search at least one architecture"

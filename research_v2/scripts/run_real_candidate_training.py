@@ -571,12 +571,11 @@ def _train_cross_section_smoke(
     model_id = f"smoke-{family.lower()}"
     bundle_store.write(
         model_id,
-        model_card={
-            "family": family_name,
-            "dataset_id": "smoke-train",
-            "model_status": "WALK_FORWARD_PASSED",
-            "model_code_version": model_code_version,
-        },
+        model_card=torch_model_card(
+            card_family=family_name,
+            dataset_id="smoke-train",
+            model_code_version=model_code_version,
+        ),
         config=config_payload,
         signature=asdict(prototype.artifact_signature()),
         feature_order=factor_order,
@@ -630,8 +629,8 @@ def train_m1_smoke(workspace: Path) -> dict[str, Any]:
     return _train_cross_section_smoke(
         workspace,
         family="M1",
-        family_name="RESIDUAL_MLP",
-        model_code_version="residual-mlp-1",
+        family_name=M1_FAMILY_NAME,
+        model_code_version=M1_MODEL_CODE_VERSION,
         config_factory=lambda: ResidualMLPConfig(
             raw_factor_count=SMOKE_FACTOR_COUNT, hidden_dim=16, num_blocks=1, dropout=0.0
         ),
@@ -648,8 +647,8 @@ def train_m3_smoke(workspace: Path) -> dict[str, Any]:
     return _train_cross_section_smoke(
         workspace,
         family="M3",
-        family_name="SET_ATTENTION",
-        model_code_version="set-attention-1",
+        family_name=M3_FAMILY_NAME,
+        model_code_version=M3_MODEL_CODE_VERSION,
         config_factory=lambda: SetAttentionConfig(
             raw_factor_count=SMOKE_FACTOR_COUNT,
             hidden_dim=16,
@@ -894,12 +893,11 @@ def train_m2_smoke(workspace: Path) -> dict[str, Any]:
     model_id = "smoke-m2"
     bundle_store.write(
         model_id,
-        model_card={
-            "family": "TEMPORAL_GRU",
-            "dataset_id": "smoke-train",
-            "model_status": "WALK_FORWARD_PASSED",
-            "model_code_version": "temporal-gru-1",
-        },
+        model_card=torch_model_card(
+            card_family=m2_card_family(M2_SMOKE_FAMILY_CHOICE),
+            dataset_id="smoke-train",
+            model_code_version=m2_model_code_version(M2_SMOKE_FAMILY_CHOICE),
+        ),
         config=config_payload,
         signature=asdict(prototype.artifact_signature()),
         feature_order=factor_order,
@@ -984,6 +982,17 @@ M0R_FAMILY_NAME = "LGBM_RANKREG"
 M0R_MODEL_CODE_VERSION = "lgbm-rankreg-1"
 M0R_MODEL_ID_PREFIX = "m0r"
 M0R_SMOKE_NUM_BOOST_ROUND = 64
+
+# The torch carriers' card identities, derived from the model classes' own ``model_family`` where
+# there is one to derive from. Four blockers in this chain were the same mistake: a model-card field
+# written one way here and expected another way by the walk-forward evaluator or the artifact
+# loader, each found by a run that had already trained for days. M2 has no constant because its
+# card is named by the winning configuration -- see ``m2_card_family``.
+M1_FAMILY_NAME = ResidualMLP.model_family
+M1_MODEL_CODE_VERSION = "residual-mlp-1"
+M3_FAMILY_NAME = SetAttention.model_family
+M3_MODEL_CODE_VERSION = "set-attention-1"
+M2_SMOKE_FAMILY_CHOICE = "GRU"
 
 LightGBMCarrier = Literal["lambdarank", "rankreg"]
 AnyLightGBMBaseline = LGBMRankerBaseline | LGBMRankRegBaseline
@@ -2573,12 +2582,11 @@ def _run_full_cross_section(
         prototype = model_factory(best_config, factor_order)
         model_store.write(
             model_id,
-            model_card={
-                "family": family_name,
-                "dataset_id": dataset_id,
-                "model_status": "WALK_FORWARD_PASSED",
-                "model_code_version": model_code_version,
-            },
+            model_card=torch_model_card(
+                card_family=family_name,
+                dataset_id=dataset_id,
+                model_code_version=model_code_version,
+            ),
             config=dict(best_config, raw_factor_count=len(factor_order)),
             signature=asdict(prototype.artifact_signature()),
             feature_order=factor_order,
@@ -2749,8 +2757,8 @@ def run_full_m1(args: argparse.Namespace) -> dict[str, Any]:
     return _run_full_cross_section(
         args,
         family="M1",
-        family_name="RESIDUAL_MLP",
-        model_code_version="residual-mlp-1",
+        family_name=M1_FAMILY_NAME,
+        model_code_version=M1_MODEL_CODE_VERSION,
         configs=m1_config_grid(args.max_configs),
         model_factory=_m1_model_factory,
     )
@@ -2761,8 +2769,8 @@ def run_full_m3(args: argparse.Namespace) -> dict[str, Any]:
     return _run_full_cross_section(
         args,
         family="M3",
-        family_name="SET_ATTENTION",
-        model_code_version="set-attention-1",
+        family_name=M3_FAMILY_NAME,
+        model_code_version=M3_MODEL_CODE_VERSION,
         configs=m3_config_grid(args.max_configs),
         model_factory=_m3_model_factory,
     )
@@ -2795,6 +2803,64 @@ def _m2_model_factory(config_payload: Mapping[str, Any], factor_order: tuple[str
             hidden_dim=int(config_payload["hidden_dim"]),
             dropout=float(config_payload["dropout"]),
         )
+    )
+
+
+def torch_model_card(
+    *, card_family: str, dataset_id: str, model_code_version: str
+) -> dict[str, str]:
+    """The model card every torch carrier writes, built in exactly one place.
+
+    ``dataset_id`` here is the BARE dataset id, which is what the reproduction audit then loads the
+    TEST split with; the LightGBM carriers write ``<dataset>:train`` instead and the walk-forward
+    evaluator accepts either, because both are legitimate and it checks membership rather than
+    equality. What no consumer can accept is a field spelled one way here and expected another way
+    there, which is what killed both real M1 runs and would have killed every M2 run.
+
+    ``test_every_card_the_driver_can_write_is_accepted_downstream`` hands this function's output to
+    the evaluator's card-family allowlist and the loader's code-version map, so the writer and its
+    acceptors are checked against each other through the writer's own code instead of through a
+    fixture restating what the writer is believed to do.
+    """
+    return {
+        "family": card_family,
+        "dataset_id": dataset_id,
+        "model_status": "WALK_FORWARD_PASSED",
+        "model_code_version": model_code_version,
+    }
+
+
+def m2_card_family(winning_family: object) -> str:
+    """M2's card family is named by the WINNING configuration, not by the carrier.
+
+    The grid searches GRU and TCN alike, so neither is knowable per fold before the search runs. The
+    config hash binds the choice; this turns it into the name the bundle carries, and the
+    evaluator's M2 allowlist has to accept every value it can return.
+    """
+    return f"TEMPORAL_{winning_family}"
+
+
+def m2_model_code_version(winning_family: object) -> str:
+    """The code version paired with :func:`m2_card_family`, from the same winning choice."""
+    return f"temporal-{str(winning_family).lower()}-1"
+
+
+def torch_card_conventions() -> tuple[tuple[str, str, str], ...]:
+    """Every ``(carrier, card family, model_code_version)`` the torch writers can produce.
+
+    Derived, not listed: M2's entries come from the grid actually searched, so an architecture that
+    becomes searchable becomes checked here automatically instead of being trainable but unloadable.
+    This is the list the tests compare against the evaluator's card-family allowlist and the
+    loader's code-version map -- the comparison whose absence let ``{"M2", "TEMPORAL"}`` sit in the
+    allowlist while this driver wrote ``TEMPORAL_GRU`` and ``TEMPORAL_TCN``.
+    """
+    return (
+        ("M1", M1_FAMILY_NAME, M1_MODEL_CODE_VERSION),
+        ("M3", M3_FAMILY_NAME, M3_MODEL_CODE_VERSION),
+        *(
+            ("M2", m2_card_family(choice), m2_model_code_version(choice))
+            for choice in sorted({str(config["family"]) for config in m2_config_grid(None)})
+        ),
     )
 
 
@@ -3164,12 +3230,11 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         prototype = _m2_model_factory(best_config, factor_order)
         model_store.write(
             model_id,
-            model_card={
-                "family": f"TEMPORAL_{best_config['family']}",
-                "dataset_id": dataset_id,
-                "model_status": "WALK_FORWARD_PASSED",
-                "model_code_version": f"temporal-{str(best_config['family']).lower()}-1",
-            },
+            model_card=torch_model_card(
+                card_family=m2_card_family(best_config["family"]),
+                dataset_id=dataset_id,
+                model_code_version=m2_model_code_version(best_config["family"]),
+            ),
             config=dict(best_config, raw_factor_count=len(factor_order)),
             signature=asdict(prototype.artifact_signature()),
             feature_order=factor_order,
