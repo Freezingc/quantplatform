@@ -141,11 +141,45 @@ M2 从 24 路解锁到 36 路。**实测否掉了**——worker 峰值仍是 13.
 （数据集以 `date32[day]` 与 `string` 存储，读进 pandas 后是 object 列，即逐单元 Python 对象），
 两者都比本次的改动大，且都要求「输出逐位不变」这条同样的纪律。
 
-## 6. 已识别但本次没做的一条
+## 6. 采纳检查已上提到构造折输入之前（`554b3d0`）
 
-`_run_full_cross_section` 在调用 `_adopt_completed_fold` **之前**就先 `FoldPreprocessor.fit(train)` 并
-`build_static_training_batches` 了 train 与 validation 两套批次。于是 `--resume` 下一个已经完成的折，仍要为
-每折付出约 5 分钟的预处理拟合与批次构造，才被采纳跳过拟合。采纳所需的全部输入（`model_id`、三个 dataset id、
-`factor_order`、`configs`、`budget`）在预处理拟合之前就都已知，且基线证据的写入在更前面，所以把采纳检查上提
-到预处理拟合之前是可行的，方向也与护栏自己的说法一致（理由应该在运行开始时给出，而不是几小时后）。收益是分钟级
-而不是小时级，故本次未做。
+第 1 节那三次恢复重跑把这条从"看起来划算"变成了"实测在付费"：`_run_full_cross_section` 与 `run_full_m2` 都在
+调用 `_adopt_completed_fold` **之前**就先 `FoldPreprocessor.fit(train)` 并构造了 train 与 validation 两套批次
+（M2 还多一套 TEST 面板），于是一个**已经冻结、马上就要被采纳跳过**的折，仍要先付出这些工作再由 `continue`
+全部丢弃。实测 F1：M1 约 6 分钟/折；M2 的三套面板是 400 s + 552 s，约 16 分钟/折。而 `--resume` 是多日运行
+**计划内**的跨折手段，不是意外——今天一天就走了三次。
+
+采纳需要的全部输入（`model_id`、三个 dataset id、`factor_order`、网格、预算）在预处理拟合之前就都已知，基线证据
+的写入更在前面，M2 绑定的窗口契约来自 `_temporal_search_budget` 读的冻结常量而不是任何面板，所以没有任何东西
+强制原来的顺序。LightGBM 那条循环本来就把采纳放在基线证据之后、构造之前——**是两条 torch 循环没对齐**，现在三条
+一致了。改的是位置不是内容：同样的调用、同样的顺序、同样的参数；数 3 个采纳点的既有 wiring 测试仍然数到 3。新增
+的是一条钉住**顺序本身**的测试（把驱动按顶层函数切开，要求在两条 torch 循环里采纳调用先于 `preprocessor.fit(`，
+并断言被检查的恰好是这两条，以免它哪天悄悄什么都不覆盖了）；它在改动前以 3406 对 2378 的偏移失败。
+
+上提之后再跑恢复，每折从约 6 分钟降到约 4.5 分钟：省掉的是预处理拟合与批次构造，剩下的主要是 `extract` 与
+`publish_fold_dataset` 的内容哈希校验（约 170 s），而那一部分采纳确实需要——`dataset_id` 是采纳要比对的东西。
+
+## 7. 评估路径上一共是**三个**阻塞点，不是一个；三个都属于同一类
+
+第 1 节写的是第一个。修掉它之后评估往前走了一步，又停在第二个；再修，又停在第三个。**同一个根因重复了三次：
+评估路径把 LightGBM 载体的行集/命名约定当成了普适规则，而此前没有任何 torch 家族走到过这么远**，所以这三条
+都没有被任何测试或任何真实运行触碰过。
+
+| # | 位置 | 症状 | 真实成因（均为实测） | 修法 | 提交 |
+|---|---|---|---|---|---|
+| 1 | `model_walk_forward._require_verified_model_bundle` | `model bundle training dataset does not match frozen model selection` | card 的 `dataset_id` 有两种合法写法：LightGBM 记 `<dataset>:train`，torch 记裸 `<dataset>`（复现审计随后要用它加载 TEST 分片）。评估器做严格相等，只认前者 | 改为成员归属：接受本折签名选择点名的 `training_dataset_id` / `test_dataset_id` / `test_dataset_id + ":train"`。**是旧接受集的严格超集** | `b86cdb0` |
+| 2 | `walk_forward._assemble_oos_frames` | `F1 candidate predictions and labels do not contain identical business keys` | LightGBM 候选覆盖整个 TEST 截面（F1 为 804,575 行），torch 只覆盖有可用标签的行（**803,572**，差的 1,003 行是 `label_valid=False`）。该检查要求候选的键与**未过滤**的标签帧完全相同 | 改为双向覆盖：候选不得有 TEST 帧之外的键，且不得漏掉任何**可打分**行；`_scoreable_label_keys` 照抄指标自己的有效性表达式 | `6a19ef2` |
+| 3 | `walk_forward._require_baseline_covered_by_candidate` | `F1 candidate and baseline predictions: baseline rows are not all covered by the candidate` | 冻结的 best_simple 基线覆盖 747,461 行，torch 候选覆盖 803,572 行，基线里候选没有的那 **940 行中可打分的行数是 0**；指标的可用交集两种情况下都是 **746,521 行** | 覆盖要求收窄到**可打分**行；同时把"基线不得有 TEST 帧之外的键"显式写出（它原先只是恒等检查的副作用，收窄后不再被隐含保证） | `a950e42` |
+
+三条都各自带了非恒真性守卫测试，因为放宽验证器正是最需要这种守卫的改动：第 1 条配"报名无关数据集的 bundle 仍被
+拒"，第 2 条配"漏掉一个可打分行仍被拒"与"候选出现 TEST 帧之外的键仍被拒"，第 3 条配"基线出现 TEST 帧之外的键
+仍被拒"，并且被接受的两种情形都断言 `delta_rank_ic` 仍为 2.0（即数值没有被动过）。
+
+另外两条值得记下的连带事实：
+
+- **测试夹具本身就是这三个 bug 能藏住的原因。** `test_model_walk_forward.py` 的夹具把 `training_dataset_id` 写成
+  `"train-F1"`（没有任何写入方会产出的字符串），并且所有 TEST 行都 `label_valid=True`、候选与基线行集完全相同。
+  于是整套测试只跑过一种 card 写法、一种行集约定，并且全绿。夹具现在两者都参数化了。
+- **`m1_v2` 的 `--resume` 是安全失败的**：它在**任何拟合之前**就 SystemExit，理由是
+  `config 0 has no adoptable search record (no record at c0-9ef4cccccd3fdf78.json)`——该运行早于 `142f8ea`
+  （搜索记录逐条落盘）。所以试它不花算力，但也恢复不出判定。
