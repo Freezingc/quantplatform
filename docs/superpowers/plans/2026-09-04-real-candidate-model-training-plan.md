@@ -943,6 +943,41 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
       上面那段"网格均值约 1.9–2.1 h、四折 17–19 h"是按 20 epoch 说的，
       同样上调约 9.5% 到 **约 19–21 h**；作为上界的结论不变。
 
+      **M3 的 `--worker-memory-gb 2.5` 也已实测确认够用，不再是"借用 M1 的足迹"（2026-09-12 07:47，
+      只读探针 `/tmp/probe_static_worker_peak.py`，日志 `/tmp/probe_static_m3.log`、
+      `/tmp/probe_static_m1.log`）。** 动机正是 M2 那次教训：拿一个家族的足迹去给另一个家族定 worker 数，
+      是让多天运行按"半个 worker 生命周期"定容量的方式。M3 的 SetAttention 注意力激活此前从未被测过。
+      测法模拟生产静态 worker（建批次 → **释放帧** → 以 batches-only 常驻为基线 → 训练 → 再测），
+      并**同时跑 M1 最大格作对照**，以便把架构差异与载荷差异分开：
+
+      | 格 | 参数量 | batches-only 基线 VmRSS | 训练后 VmRSS | **训练增量** | VmHWM |
+      |---|---|---|---|---|---|
+      | M3 `128/4/64/2`（SetAttention） | 418,433 | 2.61 GiB | 2.93 GiB | **+0.32 GiB** | 3.92（未动） |
+      | M1 `256/3`（ResidualMLP，对照） | 404,481 | 2.61 GiB | 2.78 GiB | **+0.17 GiB** | 3.92（未动） |
+
+      **结论：M3 只比同路径的 M1 重 0.15 GiB**（增量 1.9 倍，但绝对量极小），
+      而按生产口径 M1 worker 实测常驻是 1.26–1.33 GiB，所以 M3 约 **1.5 GiB**，
+      对 2.5 GiB 的申报值有约 1.7 倍余量。
+      **而且这个申报值对 48 路工作点根本不敏感**：现场调用 `worker_memory_budget`（`MemAvailable` 515 GiB、
+      parent 0.6 GiB）扫申报值 2.5 / 3 / 5 / 7 / 9 GiB，48 路都 `fits=True`
+      （`safe_workers` 依次为 185 / 154 / 92 / 66 / 51）；**只有真实峰值超过约 9.6 GiB 才会让 48 路被拒**，
+      而实测增量是 0.32 GiB——差一个数量级以上。
+      所以 M3 的内存这一项**可以从风险清单上划掉**，这与 M2 的情况正好相反
+      （M2 的申报值直接决定 24 路那个台阶能否保住）。
+
+      **一个必须说明的混淆，免得有人拿 2.61 GiB 当生产数字**：探针的 batches-only 基线是 2.61 GiB，
+      高于生产 M1 worker 实测的 1.33 GiB，因为探针在同一进程里先载入了 230 万行的原始帧与 prepared 帧、
+      再 `del` + `gc.collect()`，而 **CPython/PyTorch 的分配器不会把已释放的内存立刻还给 OS**，
+      所以 VmRSS 停在高位；生产 worker 是在**全新进程**里反序列化 0.381 GiB 的批次载荷，没有这份残留。
+      **因此这里可用的是"增量"（+0.32 对 +0.17），不是绝对值**——而增量正是问题所在
+      （M3 的注意力激活是否远重于 M1）。两格的 VmHWM 都停在 3.92 GiB 未动，
+      也说明训练期没有超过帧载入期的高水位。
+
+      **顺带交叉验证了 M3 的成本模型**：同一次运行、同一争用条件下，
+      M3 最大格 epoch **452.8 s** 对 M1 最大格 **428.7 s**，比值 **1.056**；
+      而本节前面那两个数（M3 solo 429.6 s、M1 solo 409.8 s，来自两次独立测量）给出的比值是 **1.048**——
+      **相差不到 1%**。即 M3 的 per-fit 2.386 h（20 epoch）/ 2.61 h（21.9 epoch）站得住。
+
       ```bash
       cd /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2   # 必需：下面用的是相对路径 scripts/...
       KEY=$(cat /data/zhangyudong/qrv2_research_artifacts/secrets/selection_evidence_hmac.key)
