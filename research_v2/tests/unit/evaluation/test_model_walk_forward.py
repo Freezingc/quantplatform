@@ -34,9 +34,20 @@ def _configure_evidence_keys(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(_PREDICTION_KEY_ENV, _PREDICTION_KEY.decode("utf-8"))
 
 
-def _test_frame(year: int) -> pd.DataFrame:
+_Coverage = Literal["all", "labelled", "labelled_missing_one", "labelled_plus_foreign"]
+"""Which rows the fixture's candidate predictions cover.
+
+``all`` is the LightGBM carriers' row set and ``labelled`` is the torch carriers': the static and
+temporal batch builders both drop rows without a usable label before scoring, so on the real F1 fold
+a torch candidate holds 803,572 of the TEST frame's 804,575 rows. The other two are the guards --
+a candidate that silently drops a row the metric could have used, and one that names a row the
+verified TEST frame does not contain.
+"""
+
+
+def _test_frame(year: int, *, unlabelled_per_day: int = 0) -> pd.DataFrame:
     # Two test dates per fold so four folds clear the >5 valid-day OOS gate.
-    return pd.DataFrame(
+    frame = pd.DataFrame(
         {
             "signal_date": [date(year, 1, 2)] * 30 + [date(year, 1, 3)] * 30,
             "ts_code": [f"S{index:03d}" for index in range(30)] * 2,
@@ -45,10 +56,34 @@ def _test_frame(year: int) -> pd.DataFrame:
             "f1": [float(index) for index in range(30)] * 2,
         }
     )
+    if unlabelled_per_day:
+        # Rows a torch carrier never scores: no usable label, so they cannot enter the metric
+        # either. Each day keeps its 30 valid rows, so the valid-day count does not move.
+        extra = pd.DataFrame(
+            {
+                "signal_date": [
+                    date(year, 1, day)
+                    for day in (2, 3)
+                    for _ in range(unlabelled_per_day)
+                ],
+                "ts_code": [
+                    f"U{day}{index:03d}"
+                    for day in (2, 3)
+                    for index in range(unlabelled_per_day)
+                ],
+                "raw_return_5d": [float("nan")] * (2 * unlabelled_per_day),
+                "label_valid": [False] * (2 * unlabelled_per_day),
+                "f1": [float(index) for index in range(2 * unlabelled_per_day)],
+            }
+        )
+        frame = pd.concat([frame, extra], ignore_index=True)
+    return frame
 
 
-def _write_dataset(store: DatasetArtifactStore, year: int) -> str:
-    frame = _test_frame(year)
+def _write_dataset(
+    store: DatasetArtifactStore, year: int, *, unlabelled_per_day: int = 0
+) -> str:
+    frame = _test_frame(year, unlabelled_per_day=unlabelled_per_day)
     manifest = build_dataset_manifest(
         frame,
         business_keys=("signal_date", "ts_code"),
@@ -121,9 +156,13 @@ def _fold(
     prediction_store: FrozenPredictionStore,
     tmp_path: object,
     card_form: Literal["training", "bare", "unrelated"] = "training",
+    unlabelled_per_day: int = 0,
+    candidate_coverage: _Coverage = "all",
 ) -> ModelOosFold:
     fold_id = f"F{year - 2021}"
-    test_dataset_id = _write_dataset(dataset_store, year)
+    test_dataset_id = _write_dataset(
+        dataset_store, year, unlabelled_per_day=unlabelled_per_day
+    )
     model_id = f"model-{fold_id.lower()}"
     # What every real writer emits: the selection names the train split of the same dataset
     # artifact, not an unrelated string. The fixture used to say "train-F1" here, a shape no
@@ -160,14 +199,38 @@ def _fold(
         baseline_selection_id=baseline.evidence_id,
         validation_rank_ic=0.20,
     )
-    keys = _test_frame(year).loc[:, ["signal_date", "ts_code"]]
+    frame = _test_frame(year, unlabelled_per_day=unlabelled_per_day)
+    keys = frame.loc[:, ["signal_date", "ts_code"]]
+    labelled = frame["label_valid"].astype(bool).to_numpy()
+    labelled_keys = keys.loc[labelled].reset_index(drop=True)
+    if candidate_coverage == "all":
+        candidate_keys = keys.reset_index(drop=True)
+    elif candidate_coverage == "labelled":
+        candidate_keys = labelled_keys
+    elif candidate_coverage == "labelled_missing_one":
+        candidate_keys = labelled_keys.iloc[1:].reset_index(drop=True)
+    else:
+        candidate_keys = pd.concat(
+            [
+                labelled_keys,
+                pd.DataFrame(
+                    {
+                        "signal_date": [frame["signal_date"].iloc[0]],
+                        "ts_code": ["NOT_IN_THE_TEST_FRAME"],
+                    }
+                ),
+            ],
+            ignore_index=True,
+        )
     candidate = prediction_store.write(
         selection_id=model.evidence_id,
         kind="candidate",
         fold_id=fold_id,
         dataset_id=test_dataset_id,
         model_id=model_id,
-        scores=keys.assign(score=[float(index) for index in range(30)] * 2),
+        scores=candidate_keys.assign(
+            score=[float(index % 30) for index in range(len(candidate_keys))]
+        ),
         selections=selection_store,
     )
     best_simple = prediction_store.write(
@@ -176,7 +239,11 @@ def _fold(
         fold_id=fold_id,
         dataset_id=test_dataset_id,
         model_id="B0",
-        scores=keys.assign(score=[float(-index) for index in range(30)] * 2),
+        # The frozen simple baseline is written over the labelled rows, as the real one is, which
+        # also keeps it inside the candidate's coverage -- what the baseline check next door asks.
+        scores=labelled_keys.assign(
+            score=[float(-(index % 30)) for index in range(len(labelled_keys))]
+        ),
         selections=selection_store,
     )
     return ModelOosFold(
@@ -192,6 +259,8 @@ def _folds(
     signing_key: bytes = _SELECTION_KEY,
     prediction_signing_key: bytes = _PREDICTION_KEY,
     card_form: Literal["training", "bare", "unrelated"] = "training",
+    unlabelled_per_day: int = 0,
+    candidate_coverage: _Coverage = "all",
 ) -> tuple[
     dict[str, ModelOosFold],
     DatasetArtifactStore,
@@ -218,6 +287,8 @@ def _folds(
             prediction_store=prediction_store,
             tmp_path=tmp_path,
             card_form=card_form,
+            unlabelled_per_day=unlabelled_per_day,
+            candidate_coverage=candidate_coverage,
         )
         for index in range(1, 5)
     }
@@ -610,6 +681,88 @@ def test_model_walk_forward_still_rejects_a_bundle_naming_an_unrelated_dataset(
     folds, datasets, models, selections, predictions = _folds(tmp_path, card_form="unrelated")
 
     with pytest.raises(ValueError, match="does not match frozen model selection"):
+        evaluate_model_walk_forward(
+            folds,
+            dataset_store=datasets,
+            model_store=models,
+            selection_root=tmp_path / "selections",  # type: ignore[operator]
+            prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+        )
+
+
+def test_model_walk_forward_accepts_a_candidate_scoring_only_the_labelled_rows(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A torch candidate covers the labelled rows only, and that is a convention, not a gap.
+
+    The static and temporal batch builders both drop rows without a usable label before scoring, so
+    a torch run's frozen candidate holds fewer rows than the verified TEST frame: on the real F1
+    fold, 803,572 of 804,575, the 1,003 missing ones being ``label_valid=False``. The LightGBM
+    carriers score the whole cross-section instead, and this evaluator required the candidate's
+    business keys to be IDENTICAL to the unfiltered label frame -- so it encoded one family's
+    convention as a universal rule and no torch run could ever reach a verdict. Both real M1 runs
+    died here, at the second of two blockers in the same evaluation, after the dataset_id one.
+
+    The metric agrees that the unlabelled rows are irrelevant: ``_valid_label_day_count`` and
+    ``evaluate_frozen_oos`` use only rows that are ``label_valid`` with a finite return. And the
+    neighbouring ``_require_baseline_covered_by_candidate`` settled the same question for the
+    candidate/baseline pair, its docstring recording that requiring identical keys there "rejected
+    exactly that case".
+    """
+    monkeypatch.setenv(_SELECTION_KEY_ENV, _SELECTION_KEY.decode("utf-8"))
+    folds, datasets, models, selections, predictions = _folds(
+        tmp_path, unlabelled_per_day=4, candidate_coverage="labelled"
+    )
+
+    result = evaluate_model_walk_forward(
+        folds,
+        dataset_store=datasets,
+        model_store=models,
+        selection_root=tmp_path / "selections",  # type: ignore[operator]
+        prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+    )
+
+    assert result.model_family == "M1"
+    assert result.evaluation.delta_rank_ic == pytest.approx(2.0)
+
+
+def test_model_walk_forward_rejects_a_candidate_that_drops_a_scoreable_row(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Coverage in one direction only would let the metric silently shrink.
+
+    This is the non-triviality guard for the test above. Accepting a subset is safe only because the
+    subset is required to include every row the metric can actually use; a candidate missing one of
+    those would compute RankIC over a quietly smaller cross-section and still report a number.
+    """
+    monkeypatch.setenv(_SELECTION_KEY_ENV, _SELECTION_KEY.decode("utf-8"))
+    folds, datasets, models, selections, predictions = _folds(
+        tmp_path, unlabelled_per_day=4, candidate_coverage="labelled_missing_one"
+    )
+
+    with pytest.raises(ValueError, match="usable label are not scored"):
+        evaluate_model_walk_forward(
+            folds,
+            dataset_store=datasets,
+            model_store=models,
+            selection_root=tmp_path / "selections",  # type: ignore[operator]
+            prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+        )
+
+
+def test_model_walk_forward_rejects_a_candidate_row_outside_the_test_frame(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The other direction: a candidate may not name a row the verified TEST frame lacks."""
+    monkeypatch.setenv(_SELECTION_KEY_ENV, _SELECTION_KEY.decode("utf-8"))
+    folds, datasets, models, selections, predictions = _folds(
+        tmp_path, unlabelled_per_day=4, candidate_coverage="labelled_plus_foreign"
+    )
+
+    with pytest.raises(ValueError, match="not in the verified TEST frame"):
         evaluate_model_walk_forward(
             folds,
             dataset_store=datasets,

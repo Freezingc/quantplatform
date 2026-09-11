@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 
 from research_v2.baselines.base import Baseline
@@ -207,7 +208,7 @@ def _assemble_oos_frames(
         candidate = candidate_frames[ORDINARY_TEST_FOLDS.index(fold_id)]
         labels_frame = label_frames[ORDINARY_TEST_FOLDS.index(fold_id)]
         baseline = baseline_frames[ORDINARY_TEST_FOLDS.index(fold_id)]
-        _require_matching_keys(
+        _require_candidate_covers_the_scoreable_labels(
             candidate,
             labels_frame,
             f"{fold_id} candidate predictions and labels",
@@ -264,12 +265,63 @@ def _validate_oos_frame(
     return normalized.reset_index(drop=True)
 
 
-def _require_matching_keys(left: pd.DataFrame, right: pd.DataFrame, name: str) -> None:
+def _require_candidate_covers_the_scoreable_labels(
+    candidate: pd.DataFrame, labels: pd.DataFrame, name: str
+) -> None:
+    """The candidate must sit inside the TEST frame and cover every row the metric can score.
+
+    Two families legitimately produce different row sets. The LightGBM carriers score the whole TEST
+    cross-section, so their candidate keys equal the label frame's. The torch carriers build batches
+    only from rows with a usable label -- both ``build_static_training_batches`` and
+    ``build_temporal_training_batches`` drop the others before scoring -- so their candidate keys
+    are the label-valid subset: on the real F1 fold, 803,572 of the TEST frame's 804,575 rows, the
+    1,003 missing ones being ``label_valid=False``. Requiring IDENTICAL keys here made one family's
+    convention a universal rule, so no torch run could reach a verdict; both real M1 runs died at
+    this check, the second of two blockers in the same evaluation.
+
+    The metric agrees the unlabelled rows are irrelevant: ``_valid_label_day_count`` and
+    ``evaluate_frozen_oos`` restrict themselves to rows that are ``label_valid`` with a finite
+    return, which is exactly the set computed below. And ``_require_baseline_covered_by_candidate``
+    beside this one settled the same question for the candidate/baseline pair, recording in its own
+    docstring that requiring identical keys there "rejected exactly that case".
+
+    So the rule is coverage in both directions rather than identity: nothing invented (no candidate
+    key outside the verified TEST frame) and nothing silently dropped (every scoreable row present),
+    because a metric computed over a quietly smaller cross-section would still return a number. A
+    candidate that also covers the unlabelled rows still passes, which is what keeps the LightGBM
+    carriers working.
+    """
     keys = ["signal_date", "ts_code"]
-    left_keys = left.loc[:, keys].sort_values(keys, kind="mergesort").reset_index(drop=True)
-    right_keys = right.loc[:, keys].sort_values(keys, kind="mergesort").reset_index(drop=True)
-    if not left_keys.equals(right_keys):
-        raise ValueError(f"{name} do not contain identical business keys")
+    label_keys = set(map(tuple, labels.loc[:, keys].itertuples(index=False, name=None)))
+    candidate_keys = set(map(tuple, candidate.loc[:, keys].itertuples(index=False, name=None)))
+    if not candidate_keys.issubset(label_keys):
+        raise ValueError(
+            f"{name}: {len(candidate_keys - label_keys)} candidate rows are not in the verified "
+            "TEST frame"
+        )
+    scoreable = _scoreable_label_keys(labels)
+    if not scoreable.issubset(candidate_keys):
+        raise ValueError(
+            f"{name}: {len(scoreable - candidate_keys)} rows with a usable label are not scored "
+            "by the candidate"
+        )
+
+
+def _scoreable_label_keys(labels: pd.DataFrame) -> set[tuple[object, ...]]:
+    """The rows the OOS metric can actually use, by the metric's own definition of usable.
+
+    Kept beside ``model_evaluator._valid_label_day_count``'s expression rather than restated
+    loosely: if this filter and the metric's ever diverge, the guard would certify a cross-section
+    the metric then quietly narrows, which is the failure this check exists to prevent.
+    """
+    raw_returns = pd.to_numeric(labels["raw_return_5d"], errors="coerce")
+    usable = labels["label_valid"].fillna(False).astype(bool) & np.isfinite(raw_returns)
+    return set(
+        map(
+            tuple,
+            labels.loc[usable, ["signal_date", "ts_code"]].itertuples(index=False, name=None),
+        )
+    )
 
 
 def _require_baseline_covered_by_candidate(
