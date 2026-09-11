@@ -303,26 +303,30 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       折匹配基线是冻结的 LightGBM 工件、其 `num_threads` 早已钉死，所以候选减基线是「钉线程谱系的 torch 候选」
       对「未变的基线」，两侧口径各自自洽；受影响的是与其它 torch 运行的**逐位**可比性。
 
-      **worker 数（2026-09-11 02:26 依实测改写，原为「19 而不是 20」）：时序批次构造已重写，单 worker 足迹从
-      16.80 GiB 降到 13.61 GiB、一次性重建从 2409 s 降到 455.9 s，父进程峰值也第一次被测出来是 19.15 GiB
-      （F1；它比 worker 大 41%，因为还多一套 242 个 TEST 批次与三段拼接面板）。按 F4 行数等比折算：单 worker
-      17.54 GiB、父进程 24.67 GiB。据此 `--worker-memory-gb` 从 21.6 改为 **17.6**。**
+      **worker 数（2026-09-12 00:05 第二次依实测改写；原为「19 而不是 20」，09-11 02:26 改为 24）：**
+      足迹又降了一次。`temporal_fold_batches` 原先把已经死掉的原始 train 分片与两个 prepared 帧一直握到窗口
+      构造结束，逐阶段实测后改成用完即释放（`9e8628a`）。F1 实测：worker 峰值 **13.61 → 12.85 GiB**、父进程
+      峰值 **19.15 → 17.07 GiB**，而批次数（953 / 237 / 242）、张量字节数（4,470,614,049 与 5,689,592,480）
+      与 `(1,1610,20,15)` float32 形状全部不变。按 F4 行数等比折算：单 worker **16.56 GiB**、父进程
+      **21.99 GiB**。据此 `--worker-memory-gb` 从 17.6 改为 **16.6**。（09-11 02:26 那次的数字——单 worker
+      13.61 GiB、父进程 19.15 GiB、折算 F4 为 17.54 / 24.67 GiB——已被本次取代。）
 
       **但 worker 数不是"能开多少就开多少"，M2 的 makespan 对它是台阶函数，而台阶正好在 24。** 24 配置在 24 路下
       一轮跑完（配置级 1 轮 × 3 次拟合 = 3 个拟合时，与种子级 `ceil(72/24)=3` 打平、按规则取粗粒度），搜索
       25.8 h；而 23 路与 19 路完全相同（种子级 4 轮 = 4 个拟合时，34.4 h）。所以**要么拿到 24 路，要么退回
       19 路，中间的 20–23 路买不到任何搜索时长**（但仍白拿重建从 40 分钟到 7.6 分钟这一份）。
 
-      **24 路是有前提的，发射前必须先读 MemAvailable。** 24 × 17.54 + 24.67 = **445.63 GiB**，对 90% 余量只剩
-      1.7 GiB，等价于要求 **MemAvailable ≥ 495.1 GiB**。这台机器是共用的：2026-09-11 02:00 前后另一位租户的
-      4 个进程占着约 86.6 GiB，MemAvailable 只有 488.5 GiB，此时 F4 的安全 worker 数是 23，**24 路会被护栏拒**。
-      注意护栏**每折装配后还会再查一次**，所以启动时过得去、到 F4 才拒是可能的；`--resume` 把那种情况的代价
-      降到"重启后采纳已完成的折"，但仍应避免。36 路（下一个台阶，搜索 17.2 h）需要 656.1 GiB，超过本机
-      660 GiB 总量，**不可达**——24 路就是当前足迹下的天花板。
+      **24 路仍有前提，但前提松了，发射前还是要先读 MemAvailable。** 24 × 16.56 + 21.99 = **419.36 GiB**，
+      等价于要求 **MemAvailable ≥ 466.0 GiB**（原为 495.1 GiB，那时对 447.3 GiB 的 90% 余量只剩 1.7 GiB）。
+      这个差别是实的：2026-09-11 02:00 前后另一位租户的 4 个进程占着约 86.6 GiB、MemAvailable 只有 488.5 GiB，
+      那时 F4 的安全 worker 数是 23、**24 路会被护栏拒**；同样条件下现在安全数是 **25**，24 路有余量地通过
+      （497 GiB 下同样是 25）。注意护栏**每折装配后还会再查一次**，所以启动时过得去、到 F4 才拒仍有可能；
+      `--resume` 把那种情况的代价降到"重启后采纳已完成的折"。**36 路（下一个台阶，搜索 17.2 h）需要
+      686.7 GiB，超过本机 660 GiB 总量，确定不可达**——24 路是当前足迹下的天花板，这是算术而不是保守估计。
 
       ```bash
-      # 发射前置检查：>=495.1 GiB 才用 24 路，否则退回 19 路（20-23 路没有意义）
-      awk '/MemAvailable/{printf "MemAvailable = %.1f GiB -> %s\n", $2/1048576, ($2/1048576 >= 495.1 ? "24 workers" : "19 workers")}' /proc/meminfo
+      # 发射前置检查：>=466.0 GiB 才用 24 路，否则退回 19 路（20-23 路没有意义）
+      awk '/MemAvailable/{printf "MemAvailable = %.1f GiB -> %s\n", $2/1048576, ($2/1048576 >= 466.0 ? "24 workers" : "19 workers")}' /proc/meminfo
       ```
 
 ```bash
@@ -337,7 +341,7 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
   --report /data/zhangyudong/qrv2_research_artifacts/m2_v1/report.json \
   --factor-source frozen_v2 \
   --prior-report M1=/data/zhangyudong/qrv2_research_artifacts/m1_v2/report.json \
-  --parallel-workers 24 --torch-threads 1 --worker-memory-gb 17.6 --resume \
+  --parallel-workers 24 --torch-threads 1 --worker-memory-gb 16.6 --resume \
   > /data/zhangyudong/qrv2_research_artifacts/m2_v1.log 2>&1 &
 ```
 
@@ -348,11 +352,12 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
       **首折必须读的三项遥测**——这是全链里唯一还靠外推的数字，M2 在 19 路下的并发降级从未实测：
 
       1. **单 epoch 成本**：由检查点时间戳算，与单 worker 期望值比（计划实测 1301.3 ms/train日 × 约 1220 训练日
-         ≈ 26.5 min/epoch）。静态家族在 3 路下降级约 1.00×，但 M2 的单 worker 面板大得多，19 路未知。
-      2. **worker 实际 RSS** 对 17.6 GiB 声明值的偏差（`ps -o rss` 打在 spawned worker 上）。F1 在批次构造重写后
-         实测 **13.61 GiB**（重写前 16.80 GiB），17.6 是按 F4 行数等比外推的 17.54 向上取整；父进程实测
-         **19.15 GiB**（F1），护栏减的就是它。**同时读父进程的 RSS**：24 路的余量只有 1.7 GiB，父进程若比外推
-         的 24.67 GiB 更大，护栏会在 F4 装配后拒掉整轮。
+         ≈ 26.5 min/epoch）。静态家族在 3 路下降级约 1.00×，但 M2 的单 worker 面板大得多，24 路未知。
+      2. **worker 实际 RSS** 对 16.6 GiB 声明值的偏差（`ps -o rss` 打在 spawned worker 上）。F1 实测
+         **12.85 GiB**（批次构造重写前 16.80、释放死帧前 13.61），16.6 是按 F4 行数等比外推的 16.56 向上取整；
+         父进程实测 **17.07 GiB**（F1；释放死帧前 19.15），护栏减的就是它。**同时读父进程的 RSS**：F4 的安全
+         worker 数是 25、24 路的要求是 MemAvailable ≥ 466.0 GiB，所以父进程若比外推的 21.99 GiB 大得多，
+         护栏仍会在 F4 装配后拒掉整轮。
       3. **7.6 分钟的面板重建是否每 worker 只发生一次**（缓存命中；重写前是 40 分钟）。若每个任务都重建，说明
          缓存键写错了，那会让每折多出几十小时——重建变快使这个故障**更隐蔽**，因为绝对数字小了，所以这一项
          不能因为"看起来只花几分钟"就跳过。
@@ -360,7 +365,7 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
       若第 1 项的降级超过约 1.5×，直接杀掉、用更少 worker 重启：`--resume` 把这件事的代价从「全部重来」降到
       「只重跑未完成的部分」。**预计时长（24 路，2026-09-11 依实测改写；原为 19 路 44 h/折、7.4 天）**：搜索
       1 轮 × 3 次拟合 = 25.8 h + 每 worker 一次 7.6 min 重建 + 最终拟合 1 轮 ≈ 8.6 h + 新一批 worker 的
-      7.6 min ≈ **34.7 h/折，四折约 5.8 天**。若 MemAvailable 不足 495.1 GiB 而退回 19 路，搜索回到 4 轮
+      7.6 min ≈ **34.7 h/折，四折约 5.8 天**。若 MemAvailable 不足 466.0 GiB 而退回 19 路，搜索回到 4 轮
       × 8.6 h = 34.4 h，即 **约 43.5 h/折、四折约 7.3 天**——重建变快省下的那 4.3 小时仍然拿到，台阶那一份
       拿不到。
 - [x] **4.3 M3 分支 + 合成 smoke**（32 组合 ≤30 不成立时同 4.1 粗筛规则）。
