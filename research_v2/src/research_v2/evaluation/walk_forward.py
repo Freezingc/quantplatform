@@ -216,7 +216,8 @@ def _assemble_oos_frames(
         _require_baseline_covered_by_candidate(
             candidate,
             baseline,
-            f"{fold_id} candidate and baseline predictions",
+            labels_frame,
+            f"{fold_id} baseline predictions",
         )
         dataset_ids = {
             str(candidate["dataset_id"].iloc[0]),
@@ -325,22 +326,50 @@ def _scoreable_label_keys(labels: pd.DataFrame) -> set[tuple[object, ...]]:
 
 
 def _require_baseline_covered_by_candidate(
-    candidate: pd.DataFrame, baseline: pd.DataFrame, name: str
+    candidate: pd.DataFrame,
+    baseline: pd.DataFrame,
+    labels: pd.DataFrame,
+    name: str,
 ) -> None:
-    """The candidate must cover at least the baseline's test rows, not necessarily equal them.
+    """The candidate must cover the baseline's SCOREABLE rows, and the baseline must be real.
 
-    A candidate that scores more of the test cross-section than the baseline -- M0 with
-    allow_nan scores the sparse rows the dense baseline skips -- is legitimate, and
-    evaluate_frozen_oos already restricts both to their common keys via
-    _match_prediction_coverage before computing the G4 delta. Requiring IDENTICAL keys
-    here rejected exactly that case. What must not happen is the candidate covering FEWER
-    of the baseline's rows, because then the delta would silently lose baseline coverage.
+    Two requirements, and each has a measurement behind it rather than a preference.
+
+    Covering more than the baseline is and always was legitimate: M0 with allow_nan scores sparse
+    rows the dense baseline skips, ``evaluate_frozen_oos`` restricts both to their common keys via
+    ``_match_prediction_coverage`` before the G4 delta, and requiring IDENTICAL keys here once
+    rejected exactly that case. What must not happen is the candidate covering fewer of the rows the
+    delta could actually use, because then it would be computed over a narrower cross-section than
+    the baseline supports and still return a plausible number.
+
+    "Could actually use" is the part that was wrong. The metric only ever scores rows that are
+    ``label_valid`` with a finite return, so a baseline row outside that set contributes nothing to
+    any number and cannot be lost. On the real F1 fold the best_simple baseline covers 747,461
+    rows, the torch candidate 803,572 -- exactly the scoreable set -- and the 940 baseline rows the
+    candidate lacks contain ZERO scoreable rows: the usable intersection is 746,521 either way.
+    Requiring coverage of those 940 therefore protected nothing, and it was the third blocker behind
+    which no torch family could reach a verdict.
+
+    The membership requirement is stated explicitly because it used to hold by accident: with the
+    candidate's keys required to be identical to the label frame's, a baseline row invented out of
+    nowhere could not be in the candidate and so was refused. Now that the candidate must cover
+    only the scoreable rows, that implication is gone and the check has to say what it means.
     """
     keys = ["signal_date", "ts_code"]
-    candidate_keys = set(map(tuple, candidate.loc[:, keys].itertuples(index=False, name=None)))
+    label_keys = set(map(tuple, labels.loc[:, keys].itertuples(index=False, name=None)))
     baseline_keys = set(map(tuple, baseline.loc[:, keys].itertuples(index=False, name=None)))
-    if not baseline_keys.issubset(candidate_keys):
-        raise ValueError(f"{name}: baseline rows are not all covered by the candidate")
+    candidate_keys = set(map(tuple, candidate.loc[:, keys].itertuples(index=False, name=None)))
+    if not baseline_keys.issubset(label_keys):
+        raise ValueError(
+            f"{name}: {len(baseline_keys - label_keys)} baseline rows are not in the verified "
+            "TEST frame"
+        )
+    scoreable_baseline = baseline_keys & _scoreable_label_keys(labels)
+    if not scoreable_baseline.issubset(candidate_keys):
+        raise ValueError(
+            f"{name}: {len(scoreable_baseline - candidate_keys)} scoreable baseline rows are not "
+            "covered by the candidate"
+        )
 
 
 def _labels_with_lineage(

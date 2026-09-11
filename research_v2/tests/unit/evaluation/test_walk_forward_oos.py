@@ -60,6 +60,92 @@ def test_walk_forward_requires_all_four_ordinary_test_folds() -> None:
 
     assert evaluation.summary.valid_day_count == 8
     assert evaluation.delta_rank_ic == pytest.approx(2.0)
+
+
+def _unlabelled_rows(fold_id: str, year: int, *, with_score: bool) -> pd.DataFrame:
+    """Rows with no usable label, optionally scored, on both of the fold's test dates."""
+    rows = [
+        {
+            "signal_date": date(year, 1, day),
+            "ts_code": f"U{day:03d}",
+            "raw_return_5d": float("nan"),
+            "label_valid": False,
+            "fold_id": fold_id,
+            "dataset_id": f"dataset-{year}",
+        }
+        for day in (2, 3)
+    ]
+    frame = pd.DataFrame(rows)
+    if with_score:
+        frame["score"] = [float(index) for index in range(len(frame))]
+        frame["model_id"] = "baseline"
+    return frame
+
+
+def test_walk_forward_accepts_a_baseline_row_no_candidate_could_ever_score() -> None:
+    """The frozen simple baseline scores rows that have no usable label, and that is not a gap.
+
+    Measured on the real F1 fold: the best_simple baseline covers 747,461 rows, the torch candidate
+    803,572, and the 940 baseline rows the candidate lacks contain **zero** scoreable rows -- every
+    one is ``label_valid=False`` or has a non-finite return. The metric's usable intersection is
+    746,521 rows whether or not those 940 are covered, because ``evaluate_frozen_oos`` discards them
+    either way. So requiring the candidate to cover them protected nothing at all, and it was the
+    third blocker behind which no torch family could reach a verdict.
+
+    What the check exists for is unchanged: a candidate that drops a row the baseline could be
+    compared on would compute the G4 delta over a narrower cross-section than the baseline supports,
+    and still return a plausible number. That case is pinned by the next test.
+    """
+    folds = {f"F{index}": _fold(2021 + index) for index in range(1, 5)}
+    fold = folds["F1"]
+    extra = _unlabelled_rows("F1", 2022, with_score=False)
+    folds["F1"] = OosFold(
+        candidate_predictions=fold.candidate_predictions,
+        labels=pd.concat([fold.labels, extra], ignore_index=True),
+        baseline_predictions=pd.concat(
+            [fold.baseline_predictions, _unlabelled_rows("F1", 2022, with_score=True)],
+            ignore_index=True,
+        ),
+    )
+
+    evaluation = evaluate_walk_forward_oos(folds)
+
+    assert evaluation.summary.valid_day_count == 8
+    assert evaluation.delta_rank_ic == pytest.approx(2.0)
+
+
+def test_walk_forward_rejects_a_baseline_row_outside_the_label_frame() -> None:
+    """Relaxing coverage of unscoreable rows must not relax membership of the TEST frame.
+
+    The old identity-based candidate check caught this as a side effect: a baseline row invented
+    out of nowhere could not be in the candidate, and the candidate could not leave the label frame.
+    With coverage required only over scoreable rows that implication is gone, so the requirement is
+    stated directly instead of being left to fall out of another check.
+    """
+    folds = {f"F{index}": _fold(2021 + index) for index in range(1, 5)}
+    fold = folds["F1"]
+    invented = pd.DataFrame(
+        [
+            {
+                "signal_date": date(2022, 1, 2),
+                "ts_code": "NOT_IN_THE_TEST_FRAME",
+                "score": 1.0,
+                "model_id": "baseline",
+                "fold_id": "F1",
+                "dataset_id": "dataset-2022",
+            }
+        ]
+    )
+    folds["F1"] = OosFold(
+        candidate_predictions=fold.candidate_predictions,
+        labels=fold.labels,
+        baseline_predictions=pd.concat(
+            [fold.baseline_predictions, invented], ignore_index=True
+        ),
+    )
+
+    with pytest.raises(ValueError, match="not in the verified TEST frame"):
+        evaluate_walk_forward_oos(folds)
     with pytest.raises(ValueError, match="F4"):
         evaluate_walk_forward_oos({key: value for key, value in folds.items() if key != "F4"})
 
