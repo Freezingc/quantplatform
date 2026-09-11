@@ -38,6 +38,28 @@
 
 `valid_day_count = 945`、`baseline_mean_rank_ic = 0.0852268662737014`、`icir = 0.7681728838370345`。
 
+### 1.1 一个必须写明的不对称：registry 里**只有 M0R 一条**，M1 载体从未注册
+
+`model_registry/models/` 下**只有一个目录**，就是 M0R 的 `32315c89…`。
+M1 的载体运行 `m1_parallel_v1` **有** `promotion_evidence.json`（129,485 字节，2026-09-11 21:51 写入，
+顶层键 `gate_evidence / role / schema_version`，且 2026-09-11 交接 §13 已只读复核
+`load_walk_forward_evidence` 接受它、registry 独立重算的 G4 与报告逐位一致），
+但**没有任何 registry 记录**——它既不是 `DRAFT` 也不是 `WALK_FORWARD_PASSED`，它不在册。
+
+要点在于区分两件事：`promotion_evidence.json` 是**证据工件**，
+而 registry 的 `DRAFT → WALK_FORWARD_PASSED` 是**在册状态记录**。
+M0R 两者都有，M1 载体只有前者。
+而且 `WALK_FORWARD_PASSED` **不是部署决定**——状态阶梯是
+`DRAFT → WALK_FORWARD_PASSED → SHADOW → LOCKED_TEST_APPROVED → …`，
+所以"注册到 WALK_FORWARD_PASSED"记的是走查结果这件事本身，不等于往 SHADOW 走。
+
+**对本文决策的含义**：任何形如"M1 也过门了、也在册"的说法都是**错的**。
+若要拿 M1 参与影子/晋级比较，先得决定是否把它注册进册；
+**本轮没有做这件事**，因为（a）写签名 registry 属治理动作、不归本轮擅自执行，
+（b）M1 全网格约 25 小时后就会产出另一份报告，此刻注册载体版可能与全网格版并存而造成混淆
+（若全网格选中的仍是 `c0`、且数据与 seed 不变，两次的 `model_id` 还可能相同，那更需要先想清楚）。
+建议顺序是：**等全网格报告落地，再决定注册哪一份 M1**。
+
 **与 M1 的可比性已核实**（详见 2026-09-12 交接 §6 验收 B）：`m0r_v2` 与 `m1_parallel_v1`
 同为 `mode=full`、4 折、`valid_day_count = 945`、`baseline_mean_rank_ic` **16 位全同**，
 所以 M0R 的 +0.009149 与 M1 单配置载体的 +0.005845 可直接相减（约 1.57 倍）。
@@ -104,6 +126,7 @@ M1 全 27 格运行正在进行（工作区 `m1_full_v1`，2026-09-12 02:05 发�
 ## 6. 本文没有做的事（明确列出，便于审计）
 
 * 未执行任何状态转换；registry `record.json` 与 `events.jsonl` **未被写入**。
+* 未把 M1 载体注册进 registry（理由见 §1.1）。
 * 未启动 SHADOW，未设置 shadow pointer，未触碰 active model pointer。
 * 未写数据库，未触碰 `materialization_status.{json,md}`、`/tmp/frozen_chain_hold.txt`、2026 locked 段。
 * 未勾选 F 计划的 F6.1（那是人工审批项），也未勾选本计划 §5.1/§5.2
