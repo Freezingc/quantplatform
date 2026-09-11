@@ -2297,15 +2297,6 @@ def _run_full_cross_section(
             )
             baseline_evidence_id = baseline_evidence.evidence_id
 
-        preprocessor = FoldPreprocessor(factor_order=factor_order)
-        preprocessor.fit(train.loc[:, list(factor_order)], role="TRAIN")
-        train_batches = build_static_training_batches(
-            _prepare_frame(train, preprocessor, factor_order), factor_order=factor_order
-        )
-        validation_batches = build_static_training_batches(
-            _prepare_frame(validation, preprocessor, factor_order), factor_order=factor_order
-        )
-
         # Constrained config search: per config, three-seed validation ensemble RankIC.
         search_results: list[dict[str, Any]] = []
         model_id = f"{family.lower()}-{fold_id.lower()}"
@@ -2321,6 +2312,12 @@ def _run_full_cross_section(
             runtime=torch_runtime_bindings(),
         )
         torch_budget = _torch_search_budget(max_epochs)
+        # Adoption is decided BEFORE this fold's inputs are built. A fold that is already frozen
+        # needs neither a fitted preprocessor nor a single batch, and --resume is the planned way to
+        # cross a fold boundary on a multi-day run rather than an exceptional event, so building
+        # first meant paying minutes per adopted fold for work that the continue below discards.
+        # Everything adoption reads -- the model id, the three dataset ids, the factor order, the
+        # grid, the budget, and the baseline evidence written above -- is already in hand here.
         adopted_fold = _adopt_completed_fold(
             args,
             workspace,
@@ -2341,6 +2338,15 @@ def _run_full_cross_section(
             oos_folds[fold_id] = adopted_fold.oos_fold
             print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
             continue
+
+        preprocessor = FoldPreprocessor(factor_order=factor_order)
+        preprocessor.fit(train.loc[:, list(factor_order)], role="TRAIN")
+        train_batches = build_static_training_batches(
+            _prepare_frame(train, preprocessor, factor_order), factor_order=factor_order
+        )
+        validation_batches = build_static_training_batches(
+            _prepare_frame(validation, preprocessor, factor_order), factor_order=factor_order
+        )
         execution = _parallel_execution(args)
         _check_worker_memory(args, execution)
         configs_to_run: Sequence[tuple[int, dict[str, Any]]] = tuple(enumerate(configs))
@@ -2849,6 +2855,51 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             )
             baseline_evidence_id = baseline_evidence.evidence_id
 
+        search_results: list[dict[str, Any]] = []
+        # M2's card family and code version are derived from the WINNING config (TEMPORAL_GRU or
+        # TEMPORAL_TCN), so neither is knowable per fold before the search runs. The config payload
+        # carries the family choice and the config hash binds it; these two labels only keep M2's
+        # records separate from every other family's.
+        model_id = f"m2-{fold_id.lower()}"
+        resume = _search_resume(
+            args,
+            workspace,
+            fold_id=fold_id,
+            family="M2",
+            model_code_version="m2-temporal-search",
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            runtime=torch_runtime_bindings(),
+        )
+        torch_budget = _temporal_search_budget(max_epochs)
+        # Adoption is decided BEFORE this fold's panels are built, and for M2 that ordering is worth
+        # more than anywhere else: an adopted fold would otherwise reconstruct the train panel, the
+        # train+validation panel and the TEST panel -- measured on the real F1 fold at 400 s for the
+        # first two together and 552 s for the TEST one, about sixteen minutes -- and then discard
+        # all three at the continue below. Adoption needs none of them: the window contract it binds
+        # comes from _temporal_search_budget, which reads the frozen constants, not a panel.
+        adopted_fold = _adopt_completed_fold(
+            args,
+            workspace,
+            model_store,
+            selection_store,
+            resume,
+            fold_id=fold_id,
+            model_id=model_id,
+            dataset_id=dataset_id,
+            train_dataset_id=train_dataset_id,
+            validation_dataset_id=validation_dataset_id,
+            factor_order=factor_order,
+            configs=configs,
+            budget_for=_constant_budget(torch_budget),
+        )
+        if adopted_fold is not None:
+            fold_reports.append(adopted_fold.report_entry)
+            oos_folds[fold_id] = adopted_fold.oos_fold
+            print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
+            continue
+
         preprocessor = FoldPreprocessor(factor_order=factor_order)
         preprocessor.fit(train.loc[:, list(factor_order)], role="TRAIN")
         prepared_train = _prepare_frame(train, preprocessor, factor_order)
@@ -2875,45 +2926,6 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
             factor_order,
             test_dates,
         )
-
-        search_results: list[dict[str, Any]] = []
-        # M2's card family and code version are derived from the WINNING config (TEMPORAL_GRU or
-        # TEMPORAL_TCN), so neither is knowable per fold before the search runs. The config payload
-        # carries the family choice and the config hash binds it; these two labels only keep M2's
-        # records separate from every other family's.
-        model_id = f"m2-{fold_id.lower()}"
-        resume = _search_resume(
-            args,
-            workspace,
-            fold_id=fold_id,
-            family="M2",
-            model_code_version="m2-temporal-search",
-            train_dataset_id=train_dataset_id,
-            validation_dataset_id=validation_dataset_id,
-            factor_order=factor_order,
-            runtime=torch_runtime_bindings(),
-        )
-        torch_budget = _temporal_search_budget(max_epochs)
-        adopted_fold = _adopt_completed_fold(
-            args,
-            workspace,
-            model_store,
-            selection_store,
-            resume,
-            fold_id=fold_id,
-            model_id=model_id,
-            dataset_id=dataset_id,
-            train_dataset_id=train_dataset_id,
-            validation_dataset_id=validation_dataset_id,
-            factor_order=factor_order,
-            configs=configs,
-            budget_for=_constant_budget(torch_budget),
-        )
-        if adopted_fold is not None:
-            fold_reports.append(adopted_fold.report_entry)
-            oos_folds[fold_id] = adopted_fold.oos_fold
-            print(f"  {fold_id} adopted from verified artifacts: model={model_id}", flush=True)
-            continue
         execution = _parallel_execution(args)
         _check_worker_memory(args, execution)
         configs_to_run: Sequence[tuple[int, dict[str, Any]]] = tuple(enumerate(configs))

@@ -1599,3 +1599,54 @@ def test_every_search_loop_adopts_completed_folds_before_fitting() -> None:
     assert source.count('model_id = f"{spec.model_id_prefix}-{fold_id.lower()}"') == 1
     assert source.count('model_id = f"{family.lower()}-{fold_id.lower()}"') == 1
     assert source.count('model_id = f"m2-{fold_id.lower()}"') == 1
+
+
+def _top_level_function_bodies(source: str) -> dict[str, str]:
+    """Split the driver's source into top-level functions, so ordering can be checked per loop."""
+    bodies: dict[str, str] = {}
+    name: str | None = None
+    lines: list[str] = []
+    for line in source.splitlines(keepends=True):
+        if line.startswith("def "):
+            if name is not None:
+                bodies[name] = "".join(lines)
+            name = line[len("def ") :].split("(")[0]
+            lines = [line]
+        elif name is not None:
+            lines.append(line)
+    if name is not None:
+        bodies[name] = "".join(lines)
+    return bodies
+
+
+def test_adoption_is_decided_before_the_fold_inputs_are_built() -> None:
+    """An already-frozen fold must not pay for a preprocessor fit or a batch construction.
+
+    Asking whether the fold is adopted only AFTER building its inputs means a resumed run fits the
+    preprocessor and constructs every train and validation batch -- and for M2 also the TEST panel,
+    which is the expensive one -- and then throws all of it away at the ``continue``. Measured on
+    the real F1 fold that is about six minutes per fold for M1 and about sixteen for M2, paid on
+    every restart, and restarts are the planned recovery mechanism for a multi-day run rather than
+    an exceptional event.
+
+    Everything ``_adopt_completed_fold`` needs -- the model id, the three dataset ids, the factor
+    order, the grid and the budget -- is known before the preprocessor exists, and the baseline
+    evidence it looks for is written earlier still, so nothing forces the current order. The
+    LightGBM loop already gets this right; the two torch loops are the ones checked here.
+    """
+    bodies = _top_level_function_bodies(SCRIPT_PATH.read_text(encoding="utf-8"))
+    checked: list[str] = []
+    for name, body in bodies.items():
+        adopt = body.find("adopted_fold = _adopt_completed_fold(")
+        build = body.find("preprocessor.fit(")
+        if adopt < 0 or build < 0:
+            continue
+        checked.append(name)
+        assert adopt < build, (
+            f"{name} builds the fold's inputs before asking whether the fold is already frozen, so "
+            "a resumed run pays for a preprocessor fit and a full batch construction per adopted "
+            "fold and then discards both"
+        )
+    assert sorted(checked) == ["_run_full_cross_section", "run_full_m2"], (
+        f"expected the two torch fold loops to be checked, found {sorted(checked)}"
+    )
