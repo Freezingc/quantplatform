@@ -11,6 +11,7 @@ import argparse
 import importlib.util
 import json
 import sys
+from dataclasses import asdict
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -20,8 +21,10 @@ import pandas as pd
 import pytest
 import torch
 
+from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.evaluation import model_walk_forward
 from research_v2.inference import artifact_loader
+from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.families import TORCH_FAMILIES
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
@@ -1796,3 +1799,114 @@ def test_every_bundle_config_the_driver_writes_can_be_loaded_back() -> None:
         + len(MODULE.m2_config_grid(None))
     )
     assert checked == expected, f"every grid entry must round-trip: {checked} of {expected} did"
+
+
+_BUNDLE_FACTORS = tuple(f"f{index:02d}" for index in range(4))
+
+
+def _m2_grid_entry(choice: str) -> dict[str, Any]:
+    entry = dict(MODULE.m2_config_grid(None)[0])
+    entry["family"] = choice
+    return entry
+
+
+@pytest.mark.parametrize(
+    "label,card_family,code_version,factory_name,config_payload",
+    [
+        (
+            "M1",
+            MODULE.M1_FAMILY_NAME,
+            MODULE.M1_MODEL_CODE_VERSION,
+            "_m1_model_factory",
+            MODULE.m1_config_grid(None)[0],
+        ),
+        (
+            "M3",
+            MODULE.M3_FAMILY_NAME,
+            MODULE.M3_MODEL_CODE_VERSION,
+            "_m3_model_factory",
+            MODULE.m3_config_grid(None)[0],
+        ),
+        (
+            "M2-GRU",
+            MODULE.m2_card_family("GRU"),
+            MODULE.m2_model_code_version("GRU"),
+            "_m2_model_factory",
+            _m2_grid_entry("GRU"),
+        ),
+        (
+            "M2-TCN",
+            MODULE.m2_card_family("TCN"),
+            MODULE.m2_model_code_version("TCN"),
+            "_m2_model_factory",
+            _m2_grid_entry("TCN"),
+        ),
+    ],
+)
+def test_a_bundle_written_by_the_drivers_own_writers_loads_back(
+    tmp_path: Path,
+    label: str,
+    card_family: str,
+    code_version: str,
+    factory_name: str,
+    config_payload: dict[str, Any],
+) -> None:
+    """The whole writer-to-loader contract, using the driver's real functions on both ends.
+
+    The tests above compare field SETS, which catches a config the loader would reject for its keys.
+    They cannot catch a bundle whose keys are right but whose values do not reconstruct the model --
+    ``load_bundle_for_evaluation`` rebuilds the architecture from the config and compares its
+    ``artifact_signature`` to the one stored in the bundle, and that comparison is the last link
+    between what the driver freezes and what anything can later load. It is also the link no test
+    had exercised with the driver's own writers: every existing loader test hand-builds its card,
+    config and signature, so a mismatch between the driver and the loader was invisible by
+    construction.
+
+    Built here from ``torch_model_card``, ``torch_bundle_config``, the carrier's model factory and
+    ``_preprocessing_artifact`` -- the four functions the full runs actually call -- so this fails
+    if any of them drifts from what the loader accepts.
+    """
+    factor_order = _BUNDLE_FACTORS
+    preprocessor = FoldPreprocessor(factor_order=factor_order)
+    preprocessor.fit(
+        pd.DataFrame({name: [float(value) for value in range(50)] for name in factor_order}),
+        role="TRAIN",
+    )
+    prototype = getattr(MODULE, factory_name)(config_payload, factor_order)
+    seeds = {}
+    for seed in REQUIRED_SEEDS:
+        path = tmp_path / f"{label}-{seed}.pt"
+        torch.save({"model_state_dict": prototype.state_dict()}, path)
+        seeds[seed] = path
+    store = ModelArtifactBundleStore(tmp_path / "models")
+    model_id = f"bundle-{label.lower()}"
+    store.write(
+        model_id,
+        model_card=MODULE.torch_model_card(
+            card_family=card_family,
+            dataset_id="dataset-1",
+            model_code_version=code_version,
+        ),
+        config=MODULE.torch_bundle_config(
+            config_payload, card_family=card_family, factor_count=len(factor_order)
+        ),
+        signature=asdict(prototype.artifact_signature()),
+        feature_order=factor_order,
+        preprocessing=MODULE._preprocessing_artifact(preprocessor),
+        seed_checkpoints=seeds,
+        validation_predictions=pd.DataFrame(
+            {"signal_date": [date(2025, 1, 2)], "ts_code": ["a"], "percentile_rank": [0.5]}
+        ),
+    )
+
+    loaded = load_bundle_for_evaluation(
+        store,
+        model_id,
+        expected_dataset_id="dataset-1",
+        expected_feature_order=factor_order,
+        expected_preprocessor_hash=preprocessor.state_hash,
+        device=torch.device("cpu"),
+    )
+
+    assert len(loaded.models) == len(REQUIRED_SEEDS), label
+    assert all(model.model_family == card_family for model in loaded.models), label
