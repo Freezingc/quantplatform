@@ -792,6 +792,14 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
       四折约 **17–19 h**。要精确到网格均值需要把 16 格都测一遍（约 2 小时探针），
       而对一个不到一天的运行不值得——**按 0.87 天上界规划即可**。
 
+      **epoch 数按 M1 的实测均值 21.9 修正后（取代上面按 20 epoch 算的数）**：
+      per-fit = `21.9 × 429.6 s = 2.61 h`（最大格），
+      48 路 1 轮 → 四折 **22.8 h（0.95 天，deg 1.132）到 24.6 h（1.02 天，deg 1.30）**；
+      24 路 2 轮 → **34.6 h（1.44 天）**。
+      即 M3 的规划值应为 **约 1 天（48 路）**，48 路那一步仍值约 0.45 天。
+      上面那段"网格均值约 1.9–2.1 h、四折 17–19 h"是按 20 epoch 说的，
+      同样上调约 9.5% 到 **约 19–21 h**；作为上界的结论不变。
+
       ```bash
       cd /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2   # 必需：下面用的是相对路径 scripts/...
       KEY=$(cat /data/zhangyudong/qrv2_research_artifacts/secrets/selection_evidence_hmac.key)
