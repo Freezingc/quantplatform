@@ -270,7 +270,47 @@ TCN/128 折算到生产口径约 **12.8 GiB**，与生产实测吻合，再按 F
 * Python：`/data/zhangyudong/.conda/envs/quantyd/bin/python`；测试从 `research_v2/` 跑。
 * 负结果如实报告，不美化；治理决定归所有者。
 
-## 12. 接手就能做的下一步
+## 12. 家族分派漂移这一类在 HEAD 上是封死的（地毯式审计，含一个被撤回的改动）
+
+M2 的两个架构与 M3 的 `SetAttention` **都从未在真实数据上跑过一折**，而那六个阻塞项全部属于
+同一类：某个按家族名分派的地方漏了一个家族。所以在 M2/M3 发射前把这一类整体审了一遍，
+而不是等它们各自跑数天再撞。
+
+**(a) 字面量地毯式扫描**：全仓 `src/` 与 `scripts/` 里出现的家族名字面量共 **13 处**，逐处归类后
+**没有一处是 torch 家族名的手抄**：4 处是模型类自己的定义（`residual_mlp.py:34`、
+`set_attention.py:84`、`temporal.py:32/119`，它们本身就是唯一真源），
+9 处属 LightGBM 专属（`lgbm_artifact_loader.py` 的 `LGBMModelFamily` 与其两张映射、
+`model_walk_forward.py` 的 `M0`/`M0R` 两行、驱动的 `M0_FAMILY_NAME`/`M0R_FAMILY_NAME`）。
+torch 侧全部经由 `families.py` 从类属性派生：`STATIC_TORCH_FAMILIES`、
+`TEMPORAL_TORCH_FAMILIES`、`TORCH_FAMILIES`、`TEMPORAL_CODE_VERSIONS`、`CARRIER_CARD_FAMILIES`。
+
+**(b) 三个路由器 + loader 都有遍历派生集合的测试**（`tests/unit/models/test_families.py`）：
+`test_every_family_router_knows_every_torch_family` 对每个静态家族断言它在
+`builder._CROSS_SECTIONAL_FAMILIES`、`reproduction._STATIC_TORCH_FAMILIES`、
+以及 `model_walk_forward._MODEL_CARD_FAMILIES[对应载体]` 里；对每个时序家族断言同样三处；
+对**每个** torch 家族断言它在 `artifact_loader._MODEL_CODE_VERSIONS` 里。
+`test_every_allowlisted_family_has_a_factory_behind_it` 则**遍历类声明的家族而不是遍历映射本身**，
+并真的构造出来比对 `model_family`——它的 docstring 记着为什么必须这样：
+把映射里的 `TEMPORAL_TCN` 删掉后，遍历映射的写法只是不再覆盖它、测试照样绿。
+实跑：`test_families.py` + `test_family_batch_dispatch.py` + `test_reproduction.py` +
+`test_artifact_loader.py` → **123 passed**（2026-09-12 05:15）。
+
+**(c) 一个如实记录的负结果：我改了一处测试，变异检验后发现是多余的，已撤回。**
+`test_family_batch_dispatch.py` 的时序侧用 `sorted(TEMPORAL_TORCH_FAMILIES)` 参数化、
+静态侧却手抄 `("RESIDUAL_MLP", "SET_ATTENTION")`，看着正是交接第 10 节点名的那个反模式
+（"夹具在复述写入方的约定"），于是把静态侧也改成参数化。**变异检验推翻了这个判断**：
+往 `STATIC_TORCH_FAMILIES` 里加第三个家族后，参数化的三个用例**全过**——
+因为 `builder._CROSS_SECTIONAL_FAMILIES = STATIC_TORCH_FAMILIES`，分派本来就派生自同一个集合，
+新家族自动被路由；而真正会抓住"第三个架构没被路由"的是上面 (b) 那条测试，它早就存在、位置也更对。
+所以那个改动不抓任何当前的东西，而它的 docstring 还会声称一份其实住在别处的保护——
+**留下它是负价值，已用 `apply_patch` 逐字还原，`git diff` 为空**。
+记在这里是为了不让下一个人重做一遍。
+（顺带：`test_every_family_router_knows_every_torch_family` 里
+`carrier = "M1" if family == ResidualMLP.model_family else "M3"` 是个 `else` 兜底，
+真加第三个静态家族时它会被拿去和 M3 的白名单比从而失败——是"大声失败"，可以接受，不必改。）
+
+## 13. 接手就能做的下一步
+
 
 1. **等 `m1_full_v1/report.json`**（预计 09-13 06:45）。监控三项：
    `ls m1_full_v1/search/F1 | wc -l` 应到 27；`find m1_full_v1/checkpoints -maxdepth 1 -type d -name 'm1-f1-c*'`
