@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import date
+from typing import Literal
 
 import pandas as pd
 import pytest
@@ -80,6 +81,7 @@ def _write_model_bundle(
     model_id: str,
     training_dataset_id: str,
     tmp_path: object,
+    card_dataset_id: str | None = None,
 ) -> str:
     checkpoints = {}
     for seed in REQUIRED_SEEDS:
@@ -88,7 +90,12 @@ def _write_model_bundle(
         checkpoints[seed] = path
     store.write(
         model_id,
-        model_card={"family": "M1", "dataset_id": training_dataset_id},
+        model_card={
+            "family": "M1",
+            "dataset_id": (
+                training_dataset_id if card_dataset_id is None else card_dataset_id
+            ),
+        },
         config={"raw_factor_count": 1},
         signature={"raw_factor_count": 1},
         feature_order=("f1",),
@@ -113,16 +120,30 @@ def _fold(
     selection_store: SelectionEvidenceStore,
     prediction_store: FrozenPredictionStore,
     tmp_path: object,
+    card_form: Literal["training", "bare", "unrelated"] = "training",
 ) -> ModelOosFold:
     fold_id = f"F{year - 2021}"
     test_dataset_id = _write_dataset(dataset_store, year)
     model_id = f"model-{fold_id.lower()}"
-    training_dataset_id = f"train-{fold_id}"
+    # What every real writer emits: the selection names the train split of the same dataset
+    # artifact, not an unrelated string. The fixture used to say "train-F1" here, a shape no
+    # writer produces, which is why the two legitimate card conventions were never both covered.
+    training_dataset_id = f"{test_dataset_id}:train"
+    if card_form == "training":
+        # The LightGBM convention: the card records the TRAIN split it fitted on.
+        card_dataset_id = training_dataset_id
+    elif card_form == "bare":
+        # The torch convention: the card records the bare dataset id, which is what the
+        # reproduction audit then loads the TEST split with.
+        card_dataset_id = test_dataset_id
+    else:
+        card_dataset_id = "dataset-from-another-run"
     model_bundle_digest = _write_model_bundle(
         model_store,
         model_id,
         training_dataset_id,
         tmp_path,
+        card_dataset_id=card_dataset_id,
     )
     baseline = selection_store.write_baseline_selection(
         record=_baseline_record(fold_id),
@@ -170,6 +191,7 @@ def _folds(
     *,
     signing_key: bytes = _SELECTION_KEY,
     prediction_signing_key: bytes = _PREDICTION_KEY,
+    card_form: Literal["training", "bare", "unrelated"] = "training",
 ) -> tuple[
     dict[str, ModelOosFold],
     DatasetArtifactStore,
@@ -195,6 +217,7 @@ def _folds(
             selection_store=selection_store,
             prediction_store=prediction_store,
             tmp_path=tmp_path,
+            card_form=card_form,
         )
         for index in range(1, 5)
     }
@@ -529,6 +552,64 @@ def test_model_walk_forward_rejects_prediction_signed_by_the_caller(
     )
 
     with pytest.raises(ValueError, match="prediction signature"):
+        evaluate_model_walk_forward(
+            folds,
+            dataset_store=datasets,
+            model_store=models,
+            selection_root=tmp_path / "selections",  # type: ignore[operator]
+            prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+        )
+
+
+def test_model_walk_forward_accepts_a_bundle_that_records_the_bare_dataset_id(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A torch bundle records the bare dataset id, and that is a convention, not a mismatch.
+
+    ``inference.reproduction._checked_card_dataset_id`` already documents the split: the LightGBM
+    path records the TRAIN split it fitted on (``<dataset>:train``) while the torch path records the
+    bare dataset id it later loads the TEST split with, and both are legitimate so the check there
+    is membership rather than equality. This evaluator enforced equality against the selection's
+    ``training_dataset_id`` alone, so every torch run trained and froze all four folds and then died
+    at the evaluation step -- which is what happened to both real M1 runs, ``m1_v2`` after ~44 h and
+    ``m1_parallel_v1`` after ~20 h, with no ``report.json`` and therefore no verdict for either.
+
+    Membership of a set built from this fold's own signed selection is the rule, and it is not
+    weaker: the set is derived from evidence this fold signed, so a bundle dropped in from another
+    fold or another run names a different hash and is still refused.
+    """
+    monkeypatch.setenv(_SELECTION_KEY_ENV, _SELECTION_KEY.decode("utf-8"))
+    folds, datasets, models, selections, predictions = _folds(tmp_path, card_form="bare")
+
+    result = evaluate_model_walk_forward(
+        folds,
+        dataset_store=datasets,
+        model_store=models,
+        selection_root=tmp_path / "selections",  # type: ignore[operator]
+        prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+    )
+
+    assert result.model_family == "M1"
+    assert [selection.fold_id for selection in result.selections] == ["F1", "F2", "F3", "F4"]
+    assert result.evaluation.delta_rank_ic == pytest.approx(2.0)
+
+
+def test_model_walk_forward_still_rejects_a_bundle_naming_an_unrelated_dataset(
+    tmp_path: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Accepting two conventions must not become accepting anything.
+
+    This is the non-triviality guard for the test above. Widening equality to membership is only
+    safe because the accepted set comes from this fold's signed selection, so a card naming some
+    other dataset must still be refused by the same check -- if this test ever passes for the wrong
+    reason, the test above proves nothing.
+    """
+    monkeypatch.setenv(_SELECTION_KEY_ENV, _SELECTION_KEY.decode("utf-8"))
+    folds, datasets, models, selections, predictions = _folds(tmp_path, card_form="unrelated")
+
+    with pytest.raises(ValueError, match="does not match frozen model selection"):
         evaluate_model_walk_forward(
             folds,
             dataset_store=datasets,

@@ -156,6 +156,26 @@ def _require_verified_model_bundle(
     store: ModelArtifactBundleStore,
     selection: ModelSelectionEvidence,
 ) -> None:
+    """Prove the frozen bundle belongs to this fold's signed selection.
+
+    ``card["dataset_id"]`` has two legitimate spellings and the family decides which: the LightGBM
+    writers record the TRAIN split they fitted on (``<dataset>:train``), while the torch writers
+    record the bare dataset id, because that is what the reproduction audit then loads the TEST
+    split with. ``inference.reproduction._checked_card_dataset_id`` settled this by membership
+    rather than equality and says so in its own docstring; this check had stayed at equality against
+    ``training_dataset_id`` alone. The consequence was not a wrong number but no number at all:
+    every torch run trained and froze all four folds, then died here at the evaluation step, so both
+    real M1 runs -- ``m1_v2`` after ~44 h and ``m1_parallel_v1`` after ~20 h -- produced bundles and
+    signed predictions but no ``report.json`` and therefore no verdict.
+
+    Membership is not a weaker rule. The accepted set is built only from ids this fold's own signed
+    selection names, so a bundle from another fold or another run still names a different hash and
+    is still refused; ``training_dataset_id`` stays in the set so everything the old equality
+    accepted is still accepted, and the two added values are the test dataset and its train
+    split, the same pair ``_checked_card_dataset_id`` derives from the report. The bundle digest
+    was already matched by ``load_model_card`` above, so what is identified here is a bundle this
+    selection vouched for by digest.
+    """
     card = store.load_model_card(
         selection.model_artifact_id,
         expected_bundle_digest=selection.model_bundle_digest,
@@ -163,7 +183,13 @@ def _require_verified_model_bundle(
     family = card.get("family")
     if family not in _MODEL_CARD_FAMILIES[selection.model_family]:
         raise ValueError("model bundle family does not match frozen model selection")
-    if card.get("dataset_id") != selection.training_dataset_id:
+    recorded = card.get("dataset_id")
+    accepted = (
+        selection.training_dataset_id,
+        selection.test_dataset_id,
+        f"{selection.test_dataset_id}:train",
+    )
+    if not isinstance(recorded, str) or recorded not in accepted:
         raise ValueError("model bundle training dataset does not match frozen model selection")
 
 
