@@ -586,6 +586,18 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
          缓存键写错了，那会让每折多出几十小时——重建变快使这个故障**更隐蔽**，因为绝对数字小了，所以这一项
          不能因为"看起来只花几分钟"就跳过。
 
+      **关于这 7.6 min 的一个口径澄清（2026-09-12 03:30），免得后来人拿别的数字去"修正"它。**
+      本次的只读探针在真实 F1 上构造同一套时序面板（train + `concat(train, validation)` 验证面板，
+      与 `temporal_fold_batches` 的组合逐项相同）只用了 **72.5 s**，乍看与 7.6 min 差 6 倍。
+      两者测的不是同一件事：探针直接 `pd.read_parquet` 读帧（0.9 s，**不做校验**），
+      而 worker 走的 `temporal_fold_batches` 里是 `DatasetArtifactStore.load_split(…,
+      expected_fold_id=…)`——**带分片哈希校验与折 id 绑定**，那部分才是 7.6 min 的主体。
+      所以 72.5 s 是"批次构造"、7.6 min 是"经校验的完整重建"，**7.6 min 不需要下修**。
+      顺带，探针这套面板的其余量与生产记录逐项吻合，可作为它忠实的旁证：
+      `train_batches = 953 / val_batches = 237`（本文件早先记的是 953 / 237 / 242），
+      峰值 RSS **12.18 GiB**（`temporal_fold_batches` 注释里记的是 12.77 GiB，
+      差值来自探针不返回 `validation_labels`、也不持有 store 的校验副本）。
+
       若第 1 项的降级超过约 1.5×，直接杀掉、用更少 worker 重启：`--resume` 把这件事的代价从「全部重来」降到
       「只重跑未完成的部分」。**预计时长（24 路，2026-09-11 依实测改写；原为 19 路 44 h/折、7.4 天）**：搜索
       1 轮 × 3 次拟合 = 25.8 h + 每 worker 一次 7.6 min 重建 + 最终拟合 1 轮 ≈ 8.6 h + 新一批 worker 的
