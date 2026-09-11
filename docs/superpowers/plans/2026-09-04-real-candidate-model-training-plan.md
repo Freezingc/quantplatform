@@ -694,6 +694,22 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
       已归档、六道门全过）与 `m1_full_v1`（全 27 格、进行中）都可能满足条件，
       而这两者代表不同的搜索规模与不同的谱系证据。工作区同样必须**新开**（bundle 不可变）。
 
+      **M3 不会重演 M1 那六个阻塞项——这一条是核对过的，不是推定的（2026-09-12 02:55）。**
+      M1 两次真实运行都是四折训练跑完、然后在评价阶段死掉、写不出 `report.json`；六个阻塞项里
+      第 4 项（card family）打的是全部 M2、第 5 项（bundle config 字段）打的是 M2 的 GRU 与 TCN
+      **以及 M3**、第 6 项（loader 缺 `TEMPORAL_TCN` 条目与工厂分支）让 TCN 即使赢了也无法服务。
+      所以 M3 至少在两个轴上是真的暴露过的。核对结果：
+      `artifact_loader.py` 的 code-version 映射含 `SetAttention.model_family -> "set-attention-1"`、
+      config 映射含 `SetAttentionConfig`、家族分派里有 SetAttention 的工厂分支，
+      且这三处**都以模型类自己的 `model_family` 属性为键**，不是手抄字面量；
+      `test_a_bundle_written_by_the_drivers_own_writers_loads_back` 的参数化覆盖
+      **M1 / M3 / M2-GRU / M2-TCN 四个载体全部**，用的是驱动自己的 `torch_model_card` 与
+      `torch_bundle_config` 的真实输出；另有
+      `test_every_allowlisted_family_has_a_factory_behind_it` 专门钉住"映射里有、分派里没有"
+      这一类漂移——正是当年让 `TEMPORAL_TCN` 无法加载的那个形状。
+      **仍要如实说明的是**：这些是测试层的保证，M3 从未在真实数据上跑过一折；
+      本项的 per-fit 与降级因子也因此都还是规划值。
+
 ---
 
 ### Task 5: 10.2 汇总与交接
