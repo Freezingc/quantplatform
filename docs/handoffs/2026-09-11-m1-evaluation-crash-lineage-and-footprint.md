@@ -7,7 +7,9 @@
 `a950e42`（基线覆盖收窄到可打分行，第三个）、`0c6d7c9` 与 `08297c7`（本交接的前两版）、
 `9467d63` 与 `c3afec9`（家族名收敛到一处，第 9 节的第四个阻塞点）、`81377f3`（第 9 节本身）、
 `3654b8f`（card 只在一处构造、测试向驱动索取约定，第 10 节的结构性根因）、`f693282`（第 10 节本身）、
-`9e8628a`（释放构造期间已死的帧，第 11 节）。
+`9e8628a`（释放构造期间已死的帧，第 11 节）、`fd3d389`（第 11 节本身与发射算术重算）、
+`e8cfca8`（M2/M3 的 bundle config 被 loader 拒收，第 12 节的第五、六个阻塞点）、
+`003b5f7`（用驱动自己的写入方走完 loader 全契约，含签名比对）。
 
 **五处以本交接为准，因为它们推翻了先前提交里的说法**：第 3 节的四折对照取代 `c016271` 的单折结果；第 5 节的
 足迹实测否掉了 `e1e9c09` 当时预期的 worker 收益；**第 8 节的 OOS 实测否掉了我自己据第 3 节做出的外推**
@@ -287,7 +289,9 @@ builder 的批次形状分派、artifact loader 的 code version 表），其中
 一致性测试失败；builder 改回只有 GRU → TCN 分派测试 + 一致性测试失败；TCN 从 loader 表里删掉 → 白名单测试 +
 code version 测试 + 工厂测试失败。
 
-**审计到此是完整的**：`registry/promotion_evidence.py` 只记录家族、不做白名单；`inference/torch_scoring.py` 与
+**按家族名枚举的地方已全部收敛到一处**（但这句话只覆盖「家族名」这一个轴；bundle 契约还有 `dataset_id`、
+`config` 字段集与 `signature` 重建三个轴，其中 `config` 那个轴随后又查出两个阻塞点——见第 12 节与其对本节
+这句「完整」的更正）：`registry/promotion_evidence.py` 只记录家族、不做白名单；`inference/torch_scoring.py` 与
 `predictor.py` 不按家族分派（接收已装配好的批次）；注册表本身不做家族校验；`lgbm_artifact_loader` 的两个 LightGBM
 code version 是完整的（M0/M0R 是仅有的 LightGBM 载体）；`training/temporal_search.py:138/144` 分派的是**配置里的**
 `GRU`/`TCN`（另一个命名空间，两支齐全且有 raise）。**按家族名枚举的地方已全部收敛到一处。**
@@ -396,3 +400,67 @@ MemAvailable ≥ **466.0 GiB**（原为 495.1 GiB）。这不是纸面差别—�
 两个 prepared 帧除了「还有个局部变量指着它们」之外已经全死。prepared 帧的身份由「它是从哪个原始帧准备好的」
 按对象同一性还原，不按行数猜。同时断言 `raw_validation` **必须仍活着**（它作为 `validation_labels` 返回，
 是选择指标打分要用的），只断言释放会让这条测试变成「关于删东西」而不是「关于删对东西」。
+
+## 12. 第五、第六个阻塞点：M2 与 M3 写出的 bundle config 是 loader 拒收的（`e8cfca8`、`003b5f7`）
+
+第 9 节说「审计到此是完整的」——那句话对**家族名枚举**这一个轴是准确的，但 bundle 还有另一个轴：**config 的字段
+集合**。用「把驱动真实产出交给消费方」这个方法一查，两个都断了。
+
+`artifact_loader._require_fields` 要求 bundle 的 config 与架构自己的 config 字段**完全相等**
+（`"model config has unsupported or missing fields"`），而两条 full 运行写入的是
+`dict(best_config, raw_factor_count=...)` 原样透传。用驱动自己的网格与 card 构造器实测：
+
+```
+M1        LOADED OK   config=['dropout','hidden_dim','num_blocks','raw_factor_count']
+M3        REFUSED     config=[…,'learning_rate',…]        7 个字段，架构只要 6 个
+M2/GRU    REFUSED     config=[…,'family','learning_rate',…]  5 个字段，架构只要 3 个
+M2/TCN    REFUSED     同上
+```
+
+即 **M2 与 M3 的运行会训练数日、冻结并签名 bundle，然后发现它无法被评估器、复现审计与服务端任何一方加载**。
+
+**M1 是碰巧干净的**——它的网格恰好只含架构字段。这正是问题隐身的原因：M1 是唯一跑过的 torch 家族，而两条 smoke
+路径都到不了这里（截面 smoke 用 `asdict(config_dataclass)`、M2 smoke 手写三个字段，两者写出的字段集恰好正确）。
+
+修法是在**写入方过滤**，不是放松 loader：新增 `torch_bundle_config(config_payload, card_family=…, factor_count=…)`，
+向 loader 索取该架构的字段集合（`model_config_fields`），只写这些加 `raw_factor_count`。loader 的严格相等是真契约
+（它挡住的是携带陈旧或外来字段的 bundle），保留。过滤不丢信息：完整的胜出配置仍在该折的搜索记录与报告的
+`best_config` 里，那才是 `learning_rate` 与架构选择该待的地方；bundle 的 config 只负责重建权重。字段集合两侧都
+**从 config dataclass 推导**（`dataclasses.fields`），不再各写一份——这是本条与第 9 节共同的做法。
+**目前不存在任何 M2/M3 bundle，所以现在改是零成本，晚改就是白跑一次。**
+
+### 12.1 补上最后一环：签名比对
+
+字段集合的比较只能挡住「因键被拒」的 bundle，挡不住「键对但值重建不出同一个模型」的 bundle。
+`load_bundle_for_evaluation` 会从 config 重建架构、再把它的 `artifact_signature()` 与 bundle 里冻结的签名比对——
+**这是「运行冻结了什么」与「之后还能加载什么」之间的最后一环**，而此前没有任何测试用驱动自己的写入方走过它
+（所有 loader 测试都手搓 card / config / signature，所以写入方与接收方的不一致在构造上就不可见）。
+
+`003b5f7` 补上：对四个 torch 载体（M1、M3、M2/GRU、M2/TCN）各写一个 bundle，全部用 full 运行真正调用的那四个
+函数（`torch_model_card`、`torch_bundle_config`、该载体的 model factory、`_preprocessing_artifact`）构造，再用
+`load_bundle_for_evaluation` 读回，断言三 seed、家族正确。**变异检验**：给 `torch_bundle_config` 塞进一个多余字段，
+四个参数化用例全部失败、外加穷举网格的往返测试——这正是此前缺的灵敏度：在这之前，M1 或 M3 写入方漂移一个字段
+没有任何端到端测试会发现。
+
+### 12.2 方法与对第 9 节那句「完整」的更正
+
+第 9 节的静态清扫是按**家族名**枚举点找的，它对那个轴确实穷尽了；但 bundle 契约至少有三个轴——card 的
+`family`、card 的 `dataset_id`、以及 `config` 的字段集合——加上 `signature` 的重建比对，一共四个。前三个各出过
+阻塞点（1/2/3 是 `dataset_id` 与行集、4 是 `family`、5/6 是 `config`）。
+
+**真正有效的方法不是枚举代码里的常量，而是把写入方的真实产出交给接收方**：拿驱动自己的网格、自己的 card 构造器、
+自己的 config 过滤器，去调 loader / 评估器。这一条一次找出两个，而静态清扫一个都没找到。第 12.1 节那条测试就是
+这个方法的固化形式，也是今后新增载体或新增网格字段时的默认防线。
+
+六个阻塞点的完整清单（全部已修）：
+
+| # | 轴 | 症状 | 影响的载体 | 提交 |
+|---|---|---|---|---|
+| 1 | card `dataset_id` | `model bundle training dataset does not match frozen model selection` | 所有 torch（M1 实际中招两次） | `b86cdb0` |
+| 2 | OOS 业务键 | `candidate predictions and labels do not contain identical business keys` | 所有 torch | `6a19ef2` |
+| 3 | 基线覆盖 | `baseline rows are not all covered by the candidate` | 所有 torch | `a950e42` |
+| 4 | card `family` | `model bundle family does not match frozen model selection` | **所有 M2** | `9467d63` |
+| 5 | bundle `config` | `model config has unsupported or missing fields` | **M2（GRU 与 TCN）与 M3** | `e8cfca8` |
+| 6 | 同上，TCN 服务侧 | loader 无 `TEMPORAL_TCN` 条目与工厂分支、builder 无法装配 | **TCN 胜出的 M2** | `9467d63` |
+
+门禁：`ruff check src tests` 与驱动干净、`mypy src` **170** 文件干净、`pytest tests` **2104 passed / 45 skipped**。
