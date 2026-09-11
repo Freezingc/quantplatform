@@ -441,6 +441,35 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
   `docs/reports/<date>-m1-real-candidate-walk-forward.md`（复用判定器模式），
   更新主计划 10.2；失败则归档失败报告并分析（不得用 2026 数据补救）。
 
+      **归档前必须做的两项验收（2026-09-12 02:55 补，都是本次全网格运行才第一次具备条件的检查）**
+
+      **验收 A：27 格下的"续跑报告逐字节一致"判据至今只在 1 格上验过，必须在全网格上重验。**
+      本文件早先记录该判据已实测——五份独立 M0R 全量跑的 `report.json` 同为
+      `834fb523f0177b3d47c5e53797e07d69`——但 **M0R 的网格是被钉死的单配置**，
+      `m1_parallel_v1` 也只搜了 `c0`（四折 `Searched | 1`）。也就是说
+      「`best_config` 与 `search_results` 由采纳记录按原网格顺序用同一个 `max` 重建」这句话，
+      端到端只在 **1 条记录**上被验证过；而历史上真正咬人的那个 bug（`sort_keys=True` 导致续跑报告
+      键序不同、33 条单元测试全绿、只有端到端能发现）恰恰是这一类。
+      单元层并非裸奔——`_ordered_search_results` 有用 **2 格、乱序完成、且含平局**的测试
+      （`test_a_fully_adopted_grid_still_yields_ordered_search_results`、
+      `test_ordered_search_results_restore_grid_order_after_parallel_completion`），
+      而运行中的日志也已实证 `c0…c26` 各有互不相同的 config hash 与记录名。
+      但 2 格单元 ≠ 27 格端到端。**做法**：`m1_full_v1` 出报告后，在**同一工作区**加 `--resume` 再跑一次；
+      预期四折全部整折采纳、零次拟合（因此很快），然后比对两份 `report.json` 的 md5。
+      不一致就是真 bug，**处置原则沿用本文件已确立的那条：改代码去满足判据，而不是放宽判据。**
+
+      **验收 B：可比性已用内容寻址 id 核实，不是假设。** `m1_full_v1` 的 F1 数据集 id
+      `226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538` 与基线证据 id
+      `6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9` **与 `m1_parallel_v1` 逐字相同**；
+      基线工件是同一批 `baseline_v2/baseline_oos/F1..F4.parquet`。两个已通过候选的评价口径也已核对一致：
+      `m0r_v2` 与 `m1_parallel_v1` 同为 `mode=full`、4 折、`valid_day_count = 945`、
+      `baseline_mean_rank_ic = 0.0852268662737014`（16 位全同）。
+      所以 Task 5 的横向比较是**同基线、同日集、同折结构**下的比较，
+      `+0.009149`（M0R）与 `+0.005845`（M1 单配置载体）可直接相减，全网格结果落进来也同样可比。
+      （注：`baseline_v2/report.json` 自身的 `valid_day_count` 是 969、`mean_rank_ic` 0.08706，
+      与候选报告里的 945 / 0.08523 不同——前者是基线家族自己的全日集口径，
+      后者是候选与所选 `best_simple` 基线的**交集日集**；G4 只用后者，两者不矛盾。）
+
 ---
 
 ### Task 4: M2 → M3 顺序执行
