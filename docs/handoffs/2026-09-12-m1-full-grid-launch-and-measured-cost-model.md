@@ -289,6 +289,18 @@ TCN/128 折算到生产口径约 **12.8 GiB**，与生产实测吻合，再按 F
   registry root `QRV2_MODEL_REGISTRY_ROOT=/data/zhangyudong/qrv2_research_artifacts/model_registry`。
 * Python：`/data/zhangyudong/.conda/envs/quantyd/bin/python`；测试从 `research_v2/` 跑。
 * 负结果如实报告，不美化；治理决定归所有者。
+* **运行在飞期间不要编辑驱动脚本 `research_v2/scripts/run_real_candidate_training.py`。**
+  这条不显然、代价高、且失败方式很迷惑人，所以单独记：
+  `run_parallel_search` 用 `ProcessPoolExecutor(mp_context=get_context("spawn"))`，
+  而且这个 pool 是**每折新建**的（`with` 块在每次调用里）；spawn 的子进程会通过
+  `multiprocessing.spawn._fixup_main_from_path` 用 `runpy` 以 `__mp_main__` 之名
+  **按路径重新执行主脚本**。所以第 2/3/4 折（本轮约在 7 / 14 / 21 小时后）新建的 worker
+  会读到**当时磁盘上的驱动**，不是发射时那份。
+  入口有 `if __name__ == '__main__': main()` 守卫，所以重执行只跑模块级代码、不会重复训练；
+  但**一个语法错误就足以让那一折的所有 worker 起不来**，表现为"跑了 7 小时、第 1 折完好、
+  第 2 折突然全挂"，而 `git log` 上那次编辑看起来完全无害。
+  本轮因此**推迟**了一个本来想做的驱动改动（见第 13 节第 5 项）。
+  要改驱动，等报告落地；只改 markdown 与新增文档不受此限（本轮全部提交都属此类）。
 
 ## 12. 家族分派漂移这一类在 HEAD 上是封死的（地毯式审计，含一个被撤回的改动）
 
@@ -341,3 +353,13 @@ torch 侧全部经由 `families.py` 从类属性派生：`STATIC_TORCH_FAMILIES`
 4. **若发 M2**：先读 `MemAvailable`（需 ≥467.1 GiB），确认 M1 已结束（互斥，第 10 节第 3 项），
    首折用 **相邻 epoch 检查点时间戳之差**实测降级（不要用 epoch-1 墙钟），
    以及实测每格 epoch 数——这是 M2 工期 4.4–6.3 天这个区间的唯一来源。
+5. **一个被推迟的驱动改动（等 M1 报告落地后再做，理由见第 11 节最后一条）**：
+   让 `prior_families_from_reports` 在**接受**一份前置报告时，把它实际搜了几格打印出来，
+   例如 `M1 prerequisite satisfied by a report that searched 1 of 27 configs`。
+   动机就是第 1 节那个结构性事实：守卫不要求网格搜满，所以一份载体验证级的 M1 报告
+   能让 M2 静默通过前置、进而发射一个数天的运行。
+   **这是纯可观测性、不改任何准入语义**（不新增拒绝条件），与本文件已有的先例同一风格——
+   未声明 `--worker-memory-gb` 时也是"把数字打印进 transcript"而不是直接拒。
+   格数从报告的 `folds[*].searched_config_count` 取，与 `m1_config_grid(None)` 的长度对比即可。
+   做的时候要按本项目的纪律配测试，且**测试要向驱动索取真实输出、不要复述它的约定**
+   （那正是六个阻塞项的结构性根因）。
