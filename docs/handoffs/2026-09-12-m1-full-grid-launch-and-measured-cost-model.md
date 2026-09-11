@@ -341,6 +341,20 @@ TCN/128 折算到生产口径约 **12.8 GiB**，与生产实测吻合，再按 F
 
 * **零 DB 写入**；不碰 `materialization_status.{json,md}`、`/tmp/frozen_chain_hold.txt`、2026 locked 段。
 * 提交只加相关文件；`docs/research/` 保持未跟踪（属因子侧那个对话）。
+  **这条我今天自己违反了一次，记下来防止重犯**：为了提交四份改动过的文档，
+  我用了 `git add -A docs/`，它把 `docs/research/` 下三个属因子侧对话的文件
+  （`2026-09-10-conditional-factor-idea-review-v0.1.{md,html,evidence.json}`）一并暂存，
+  随 `05a485c` 提交并推送。已用 `git rm --cached -r docs/research/` 撤回
+  （`12f7537`）：**文件在磁盘上完好、`git ls-files docs/research/` 为 0、
+  `git status` 回到只有 `?? docs/research/`**，即恢复了应有状态。
+  **没有改写已推送的历史**——分支已推送，改写是更具破坏性的动作；
+  所以那三个文件的 blob 仍存在于 `05a485c` 那一个提交里。
+  内容是因子想法评审及其证据 JSON 与渲染 HTML，**不含密钥**，
+  所以这是范围越界而不是泄密，但它确实违反了一条明确约束。
+  **根因是暂存路径太宽，不是对那些文件的判断**；本系列其它每个提交都是逐个文件加的。
+  **规则：只 `git add` 明确要提交的路径，不要用 `git add -A <目录>`。**
+  也**故意没有改 `.gitignore`**：`docs/research/` 是否应被永久忽略属因子侧对话的决定，
+  不该由这边代为定。
 * 推送：`https_proxy=http://127.0.0.1:7890 git push origin codex/publish-quant-platform`。
 * HMAC key：`cat /data/zhangyudong/qrv2_research_artifacts/secrets/selection_evidence_hmac.key`
   （`QRV2_SELECTION_EVIDENCE_HMAC_KEY` 与 `QRV2_PREDICTION_EVIDENCE_HMAC_KEY` 同值）；
