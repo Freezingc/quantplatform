@@ -854,6 +854,25 @@ setsid nohup env QRV2_SELECTION_EVIDENCE_HMAC_KEY="$KEY" QRV2_PREDICTION_EVIDENC
   前置清单（F6.1 部署审批、60 有效日影子运行、监控与回滚演练），
   移交人工审批；不擅自启动 SHADOW。
 
+      **进展注记（2026-09-12 05:25）：本项的触发条件已满足并已对 M0R 执行，但本项保持未勾选。**
+      `m0r_v2` 的模型 `sha256:32315c89…` 在签名 registry 记录里的状态就是
+      **`WALK_FORWARD_PASSED`**（事件链 `DRAFT → WALK_FORWARD_PASSED`，2026-09-08T19:51:31Z，
+      理由 `all G1-G6 walk-forward gates passed`，绑定证据哈希 `64b413507bf4…`），
+      六道门全过、G4 = **+0.009149095118820283**。据此已产出两份文档：
+      `docs/reports/2026-09-12-m0r-real-candidate-walk-forward.md`（判定文档，
+      由 `summarize_real_candidate_walk_forward.py` 直接生成；同一输入三处渲染 md5 全同
+      `2bfa79833db1bcb9b5bb8036ceac48d1`，渲染器确定性已验）与
+      `docs/reports/2026-09-12-m0r-shadow-approval-preconditions.md`（前置清单，
+      逐项对齐 F 计划 F6.1 的五项人工核验、并摘录批准后即生效的六条约束）。
+      **未启动 SHADOW、未做任何状态转换、未写 registry 与数据库**——`WALK_FORWARD_PASSED → SHADOW`
+      按 F6.1 是人工动作。
+      **不勾选的理由**：本项写的是"若有候选"，而 M1/M2/M3 尚无 `WALK_FORWARD_PASSED` 的
+      全网格候选（M1 全网格进行中，预计 09-13 06:45 前后出报告）；等三者齐备再判定本项完成。
+      **另需所有者裁断一个解释问题**（前置清单 §4）：F 计划第 15 行的正式运营前置写的是
+      "至少一个**复杂候选模型**处于 `WALK_FORWARD_PASSED`"，而 M0R 是 LightGBM 的
+      `LGBM_RANKREG` 载体、不是 torch 架构。它算不算"复杂候选"会移动 60 日影子计时的起点，
+      而 60 有效日又卡在 2026 标签成熟与 F9 之前，**是有时间代价的决定**，本计划不代为预设。
+
 ---
 
 ## Self-Review 记录
