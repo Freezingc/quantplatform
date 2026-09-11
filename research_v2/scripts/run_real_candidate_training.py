@@ -68,7 +68,10 @@ from research_v2.evaluation.selection_evidence import (
     FrozenPredictionStore,
     SelectionEvidenceStore,
 )
-from research_v2.inference.artifact_loader import load_bundle_for_evaluation
+from research_v2.inference.artifact_loader import (
+    load_bundle_for_evaluation,
+    model_config_fields,
+)
 from research_v2.inference.torch_scoring import (
     concat_date_scores as _concat_date_scores,
 )
@@ -2587,7 +2590,9 @@ def _run_full_cross_section(
                 dataset_id=dataset_id,
                 model_code_version=model_code_version,
             ),
-            config=dict(best_config, raw_factor_count=len(factor_order)),
+            config=torch_bundle_config(
+                best_config, card_family=family_name, factor_count=len(factor_order)
+            ),
             signature=asdict(prototype.artifact_signature()),
             feature_order=factor_order,
             preprocessing=_preprocessing_artifact(preprocessor),
@@ -2843,6 +2848,41 @@ def m2_card_family(winning_family: object) -> str:
 def m2_model_code_version(winning_family: object) -> str:
     """The code version paired with :func:`m2_card_family`, from the same winning choice."""
     return f"temporal-{str(winning_family).lower()}-1"
+
+
+def torch_bundle_config(
+    config_payload: Mapping[str, Any], *, card_family: str, factor_count: int
+) -> dict[str, Any]:
+    """Exactly the fields that reconstruct the model, and none the search also happened to carry.
+
+    ``artifact_loader._require_fields`` refuses a bundle whose config does not match the
+    architecture's own config fields EXACTLY -- "model config has unsupported or missing fields" --
+    and both full-run writers passed ``dict(best_config, raw_factor_count=...)`` straight through.
+    M2's grid carries ``family`` (already the card's family) and ``learning_rate`` (an optimiser
+    setting); M3's grid carries ``learning_rate``. Verified before this change: M1 loads, while
+    M2/GRU, M2/TCN and M3 are all refused, so each of those runs would have trained for days, frozen
+    and signed a bundle, and then found it unloadable by the evaluator, the reproduction audit and
+    serving alike.
+
+    M1 was clean by accident -- its grid holds only architecture fields -- which is why nothing
+    caught this: M1 is the only torch family that has run, and both smoke paths build their config
+    from ``asdict`` of the config dataclass or spell the fields by hand, so neither could reach it.
+
+    Nothing is lost by filtering. The full winning payload stays in the fold's search record and in
+    the report's ``best_config``, which is where ``learning_rate`` and the architecture choice
+    belong; a bundle's config is only what reconstructs the weights. The field set is asked of the
+    loader rather than restated here, so the writer and the acceptor cannot drift.
+    """
+    architecture_fields = model_config_fields(card_family) - {"raw_factor_count"}
+    missing = sorted(architecture_fields.difference(config_payload))
+    if missing:
+        raise ValueError(
+            f"the winning {card_family} config carries no {missing}, so no bundle could be "
+            "reconstructed from it"
+        )
+    config: dict[str, Any] = {name: config_payload[name] for name in sorted(architecture_fields)}
+    config["raw_factor_count"] = factor_count
+    return config
 
 
 def torch_card_conventions() -> tuple[tuple[str, str, str], ...]:
@@ -3235,7 +3275,11 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
                 dataset_id=dataset_id,
                 model_code_version=m2_model_code_version(best_config["family"]),
             ),
-            config=dict(best_config, raw_factor_count=len(factor_order)),
+            config=torch_bundle_config(
+                best_config,
+                card_family=m2_card_family(best_config["family"]),
+                factor_count=len(factor_order),
+            ),
             signature=asdict(prototype.artifact_signature()),
             feature_order=factor_order,
             preprocessing=_preprocessing_artifact(preprocessor),

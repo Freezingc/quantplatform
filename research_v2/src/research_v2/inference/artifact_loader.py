@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import io
 from collections.abc import Callable, Mapping
-from dataclasses import asdict, dataclass, replace
+from collections.abc import Set as AbstractSet
+from dataclasses import asdict, dataclass, fields, replace
 from datetime import UTC, datetime
 from types import MappingProxyType
 from typing import TypeAlias, cast
@@ -49,6 +50,41 @@ _MODEL_CODE_VERSIONS: dict[str, str] = {
     SetAttention.model_family: "set-attention-1",
     **TEMPORAL_CODE_VERSIONS,
 }
+
+_MODEL_CONFIG_CLASSES: Mapping[str, type] = {
+    ResidualMLP.model_family: ResidualMLPConfig,
+    TemporalGRU.model_family: TemporalGRUConfig,
+    TemporalTCN.model_family: TemporalTCNConfig,
+    SetAttention.model_family: SetAttentionConfig,
+}
+
+_MODEL_CONFIG_FIELDS: Mapping[str, frozenset[str]] = MappingProxyType(
+    {
+        family: frozenset(field.name for field in fields(config_class))
+        for family, config_class in _MODEL_CONFIG_CLASSES.items()
+    }
+)
+"""The exact config fields each architecture declares, taken from its own dataclass.
+
+Both sides of this contract need the same set: the loader refuses a bundle whose config does not
+match it exactly, and the driver has to write exactly it. Derived rather than restated because
+restated sets drift, and the drift is invisible until a bundle exists that cannot be loaded -- which
+is what the M2 and M3 full-run writers were producing, since their grids carry search-only fields
+(``family``, ``learning_rate``) that no architecture declares.
+"""
+
+
+def model_config_fields(card_family: str) -> frozenset[str]:
+    """The config fields a bundle for ``card_family`` must carry -- exactly these, and no others.
+
+    Exported so the writer can filter to it instead of guessing: a bundle is written once and read
+    back days later by the evaluator, the reproduction audit and serving, so a field-set mismatch is
+    not caught at write time by anything except this.
+    """
+    try:
+        return _MODEL_CONFIG_FIELDS[card_family]
+    except KeyError:
+        raise ValueError(f"model family is not allowlisted for inference: {card_family}") from None
 
 
 @dataclass(frozen=True)
@@ -353,7 +389,7 @@ def _allowlisted_factory(
 
 
 def _residual_config(config: Mapping[str, object]) -> ResidualMLPConfig:
-    _require_fields(config, {"raw_factor_count", "hidden_dim", "num_blocks", "dropout"})
+    _require_fields(config, model_config_fields(ResidualMLP.model_family))
     return ResidualMLPConfig(
         raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
         hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
@@ -363,7 +399,7 @@ def _residual_config(config: Mapping[str, object]) -> ResidualMLPConfig:
 
 
 def _temporal_gru_config(config: Mapping[str, object]) -> TemporalGRUConfig:
-    _require_fields(config, {"raw_factor_count", "hidden_dim", "dropout"})
+    _require_fields(config, model_config_fields(TemporalGRU.model_family))
     return TemporalGRUConfig(
         raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
         hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
@@ -380,7 +416,7 @@ def _temporal_tcn_config(config: Mapping[str, object]) -> TemporalTCNConfig:
     matches ``TemporalTCNConfig``'s own fields, or a real bundle would be refused for missing a
     field it never carried.
     """
-    _require_fields(config, {"raw_factor_count", "hidden_dim", "dropout"})
+    _require_fields(config, model_config_fields(TemporalTCN.model_family))
     return TemporalTCNConfig(
         raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
         hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
@@ -389,17 +425,7 @@ def _temporal_tcn_config(config: Mapping[str, object]) -> TemporalTCNConfig:
 
 
 def _set_attention_config(config: Mapping[str, object]) -> SetAttentionConfig:
-    _require_fields(
-        config,
-        {
-            "raw_factor_count",
-            "hidden_dim",
-            "num_heads",
-            "inducing_points",
-            "num_blocks",
-            "dropout",
-        },
-    )
+    _require_fields(config, model_config_fields(SetAttention.model_family))
     return SetAttentionConfig(
         raw_factor_count=_int_config(config["raw_factor_count"], "raw_factor_count"),
         hidden_dim=_int_config(config["hidden_dim"], "hidden_dim"),
@@ -410,7 +436,7 @@ def _set_attention_config(config: Mapping[str, object]) -> SetAttentionConfig:
     )
 
 
-def _require_fields(config: Mapping[str, object], expected: set[str]) -> None:
+def _require_fields(config: Mapping[str, object], expected: AbstractSet[str]) -> None:
     if set(config) != expected:
         raise ValueError("model config has unsupported or missing fields")
 

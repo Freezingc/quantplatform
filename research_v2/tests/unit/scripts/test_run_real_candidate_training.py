@@ -1701,3 +1701,98 @@ def test_the_m2_card_conventions_cover_every_family_the_grid_searches() -> None:
     }
     assert searched == declared
     assert searched, "the M2 grid must search at least one architecture"
+
+
+def _driver_card(card_family: str, code_version: str) -> dict[str, str]:
+    return MODULE.torch_model_card(
+        card_family=card_family, dataset_id="dataset-1", model_code_version=code_version
+    )
+
+
+def _every_torch_config() -> list[tuple[str, str, str, dict[str, Any]]]:
+    """Every configuration every torch grid can search, with the card identity the driver writes.
+
+    Exhaustive rather than one sample per carrier, because the M2 grid mixes two architectures:
+    sampling a single entry would check one architecture's field set and report the carrier covered.
+    """
+    entries: list[tuple[str, str, str, dict[str, Any]]] = [
+        ("M1", MODULE.M1_FAMILY_NAME, MODULE.M1_MODEL_CODE_VERSION, config)
+        for config in MODULE.m1_config_grid(None)
+    ]
+    entries += [
+        ("M3", MODULE.M3_FAMILY_NAME, MODULE.M3_MODEL_CODE_VERSION, config)
+        for config in MODULE.m3_config_grid(None)
+    ]
+    entries += [
+        (
+            f"M2/{config['family']}",
+            MODULE.m2_card_family(config["family"]),
+            MODULE.m2_model_code_version(config["family"]),
+            config,
+        )
+        for config in MODULE.m2_config_grid(None)
+    ]
+    return entries
+
+
+def test_the_unfiltered_winning_config_is_refused_by_the_loader() -> None:
+    """The bug ``torch_bundle_config`` exists for, pinned against the loader rather than described.
+
+    The loader refuses a bundle whose config does not match the architecture's config fields
+    EXACTLY, and the full-run writers passed ``dict(best_config, raw_factor_count=...)`` straight
+    through. M2's grid carries ``family`` -- already the card's family -- and ``learning_rate``, an
+    optimiser setting; M3's grid carries ``learning_rate``. Verified before the fix: M1 loads, while
+    M2/GRU, M2/TCN and M3 are all refused with "model config has unsupported or missing fields". A
+    run would have trained for days, frozen and signed the bundle, and then found it unloadable.
+
+    M1 is skipped by the field-set comparison because its grid happens to hold only architecture
+    fields, which is exactly why this stayed invisible: M1 is the only torch family that has ever
+    run, and both smoke paths build their config from ``asdict`` of the config dataclass or spell
+    the fields by hand, so neither smoke could reach it.
+    """
+    refused: list[tuple[str, str]] = []
+    for label, card_family, code_version, config_payload in _every_torch_config():
+        written = dict(config_payload, raw_factor_count=15)
+        card = _driver_card(card_family, code_version)
+        if set(written) == artifact_loader.model_config_fields(card_family):
+            continue
+        with pytest.raises(ValueError, match="unsupported or missing fields"):
+            artifact_loader._allowlisted_factory(card, written)()
+        refused.append((label, card_family))
+    assert sorted({family for _, family in refused}) == [
+        "SET_ATTENTION",
+        "TEMPORAL_GRU",
+        "TEMPORAL_TCN",
+    ], refused
+    assert all(label != "M1" for label, _ in refused), (
+        "M1's grid holds only architecture fields, so no M1 config should need filtering"
+    )
+
+
+def test_every_bundle_config_the_driver_writes_can_be_loaded_back() -> None:
+    """For every configuration every torch grid can search, the bundle the driver writes must load.
+
+    This is the comparison whose absence let five blockers through: the writer and the acceptor were
+    each tested against a fixture's idea of the other. Here the config comes from the driver's own
+    grid through the driver's own ``torch_bundle_config``, the card from the driver's own
+    ``torch_model_card``, and the pair is handed to the loader that would otherwise refuse it.
+    """
+    checked = 0
+    for label, card_family, code_version, config_payload in _every_torch_config():
+        written = MODULE.torch_bundle_config(
+            config_payload, card_family=card_family, factor_count=15
+        )
+        assert set(written) == artifact_loader.model_config_fields(card_family), (
+            f"{label}: bundle config {sorted(written)} is not the architecture's field set"
+        )
+        model = artifact_loader._allowlisted_factory(
+            _driver_card(card_family, code_version), written
+        )()
+        assert model.model_family == card_family, label
+        checked += 1
+    expected = (
+        len(MODULE.m1_config_grid(None))
+        + len(MODULE.m3_config_grid(None))
+        + len(MODULE.m2_config_grid(None))
+    )
+    assert checked == expected, f"every grid entry must round-trip: {checked} of {expected} did"

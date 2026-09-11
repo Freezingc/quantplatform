@@ -17,7 +17,12 @@ from research_v2.datasets.preprocessing import FoldPreprocessor
 from research_v2.inference.artifact_loader import load_bundle_for_evaluation
 from research_v2.models.residual_mlp import ResidualMLP, ResidualMLPConfig
 from research_v2.models.set_attention import SetAttention, SetAttentionConfig
-from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig, TemporalTCN
+from research_v2.models.temporal import (
+    TemporalGRU,
+    TemporalGRUConfig,
+    TemporalTCN,
+    TemporalTCNConfig,
+)
 from research_v2.training.ensemble import REQUIRED_SEEDS
 from research_v2.training.model_bundle import ModelArtifactBundleStore
 
@@ -94,14 +99,37 @@ def test_allowlisted_loader_reads_only_verified_three_seed_state_dicts(tmp_path:
     assert all(not candidate.training for candidate in loaded.models)
 
 
-def test_allowlisted_loader_reconstructs_gru_and_set_attention_bundles(tmp_path: object) -> None:
+def test_allowlisted_loader_reconstructs_every_allowlisted_torch_family(tmp_path: object) -> None:
+    """Write a bundle the way the driver does, then load it back through the allowlist.
+
+    Renamed and extended: this covered GRU and SetAttention only, so TEMPORAL_TCN was in the M2 grid
+    and constructible by the driver but had never been round-tripped here -- which is how the loader
+    came to have no TCN code version and no TCN factory branch. The coverage assertion at the end is
+    the point: an allowlist entry with no round-trip behind it is a claim nobody has checked.
+    """
     cases = (
+        (
+            "mlp-model",
+            "RESIDUAL_MLP",
+            ResidualMLP(
+                ResidualMLPConfig(raw_factor_count=2, hidden_dim=4, num_blocks=1, dropout=0.0)
+            ),
+            {"raw_factor_count": 2, "hidden_dim": 4, "num_blocks": 1, "dropout": 0.0},
+            ResidualMLP,
+        ),
         (
             "gru-model",
             "TEMPORAL_GRU",
             TemporalGRU(TemporalGRUConfig(raw_factor_count=2, hidden_dim=4, dropout=0.0)),
             {"raw_factor_count": 2, "hidden_dim": 4, "dropout": 0.0},
             TemporalGRU,
+        ),
+        (
+            "tcn-model",
+            "TEMPORAL_TCN",
+            TemporalTCN(TemporalTCNConfig(raw_factor_count=2, hidden_dim=4, dropout=0.0)),
+            {"raw_factor_count": 2, "hidden_dim": 4, "dropout": 0.0},
+            TemporalTCN,
         ),
         (
             "set-model",
@@ -163,6 +191,10 @@ def test_allowlisted_loader_reconstructs_gru_and_set_attention_bundles(tmp_path:
 
         assert len(loaded.models) == 3
         assert all(isinstance(candidate, expected_type) for candidate in loaded.models)
+    assert {case[1] for case in cases} == set(artifact_loader._MODEL_CODE_VERSIONS), (
+        "every allowlisted family must be round-tripped here, or an entry can exist with no "
+        "working factory behind it"
+    )
 
 
 @pytest.mark.parametrize("field", tuple(_INFERENCE_CONTRACT))
