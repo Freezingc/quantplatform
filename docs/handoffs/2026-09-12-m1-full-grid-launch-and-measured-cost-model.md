@@ -388,6 +388,7 @@ torch 侧全部经由 `families.py` 从类属性派生：`STATIC_TORCH_FAMILIES`
    `ls m1_full_v1/search/F1 | wc -l` 应到 27；`find m1_full_v1/checkpoints -maxdepth 1 -type d -name 'm1-f1-c*'`
    的最大编号应到 26；日志 0 错误。
 2. **做验收 A**：同工作区 `--resume` 再跑一次，比对两份报告 md5（第 6 节）。
+   同时做**验收 C**：若 `best_config` 是 c0，检查 G4 是否逐位等于 `+0.005844602701716051`（第 6 节）。
 3. **做 §3.5 判定归档**，并把全网格的 G4 与 `m1_parallel_v1` 的 +0.005845、
    `m0r_v2` 的 +0.009149 并列——三者可比性已核实（第 6 节验收 B）。
 4. **若发 M2**：先读 `MemAvailable`（需 ≥467.1 GiB；05:35 实测 480.3 GiB，够，余量 2.8%）。
