@@ -412,6 +412,22 @@ torch 侧全部经由 `families.py` 从类属性派生：`STATIC_TORCH_FAMILIES`
    **不必等 M1 结束**（第 10 节第 3 项的更正：两者不互斥），但要接受那里的三条代价，
    首折用 **相邻 epoch 检查点时间戳之差**实测降级（不要用 epoch-1 墙钟），
    以及实测每格 epoch 数——这是 M2 工期 4.4–6.3 天这个区间的唯一来源。
+
+   **发射就绪快照（2026-09-12 05:50 逐项只读核验，六项全过；但 `MemAvailable` 会变，
+   所以真发射时必须重跑第 5 项，不能采信这个快照）**：
+
+   | # | 前置 | 结果 |
+   |---|---|---|
+   | 1 | 工作区 `m2_v1` **必须不存在**（bundle 不可变） | `No such file or directory` ✓ |
+   | 2 | `--prior-report M1=m1_parallel_v1/report.json` 满足守卫三项 | `family='M1'` ✓ `mode='full'` ✓ `oos.all_passed=True` ✓ |
+   | 3 | 基线工件与报告 | `baseline_v2/baseline_oos/` 4 个 parquet ✓；`baseline_v2/report.json` 48,655 字节 ✓ |
+   | 4 | HMAC key 与 registry root | key 64 字节 ✓；`model_registry/` 存在 ✓ |
+   | 5 | 内存前置检查（已更正的 467.1 阈值） | `MemAvailable = 480.9 GiB -> 24 workers` ✓ |
+   | 6 | 核数 | 104 核，M1 占 41、M2 需 24 → 65，不超订 ✓ |
+
+   即 **M2 此刻就可发射**，不需要等 M1。仍属所有者裁决的理由见第 10 节第 3 项：
+   余量只有 2.8%、护栏每折会再查一次、65 路下的降级未实测，
+   且发射 M2 等于采用钉线程谱系（裁决 2）并选定用哪份 M1 报告作前置。
 5. **一个被推迟的驱动改动（等 M1 报告落地后再做，理由见第 11 节最后一条）**：
    让 `prior_families_from_reports` 在**接受**一份前置报告时，把它实际搜了几格打印出来，
    例如 `M1 prerequisite satisfied by a report that searched 1 of 27 configs`。
