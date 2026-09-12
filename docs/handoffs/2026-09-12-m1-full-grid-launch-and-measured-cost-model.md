@@ -457,6 +457,17 @@ torch 侧全部经由 `families.py` 从类属性派生：`STATIC_TORCH_FAMILIES`
    的最大编号应到 26；日志 0 错误。
 2. **做验收 A**：同工作区 `--resume` 再跑一次，比对两份报告 md5（第 6 节）。
    同时做**验收 C**：若 `best_config` 是 c0，检查 G4 是否逐位等于 `+0.005844602701716051`（第 6 节）。
+   **（C 已失效，改用 C′——见第 6 节末尾：折 1 的胜者是 c15 不是 c0；
+   C′ 是"每折胜出格的最终拟合检查点必须与其搜索阶段检查点逐字节相同"，折 1 已实测 9/9 通过。）**
+
+   **另外：每折跑完就可以立刻做一次评价预检，不必等到最后。**
+   脚本 `/tmp/verify_f1_bundle_loads.py`（把 `FOLD = "F1"` 改成 F2/F3/F4 即可重跑），
+   它照抄评价器自己的六步、只读、不碰运行中的进程；折 1 已全过（第 14 节）。
+   **价值在于时间差**：评价在四折全跑完后只做一次，若写入方与消费方又对不上，
+   发现的那一刻已经是运行结束之时；而 bundle 与签名预测**每折一完成就存在**，
+   所以每折都能提前约 1–3 天把那一折的检查跑掉。
+   **仍要记住第 14 节那条边界**：跨折合并（`_assemble_oos_frames`）与门控计算
+   要求四折齐全，blocker 2/3 真正住的地方在那里，预检收窄但不消除该风险。
 3. **做 §3.5 判定归档**，并把全网格的 G4 与 `m1_parallel_v1` 的 +0.005845、
    `m0r_v2` 的 +0.009149 并列——三者可比性已核实（第 6 节验收 B）。
 4. **若发 M2**：先读 `MemAvailable`（需 ≥467.1 GiB；05:35 实测 480.3 GiB，够，余量 2.8%）。
@@ -531,7 +542,56 @@ torch 侧全部经由 `families.py` 从类属性派生：`STATIC_TORCH_FAMILIES`
    **M1 报告落地之后、发射 M2 之前**，那个窗口本来就要停下来做验收 A/C 与 §3.5 归档，
    顺手把这两条驱动改动一起做掉（并各自配测试与变异检验）。
 
-## 14. M2 的 `--worker-memory-gb 16.6` 从未覆盖训练期；实测后改为 17.1，而我第一版的结论是错的
+## 14. 折 1 的评价预检已提前做完：那六个阻塞项所在的检查，今天全部通过
+
+**动机**：六个阻塞项里五个只在**评价阶段**才发作，而本次运行的评价在四折全跑完后**只做一次**，
+即约 28 小时之后。折 1 的 bundle 与签名预测工件**现在已经存在**，所以评价器对单折会做的事
+可以今天就做一遍，而不是等最后一天才发现写入方与消费方又对不上。
+
+只读脚本 `/tmp/verify_f1_bundle_loads.py`，**照抄评价器自己的路径**
+（`model_walk_forward.py` 第 89–116 行那六步），不近似：
+
+| # | 检查 | 结果 |
+|---|---|---|
+| 1 | `SelectionEvidenceVerifier.load_model_selection` → F1 的签名选择证据 | 载入成功；`model_bundle_digest = 0ed7e6418843e37b…` |
+| 2 | **`_require_verified_model_bundle`**（**五个阻塞项死在这里**） | **PASSED** |
+| 3 | card 内容 | `{dataset_id: 226a8dfc…（裸 id）, family: RESIDUAL_MLP, model_code_version: residual-mlp-1}` |
+| 3b | 冻结的 `config.json` 是否等于折 1 的网格胜者 c15 | **True**（`hidden 128 / blocks 3 / dropout 0.0`） |
+| 4 | `FrozenPredictionStore.load` 候选预测（验签） | **803,572 行**，签名验证通过 |
+| 5 | **`_require_candidate_evidence`**（**blocker 2 的轴**） | **PASSED** |
+| 6 | `load` best_simple 预测（验签）+ `load_baseline_selection` | **747,461 行**；`selected = B2`（Ridge，与"F1–F3 由 B2 胜出"一致） |
+| 7 | **`_require_best_simple_evidence`**（**blocker 3 的轴**） | **PASSED** |
+| 8 | `dataset_store.load_split(test)` + `_labels_with_lineage` | **804,575 行** |
+| 9 | `_validate_oos_frame` × 3（候选 / 标签 / 基线，期望测试年 2022） | **三个全 PASSED** |
+
+**card 的裸 `dataset_id` 是对的，不是 blocker 1 复发。** `model_walk_forward.py` 第 168–176 行的
+docstring 把这条约定写死了：`card["dataset_id"]` **有两种合法拼法、由家族决定**——
+LightGBM 写它拟合的 TRAIN 分片（`<dataset>:train`），torch 写**裸 dataset id**，
+因为复现审计随后要用它载入 TEST 分片；修复是把等值比较改成**成员判定**
+（`_checked_card_dataset_id` 早已如此，而这个检查当时还停在等值）。
+本轮直接对照了两边的实物：`m0_v2`/`m0_v3` 的 card 是 `226a8dfc…:train`，
+`m1_full_v1` 的是裸 `226a8dfc…`——两种拼法都在被接受的那个集合里。
+
+**一个诚实的边界，别把这次预检当成"评价必过"**：
+`_assemble_oos_frames` 与 `evaluate_walk_forward_oos` 都遍历 `ORDINARY_TEST_FOLDS`
+并 `folds[fold_id]` 索引，所以**跨折合并与门控计算无法在 F4 出现之前跑**——
+而 blocker 2 与 3 真正住的地方是那段合并逻辑（"候选与标签的业务键不完全相同"、
+"基线的行没有被候选全覆盖"）。**所以本次预检把风险收窄到了那一步，没有消除它。**
+（`evaluate_walk_forward_oos` 开头的 `_require_ordinary_fold_set` 要求四折齐全，
+这本身是好设计：它阻止用部分折产出判定。）
+
+**一条顺带量到、需要正确解读的数字**：三个业务键集合**本来就不相等**——
+候选 803,572、标签 804,575、基线 747,461，其中 `基线 ∩ 候选 = 746,521`，
+即 **99.9% 的基线行被候选覆盖，有 940 行（0.13%）不在候选里**。
+**这不是 blocker 3 复发**：标签含 `label_valid=False` 的行、候选只含模型能打分的行、
+而 best_simple 基线覆盖得更少，三者本就该不同；
+blocker 3 修的正是"覆盖检查索要了任何指标都用不到的行"。
+**我第一版脚本把裸集合相等当成了判据、还无条件打印了"全部通过"，那是错的**——
+它恰好复现了被修掉的那个过严检查。已改成：裸集合只作信息打印、
+逐帧契约用评价器自己的 `_validate_oos_frame`、并在输出里明写"跨折聚合未覆盖"。
+
+## 15. M2 的 `--worker-memory-gb 16.6` 从未覆盖训练期；实测后改为 17.1，而我第一版的结论是错的
+
 
 **这一节更正第 10 节第 3 项里那个余量分析所依赖的申报值，并撤回我自己在过程中写下的两个错误结论。**
 
