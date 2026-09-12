@@ -1,0 +1,45 @@
+{
+  "valid_day_count": 969,
+  "mean_rank_ic": 0.08705554536301544,
+  "icir": 0.7507448094822075,
+  "hac_t_statistic": 12.749827362339925,
+  "yearly_mean_rank_ic": {
+    "2022": 0.08118566121294693,
+    "2023": 0.07806425016339068,
+    "2024": 0.09060417297861999,
+    "2025": 0.09832154338626425
+  },
+  "gates": {
+    "G1": {
+      "status": "PASS",
+      "observed_value": 0.08705554536301544,
+      "threshold": 0.03
+    },
+    "G2": {
+      "status": "PASS",
+      "observed_value": 12.749827362339925,
+      "threshold": 2.0
+    },
+    "G3": {
+      "status": "PASS",
+      "observed_value": 1.0,
+      "threshold": 0.7
+    },
+    "G4": {
+      "status": "NOT_APPLICABLE",
+      "observed_value": null,
+      "threshold": null
+    },
+    "G5": {
+      "status": "PASS",
+      "observed_value": 0.2823906544640189,
+      "threshold": 0.5
+    },
+    "G6": {
+      "status": "PASS",
+      "observed_value": 1.0,
+      "threshold": 0.95
+    }
+  },
+  "all_passed": true
+}

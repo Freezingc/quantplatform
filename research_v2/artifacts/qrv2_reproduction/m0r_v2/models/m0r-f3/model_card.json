@@ -1,0 +1,6 @@
+{
+  "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7:train",
+  "family": "LGBM_RANKREG",
+  "model_code_version": "lgbm-rankreg-1",
+  "model_status": "WALK_FORWARD_PASSED"
+}
