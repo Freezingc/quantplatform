@@ -1,0 +1,477 @@
+{
+  "report_version": "0.1",
+  "review_date": "2026-09-10",
+  "repository_head_at_review": "e3769d1",
+  "scope": {
+    "new_training": false,
+    "new_market_data_experiment": false,
+    "new_significance_test": false,
+    "paper_baseline_reproduction": false,
+    "locked_2026_data_access": false
+  },
+  "local_sources": [
+    {
+      "path": "/tmp/es_metric_diag/rankreg_subsets.json",
+      "sha256": "10618f69af351a1a81e8e2c8014b4d9ab864248d5a7093d8449c6b205ebcbe22"
+    },
+    {
+      "path": "/tmp/es_metric_diag/run_rankreg_subsets.py",
+      "sha256": "41931618246abfe050437fafa93f896faba757615992ea9ab90b51790b8ee560"
+    },
+    {
+      "path": "/tmp/es_metric_diag/run_config_robustness.py",
+      "sha256": "da6b492537129d0c1c8109e4a514417f6b2296d3f7d27da1e2c84cfb8d0f7376"
+    },
+    {
+      "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/diagnostics/factor_set_frozen_v2.json",
+      "sha256": "e472cfb93b3600c5a4c734fe611bf8d70dad0bb74dfaf96a42ed95462ab19e33"
+    },
+    {
+      "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/models/residual_mlp.py",
+      "sha256": "2488b6b17551c07d5fd4b655922f9f74f40161b2c76595580218134807604de9"
+    },
+    {
+      "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/datasets/preprocessing.py",
+      "sha256": "e120976519155fa4cd5dd3089bc2d39459cb633ce59d1faf54d03c0716e64185"
+    },
+    {
+      "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/labels/forward_return.py",
+      "sha256": "c76a4b7deda1152296db21beea7adeb548f0fefb7d45e3076d2e88356d01f6f0"
+    },
+    {
+      "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-01-admission-decision-brief.md",
+      "sha256": "e9aca52025da61e2ba4128986044d7c908db2009c32a052ba730c658767a7289"
+    }
+  ],
+  "existing_subset_results": {
+    "all15": {
+      "factor_count": 15,
+      "per_fold": {
+        "F1": {
+          "trees": [
+            44,
+            25,
+            34
+          ],
+          "paired_delta": 0.012491150540894738
+        },
+        "F2": {
+          "trees": [
+            214,
+            146,
+            133
+          ],
+          "paired_delta": 0.003192081739923608
+        },
+        "F3": {
+          "trees": [
+            54,
+            59,
+            27
+          ],
+          "paired_delta": 0.013919257999228399
+        },
+        "F4": {
+          "trees": [
+            36,
+            43,
+            40
+          ],
+          "paired_delta": 0.006452680123757132
+        }
+      },
+      "pooled": {
+        "cand": 0.09437596139252168,
+        "base": 0.0852268662737014,
+        "delta": 0.009149095118820283,
+        "icir": 0.7681728838370345,
+        "hac_t": 12.905448712183105,
+        "valid_days": 945,
+        "yearly": {
+          "2022": 0.09312791086598766,
+          "2023": 0.07299840359660018,
+          "2024": 0.10452343097784839,
+          "2025": 0.10477422351002139
+        },
+        "gates": {
+          "G1": "PASS",
+          "G2": "PASS",
+          "G3": "PASS",
+          "G4": "PASS",
+          "G5": "PASS",
+          "G6": "PASS"
+        },
+        "all_passed": true
+      },
+      "seconds": 578.2
+    },
+    "dense9": {
+      "factor_count": 9,
+      "per_fold": {
+        "F1": {
+          "trees": [
+            3,
+            14,
+            27
+          ],
+          "paired_delta": 0.010248951627842742
+        },
+        "F2": {
+          "trees": [
+            142,
+            158,
+            204
+          ],
+          "paired_delta": 0.001642643390710713
+        },
+        "F3": {
+          "trees": [
+            54,
+            32,
+            52
+          ],
+          "paired_delta": 0.01697752431167221
+        },
+        "F4": {
+          "trees": [
+            187,
+            133,
+            156
+          ],
+          "paired_delta": 0.005791179814624084
+        }
+      },
+      "pooled": {
+        "cand": 0.09405814016074272,
+        "base": 0.0852268662737014,
+        "delta": 0.00883127388704133,
+        "icir": 0.771236977475296,
+        "hac_t": 12.96563007235339,
+        "valid_days": 945,
+        "yearly": {
+          "2022": 0.09088571195293567,
+          "2023": 0.07144896524738728,
+          "2024": 0.1075816972902922,
+          "2025": 0.10411272320088834
+        },
+        "gates": {
+          "G1": "PASS",
+          "G2": "PASS",
+          "G3": "PASS",
+          "G4": "PASS",
+          "G5": "PASS",
+          "G6": "PASS"
+        },
+        "all_passed": true
+      },
+      "seconds": 647.1
+    },
+    "sparse6": {
+      "factor_count": 6,
+      "per_fold": {
+        "F1": {
+          "trees": [
+            1,
+            1,
+            3
+          ],
+          "paired_delta": -0.006856795797713033
+        },
+        "F2": {
+          "trees": [
+            4,
+            4,
+            6
+          ],
+          "paired_delta": -0.006453999999732632
+        },
+        "F3": {
+          "trees": [
+            1,
+            3,
+            1
+          ],
+          "paired_delta": -0.005731499017109495
+        },
+        "F4": {
+          "trees": [
+            2,
+            5,
+            1
+          ],
+          "paired_delta": -0.01579674763055057
+        }
+      },
+      "pooled": {
+        "cand": 0.07645274328581296,
+        "base": 0.0852268662737014,
+        "delta": -0.008774122987888433,
+        "icir": 0.662266953422114,
+        "hac_t": 11.585539559507627,
+        "valid_days": 945,
+        "yearly": {
+          "2022": 0.0737799645273799,
+          "2023": 0.06335232185694394,
+          "2024": 0.08487267396151049,
+          "2025": 0.08252479575571368
+        },
+        "gates": {
+          "G1": "PASS",
+          "G2": "PASS",
+          "G3": "PASS",
+          "G4": "FAIL",
+          "G5": "PASS",
+          "G6": "PASS"
+        },
+        "all_passed": false
+      },
+      "seconds": 297.2
+    },
+    "_verdict": {
+      "all15_delta": 0.009149095118820283,
+      "dense9_delta": 0.00883127388704133,
+      "sparse_marginal_contribution": 0.00031782123177895305,
+      "reading": "the sparse factors are within noise of contributing nothing",
+      "lambdarank_comparison": {
+        "all15": 0.00109,
+        "dense9": 0.00177,
+        "sparse6": -0.02122
+      }
+    }
+  },
+  "audit_findings": [
+    "The inspected subset verdict uses a +/-0.001 heuristic, not a paired significance or equivalence test.",
+    "The four-configuration robustness script uses all15 only; it does not replicate all15-minus-dense9 across all configurations.",
+    "Sparse6 absolute RankIC is positive; its delta versus the chain reference is negative.",
+    "Factor admission used periods subsequently designated as outer test years."
+  ],
+  "papers": [
+    {
+      "id": "alphaforge",
+      "title": "AlphaForge: A Framework to Mine and Dynamically Combine Formulaic Alpha Factors",
+      "url": "https://arxiv.org/html/2406.18394v5",
+      "publication_status": "AAAI 2025; author page confirms",
+      "review_depth": "Alpha Combination and experiments",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "a675e8ba774b8110bf596de5f03bea9a8214b38a62e488243d47b50dda078488"
+    },
+    {
+      "id": "master",
+      "title": "MASTER: Market-Guided Stock Transformer for Stock Price Forecasting",
+      "url": "https://arxiv.org/html/2312.15235v1",
+      "publication_status": "AAAI 2024; author page confirms",
+      "review_depth": "Market-Guided Gating and experiments",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "cf3f1af4887d3f7ef935463cd1172df2813487671cd472025a2a9afb9fca183e"
+    },
+    {
+      "id": "tra",
+      "title": "Learning Multiple Stock Trading Patterns with Temporal Routing Adaptor and Optimal Transport",
+      "url": "https://arxiv.org/html/2106.12950v2",
+      "publication_status": "KDD 2021; author page confirms",
+      "review_depth": "Sections 5.1-5.3",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "3040848adb5163b25ae9024547dfd2bc996dae2f526af55e0f84459825d620cb"
+    },
+    {
+      "id": "doubleadapt",
+      "title": "DoubleAdapt: A Meta-learning Approach to Incremental Learning for Stock Trend Forecasting",
+      "url": "https://arxiv.org/html/2306.09862v3",
+      "publication_status": "KDD 2023; author page confirms",
+      "review_depth": "Sections 2-5, 6.1",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "19f27c34a38780c016d94bbf0ddab3f74dca7101991f2f78c2d40a8e973de9ed"
+    },
+    {
+      "id": "neumiss",
+      "title": "NeuMiss networks: differentiable programming for supervised learning with missing values",
+      "url": "https://arxiv.org/html/2007.01627v4",
+      "publication_status": "NeurIPS 2020; arXiv journal reference confirms",
+      "review_depth": "Sections 2, 3.3-3.4",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "b953cf313b9ad86ea1954a57859901548e80ed8d89d426cbb313f71a84e24483"
+    },
+    {
+      "id": "imputation",
+      "title": "What's a good imputation to predict with missing values?",
+      "url": "https://arxiv.org/html/2106.00311v2",
+      "publication_status": "2021 author manuscript; final venue not independently checked",
+      "review_depth": "Sections 3.2-4",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "3e8c92ea8ef61027fab95843fc4fb53b5f1ad2a5fe5fd4610523150d10e1c6a2"
+    },
+    {
+      "id": "stablemiss",
+      "title": "Prediction with Incomplete Data under Agnostic Mask Distribution Shift",
+      "url": "https://arxiv.org/html/2305.11197v1",
+      "publication_status": "2023 author manuscript; final venue not independently checked",
+      "review_depth": "Sections 3.1-4",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "a70f64092c3d425385ed9689a76832134ab1519773a5d031e40f2403b583a73e"
+    },
+    {
+      "id": "robust_missing",
+      "title": "Robust prediction under missingness shifts",
+      "url": "https://arxiv.org/html/2406.16484v1",
+      "publication_status": "2024 author manuscript; final venue not independently checked",
+      "review_depth": "Sections 3-5",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "0c0b863872fb660c3e148113b24b75a7c65be671de940f743147a857843b1535"
+    },
+    {
+      "id": "mirrams",
+      "title": "MIRRAMS: Learning Robust Tabular Models under Unseen Missingness Shifts",
+      "url": "https://arxiv.org/html/2507.08280v2",
+      "publication_status": "2025 author manuscript; final venue not independently checked",
+      "review_depth": "Notations and Definitions, MI robustness conditions, loss derivation",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "d78e785325bc9169633de1cb2e56727b14a73ab7921b59440597763ca29a8824"
+    },
+    {
+      "id": "dams",
+      "title": "Domain Adaptation under Missingness Shift",
+      "url": "https://arxiv.org/html/2211.02093v3",
+      "publication_status": "2022 initial manuscript, 2023 revision; final venue not independently checked",
+      "review_depth": "Problem setup and statements in Sections 3-6",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "3e956eb3fe8b715dedb32174164c523f6cdc696f010091276417cd5f423079d5"
+    },
+    {
+      "id": "gaillard2014",
+      "title": "A second-order bound with excess losses",
+      "url": "https://proceedings.mlr.press/v35/gaillard14.html",
+      "publication_status": "COLT 2014; publisher confirms",
+      "review_depth": "PDF Sections 2 and 4; no independent proof verification",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "df33026c53290cecf5ba423bbbe36397163816b6ff2e155e7e1ca8438a63e33e"
+    },
+    {
+      "id": "temperature",
+      "title": "Contribution of expert aggregation to temperature prediction Part II: second-order bounds with sleeping experts",
+      "url": "https://arxiv.org/html/2506.15216v2",
+      "publication_status": "2025 initial manuscript, 2026-07-13 v2; final venue not independently checked",
+      "review_depth": "Sections 2-4, especially 3.4 and 4.1",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "ff46c2ba650d665cb8425f560767612bd73cbb6a068ca46b3c7320c21d278fc7"
+    },
+    {
+      "id": "backtest",
+      "title": "The Probability of Backtest Overfitting",
+      "url": "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+      "publication_status": "Author-hosted manuscript revised February 2015",
+      "review_depth": "Introduction and Section 2",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "d8bfbadaaedb430d9dec929646d92f3580fdf18238f34121ae7738fa1c69a63d"
+    },
+    {
+      "id": "alphag_opd",
+      "title": "AlphaG-OPD: Reliability-Gated Sibling Counterfactuals for On-Policy Distillation in Symbolic Alpha Factor Discovery",
+      "url": "https://arxiv.org/abs/2608.01303",
+      "publication_status": "2026-08-02 preprint; final venue not independently checked",
+      "review_depth": "Abstract and metadata only",
+      "retrieved_on": "2026-09-10",
+      "retrieved_content_sha256": "703ac2391db392c2e6d2399bf45155f3a113d1856d98b5e156231aee7f7073f5"
+    }
+  ],
+  "limitations": [
+    "Targeted review rather than exhaustive systematic review.",
+    "No independent verification of all paper proofs or benchmark results.",
+    "CCF latest catalogue and local institutional classification not verified."
+  ],
+  "final_url_checks": [
+    {
+      "id": "alphaforge",
+      "url": "https://arxiv.org/html/2406.18394v5",
+      "http_status": 200,
+      "bytes": 203221
+    },
+    {
+      "id": "master",
+      "url": "https://arxiv.org/html/2312.15235v1",
+      "http_status": 200,
+      "bytes": 199573
+    },
+    {
+      "id": "tra",
+      "url": "https://arxiv.org/html/2106.12950v2",
+      "http_status": 200,
+      "bytes": 237658
+    },
+    {
+      "id": "doubleadapt",
+      "url": "https://arxiv.org/html/2306.09862v3",
+      "http_status": 200,
+      "bytes": 455051
+    },
+    {
+      "id": "neumiss",
+      "url": "https://arxiv.org/html/2007.01627v4",
+      "http_status": 200,
+      "bytes": 673323
+    },
+    {
+      "id": "imputation",
+      "url": "https://arxiv.org/html/2106.00311v2",
+      "http_status": 200,
+      "bytes": 624091
+    },
+    {
+      "id": "stablemiss",
+      "url": "https://arxiv.org/html/2305.11197v1",
+      "http_status": 200,
+      "bytes": 477928
+    },
+    {
+      "id": "robust_missing",
+      "url": "https://arxiv.org/html/2406.16484v1",
+      "http_status": 200,
+      "bytes": 478019
+    },
+    {
+      "id": "mirrams",
+      "url": "https://arxiv.org/html/2507.08280v2",
+      "http_status": 200,
+      "bytes": 1040974
+    },
+    {
+      "id": "dams",
+      "url": "https://arxiv.org/html/2211.02093v3",
+      "http_status": 200,
+      "bytes": 954002
+    },
+    {
+      "id": "gaillard2014",
+      "url": "https://proceedings.mlr.press/v35/gaillard14.html",
+      "http_status": 200,
+      "bytes": 15895
+    },
+    {
+      "id": "temperature",
+      "url": "https://arxiv.org/html/2506.15216v2",
+      "http_status": 200,
+      "bytes": 375231
+    },
+    {
+      "id": "backtest",
+      "url": "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+      "http_status": 200,
+      "bytes": 1145522
+    },
+    {
+      "id": "alphag_opd",
+      "url": "https://arxiv.org/abs/2608.01303",
+      "http_status": 200,
+      "bytes": 42966
+    }
+  ],
+  "report_files": [
+    {
+      "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/research/2026-09-10-conditional-factor-idea-review-v0.1.md",
+      "sha256": "a4456973153d13f8984ac7cbc02efc14f1d4f06c762da7154aa147b618f476a4"
+    },
+    {
+      "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/research/2026-09-10-conditional-factor-idea-review-v0.1.html",
+      "sha256": "e6d1138a7cff4509e061d6f54996ed54bf3000a753d05ab67b0bf031682999ad"
+    }
+  ]
+}
