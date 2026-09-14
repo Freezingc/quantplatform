@@ -498,6 +498,85 @@ M0R 池化 delta `+0.009149 → +0.009542`、M1 全网格 `+0.007827 → +0.0081
 （`33742880f314ca21`）与 mtime（`2026-09-12 00:50:33.890987021`）在两次 ff 合并前后逐字符未变，
 M2 驱动 pid 3588838 存活（19:40 时 24h45m、F1 16/24、无告警），
 两个看守都在（链式 320418、逐折预检 215628，PPID 均为 1）。
+
+---
+
+## 12. 【2026-09-14 19:45 增补】M3 也有逐折预检了：第三个看守已在跑（pid 459020），而它需要先学会"等一个还不存在的驱动"
+
+### 12.1 缺口
+
+逐折预检是 M2 这条边界上最值钱的一道保险（六个阻塞点里五个只在评价阶段发作，
+而每折的 bundle 与签名预测**一折一落地就存在**：折 1 发现是可修的一天，折 4 之后发现是白跑的八天）。
+但那个实例是**按 M2 参数化的**，而 M3 同样有暴露面——
+blocker 5（bundle config 字段）打的正是 **M2 与 M3 两家**。
+M3 约 09-24 由链式看守自动发射、约一天跑完，**在它跑完之前没有任何逐折检查**。
+
+直接把同一个脚本用 `--carrier M3` 起一份也不行，有两处会当场出错：
+
+1. **驱动识别是硬编码 pid**（`M2_PID = 3588838`）+ `"--family M2"`，
+   而 M3 的 pid 要等链式看守发射时才存在；
+2. 因此它会**立刻**走进"驱动没了"的分支，为一次**根本还没发射**的运行写下 ALARM——
+   而一条假告警的代价是让人从此不看告警文件。
+
+### 12.2 改动（`m2_fold_preflight_watcher.py`，改前备份 `/tmp/m2_fold_preflight_watcher.py.bak-20260914`，sha256 前缀 `3b0d41051c285439`）
+
+* **按命令行发现驱动**：`find_driver(family)` 扫 `/proc`；
+  `is_driver(cmd, family)` 要求 cmdline 同时含 `run_real_candidate_training.py` 与 `--family <F>`，
+  **并且第一个 token 含 `python`**。最后这条不是装饰：链式看守是通过
+  `bash -c "cd …; setsid nohup env … python scripts/run_real_candidate_training.py --family M3 …"` 发射的，
+  那一瞬间存在一个**cmdline 里两根针都有、但其实只是 shell** 的进程；
+  信它就会报告一个从未 exec 的驱动。
+* **钉 pid 仍然支持**（`--driver-pid`），`--discover-driver` 才切到发现模式；
+  `driver_alive()` 两条路都走同一个 `is_driver`，所以"pid 被复用"这个九天窗口里的老问题照旧被挡住。
+* **等驱动阶段**：`--wait-for-driver-hours`（M3 实例给 336 h = 14 天，覆盖 M2 的 09-23～25 收工再加余量）。
+  等待期间不会写 ALARM；超过期限才写，且消息里明说"若链式看守已 ABORT，以它的理由为准"。
+  睡眠按剩余期限截断，不会因为一个 poll 间隔把 14 天的预算超成 14 天零 5 分钟。
+* **停止标记**：`--stop-marker`（M3 实例指向 `m2_m3_chain_watcher.ABORT`）。
+  该文件一出现就**安静退出、不叠加第二条告警**——失败已经有人报告了，
+  再报一次只会让两个文件互相掩盖时间线。
+* 告警文案改为用 `CARRIER` 与 `WS.name`（原来写死 "M2 driver exited" 与 `m2_v1.log`）；
+  新增 `--poll-seconds` 只为测试能快速跑完。
+* **第 1–6 段检查逻辑一行未改**：与备份逐行 diff，被删的只有 `driver_alive` 的旧实现、
+  `global` 那一行、启动日志那一行、以及写死 M2 的告警文案。
+
+### 12.3 两个方向都验过（`test_fold_preflight_watcher_driver_discovery.py`，**23/23 通过**，可重跑）
+
+* `is_driver`：接受真正的解释器命令行；**拒绝那个 launcher shell**；拒绝错的 family；拒绝空串与无关进程。
+* **活体对照**：`find_driver("M2")` 与一份**独立实现**的 `/proc` 扫描结果一致（当前 = 3588838）；
+  `find_driver("M3")` 与 `find_driver("M9")` 都返回 None。
+* 钉 pid 的四种组合：活 pid + 对 family → True；死 pid → False；
+  **活 pid + 错 family → False**；不钉 pid 走发现 → True/False 各自正确。
+* **等驱动阶段端到端**（临时工作区、真进程）：驱动始终不出现 → 退出码 1、写 ALARM、
+  文案是 `M3 driver never appeared`、日志证明它**先等了**（`WAIT: no M3 driver yet`）而不是立刻告警；
+  预置 stop-marker → **退出码 0、不写 ALARM**、日志写明 `STOP:` 与理由。
+* `--once` 指向一个还不存在的工作区 → 不崩、不误告警。
+
+### 12.4 第三个看守已在跑
+
+```
+pid 459020  PPID 1  自有会话  无 TTY
+--workspace …/m3_v1 --carrier M3 --prefix m3 --discover-driver
+--wait-for-driver-hours 336 --stop-marker …/m2_m3_chain_watcher.ABORT
+--log …/m3_fold_preflight.log --alarm …/m3_fold_preflight.ALARM
+```
+
+日志现在是两行：`watcher start … driver=discovered wait_h=336.0 stop_marker=…` 与
+`WAIT: no M3 driver yet; waiting up to 336 h for one`。**这就是它该有的样子**，不是故障。
+
+**接手时要看的告警/标记文件从三个变成五个**：
+`m2_m3_chain_watcher.{ABORT,LAUNCHED}`、`m2_fold_preflight.ALARM`、
+**`m3_fold_preflight.ALARM`**（新）、以及 M3 发射后的 `m3_v1.log`。
+判断看守是否在跑用 `pgrep -af "chain_watcher.py|preflight_watcher.py"`，不要信文档里的 pid。
+
+**一个命名上的坦白**：这个脚本现在对 M1/M2/M3 都通用，文件名却还叫
+`m2_fold_preflight_watcher.py`。**故意没改名**——正在跑的 M2 实例、本文 §4.1 与
+研究分支的记录都按这个路径引用它，在多日运行中途改名换来的整洁不值那个混淆。
+M3 实例跑的是**同一个文件**，只是参数不同。
+
+### 12.5 M2 状态（19:41 实测）
+
+驱动存活 1d00h46m，**F1 18/24**（今天一路 13 → 15 → 16 → 17 → 18，剩下的全是 TCN-128 那一档），
+无 `*.ABORT` / `*.ALARM`，ETA 口径不变（09-23 至 09-25）。
 另外核过一件事：**报告与晋级证据里不含任何 git 提交号**
 （只有 `model_code_version` / `data_version` / `schema_version` 这类逻辑版本），
 所以主线前进不会让验收 A 的"逐字节相同"失效。
