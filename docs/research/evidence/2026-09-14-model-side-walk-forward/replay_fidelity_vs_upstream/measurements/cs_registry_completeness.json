@@ -1,0 +1,1683 @@
+{
+ "question": "Is FULL_CROSS_SECTION_FACTOR_IDS complete with respect to what the calculators actually do?",
+ "registry_file": "research_v2/scripts/audit_formula_replay_tushare.py:120",
+ "registry_size": 34,
+ "where_the_registry_is_used": "audit_formula_replay_tushare.py:1030-1036 -- codes are widened to the full market only if --full-market AND requires_full_cross_section()",
+ "impact_scope": "the AUDIT tool only. materialize_frozen_factor_daily.py does not consult requires_full_cross_section and always fetches the full SH/SZ market, so published factor_daily values are unaffected.",
+ "replay_definitions_scanned": 99,
+ "operator_patterns": {
+  "axis1_rank": "\\.rank\\([^)]*axis\\s*=\\s*1",
+  "axis1_mean": "\\.mean\\([^)]*axis\\s*=\\s*1",
+  "axis1_std": "\\.std\\([^)]*axis\\s*=\\s*1",
+  "axis1_max": "\\.max\\([^)]*axis\\s*=\\s*1",
+  "axis1_min": "\\.min\\([^)]*axis\\s*=\\s*1",
+  "axis1_median": "\\.median\\([^)]*axis\\s*=\\s*1",
+  "axis1_sum": "\\.sum\\([^)]*axis\\s*=\\s*1",
+  "cs_helper": "\\bcs_(?:rank|zscore|max|min|mean|std)\\b",
+  "industry_groupby": "groupby\\(\\s*['\\\"]?industry|groupby\\(\\s*industry_map|groupby\\(\\s*groups",
+  "transform_group": "\\.transform\\(\\s*['\\\"](?:mean|std|skew)['\\\"]\\s*\\)"
+ },
+ "factors_with_cs_operators_but_NOT_registered": [
+  "yeslab_212",
+  "yeslab_359",
+  "yeslab_365",
+  "yeslab_370",
+  "yeslab_372",
+  "yeslab_375",
+  "yeslab_378",
+  "yeslab_379",
+  "yeslab_384",
+  "yeslab_386",
+  "yeslab_390",
+  "yeslab_398",
+  "yeslab_401",
+  "yeslab_404",
+  "yeslab_406",
+  "yeslab_409",
+  "yeslab_411",
+  "yeslab_415",
+  "yeslab_418",
+  "yeslab_419",
+  "yeslab_420",
+  "yeslab_423",
+  "yeslab_428",
+  "yeslab_436",
+  "yeslab_444",
+  "yeslab_446",
+  "yeslab_461",
+  "yeslab_464",
+  "yeslab_468",
+  "yeslab_83"
+ ],
+ "count_with_cs_operators_but_not_registered": 30,
+ "of_those_in_frozen_v2": [
+  "yeslab_372",
+  "yeslab_375",
+  "yeslab_384",
+  "yeslab_390",
+  "yeslab_406",
+  "yeslab_464"
+ ],
+ "registered_but_no_operators_found_by_this_scan": [
+  "yeslab_392",
+  "yeslab_481",
+  "yeslab_482",
+  "yeslab_483",
+  "yeslab_484",
+  "yeslab_485",
+  "yeslab_486",
+  "yeslab_487",
+  "yeslab_94",
+  "yeslab_95",
+  "yeslab_96",
+  "yeslab_98"
+ ],
+ "frozen_v2_detail": {
+  "yeslab_206": {
+   "calculator_module": "Bias_Vol_Demean_60_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 0,
+   "own_file_operators": {},
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_357": {
+   "calculator_module": "IndustryStandAbsCalculator",
+   "in_registry": true,
+   "own_file_operator_count": 1,
+   "own_file_operators": {
+    "industry_groupby": 1
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_372": {
+   "calculator_module": "GP_Factor_003_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 2,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_375": {
+   "calculator_module": "GP_Factor_006_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 5,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_381": {
+   "calculator_module": "GP_Factor_012_Calculator",
+   "in_registry": true,
+   "own_file_operator_count": 3,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_384": {
+   "calculator_module": "GP_Factor_015_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 2,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_389": {
+   "calculator_module": "GP_Factor_020_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 0,
+   "own_file_operators": {},
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": false
+  },
+  "yeslab_390": {
+   "calculator_module": "GP_Factor_021_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 2,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_406": {
+   "calculator_module": "GP_Factor_037_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 2,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_425": {
+   "calculator_module": "GP_Factor_056_Calculator",
+   "in_registry": true,
+   "own_file_operator_count": 4,
+   "own_file_operators": {
+    "axis1_rank": 2,
+    "cs_helper": 2
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_464": {
+   "calculator_module": "GP_Factor_095_Calculator",
+   "in_registry": false,
+   "own_file_operator_count": 14,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 2,
+    "axis1_std": 2,
+    "axis1_max": 1,
+    "cs_helper": 8
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": true
+  },
+  "yeslab_471": {
+   "calculator_module": "AttentionSpilloverCalculator",
+   "in_registry": true,
+   "own_file_operator_count": 2,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "industry_groupby": 1
+   },
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_484": {
+   "calculator_module": "HerdingCSADStd21Calculator",
+   "in_registry": true,
+   "own_file_operator_count": 0,
+   "own_file_operators": {},
+   "base_class_scan": {
+    "base_class": "HerdingCSADCalculatorBase",
+    "file_found": true,
+    "lines": 60,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_96": {
+   "calculator_module": "ModifiedDayReversalCalculator",
+   "in_registry": true,
+   "own_file_operator_count": 0,
+   "own_file_operators": {},
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  }
+ },
+ "frozen_v2_not_in_replay_definitions": [
+  "yeslab_443_reg30_max20_v1"
+ ],
+ "caveat": "a regex scan of calculator source. It can miss operators built indirectly (a helper in another module, a numpy reduction over axis 1 written out longhand) and it can over-count where axis=1 is used on a frame that is not date-by-code. Every per-factor operator list is recorded so a reader can check the classification rather than trust it.",
+ "per_factor": {
+  "yeslab_105": {
+   "calculator_module": "Alpha83Calculator",
+   "factor_name": "Alpha83",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 3
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_114": {
+   "calculator_module": "TerriStdCalculator",
+   "factor_name": "惊恐波动",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1
+   },
+   "own_file_operator_count": 1,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_140": {
+   "calculator_module": "Std_Turn_1m_Calculator",
+   "factor_name": "日换手率波动（1个月内）",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_143": {
+   "calculator_module": "Bias_Std_Turn_1m_Calculator",
+   "factor_name": "日换手率波动偏离（1个月内）",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_155": {
+   "calculator_module": "SkipDemeanAbsCalculator",
+   "factor_name": "跳空去均值绝对值",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1
+   },
+   "own_file_operator_count": 1,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_163": {
+   "calculator_module": "Alpha95Calculator",
+   "factor_name": "Alpha95",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_165": {
+   "calculator_module": "Alpha97Calculator",
+   "factor_name": "Alpha97",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_167": {
+   "calculator_module": "Alpha99Calculator",
+   "factor_name": "Alpha99",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 1
+   },
+   "own_file_operator_count": 1,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_168": {
+   "calculator_module": "Alpha100Calculator",
+   "factor_name": "Alpha100",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_206": {
+   "calculator_module": "Bias_Vol_Demean_60_Calculator",
+   "factor_name": "60日成交量去均值相对偏离",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_208": {
+   "calculator_module": "Bias_Close_Mean_Std_Low_Vol_Std_60_Calculator",
+   "factor_name": "价格均值标准差乖离乘短期成交量波动",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_209": {
+   "calculator_module": "FlyCalculator",
+   "factor_name": "量价齐飞",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_211": {
+   "calculator_module": "FlyOpenCalculator",
+   "factor_name": "量价齐飞-开盘价",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_212": {
+   "calculator_module": "FlyRankCalculator",
+   "factor_name": "量价齐飞-排名",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 2
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_213": {
+   "calculator_module": "FlyPlusTurnoverCalculator",
+   "factor_name": "量价齐飞加换手率",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_214": {
+   "calculator_module": "FlyMultipleTurnover5Calculator",
+   "factor_name": "量价齐飞乘换手率5日均值",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_222": {
+   "calculator_module": "ROE_Calculator",
+   "factor_name": "ROE",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_224": {
+   "calculator_module": "ROIC_Calculator",
+   "factor_name": "ROIC",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_252": {
+   "calculator_module": "Vol_Up_Std_1M_Calculator",
+   "factor_name": "1个月上行波动率",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_260": {
+   "calculator_module": "Vol_Up_Std_3M_Calculator",
+   "factor_name": "3个月上行波动率",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_271": {
+   "calculator_module": "Vol_HighLow_Std_1M_Calculator",
+   "factor_name": "1个月日内振幅标准差",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_272": {
+   "calculator_module": "Vol_HighLow_Std_3M_Calculator",
+   "factor_name": "3个月日内振幅标准差",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_31": {
+   "calculator_module": "Alpha32Calculator",
+   "factor_name": "Alpha32",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 3
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_357": {
+   "calculator_module": "IndustryStandAbsCalculator",
+   "factor_name": "行业内收益标准化绝对值",
+   "in_registry": true,
+   "own_file_operators": {
+    "industry_groupby": 1
+   },
+   "own_file_operator_count": 1,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_359": {
+   "calculator_module": "IndustryStandAbsMultiStdCalculator",
+   "factor_name": "行业标准化绝对值乘行业波动率",
+   "in_registry": false,
+   "own_file_operators": {
+    "industry_groupby": 2,
+    "transform_group": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_362": {
+   "calculator_module": "IndustryStandAbsDivSkewCalculator",
+   "factor_name": "行业标准化绝对值除行业偏度5日均",
+   "in_registry": true,
+   "own_file_operators": {
+    "industry_groupby": 2,
+    "transform_group": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_363": {
+   "calculator_module": "IndustryStandAbsDivSkewAbsCalculator",
+   "factor_name": "行业标准化绝对值除行业偏度绝对值",
+   "in_registry": true,
+   "own_file_operators": {
+    "industry_groupby": 2,
+    "transform_group": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_365": {
+   "calculator_module": "IndustryStandAbsCutBySkewCalculator",
+   "factor_name": "行业标准化绝对值按正偏度过滤",
+   "in_registry": false,
+   "own_file_operators": {
+    "industry_groupby": 2,
+    "transform_group": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_370": {
+   "calculator_module": "GP_Factor_001_Calculator",
+   "factor_name": "GP_001",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_371": {
+   "calculator_module": "GP_Factor_002_Calculator",
+   "factor_name": "GP_002",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_372": {
+   "calculator_module": "GP_Factor_003_Calculator",
+   "factor_name": "GP_003",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_375": {
+   "calculator_module": "GP_Factor_006_Calculator",
+   "factor_name": "GP_006",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 5,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_376": {
+   "calculator_module": "GP_Factor_007_Calculator",
+   "factor_name": "GP_007",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_377": {
+   "calculator_module": "GP_Factor_008_Calculator",
+   "factor_name": "GP_008",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_378": {
+   "calculator_module": "GP_Factor_009_Calculator",
+   "factor_name": "GP_009",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 5,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_379": {
+   "calculator_module": "GP_Factor_010_Calculator",
+   "factor_name": "GP_010",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 2,
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 6,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_380": {
+   "calculator_module": "GP_Factor_011_Calculator",
+   "factor_name": "GP_011",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_381": {
+   "calculator_module": "GP_Factor_012_Calculator",
+   "factor_name": "GP_012",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_384": {
+   "calculator_module": "GP_Factor_015_Calculator",
+   "factor_name": "GP_015",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_385": {
+   "calculator_module": "GP_Factor_016_Calculator",
+   "factor_name": "GP_016",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_386": {
+   "calculator_module": "GP_Factor_017_Calculator",
+   "factor_name": "GP_017",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 5,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_387": {
+   "calculator_module": "GP_Factor_018_Calculator",
+   "factor_name": "GP_018",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_388": {
+   "calculator_module": "GP_Factor_019_Calculator",
+   "factor_name": "GP_019",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_389": {
+   "calculator_module": "GP_Factor_020_Calculator",
+   "factor_name": "GP_020",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": false
+  },
+  "yeslab_390": {
+   "calculator_module": "GP_Factor_021_Calculator",
+   "factor_name": "GP_021",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_391": {
+   "calculator_module": "GP_Factor_022_Calculator",
+   "factor_name": "GP_022",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_392": {
+   "calculator_module": "GP_Factor_023_Calculator",
+   "factor_name": "GP_023",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_395": {
+   "calculator_module": "GP_Factor_026_Calculator",
+   "factor_name": "GP_026",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_396": {
+   "calculator_module": "GP_Factor_027_Calculator",
+   "factor_name": "GP_027",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_397": {
+   "calculator_module": "GP_Factor_028_Calculator",
+   "factor_name": "GP_028",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_398": {
+   "calculator_module": "GP_Factor_029_Calculator",
+   "factor_name": "GP_029",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "axis1_max": 1,
+    "cs_helper": 5
+   },
+   "own_file_operator_count": 8,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_400": {
+   "calculator_module": "GP_Factor_031_Calculator",
+   "factor_name": "GP_031",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_401": {
+   "calculator_module": "GP_Factor_032_Calculator",
+   "factor_name": "GP_032",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 5,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_404": {
+   "calculator_module": "GP_Factor_035_Calculator",
+   "factor_name": "GP_035",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_max": 1,
+    "cs_helper": 6
+   },
+   "own_file_operator_count": 8,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_405": {
+   "calculator_module": "GP_Factor_036_Calculator",
+   "factor_name": "GP_036",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_406": {
+   "calculator_module": "GP_Factor_037_Calculator",
+   "factor_name": "GP_037",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "sparse",
+   "audit_would_under_scope": true
+  },
+  "yeslab_409": {
+   "calculator_module": "GP_Factor_040_Calculator",
+   "factor_name": "GP_040",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_411": {
+   "calculator_module": "GP_Factor_042_Calculator",
+   "factor_name": "GP_042",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 4
+   },
+   "own_file_operator_count": 7,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_414": {
+   "calculator_module": "GP_Factor_045_Calculator",
+   "factor_name": "GP_045",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_415": {
+   "calculator_module": "GP_Factor_046_Calculator",
+   "factor_name": "GP_046",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_418": {
+   "calculator_module": "GP_Factor_049_Calculator",
+   "factor_name": "GP_049",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "axis1_max": 1,
+    "cs_helper": 4
+   },
+   "own_file_operator_count": 7,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_419": {
+   "calculator_module": "GP_Factor_050_Calculator",
+   "factor_name": "GP_050",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_420": {
+   "calculator_module": "GP_Factor_051_Calculator",
+   "factor_name": "GP_051",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_423": {
+   "calculator_module": "GP_Factor_054_Calculator",
+   "factor_name": "GP_054",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_std": 1,
+    "axis1_max": 2,
+    "cs_helper": 14
+   },
+   "own_file_operator_count": 18,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_425": {
+   "calculator_module": "GP_Factor_056_Calculator",
+   "factor_name": "GP_056",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 2,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 4,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_428": {
+   "calculator_module": "GP_Factor_059_Calculator",
+   "factor_name": "GP_059",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_max": 1,
+    "axis1_sum": 1,
+    "cs_helper": 4
+   },
+   "own_file_operator_count": 6,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_429": {
+   "calculator_module": "GP_Factor_060_Calculator",
+   "factor_name": "GP_060",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_431": {
+   "calculator_module": "GP_Factor_062_Calculator",
+   "factor_name": "GP_062",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_432": {
+   "calculator_module": "GP_Factor_063_Calculator",
+   "factor_name": "GP_063",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_433": {
+   "calculator_module": "GP_Factor_064_Calculator",
+   "factor_name": "GP_064",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_434": {
+   "calculator_module": "GP_Factor_065_Calculator",
+   "factor_name": "GP_065",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_436": {
+   "calculator_module": "GP_Factor_067_Calculator",
+   "factor_name": "GP_067",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 2,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 6,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_437": {
+   "calculator_module": "GP_Factor_068_Calculator",
+   "factor_name": "GP_068",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_438": {
+   "calculator_module": "GP_Factor_069_Calculator",
+   "factor_name": "GP_069",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_442": {
+   "calculator_module": "GP_Factor_073_Calculator",
+   "factor_name": "GP_073",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_443": {
+   "calculator_module": "GP_Factor_074_Calculator",
+   "factor_name": "GP_074",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 1,
+    "cs_helper": 4
+   },
+   "own_file_operator_count": 6,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_444": {
+   "calculator_module": "GP_Factor_075_Calculator",
+   "factor_name": "GP_075",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 2,
+    "cs_helper": 4
+   },
+   "own_file_operator_count": 7,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_446": {
+   "calculator_module": "GP_Factor_077_Calculator",
+   "factor_name": "GP_077",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 2,
+    "axis1_mean": 1,
+    "axis1_max": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 5,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_451": {
+   "calculator_module": "GP_Factor_082_Calculator",
+   "factor_name": "GP_082",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_46": {
+   "calculator_module": "turnover_monthly_std_Calculator",
+   "factor_name": "月换手波动",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_461": {
+   "calculator_module": "GP_Factor_092_Calculator",
+   "factor_name": "GP_092",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "axis1_std": 1,
+    "cs_helper": 1
+   },
+   "own_file_operator_count": 3,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_464": {
+   "calculator_module": "GP_Factor_095_Calculator",
+   "factor_name": "GP_095",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 2,
+    "axis1_std": 2,
+    "axis1_max": 1,
+    "cs_helper": 8
+   },
+   "own_file_operator_count": 14,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": true
+  },
+  "yeslab_467": {
+   "calculator_module": "GP_Factor_098_Calculator",
+   "factor_name": "GP_098",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_468": {
+   "calculator_module": "GP_Factor_099_Calculator",
+   "factor_name": "GP_099",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 1,
+    "axis1_mean": 2,
+    "axis1_std": 1,
+    "cs_helper": 2
+   },
+   "own_file_operator_count": 6,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_471": {
+   "calculator_module": "AttentionSpilloverCalculator",
+   "factor_name": "AttentionSpillover",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_mean": 1,
+    "industry_groupby": 1
+   },
+   "own_file_operator_count": 2,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_481": {
+   "calculator_module": "HerdingCSADRatio20Calculator",
+   "factor_name": "羊群效应_CSAD收益波动比20",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": {
+    "base_class": "HerdingCSADCalculatorBase",
+    "file_found": true,
+    "lines": 60,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_482": {
+   "calculator_module": "HerdingCSADRatio120Calculator",
+   "factor_name": "羊群效应_CSAD收益波动比120",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": {
+    "base_class": "HerdingCSADCalculatorBase",
+    "file_found": true,
+    "lines": 60,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_483": {
+   "calculator_module": "HerdingCSADRatio20To120Calculator",
+   "factor_name": "羊群效应_CSAD短长周期比",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": {
+    "base_class": "HerdingCSADCalculatorBase",
+    "file_found": true,
+    "lines": 60,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_484": {
+   "calculator_module": "HerdingCSADStd21Calculator",
+   "factor_name": "羊群效应_CSAD波动率21",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": {
+    "base_class": "HerdingCSADCalculatorBase",
+    "file_found": true,
+    "lines": 60,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_485": {
+   "calculator_module": "CorwinSchultzDailyCalculator",
+   "factor_name": "CS价差_日频",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": {
+    "base_class": "CorwinSchultzCalculatorBase",
+    "file_found": true,
+    "lines": 33,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_486": {
+   "calculator_module": "CorwinSchultzMean21Calculator",
+   "factor_name": "CS价差_21日均值",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": {
+    "base_class": "CorwinSchultzCalculatorBase",
+    "file_found": true,
+    "lines": 33,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_487": {
+   "calculator_module": "CorwinSchultzStd21Calculator",
+   "factor_name": "CS价差_21日标准差",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": {
+    "base_class": "CorwinSchultzCalculatorBase",
+    "file_found": true,
+    "lines": 33,
+    "operators": {},
+    "operator_count": 0
+   },
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_5": {
+   "calculator_module": "Alpha5Calculator",
+   "factor_name": "Alpha5",
+   "in_registry": false,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_71": {
+   "calculator_module": "Alpha62Calculator",
+   "factor_name": "Alpha62",
+   "in_registry": true,
+   "own_file_operators": {
+    "axis1_rank": 1
+   },
+   "own_file_operator_count": 1,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_83": {
+   "calculator_module": "Alpha74Calculator",
+   "factor_name": "Alpha74",
+   "in_registry": false,
+   "own_file_operators": {
+    "axis1_rank": 4
+   },
+   "own_file_operator_count": 4,
+   "base_class_scan": null,
+   "has_global_cs_operators": true,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": true
+  },
+  "yeslab_94": {
+   "calculator_module": "DayReversalVolatilityCalculator",
+   "factor_name": "日间反转-波动翻转",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_95": {
+   "calculator_module": "DayReversalTurnoverCalculator",
+   "factor_name": "日间反转-换手翻转",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  },
+  "yeslab_96": {
+   "calculator_module": "ModifiedDayReversalCalculator",
+   "factor_name": "修正日间反转",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": true,
+   "frozen_v2_role": "dense",
+   "audit_would_under_scope": false
+  },
+  "yeslab_98": {
+   "calculator_module": "IntradayReversalVolatilityCalculator",
+   "factor_name": "日内反转-波动翻转",
+   "in_registry": true,
+   "own_file_operators": {},
+   "own_file_operator_count": 0,
+   "base_class_scan": null,
+   "has_global_cs_operators": false,
+   "in_frozen_v2": false,
+   "frozen_v2_role": null,
+   "audit_would_under_scope": false
+  }
+ },
+ "database_writes": false,
+ "weights_written": false
+}

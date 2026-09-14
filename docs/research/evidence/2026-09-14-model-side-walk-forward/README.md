@@ -480,3 +480,48 @@ SZ 3,012 / SH 2,391 / BJ 552），所以"仅上游有 1,153 只"里 **1,044 只�
 **没有用别名表逐只核实**"上游 BJ 旧代码 = 重放 BJ 新代码"（从北交所公开代码迁移推断；
 仓库那份 alias artifact **默认关闭**，本文没启用）；没有查清"仅重放有"的 **22–59 只 SH/SZ**
 为什么上游没有值（候选：上市不足计算器所需历史、上游停牌处理不同、上游当日计算失败）。
+
+### 【07:40，治理类新发现】`FULL_CROSS_SECTION_FACTOR_IDS` 是手工名单，漏掉 30 个真正需要它的因子（含冻结 v2 里的 6 个）
+
+`replay_fidelity_vs_upstream/finding.md` §17、`probes/probe_cs_registry_completeness.py`、
+`measurements/cs_registry_completeness.json`。属 §D 那一族："守卫存在，但对真正需要它的对象不生效"。
+
+`audit_formula_replay_tushare.py:1024-1041` 里，审计的面板默认是"**该因子自己上游观测过的证券**"，
+**只有** `--full-market` **且** `requires_full_cross_section(factor_id)`（= 与 `:120` 那份 **34 个 id** 的
+手工名单求交）**且**未加 `--restrict-to-v2-universe` 时才扩到全市场。
+扫描 99 个 `REPLAY_DEFINITIONS` 的计算器源码（10 类全局截面算子模式；自身为 0 时再向下追一层基类）：
+
+| | 扫到全局截面算子 | 没扫到 |
+|---|---|---|
+| **在名单里** | 22 | 12 |
+| **不在名单里** | **30** | 35 |
+
+**30 个漏项**里**属冻结 v2 十五因子的有 6 个**：`372`、`375`、`384`、`390`、`406`
+（**六个稀疏因子中的五个**）与 **`464`（稠密九之一，14 个算子，v2 里最多）**。
+`357`/`381`/`425`/`471`/`484`/`96` 都在名单里；`389`、`206` 算子数为 0。
+
+**影响范围必须说准：只影响审计工具，不影响已发布值。**
+`materialize_frozen_factor_daily.py` **完全不查** `requires_full_cross_section`、无条件取全市场，
+所以 `factor_daily` 的已发布值不受影响、**本条不使任何已发布结果失效**。
+暴露面是 `audit_formula_replay_tushare.py --factor-id yeslab_464 --full-market`
+会把面板**静默限制**在 464 自己观测过的证券上，而它有 14 个全局截面算子（含 `cs_max`）——
+**这正是 §Q–§U 追的那个"重放 vs 上游"差异的污染源之一**。
+测试也印证：`requires_full_cross_section` 的负例只测了 `yeslab_5`（`:54`），正例测了 `471`/`443`/`376`，
+**没有任何测试覆盖 `yeslab_464`**。
+
+**反向那 12 个（`94`/`95`/`96`/`98`/`392`/`481`–`487`）应读作"本扫描未能判定"**：
+它们的截面步骤很可能在 `HerdingCSADCore.py` 的**模块级函数**里，而扫描只向下追一层基类。
+**名单偏保守是安全的（多登只多取行情），漏登是不安全的（审计静默算错）——30 个漏项正好在不安全那侧。**
+
+**建议（未代为执行）**：① 名单改为**派生量**（扫源码，或在 `ReplayDefinition` 上加
+`full_cross_section: bool`，或让计算器类声明 `REQUIRES_FULL_CROSS_SECTION = True`）；
+② 加测试断言 `has_global_cs_operators ⇒ requires_full_cross_section([fid])` 并把扫描器移进 `research_v2`；
+③ **最小修复**：把那 30 个 id 加进名单——**一行常量**、只影响审计取数范围、**不改任何已发布值**，
+且该文件**不是** M2 驱动导入的模块（M2 走 `run_real_candidate_training.py` → `walk_forward_*`），
+技术上可在 M2 在飞时改，但**是否现在改属所有者决定**。
+**另发现一处开关矛盾（未深查）**：`--restrict-to-v2-universe` 会**覆盖**全市场扩展
+（`:1033` 的 `and not args.restrict_to_v2_universe`），即**名单对了也会被这个开关缩回 v2 宇宙**。
+
+**仍未做**：没有改任何代码；扫描是正则，会漏间接写法、也可能误判非"日期×证券"表上的 `axis=1`
+（**每个因子的算子清单都逐条记在机读件里**，可自行核对）；只追一层基类；
+没有量化"面板缩小后 464 会偏多少"；没有追查 `--restrict-to-v2-universe` 的实际用法。

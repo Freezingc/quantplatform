@@ -986,3 +986,130 @@ market = fetch_full_tushare_shsz_market(open_dates, token=..., cache_dir=CACHE,
   `excluded_exchanges: ["BJ"]` 与 `cn_liquid_a` 宇宙都指向"不该"，
   但 `cs_*` 算子的口径一旦改动，**所有含全局截面算子的因子值都会变**，等于又一次新谱系。
   **本文只指出不一致，不代为决定。**
+
+---
+
+## 17. 【新发现，治理类】`FULL_CROSS_SECTION_FACTOR_IDS` 是一份**手工名单**，而它漏掉了 30 个真正需要它的因子——包括冻结 v2 里的 6 个
+
+### 17.1 这份名单控制什么
+
+`audit_formula_replay_tushare.py:1024-1041`：
+
+```python
+codes = tuple(sorted(set().union(*map(set, code_sets))))      # 默认：该因子自己上游观测里出现过的证券
+market_universe_source = "factor_observation_codes"
+if (args.full_market
+        and requires_full_cross_section(args.factor_id)        # ← 只查这份名单
+        and not args.restrict_to_v2_universe):
+    codes = _query_stock_market_codes(client, market_start, args.end)   # 才会扩到全市场
+    market_universe_source = "YesLab.stock_factor_daily"
+...
+if args.exclude_bj:
+    codes = tuple(code for code in codes if not code.endswith(".BJ"))
+```
+
+而 `requires_full_cross_section` 就是与 `FULL_CROSS_SECTION_FACTOR_IDS`（`:120`，**34 个 id**）求交集。
+
+**含义**：一个因子如果它的计算器里有**全局截面算子**（`cs_zscore`/`cs_rank`/`cs_max`，或任何对
+"日期×证券"表的 `axis=1` 归约），那么**每一只证券的值都取决于面板里还有谁**。
+用"该因子自己上游观测过的证券"当面板去审计它，**算出来的是另一个量**，而且是**静默**的。
+所以这份名单是一道**安全注册表**，漏项 = 审计口径被静默缩小。
+
+### 17.2 扫描结果（`probes/probe_cs_registry_completeness.py`，机读件 `measurements/cs_registry_completeness.json`）
+
+对 **99** 个 `REPLAY_DEFINITIONS` 条目逐个解析出 `calculator_module`，
+在 `数据库/factor_calculators/<module>.py` 里按 10 类模式扫全局截面算子；
+若某计算器自身为 0，再向下扫一层它的基类（`484` 的截面步骤就在 `HerdingCSADCalculatorBase` 之下）：
+
+| | 扫到全局截面算子 | 没扫到 |
+|---|---|---|
+| **在名单里** | **22** | 12 |
+| **不在名单里** | **30** | 35 |
+
+**30 个"有算子但不在名单"的因子**：
+
+```
+yeslab_83  yeslab_212 yeslab_359 yeslab_365 yeslab_370 yeslab_372 yeslab_375 yeslab_378
+yeslab_379 yeslab_384 yeslab_386 yeslab_390 yeslab_398 yeslab_401 yeslab_404 yeslab_406
+yeslab_409 yeslab_411 yeslab_415 yeslab_418 yeslab_419 yeslab_420 yeslab_423 yeslab_428
+yeslab_436 yeslab_444 yeslab_446 yeslab_461 yeslab_464 yeslab_468
+```
+
+**其中属于冻结 v2 十五因子的有 6 个**：`yeslab_372`、`yeslab_375`、`yeslab_384`、`yeslab_390`、
+`yeslab_406`（**六个稀疏因子中的五个**）与 **`yeslab_464`（稠密九之一）**。
+
+冻结 v2 的逐个情况：
+
+| 因子 | 角色 | 在名单? | 扫到的算子数 | **审计会被静默缩小?** | 计算器 |
+|---|---|---|---|---|---|
+| **`yeslab_464`** | 稠密 | **否** | **14**（v2 里最多） | **是** | `GP_Factor_095_Calculator` |
+| `yeslab_375` | 稀疏 | 否 | 5 | **是** | `GP_Factor_006_Calculator` |
+| `yeslab_372` | 稀疏 | 否 | 2 | **是** | `GP_Factor_003_Calculator` |
+| `yeslab_384` | 稀疏 | 否 | 2 | **是** | `GP_Factor_015_Calculator` |
+| `yeslab_390` | 稀疏 | 否 | 2 | **是** | `GP_Factor_021_Calculator` |
+| `yeslab_406` | 稀疏 | 否 | 2 | **是** | `GP_Factor_037_Calculator` |
+| `yeslab_425` | 稠密 | 是 | 4 | 否 | `GP_Factor_056_Calculator` |
+| `yeslab_381` | 稠密 | 是 | 3 | 否 | `GP_Factor_012_Calculator` |
+| `yeslab_357` | 稠密 | 是 | 1 | 否 | `IndustryStandAbsCalculator` |
+| `yeslab_471` | 稠密 | 是 | 2 | 否 | `AttentionSpilloverCalculator` |
+| `yeslab_96` | 稠密 | 是 | 0 | 否 | `ModifiedDayReversalCalculator` |
+| `yeslab_484` | 稠密 | 是 | 0（自身+基类均 0） | 否 | `HerdingCSADStd21Calculator` |
+| `yeslab_206` | 稠密 | 否 | 0 | 否（且是修复变体） | `Bias_Vol_Demean_60_Calculator` |
+| `yeslab_389` | 稀疏 | 否 | 0 | 否 | `GP_Factor_020_Calculator` |
+| `yeslab_443_reg30_max20_v1` | 稠密 | — | — | — | **不在 `REPLAY_DEFINITIONS`**（修复变体） |
+
+### 17.3 影响范围必须说准：**只影响审计工具，不影响已发布值**
+
+`materialize_frozen_factor_daily.py` **完全不查** `requires_full_cross_section`——
+它无条件调 `fetch_full_tushare_shsz_market(...)`（全市场）。
+**所以 `factor_daily` 里已发布的值是在全市场面板上算的，本条不使任何已发布结果失效。**
+
+暴露面是：**任何人用 `audit_formula_replay_tushare.py --factor-id yeslab_464 --full-market` 去审计 464，
+面板会被静默限制在"464 自己上游观测过的证券"上**，而 `464` 的计算器有 **14 个**全局截面算子
+（含 `_v14 = _v13.max(axis=1)` 这个 `cs_max`）。这样跑出来的"重放 vs 上游"差异
+**混入了一个纯粹由面板缩小组成的假差异**，无法与真实差异区分。
+**这正是本证据包 §11–§16 一直在追的那个量的污染源之一。**
+
+而且它属于本包 §D 已经记录过的那一族问题：**"守卫存在，但对真正需要它的对象不生效"**。
+测试也印证了这一点：`tests/unit/scripts/test_audit_formula_replay_tushare.py` 里
+`requires_full_cross_section` 的**负例只测了 `yeslab_5`**（`:54`），
+正例测了 `yeslab_471`（`:422`）、`yeslab_443`（`:798`）、`yeslab_376`（`:797`）等，
+**没有任何测试覆盖 `yeslab_464`**——即名单漏掉它，测试也不会发现。
+
+### 17.4 反向的 12 个：在名单里、但本扫描没找到算子
+
+`yeslab_94`、`yeslab_95`、`yeslab_96`、`yeslab_98`、`yeslab_392`、`yeslab_481`–`yeslab_487`。
+**这大概率是扫描漏检、不是名单错登**：`96` 与 `484` 的计算器本身确实没有 `axis=1` 归约，
+而 `481`–`487`/`94`/`95`/`98` 很可能与 `484` 同属羊群效应家族——
+它们的截面步骤在 **`HerdingCSADCore.py` 的模块级函数**里（"对每只股票选取收益相关性最高的
+`group_size - 1` 只股票"），而本扫描**只向下追一层基类**，追不到模块级函数。
+**所以这 12 个应当读作"本扫描未能判定"，不是"名单多登"。**
+这也说明名单**偏保守是安全的**（多登只是让审计多取一些行情），
+而**漏登是不安全的**（审计会静默算错）——**当前的 30 个漏项正好在不安全的那一侧。**
+
+### 17.5 建议（本文不代为执行）
+
+1. **把名单从手工常量改成派生量**：从 `calculator_module` 的源码扫出全局截面算子，
+   或在 `ReplayDefinition` 上加一个 `full_cross_section: bool` 字段由计算器类自己声明
+   （例如类属性 `REQUIRES_FULL_CROSS_SECTION = True`），让"漏登"变成"计算器作者必须显式回答"的问题。
+2. **加一条测试**：对**每个** `REPLAY_DEFINITIONS` 条目断言
+   `has_global_cs_operators ⇒ requires_full_cross_section([fid])`，
+   并把扫描器本身放进 `research_v2`（而不是留在证据包里），这样新增计算器时测试会失败。
+3. **立刻可做的最小修复**：把 §17.2 那 30 个 id 加进名单。这是**一行常量**的改动，
+   且只影响审计工具的取数范围，**不改变任何已发布值**。
+   **但 M2/M3 在飞时不能改 `audit_formula_replay_tushare.py` 之外的共享文件**——
+   好在这一条就在该文件内，且它**不是** M2 驱动导入的模块（M2 导入的是
+   `run_real_candidate_training.py` → `walk_forward_*`）。**是否现在改仍属所有者决定。**
+
+### 17.6 §17 没有做的事
+
+* **没有改任何代码**，名单一个 id 都没加。
+* 扫描是**正则**：会漏掉间接写法（跨模块 helper、手写 numpy `axis=1` 归约），
+  也可能把非"日期×证券"表上的 `axis=1` 误判为截面算子。
+  **每个因子的算子清单都逐条记在机读件里**，读者可以自行核对分类而不必相信它。
+* 只向下追了**一层基类**，所以 §17.4 那 12 个是"未判定"而非"确认无算子"。
+* 没有量化"面板被缩小后 `464` 的值会偏多少"——那需要真跑一次受限面板的重放。
+* 没有检查 `--restrict-to-v2-universe` 这条路径：**它会覆盖全市场扩展**
+  （`:1033` 的 `and not args.restrict_to_v2_universe`），
+  也就是说**即使名单是对的，加上这个开关也会把截面缩小到 v2 宇宙**。
+  对含全局截面算子的因子，这个开关与名单**互相矛盾**，而本文没有进一步追查它的用法。
