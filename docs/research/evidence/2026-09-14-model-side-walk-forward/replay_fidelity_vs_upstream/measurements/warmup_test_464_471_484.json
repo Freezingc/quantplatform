@@ -1,0 +1,522 @@
+{
+ "question": "Is yeslab_464's ordering divergence a warm-up artifact? Split each day by listing age.",
+ "in_family_control": {
+  "factor_id": "yeslab_484",
+  "why": "same upstream table (factor_data10), same days, same securities",
+  "spearman_range_across_all_days": [
+   0.9944364793985475,
+   0.9998967271742917
+  ],
+  "spearman_on_the_worst_day_of_each_other_factor": {
+   "2022-03-15": {
+    "worst_factor": "yeslab_471",
+    "worst_spearman": 0.4792194323973327,
+    "control_spearman": 0.9990158032486134
+   },
+   "2022-07-29": {
+    "worst_factor": "yeslab_471",
+    "worst_spearman": 0.8706571255140187,
+    "control_spearman": 0.9991990617619679
+   },
+   "2023-07-05": {
+    "worst_factor": "yeslab_464",
+    "worst_spearman": 0.8093604436489256,
+    "control_spearman": 0.9986712921566774
+   },
+   "2023-10-09": {
+    "worst_factor": "yeslab_471",
+    "worst_spearman": 0.8155780567007366,
+    "control_spearman": 0.9975119391133321
+   },
+   "2024-01-15": {
+    "worst_factor": "yeslab_471",
+    "worst_spearman": 0.8504282236192079,
+    "control_spearman": 0.9973209727834473
+   },
+   "2024-06-17": {
+    "worst_factor": "yeslab_464",
+    "worst_spearman": 0.8230783917151321,
+    "control_spearman": 0.9998967271742917
+   },
+   "2024-11-18": {
+    "worst_factor": "yeslab_464",
+    "worst_spearman": 0.7007416650841923,
+    "control_spearman": 0.9995934739966242
+   },
+   "2025-03-17": {
+    "worst_factor": "yeslab_471",
+    "worst_spearman": 0.882857348978941,
+    "control_spearman": 0.9993402022996645
+   },
+   "2025-08-08": {
+    "worst_factor": "yeslab_471",
+    "worst_spearman": 0.8609010294398586,
+    "control_spearman": 0.9944364793985475
+   }
+  },
+  "conclusion": "The control is fine on every day, including the days where 464 and 471 are worst, so the divergence is not a property of the upstream table, of the day, or of the security set. It is specific to the CALCULATOR: GP_Factor_095_Calculator (464) and AttentionSpilloverCalculator (471) diverge while HerdingCSADStd21Calculator (484), reading the same table on the same days, does not."
+ },
+ "databases_read": [
+  "dfs://YesLab",
+  "dfs://QuantResearchV2Test"
+ ],
+ "bands_calendar_days": [
+  {
+   "lo": 0,
+   "hi": 180,
+   "label": "under_180_calendar_days_listed"
+  },
+  {
+   "lo": 180,
+   "hi": 400,
+   "label": "180_to_400_calendar_days"
+  },
+  {
+   "lo": 400,
+   "hi": 100000,
+   "label": "over_400_calendar_days"
+  }
+ ],
+ "days": [
+  "2022-03-15",
+  "2022-07-29",
+  "2023-07-05",
+  "2023-10-09",
+  "2024-01-15",
+  "2024-06-17",
+  "2024-11-18",
+  "2025-03-17",
+  "2025-08-08"
+ ],
+ "listing_dates_securities": 5901,
+ "per_factor": {
+  "yeslab_464": {
+   "days": 9,
+   "spearman_all_range": [
+    0.6356795169915979,
+    0.9880048418156263
+   ],
+   "spearman_old_band_median": 0.9056605714197183,
+   "spearman_old_band_min": 0.6352342072481955,
+   "spearman_young_band_median": null,
+   "old_minus_young_median": null,
+   "warm_up_hypothesis": "REFUTED -- the long-history band reproduces the all-securities value on every day, so the divergence is not concentrated in young securities",
+   "pairs_in_the_young_band_total": 0,
+   "pairs_in_the_mid_band_total": 102,
+   "old_band_tracks_the_all_securities_value": true
+  },
+  "yeslab_471": {
+   "days": 9,
+   "spearman_all_range": [
+    0.4792194323973327,
+    0.882857348978941
+   ],
+   "spearman_old_band_median": 0.8610138020523291,
+   "spearman_old_band_min": 0.476315813661938,
+   "spearman_young_band_median": null,
+   "old_minus_young_median": null,
+   "warm_up_hypothesis": "REFUTED -- the long-history band reproduces the all-securities value on every day, so the divergence is not concentrated in young securities",
+   "pairs_in_the_young_band_total": 0,
+   "pairs_in_the_mid_band_total": 89,
+   "old_band_tracks_the_all_securities_value": true
+  },
+  "yeslab_484": {
+   "days": 9,
+   "spearman_all_range": [
+    0.9944364793985475,
+    0.9998967271742917
+   ],
+   "spearman_old_band_median": 0.999011417302489,
+   "spearman_old_band_min": 0.9944341547983346,
+   "spearman_young_band_median": null,
+   "old_minus_young_median": null,
+   "warm_up_hypothesis": "NOT APPLICABLE -- this factor shows no ordering divergence to explain (tier A control)",
+   "pairs_in_the_young_band_total": 0,
+   "pairs_in_the_mid_band_total": 103,
+   "old_band_tracks_the_all_securities_value": true
+  }
+ },
+ "per_day_per_factor": [
+  {
+   "day": "2022-03-15",
+   "factor_id": "yeslab_464",
+   "pairs": 3190,
+   "spearman_all": 0.6356795169915979,
+   "std_ratio_all": 0.852237261940942,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 13,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3177,
+   "spearman_over_400_calendar_days": 0.6352342072481955,
+   "old_minus_young": null
+  },
+  {
+   "day": "2022-03-15",
+   "factor_id": "yeslab_471",
+   "pairs": 2952,
+   "spearman_all": 0.4792194323973327,
+   "std_ratio_all": 0.6996270594569559,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 10,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 2942,
+   "spearman_over_400_calendar_days": 0.476315813661938,
+   "old_minus_young": null
+  },
+  {
+   "day": "2022-03-15",
+   "factor_id": "yeslab_484",
+   "pairs": 3200,
+   "spearman_all": 0.9990158032486134,
+   "std_ratio_all": 1.0054220499335753,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 13,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3187,
+   "spearman_over_400_calendar_days": 0.999011417302489,
+   "old_minus_young": null
+  },
+  {
+   "day": "2022-07-29",
+   "factor_id": "yeslab_464",
+   "pairs": 3343,
+   "spearman_all": 0.9805263092241967,
+   "std_ratio_all": 1.0721243497936987,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 23,
+   "spearman_180_to_400_calendar_days": 0.9920948616600791,
+   "n_over_400_calendar_days": 3320,
+   "spearman_over_400_calendar_days": 0.9803994922641186,
+   "old_minus_young": null
+  },
+  {
+   "day": "2022-07-29",
+   "factor_id": "yeslab_471",
+   "pairs": 2979,
+   "spearman_all": 0.8706571255140187,
+   "std_ratio_all": 0.9875087149074142,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 16,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 2963,
+   "spearman_over_400_calendar_days": 0.869932115867879,
+   "old_minus_young": null
+  },
+  {
+   "day": "2022-07-29",
+   "factor_id": "yeslab_484",
+   "pairs": 3355,
+   "spearman_all": 0.9991990617619679,
+   "std_ratio_all": 1.0015319784410672,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 24,
+   "spearman_180_to_400_calendar_days": 0.9999999999999999,
+   "n_over_400_calendar_days": 3331,
+   "spearman_over_400_calendar_days": 0.9991937050851402,
+   "old_minus_young": null
+  },
+  {
+   "day": "2023-07-05",
+   "factor_id": "yeslab_464",
+   "pairs": 3612,
+   "spearman_all": 0.8093604436489256,
+   "std_ratio_all": 1.1440870264765663,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 13,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3599,
+   "spearman_over_400_calendar_days": 0.8093144674088795,
+   "old_minus_young": null
+  },
+  {
+   "day": "2023-07-05",
+   "factor_id": "yeslab_471",
+   "pairs": 3201,
+   "spearman_all": 0.8695668680598524,
+   "std_ratio_all": 0.9829487461036823,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 10,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3191,
+   "spearman_over_400_calendar_days": 0.869777863586022,
+   "old_minus_young": null
+  },
+  {
+   "day": "2023-07-05",
+   "factor_id": "yeslab_484",
+   "pairs": 3627,
+   "spearman_all": 0.9986712921566774,
+   "std_ratio_all": 1.0009500226911234,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 13,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3614,
+   "spearman_over_400_calendar_days": 0.9986841776536254,
+   "old_minus_young": null
+  },
+  {
+   "day": "2023-10-09",
+   "factor_id": "yeslab_464",
+   "pairs": 3707,
+   "spearman_all": 0.9835285492426972,
+   "std_ratio_all": 0.9395335577461151,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 10,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3697,
+   "spearman_over_400_calendar_days": 0.9836759386093417,
+   "old_minus_young": null
+  },
+  {
+   "day": "2023-10-09",
+   "factor_id": "yeslab_471",
+   "pairs": 3646,
+   "spearman_all": 0.8155780567007366,
+   "std_ratio_all": 0.9730145161591042,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 10,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3636,
+   "spearman_over_400_calendar_days": 0.815182068103013,
+   "old_minus_young": null
+  },
+  {
+   "day": "2023-10-09",
+   "factor_id": "yeslab_484",
+   "pairs": 3712,
+   "spearman_all": 0.9975119391133321,
+   "std_ratio_all": 1.003255269536086,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 10,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3702,
+   "spearman_over_400_calendar_days": 0.9975043965501234,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-01-15",
+   "factor_id": "yeslab_464",
+   "pairs": 3784,
+   "spearman_all": 0.9880048418156263,
+   "std_ratio_all": 1.2348245855502618,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 17,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3767,
+   "spearman_over_400_calendar_days": 0.9879748541034028,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-01-15",
+   "factor_id": "yeslab_471",
+   "pairs": 3719,
+   "spearman_all": 0.8504282236192079,
+   "std_ratio_all": 0.9849445865019306,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 17,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3702,
+   "spearman_over_400_calendar_days": 0.849238947224338,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-01-15",
+   "factor_id": "yeslab_484",
+   "pairs": 3791,
+   "spearman_all": 0.9973209727834473,
+   "std_ratio_all": 1.0037198173843183,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 17,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3774,
+   "spearman_over_400_calendar_days": 0.997308605333537,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-06-17",
+   "factor_id": "yeslab_464",
+   "pairs": 3810,
+   "spearman_all": 0.8230783917151321,
+   "std_ratio_all": 1.000956204243817,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 16,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3794,
+   "spearman_over_400_calendar_days": 0.822598226881426,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-06-17",
+   "factor_id": "yeslab_471",
+   "pairs": 3779,
+   "spearman_all": 0.8574292888453044,
+   "std_ratio_all": 0.9954759750416439,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 16,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3763,
+   "spearman_over_400_calendar_days": 0.8566827083605215,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-06-17",
+   "factor_id": "yeslab_484",
+   "pairs": 3825,
+   "spearman_all": 0.9998967271742917,
+   "std_ratio_all": 1.0001404470240751,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 16,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3809,
+   "spearman_over_400_calendar_days": 0.9998963820152643,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-11-18",
+   "factor_id": "yeslab_464",
+   "pairs": 3887,
+   "spearman_all": 0.7007416650841923,
+   "std_ratio_all": 1.1702385736668408,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 5,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3882,
+   "spearman_over_400_calendar_days": 0.7000771267462176,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-11-18",
+   "factor_id": "yeslab_471",
+   "pairs": 3855,
+   "spearman_all": 0.8812582206525726,
+   "std_ratio_all": 0.9957978726792447,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 5,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3850,
+   "spearman_over_400_calendar_days": 0.8810299443144795,
+   "old_minus_young": null
+  },
+  {
+   "day": "2024-11-18",
+   "factor_id": "yeslab_484",
+   "pairs": 3909,
+   "spearman_all": 0.9995934739966242,
+   "std_ratio_all": 1.0046146598198733,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 5,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3904,
+   "spearman_over_400_calendar_days": 0.9995938850379829,
+   "old_minus_young": null
+  },
+  {
+   "day": "2025-03-17",
+   "factor_id": "yeslab_464",
+   "pairs": 3909,
+   "spearman_all": 0.9474146354387785,
+   "std_ratio_all": 1.0464392703263234,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 2,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3907,
+   "spearman_over_400_calendar_days": 0.9474493257618865,
+   "old_minus_young": null
+  },
+  {
+   "day": "2025-03-17",
+   "factor_id": "yeslab_471",
+   "pairs": 3885,
+   "spearman_all": 0.882857348978941,
+   "std_ratio_all": 0.9992009015825426,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 2,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3883,
+   "spearman_over_400_calendar_days": 0.8828974898521057,
+   "old_minus_young": null
+  },
+  {
+   "day": "2025-03-17",
+   "factor_id": "yeslab_484",
+   "pairs": 3923,
+   "spearman_all": 0.9993402022996645,
+   "std_ratio_all": 1.0034977886238217,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 2,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3921,
+   "spearman_over_400_calendar_days": 0.9993396274986489,
+   "old_minus_young": null
+  },
+  {
+   "day": "2025-08-08",
+   "factor_id": "yeslab_464",
+   "pairs": 3821,
+   "spearman_all": 0.9057058352349872,
+   "std_ratio_all": 1.1677664865185773,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 3,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3818,
+   "spearman_over_400_calendar_days": 0.9056605714197183,
+   "old_minus_young": null
+  },
+  {
+   "day": "2025-08-08",
+   "factor_id": "yeslab_471",
+   "pairs": 3800,
+   "spearman_all": 0.8609010294398586,
+   "std_ratio_all": 0.99704186590717,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 3,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3797,
+   "spearman_over_400_calendar_days": 0.8610138020523291,
+   "old_minus_young": null
+  },
+  {
+   "day": "2025-08-08",
+   "factor_id": "yeslab_484",
+   "pairs": 3836,
+   "spearman_all": 0.9944364793985475,
+   "std_ratio_all": 1.0117262034212884,
+   "n_under_180_calendar_days_listed": 0,
+   "spearman_under_180_calendar_days_listed": null,
+   "n_180_to_400_calendar_days": 3,
+   "spearman_180_to_400_calendar_days": null,
+   "n_over_400_calendar_days": 3833,
+   "spearman_over_400_calendar_days": 0.9944341547983346,
+   "old_minus_young": null
+  }
+ ],
+ "note": "yeslab_484 is included as an in-family control: same table, same owner neighbourhood, and tier A in the census, so a day effect that hits 464 and 471 but not 484 is not a property of the table or the day alone",
+ "database_writes": false,
+ "weights_written": false
+}
