@@ -293,3 +293,36 @@ M2 出报告后请重跑一次提取器，并把叙述文档升到 v0.2、用最
 "每天约 136 个证券"是标签层面计数，**没有**换算成 `357`/`471` 会有多少个值改变（那需要重放）；
 "每天约 19 个"是均值，没有逐日分布、也没查那 63,808 个证券日是否集中在少数证券上；
 `member_all` 歧义为 0 只在 **170 个采样日**上验证，不是全窗口逐日。
+
+### 【07:00 重大更正】上面第 5–10 条里关于 `yeslab_206` 的保真度结论**全部撤回**：我比错了对象
+
+`materialize_frozen_factor_daily.py` 的 `replay_factor_values` 把 **`MEDIAN_206 = "yeslab_206"` 特殊分支**
+改道到 `materialize_alpha206_median_repair`（= `compute_variants(market)["median_abs"]`，**已批准的中位数偏离修复**），
+**不走** `REPLAY_DEFINITIONS["yeslab_206"]`（`Bias_Vol_Demean_60_Calculator`），也不是上游
+`60日成交量去均值相对偏离` 那条序列；模块 docstring 自己写明
+"*the 206 median-repair and 443 reg30_max20 repair variant use their approved formulas*"。
+`yeslab_443_reg30_max20_v1` 同理（`compute_gp074_variant(wide, 30, 20)`，即 `GP_074` 的窗口变体，
+**按构造**就不该在 catalog 里）。所以"重放标准差是上游 1.78–2.37 倍、秩相关 0.75"
+**是修复版 vs 规范版的差异、属设计结果，不是保真度缺陷**，
+"向 owner 确认去均值基准/分母"那个移交项**问错了**、一并撤回。
+
+机读普查 `replay_fidelity_vs_upstream/measurements/dense_nine_production_paths.json`
+（`probes/probe_dense_nine_production_paths.py`，特殊分支/`PIT_FACTORS`/`REPLAY_DEFINITIONS`(99 条)/catalog
+全部从源码解析）：**九因子里只有 7 个的保真度比较有意义**。
+**D 档从三个缩到两个：`yeslab_464` 与 `yeslab_471`**，A/B/C 档（`96`/`484`/`425`/`381`/`357`）不变，
+`factors_reproducing_upstream_exactly = []` 仍成立但适用范围收窄到这 7 个。
+**对选项的影响**：选项 4 的排序**不变、理由更硬**（它注入的 `471` 不是修复变体，比较有效）；
+选项 1 **不受影响**（只改输入）。
+
+**`yeslab_464` 成为最尖锐的未解释项**：普通 `REPLAY_DEFINITIONS`、**不吃行业提供方**、**不是修复变体**
+（上游 `factor_data10` 的 `GP_095`、`GP_Factor_095_Calculator`，lookback 60、**replay_lookback 180**），
+却实测 std 比 0.852–1.144、OLS 斜率 0.600–1.060（**尺度几乎对**）而 Spearman 从 **0.636** 摆到 0.984（**排序不对**）。
+`471` 的 D 档有说得通的机制（行业划分不同，能同时解释缩小与逐日摆动），**`464` 没有**；
+唯一线索是它的 `replay_lookback_days` 是 `lookback_days` 的 3 倍——**待查项，不是结论**。
+
+**方法论教训（建议进论文方法段）**：那套"三候选"归因法的三个候选**全在数据层面**
+（去重口径、名称映射、真实差异），**没有一个在代码路径层面**。正确的**第 0 个**候选是
+**"先读产出这一列的代码路径，确认它到底是不是你以为的那个因子"**。
+跳过它的代价是为一处**设计上就该存在的差异**写了三节分析、一个错误的移交项和两处更正。
+**"同名"不等于"同物"**，与"保守假设要标注成假设，否则它会变成结论"是同一类教训：
+**未经验证的前提会被后续分析放大成结论。**

@@ -1,5 +1,16 @@
 # 重放保真度普查：冻结链消费的因子值与上游权威存量值**并不相等**，而差异是因子特异的（2026-09-15 05:25）
 
+> **【重大更正，同日 07:00】本文对 `yeslab_206` 的全部结论撤回，见 §12。**
+> 原因：`materialize_frozen_factor_daily.py` 把 `MEDIAN_206 = "yeslab_206"` **特殊分支**改道到
+> `materialize_alpha206_median_repair`（即 `compute_variants(market)["median_abs"]`，**已批准的中位数偏离修复**），
+> **不走** `REPLAY_DEFINITIONS["yeslab_206"]`（`Bias_Vol_Demean_60_Calculator`）、也不是上游
+> `60日成交量去均值相对偏离` 那条序列。所以我拿它跟上游规范值比"保真度"**比错了对象**：
+> 那是**修复版 vs 规范版**，差异是**设计结果**，不是缺陷。`yeslab_443_reg30_max20_v1` 同理
+> （`compute_gp074_variant(wide, 30, 20)` vs 规范 `GP_Factor_074_Calculator` 的 reg30_max5）。
+> **九因子里只有 7 个的保真度比较是有意义的**；D 档从 `{206, 464, 471}` 缩到 **`{464, 471}`**，
+> 而 **`yeslab_464` 成为最尖锐的未解释项**（不吃行业提供方、不是修复变体，Spearman 却低至 0.636）。
+> §4 的表、§5 第 4 条、§6 第 2 条、§9 全节、§11 的 `206` 那一列**都按 §12 更正**。
+
 ## 0. 为什么会去量这件事
 
 决策单 v0.1/v0.2 的**选项 3**（治理例外：在 2023-09-25 之前直接用 YesLab 权威存量值填 `357`/`471`）
@@ -438,3 +449,138 @@ oos_years_with_no_referent                       = []
   而它同样吃行业提供方，本可以用作 `471` 的第三个对照。
 * 三个因子都只在 **6 个日子**上测（全在 2022 之后）；§10 说明 2014–2019 无从测起，
   但 **2020–2021 是可测的、本轮没测**。
+
+---
+
+## 12. 【更正 §4/§5/§6/§9/§11】九因子的**产出路径普查**：其中 2 个是既定修复变体，保真度比较对它们无意义
+
+### 12.1 触发点
+
+§9 为 `yeslab_206` 排除了两个候选（我的去重口径、catalog 映射错名），坐实"真实的计算差异且不是纯缩放"，
+并把"约 2 倍尺度差"列为待向 owner 确认的事项。但**三候选法漏了第四个候选**：
+
+> **④ 重放出来的那一列本来就不是上游那个因子——它是已批准的修复变体，用的是另一个公式。**
+
+读 `research_v2/scripts/materialize_frozen_factor_daily.py` 就知道这个候选才是对的：
+
+```
+REPAIR_VARIANT_443 = "yeslab_443_reg30_max20_v1"
+MEDIAN_206         = "yeslab_206"
+PIT_FACTORS        = {"yeslab_357", "yeslab_363", "yeslab_471"}
+
+def replay_factor_values(fid, session, market, provider, start, end):
+    if fid == MEDIAN_206:
+        return materialize_alpha206_median_repair(market, start, end)      # ← 不走 REPLAY_DEFINITIONS
+    if fid == REPAIR_VARIANT_443:
+        factor_wide = compute_gp074_variant(wide, 30, 20)                  # ← 不走 REPLAY_DEFINITIONS
+        ...
+    definition = replay.REPLAY_DEFINITIONS[fid]
+    prov = provider if fid in PIT_FACTORS else None
+    return replay._replay_factor(session, definition, start, end, industry_provider=prov)
+```
+
+模块 docstring 自己就写明了：*"isolated canonical versions; **the 206 median-repair and 443
+reg30_max20 repair variant use their approved formulas**"*。
+
+`materialize_alpha206_median_repair`（`audit_canonical_candidate_pairs.py:337-354`）的正文是
+`panel = compute_variants(market)["median_abs"]`——**中位数绝对偏离**修复，
+而 `REPLAY_DEFINITIONS["yeslab_206"]` 指的是 `Bias_Vol_Demean_60_Calculator`（lookback 60）、
+上游序列 `60日成交量去均值相对偏离`。**两个不同的公式。**
+所以 §9 量到的"重放标准差是上游的 1.78–2.37 倍、秩相关 0.75"**正是修复应有的效果**，不是缺陷。
+
+### 12.2 普查结果（`probes/probe_dense_nine_production_paths.py`，机读件 `measurements/dense_nine_production_paths.json`）
+
+特殊分支、`PIT_FACTORS`、`REPLAY_DEFINITIONS`（99 条）与 catalog 全部**从源码/配置解析**，不手抄：
+
+| 因子 | 产出路径 | 实际产出者 | 在 catalog? | **保真度比较有意义?** |
+|---|---|---|---|---|
+| `yeslab_206` | **REPAIR 特殊分支** | `materialize_alpha206_median_repair` → `compute_variants(market)["median_abs"]` | 是 | **否** |
+| `yeslab_357` | REPLAY_DEFINITIONS **+ 行业提供方** | `IndustryStandAbsCalculator`（lookback 1） | 是 | **是** |
+| `yeslab_381` | REPLAY_DEFINITIONS | `GP_Factor_012_Calculator`（lookback 5） | 是 | **是** |
+| `yeslab_425` | REPLAY_DEFINITIONS | `GP_Factor_056_Calculator`（lookback 30） | 是 | **是** |
+| `yeslab_443_reg30_max20_v1` | **REPAIR 特殊分支** | `compute_gp074_variant(wide, 30, 20)` | **否** | **否** |
+| `yeslab_464` | REPLAY_DEFINITIONS | `GP_Factor_095_Calculator`（lookback 60，**replay_lookback 180**） | 是 | **是** |
+| `yeslab_471` | REPLAY_DEFINITIONS **+ 行业提供方** | `AttentionSpilloverCalculator`（lookback 21） | 是 | **是** |
+| `yeslab_484` | REPLAY_DEFINITIONS | `HerdingCSADStd21Calculator`（lookback 120） | 是 | **是** |
+| `yeslab_96` | REPLAY_DEFINITIONS | `ModifiedDayReversalCalculator`（lookback 20） | 是 | **是** |
+
+```
+fidelity_comparison_meaningful_for                     = 7 个
+approved_repair_variants_excluded_from_the_census      = [yeslab_206, yeslab_443_reg30_max20_v1]
+```
+
+> 顺带解开了 `443_reg30_max20_v1` "不在 catalog 里"这个谜：它**按构造**就不该在——
+> 它不是任何一个上游序列，而是 `GP_074` 的**窗口变体**（规范版 reg30_max5，修复版 reg30_max20），
+> 由 `repair_alpha443_window_scan.py:compute_gp074_variant` 直接从行情算出。
+> 所以 §7 里"九因子中有一个根本没有上游对应物"这句是对的，但**原因是设计，不是缺口**。
+
+### 12.3 更正后的档位（**只有 7 个因子**）
+
+| 档 | 因子 | 依据 |
+|---|---|---|
+| **A 浮点相同** | `yeslab_96`、`yeslab_484` | 相对差中位 6.7e-16 / 3.7e-07 |
+| **A/C** | `yeslab_425` | 相对差中位 5.4e-03，Spearman ≥0.969 |
+| **B 秩全同、值不同** | `yeslab_381` | Spearman 恒 1.000，绝对值差到 1.4e7 量级、相对差 2.6e-02 |
+| **C 接近** | `yeslab_357` | 相对差中位 6.3e-02，Spearman 0.948–0.996（**吃行业提供方**） |
+| **D 实质不同** | **`yeslab_464`**、**`yeslab_471`** | Spearman 最低 **0.636** / **0.479** |
+| ~~D~~ → **不适用** | ~~`yeslab_206`~~ | **修复变体，比较无意义**（§12.1） |
+
+**`factors_reproducing_upstream_exactly = []` 这个结论仍然成立**，但适用范围收窄到那 7 个：
+其中 A 档两个是浮点级相同（精确率不为 100% 只是逐位表示差异，相对差 1e-15/1e-16 量级）。
+
+### 12.4 `yeslab_464` 现在是**最尖锐的未解释项**
+
+`471` 的 D 档有一个**说得通的机制**：它是 `PIT_FACTORS` 成员、吃行业提供方，
+而 §1–§15 已证明我们手上的行业标签与数据商另一支 API 有 3.555% 的真分歧、
+且对科创板整段截断——**行业划分不同会同时解释它的缩小（std 比 0.70–1.00）与逐日摆动（Spearman 0.479–0.883）**。
+
+`464` **没有这种解释**：它走普通 `REPLAY_DEFINITIONS`、**不吃行业提供方**、**不是修复变体**，
+上游是 `factor_data10` 的 `GP_095`、计算器 `GP_Factor_095_Calculator`（lookback 60、replay_lookback 180）。
+而实测（§11）：**std 比 0.852–1.144（尺度几乎对）、OLS 斜率 0.600–1.060（也几乎对）、
+但 Spearman 从 0.636 摆到 0.984**——**尺度对、排序不对**，且逐日极不稳定。
+**本文没有候选机制。** 唯一可见的线索是它的 `replay_lookback_days = 180`（`lookback_days` 的 3 倍），
+即重放需要比计算器自身回看期长 3 倍的热身数据；**若热身不足或口径不同，就会是这种"尺度对、排序不对"的形状**。
+**这是待查项，不是结论。**
+
+### 12.5 撤回与保留清单
+
+**撤回**：
+
+* §4 表里 `yeslab_206` 的"D 档、最严重"定性；
+* §5 第 4 条"与 §O-续 可能同源"的猜想（§10 已因上游 2020 年才开始而撤回一次，**这里是第二次、且更彻底**：
+  它连"保真度差"这个前提都不成立）；
+* §6 第 2 条"向 owner `suyanning` 确认去均值基准/分母"这个移交项——**问错了**，
+  206 走的是中位数偏离修复，本来就不用去均值基准；
+* §9 全节的**解释**（测量数字仍然有效，但结论从"真实的计算差异、不是纯缩放"改为
+  "**已批准修复变体与其规范源之间的差异，属设计**"）；
+* §11 表里 `yeslab_206` 那一列的定性。
+
+**保留（且现在更硬）**：
+
+* `yeslab_471` 与 `yeslab_464` 的 D 档——这两个**是**有效的保真度测量；
+* §1–§3 关于选项 4 的全部结论：它注入的正是 `471`，而 `471` 走 `REPLAY_DEFINITIONS`，
+  **保真度比较对它是有意义的**，实测精确率恒 0、Spearman 0.479–0.883；
+* §10 上游存量 2020 年起的全部结论（与产出路径无关）；
+* "论文里凡按因子名叙述都要写明用的是重放版"——**对 206 与 443 变体还要再加一句**：
+  它们是**修复变体**，与上游同名因子**不是同一个公式**。
+
+### 12.6 方法论教训（值得写进论文的方法段）
+
+§9 的三候选法按"最能推翻自己"的顺序排，但**三个候选全都在数据层面**，
+没有一个在**代码路径层面**。正确的第 0 个候选应该是：
+
+> **⓪ 先读产出这一列的代码路径，确认它到底是不是你以为的那个因子。**
+
+跳过 ⓪ 的代价是：我为一处**设计上就该存在的差异**写了三节分析、一个移交项和两处"更正"，
+然后在第四节才发现比错了对象。**"保守假设要标注成假设"这条教训（§9 末尾）在这里同样适用：
+"同名"不等于"同物"，也要标注成待验证。**
+
+### 12.7 §12 没有做的事
+
+* 没有读 `compute_variants` 的实现，所以**没有**独立验证 `median_abs` 修复的公式本身；
+  只确认了"206 走的是它、不是 `Bias_Vol_Demean_60_Calculator`"。
+* 没有为 `yeslab_464` 找到机制。`replay_lookback_days = 180` 只是**线索**。
+* 没有测 `yeslab_363`（`PIT_FACTORS` 第三个成员，不在稠密九里）。
+* 没有检查**稀疏六因子**（`372/375/384/389/390/406`）里是否还有别的修复变体走特殊分支——
+  `materialize_frozen_factor_daily.py` 里只解析出 `MEDIAN_206` 与 `REPAIR_VARIANT_443` 两个常量，
+  所以**就这份源码而言没有**；但若别的物化脚本另有分支，本普查不会发现。

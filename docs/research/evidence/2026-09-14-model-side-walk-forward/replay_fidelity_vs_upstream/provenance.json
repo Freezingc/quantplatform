@@ -18,7 +18,7 @@
     "path": "research_v2/configs/factors/source_catalog.yaml",
     "sha256": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad"
   },
-  "generated_at_utc": "2026-09-14T22:15:50+00:00",
+  "generated_at_utc": "2026-09-14T22:47:04+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "d4baec523afea29135dea960e56b9825ebd40a1f9d037fce272dc9c157a3c0f9"
@@ -31,6 +31,10 @@
     "cause_yeslab_471.json": {
       "bytes": 13444,
       "sha256": "9fa74bc4e55ae1c57f2c9836d95cdf08c8a4981bd858b958d65f948a62d6827e"
+    },
+    "dense_nine_production_paths.json": {
+      "bytes": 13754,
+      "sha256": "a9d090a8fee75d84337910c20931189a3f4a4ed7ec94b54f0d0969ce53741ef5"
     },
     "option3_upstream_ceiling.json": {
       "bytes": 19175,
@@ -63,14 +67,18 @@
   },
   "narratives": {
     "finding.md": {
-      "bytes": 32009,
-      "sha256": "222a6a44c41fd2f5116c3967f26e68f3846a2ed40dcd64f196a3fc271a9dd26c"
+      "bytes": 42053,
+      "sha256": "bc667e1e75e1564fd2090500e700ab7acbaada539b75baaf8a9a92d8910063da"
     }
   },
   "probe_scripts": {
     "probe_206_scale_cause.py": {
       "bytes": 10138,
       "sha256": "ea7144f96f96d8a42754a62f3ce97e99de670065a34b7a319f4095dd1622fca8"
+    },
+    "probe_dense_nine_production_paths.py": {
+      "bytes": 8230,
+      "sha256": "918ad9bddb6713748765fc35d2e0a7d0cbfbac43227179dd21447e849025b07c"
     },
     "probe_fidelity_cause.py": {
       "bytes": 11750,
@@ -103,6 +111,6 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "f043cfb36ecf68c77a7da6edab5b9890c4410380"
+    "commit_at_generation": "29b2bfa7f586e8ab58f2abbc26b12d95dadaf678"
   }
 }

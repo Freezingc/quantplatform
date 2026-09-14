@@ -1,0 +1,364 @@
+{
+ "question": "Which code path produces each dense factor in factor_daily, and for which of them is a replayed-versus-upstream fidelity comparison meaningful at all?",
+ "source_of_truth": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/scripts/materialize_frozen_factor_daily.py",
+ "special_cases_parsed_from_source": {
+  "constants": {
+   "REPAIR_VARIANT_443": "yeslab_443_reg30_max20_v1",
+   "MEDIAN_206": "yeslab_206"
+  },
+  "PIT_FACTORS": [
+   "yeslab_357",
+   "yeslab_363",
+   "yeslab_471"
+  ],
+  "routes": [
+   {
+    "constant": "MEDIAN_206",
+    "call": "materialize_alpha206_median_repair(market, start, end)"
+   }
+  ],
+  "repair_variant_call": "compute_gp074_variant(wide, 30, 20)",
+  "fallback": "replay._replay_factor(session, replay.REPLAY_DEFINITIONS[fid], ..., industry_provider=prov if fid in PIT_FACTORS else None)"
+ },
+ "REPLAY_DEFINITIONS_entry_count": 99,
+ "dense_nine": {
+  "yeslab_206": {
+   "production_path": "REPAIR special-case",
+   "producer": "materialize_alpha206_median_repair -> compute_variants(market)['median_abs']",
+   "constant_in_materialize": "yeslab_206",
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "60日成交量去均值相对偏离",
+   "replay_definition_store_factor": "factor_data5",
+   "replay_definition_calculator": "Bias_Vol_Demean_60_Calculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data5",
+   "catalog_source_factor_name": "60日成交量去均值相对偏离",
+   "takes_industry_provider": false,
+   "fidelity_comparison_is_meaningful": false,
+   "why": "the replayed column is an APPROVED REPAIR VARIANT of a different formula, so replayed-versus-stored compares repair against canonical and a large gap is the designed outcome, not a fidelity defect",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.6596470632654216,
+     "spearman_median": 0.7531703119064337,
+     "median_relative_difference_median": 0.4938883264953857,
+     "classification_by_day": [
+      "DIVERGENT"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.7644281975597046,
+     "spearman_median": 0.7650940351670967,
+     "median_relative_difference_median": 0.47252886624429674,
+     "classification_by_day": [
+      "DIVERGENT"
+     ]
+    }
+   ]
+  },
+  "yeslab_357": {
+   "production_path": "REPLAY_DEFINITIONS + industry provider",
+   "producer": "IndustryStandAbsCalculator (lookback 1)",
+   "constant_in_materialize": null,
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "行业内收益标准化绝对值",
+   "replay_definition_store_factor": "factor_data8",
+   "replay_definition_calculator": "IndustryStandAbsCalculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data8",
+   "catalog_source_factor_name": "行业内收益标准化绝对值",
+   "takes_industry_provider": true,
+   "fidelity_comparison_is_meaningful": true,
+   "why": "the replayed column IS the catalogued factor, so replayed-versus-stored is a fidelity test",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.02483660130718954,
+     "spearman_min": 0.9484136592296576,
+     "spearman_median": 0.9801589712315087,
+     "median_relative_difference_median": 0.06325288364415067,
+     "classification_by_day": [
+      "CLOSE_RANK_MATERIAL_DIFFERENCE",
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.9290823555410637,
+     "spearman_median": 0.9327304696259998,
+     "median_relative_difference_median": 0.12130300762473044,
+     "classification_by_day": [
+      "CLOSE_RANK_MATERIAL_DIFFERENCE"
+     ]
+    }
+   ]
+  },
+  "yeslab_381": {
+   "production_path": "REPLAY_DEFINITIONS",
+   "producer": "GP_Factor_012_Calculator (lookback 5)",
+   "constant_in_materialize": null,
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "GP_012",
+   "replay_definition_store_factor": "factor_data8",
+   "replay_definition_calculator": "GP_Factor_012_Calculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data8",
+   "catalog_source_factor_name": "GP_012",
+   "takes_industry_provider": false,
+   "fidelity_comparison_is_meaningful": true,
+   "why": "the replayed column IS the catalogued factor, so replayed-versus-stored is a fidelity test",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.9929588651739975,
+     "spearman_median": 0.9996013062651944,
+     "median_relative_difference_median": 0.026436882413926985,
+     "classification_by_day": [
+      "SAME_RANK_DIFFERENT_SCALE",
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.998400222615301,
+     "spearman_median": 0.99907946650756,
+     "median_relative_difference_median": 0.11439717561550387,
+     "classification_by_day": [
+      "SAME_RANK_DIFFERENT_SCALE",
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    }
+   ]
+  },
+  "yeslab_425": {
+   "production_path": "REPLAY_DEFINITIONS",
+   "producer": "GP_Factor_056_Calculator (lookback 30)",
+   "constant_in_materialize": null,
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "GP_056",
+   "replay_definition_store_factor": "factor_data9",
+   "replay_definition_calculator": "GP_Factor_056_Calculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data9",
+   "catalog_source_factor_name": "GP_056",
+   "takes_industry_provider": false,
+   "fidelity_comparison_is_meaningful": true,
+   "why": "the replayed column IS the catalogued factor, so replayed-versus-stored is a fidelity test",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.41363040629095676,
+     "spearman_min": 0.9693874007769262,
+     "spearman_median": 0.9975797574096025,
+     "median_relative_difference_median": 0.005384929752587745,
+     "classification_by_day": [
+      "CLOSE_RANK_MATERIAL_DIFFERENCE",
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.3177257525083612,
+     "spearman_min": 0.9971749707227658,
+     "spearman_median": 0.9975415540838842,
+     "median_relative_difference_median": 0.0007533403405163034,
+     "classification_by_day": [
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    }
+   ]
+  },
+  "yeslab_443_reg30_max20_v1": {
+   "production_path": "REPAIR special-case",
+   "producer": "compute_gp074_variant(wide, 30, 20)",
+   "constant_in_materialize": "yeslab_443_reg30_max20_v1",
+   "in_REPLAY_DEFINITIONS": false,
+   "replay_definition_factor_name": null,
+   "replay_definition_store_factor": null,
+   "replay_definition_calculator": null,
+   "in_source_catalog": false,
+   "catalog_source_table": null,
+   "catalog_source_factor_name": null,
+   "takes_industry_provider": false,
+   "fidelity_comparison_is_meaningful": false,
+   "why": "the replayed column is an APPROVED REPAIR VARIANT of a different formula, so replayed-versus-stored compares repair against canonical and a large gap is the designed outcome, not a fidelity defect",
+   "census_tiers": []
+  },
+  "yeslab_464": {
+   "production_path": "REPLAY_DEFINITIONS",
+   "producer": "GP_Factor_095_Calculator (lookback 60, replay_lookback 180)",
+   "constant_in_materialize": null,
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "GP_095",
+   "replay_definition_store_factor": "factor_data10",
+   "replay_definition_calculator": "GP_Factor_095_Calculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data10",
+   "catalog_source_factor_name": "GP_095",
+   "takes_industry_provider": false,
+   "fidelity_comparison_is_meaningful": true,
+   "why": "the replayed column IS the catalogued factor, so replayed-versus-stored is a fidelity test",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.6356826547063269,
+     "spearman_median": 0.9057058352349872,
+     "median_relative_difference_median": 0.21358648041099726,
+     "classification_by_day": [
+      "CLOSE_RANK_MATERIAL_DIFFERENCE",
+      "DIVERGENT"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.5464044784737451,
+     "spearman_median": 0.6978050191471371,
+     "median_relative_difference_median": 0.3358753491422455,
+     "classification_by_day": [
+      "CLOSE_RANK_MATERIAL_DIFFERENCE",
+      "DIVERGENT"
+     ]
+    }
+   ]
+  },
+  "yeslab_471": {
+   "production_path": "REPLAY_DEFINITIONS + industry provider",
+   "producer": "AttentionSpilloverCalculator (lookback 21)",
+   "constant_in_materialize": null,
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "AttentionSpillover",
+   "replay_definition_store_factor": "factor_data10",
+   "replay_definition_calculator": "AttentionSpilloverCalculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data10",
+   "catalog_source_factor_name": "AttentionSpillover",
+   "takes_industry_provider": true,
+   "fidelity_comparison_is_meaningful": true,
+   "why": "the replayed column IS the catalogued factor, so replayed-versus-stored is a fidelity test",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.4792194323973327,
+     "spearman_median": 0.8609010294398586,
+     "median_relative_difference_median": 0.33175116608450755,
+     "classification_by_day": [
+      "DIVERGENT"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.0,
+     "spearman_min": 0.8002203895711648,
+     "spearman_median": 0.8572271875698686,
+     "median_relative_difference_median": 0.3846257910931896,
+     "classification_by_day": [
+      "DIVERGENT"
+     ]
+    }
+   ]
+  },
+  "yeslab_484": {
+   "production_path": "REPLAY_DEFINITIONS",
+   "producer": "HerdingCSADStd21Calculator (lookback 120)",
+   "constant_in_materialize": null,
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "羊群效应_CSAD波动率21",
+   "replay_definition_store_factor": "factor_data10",
+   "replay_definition_calculator": "HerdingCSADStd21Calculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data10",
+   "catalog_source_factor_name": "羊群效应_CSAD波动率21",
+   "takes_industry_provider": false,
+   "fidelity_comparison_is_meaningful": true,
+   "why": "the replayed column IS the catalogued factor, so replayed-versus-stored is a fidelity test",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.03498906591690097,
+     "spearman_min": 0.9944364793985475,
+     "spearman_median": 0.9990166755987209,
+     "median_relative_difference_median": 3.7327201964378546e-07,
+     "classification_by_day": [
+      "SAME_RANK_DIFFERENT_VALUES",
+      "SAME_SIGNAL_FLOAT_NOISE"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.032538659793814435,
+     "spearman_min": 0.9740960263838276,
+     "spearman_median": 0.9800164868986907,
+     "median_relative_difference_median": 2.3256684127081813e-15,
+     "classification_by_day": [
+      "CLOSE_RANK_MATERIAL_DIFFERENCE",
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    }
+   ]
+  },
+  "yeslab_96": {
+   "production_path": "REPLAY_DEFINITIONS",
+   "producer": "ModifiedDayReversalCalculator (lookback 20)",
+   "constant_in_materialize": null,
+   "in_REPLAY_DEFINITIONS": true,
+   "replay_definition_factor_name": "修正日间反转",
+   "replay_definition_store_factor": "factor_data3",
+   "replay_definition_calculator": "ModifiedDayReversalCalculator",
+   "in_source_catalog": true,
+   "catalog_source_table": "factor_data3",
+   "catalog_source_factor_name": "修正日间反转",
+   "takes_industry_provider": false,
+   "fidelity_comparison_is_meaningful": true,
+   "why": "the replayed column IS the catalogued factor, so replayed-versus-stored is a fidelity test",
+   "census_tiers": [
+    {
+     "file": "replay_fidelity_census.json",
+     "exact_match_rate_max": 0.24843161856963614,
+     "spearman_min": 0.8874548924106629,
+     "spearman_median": 0.987680448139198,
+     "median_relative_difference_median": 6.72666754292785e-16,
+     "classification_by_day": [
+      "CLOSE_RANK_MATERIAL_DIFFERENCE",
+      "DIVERGENT",
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    },
+    {
+     "file": "replay_fidelity_census_training_years.json",
+     "exact_match_rate_max": 0.26646706586826346,
+     "spearman_min": 0.9933390180337418,
+     "spearman_median": 0.9936468308328154,
+     "median_relative_difference_median": 3.37855590614483e-16,
+     "classification_by_day": [
+      "SAME_RANK_DIFFERENT_VALUES"
+     ]
+    }
+   ]
+  }
+ },
+ "fidelity_comparison_meaningful_for": [
+  "yeslab_357",
+  "yeslab_381",
+  "yeslab_425",
+  "yeslab_464",
+  "yeslab_471",
+  "yeslab_484",
+  "yeslab_96"
+ ],
+ "approved_repair_variants_excluded_from_the_fidelity_census": [
+  "yeslab_206",
+  "yeslab_443_reg30_max20_v1"
+ ],
+ "verdict": "2 of the 9 dense factors (yeslab_206, yeslab_443_reg30_max20_v1) are approved repair variants routed around REPLAY_DEFINITIONS, so the census's divergence figures for them measure repair-versus-canonical and must not be read as fidelity defects. The remaining 7 are genuine fidelity measurements.",
+ "database_writes": false,
+ "weights_written": false
+}
