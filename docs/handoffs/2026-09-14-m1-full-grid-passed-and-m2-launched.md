@@ -765,6 +765,64 @@ M2 驱动 pid 3588838 存活 1d02h、**F1 18/24**、无 `*.ABORT` / `*.ALARM`；
 M2 本身未受影响：驱动 pid 3588838 存活 1d02h06m、F1 **18/24**、
 `run_real_candidate_training.py` 的 sha256 与 mtime 仍逐字符未变。
 **F1 落地时将第一次同时得到两件事**：逐折证据预检，与**时序家族在真实数据上的第一次复现审计**。
+
+---
+
+## 16. 【2026-09-14 21:40 增补】新的审计阶段已在**真实签名工件**上端到端验过：M1 四折全过
+
+§15 的测试用的是假审计 CLI，它证明的是"看守对各种结局的反应正确"，
+**没有**证明"看守与真审计接起来能跑通"（最可能出错的地方是 JSON 摘要的形状：
+`--fold` 模式的输出与整跑模式并不显然相同）。所以又做了一次真件端到端：
+
+```
+m2_fold_preflight_watcher.py --workspace …/m1_full_v1 --carrier M1 --prefix m1 --once \
+    --log /tmp/m1_preflight_e2e.log --alarm /tmp/m1_preflight_e2e.ALARM
+```
+
+**结果：四折全部 `PREFLIGHT COMPLETE`，末行 `4 fold(s) checked; alarm file absent - clean`，
+全程 21:05:54 → 21:35:59（30 分钟），未写任何 ALARM。**逐折审计明细：
+
+| 折 | 审计起止 | 耗时 | 复核行数 | max abs diff | 打分线程 |
+|---|---|---|---|---|---|
+| F1 | 21:09:45 → 21:13:09 | 3m24s | 803,572 | **0.0** | 1（requested 1） |
+| F2 | 21:16:27 → 21:20:10 | 3m43s | 881,863 | **0.0** | 1（requested 1） |
+| F3 | 21:23:46 → 21:27:45 | 3m59s | 931,411 | **0.0** | 1（requested 1） |
+| F4 | 21:31:33 → 21:35:59 | 4m26s | 936,317 | **0.0** | 1（requested 1） |
+
+行数与 §14 的整跑审计逐折相同，`--fold` 模式因此与整跑模式**互相印证**。
+顺带确认了 `--fold` 模式的摘要形状（`{"folds": [...], "reproduced", "scored_under_torch_threads",
+"threads_requested"}`，每个 fold 记录含 `identical` / `row_count` / `max_absolute_difference`）
+与看守解析器所设一致——**这正是最可能静默出错的地方**：
+若键名不符，`folds` 里的 `identical` 会取到 `None`，`not None` 为真，
+于是"全部通过"会被读成"全部不通过"并误告警。
+日志已归档为 `$A/m1_full_v1_preflight_e2e_with_audit.log`。
+
+### 16.1 两个为 M2 准备的量化事实
+
+* **单折审计耗时随行数增长**（3m24s → 4m26s，803k → 936k 行），静态家族约 **4 分钟/折**。
+  M2 是时序家族，TEST 面板要从三个已发布分片重建 20 日窗口，**预计更久**；
+  超时上限设的是 3600 s，余量足够。
+* **审计子进程峰值 RSS 实测 5.6 GiB**（静态家族，采样 240 s 取最大）。
+  它会与**下一折的 24 路搜索并行**运行，而驱动在折初的内存护栏要求
+  `24 × 17.1 + parent ≈ 425 GiB` 可用（F1 折初实测可用 496.5 GiB，余量约 70 GiB），
+  所以即使时序审计的峰值是静态的数倍，也**不会把下一折的护栏挤到拒绝**。
+  这一条是算出来的余量，不是实测的时序峰值——**M2 F1 落地时应顺手记一次实际峰值**。
+
+### 16.2 时序复现路径的既有覆盖
+
+`tests/unit/inference/test_reproduction.py` 在当前树上 **74 passed**（6.0 s），
+其中包含时序专项：`test_the_temporal_path_closes_on_a_real_bundle`（真 TemporalGRU bundle +
+真已发布折）、`test_the_temporal_row_set_is_the_labelled_subset`、
+以及 TEMPORAL_GRU / TEMPORAL_TCN 两家都必须路由到时序打分器的那条参数化测试
+（路由错到静态打分器不会大声失败，只会用错误的窗口给分）。
+所以**明天 M2 F1 的审计不是"第一次有任何覆盖"，而是第一次遇到真实数据**。
+
+### 16.3 状态（21:37 实测）
+
+M2 驱动 pid 3588838 存活 **1d02h42m**、F1 **18/24**、无 `*.ABORT` / `*.ALARM`；
+三个看守都在且 PPID=1（链式 320418、M2 逐折 529186、M3 逐折 529385）。
+主分支本节提交后为最新；`run_real_candidate_training.py` 的 sha256（`33742880f314ca21`）
+与 mtime（`2026-09-12 00:50:33.890987021`）自始至终未变。
 另外核过一件事：**报告与晋级证据里不含任何 git 提交号**
 （只有 `model_code_version` / `data_version` / `schema_version` 这类逻辑版本），
 所以主线前进不会让验收 A 的"逐字节相同"失效。
