@@ -823,6 +823,82 @@ M2 驱动 pid 3588838 存活 **1d02h42m**、F1 **18/24**、无 `*.ABORT` / `*.AL
 三个看守都在且 PPID=1（链式 320418、M2 逐折 529186、M3 逐折 529385）。
 主分支本节提交后为最新；`run_real_candidate_training.py` 的 sha256（`33742880f314ca21`）
 与 mtime（`2026-09-12 00:50:33.890987021`）自始至终未变。
+
+---
+
+## 17. 【2026-09-14 22:00 增补】计划 §5.3 的 M1 实例已产出，而它带出一条**服务侧的硬前置**
+
+### 17.1 Task 5.3 的 M1 实例（提交 `fffa973`）
+
+`docs/reports/2026-09-14-m1-full-grid-shadow-approval-preconditions.md`。
+**它不重复 M0R 前置清单里与模型无关的部分**（F6.1 五项框架、批准后生效的六条约束、
+"复杂候选"的解释分歧都在那份里），只写 M1 特有的：
+
+1. **M1 比 M0R 多一道前置：先注册。** F6.1 的 `WALK_FORWARD_PASSED → SHADOW`
+   以"已在册"为前提，而 **M1 不在册**（本轮由复现审计**机器读出** `registry_status=UNREGISTERED`，
+   `model_registry/models/` 下仍只有 M0R 的 `32315c89…`）。
+   注册所需证据已齐且已被独立验证（`promotion_evidence.json` sha256 `e941274d…`，
+   registry 重算的 G1–G6 与报告逐位相同）。注册哪一份 M1（载体 vs 全网格）仍是所有者裁决。
+2. **四折是四个不同架构**（`128/3/0.0`、`128/2/0.2`、`128/2/0.0`、`128/3/0.1`）
+   却共用**一个 model_id**，而 shadow pointer 指向的是 `model_id + model_version`
+   （`registry/active_pointer.py` 的 `ActiveModelPointer`），**不是某个折的 bundle**。
+   所以"某个打分日由哪一折的 bundle 出分"这个规则**目前没有被明确写下**，
+   本文不代为设定，但把它列为批准前必须明确的项——对 M1 比对 M0R 要紧，
+   因为选错折不只是数值差异，而是**用了另一个模型**。
+3. **选择偏差使"选 M1 还是 M0R"不是中性的**：M0R +0.009149（1 格、无偏差）
+   对 M1 +0.007827（27 格、含偏差），真实差距大于表面的 0.001322。
+
+### 17.2 顺带测出来的一条新缺陷：**服务侧不钉 torch 线程数，而工件里也没有这个数**
+
+复现审计能报 `max_absolute_difference=0.0`，靠的是**把自己钉到该运行记录的线程数**
+（`recorded_run_threads()` 从**工作区的检查点 manifest** 读）。但是：
+
+* **card 只有四个字段**（`dataset_id` / `family` / `model_status` / `model_code_version`，
+  已核 `m1-f1/model_card.json`），bundle 的其余文件也不含线程数——
+  **离开那个工作区，重算出 0.0 的条件就丢了**；
+* **服务侧一行线程配置都没有**：`src/research_v2/inference/` 下只有 `reproduction.py`
+  与线程有关（且是**读**不是设）；`torch_scoring.py` / `predictor.py` / `daily_pipeline.py`
+  与 `configs/inference/daily.yaml`、`configs/production.yaml`、`configs/base.yaml`
+  都没有 `set_num_threads` / `configure_torch_threads`（逐文件核过）；
+* 而**已训练的 torch bundle 前向不是线程稳定的**（1/2/4/8 逐位相同，
+  **16 线程差 4.805844e-05、52 线程差 4.923683e-05**，是近似并列股票的秩反转）。
+
+**推论**：把 torch 候选（M1，将来 M2/M3）放进影子、在默认 52 线程宿主上打分，
+分数会与被审计、被签名的不一致，**而现有任何一道门都不会发现**
+（PSI 比分布、监控比数据与分数健康，没有一道会把影子分数与 bundle 重算值逐行对比）。
+**这不是 M1 独有的问题，是所有 torch 候选的**；M0R 是 LightGBM，本轮审计在宿主默认 52 线程下
+仍然逐位相同，所以它不受这条影响。
+
+**处置**（两层，都已成文，**都没有动代码**）：
+
+* **今天就能做、不需改代码**：影子/生产打分进程启动时把 intra 与 inter 都钉到 **1**
+  并留痕——已写进 M1 前置清单 §3.1，**批准影子前必须落在运行手册里**。
+* **长期修法已成设计稿**：`docs/superpowers/specs/2026-09-14-serving-thread-contract-design.md`
+  （提交 `981a48a`）。形状受三条约束决定：不能让现有 bundle 失效
+  （`artifact_loader` 里已有同一类教训的原话："requiring the field would refuse every existing
+  bundle, including the promoted M0R"）、合并窗口在 M3 之后、
+  以及沿用仓库既有的 `unverified_bindings` 做法（**说出没校验什么，而不是悄悄跳过**）。
+  设计稿含逐文件改动清单、6 条测试（每条都要变异检验）、验收标准
+  （其中硬的一条：改动后 `m0r_v2` 与 `m1_full_v1` 的四折审计仍须 0.0），
+  以及明确的"本设计不做什么"。
+
+### 17.3 对合并窗口的影响：**待合并的驱动改动从两条变成三条**
+
+`codex/deferred-driver-fixes` 的两条（fold-cache 临时名竞态 `4f44e12`、
+`--folds` 死参数 `1dbc36c`）之外，再加上 §17.2 的 card 线程字段。
+三者都改 `run_real_candidate_training.py`，**必须等 M2 与 M3 都跑完后同一批合并、合并后重跑全门禁**。
+**本轮已核实合并窗口是干净的**：自 `9e0b2be` 以来主线只动了
+4 份文档 + 3 个新分析脚本 + 3 个新测试文件，与那两条修复触及的 5 个文件
+（驱动、`walk_forward_common.py`、`walk_forward_factor_daily.py` 及两个测试文件）
+**交集为空**（`comm -12` 实测为空），所以不存在冲突。
+
+### 17.4 状态（22:00 实测）
+
+M2 驱动 pid 3588838 存活约 1d03h、F1 **18/24**、无 `*.ABORT` / `*.ALARM`；
+三个看守都在且 PPID=1（链式 320418、M2 逐折 529186、M3 逐折 529385）。
+主分支 `981a48a`、研究分支 `26be7e9`，均已推送；
+研究分支的 `problems_found.md` D 节已追加这条服务侧前置（因为它是"结果可验证"这个主张的边界条件）。
+`run_real_candidate_training.py` 的 sha256 与 mtime 仍未变。
 另外核过一件事：**报告与晋级证据里不含任何 git 提交号**
 （只有 `model_code_version` / `data_version` / `schema_version` 这类逻辑版本），
 所以主线前进不会让验收 A 的"逐字节相同"失效。
