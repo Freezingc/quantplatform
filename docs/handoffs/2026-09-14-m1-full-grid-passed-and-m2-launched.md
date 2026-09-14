@@ -1335,12 +1335,29 @@ OOS 窗口里几乎每一天都不可评，**G6 会变成 ≈0.001**——
    `walk_forward_factor_daily.py` 各 2 处、`_requested_folds` 在驱动里 2 处、
    `artifact_loader.py` 的线程契约在、两个筛查脚本（`screen_factor_daily_coverage.py` 修好的版本
    与新增的 `screen_dense_intersection_coverage.py`）都在。
-2. **合并树上跑全量门禁**：`pytest tests -q` → **2229 passed / 46 skipped（160.78s）、0 失败**。
+2. **合并树上跑门禁**（第一次演练只跑了 `pytest`，本文当时写成"全量门禁"是**说过头了**；
+   已在第二次演练里把 ruff 与 mypy 补齐，下面三项都是同一棵合并树上的实测）：
+
+   * `pytest tests -q` → **2229 passed / 46 skipped（165.30s）、0 失败**。
+   * `mypy src`（`MYPYPATH=src`）→ **Success: no issues found in 170 source files**，
+     与基线树 `9250f5a` 逐字相同。
+   * `ruff check src tests` → **All checks passed!**；
+     对四个分支实际碰到的 **13 个文件**单独跑 → **All checks passed!**。
+     **一处必须说清的口径**：`ruff check src tests scripts`（含全部 `scripts/`）在合并树上报
+     **589 处**，而**基线树同一命令也是 589 处**——即**零新增**，那 589 处是
+     `scripts/` 里与这四个分支无关的既有量。所以"ruff 全清"这句话的正确范围是
+     **`src`、`tests` 与被改动的脚本**，不是整个 `scripts/` 目录；
+     本文 §5.1 第 4 条与 §18 里那句"ruff 全清（src、tests 与三个被改脚本）"用的就是这个范围。
+
    **测试数逐条对账**：基线 4fff381 收集 **2214**，
    `deferred-driver-fixes` +21、`serving-thread-contract` +19、`coverage-screen-denominator` +8、
    `dense-intersection-screen` +13，**2214 + 61 = 2275 = 2229 + 46**。
    对得上说明**合并过程没有静默丢掉任何一个测试**——这是"干净合并"最需要复核的一点，
    因为两个分支改同一个测试文件时，最典型的失败模式就是其中一方的测试在合并里消失。
+
+   两次演练都在**一次性 detached worktree** 里做，合完即 `git worktree remove`，
+   **没有推送任何合并提交**；第二次演练的合并树顶点是 `6235508`（本地、已丢弃），
+   顺序与第一次相同。
 
 **给合并窗口的结论**：按上表顺序合即可；合并后**仍须重跑一次全门禁**（主线到那时会前进），
 但已经知道**不会有冲突、也不会有测试丢失**。合并时机不变：**M2 与 M3 都跑完之后**，
