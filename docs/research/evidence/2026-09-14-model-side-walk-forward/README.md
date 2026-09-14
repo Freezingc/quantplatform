@@ -22,8 +22,8 @@
 | `reproduction_audits/` | `research_v2/scripts/verify_prediction_reproduction.py`（主分支既有工具，本轮首次对这两个运行使用） | **预测复现审计**的 JSON 摘要：`m0r_v2` 四折 3,557,762 行与 `m1_full_v1` 四折 3,553,163 行，**全部 `identical=true`、`max_absolute_difference=0.0`**；含机器读出的 registry 状态（`WALK_FORWARD_PASSED` / `UNREGISTERED`）与实际打分线程数（52 / 1）。这是"分数确由该 bundle 算出"的唯一证据——签名链只证明归属 |
 | `extract_from_reports.py` | — | 只读提取器，stdlib only |
 | `vendor_sources.py` | — | 原件复制器，同时重算 `vendored/MANIFEST.json` |
-| `vendored/` | `vendor_sources.py` | 13 份仓库文档 + 7 份签名 `report.json` 的**逐字节副本**，`MANIFEST.json` 记源路径、sha256、取值时的 git HEAD。新增的一份是 `docs/reports/2026-09-14-yearly-deltas-and-the-24-unevaluable-days.md`——逐年增量与那 24 天归属分析的完整方法、§4.1 逐侧覆盖率表、§4.2 的设计观察与三种处置、§6 敏感性、§8 边界 |
-| `vendored/docs/reports/2026-09-14-*.md` | 同上 | 两份新报告：逐年增量与 24 天归属（含 §4.1 逐侧覆盖率表、§4.2 设计观察与三种处置、§6 敏感性）、以及稠密因子覆盖缺口的完整叙述（含给因子侧的移交问题与论文方法学段落该怎么写） |
+| `vendored/` | `vendor_sources.py` | 14 份仓库文档 + 7 份签名 `report.json` 的**逐字节副本**，`MANIFEST.json` 记源路径、sha256、取值时的 git HEAD。新增的一份是 `docs/reports/2026-09-14-yearly-deltas-and-the-24-unevaluable-days.md`——逐年增量与那 24 天归属分析的完整方法、§4.1 逐侧覆盖率表、§4.2 的设计观察与三种处置、§6 敏感性、§8 边界 |
+| `vendored/docs/reports/2026-09-14-*.md` | 同上 | 逐年增量与 24 天归属（含 §4.1 逐侧覆盖率表、§4.2 设计观察与三种处置、§6 敏感性）、稠密因子覆盖缺口的完整叙述（含给因子侧的移交问题与论文方法学段落该怎么写）、预测复现审计（两个领先候选四折逐位相同）、以及 M1 的影子审批前置清单（§3.1 是服务侧线程钉住这条硬前置） |
 
 ## 为什么要复制原件
 

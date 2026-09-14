@@ -31,6 +31,7 @@ DOCS = (
     "docs/reports/2026-09-14-yearly-deltas-and-the-24-unevaluable-days.md",
     "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md",
     "docs/reports/2026-09-14-prediction-reproduction-audits.md",
+    "docs/reports/2026-09-14-m1-full-grid-shadow-approval-preconditions.md",
     "docs/handoffs/2026-09-08-m0-attribution-and-carrier-findings.md",
     "docs/handoffs/2026-09-09-sparse-factor-value-alignment-brief.md",
     "docs/handoffs/2026-09-09-model-status-fail-open-finding.md",

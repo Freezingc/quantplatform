@@ -642,6 +642,187 @@ M3 实例跑的是**同一个文件**，只是参数不同。
 M2 驱动存活 1d01h26m、F1 18/24、无告警；三个看守都在（320418 / 215628 / 459020，PPID 均为 1）。
 临时 worktree `dense-coverage` 已清理，现存两个：`deferred-driver-fixes`（等 M3 后合并）
 与 `research-conditional-factor-review`（论文用）。
+
+---
+
+## 14. 【2026-09-14 21:00 增补】复现审计补上了缺的那一环：两个领先候选**四折全部逐位相同**
+
+§D（研究分支问题记录）里那条"签名链证明的是**归属**、不是**复现**"一直缺后半段的证据：
+复现审计此前只在 `m1_parallel_v1`（M1 载体，09-11）上跑过，
+而**被引用得最多的两个运行从未审计**。本轮用既有工具
+`research_v2/scripts/verify_prediction_reproduction.py` 补齐（只读、不连数据库）：
+
+| 工作区 | 家族 | 复核行数 | identical / max abs diff | registry 状态（机器读出） | 打分线程 |
+|---|---|---|---|---|---|
+| `m0r_v2` | LGBM_RANKREG | **3,557,762** | 四折全 **true / 0.0** | **`WALK_FORWARD_PASSED`** | 52（宿主默认；LightGBM 无 torch 检查点可钉） |
+| `m1_full_v1` | RESIDUAL_MLP | **3,553,163** | 四折全 **true / 0.0** | **`UNREGISTERED`** | **1**（该运行自己记录的值） |
+
+报告 `docs/reports/2026-09-14-prediction-reproduction-audits.md`（提交 `5d8837d`），
+原始日志 `$A/reproduction_audit_{m0r_v2,m1_full_v1}.log`，
+JSON 摘要也复制进了研究分支的 `reproduction_audits/`（提交 `4186baf`，已推送）。
+两个工作区并行跑约 **18 分钟**。
+
+**三点必须一起转述，否则"0.0"会被误读**：
+
+1. **审计把自己钉到该运行记录的线程数**（`recorded_run_threads()` 从工作区自己的检查点 manifest 读，
+   混合多个值直接拒绝）。已训练的 torch bundle 前向**不是线程稳定**的：
+   同一份 `m1_v2` F1 bundle 在 1/2/4/8 线程下逐位相同，**16 线程差 4.805844e-05、52 线程差 4.923683e-05**，
+   量级是**近似并列股票的秩反转**（会改选股名次），不是末位舍入。
+2. **它对任何差异都抛错并非零退出**（`_compare_scores` → `ReproductionError`），
+   `"reproduced": true` 只在四折全同时才会被写出，所以**可以直接当门禁用**。
+3. **三者不可互相替代**：复现审计答"存下来的分数是否确由这个 bundle 算出"；
+   验收 C′ 答"这个 bundle 是否由那次搜索选出"（检查点逐字节比对）；
+   验收 A 答"这次运行能否从头重跑"（`--resume` 报告逐字节相同）。
+
+**给下一班的建议（本轮未做）**：M2 每折落地后跑一次
+`verify_prediction_reproduction.py --workspace $A/m2_v1 --fold F1`（`--fold` 可重复、
+不需要 report、不查 registry，正是为在跑的运行设计的）。
+**逐折预检看守不重算分数**（它查证据链、card family 白名单、loader 可构造性、冻结 config 与胜者一致），
+所以复现审计补的是它不覆盖的那一块；而 M2 是时序家族、TEST 面板要从三个已发布分片重建 20 日窗口，
+**是最值得逐折提前验的一个**。
+
+### 14.1 红线文件的完整性快照（本轮所有操作之后核过）
+
+| 文件 | sha256 前 16 位 | mtime |
+|---|---|---|
+| `research_v2/artifacts/diagnostics/factor_daily_materialization/materialization_status.json` | `44ab75f6d073f9d9` | 2026-09-07 16:36 |
+| `…/materialization_status.md` | `fdea7ba855bdcd6c` | 2026-09-07 16:36 |
+| `/tmp/frozen_chain_hold.txt` | `a47a7fe690126116` | 2026-09-05 21:56 |
+| `research_v2/scripts/run_real_candidate_training.py` | `33742880f314ca21` | 2026-09-12 00:50:33.890987021 |
+
+四个都早于今天所有操作、`git status` 干净，即**本轮零改动**。
+（`/tmp/frozen_chain_hold.txt` 本身值得一读：它记的正是 2014 年 `dropna(subset=全部 17 因子)`
+只剩 **11.6%** 覆盖率而暂停冻结链的决定——与今天测到的"稠密因子完整性决定可评日集"是同一类问题，
+只是当年更极端。）
+
+### 14.2 状态（21:00 实测）
+
+M2 驱动 pid 3588838 存活 1d02h、**F1 18/24**、无 `*.ABORT` / `*.ALARM`；
+三个看守都在且 PPID=1（链式 320418、M2 逐折 215628、M3 逐折 459020）。
+主分支 `5d8837d`、研究分支 `4186baf`，均已推送。ETA 口径不变（09-23 至 09-25）。
+
+---
+
+## 15. 【2026-09-14 21:05 增补】逐折预检里加进了**复现审计**，两个看守已用新代码重启（**pid 又变了**）
+
+### 15.1 为什么加
+
+§14 说清了"归属 vs 复现"的分工：逐折预检查的是**归属**
+（bundle 验签、card family 白名单、loader 可构造、冻结 config 与搜索胜者一致、三个帧的验签与校验），
+**它一行分数都不重算**。而 M2 恰恰是复现路径上最复杂的一家：
+时序家族的 TEST 分数来自 **20 日窗口面板**，审计要从三个已发布分片把它重建出来
+（`_recompute_temporal_torch`），这条路**从未在真实数据上跑过一折**。
+按本文一开始就写下的那句标准——**折 1 发现是可修的一天，折 4 之后发现是白跑的八天**——
+这一步应该在折 1 就做，而不是等到 M2 的评价阶段（约 09-23）。
+
+所以逐折预检现在在**每折的证据检查全过之后**，追加一次
+`verify_prediction_reproduction.py --workspace … --fold <F>`（`--fold` 模式正是为在跑的运行设计的：
+从该折签名选择取 bundle 与 TEST 数据集，不需要 report、不查 registry）。
+
+### 15.2 实现上的两个决定
+
+* **子进程，不是 import**：审计在**进程启动时**钉 torch 的 intra/inter-op 线程数，
+  而 inter-op **一个进程只能配一次**；看守自己 `import torch`，
+  在同进程里跑审计就钉不住了（§14 已实测：已训练 bundle 在 16/52 线程下差 4.8e-05 / 4.9e-05，
+  是秩反转）。子进程同时把它的内存与看守隔开。
+* **凡不是真通过，一律告警**：非零退出、退出 0 但**没有 JSON 摘要**、摘要**不是合法 JSON**、
+  摘要里 **folds 为空**（审计了什么也没比——与 C′ 的"0/0 相同"同一个形状）、
+  任何一折 `identical=false`、以及**超时**（默认 3600 s，消息里明写"超时**不是**通过，
+  该折分数处于未验证状态"）。脚本缺失也告警。
+
+### 15.3 两个方向都验过（`test_fold_preflight_reproduction_audit.py`，**21/21 通过**，可重跑）
+
+用一个假的审计 CLI 演全部八种结局：干净通过（返回 True、不写告警、日志带行数与线程数）；
+退出 0 但报差异；退出 1；退出 0 无摘要；退出 0 摘要非法 JSON；退出 0 但 folds 为空；
+超时（把 `AUDIT_TIMEOUT_S` 调到 2 s、假脚本睡 30 s）；脚本不存在。
+**七种非通过结局全部落 ALARM 并返回 False**，且每条告警文案都写明"为什么这要紧"。
+测试把看守的 `REPO / WS / KEY_PATH / LOG / ALARM` 重指到临时目录，
+**不碰真实 `m2_v1`、不碰真实审计 CLI、不连数据库**。
+
+### 15.4 两个看守已重启，**pid 变了**
+
+改前备份 `/tmp/m2_fold_preflight_watcher.py.bak-20260914b`（sha256 前缀 `31bbdcee76f3b669`）；
+与备份逐行 diff，**被删的只有两行**（旧的 PREFLIGHT COMPLETE 日志行与旧的启动日志行），
+其余全是新增；已有的证据检查逻辑一行未改。旧日志留档为
+`m2_fold_preflight.log.pre-restart-20260914` 与 `m3_fold_preflight.log.pre-restart-20260914`。
+
+| 看守 | 旧 pid | **新 pid** | 启动日志里的关键项 |
+|---|---|---|---|
+| 链式（M2→M3） | — | **320418**（未重启） | `WAIT: for m2_v1/report.json …` |
+| M2 逐折预检 | 215628 | **529186** | `carrier=M2 driver=3588838 reproduction_audit=True audit_timeout=3600` |
+| M3 逐折预检 | 459020 | **529385** | `carrier=M3 driver=discovered wait_h=336.0 stop_marker=…ABORT reproduction_audit=True` |
+
+三者 **PPID 均为 1**、自有会话、无 TTY，无 `*.ALARM` / `*.ABORT`。
+**本文里出现过的所有看守 pid（188088、206286、213719、215628、459020）现在全部作废**，
+以 `pgrep -af "chain_watcher.py|preflight_watcher.py"` 为准。
+
+### 15.5 代价与状态
+
+每折多花约 5 分钟（时序折要重建窗口面板并重算数据集哈希），
+相对 M2 单折约 50 小时的工期可以忽略；审计进程峰值内存与一个 worker 同量级，
+而它跑的时候该折的 24 路搜索已经结束，内存正处在最宽松的时刻。
+
+M2 本身未受影响：驱动 pid 3588838 存活 1d02h06m、F1 **18/24**、
+`run_real_candidate_training.py` 的 sha256 与 mtime 仍逐字符未变。
+**F1 落地时将第一次同时得到两件事**：逐折证据预检，与**时序家族在真实数据上的第一次复现审计**。
+
+---
+
+## 16. 【2026-09-14 21:40 增补】新的审计阶段已在**真实签名工件**上端到端验过：M1 四折全过
+
+§15 的测试用的是假审计 CLI，它证明的是"看守对各种结局的反应正确"，
+**没有**证明"看守与真审计接起来能跑通"（最可能出错的地方是 JSON 摘要的形状：
+`--fold` 模式的输出与整跑模式并不显然相同）。所以又做了一次真件端到端：
+
+```
+m2_fold_preflight_watcher.py --workspace …/m1_full_v1 --carrier M1 --prefix m1 --once \
+    --log /tmp/m1_preflight_e2e.log --alarm /tmp/m1_preflight_e2e.ALARM
+```
+
+**结果：四折全部 `PREFLIGHT COMPLETE`，末行 `4 fold(s) checked; alarm file absent - clean`，
+全程 21:05:54 → 21:35:59（30 分钟），未写任何 ALARM。**逐折审计明细：
+
+| 折 | 审计起止 | 耗时 | 复核行数 | max abs diff | 打分线程 |
+|---|---|---|---|---|---|
+| F1 | 21:09:45 → 21:13:09 | 3m24s | 803,572 | **0.0** | 1（requested 1） |
+| F2 | 21:16:27 → 21:20:10 | 3m43s | 881,863 | **0.0** | 1（requested 1） |
+| F3 | 21:23:46 → 21:27:45 | 3m59s | 931,411 | **0.0** | 1（requested 1） |
+| F4 | 21:31:33 → 21:35:59 | 4m26s | 936,317 | **0.0** | 1（requested 1） |
+
+行数与 §14 的整跑审计逐折相同，`--fold` 模式因此与整跑模式**互相印证**。
+顺带确认了 `--fold` 模式的摘要形状（`{"folds": [...], "reproduced", "scored_under_torch_threads",
+"threads_requested"}`，每个 fold 记录含 `identical` / `row_count` / `max_absolute_difference`）
+与看守解析器所设一致——**这正是最可能静默出错的地方**：
+若键名不符，`folds` 里的 `identical` 会取到 `None`，`not None` 为真，
+于是"全部通过"会被读成"全部不通过"并误告警。
+日志已归档为 `$A/m1_full_v1_preflight_e2e_with_audit.log`。
+
+### 16.1 两个为 M2 准备的量化事实
+
+* **单折审计耗时随行数增长**（3m24s → 4m26s，803k → 936k 行），静态家族约 **4 分钟/折**。
+  M2 是时序家族，TEST 面板要从三个已发布分片重建 20 日窗口，**预计更久**；
+  超时上限设的是 3600 s，余量足够。
+* **审计子进程峰值 RSS 实测 5.6 GiB**（静态家族，采样 240 s 取最大）。
+  它会与**下一折的 24 路搜索并行**运行，而驱动在折初的内存护栏要求
+  `24 × 17.1 + parent ≈ 425 GiB` 可用（F1 折初实测可用 496.5 GiB，余量约 70 GiB），
+  所以即使时序审计的峰值是静态的数倍，也**不会把下一折的护栏挤到拒绝**。
+  这一条是算出来的余量，不是实测的时序峰值——**M2 F1 落地时应顺手记一次实际峰值**。
+
+### 16.2 时序复现路径的既有覆盖
+
+`tests/unit/inference/test_reproduction.py` 在当前树上 **74 passed**（6.0 s），
+其中包含时序专项：`test_the_temporal_path_closes_on_a_real_bundle`（真 TemporalGRU bundle +
+真已发布折）、`test_the_temporal_row_set_is_the_labelled_subset`、
+以及 TEMPORAL_GRU / TEMPORAL_TCN 两家都必须路由到时序打分器的那条参数化测试
+（路由错到静态打分器不会大声失败，只会用错误的窗口给分）。
+所以**明天 M2 F1 的审计不是"第一次有任何覆盖"，而是第一次遇到真实数据**。
+
+### 16.3 状态（21:37 实测）
+
+M2 驱动 pid 3588838 存活 **1d02h42m**、F1 **18/24**、无 `*.ABORT` / `*.ALARM`；
+三个看守都在且 PPID=1（链式 320418、M2 逐折 529186、M3 逐折 529385）。
+主分支本节提交后为最新；`run_real_candidate_training.py` 的 sha256（`33742880f314ca21`）
+与 mtime（`2026-09-12 00:50:33.890987021`）自始至终未变。
 另外核过一件事：**报告与晋级证据里不含任何 git 提交号**
 （只有 `model_code_version` / `data_version` / `schema_version` 这类逻辑版本），
 所以主线前进不会让验收 A 的"逐字节相同"失效。

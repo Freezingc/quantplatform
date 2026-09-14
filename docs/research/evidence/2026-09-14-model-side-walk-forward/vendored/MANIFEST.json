@@ -2,7 +2,7 @@
   "files": [
     {
       "bytes": 15514,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "41295a50ae23d2b7ad9667fa839442f2b6590ec1caf67bdf59ad7b5e1b2198de",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-12-candidate-standings-comparison.md",
@@ -10,7 +10,7 @@
     },
     {
       "bytes": 2731,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "40f90192bca71871bbf6458d750d6ffd1b4ec9bf849e4cb91c8b922ff6423696",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-12-m0r-real-candidate-walk-forward.md",
@@ -18,7 +18,7 @@
     },
     {
       "bytes": 12813,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "2b9a6e5bcbbc16dcb7ece4d79340492e32eebff1b974f87f9f360f2a753c591c",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-12-m0r-shadow-approval-preconditions.md",
@@ -26,7 +26,7 @@
     },
     {
       "bytes": 2465,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "9281dba625f8c508a0cc9215d9cc8a6a6756d6d113aab37e672efe4ef9d48131",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-13-m1-full-grid-real-candidate-walk-forward.md",
@@ -34,7 +34,7 @@
     },
     {
       "bytes": 17987,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "f2203a11f2bbc5ed1e99cd39022d3ef78353bd94d95082f9e0113f1eb77ca42c",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-14-yearly-deltas-and-the-24-unevaluable-days.md",
@@ -42,7 +42,7 @@
     },
     {
       "bytes": 9476,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "0650aa787ef9496c9dc476bf7ff9b736ad9abf11863dca8bc408417327c20358",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md",
@@ -50,15 +50,23 @@
     },
     {
       "bytes": 7139,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "71e8b1973bfe49ab215013cdfeec8a0989b11c228e124de733ec57f542a13817",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-14-prediction-reproduction-audits.md",
       "vendored_as": "vendored/docs/reports/2026-09-14-prediction-reproduction-audits.md"
     },
     {
+      "bytes": 10941,
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
+      "kind": "repository-document",
+      "sha256": "c4be62b43054dc3da63c90fb4aca09aa17e9f07d20027436c467e064f25c0b1e",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-14-m1-full-grid-shadow-approval-preconditions.md",
+      "vendored_as": "vendored/docs/reports/2026-09-14-m1-full-grid-shadow-approval-preconditions.md"
+    },
+    {
       "bytes": 32774,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "3324b6ce663ec616e412bec208fde4478e778a6ab6f4294b79baf6f3286dcef2",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-08-m0-attribution-and-carrier-findings.md",
@@ -66,7 +74,7 @@
     },
     {
       "bytes": 8044,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "8cd5e94981dda1e7bbc65a108ddbbf037b6d763f363f7494150dfd9cae6ba1f1",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-09-sparse-factor-value-alignment-brief.md",
@@ -74,7 +82,7 @@
     },
     {
       "bytes": 27582,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "599f7f7e85fe33aab6a552a96c88ac078d3e6824e9473e9756631aa70761f142",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-09-model-status-fail-open-finding.md",
@@ -82,7 +90,7 @@
     },
     {
       "bytes": 44184,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "fc7b5ec5720768cfdea5e2aac28b0f2696220018a5d3ea803c1e90c5562e892c",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-11-m1-evaluation-crash-lineage-and-footprint.md",
@@ -90,17 +98,17 @@
     },
     {
       "bytes": 58577,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
       "sha256": "fa67e07fc78d872e558a57b031f76f6db2ca3091c4771e344adca0827090c53a",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-12-m1-full-grid-launch-and-measured-cost-model.md",
       "vendored_as": "vendored/docs/handoffs/2026-09-12-m1-full-grid-launch-and-measured-cost-model.md"
     },
     {
-      "bytes": 54006,
-      "git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863",
+      "bytes": 66121,
+      "git_head": "981a48a07be2184832450366a708ff0798a2461f",
       "kind": "repository-document",
-      "sha256": "1837f208720d8db3a6ac8fe42587e705302e1f17244569afdb25126cbfcffe7a",
+      "sha256": "435dbb742ae9159fc46290b026f87e90c734b5ca0abf923328fc31861bb8418e",
       "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-14-m1-full-grid-passed-and-m2-launched.md",
       "vendored_as": "vendored/docs/handoffs/2026-09-14-m1-full-grid-passed-and-m2-launched.md"
     },
@@ -161,7 +169,7 @@
       "vendored_as": "vendored/artifacts/m1_full_v1_report.json"
     }
   ],
-  "generated_at_utc": "2026-09-14T12:53:02+00:00",
+  "generated_at_utc": "2026-09-14T13:54:50+00:00",
   "note": "Vendored copies. The authoritative originals live on branch codex/publish-quant-platform (documents) and in the artifacts tree (run reports). Compare sha256 before quoting.",
-  "repository_git_head": "5d8837d54e7f20a8ac098d1a2bc8adc246b64863"
+  "repository_git_head": "981a48a07be2184832450366a708ff0798a2461f"
 }

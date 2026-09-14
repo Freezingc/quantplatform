@@ -168,6 +168,33 @@ JSON 摘要在 `reproduction_audits/`，原始日志在
 八种结局都做过对照测试（21/21 通过）。
 **含义**：本文 v0.2 里将要填的 M2/M3 数字，会在它们出现之前就已经逐折通过复现审计。
 
+**【2026-09-14 21:55 追加：复现审计成立的前提，在服务侧目前并不成立】**
+审计能报 `max_absolute_difference = 0.0`，是因为它**把自己钉到该运行记录的线程数**
+（从工作区的检查点 manifest 读 `torch_intraop_threads`）。而：
+
+* **这个线程数不在已发布的工件里**——`model_card.json` 只有四个字段
+  （`dataset_id` / `family` / `model_status` / `model_code_version`），
+  bundle 的其余文件也没有；
+* **服务侧一行线程配置都没有**：`inference/` 下只有 `reproduction.py` 与线程有关（而且是读、不是设），
+  `torch_scoring.py` / `predictor.py` / `daily_pipeline.py` 与三个推理配置文件里都没有
+  `set_num_threads` / `configure_torch_threads`（已逐文件核过）。
+
+**所以**：把一个 torch 候选放进影子、在默认 52 线程的宿主上打分，
+得到的分数会与被审计、被签名的不一致（量级 5e-5，是近似并列股票的**秩反转**），
+而**现有任何一道门都不会发现**——PSI 比分布、监控比数据与分数健康，
+没有一道会把影子分数与 bundle 重算值逐行对比。
+**这条对"结果可验证"的主张是有边界意义的**：可验证性成立的前提是**在同一线程数下**问这个问题。
+
+处置分两层，都已写进
+`vendored/docs/reports/2026-09-14-m1-full-grid-shadow-approval-preconditions.md` §3.1
+（批准影子前必须落在运行手册里的临时措施：进程启动即把 intra/inter 都钉到 1 并留痕）与
+主分支 `docs/superpowers/specs/2026-09-14-serving-thread-contract-design.md`
+（长期修法：card 带上线程数、服务侧缺值时**拒绝加载**而不是静默用宿主默认、
+审计侧校验 card 与检查点记录一致）。
+**长期修法要等 M2 与 M3 都跑完才能合并**（驱动在飞期间不能改，且 M2 验收完会立即发射 M3），
+与另两条驱动修复同一批。M2/M3 的 bundle 因此**注定是四字段 card**，
+它们的线程数只能来自各自工作区的检查点 manifest（`torch_intraop_threads: 1`）。
+
 出处：`vendored/docs/handoffs/2026-09-09-model-status-fail-open-finding.md`；
 `vendored/docs/handoffs/2026-09-11-m1-evaluation-crash-lineage-and-footprint.md` §8.1。
 
