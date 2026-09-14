@@ -1,0 +1,72 @@
+{
+  "cited_source_missing": [],
+  "cited_source_sha256": {
+    "research_v2/configs/factors/source_catalog.yaml": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad",
+    "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
+    "research_v2/scripts/materialize_frozen_factor_daily.py": "27da63ee4a0c86ca32961c6bd854ebf5187e7d097fff27153d41d568efa34d83",
+    "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+    "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
+    "research_v2/src/research_v2/evaluation/gates.py": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
+  },
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "parquet panels and fold caches (read in place, never copied)",
+    "the upstream factor observations themselves: only aggregate counts, correlations and differences are recorded, never the values"
+  ],
+  "factor_catalog": {
+    "note": "the census resolves every upstream table and factor name from this file",
+    "path": "research_v2/configs/factors/source_catalog.yaml",
+    "sha256": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad"
+  },
+  "generated_at_utc": "2026-09-14T21:25:37+00:00",
+  "generator": {
+    "path": "make_provenance.py",
+    "sha256": "d4baec523afea29135dea960e56b9825ebd40a1f9d037fce272dc9c157a3c0f9"
+  },
+  "measurements": {
+    "option3_upstream_ceiling.json": {
+      "bytes": 19175,
+      "sha256": "a150130404f933793f73fc61580806fa35ae213c26c60d0cfcc3233916975552"
+    },
+    "replay_fidelity_census.json": {
+      "bytes": 73520,
+      "sha256": "cc59b9a9f67d96b7e4e7257d21aed596d244855b897bee77ab6a67995f909a2c"
+    },
+    "replay_fidelity_controls.json": {
+      "bytes": 22649,
+      "sha256": "3afa890c80a7fcd8d481be1cfa59c1fdf18fcc4d79e532ab12f5f926fe3df826"
+    }
+  },
+  "narratives": {
+    "finding.md": {
+      "bytes": 12099,
+      "sha256": "3a0bf27998fe1ef41694588ceeb28851a11b60a332e01b7431377b9f177c3c4e"
+    }
+  },
+  "probe_scripts": {
+    "probe_option3_upstream_ceiling.py": {
+      "bytes": 12718,
+      "sha256": "8806b07c4dc25057d94c0866031edc9ccfafd5a5d2ce319956b56fbd48eb06c6"
+    },
+    "probe_replay_fidelity_census.py": {
+      "bytes": 8763,
+      "sha256": "75d64929af3765e932f401e7c28f9d0951a445924c960087bbe93316b25eb99a"
+    },
+    "probe_replay_fidelity_controls.py": {
+      "bytes": 7445,
+      "sha256": "95b6e1ed3b01fdc2b3f49a4ce9009e7ac213024bb8fccadc2a8e61e0db335a4b"
+    }
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "2502014df94a07bc8e52d621e3a7f65e92640858",
+    "dirty": false,
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+    "subject": "docs(handoff): a one-page price list for the 24 days, and the cliff that makes 'tighten the health check slightly' a gate-failing change -- 42 days sit within 0.005 above the floor, so 0.905 turns G6 from 0.9752 to 0.9319"
+  },
+  "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
+  "this_evidence_branch": {
+    "branch": "codex/research-conditional-factor-review",
+    "commit_at_generation": "e57065839067ebd4a87f225db105fafe1cb46798"
+  }
+}
