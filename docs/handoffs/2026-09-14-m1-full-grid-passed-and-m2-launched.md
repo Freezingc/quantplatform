@@ -191,6 +191,37 @@ card 的家族必须同时在评价器的 `_MODEL_CARD_FAMILIES[CARRIER]` 白名
 4. **两条被推迟的驱动改动**（现在 M2 在跑，窗口又关上了，要等 M2 结束）：
    fold-cache 临时文件名竞态、`--folds` 死参数应改为拒绝非默认值。
    两者都不是 M2 的前置（缓存对这四折已全热、M2 不传 `--folds`）。
+
+   **【2026-09-14 15:20 更新：两条都已实现、测好、变异检验过，放在独立 worktree 的分支上等合并】**
+   既然 M2 还要跑约 9 天、期间不能动主工作树的驱动（spawn 每折从磁盘重导入），
+   就用 `git worktree` 把它们做在了主树之外：
+
+   * **worktree**：`/data/zhangyudong/qrv2_worktrees/deferred-driver-fixes`
+   * **分支**：`codex/deferred-driver-fixes`，从 `9e0b2be` 起，两个提交：
+     * `4f44e12` **缓存竞态**：新增 `write_fold_cache_atomic(cache_path, dataset)`，
+       临时名带上 **pid + 8 位随机片段**（pid 分隔并发进程，随机片段分隔同进程内同键的两次写入、
+       并抗 31 天不重启主机上的 pid 复用）；失败时删掉自己的临时文件（旧版不删，
+       每次中断都在那个已有 6 GiB 的目录里留一个永不读取也永不清理的文件）。
+       两处重复的模式（`walk_forward_common.py`、`walk_forward_factor_daily.py`）都改为走同一个助手。
+     * `1dbc36c` **`--folds`**：新增 `_requested_folds(args)`，只接受全集（任意顺序），
+       其余一律 `SystemExit`，理由写进消息（`folds_complete` / `WALK_FORWARD_PASSED`）。
+       **校验放在 `parse_args` 而不是 `main()`**——`parse_args` 是唯一入口，
+       放在那里就不可能被人重排到几小时拟合之后。
+   * **主工作树未被触碰，已验证**：`git status` 干净、HEAD 仍是 `9e0b2be`、
+     且 `grep -c "_requested_folds\|write_fold_cache_atomic"` 在主树的两个驱动文件里都是 **0**。
+   * **门禁（在 worktree 内实跑）**：`ruff` 全清（src、tests 与三个被改脚本）、
+     `mypy src` 170 文件清、`pytest tests -q` **2127 passed / 46 skipped**（基线 2107 / 45，
+     即净增 21 个测试、0 失败）。
+   * **变异检验（每个修复都做了，且失败信息指向"为什么要紧"）**：
+     * 缓存：把临时名改回 `with_suffix(".parquet.tmp")` → **3 个测试失败**，
+       关键那条报 `two writers computed the same temporary path and would interleave`
+       并列出两个相同路径。
+     * `--folds` 变异一：删掉 `parse_args` 里的调用 → 端到端与 wiring 两条测试失败。
+     * `--folds` 变异二：**把调用挪到 `main()`**（功能等价、但可被重排）→ 同样两条失败。
+       这条更隐蔽的退化正是 wiring 测试存在的理由。
+   * **合并时机**：M2 与 M3 都跑完之后（约 09-25 前后）。合并只需把分支并入
+     `codex/publish-quant-platform`；届时**必须重跑一次全门禁**，因为主线在这期间可能已前进。
+     **不要在 M2 或 M3 在飞时合并**——那会改动主树的驱动，而下一折的 worker 会读到新代码。
 5. **5.1 / 5.2 / 5.3**：5.1 要 M1–M3 全齐；5.2 要 5.1；
    5.3 的 M0R 实例已做（`docs/reports/2026-09-12-m0r-shadow-approval-preconditions.md`），
    而 **M1 通过已使"复杂候选"的解释分歧不再阻塞**——见该文档 §4 的 09-14 更新。
