@@ -1,0 +1,6913 @@
+{
+  "window": [
+    "2022-01-01",
+    "2025-12-31"
+  ],
+  "factor_source": "explicit",
+  "floor": 0.9,
+  "floor_source": "parsed from /data/zhangyudong/qrv2_worktrees/dense-intersection-screen/research_v2/src/research_v2/evaluation/gates.py",
+  "diagnostics": {
+    "factor_count": 8,
+    "factor_ids": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_484",
+      "yeslab_96",
+      "yeslab_471"
+    ],
+    "partitions_resolved": 48,
+    "years_queried": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "factor_versions_resolved": 4,
+    "label_versions_resolved": 48,
+    "numerator_restricted_to_valid_label_rows": true,
+    "days_with_intersection_rows": 969,
+    "days_with_valid_label_rows": 969,
+    "days_with_labels_but_no_intersection": []
+  },
+  "summary": {
+    "floor": 0.9,
+    "total_days": 969,
+    "days_below_floor": 24,
+    "days_below_floor_list": [
+      "2022-07-29",
+      "2023-04-28",
+      "2023-05-10",
+      "2023-05-11",
+      "2023-05-12",
+      "2023-05-16",
+      "2023-05-19",
+      "2023-06-21",
+      "2023-06-26",
+      "2023-06-27",
+      "2023-06-28",
+      "2023-06-29",
+      "2023-06-30",
+      "2023-07-05",
+      "2023-07-06",
+      "2023-07-07",
+      "2023-07-10",
+      "2023-07-11",
+      "2023-07-12",
+      "2023-07-13",
+      "2023-07-14",
+      "2023-07-17",
+      "2023-07-18",
+      "2023-07-19"
+    ],
+    "coverage_min": 0.8902674386545354,
+    "coverage_median": 0.9845428346869269,
+    "by_year": {
+      "2022": {
+        "days": 242,
+        "days_below_floor": 1,
+        "days_below_floor_list": [
+          "2022-07-29"
+        ],
+        "coverage_min": 0.8950819672131147,
+        "coverage_median": 0.9253990284831323,
+        "coverage_max": 0.9483451902257964
+      },
+      "2023": {
+        "days": 242,
+        "days_below_floor": 23,
+        "days_below_floor_list": [
+          "2023-04-28",
+          "2023-05-10",
+          "2023-05-11",
+          "2023-05-12",
+          "2023-05-16",
+          "2023-05-19",
+          "2023-06-21",
+          "2023-06-26",
+          "2023-06-27",
+          "2023-06-28",
+          "2023-06-29",
+          "2023-06-30",
+          "2023-07-05",
+          "2023-07-06",
+          "2023-07-07",
+          "2023-07-10",
+          "2023-07-11",
+          "2023-07-12",
+          "2023-07-13",
+          "2023-07-14",
+          "2023-07-17",
+          "2023-07-18",
+          "2023-07-19"
+        ],
+        "coverage_min": 0.8902674386545354,
+        "coverage_median": 0.9092936592336784,
+        "coverage_max": 0.9954521134296416
+      },
+      "2024": {
+        "days": 242,
+        "days_below_floor": 0,
+        "days_below_floor_list": [],
+        "coverage_min": 0.9711145194274029,
+        "coverage_median": 0.9924234358393046,
+        "coverage_max": 0.9966057441253263
+      },
+      "2025": {
+        "days": 243,
+        "days_below_floor": 0,
+        "days_below_floor_list": [],
+        "coverage_min": 0.980854969840021,
+        "coverage_median": 0.9859442882698697,
+        "coverage_max": 0.9894952600563669
+      }
+    }
+  },
+  "per_day": [
+    {
+      "day": "2022-01-04",
+      "intersection_rows": 2959,
+      "valid_label_rows": 3124,
+      "coverage": 0.9471830985915493,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-05",
+      "intersection_rows": 2958,
+      "valid_label_rows": 3125,
+      "coverage": 0.94656,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-06",
+      "intersection_rows": 2959,
+      "valid_label_rows": 3127,
+      "coverage": 0.9462743843939878,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-07",
+      "intersection_rows": 2961,
+      "valid_label_rows": 3131,
+      "coverage": 0.9457042478441392,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-10",
+      "intersection_rows": 2966,
+      "valid_label_rows": 3138,
+      "coverage": 0.9451880178457617,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-11",
+      "intersection_rows": 2966,
+      "valid_label_rows": 3138,
+      "coverage": 0.9451880178457617,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-12",
+      "intersection_rows": 2967,
+      "valid_label_rows": 3139,
+      "coverage": 0.9452054794520548,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-13",
+      "intersection_rows": 2968,
+      "valid_label_rows": 3142,
+      "coverage": 0.9446212603437301,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-14",
+      "intersection_rows": 2969,
+      "valid_label_rows": 3142,
+      "coverage": 0.9449395289624443,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-17",
+      "intersection_rows": 2964,
+      "valid_label_rows": 3140,
+      "coverage": 0.9439490445859873,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-18",
+      "intersection_rows": 2966,
+      "valid_label_rows": 3142,
+      "coverage": 0.9439847231063018,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-19",
+      "intersection_rows": 2970,
+      "valid_label_rows": 3147,
+      "coverage": 0.9437559580552908,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-20",
+      "intersection_rows": 2967,
+      "valid_label_rows": 3148,
+      "coverage": 0.9425031766200762,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-21",
+      "intersection_rows": 2965,
+      "valid_label_rows": 3149,
+      "coverage": 0.9415687519847571,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-24",
+      "intersection_rows": 2960,
+      "valid_label_rows": 3148,
+      "coverage": 0.940279542566709,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-25",
+      "intersection_rows": 2962,
+      "valid_label_rows": 3148,
+      "coverage": 0.9409148665819568,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-26",
+      "intersection_rows": 2961,
+      "valid_label_rows": 3148,
+      "coverage": 0.9405972045743329,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-27",
+      "intersection_rows": 2961,
+      "valid_label_rows": 3150,
+      "coverage": 0.94,
+      "below_floor": false
+    },
+    {
+      "day": "2022-01-28",
+      "intersection_rows": 2961,
+      "valid_label_rows": 3153,
+      "coverage": 0.9391056137012369,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-07",
+      "intersection_rows": 2966,
+      "valid_label_rows": 3149,
+      "coverage": 0.9418863131152747,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-08",
+      "intersection_rows": 2968,
+      "valid_label_rows": 3151,
+      "coverage": 0.9419231989844494,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-09",
+      "intersection_rows": 2969,
+      "valid_label_rows": 3154,
+      "coverage": 0.9413443246670894,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-10",
+      "intersection_rows": 2970,
+      "valid_label_rows": 3158,
+      "coverage": 0.9404686510449651,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-11",
+      "intersection_rows": 2968,
+      "valid_label_rows": 3164,
+      "coverage": 0.9380530973451328,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-14",
+      "intersection_rows": 2970,
+      "valid_label_rows": 3164,
+      "coverage": 0.938685208596713,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-15",
+      "intersection_rows": 2973,
+      "valid_label_rows": 3167,
+      "coverage": 0.938743290179981,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-16",
+      "intersection_rows": 2977,
+      "valid_label_rows": 3170,
+      "coverage": 0.9391167192429022,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-17",
+      "intersection_rows": 2977,
+      "valid_label_rows": 3172,
+      "coverage": 0.9385245901639344,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-18",
+      "intersection_rows": 2979,
+      "valid_label_rows": 3173,
+      "coverage": 0.9388591238575481,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-21",
+      "intersection_rows": 2983,
+      "valid_label_rows": 3173,
+      "coverage": 0.9401197604790419,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-22",
+      "intersection_rows": 2985,
+      "valid_label_rows": 3174,
+      "coverage": 0.9404536862003781,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-23",
+      "intersection_rows": 2989,
+      "valid_label_rows": 3176,
+      "coverage": 0.9411209068010076,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-24",
+      "intersection_rows": 2992,
+      "valid_label_rows": 3179,
+      "coverage": 0.9411764705882353,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-25",
+      "intersection_rows": 2994,
+      "valid_label_rows": 3181,
+      "coverage": 0.9412134548883999,
+      "below_floor": false
+    },
+    {
+      "day": "2022-02-28",
+      "intersection_rows": 2997,
+      "valid_label_rows": 3183,
+      "coverage": 0.941564561734213,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-01",
+      "intersection_rows": 2996,
+      "valid_label_rows": 3183,
+      "coverage": 0.9412503927112786,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-02",
+      "intersection_rows": 2996,
+      "valid_label_rows": 3184,
+      "coverage": 0.9409547738693468,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-03",
+      "intersection_rows": 3000,
+      "valid_label_rows": 3185,
+      "coverage": 0.9419152276295133,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-04",
+      "intersection_rows": 3004,
+      "valid_label_rows": 3187,
+      "coverage": 0.942579228114214,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-07",
+      "intersection_rows": 3007,
+      "valid_label_rows": 3189,
+      "coverage": 0.9429288178112261,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-08",
+      "intersection_rows": 3009,
+      "valid_label_rows": 3190,
+      "coverage": 0.9432601880877743,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-09",
+      "intersection_rows": 3012,
+      "valid_label_rows": 3190,
+      "coverage": 0.9442006269592477,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-10",
+      "intersection_rows": 3014,
+      "valid_label_rows": 3193,
+      "coverage": 0.9439398684622612,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-11",
+      "intersection_rows": 3018,
+      "valid_label_rows": 3196,
+      "coverage": 0.9443053817271589,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-14",
+      "intersection_rows": 3021,
+      "valid_label_rows": 3200,
+      "coverage": 0.9440625,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-15",
+      "intersection_rows": 3022,
+      "valid_label_rows": 3201,
+      "coverage": 0.94407997500781,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-16",
+      "intersection_rows": 3022,
+      "valid_label_rows": 3201,
+      "coverage": 0.94407997500781,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-17",
+      "intersection_rows": 3023,
+      "valid_label_rows": 3200,
+      "coverage": 0.9446875,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-18",
+      "intersection_rows": 3025,
+      "valid_label_rows": 3200,
+      "coverage": 0.9453125,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-21",
+      "intersection_rows": 3026,
+      "valid_label_rows": 3202,
+      "coverage": 0.9450343535290443,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-22",
+      "intersection_rows": 3027,
+      "valid_label_rows": 3203,
+      "coverage": 0.9450515142054324,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-23",
+      "intersection_rows": 3026,
+      "valid_label_rows": 3203,
+      "coverage": 0.9447393068997815,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-24",
+      "intersection_rows": 3026,
+      "valid_label_rows": 3203,
+      "coverage": 0.9447393068997815,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-25",
+      "intersection_rows": 3027,
+      "valid_label_rows": 3202,
+      "coverage": 0.9453466583385384,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-28",
+      "intersection_rows": 3029,
+      "valid_label_rows": 3205,
+      "coverage": 0.9450858034321373,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-29",
+      "intersection_rows": 3031,
+      "valid_label_rows": 3206,
+      "coverage": 0.9454148471615721,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-30",
+      "intersection_rows": 3032,
+      "valid_label_rows": 3207,
+      "coverage": 0.9454318677892111,
+      "below_floor": false
+    },
+    {
+      "day": "2022-03-31",
+      "intersection_rows": 3034,
+      "valid_label_rows": 3209,
+      "coverage": 0.9454658772203178,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-01",
+      "intersection_rows": 3037,
+      "valid_label_rows": 3208,
+      "coverage": 0.9466957605985037,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-06",
+      "intersection_rows": 3040,
+      "valid_label_rows": 3209,
+      "coverage": 0.947335618572764,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-07",
+      "intersection_rows": 3042,
+      "valid_label_rows": 3209,
+      "coverage": 0.9479588656902462,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-08",
+      "intersection_rows": 3039,
+      "valid_label_rows": 3211,
+      "coverage": 0.9464341326689505,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-11",
+      "intersection_rows": 3040,
+      "valid_label_rows": 3214,
+      "coverage": 0.9458618543870566,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-12",
+      "intersection_rows": 3046,
+      "valid_label_rows": 3221,
+      "coverage": 0.945669046879851,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-13",
+      "intersection_rows": 3050,
+      "valid_label_rows": 3224,
+      "coverage": 0.9460297766749379,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-14",
+      "intersection_rows": 3051,
+      "valid_label_rows": 3226,
+      "coverage": 0.9457532548047117,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-15",
+      "intersection_rows": 3051,
+      "valid_label_rows": 3224,
+      "coverage": 0.9463399503722084,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-18",
+      "intersection_rows": 3051,
+      "valid_label_rows": 3224,
+      "coverage": 0.9463399503722084,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-19",
+      "intersection_rows": 3053,
+      "valid_label_rows": 3225,
+      "coverage": 0.9466666666666667,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-20",
+      "intersection_rows": 3048,
+      "valid_label_rows": 3219,
+      "coverage": 0.9468779123951537,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-21",
+      "intersection_rows": 3054,
+      "valid_label_rows": 3225,
+      "coverage": 0.9469767441860465,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-22",
+      "intersection_rows": 3037,
+      "valid_label_rows": 3204,
+      "coverage": 0.9478776529338327,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-25",
+      "intersection_rows": 3065,
+      "valid_label_rows": 3232,
+      "coverage": 0.9483292079207921,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-26",
+      "intersection_rows": 3066,
+      "valid_label_rows": 3233,
+      "coverage": 0.9483451902257964,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-27",
+      "intersection_rows": 3057,
+      "valid_label_rows": 3228,
+      "coverage": 0.9470260223048327,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-28",
+      "intersection_rows": 3056,
+      "valid_label_rows": 3229,
+      "coverage": 0.9464230411892227,
+      "below_floor": false
+    },
+    {
+      "day": "2022-04-29",
+      "intersection_rows": 3036,
+      "valid_label_rows": 3209,
+      "coverage": 0.9460891243377999,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-05",
+      "intersection_rows": 3040,
+      "valid_label_rows": 3206,
+      "coverage": 0.9482220835932627,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-06",
+      "intersection_rows": 3044,
+      "valid_label_rows": 3211,
+      "coverage": 0.9479912799750856,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-09",
+      "intersection_rows": 3046,
+      "valid_label_rows": 3216,
+      "coverage": 0.947139303482587,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-10",
+      "intersection_rows": 3042,
+      "valid_label_rows": 3221,
+      "coverage": 0.944427196522819,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-11",
+      "intersection_rows": 3043,
+      "valid_label_rows": 3226,
+      "coverage": 0.9432734035957843,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-12",
+      "intersection_rows": 3043,
+      "valid_label_rows": 3229,
+      "coverage": 0.942397026943326,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-13",
+      "intersection_rows": 3044,
+      "valid_label_rows": 3232,
+      "coverage": 0.9418316831683168,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-16",
+      "intersection_rows": 3047,
+      "valid_label_rows": 3236,
+      "coverage": 0.9415945611866502,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-17",
+      "intersection_rows": 3051,
+      "valid_label_rows": 3241,
+      "coverage": 0.94137611848195,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-18",
+      "intersection_rows": 3052,
+      "valid_label_rows": 3243,
+      "coverage": 0.9411039161270429,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-19",
+      "intersection_rows": 3048,
+      "valid_label_rows": 3243,
+      "coverage": 0.9398704902867715,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-20",
+      "intersection_rows": 3049,
+      "valid_label_rows": 3247,
+      "coverage": 0.9390206344317832,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-23",
+      "intersection_rows": 3052,
+      "valid_label_rows": 3252,
+      "coverage": 0.9384993849938499,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-24",
+      "intersection_rows": 3052,
+      "valid_label_rows": 3252,
+      "coverage": 0.9384993849938499,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-25",
+      "intersection_rows": 3059,
+      "valid_label_rows": 3260,
+      "coverage": 0.9383435582822086,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-26",
+      "intersection_rows": 3066,
+      "valid_label_rows": 3267,
+      "coverage": 0.938475665748393,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-27",
+      "intersection_rows": 3061,
+      "valid_label_rows": 3265,
+      "coverage": 0.9375191424196019,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-30",
+      "intersection_rows": 3064,
+      "valid_label_rows": 3273,
+      "coverage": 0.9361442102047052,
+      "below_floor": false
+    },
+    {
+      "day": "2022-05-31",
+      "intersection_rows": 3063,
+      "valid_label_rows": 3278,
+      "coverage": 0.934411226357535,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-01",
+      "intersection_rows": 3052,
+      "valid_label_rows": 3263,
+      "coverage": 0.9353355807539074,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-02",
+      "intersection_rows": 3047,
+      "valid_label_rows": 3264,
+      "coverage": 0.9335171568627451,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-06",
+      "intersection_rows": 3040,
+      "valid_label_rows": 3267,
+      "coverage": 0.9305172941536578,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-07",
+      "intersection_rows": 3040,
+      "valid_label_rows": 3271,
+      "coverage": 0.9293793946805259,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-08",
+      "intersection_rows": 3038,
+      "valid_label_rows": 3276,
+      "coverage": 0.9273504273504274,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-09",
+      "intersection_rows": 3036,
+      "valid_label_rows": 3276,
+      "coverage": 0.9267399267399268,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-10",
+      "intersection_rows": 3036,
+      "valid_label_rows": 3280,
+      "coverage": 0.925609756097561,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-13",
+      "intersection_rows": 3042,
+      "valid_label_rows": 3287,
+      "coverage": 0.925463948889565,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-14",
+      "intersection_rows": 3042,
+      "valid_label_rows": 3288,
+      "coverage": 0.9251824817518248,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-15",
+      "intersection_rows": 3047,
+      "valid_label_rows": 3293,
+      "coverage": 0.9252960825994534,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-16",
+      "intersection_rows": 3044,
+      "valid_label_rows": 3290,
+      "coverage": 0.9252279635258359,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-17",
+      "intersection_rows": 3041,
+      "valid_label_rows": 3290,
+      "coverage": 0.9243161094224924,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-20",
+      "intersection_rows": 3043,
+      "valid_label_rows": 3292,
+      "coverage": 0.9243620899149453,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-21",
+      "intersection_rows": 3045,
+      "valid_label_rows": 3298,
+      "coverage": 0.9232868405093997,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-22",
+      "intersection_rows": 3047,
+      "valid_label_rows": 3300,
+      "coverage": 0.9233333333333333,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-23",
+      "intersection_rows": 3049,
+      "valid_label_rows": 3305,
+      "coverage": 0.9225416036308624,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-24",
+      "intersection_rows": 3046,
+      "valid_label_rows": 3304,
+      "coverage": 0.9219128329297821,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-27",
+      "intersection_rows": 3050,
+      "valid_label_rows": 3307,
+      "coverage": 0.9222860598729967,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-28",
+      "intersection_rows": 3050,
+      "valid_label_rows": 3306,
+      "coverage": 0.9225650332728372,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-29",
+      "intersection_rows": 3053,
+      "valid_label_rows": 3310,
+      "coverage": 0.9223564954682779,
+      "below_floor": false
+    },
+    {
+      "day": "2022-06-30",
+      "intersection_rows": 3057,
+      "valid_label_rows": 3316,
+      "coverage": 0.9218938480096501,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-01",
+      "intersection_rows": 3062,
+      "valid_label_rows": 3317,
+      "coverage": 0.9231233041905336,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-04",
+      "intersection_rows": 3062,
+      "valid_label_rows": 3314,
+      "coverage": 0.923958961979481,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-05",
+      "intersection_rows": 3066,
+      "valid_label_rows": 3316,
+      "coverage": 0.9246079613992763,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-06",
+      "intersection_rows": 3072,
+      "valid_label_rows": 3323,
+      "coverage": 0.9244658441167619,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-07",
+      "intersection_rows": 3073,
+      "valid_label_rows": 3325,
+      "coverage": 0.9242105263157895,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-08",
+      "intersection_rows": 3076,
+      "valid_label_rows": 3326,
+      "coverage": 0.9248346361996392,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-11",
+      "intersection_rows": 3078,
+      "valid_label_rows": 3328,
+      "coverage": 0.9248798076923077,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-12",
+      "intersection_rows": 3078,
+      "valid_label_rows": 3327,
+      "coverage": 0.9251577998196574,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-13",
+      "intersection_rows": 3079,
+      "valid_label_rows": 3330,
+      "coverage": 0.9246246246246246,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-14",
+      "intersection_rows": 3080,
+      "valid_label_rows": 3334,
+      "coverage": 0.9238152369526095,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-15",
+      "intersection_rows": 3078,
+      "valid_label_rows": 3332,
+      "coverage": 0.9237695078031213,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-18",
+      "intersection_rows": 3081,
+      "valid_label_rows": 3336,
+      "coverage": 0.9235611510791367,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-19",
+      "intersection_rows": 3084,
+      "valid_label_rows": 3340,
+      "coverage": 0.9233532934131736,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-20",
+      "intersection_rows": 3087,
+      "valid_label_rows": 3344,
+      "coverage": 0.9231459330143541,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-21",
+      "intersection_rows": 3089,
+      "valid_label_rows": 3345,
+      "coverage": 0.9234678624813154,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-22",
+      "intersection_rows": 3090,
+      "valid_label_rows": 3346,
+      "coverage": 0.9234907352062164,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-25",
+      "intersection_rows": 3093,
+      "valid_label_rows": 3347,
+      "coverage": 0.9241111443083359,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-26",
+      "intersection_rows": 3094,
+      "valid_label_rows": 3350,
+      "coverage": 0.9235820895522389,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-27",
+      "intersection_rows": 3095,
+      "valid_label_rows": 3351,
+      "coverage": 0.9236048940614742,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-28",
+      "intersection_rows": 3096,
+      "valid_label_rows": 3354,
+      "coverage": 0.9230769230769231,
+      "below_floor": false
+    },
+    {
+      "day": "2022-07-29",
+      "intersection_rows": 3003,
+      "valid_label_rows": 3355,
+      "coverage": 0.8950819672131147,
+      "below_floor": true
+    },
+    {
+      "day": "2022-08-01",
+      "intersection_rows": 3099,
+      "valid_label_rows": 3353,
+      "coverage": 0.9242469430360871,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-02",
+      "intersection_rows": 3104,
+      "valid_label_rows": 3355,
+      "coverage": 0.9251862891207153,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-03",
+      "intersection_rows": 3099,
+      "valid_label_rows": 3356,
+      "coverage": 0.9234207389749702,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-04",
+      "intersection_rows": 3102,
+      "valid_label_rows": 3361,
+      "coverage": 0.9229396013091342,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-05",
+      "intersection_rows": 3100,
+      "valid_label_rows": 3365,
+      "coverage": 0.9212481426448736,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-08",
+      "intersection_rows": 3098,
+      "valid_label_rows": 3367,
+      "coverage": 0.9201069201069201,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-09",
+      "intersection_rows": 3094,
+      "valid_label_rows": 3366,
+      "coverage": 0.9191919191919192,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-10",
+      "intersection_rows": 3095,
+      "valid_label_rows": 3368,
+      "coverage": 0.9189429928741093,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-11",
+      "intersection_rows": 3097,
+      "valid_label_rows": 3371,
+      "coverage": 0.9187184811628597,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-12",
+      "intersection_rows": 3097,
+      "valid_label_rows": 3373,
+      "coverage": 0.918173732582271,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-15",
+      "intersection_rows": 3098,
+      "valid_label_rows": 3376,
+      "coverage": 0.917654028436019,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-16",
+      "intersection_rows": 3098,
+      "valid_label_rows": 3377,
+      "coverage": 0.9173822919751259,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-17",
+      "intersection_rows": 3102,
+      "valid_label_rows": 3380,
+      "coverage": 0.9177514792899408,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-18",
+      "intersection_rows": 3106,
+      "valid_label_rows": 3384,
+      "coverage": 0.9178486997635934,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-19",
+      "intersection_rows": 3103,
+      "valid_label_rows": 3385,
+      "coverage": 0.9166912850812408,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-22",
+      "intersection_rows": 3109,
+      "valid_label_rows": 3385,
+      "coverage": 0.918463810930576,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-23",
+      "intersection_rows": 3108,
+      "valid_label_rows": 3385,
+      "coverage": 0.9181683899556868,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-24",
+      "intersection_rows": 3109,
+      "valid_label_rows": 3386,
+      "coverage": 0.9181925575900768,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-25",
+      "intersection_rows": 3116,
+      "valid_label_rows": 3391,
+      "coverage": 0.918902978472427,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-26",
+      "intersection_rows": 3120,
+      "valid_label_rows": 3394,
+      "coverage": 0.9192692987625221,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-29",
+      "intersection_rows": 3124,
+      "valid_label_rows": 3397,
+      "coverage": 0.9196349720341478,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-30",
+      "intersection_rows": 3122,
+      "valid_label_rows": 3399,
+      "coverage": 0.9185054427772874,
+      "below_floor": false
+    },
+    {
+      "day": "2022-08-31",
+      "intersection_rows": 3125,
+      "valid_label_rows": 3401,
+      "coverage": 0.9188473978241694,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-01",
+      "intersection_rows": 3129,
+      "valid_label_rows": 3399,
+      "coverage": 0.9205648720211828,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-02",
+      "intersection_rows": 3135,
+      "valid_label_rows": 3402,
+      "coverage": 0.9215167548500882,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-05",
+      "intersection_rows": 3137,
+      "valid_label_rows": 3402,
+      "coverage": 0.9221046443268666,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-06",
+      "intersection_rows": 3140,
+      "valid_label_rows": 3404,
+      "coverage": 0.9224441833137486,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-07",
+      "intersection_rows": 3140,
+      "valid_label_rows": 3407,
+      "coverage": 0.9216319342530085,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-08",
+      "intersection_rows": 3142,
+      "valid_label_rows": 3409,
+      "coverage": 0.921677911410971,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-09",
+      "intersection_rows": 3143,
+      "valid_label_rows": 3409,
+      "coverage": 0.9219712525667351,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-13",
+      "intersection_rows": 3149,
+      "valid_label_rows": 3411,
+      "coverage": 0.9231896804456171,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-14",
+      "intersection_rows": 3149,
+      "valid_label_rows": 3409,
+      "coverage": 0.92373129950132,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-15",
+      "intersection_rows": 3153,
+      "valid_label_rows": 3410,
+      "coverage": 0.924633431085044,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-16",
+      "intersection_rows": 3156,
+      "valid_label_rows": 3412,
+      "coverage": 0.9249706916764361,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-19",
+      "intersection_rows": 3157,
+      "valid_label_rows": 3413,
+      "coverage": 0.9249926750659244,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-20",
+      "intersection_rows": 3163,
+      "valid_label_rows": 3417,
+      "coverage": 0.9256657887035411,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-21",
+      "intersection_rows": 3170,
+      "valid_label_rows": 3420,
+      "coverage": 0.9269005847953217,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-22",
+      "intersection_rows": 3172,
+      "valid_label_rows": 3418,
+      "coverage": 0.9280280866003511,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-23",
+      "intersection_rows": 3176,
+      "valid_label_rows": 3421,
+      "coverage": 0.9283835135925168,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-26",
+      "intersection_rows": 3179,
+      "valid_label_rows": 3421,
+      "coverage": 0.9292604501607717,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-27",
+      "intersection_rows": 3182,
+      "valid_label_rows": 3424,
+      "coverage": 0.929322429906542,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-28",
+      "intersection_rows": 3184,
+      "valid_label_rows": 3426,
+      "coverage": 0.9293636894337419,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-29",
+      "intersection_rows": 3186,
+      "valid_label_rows": 3426,
+      "coverage": 0.9299474605954466,
+      "below_floor": false
+    },
+    {
+      "day": "2022-09-30",
+      "intersection_rows": 3181,
+      "valid_label_rows": 3427,
+      "coverage": 0.9282170995039393,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-10",
+      "intersection_rows": 3184,
+      "valid_label_rows": 3430,
+      "coverage": 0.9282798833819242,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-11",
+      "intersection_rows": 3188,
+      "valid_label_rows": 3433,
+      "coverage": 0.9286338479464026,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-12",
+      "intersection_rows": 3188,
+      "valid_label_rows": 3433,
+      "coverage": 0.9286338479464026,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-13",
+      "intersection_rows": 3190,
+      "valid_label_rows": 3435,
+      "coverage": 0.9286754002911208,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-14",
+      "intersection_rows": 3186,
+      "valid_label_rows": 3435,
+      "coverage": 0.9275109170305676,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-17",
+      "intersection_rows": 3184,
+      "valid_label_rows": 3435,
+      "coverage": 0.9269286754002911,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-18",
+      "intersection_rows": 3186,
+      "valid_label_rows": 3436,
+      "coverage": 0.9272409778812573,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-19",
+      "intersection_rows": 3187,
+      "valid_label_rows": 3438,
+      "coverage": 0.9269924374636417,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-20",
+      "intersection_rows": 3185,
+      "valid_label_rows": 3442,
+      "coverage": 0.9253341080766996,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-21",
+      "intersection_rows": 3177,
+      "valid_label_rows": 3441,
+      "coverage": 0.923278116826504,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-24",
+      "intersection_rows": 3174,
+      "valid_label_rows": 3441,
+      "coverage": 0.9224062772449869,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-25",
+      "intersection_rows": 3176,
+      "valid_label_rows": 3438,
+      "coverage": 0.9237929028504944,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-26",
+      "intersection_rows": 3171,
+      "valid_label_rows": 3436,
+      "coverage": 0.9228754365541327,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-27",
+      "intersection_rows": 3170,
+      "valid_label_rows": 3443,
+      "coverage": 0.9207086842869591,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-28",
+      "intersection_rows": 3172,
+      "valid_label_rows": 3447,
+      "coverage": 0.9202204815781839,
+      "below_floor": false
+    },
+    {
+      "day": "2022-10-31",
+      "intersection_rows": 3167,
+      "valid_label_rows": 3449,
+      "coverage": 0.9182371701942592,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-01",
+      "intersection_rows": 3165,
+      "valid_label_rows": 3446,
+      "coverage": 0.9184561810795124,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-02",
+      "intersection_rows": 3163,
+      "valid_label_rows": 3448,
+      "coverage": 0.9173433874709976,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-03",
+      "intersection_rows": 3162,
+      "valid_label_rows": 3454,
+      "coverage": 0.9154603358425014,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-04",
+      "intersection_rows": 3164,
+      "valid_label_rows": 3454,
+      "coverage": 0.9160393746381007,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-07",
+      "intersection_rows": 3163,
+      "valid_label_rows": 3458,
+      "coverage": 0.9146905725853094,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-08",
+      "intersection_rows": 3161,
+      "valid_label_rows": 3461,
+      "coverage": 0.9133198497544063,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-09",
+      "intersection_rows": 3158,
+      "valid_label_rows": 3463,
+      "coverage": 0.9119260756569448,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-10",
+      "intersection_rows": 3155,
+      "valid_label_rows": 3466,
+      "coverage": 0.9102712060011541,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-11",
+      "intersection_rows": 3157,
+      "valid_label_rows": 3468,
+      "coverage": 0.910322952710496,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-14",
+      "intersection_rows": 3158,
+      "valid_label_rows": 3471,
+      "coverage": 0.9098242581388649,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-15",
+      "intersection_rows": 3162,
+      "valid_label_rows": 3473,
+      "coverage": 0.9104520587388425,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-16",
+      "intersection_rows": 3161,
+      "valid_label_rows": 3472,
+      "coverage": 0.910426267281106,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-17",
+      "intersection_rows": 3161,
+      "valid_label_rows": 3473,
+      "coverage": 0.9101641232363951,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-18",
+      "intersection_rows": 3159,
+      "valid_label_rows": 3475,
+      "coverage": 0.9090647482014389,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-21",
+      "intersection_rows": 3156,
+      "valid_label_rows": 3475,
+      "coverage": 0.9082014388489209,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-22",
+      "intersection_rows": 3155,
+      "valid_label_rows": 3479,
+      "coverage": 0.9068697901695889,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-23",
+      "intersection_rows": 3159,
+      "valid_label_rows": 3482,
+      "coverage": 0.9072372199885124,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-24",
+      "intersection_rows": 3163,
+      "valid_label_rows": 3486,
+      "coverage": 0.9073436603557086,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-25",
+      "intersection_rows": 3160,
+      "valid_label_rows": 3485,
+      "coverage": 0.9067431850789096,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-28",
+      "intersection_rows": 3168,
+      "valid_label_rows": 3489,
+      "coverage": 0.9079965606190885,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-29",
+      "intersection_rows": 3172,
+      "valid_label_rows": 3489,
+      "coverage": 0.9091430209229006,
+      "below_floor": false
+    },
+    {
+      "day": "2022-11-30",
+      "intersection_rows": 3178,
+      "valid_label_rows": 3491,
+      "coverage": 0.9103408765396734,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-01",
+      "intersection_rows": 3180,
+      "valid_label_rows": 3490,
+      "coverage": 0.9111747851002865,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-02",
+      "intersection_rows": 3185,
+      "valid_label_rows": 3493,
+      "coverage": 0.9118236472945892,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-05",
+      "intersection_rows": 3192,
+      "valid_label_rows": 3494,
+      "coverage": 0.9135661133371494,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-06",
+      "intersection_rows": 3194,
+      "valid_label_rows": 3493,
+      "coverage": 0.9144002290294876,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-07",
+      "intersection_rows": 3196,
+      "valid_label_rows": 3494,
+      "coverage": 0.9147109330280481,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-08",
+      "intersection_rows": 3199,
+      "valid_label_rows": 3496,
+      "coverage": 0.915045766590389,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-09",
+      "intersection_rows": 3198,
+      "valid_label_rows": 3494,
+      "coverage": 0.9152833428734974,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-12",
+      "intersection_rows": 3199,
+      "valid_label_rows": 3497,
+      "coverage": 0.9147841006577067,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-13",
+      "intersection_rows": 3197,
+      "valid_label_rows": 3496,
+      "coverage": 0.9144736842105263,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-14",
+      "intersection_rows": 3203,
+      "valid_label_rows": 3501,
+      "coverage": 0.914881462439303,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-15",
+      "intersection_rows": 3206,
+      "valid_label_rows": 3500,
+      "coverage": 0.916,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-16",
+      "intersection_rows": 3207,
+      "valid_label_rows": 3499,
+      "coverage": 0.9165475850242927,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-19",
+      "intersection_rows": 3214,
+      "valid_label_rows": 3505,
+      "coverage": 0.9169757489300998,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-20",
+      "intersection_rows": 3212,
+      "valid_label_rows": 3501,
+      "coverage": 0.9174521565267066,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-21",
+      "intersection_rows": 3215,
+      "valid_label_rows": 3504,
+      "coverage": 0.9175228310502284,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-22",
+      "intersection_rows": 3213,
+      "valid_label_rows": 3510,
+      "coverage": 0.9153846153846154,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-23",
+      "intersection_rows": 3212,
+      "valid_label_rows": 3507,
+      "coverage": 0.9158825206729398,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-26",
+      "intersection_rows": 3215,
+      "valid_label_rows": 3510,
+      "coverage": 0.915954415954416,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-27",
+      "intersection_rows": 3212,
+      "valid_label_rows": 3512,
+      "coverage": 0.9145785876993167,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-28",
+      "intersection_rows": 3212,
+      "valid_label_rows": 3513,
+      "coverage": 0.9143182465129519,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-29",
+      "intersection_rows": 3213,
+      "valid_label_rows": 3514,
+      "coverage": 0.9143426294820717,
+      "below_floor": false
+    },
+    {
+      "day": "2022-12-30",
+      "intersection_rows": 3214,
+      "valid_label_rows": 3516,
+      "coverage": 0.9141069397042093,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-03",
+      "intersection_rows": 3215,
+      "valid_label_rows": 3513,
+      "coverage": 0.9151722174779391,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-04",
+      "intersection_rows": 3215,
+      "valid_label_rows": 3515,
+      "coverage": 0.914651493598862,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-05",
+      "intersection_rows": 3217,
+      "valid_label_rows": 3519,
+      "coverage": 0.914180164819551,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-06",
+      "intersection_rows": 3222,
+      "valid_label_rows": 3523,
+      "coverage": 0.9145614533068408,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-09",
+      "intersection_rows": 3218,
+      "valid_label_rows": 3528,
+      "coverage": 0.9121315192743764,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-10",
+      "intersection_rows": 3221,
+      "valid_label_rows": 3533,
+      "coverage": 0.9116897820549108,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-11",
+      "intersection_rows": 3220,
+      "valid_label_rows": 3529,
+      "coverage": 0.9124397846415415,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-12",
+      "intersection_rows": 3223,
+      "valid_label_rows": 3531,
+      "coverage": 0.9127725856697819,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-13",
+      "intersection_rows": 3221,
+      "valid_label_rows": 3531,
+      "coverage": 0.9122061738884168,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-16",
+      "intersection_rows": 3218,
+      "valid_label_rows": 3532,
+      "coverage": 0.9110985277463194,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-17",
+      "intersection_rows": 3218,
+      "valid_label_rows": 3533,
+      "coverage": 0.9108406453439004,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-18",
+      "intersection_rows": 3215,
+      "valid_label_rows": 3533,
+      "coverage": 0.9099915086328899,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-19",
+      "intersection_rows": 3220,
+      "valid_label_rows": 3536,
+      "coverage": 0.9106334841628959,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-20",
+      "intersection_rows": 3217,
+      "valid_label_rows": 3537,
+      "coverage": 0.9095278484591461,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-30",
+      "intersection_rows": 3222,
+      "valid_label_rows": 3538,
+      "coverage": 0.9106840022611645,
+      "below_floor": false
+    },
+    {
+      "day": "2023-01-31",
+      "intersection_rows": 3227,
+      "valid_label_rows": 3537,
+      "coverage": 0.9123551031947978,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-01",
+      "intersection_rows": 3227,
+      "valid_label_rows": 3536,
+      "coverage": 0.9126131221719457,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-02",
+      "intersection_rows": 3227,
+      "valid_label_rows": 3538,
+      "coverage": 0.9120972300734879,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-03",
+      "intersection_rows": 3228,
+      "valid_label_rows": 3541,
+      "coverage": 0.9116068907088393,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-06",
+      "intersection_rows": 3226,
+      "valid_label_rows": 3542,
+      "coverage": 0.9107848673066065,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-07",
+      "intersection_rows": 3226,
+      "valid_label_rows": 3546,
+      "coverage": 0.9097574732092498,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-08",
+      "intersection_rows": 3225,
+      "valid_label_rows": 3547,
+      "coverage": 0.9092190583591768,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-09",
+      "intersection_rows": 3228,
+      "valid_label_rows": 3549,
+      "coverage": 0.9095519864750634,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-10",
+      "intersection_rows": 3230,
+      "valid_label_rows": 3552,
+      "coverage": 0.9093468468468469,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-13",
+      "intersection_rows": 3227,
+      "valid_label_rows": 3552,
+      "coverage": 0.9085022522522522,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-14",
+      "intersection_rows": 3228,
+      "valid_label_rows": 3554,
+      "coverage": 0.9082723691615081,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-15",
+      "intersection_rows": 3225,
+      "valid_label_rows": 3557,
+      "coverage": 0.9066629181894855,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-16",
+      "intersection_rows": 3231,
+      "valid_label_rows": 3559,
+      "coverage": 0.907839280696825,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-17",
+      "intersection_rows": 3233,
+      "valid_label_rows": 3560,
+      "coverage": 0.9081460674157303,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-20",
+      "intersection_rows": 3235,
+      "valid_label_rows": 3563,
+      "coverage": 0.9079427448779118,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-21",
+      "intersection_rows": 3237,
+      "valid_label_rows": 3564,
+      "coverage": 0.9082491582491582,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-22",
+      "intersection_rows": 3240,
+      "valid_label_rows": 3565,
+      "coverage": 0.908835904628331,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-23",
+      "intersection_rows": 3241,
+      "valid_label_rows": 3563,
+      "coverage": 0.9096267190569745,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-24",
+      "intersection_rows": 3242,
+      "valid_label_rows": 3563,
+      "coverage": 0.9099073814201516,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-27",
+      "intersection_rows": 3243,
+      "valid_label_rows": 3563,
+      "coverage": 0.9101880437833286,
+      "below_floor": false
+    },
+    {
+      "day": "2023-02-28",
+      "intersection_rows": 3237,
+      "valid_label_rows": 3567,
+      "coverage": 0.9074852817493693,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-01",
+      "intersection_rows": 3238,
+      "valid_label_rows": 3564,
+      "coverage": 0.9085297418630752,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-02",
+      "intersection_rows": 3239,
+      "valid_label_rows": 3568,
+      "coverage": 0.9077914798206278,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-03",
+      "intersection_rows": 3241,
+      "valid_label_rows": 3570,
+      "coverage": 0.907843137254902,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-06",
+      "intersection_rows": 3242,
+      "valid_label_rows": 3572,
+      "coverage": 0.9076147816349384,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-07",
+      "intersection_rows": 3246,
+      "valid_label_rows": 3574,
+      "coverage": 0.9082260772243984,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-08",
+      "intersection_rows": 3248,
+      "valid_label_rows": 3574,
+      "coverage": 0.9087856743144935,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-09",
+      "intersection_rows": 3245,
+      "valid_label_rows": 3573,
+      "coverage": 0.9082003918275958,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-10",
+      "intersection_rows": 3247,
+      "valid_label_rows": 3574,
+      "coverage": 0.908505875769446,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-13",
+      "intersection_rows": 3246,
+      "valid_label_rows": 3574,
+      "coverage": 0.9082260772243984,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-14",
+      "intersection_rows": 3245,
+      "valid_label_rows": 3573,
+      "coverage": 0.9082003918275958,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-15",
+      "intersection_rows": 3247,
+      "valid_label_rows": 3574,
+      "coverage": 0.908505875769446,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-16",
+      "intersection_rows": 3248,
+      "valid_label_rows": 3574,
+      "coverage": 0.9087856743144935,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-17",
+      "intersection_rows": 3248,
+      "valid_label_rows": 3575,
+      "coverage": 0.9085314685314685,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-20",
+      "intersection_rows": 3252,
+      "valid_label_rows": 3576,
+      "coverage": 0.9093959731543624,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-21",
+      "intersection_rows": 3250,
+      "valid_label_rows": 3577,
+      "coverage": 0.9085826111266424,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-22",
+      "intersection_rows": 3252,
+      "valid_label_rows": 3578,
+      "coverage": 0.9088876467300168,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-23",
+      "intersection_rows": 3249,
+      "valid_label_rows": 3580,
+      "coverage": 0.9075418994413408,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-24",
+      "intersection_rows": 3251,
+      "valid_label_rows": 3582,
+      "coverage": 0.9075935231714126,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-27",
+      "intersection_rows": 3253,
+      "valid_label_rows": 3584,
+      "coverage": 0.9076450892857143,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-28",
+      "intersection_rows": 3252,
+      "valid_label_rows": 3584,
+      "coverage": 0.9073660714285714,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-29",
+      "intersection_rows": 3250,
+      "valid_label_rows": 3585,
+      "coverage": 0.9065550906555091,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-30",
+      "intersection_rows": 3254,
+      "valid_label_rows": 3588,
+      "coverage": 0.9069119286510591,
+      "below_floor": false
+    },
+    {
+      "day": "2023-03-31",
+      "intersection_rows": 3253,
+      "valid_label_rows": 3588,
+      "coverage": 0.9066332218506131,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-03",
+      "intersection_rows": 3258,
+      "valid_label_rows": 3593,
+      "coverage": 0.9067631505705539,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-04",
+      "intersection_rows": 3259,
+      "valid_label_rows": 3596,
+      "coverage": 0.9062847608453838,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-06",
+      "intersection_rows": 3260,
+      "valid_label_rows": 3596,
+      "coverage": 0.9065628476084538,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-07",
+      "intersection_rows": 3257,
+      "valid_label_rows": 3595,
+      "coverage": 0.905980528511822,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-10",
+      "intersection_rows": 3262,
+      "valid_label_rows": 3598,
+      "coverage": 0.9066147859922179,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-11",
+      "intersection_rows": 3266,
+      "valid_label_rows": 3601,
+      "coverage": 0.9069702860316579,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-12",
+      "intersection_rows": 3262,
+      "valid_label_rows": 3601,
+      "coverage": 0.905859483476812,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-13",
+      "intersection_rows": 3258,
+      "valid_label_rows": 3602,
+      "coverage": 0.9044975013881177,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-14",
+      "intersection_rows": 3250,
+      "valid_label_rows": 3599,
+      "coverage": 0.9030286190608502,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-17",
+      "intersection_rows": 3253,
+      "valid_label_rows": 3603,
+      "coverage": 0.9028587288370802,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-18",
+      "intersection_rows": 3252,
+      "valid_label_rows": 3604,
+      "coverage": 0.902330743618202,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-19",
+      "intersection_rows": 3248,
+      "valid_label_rows": 3601,
+      "coverage": 0.9019716745348514,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-20",
+      "intersection_rows": 3244,
+      "valid_label_rows": 3598,
+      "coverage": 0.9016120066703724,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-21",
+      "intersection_rows": 3231,
+      "valid_label_rows": 3583,
+      "coverage": 0.9017583030979626,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-24",
+      "intersection_rows": 3252,
+      "valid_label_rows": 3608,
+      "coverage": 0.9013303769401331,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-25",
+      "intersection_rows": 3247,
+      "valid_label_rows": 3604,
+      "coverage": 0.9009433962264151,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-26",
+      "intersection_rows": 3239,
+      "valid_label_rows": 3595,
+      "coverage": 0.9009735744089012,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-27",
+      "intersection_rows": 3231,
+      "valid_label_rows": 3585,
+      "coverage": 0.901255230125523,
+      "below_floor": false
+    },
+    {
+      "day": "2023-04-28",
+      "intersection_rows": 3212,
+      "valid_label_rows": 3569,
+      "coverage": 0.899971980947044,
+      "below_floor": true
+    },
+    {
+      "day": "2023-05-04",
+      "intersection_rows": 3216,
+      "valid_label_rows": 3568,
+      "coverage": 0.9013452914798207,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-05",
+      "intersection_rows": 3220,
+      "valid_label_rows": 3571,
+      "coverage": 0.9017082049845981,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-08",
+      "intersection_rows": 3219,
+      "valid_label_rows": 3574,
+      "coverage": 0.9006715165081142,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-09",
+      "intersection_rows": 3221,
+      "valid_label_rows": 3575,
+      "coverage": 0.9009790209790209,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-10",
+      "intersection_rows": 3223,
+      "valid_label_rows": 3582,
+      "coverage": 0.8997766610831938,
+      "below_floor": true
+    },
+    {
+      "day": "2023-05-11",
+      "intersection_rows": 3225,
+      "valid_label_rows": 3584,
+      "coverage": 0.8998325892857143,
+      "below_floor": true
+    },
+    {
+      "day": "2023-05-12",
+      "intersection_rows": 3226,
+      "valid_label_rows": 3586,
+      "coverage": 0.8996095928611266,
+      "below_floor": true
+    },
+    {
+      "day": "2023-05-15",
+      "intersection_rows": 3232,
+      "valid_label_rows": 3589,
+      "coverage": 0.9005293953747562,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-16",
+      "intersection_rows": 3231,
+      "valid_label_rows": 3592,
+      "coverage": 0.8994988864142539,
+      "below_floor": true
+    },
+    {
+      "day": "2023-05-17",
+      "intersection_rows": 3235,
+      "valid_label_rows": 3594,
+      "coverage": 0.9001112966054535,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-18",
+      "intersection_rows": 3237,
+      "valid_label_rows": 3594,
+      "coverage": 0.9006677796327212,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-19",
+      "intersection_rows": 3233,
+      "valid_label_rows": 3593,
+      "coverage": 0.8998051767325355,
+      "below_floor": true
+    },
+    {
+      "day": "2023-05-22",
+      "intersection_rows": 3237,
+      "valid_label_rows": 3593,
+      "coverage": 0.9009184525466184,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-23",
+      "intersection_rows": 3241,
+      "valid_label_rows": 3596,
+      "coverage": 0.9012791991101223,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-24",
+      "intersection_rows": 3245,
+      "valid_label_rows": 3596,
+      "coverage": 0.9023915461624027,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-25",
+      "intersection_rows": 3248,
+      "valid_label_rows": 3596,
+      "coverage": 0.9032258064516129,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-26",
+      "intersection_rows": 3254,
+      "valid_label_rows": 3597,
+      "coverage": 0.904642757853767,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-29",
+      "intersection_rows": 3257,
+      "valid_label_rows": 3599,
+      "coverage": 0.9049736037788274,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-30",
+      "intersection_rows": 3260,
+      "valid_label_rows": 3599,
+      "coverage": 0.9058071686579605,
+      "below_floor": false
+    },
+    {
+      "day": "2023-05-31",
+      "intersection_rows": 3261,
+      "valid_label_rows": 3603,
+      "coverage": 0.9050791007493755,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-01",
+      "intersection_rows": 3260,
+      "valid_label_rows": 3598,
+      "coverage": 0.906058921623124,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-02",
+      "intersection_rows": 3263,
+      "valid_label_rows": 3599,
+      "coverage": 0.9066407335370936,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-05",
+      "intersection_rows": 3262,
+      "valid_label_rows": 3601,
+      "coverage": 0.905859483476812,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-06",
+      "intersection_rows": 3259,
+      "valid_label_rows": 3603,
+      "coverage": 0.9045240077713017,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-07",
+      "intersection_rows": 3256,
+      "valid_label_rows": 3604,
+      "coverage": 0.9034406215316315,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-08",
+      "intersection_rows": 3258,
+      "valid_label_rows": 3605,
+      "coverage": 0.9037447988904299,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-09",
+      "intersection_rows": 3254,
+      "valid_label_rows": 3603,
+      "coverage": 0.9031362753261172,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-12",
+      "intersection_rows": 3254,
+      "valid_label_rows": 3605,
+      "coverage": 0.9026352288488211,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-13",
+      "intersection_rows": 3253,
+      "valid_label_rows": 3605,
+      "coverage": 0.9023578363384188,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-14",
+      "intersection_rows": 3256,
+      "valid_label_rows": 3609,
+      "coverage": 0.9021889720144084,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-15",
+      "intersection_rows": 3257,
+      "valid_label_rows": 3609,
+      "coverage": 0.9024660570795234,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-16",
+      "intersection_rows": 3257,
+      "valid_label_rows": 3611,
+      "coverage": 0.9019662143450567,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-19",
+      "intersection_rows": 3258,
+      "valid_label_rows": 3615,
+      "coverage": 0.9012448132780083,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-20",
+      "intersection_rows": 3255,
+      "valid_label_rows": 3614,
+      "coverage": 0.9006640841173216,
+      "below_floor": false
+    },
+    {
+      "day": "2023-06-21",
+      "intersection_rows": 3255,
+      "valid_label_rows": 3617,
+      "coverage": 0.8999170583356373,
+      "below_floor": true
+    },
+    {
+      "day": "2023-06-26",
+      "intersection_rows": 3253,
+      "valid_label_rows": 3618,
+      "coverage": 0.8991155334438916,
+      "below_floor": true
+    },
+    {
+      "day": "2023-06-27",
+      "intersection_rows": 3252,
+      "valid_label_rows": 3617,
+      "coverage": 0.8990876416920099,
+      "below_floor": true
+    },
+    {
+      "day": "2023-06-28",
+      "intersection_rows": 3255,
+      "valid_label_rows": 3620,
+      "coverage": 0.899171270718232,
+      "below_floor": true
+    },
+    {
+      "day": "2023-06-29",
+      "intersection_rows": 3259,
+      "valid_label_rows": 3623,
+      "coverage": 0.8995307756003312,
+      "below_floor": true
+    },
+    {
+      "day": "2023-06-30",
+      "intersection_rows": 3255,
+      "valid_label_rows": 3623,
+      "coverage": 0.8984267181893458,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-03",
+      "intersection_rows": 3257,
+      "valid_label_rows": 3617,
+      "coverage": 0.9004700027647221,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-04",
+      "intersection_rows": 3262,
+      "valid_label_rows": 3624,
+      "coverage": 0.9001103752759382,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-05",
+      "intersection_rows": 3229,
+      "valid_label_rows": 3627,
+      "coverage": 0.8902674386545354,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-06",
+      "intersection_rows": 3259,
+      "valid_label_rows": 3627,
+      "coverage": 0.8985387372484147,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-07",
+      "intersection_rows": 3263,
+      "valid_label_rows": 3631,
+      "coverage": 0.8986505095015147,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-10",
+      "intersection_rows": 3261,
+      "valid_label_rows": 3630,
+      "coverage": 0.8983471074380165,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-11",
+      "intersection_rows": 3265,
+      "valid_label_rows": 3633,
+      "coverage": 0.8987063033305808,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-12",
+      "intersection_rows": 3266,
+      "valid_label_rows": 3635,
+      "coverage": 0.8984869325997249,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-13",
+      "intersection_rows": 3268,
+      "valid_label_rows": 3636,
+      "coverage": 0.8987898789878987,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-14",
+      "intersection_rows": 3265,
+      "valid_label_rows": 3636,
+      "coverage": 0.897964796479648,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-17",
+      "intersection_rows": 3270,
+      "valid_label_rows": 3639,
+      "coverage": 0.8985985160758451,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-18",
+      "intersection_rows": 3269,
+      "valid_label_rows": 3638,
+      "coverage": 0.8985706432105552,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-19",
+      "intersection_rows": 3272,
+      "valid_label_rows": 3640,
+      "coverage": 0.8989010989010989,
+      "below_floor": true
+    },
+    {
+      "day": "2023-07-20",
+      "intersection_rows": 3279,
+      "valid_label_rows": 3642,
+      "coverage": 0.9003294892915981,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-21",
+      "intersection_rows": 3285,
+      "valid_label_rows": 3643,
+      "coverage": 0.9017293439472962,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-24",
+      "intersection_rows": 3288,
+      "valid_label_rows": 3643,
+      "coverage": 0.9025528410650563,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-25",
+      "intersection_rows": 3294,
+      "valid_label_rows": 3644,
+      "coverage": 0.9039517014270033,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-26",
+      "intersection_rows": 3296,
+      "valid_label_rows": 3646,
+      "coverage": 0.9040043883708173,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-27",
+      "intersection_rows": 3302,
+      "valid_label_rows": 3648,
+      "coverage": 0.9051535087719298,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-28",
+      "intersection_rows": 3306,
+      "valid_label_rows": 3650,
+      "coverage": 0.9057534246575343,
+      "below_floor": false
+    },
+    {
+      "day": "2023-07-31",
+      "intersection_rows": 3312,
+      "valid_label_rows": 3649,
+      "coverage": 0.9076459303918882,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-01",
+      "intersection_rows": 3316,
+      "valid_label_rows": 3647,
+      "coverage": 0.90924047162051,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-02",
+      "intersection_rows": 3322,
+      "valid_label_rows": 3648,
+      "coverage": 0.9106359649122807,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-03",
+      "intersection_rows": 3327,
+      "valid_label_rows": 3652,
+      "coverage": 0.9110076670317634,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-04",
+      "intersection_rows": 3330,
+      "valid_label_rows": 3653,
+      "coverage": 0.9115795236791678,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-07",
+      "intersection_rows": 3331,
+      "valid_label_rows": 3655,
+      "coverage": 0.9113543091655266,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-08",
+      "intersection_rows": 3332,
+      "valid_label_rows": 3655,
+      "coverage": 0.9116279069767442,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-09",
+      "intersection_rows": 3335,
+      "valid_label_rows": 3656,
+      "coverage": 0.912199124726477,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-10",
+      "intersection_rows": 3340,
+      "valid_label_rows": 3658,
+      "coverage": 0.9130672498633133,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-11",
+      "intersection_rows": 3348,
+      "valid_label_rows": 3658,
+      "coverage": 0.9152542372881356,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-14",
+      "intersection_rows": 3350,
+      "valid_label_rows": 3661,
+      "coverage": 0.9150505326413548,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-15",
+      "intersection_rows": 3348,
+      "valid_label_rows": 3661,
+      "coverage": 0.9145042338158973,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-16",
+      "intersection_rows": 3349,
+      "valid_label_rows": 3662,
+      "coverage": 0.9145275805570726,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-17",
+      "intersection_rows": 3353,
+      "valid_label_rows": 3665,
+      "coverage": 0.9148703956343792,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-18",
+      "intersection_rows": 3352,
+      "valid_label_rows": 3666,
+      "coverage": 0.9143480632842335,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-21",
+      "intersection_rows": 3350,
+      "valid_label_rows": 3666,
+      "coverage": 0.9138025095471904,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-22",
+      "intersection_rows": 3355,
+      "valid_label_rows": 3669,
+      "coverage": 0.914418097574271,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-23",
+      "intersection_rows": 3354,
+      "valid_label_rows": 3671,
+      "coverage": 0.9136475074911469,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-24",
+      "intersection_rows": 3355,
+      "valid_label_rows": 3672,
+      "coverage": 0.9136710239651417,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-25",
+      "intersection_rows": 3359,
+      "valid_label_rows": 3673,
+      "coverage": 0.9145112986659406,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-28",
+      "intersection_rows": 3357,
+      "valid_label_rows": 3676,
+      "coverage": 0.9132208922742111,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-29",
+      "intersection_rows": 3352,
+      "valid_label_rows": 3678,
+      "coverage": 0.9113648722131593,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-30",
+      "intersection_rows": 3353,
+      "valid_label_rows": 3683,
+      "coverage": 0.9103991311430899,
+      "below_floor": false
+    },
+    {
+      "day": "2023-08-31",
+      "intersection_rows": 3353,
+      "valid_label_rows": 3685,
+      "coverage": 0.9099050203527815,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-01",
+      "intersection_rows": 3354,
+      "valid_label_rows": 3684,
+      "coverage": 0.9104234527687296,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-04",
+      "intersection_rows": 3355,
+      "valid_label_rows": 3686,
+      "coverage": 0.9102007596310363,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-05",
+      "intersection_rows": 3357,
+      "valid_label_rows": 3687,
+      "coverage": 0.9104963384865744,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-06",
+      "intersection_rows": 3357,
+      "valid_label_rows": 3690,
+      "coverage": 0.9097560975609756,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-07",
+      "intersection_rows": 3358,
+      "valid_label_rows": 3691,
+      "coverage": 0.9097805472771606,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-08",
+      "intersection_rows": 3362,
+      "valid_label_rows": 3692,
+      "coverage": 0.9106175514626219,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-11",
+      "intersection_rows": 3359,
+      "valid_label_rows": 3692,
+      "coverage": 0.9098049837486457,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-12",
+      "intersection_rows": 3363,
+      "valid_label_rows": 3697,
+      "coverage": 0.9096564782255883,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-13",
+      "intersection_rows": 3362,
+      "valid_label_rows": 3698,
+      "coverage": 0.9091400757166036,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-14",
+      "intersection_rows": 3362,
+      "valid_label_rows": 3699,
+      "coverage": 0.9088942957556096,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-15",
+      "intersection_rows": 3361,
+      "valid_label_rows": 3700,
+      "coverage": 0.9083783783783784,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-18",
+      "intersection_rows": 3359,
+      "valid_label_rows": 3701,
+      "coverage": 0.9075925425560659,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-19",
+      "intersection_rows": 3360,
+      "valid_label_rows": 3700,
+      "coverage": 0.9081081081081082,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-20",
+      "intersection_rows": 3360,
+      "valid_label_rows": 3702,
+      "coverage": 0.9076175040518638,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-21",
+      "intersection_rows": 3364,
+      "valid_label_rows": 3706,
+      "coverage": 0.9077172153264975,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-22",
+      "intersection_rows": 3363,
+      "valid_label_rows": 3708,
+      "coverage": 0.906957928802589,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-25",
+      "intersection_rows": 3685,
+      "valid_label_rows": 3708,
+      "coverage": 0.993797195253506,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-26",
+      "intersection_rows": 3688,
+      "valid_label_rows": 3710,
+      "coverage": 0.9940700808625337,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-27",
+      "intersection_rows": 3689,
+      "valid_label_rows": 3710,
+      "coverage": 0.9943396226415094,
+      "below_floor": false
+    },
+    {
+      "day": "2023-09-28",
+      "intersection_rows": 3692,
+      "valid_label_rows": 3713,
+      "coverage": 0.9943441960678696,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-09",
+      "intersection_rows": 3693,
+      "valid_label_rows": 3713,
+      "coverage": 0.9946135200646378,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-10",
+      "intersection_rows": 3695,
+      "valid_label_rows": 3716,
+      "coverage": 0.9943487621097955,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-11",
+      "intersection_rows": 3696,
+      "valid_label_rows": 3716,
+      "coverage": 0.9946178686759957,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-12",
+      "intersection_rows": 3697,
+      "valid_label_rows": 3717,
+      "coverage": 0.994619316653215,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-13",
+      "intersection_rows": 3701,
+      "valid_label_rows": 3721,
+      "coverage": 0.9946251007793604,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-16",
+      "intersection_rows": 3704,
+      "valid_label_rows": 3723,
+      "coverage": 0.9948965887724953,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-17",
+      "intersection_rows": 3704,
+      "valid_label_rows": 3724,
+      "coverage": 0.9946294307196563,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-18",
+      "intersection_rows": 3708,
+      "valid_label_rows": 3727,
+      "coverage": 0.9949020660048297,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-19",
+      "intersection_rows": 3710,
+      "valid_label_rows": 3731,
+      "coverage": 0.9943714821763602,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-20",
+      "intersection_rows": 3708,
+      "valid_label_rows": 3730,
+      "coverage": 0.9941018766756032,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-23",
+      "intersection_rows": 3713,
+      "valid_label_rows": 3733,
+      "coverage": 0.99464237878382,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-24",
+      "intersection_rows": 3717,
+      "valid_label_rows": 3736,
+      "coverage": 0.994914346895075,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-25",
+      "intersection_rows": 3718,
+      "valid_label_rows": 3738,
+      "coverage": 0.994649545211343,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-26",
+      "intersection_rows": 3717,
+      "valid_label_rows": 3737,
+      "coverage": 0.9946481134599946,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-27",
+      "intersection_rows": 3714,
+      "valid_label_rows": 3734,
+      "coverage": 0.9946438136047134,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-30",
+      "intersection_rows": 3717,
+      "valid_label_rows": 3737,
+      "coverage": 0.9946481134599946,
+      "below_floor": false
+    },
+    {
+      "day": "2023-10-31",
+      "intersection_rows": 3720,
+      "valid_label_rows": 3741,
+      "coverage": 0.9943865276663993,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-01",
+      "intersection_rows": 3718,
+      "valid_label_rows": 3737,
+      "coverage": 0.9949157077869949,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-02",
+      "intersection_rows": 3720,
+      "valid_label_rows": 3738,
+      "coverage": 0.9951845906902087,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-03",
+      "intersection_rows": 3721,
+      "valid_label_rows": 3738,
+      "coverage": 0.9954521134296416,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-06",
+      "intersection_rows": 3721,
+      "valid_label_rows": 3738,
+      "coverage": 0.9954521134296416,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-07",
+      "intersection_rows": 3724,
+      "valid_label_rows": 3745,
+      "coverage": 0.994392523364486,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-08",
+      "intersection_rows": 3723,
+      "valid_label_rows": 3744,
+      "coverage": 0.9943910256410257,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-09",
+      "intersection_rows": 3722,
+      "valid_label_rows": 3745,
+      "coverage": 0.9938584779706275,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-10",
+      "intersection_rows": 3724,
+      "valid_label_rows": 3748,
+      "coverage": 0.9935965848452508,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-13",
+      "intersection_rows": 3728,
+      "valid_label_rows": 3753,
+      "coverage": 0.9933386624034106,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-14",
+      "intersection_rows": 3728,
+      "valid_label_rows": 3753,
+      "coverage": 0.9933386624034106,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-15",
+      "intersection_rows": 3727,
+      "valid_label_rows": 3752,
+      "coverage": 0.9933368869936035,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-16",
+      "intersection_rows": 3727,
+      "valid_label_rows": 3752,
+      "coverage": 0.9933368869936035,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-17",
+      "intersection_rows": 3729,
+      "valid_label_rows": 3753,
+      "coverage": 0.9936051159072742,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-20",
+      "intersection_rows": 3729,
+      "valid_label_rows": 3755,
+      "coverage": 0.9930758988015979,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-21",
+      "intersection_rows": 3732,
+      "valid_label_rows": 3759,
+      "coverage": 0.9928172386272945,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-22",
+      "intersection_rows": 3733,
+      "valid_label_rows": 3759,
+      "coverage": 0.9930832668262836,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-23",
+      "intersection_rows": 3732,
+      "valid_label_rows": 3760,
+      "coverage": 0.9925531914893617,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-24",
+      "intersection_rows": 3732,
+      "valid_label_rows": 3761,
+      "coverage": 0.9922892847646902,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-27",
+      "intersection_rows": 3733,
+      "valid_label_rows": 3760,
+      "coverage": 0.9928191489361702,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-28",
+      "intersection_rows": 3736,
+      "valid_label_rows": 3763,
+      "coverage": 0.9928248737709274,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-29",
+      "intersection_rows": 3736,
+      "valid_label_rows": 3764,
+      "coverage": 0.9925611052072264,
+      "below_floor": false
+    },
+    {
+      "day": "2023-11-30",
+      "intersection_rows": 3739,
+      "valid_label_rows": 3767,
+      "coverage": 0.992567029466419,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-01",
+      "intersection_rows": 3739,
+      "valid_label_rows": 3765,
+      "coverage": 0.9930942895086321,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-04",
+      "intersection_rows": 3741,
+      "valid_label_rows": 3766,
+      "coverage": 0.9933616569304302,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-05",
+      "intersection_rows": 3743,
+      "valid_label_rows": 3766,
+      "coverage": 0.9938927243759957,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-06",
+      "intersection_rows": 3742,
+      "valid_label_rows": 3767,
+      "coverage": 0.9933634191664454,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-07",
+      "intersection_rows": 3742,
+      "valid_label_rows": 3769,
+      "coverage": 0.9928362960997612,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-08",
+      "intersection_rows": 3740,
+      "valid_label_rows": 3768,
+      "coverage": 0.9925690021231423,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-11",
+      "intersection_rows": 3739,
+      "valid_label_rows": 3766,
+      "coverage": 0.9928305894848646,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-12",
+      "intersection_rows": 3743,
+      "valid_label_rows": 3768,
+      "coverage": 0.9933651804670913,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-13",
+      "intersection_rows": 3740,
+      "valid_label_rows": 3767,
+      "coverage": 0.992832492699761,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-14",
+      "intersection_rows": 3741,
+      "valid_label_rows": 3769,
+      "coverage": 0.9925709737330857,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-15",
+      "intersection_rows": 3743,
+      "valid_label_rows": 3771,
+      "coverage": 0.992574913815964,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-18",
+      "intersection_rows": 3745,
+      "valid_label_rows": 3770,
+      "coverage": 0.993368700265252,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-19",
+      "intersection_rows": 3744,
+      "valid_label_rows": 3770,
+      "coverage": 0.993103448275862,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-20",
+      "intersection_rows": 3745,
+      "valid_label_rows": 3771,
+      "coverage": 0.9931052771148237,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-21",
+      "intersection_rows": 3747,
+      "valid_label_rows": 3774,
+      "coverage": 0.9928457869634341,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-22",
+      "intersection_rows": 3749,
+      "valid_label_rows": 3776,
+      "coverage": 0.9928495762711864,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-25",
+      "intersection_rows": 3749,
+      "valid_label_rows": 3778,
+      "coverage": 0.9923239809422975,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-26",
+      "intersection_rows": 3749,
+      "valid_label_rows": 3779,
+      "coverage": 0.9920613919026198,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-27",
+      "intersection_rows": 3749,
+      "valid_label_rows": 3780,
+      "coverage": 0.9917989417989418,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-28",
+      "intersection_rows": 3750,
+      "valid_label_rows": 3781,
+      "coverage": 0.9918011108172441,
+      "below_floor": false
+    },
+    {
+      "day": "2023-12-29",
+      "intersection_rows": 3750,
+      "valid_label_rows": 3781,
+      "coverage": 0.9918011108172441,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-02",
+      "intersection_rows": 3749,
+      "valid_label_rows": 3780,
+      "coverage": 0.9917989417989418,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-03",
+      "intersection_rows": 3749,
+      "valid_label_rows": 3780,
+      "coverage": 0.9917989417989418,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-04",
+      "intersection_rows": 3749,
+      "valid_label_rows": 3780,
+      "coverage": 0.9917989417989418,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-05",
+      "intersection_rows": 3752,
+      "valid_label_rows": 3783,
+      "coverage": 0.9918054454136929,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-08",
+      "intersection_rows": 3753,
+      "valid_label_rows": 3785,
+      "coverage": 0.9915455746367239,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-09",
+      "intersection_rows": 3755,
+      "valid_label_rows": 3787,
+      "coverage": 0.9915500396091893,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-10",
+      "intersection_rows": 3758,
+      "valid_label_rows": 3791,
+      "coverage": 0.9912951727776312,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-11",
+      "intersection_rows": 3759,
+      "valid_label_rows": 3790,
+      "coverage": 0.991820580474934,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-12",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3792,
+      "coverage": 0.9920886075949367,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-15",
+      "intersection_rows": 3761,
+      "valid_label_rows": 3792,
+      "coverage": 0.991824894514768,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-16",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3793,
+      "coverage": 0.9918270498286317,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-17",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3793,
+      "coverage": 0.9918270498286317,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-18",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3794,
+      "coverage": 0.9915656299420137,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-19",
+      "intersection_rows": 3763,
+      "valid_label_rows": 3795,
+      "coverage": 0.9915678524374176,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-22",
+      "intersection_rows": 3763,
+      "valid_label_rows": 3794,
+      "coverage": 0.9918292040063258,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-23",
+      "intersection_rows": 3763,
+      "valid_label_rows": 3794,
+      "coverage": 0.9918292040063258,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-24",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3794,
+      "coverage": 0.9920927780706379,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-25",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3793,
+      "coverage": 0.9918270498286317,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-26",
+      "intersection_rows": 3763,
+      "valid_label_rows": 3793,
+      "coverage": 0.9920906933825469,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-29",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3794,
+      "coverage": 0.9920927780706379,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-30",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3795,
+      "coverage": 0.9926218708827405,
+      "below_floor": false
+    },
+    {
+      "day": "2024-01-31",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3796,
+      "coverage": 0.9928872497365648,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-01",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3794,
+      "coverage": 0.9934106483921982,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-02",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3795,
+      "coverage": 0.9936758893280633,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-05",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3796,
+      "coverage": 0.9934141201264489,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-06",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3799,
+      "coverage": 0.9931560937088707,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-07",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3799,
+      "coverage": 0.9928928665438274,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-08",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3798,
+      "coverage": 0.9928909952606635,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-19",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3799,
+      "coverage": 0.9928928665438274,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-20",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3798,
+      "coverage": 0.9936808846761453,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-21",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3799,
+      "coverage": 0.9939457752040011,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-22",
+      "intersection_rows": 3778,
+      "valid_label_rows": 3801,
+      "coverage": 0.9939489607997896,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-23",
+      "intersection_rows": 3779,
+      "valid_label_rows": 3801,
+      "coverage": 0.9942120494606682,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-26",
+      "intersection_rows": 3780,
+      "valid_label_rows": 3801,
+      "coverage": 0.994475138121547,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-27",
+      "intersection_rows": 3779,
+      "valid_label_rows": 3800,
+      "coverage": 0.9944736842105263,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-28",
+      "intersection_rows": 3779,
+      "valid_label_rows": 3800,
+      "coverage": 0.9944736842105263,
+      "below_floor": false
+    },
+    {
+      "day": "2024-02-29",
+      "intersection_rows": 3782,
+      "valid_label_rows": 3802,
+      "coverage": 0.9947396107311941,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-01",
+      "intersection_rows": 3782,
+      "valid_label_rows": 3802,
+      "coverage": 0.9947396107311941,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-04",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3805,
+      "coverage": 0.9947437582128777,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-05",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3805,
+      "coverage": 0.9947437582128777,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-06",
+      "intersection_rows": 3786,
+      "valid_label_rows": 3807,
+      "coverage": 0.9944838455476753,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-07",
+      "intersection_rows": 3787,
+      "valid_label_rows": 3807,
+      "coverage": 0.9947465195692146,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-08",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3806,
+      "coverage": 0.9944823962165003,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-11",
+      "intersection_rows": 3788,
+      "valid_label_rows": 3808,
+      "coverage": 0.9947478991596639,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-12",
+      "intersection_rows": 3786,
+      "valid_label_rows": 3808,
+      "coverage": 0.9942226890756303,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-13",
+      "intersection_rows": 3788,
+      "valid_label_rows": 3810,
+      "coverage": 0.9942257217847769,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-14",
+      "intersection_rows": 3789,
+      "valid_label_rows": 3810,
+      "coverage": 0.9944881889763779,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-15",
+      "intersection_rows": 3790,
+      "valid_label_rows": 3810,
+      "coverage": 0.994750656167979,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-18",
+      "intersection_rows": 3790,
+      "valid_label_rows": 3810,
+      "coverage": 0.994750656167979,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-19",
+      "intersection_rows": 3790,
+      "valid_label_rows": 3812,
+      "coverage": 0.9942287513116475,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-20",
+      "intersection_rows": 3791,
+      "valid_label_rows": 3813,
+      "coverage": 0.994230264883294,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-21",
+      "intersection_rows": 3792,
+      "valid_label_rows": 3814,
+      "coverage": 0.994231777661248,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-22",
+      "intersection_rows": 3795,
+      "valid_label_rows": 3815,
+      "coverage": 0.9947575360419397,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-25",
+      "intersection_rows": 3797,
+      "valid_label_rows": 3817,
+      "coverage": 0.994760282944721,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-26",
+      "intersection_rows": 3800,
+      "valid_label_rows": 3817,
+      "coverage": 0.9955462405030129,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-27",
+      "intersection_rows": 3802,
+      "valid_label_rows": 3820,
+      "coverage": 0.9952879581151832,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-28",
+      "intersection_rows": 3801,
+      "valid_label_rows": 3819,
+      "coverage": 0.99528672427337,
+      "below_floor": false
+    },
+    {
+      "day": "2024-03-29",
+      "intersection_rows": 3802,
+      "valid_label_rows": 3820,
+      "coverage": 0.9952879581151832,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-01",
+      "intersection_rows": 3804,
+      "valid_label_rows": 3820,
+      "coverage": 0.9958115183246073,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-02",
+      "intersection_rows": 3804,
+      "valid_label_rows": 3821,
+      "coverage": 0.9955509029049987,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-03",
+      "intersection_rows": 3803,
+      "valid_label_rows": 3820,
+      "coverage": 0.9955497382198953,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-08",
+      "intersection_rows": 3802,
+      "valid_label_rows": 3821,
+      "coverage": 0.9950274797173515,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-09",
+      "intersection_rows": 3803,
+      "valid_label_rows": 3821,
+      "coverage": 0.9952891913111751,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-10",
+      "intersection_rows": 3804,
+      "valid_label_rows": 3822,
+      "coverage": 0.9952904238618524,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-11",
+      "intersection_rows": 3804,
+      "valid_label_rows": 3821,
+      "coverage": 0.9955509029049987,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-12",
+      "intersection_rows": 3809,
+      "valid_label_rows": 3825,
+      "coverage": 0.9958169934640523,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-15",
+      "intersection_rows": 3806,
+      "valid_label_rows": 3822,
+      "coverage": 0.9958137100994244,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-16",
+      "intersection_rows": 3809,
+      "valid_label_rows": 3825,
+      "coverage": 0.9958169934640523,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-17",
+      "intersection_rows": 3811,
+      "valid_label_rows": 3825,
+      "coverage": 0.9963398692810458,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-18",
+      "intersection_rows": 3809,
+      "valid_label_rows": 3822,
+      "coverage": 0.9965986394557823,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-19",
+      "intersection_rows": 3803,
+      "valid_label_rows": 3816,
+      "coverage": 0.9965932914046122,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-22",
+      "intersection_rows": 3779,
+      "valid_label_rows": 3792,
+      "coverage": 0.9965717299578059,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-23",
+      "intersection_rows": 3817,
+      "valid_label_rows": 3830,
+      "coverage": 0.9966057441253263,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-24",
+      "intersection_rows": 3814,
+      "valid_label_rows": 3827,
+      "coverage": 0.9966030833551084,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-25",
+      "intersection_rows": 3807,
+      "valid_label_rows": 3820,
+      "coverage": 0.9965968586387435,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-26",
+      "intersection_rows": 3797,
+      "valid_label_rows": 3810,
+      "coverage": 0.9965879265091864,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-29",
+      "intersection_rows": 3763,
+      "valid_label_rows": 3776,
+      "coverage": 0.9965572033898306,
+      "below_floor": false
+    },
+    {
+      "day": "2024-04-30",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3780,
+      "coverage": 0.9957671957671957,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-06",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3787,
+      "coverage": 0.9960390810668075,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-07",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3788,
+      "coverage": 0.9957761351636748,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-08",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3788,
+      "coverage": 0.9960401267159451,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-09",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3790,
+      "coverage": 0.996042216358839,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-10",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3788,
+      "coverage": 0.9955121436114044,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-13",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3791,
+      "coverage": 0.9952519124241624,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-14",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3793,
+      "coverage": 0.9955180595834432,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-15",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3793,
+      "coverage": 0.9952544160295281,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-16",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3794,
+      "coverage": 0.9949920927780707,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-17",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3790,
+      "coverage": 0.9949868073878628,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-20",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3792,
+      "coverage": 0.9949894514767933,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-21",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3793,
+      "coverage": 0.9941998418138677,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-22",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3794,
+      "coverage": 0.9947285187137586,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-23",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3795,
+      "coverage": 0.9944664031620554,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-24",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3795,
+      "coverage": 0.9944664031620554,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-27",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3797,
+      "coverage": 0.9944693178825389,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-28",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3797,
+      "coverage": 0.9942059520674217,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-29",
+      "intersection_rows": 3778,
+      "valid_label_rows": 3800,
+      "coverage": 0.9942105263157894,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-30",
+      "intersection_rows": 3779,
+      "valid_label_rows": 3802,
+      "coverage": 0.9939505523408733,
+      "below_floor": false
+    },
+    {
+      "day": "2024-05-31",
+      "intersection_rows": 3779,
+      "valid_label_rows": 3803,
+      "coverage": 0.9936891927425716,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-03",
+      "intersection_rows": 3779,
+      "valid_label_rows": 3804,
+      "coverage": 0.9934279705573081,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-04",
+      "intersection_rows": 3782,
+      "valid_label_rows": 3807,
+      "coverage": 0.9934331494615183,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-05",
+      "intersection_rows": 3784,
+      "valid_label_rows": 3810,
+      "coverage": 0.9931758530183727,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-06",
+      "intersection_rows": 3787,
+      "valid_label_rows": 3812,
+      "coverage": 0.9934417628541448,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-07",
+      "intersection_rows": 3788,
+      "valid_label_rows": 3812,
+      "coverage": 0.993704092339979,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-11",
+      "intersection_rows": 3792,
+      "valid_label_rows": 3817,
+      "coverage": 0.9934503536809012,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-12",
+      "intersection_rows": 3792,
+      "valid_label_rows": 3820,
+      "coverage": 0.9926701570680628,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-13",
+      "intersection_rows": 3793,
+      "valid_label_rows": 3824,
+      "coverage": 0.9918933054393305,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-14",
+      "intersection_rows": 3791,
+      "valid_label_rows": 3823,
+      "coverage": 0.9916296102537274,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-17",
+      "intersection_rows": 3793,
+      "valid_label_rows": 3825,
+      "coverage": 0.9916339869281046,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-18",
+      "intersection_rows": 3797,
+      "valid_label_rows": 3827,
+      "coverage": 0.9921609615887118,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-19",
+      "intersection_rows": 3798,
+      "valid_label_rows": 3828,
+      "coverage": 0.9921630094043887,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-20",
+      "intersection_rows": 3800,
+      "valid_label_rows": 3830,
+      "coverage": 0.9921671018276762,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-21",
+      "intersection_rows": 3800,
+      "valid_label_rows": 3830,
+      "coverage": 0.9921671018276762,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-24",
+      "intersection_rows": 3800,
+      "valid_label_rows": 3831,
+      "coverage": 0.9919081179848603,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-25",
+      "intersection_rows": 3804,
+      "valid_label_rows": 3834,
+      "coverage": 0.9921752738654147,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-26",
+      "intersection_rows": 3809,
+      "valid_label_rows": 3839,
+      "coverage": 0.9921854649648346,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-27",
+      "intersection_rows": 3809,
+      "valid_label_rows": 3839,
+      "coverage": 0.9921854649648346,
+      "below_floor": false
+    },
+    {
+      "day": "2024-06-28",
+      "intersection_rows": 3804,
+      "valid_label_rows": 3834,
+      "coverage": 0.9921752738654147,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-01",
+      "intersection_rows": 3807,
+      "valid_label_rows": 3837,
+      "coverage": 0.9921813917122753,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-02",
+      "intersection_rows": 3808,
+      "valid_label_rows": 3838,
+      "coverage": 0.9921834288692027,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-03",
+      "intersection_rows": 3810,
+      "valid_label_rows": 3842,
+      "coverage": 0.9916710046850599,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-04",
+      "intersection_rows": 3810,
+      "valid_label_rows": 3845,
+      "coverage": 0.9908972691807543,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-05",
+      "intersection_rows": 3809,
+      "valid_label_rows": 3844,
+      "coverage": 0.990894901144641,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-08",
+      "intersection_rows": 3809,
+      "valid_label_rows": 3845,
+      "coverage": 0.9906371911573472,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-09",
+      "intersection_rows": 3812,
+      "valid_label_rows": 3847,
+      "coverage": 0.9909020015596569,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-10",
+      "intersection_rows": 3814,
+      "valid_label_rows": 3849,
+      "coverage": 0.9909067290205248,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-11",
+      "intersection_rows": 3813,
+      "valid_label_rows": 3848,
+      "coverage": 0.9909043659043659,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-12",
+      "intersection_rows": 3816,
+      "valid_label_rows": 3851,
+      "coverage": 0.9909114515710206,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-15",
+      "intersection_rows": 3816,
+      "valid_label_rows": 3852,
+      "coverage": 0.9906542056074766,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-16",
+      "intersection_rows": 3818,
+      "valid_label_rows": 3853,
+      "coverage": 0.9909161692187906,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-17",
+      "intersection_rows": 3819,
+      "valid_label_rows": 3853,
+      "coverage": 0.9911757072411108,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-18",
+      "intersection_rows": 3819,
+      "valid_label_rows": 3853,
+      "coverage": 0.9911757072411108,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-19",
+      "intersection_rows": 3821,
+      "valid_label_rows": 3856,
+      "coverage": 0.9909232365145229,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-22",
+      "intersection_rows": 3820,
+      "valid_label_rows": 3857,
+      "coverage": 0.9904070521130413,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-23",
+      "intersection_rows": 3820,
+      "valid_label_rows": 3856,
+      "coverage": 0.9906639004149378,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-24",
+      "intersection_rows": 3821,
+      "valid_label_rows": 3858,
+      "coverage": 0.9904095386210472,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-25",
+      "intersection_rows": 3823,
+      "valid_label_rows": 3859,
+      "coverage": 0.9906711583311739,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-26",
+      "intersection_rows": 3827,
+      "valid_label_rows": 3863,
+      "coverage": 0.9906808180170852,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-29",
+      "intersection_rows": 3830,
+      "valid_label_rows": 3865,
+      "coverage": 0.9909443725743855,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-30",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3866,
+      "coverage": 0.9762027935851009,
+      "below_floor": false
+    },
+    {
+      "day": "2024-07-31",
+      "intersection_rows": 3829,
+      "valid_label_rows": 3867,
+      "coverage": 0.9901732609257823,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-01",
+      "intersection_rows": 3831,
+      "valid_label_rows": 3869,
+      "coverage": 0.9901783406565003,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-02",
+      "intersection_rows": 3831,
+      "valid_label_rows": 3869,
+      "coverage": 0.9901783406565003,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-05",
+      "intersection_rows": 3834,
+      "valid_label_rows": 3872,
+      "coverage": 0.9901859504132231,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-06",
+      "intersection_rows": 3836,
+      "valid_label_rows": 3873,
+      "coverage": 0.9904466821585335,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-07",
+      "intersection_rows": 3839,
+      "valid_label_rows": 3876,
+      "coverage": 0.990454076367389,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-08",
+      "intersection_rows": 3840,
+      "valid_label_rows": 3878,
+      "coverage": 0.9902011346054668,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-09",
+      "intersection_rows": 3843,
+      "valid_label_rows": 3879,
+      "coverage": 0.9907192575406032,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-12",
+      "intersection_rows": 3844,
+      "valid_label_rows": 3879,
+      "coverage": 0.9909770559422532,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-13",
+      "intersection_rows": 3846,
+      "valid_label_rows": 3880,
+      "coverage": 0.9912371134020619,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-14",
+      "intersection_rows": 3846,
+      "valid_label_rows": 3879,
+      "coverage": 0.991492652745553,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-15",
+      "intersection_rows": 3849,
+      "valid_label_rows": 3882,
+      "coverage": 0.991499227202473,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-16",
+      "intersection_rows": 3850,
+      "valid_label_rows": 3883,
+      "coverage": 0.9915014164305949,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-19",
+      "intersection_rows": 3848,
+      "valid_label_rows": 3882,
+      "coverage": 0.9912416280267903,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-20",
+      "intersection_rows": 3849,
+      "valid_label_rows": 3883,
+      "coverage": 0.9912438835951584,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-21",
+      "intersection_rows": 3850,
+      "valid_label_rows": 3885,
+      "coverage": 0.990990990990991,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-22",
+      "intersection_rows": 3852,
+      "valid_label_rows": 3886,
+      "coverage": 0.9912506433350489,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-23",
+      "intersection_rows": 3852,
+      "valid_label_rows": 3885,
+      "coverage": 0.9915057915057915,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-26",
+      "intersection_rows": 3853,
+      "valid_label_rows": 3884,
+      "coverage": 0.9920185375901133,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-27",
+      "intersection_rows": 3855,
+      "valid_label_rows": 3886,
+      "coverage": 0.9920226453937211,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-28",
+      "intersection_rows": 3859,
+      "valid_label_rows": 3888,
+      "coverage": 0.9925411522633745,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-29",
+      "intersection_rows": 3859,
+      "valid_label_rows": 3888,
+      "coverage": 0.9925411522633745,
+      "below_floor": false
+    },
+    {
+      "day": "2024-08-30",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3886,
+      "coverage": 0.9927946474523932,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-02",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3886,
+      "coverage": 0.9938239835306227,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-03",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3889,
+      "coverage": 0.9940858832604783,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-04",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3891,
+      "coverage": 0.9951169365201747,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-05",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3890,
+      "coverage": 0.9953727506426735,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-06",
+      "intersection_rows": 3870,
+      "valid_label_rows": 3890,
+      "coverage": 0.9948586118251928,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-09",
+      "intersection_rows": 3871,
+      "valid_label_rows": 3893,
+      "coverage": 0.994348831235551,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-10",
+      "intersection_rows": 3871,
+      "valid_label_rows": 3893,
+      "coverage": 0.994348831235551,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-11",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3896,
+      "coverage": 0.9938398357289527,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-12",
+      "intersection_rows": 3873,
+      "valid_label_rows": 3897,
+      "coverage": 0.993841416474211,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-13",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3895,
+      "coverage": 0.9940949935815148,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-18",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3895,
+      "coverage": 0.9940949935815148,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-19",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3896,
+      "coverage": 0.9938398357289527,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-20",
+      "intersection_rows": 3869,
+      "valid_label_rows": 3895,
+      "coverage": 0.9933247753530167,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-23",
+      "intersection_rows": 3869,
+      "valid_label_rows": 3895,
+      "coverage": 0.9933247753530167,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-24",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3895,
+      "coverage": 0.992811296534018,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-25",
+      "intersection_rows": 3871,
+      "valid_label_rows": 3899,
+      "coverage": 0.992818671454219,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-26",
+      "intersection_rows": 3870,
+      "valid_label_rows": 3898,
+      "coverage": 0.9928168291431503,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-27",
+      "intersection_rows": 3871,
+      "valid_label_rows": 3898,
+      "coverage": 0.9930733709594664,
+      "below_floor": false
+    },
+    {
+      "day": "2024-09-30",
+      "intersection_rows": 3871,
+      "valid_label_rows": 3897,
+      "coverage": 0.9933282011803952,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-08",
+      "intersection_rows": 3874,
+      "valid_label_rows": 3894,
+      "coverage": 0.9948638931689779,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-09",
+      "intersection_rows": 3876,
+      "valid_label_rows": 3895,
+      "coverage": 0.9951219512195122,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-10",
+      "intersection_rows": 3874,
+      "valid_label_rows": 3894,
+      "coverage": 0.9948638931689779,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-11",
+      "intersection_rows": 3874,
+      "valid_label_rows": 3894,
+      "coverage": 0.9948638931689779,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-14",
+      "intersection_rows": 3873,
+      "valid_label_rows": 3898,
+      "coverage": 0.9935864545920985,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-15",
+      "intersection_rows": 3873,
+      "valid_label_rows": 3898,
+      "coverage": 0.9935864545920985,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-16",
+      "intersection_rows": 3875,
+      "valid_label_rows": 3900,
+      "coverage": 0.9935897435897436,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-17",
+      "intersection_rows": 3875,
+      "valid_label_rows": 3901,
+      "coverage": 0.993335042296847,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-18",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3898,
+      "coverage": 0.9933299127757824,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-21",
+      "intersection_rows": 3873,
+      "valid_label_rows": 3901,
+      "coverage": 0.9928223532427582,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-22",
+      "intersection_rows": 3871,
+      "valid_label_rows": 3899,
+      "coverage": 0.992818671454219,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-23",
+      "intersection_rows": 3869,
+      "valid_label_rows": 3899,
+      "coverage": 0.9923057194152347,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-24",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3897,
+      "coverage": 0.9923017705927637,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-25",
+      "intersection_rows": 3868,
+      "valid_label_rows": 3898,
+      "coverage": 0.9923037455105183,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-28",
+      "intersection_rows": 3868,
+      "valid_label_rows": 3897,
+      "coverage": 0.9925583782396715,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-29",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3897,
+      "coverage": 0.9920451629458558,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-30",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3896,
+      "coverage": 0.9920431211498973,
+      "below_floor": false
+    },
+    {
+      "day": "2024-10-31",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3898,
+      "coverage": 0.99153412006157,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-01",
+      "intersection_rows": 3864,
+      "valid_label_rows": 3892,
+      "coverage": 0.9928057553956835,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-04",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3892,
+      "coverage": 0.9930626927029804,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-05",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3897,
+      "coverage": 0.9920451629458558,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-06",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3900,
+      "coverage": 0.9915384615384616,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-07",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3904,
+      "coverage": 0.9905225409836066,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-08",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3900,
+      "coverage": 0.9902564102564102,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-11",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3901,
+      "coverage": 0.9894898743911817,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-12",
+      "intersection_rows": 3861,
+      "valid_label_rows": 3905,
+      "coverage": 0.9887323943661972,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-13",
+      "intersection_rows": 3859,
+      "valid_label_rows": 3903,
+      "coverage": 0.9887266205482962,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-14",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3906,
+      "coverage": 0.9882232462877624,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-15",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3906,
+      "coverage": 0.9882232462877624,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-18",
+      "intersection_rows": 3857,
+      "valid_label_rows": 3908,
+      "coverage": 0.986949846468782,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-19",
+      "intersection_rows": 3857,
+      "valid_label_rows": 3909,
+      "coverage": 0.9866973650550013,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-20",
+      "intersection_rows": 3856,
+      "valid_label_rows": 3909,
+      "coverage": 0.9864415451522128,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-21",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3911,
+      "coverage": 0.9864484786499617,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-22",
+      "intersection_rows": 3857,
+      "valid_label_rows": 3911,
+      "coverage": 0.9861927895678855,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-25",
+      "intersection_rows": 3854,
+      "valid_label_rows": 3910,
+      "coverage": 0.9856777493606138,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-26",
+      "intersection_rows": 3854,
+      "valid_label_rows": 3911,
+      "coverage": 0.9854257223216568,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-27",
+      "intersection_rows": 3852,
+      "valid_label_rows": 3910,
+      "coverage": 0.9851662404092072,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-28",
+      "intersection_rows": 3851,
+      "valid_label_rows": 3909,
+      "coverage": 0.9851624456382707,
+      "below_floor": false
+    },
+    {
+      "day": "2024-11-29",
+      "intersection_rows": 3849,
+      "valid_label_rows": 3910,
+      "coverage": 0.9843989769820972,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-02",
+      "intersection_rows": 3852,
+      "valid_label_rows": 3905,
+      "coverage": 0.9864276568501921,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-03",
+      "intersection_rows": 3851,
+      "valid_label_rows": 3904,
+      "coverage": 0.9864241803278688,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-04",
+      "intersection_rows": 3850,
+      "valid_label_rows": 3906,
+      "coverage": 0.985663082437276,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-05",
+      "intersection_rows": 3850,
+      "valid_label_rows": 3909,
+      "coverage": 0.9849066257354823,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-06",
+      "intersection_rows": 3848,
+      "valid_label_rows": 3912,
+      "coverage": 0.983640081799591,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-09",
+      "intersection_rows": 3848,
+      "valid_label_rows": 3911,
+      "coverage": 0.9838915878291997,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-10",
+      "intersection_rows": 3847,
+      "valid_label_rows": 3910,
+      "coverage": 0.9838874680306905,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-11",
+      "intersection_rows": 3849,
+      "valid_label_rows": 3912,
+      "coverage": 0.9838957055214724,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-12",
+      "intersection_rows": 3852,
+      "valid_label_rows": 3913,
+      "coverage": 0.98441093789931,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-13",
+      "intersection_rows": 3850,
+      "valid_label_rows": 3910,
+      "coverage": 0.9846547314578005,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-16",
+      "intersection_rows": 3850,
+      "valid_label_rows": 3913,
+      "coverage": 0.9838998211091234,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-17",
+      "intersection_rows": 3851,
+      "valid_label_rows": 3913,
+      "coverage": 0.9841553795042167,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-18",
+      "intersection_rows": 3855,
+      "valid_label_rows": 3915,
+      "coverage": 0.9846743295019157,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-19",
+      "intersection_rows": 3857,
+      "valid_label_rows": 3915,
+      "coverage": 0.9851851851851852,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-20",
+      "intersection_rows": 3799,
+      "valid_label_rows": 3912,
+      "coverage": 0.9711145194274029,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-23",
+      "intersection_rows": 3815,
+      "valid_label_rows": 3914,
+      "coverage": 0.9747061829330608,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-24",
+      "intersection_rows": 3823,
+      "valid_label_rows": 3911,
+      "coverage": 0.9774993607772948,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-25",
+      "intersection_rows": 3830,
+      "valid_label_rows": 3913,
+      "coverage": 0.9787886532072578,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-26",
+      "intersection_rows": 3841,
+      "valid_label_rows": 3913,
+      "coverage": 0.9815997955532839,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-27",
+      "intersection_rows": 3854,
+      "valid_label_rows": 3913,
+      "coverage": 0.9849220546894966,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-30",
+      "intersection_rows": 3855,
+      "valid_label_rows": 3914,
+      "coverage": 0.984925907000511,
+      "below_floor": false
+    },
+    {
+      "day": "2024-12-31",
+      "intersection_rows": 3854,
+      "valid_label_rows": 3914,
+      "coverage": 0.9846704138988247,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-02",
+      "intersection_rows": 3859,
+      "valid_label_rows": 3908,
+      "coverage": 0.9874616171954964,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-03",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3908,
+      "coverage": 0.9877175025588536,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-06",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3910,
+      "coverage": 0.9867007672634271,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-07",
+      "intersection_rows": 3857,
+      "valid_label_rows": 3910,
+      "coverage": 0.9864450127877238,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-08",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3917,
+      "coverage": 0.9849374521317334,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-09",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3918,
+      "coverage": 0.9857069933639612,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-10",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3917,
+      "coverage": 0.9854480469747255,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-13",
+      "intersection_rows": 3863,
+      "valid_label_rows": 3919,
+      "coverage": 0.9857106404695075,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-14",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3923,
+      "coverage": 0.9854703033392812,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-15",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3922,
+      "coverage": 0.985721570627231,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-16",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3921,
+      "coverage": 0.9857179290997194,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-17",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3920,
+      "coverage": 0.985204081632653,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-20",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3920,
+      "coverage": 0.985204081632653,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-21",
+      "intersection_rows": 3863,
+      "valid_label_rows": 3920,
+      "coverage": 0.9854591836734694,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-22",
+      "intersection_rows": 3861,
+      "valid_label_rows": 3920,
+      "coverage": 0.9849489795918367,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-23",
+      "intersection_rows": 3863,
+      "valid_label_rows": 3922,
+      "coverage": 0.9849566547679756,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-24",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3923,
+      "coverage": 0.9852153963803212,
+      "below_floor": false
+    },
+    {
+      "day": "2025-01-27",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3922,
+      "coverage": 0.9854665986741459,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-05",
+      "intersection_rows": 3870,
+      "valid_label_rows": 3915,
+      "coverage": 0.9885057471264368,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-06",
+      "intersection_rows": 3870,
+      "valid_label_rows": 3913,
+      "coverage": 0.989010989010989,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-07",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3912,
+      "coverage": 0.9884969325153374,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-10",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3914,
+      "coverage": 0.9877363311190598,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-11",
+      "intersection_rows": 3869,
+      "valid_label_rows": 3924,
+      "coverage": 0.9859836901121305,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-12",
+      "intersection_rows": 3868,
+      "valid_label_rows": 3923,
+      "coverage": 0.9859801172572011,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-13",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3923,
+      "coverage": 0.9857252102982411,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-14",
+      "intersection_rows": 3868,
+      "valid_label_rows": 3922,
+      "coverage": 0.9862315145334013,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-17",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3925,
+      "coverage": 0.9852229299363058,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-18",
+      "intersection_rows": 3869,
+      "valid_label_rows": 3926,
+      "coverage": 0.9854814060112074,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-19",
+      "intersection_rows": 3868,
+      "valid_label_rows": 3923,
+      "coverage": 0.9859801172572011,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-20",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3924,
+      "coverage": 0.9867482161060143,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-21",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3919,
+      "coverage": 0.9864761418729268,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-24",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3918,
+      "coverage": 0.9867279224093926,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-25",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3918,
+      "coverage": 0.9869831546707504,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-26",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3917,
+      "coverage": 0.9869798315037018,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-27",
+      "intersection_rows": 3866,
+      "valid_label_rows": 3917,
+      "coverage": 0.9869798315037018,
+      "below_floor": false
+    },
+    {
+      "day": "2025-02-28",
+      "intersection_rows": 3867,
+      "valid_label_rows": 3917,
+      "coverage": 0.9872351289251978,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-03",
+      "intersection_rows": 3873,
+      "valid_label_rows": 3915,
+      "coverage": 0.989272030651341,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-04",
+      "intersection_rows": 3873,
+      "valid_label_rows": 3916,
+      "coverage": 0.9890194075587334,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-05",
+      "intersection_rows": 3872,
+      "valid_label_rows": 3915,
+      "coverage": 0.9890166028097063,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-06",
+      "intersection_rows": 3871,
+      "valid_label_rows": 3915,
+      "coverage": 0.9887611749680715,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-07",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3911,
+      "coverage": 0.988238302224495,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-10",
+      "intersection_rows": 3865,
+      "valid_label_rows": 3913,
+      "coverage": 0.9877331970355226,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-11",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3910,
+      "coverage": 0.9872122762148338,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-12",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3909,
+      "coverage": 0.9874648247633666,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-13",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3913,
+      "coverage": 0.9869665218502428,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-14",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3909,
+      "coverage": 0.9869531849577897,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-17",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3913,
+      "coverage": 0.9859442882698697,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-18",
+      "intersection_rows": 3860,
+      "valid_label_rows": 3913,
+      "coverage": 0.9864554050600562,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-19",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3912,
+      "coverage": 0.9861963190184049,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-20",
+      "intersection_rows": 3855,
+      "valid_label_rows": 3909,
+      "coverage": 0.9861857252494244,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-21",
+      "intersection_rows": 3857,
+      "valid_label_rows": 3909,
+      "coverage": 0.9866973650550013,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-24",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3912,
+      "coverage": 0.9872188139059305,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-25",
+      "intersection_rows": 3864,
+      "valid_label_rows": 3912,
+      "coverage": 0.9877300613496932,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-26",
+      "intersection_rows": 3863,
+      "valid_label_rows": 3910,
+      "coverage": 0.9879795396419437,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-27",
+      "intersection_rows": 3864,
+      "valid_label_rows": 3912,
+      "coverage": 0.9877300613496932,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-28",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3911,
+      "coverage": 0.9874712349782664,
+      "below_floor": false
+    },
+    {
+      "day": "2025-03-31",
+      "intersection_rows": 3861,
+      "valid_label_rows": 3914,
+      "coverage": 0.9864588656106286,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-01",
+      "intersection_rows": 3861,
+      "valid_label_rows": 3902,
+      "coverage": 0.9894925679138903,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-02",
+      "intersection_rows": 3862,
+      "valid_label_rows": 3903,
+      "coverage": 0.9894952600563669,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-03",
+      "intersection_rows": 3861,
+      "valid_label_rows": 3903,
+      "coverage": 0.98923904688701,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-07",
+      "intersection_rows": 3858,
+      "valid_label_rows": 3902,
+      "coverage": 0.9887237314197848,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-08",
+      "intersection_rows": 3856,
+      "valid_label_rows": 3910,
+      "coverage": 0.9861892583120204,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-09",
+      "intersection_rows": 3859,
+      "valid_label_rows": 3911,
+      "coverage": 0.9867041677320378,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-10",
+      "intersection_rows": 3856,
+      "valid_label_rows": 3911,
+      "coverage": 0.9859371004858093,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-11",
+      "intersection_rows": 3855,
+      "valid_label_rows": 3909,
+      "coverage": 0.9861857252494244,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-14",
+      "intersection_rows": 3851,
+      "valid_label_rows": 3906,
+      "coverage": 0.9859190988223246,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-15",
+      "intersection_rows": 3852,
+      "valid_label_rows": 3905,
+      "coverage": 0.9864276568501921,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-16",
+      "intersection_rows": 3853,
+      "valid_label_rows": 3906,
+      "coverage": 0.9864311315924219,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-17",
+      "intersection_rows": 3849,
+      "valid_label_rows": 3902,
+      "coverage": 0.986417221937468,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-18",
+      "intersection_rows": 3843,
+      "valid_label_rows": 3893,
+      "coverage": 0.9871564346262522,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-21",
+      "intersection_rows": 3823,
+      "valid_label_rows": 3872,
+      "coverage": 0.987345041322314,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-22",
+      "intersection_rows": 3803,
+      "valid_label_rows": 3855,
+      "coverage": 0.9865110246433204,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-23",
+      "intersection_rows": 3800,
+      "valid_label_rows": 3851,
+      "coverage": 0.9867566865749156,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-24",
+      "intersection_rows": 3802,
+      "valid_label_rows": 3852,
+      "coverage": 0.9870197300103842,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-25",
+      "intersection_rows": 3800,
+      "valid_label_rows": 3850,
+      "coverage": 0.987012987012987,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-28",
+      "intersection_rows": 3803,
+      "valid_label_rows": 3853,
+      "coverage": 0.9870230988839865,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-29",
+      "intersection_rows": 3796,
+      "valid_label_rows": 3848,
+      "coverage": 0.9864864864864865,
+      "below_floor": false
+    },
+    {
+      "day": "2025-04-30",
+      "intersection_rows": 3796,
+      "valid_label_rows": 3847,
+      "coverage": 0.9867429165583571,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-06",
+      "intersection_rows": 3799,
+      "valid_label_rows": 3841,
+      "coverage": 0.989065347565738,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-07",
+      "intersection_rows": 3797,
+      "valid_label_rows": 3842,
+      "coverage": 0.9882873503383655,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-08",
+      "intersection_rows": 3796,
+      "valid_label_rows": 3842,
+      "coverage": 0.9880270692347736,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-09",
+      "intersection_rows": 3796,
+      "valid_label_rows": 3842,
+      "coverage": 0.9880270692347736,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-12",
+      "intersection_rows": 3790,
+      "valid_label_rows": 3846,
+      "coverage": 0.9854394175767031,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-13",
+      "intersection_rows": 3788,
+      "valid_label_rows": 3842,
+      "coverage": 0.9859448204060385,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-14",
+      "intersection_rows": 3786,
+      "valid_label_rows": 3840,
+      "coverage": 0.9859375,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-15",
+      "intersection_rows": 3792,
+      "valid_label_rows": 3841,
+      "coverage": 0.9872429054933611,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-16",
+      "intersection_rows": 3787,
+      "valid_label_rows": 3836,
+      "coverage": 0.9872262773722628,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-19",
+      "intersection_rows": 3786,
+      "valid_label_rows": 3836,
+      "coverage": 0.9869655891553701,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-20",
+      "intersection_rows": 3784,
+      "valid_label_rows": 3836,
+      "coverage": 0.986444212721585,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-21",
+      "intersection_rows": 3787,
+      "valid_label_rows": 3837,
+      "coverage": 0.9869689861871254,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-22",
+      "intersection_rows": 3788,
+      "valid_label_rows": 3838,
+      "coverage": 0.9869723814486712,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-23",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3837,
+      "coverage": 0.9864477456346104,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-26",
+      "intersection_rows": 3788,
+      "valid_label_rows": 3840,
+      "coverage": 0.9864583333333333,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-27",
+      "intersection_rows": 3784,
+      "valid_label_rows": 3837,
+      "coverage": 0.9861871253583528,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-28",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3838,
+      "coverage": 0.9861907243355914,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-29",
+      "intersection_rows": 3783,
+      "valid_label_rows": 3835,
+      "coverage": 0.9864406779661017,
+      "below_floor": false
+    },
+    {
+      "day": "2025-05-30",
+      "intersection_rows": 3784,
+      "valid_label_rows": 3836,
+      "coverage": 0.986444212721585,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-03",
+      "intersection_rows": 3784,
+      "valid_label_rows": 3829,
+      "coverage": 0.9882475842256464,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-04",
+      "intersection_rows": 3788,
+      "valid_label_rows": 3830,
+      "coverage": 0.9890339425587468,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-05",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3829,
+      "coverage": 0.988508749020632,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-06",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3831,
+      "coverage": 0.9879926912033412,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-09",
+      "intersection_rows": 3785,
+      "valid_label_rows": 3837,
+      "coverage": 0.9864477456346104,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-10",
+      "intersection_rows": 3784,
+      "valid_label_rows": 3843,
+      "coverage": 0.9846474108769191,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-11",
+      "intersection_rows": 3786,
+      "valid_label_rows": 3844,
+      "coverage": 0.9849115504682622,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-12",
+      "intersection_rows": 3782,
+      "valid_label_rows": 3842,
+      "coverage": 0.9843831337844873,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-13",
+      "intersection_rows": 3782,
+      "valid_label_rows": 3840,
+      "coverage": 0.9848958333333333,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-16",
+      "intersection_rows": 3782,
+      "valid_label_rows": 3841,
+      "coverage": 0.9846394168185368,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-17",
+      "intersection_rows": 3782,
+      "valid_label_rows": 3840,
+      "coverage": 0.9848958333333333,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-18",
+      "intersection_rows": 3780,
+      "valid_label_rows": 3838,
+      "coverage": 0.9848879624804586,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-19",
+      "intersection_rows": 3780,
+      "valid_label_rows": 3838,
+      "coverage": 0.9848879624804586,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-20",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3835,
+      "coverage": 0.9846153846153847,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-23",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3835,
+      "coverage": 0.9846153846153847,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-24",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3836,
+      "coverage": 0.9840980187695516,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-25",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3834,
+      "coverage": 0.9846113719353156,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-26",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3834,
+      "coverage": 0.9846113719353156,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-27",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3830,
+      "coverage": 0.9851174934725848,
+      "below_floor": false
+    },
+    {
+      "day": "2025-06-30",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3830,
+      "coverage": 0.985378590078329,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-01",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3828,
+      "coverage": 0.9864158829676071,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-02",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3829,
+      "coverage": 0.9861582658657613,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-03",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3828,
+      "coverage": 0.9858934169278997,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-04",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3827,
+      "coverage": 0.985628429579305,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-07",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3829,
+      "coverage": 0.9851136066858187,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-08",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3828,
+      "coverage": 0.9853709508881923,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-09",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3830,
+      "coverage": 0.985378590078329,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-10",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3829,
+      "coverage": 0.9851136066858187,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-11",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3829,
+      "coverage": 0.9843301123008619,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-14",
+      "intersection_rows": 3768,
+      "valid_label_rows": 3827,
+      "coverage": 0.9845832244577999,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-15",
+      "intersection_rows": 3768,
+      "valid_label_rows": 3829,
+      "coverage": 0.9840689475058763,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-16",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3828,
+      "coverage": 0.9840647857889238,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-17",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3827,
+      "coverage": 0.9843219231774236,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-18",
+      "intersection_rows": 3770,
+      "valid_label_rows": 3829,
+      "coverage": 0.9845912770958475,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-21",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3830,
+      "coverage": 0.9840731070496084,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-22",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3830,
+      "coverage": 0.9840731070496084,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-23",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3827,
+      "coverage": 0.9843219231774236,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-24",
+      "intersection_rows": 3768,
+      "valid_label_rows": 3827,
+      "coverage": 0.9845832244577999,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-25",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3825,
+      "coverage": 0.9840522875816994,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-28",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3828,
+      "coverage": 0.9832810867293625,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-29",
+      "intersection_rows": 3766,
+      "valid_label_rows": 3832,
+      "coverage": 0.982776617954071,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-30",
+      "intersection_rows": 3766,
+      "valid_label_rows": 3830,
+      "coverage": 0.983289817232376,
+      "below_floor": false
+    },
+    {
+      "day": "2025-07-31",
+      "intersection_rows": 3768,
+      "valid_label_rows": 3831,
+      "coverage": 0.9835552075176194,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-01",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3826,
+      "coverage": 0.9845791949817041,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-04",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3830,
+      "coverage": 0.9840731070496084,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-05",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3828,
+      "coverage": 0.9840647857889238,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-06",
+      "intersection_rows": 3768,
+      "valid_label_rows": 3832,
+      "coverage": 0.9832985386221295,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-07",
+      "intersection_rows": 3766,
+      "valid_label_rows": 3831,
+      "coverage": 0.9830331506134169,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-08",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3829,
+      "coverage": 0.9830242883259337,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-11",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3832,
+      "coverage": 0.9830375782881002,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-12",
+      "intersection_rows": 3758,
+      "valid_label_rows": 3830,
+      "coverage": 0.981201044386423,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-13",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3833,
+      "coverage": 0.9827811114009913,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-14",
+      "intersection_rows": 3765,
+      "valid_label_rows": 3831,
+      "coverage": 0.9827721221613156,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-15",
+      "intersection_rows": 3765,
+      "valid_label_rows": 3830,
+      "coverage": 0.9830287206266318,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-18",
+      "intersection_rows": 3766,
+      "valid_label_rows": 3830,
+      "coverage": 0.983289817232376,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-19",
+      "intersection_rows": 3766,
+      "valid_label_rows": 3831,
+      "coverage": 0.9830331506134169,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-20",
+      "intersection_rows": 3766,
+      "valid_label_rows": 3830,
+      "coverage": 0.983289817232376,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-21",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3827,
+      "coverage": 0.9830154167755422,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-22",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3827,
+      "coverage": 0.9830154167755422,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-25",
+      "intersection_rows": 3761,
+      "valid_label_rows": 3828,
+      "coverage": 0.9824973876698014,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-26",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3831,
+      "coverage": 0.9832941790655182,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-27",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3831,
+      "coverage": 0.9832941790655182,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-28",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3830,
+      "coverage": 0.9840731070496084,
+      "below_floor": false
+    },
+    {
+      "day": "2025-08-29",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3831,
+      "coverage": 0.9843382928739233,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-01",
+      "intersection_rows": 3777,
+      "valid_label_rows": 3826,
+      "coverage": 0.987192890747517,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-02",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3826,
+      "coverage": 0.9869315211709357,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-03",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3826,
+      "coverage": 0.9866701515943544,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-04",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3827,
+      "coverage": 0.98667363470081,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-05",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3830,
+      "coverage": 0.9856396866840731,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-08",
+      "intersection_rows": 3777,
+      "valid_label_rows": 3832,
+      "coverage": 0.9856471816283925,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-09",
+      "intersection_rows": 3777,
+      "valid_label_rows": 3834,
+      "coverage": 0.985133020344288,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-10",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3834,
+      "coverage": 0.9848721961398018,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-11",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3833,
+      "coverage": 0.9851291416644926,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-12",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3830,
+      "coverage": 0.9845953002610967,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-15",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3829,
+      "coverage": 0.9851136066858187,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-16",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3832,
+      "coverage": 0.985125260960334,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-17",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3832,
+      "coverage": 0.985125260960334,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-18",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3831,
+      "coverage": 0.9856434351344296,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-19",
+      "intersection_rows": 3768,
+      "valid_label_rows": 3823,
+      "coverage": 0.985613392623594,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-22",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3823,
+      "coverage": 0.985351817944023,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-23",
+      "intersection_rows": 3766,
+      "valid_label_rows": 3820,
+      "coverage": 0.9858638743455498,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-24",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3821,
+      "coverage": 0.9858675739335253,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-25",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3824,
+      "coverage": 0.9861401673640168,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-26",
+      "intersection_rows": 3770,
+      "valid_label_rows": 3822,
+      "coverage": 0.9863945578231292,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-29",
+      "intersection_rows": 3770,
+      "valid_label_rows": 3824,
+      "coverage": 0.9858786610878661,
+      "below_floor": false
+    },
+    {
+      "day": "2025-09-30",
+      "intersection_rows": 3769,
+      "valid_label_rows": 3824,
+      "coverage": 0.9856171548117155,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-09",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3821,
+      "coverage": 0.9871761319026433,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-10",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3821,
+      "coverage": 0.9874378434964669,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-13",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3822,
+      "coverage": 0.9871794871794872,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-14",
+      "intersection_rows": 3775,
+      "valid_label_rows": 3825,
+      "coverage": 0.9869281045751634,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-15",
+      "intersection_rows": 3777,
+      "valid_label_rows": 3829,
+      "coverage": 0.9864194306607469,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-16",
+      "intersection_rows": 3777,
+      "valid_label_rows": 3829,
+      "coverage": 0.9864194306607469,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-17",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3828,
+      "coverage": 0.985632183908046,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-20",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3825,
+      "coverage": 0.9861437908496732,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-21",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3825,
+      "coverage": 0.9861437908496732,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-22",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3824,
+      "coverage": 0.9864016736401674,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-23",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3825,
+      "coverage": 0.9864052287581699,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-24",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3821,
+      "coverage": 0.9869144203088197,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-27",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3824,
+      "coverage": 0.9864016736401674,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-28",
+      "intersection_rows": 3776,
+      "valid_label_rows": 3823,
+      "coverage": 0.9877059900601621,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-29",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3822,
+      "coverage": 0.9871794871794872,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-30",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3824,
+      "coverage": 0.9869246861924686,
+      "below_floor": false
+    },
+    {
+      "day": "2025-10-31",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3823,
+      "coverage": 0.9869212660214491,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-03",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3818,
+      "coverage": 0.9882137244630697,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-04",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3816,
+      "coverage": 0.9882075471698113,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-05",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3819,
+      "coverage": 0.9879549620319455,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-06",
+      "intersection_rows": 3774,
+      "valid_label_rows": 3822,
+      "coverage": 0.9874411302982732,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-07",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3822,
+      "coverage": 0.9866562009419152,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-10",
+      "intersection_rows": 3772,
+      "valid_label_rows": 3824,
+      "coverage": 0.9864016736401674,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-11",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3826,
+      "coverage": 0.9861474124411919,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-12",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3826,
+      "coverage": 0.9861474124411919,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-13",
+      "intersection_rows": 3773,
+      "valid_label_rows": 3826,
+      "coverage": 0.9861474124411919,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-14",
+      "intersection_rows": 3771,
+      "valid_label_rows": 3823,
+      "coverage": 0.986398116662307,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-17",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3819,
+      "coverage": 0.9863838701230688,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-18",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3818,
+      "coverage": 0.9866422210581456,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-19",
+      "intersection_rows": 3768,
+      "valid_label_rows": 3823,
+      "coverage": 0.985613392623594,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-20",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3822,
+      "coverage": 0.9856096284667714,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-21",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3820,
+      "coverage": 0.9853403141361257,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-24",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3819,
+      "coverage": 0.9855983241686306,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-25",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3821,
+      "coverage": 0.9858675739335253,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-26",
+      "intersection_rows": 3767,
+      "valid_label_rows": 3820,
+      "coverage": 0.9861256544502618,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-27",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3816,
+      "coverage": 0.9863731656184487,
+      "below_floor": false
+    },
+    {
+      "day": "2025-11-28",
+      "intersection_rows": 3762,
+      "valid_label_rows": 3814,
+      "coverage": 0.9863660199265862,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-01",
+      "intersection_rows": 3764,
+      "valid_label_rows": 3814,
+      "coverage": 0.9868904037755637,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-02",
+      "intersection_rows": 3760,
+      "valid_label_rows": 3813,
+      "coverage": 0.986100183582481,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-03",
+      "intersection_rows": 3760,
+      "valid_label_rows": 3814,
+      "coverage": 0.9858416360776088,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-04",
+      "intersection_rows": 3759,
+      "valid_label_rows": 3814,
+      "coverage": 0.98557944415312,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-05",
+      "intersection_rows": 3757,
+      "valid_label_rows": 3815,
+      "coverage": 0.9847968545216251,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-08",
+      "intersection_rows": 3757,
+      "valid_label_rows": 3816,
+      "coverage": 0.984538784067086,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-09",
+      "intersection_rows": 3758,
+      "valid_label_rows": 3817,
+      "coverage": 0.9845428346869269,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-10",
+      "intersection_rows": 3756,
+      "valid_label_rows": 3815,
+      "coverage": 0.9845347313237222,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-11",
+      "intersection_rows": 3755,
+      "valid_label_rows": 3814,
+      "coverage": 0.9845306764551652,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-12",
+      "intersection_rows": 3753,
+      "valid_label_rows": 3811,
+      "coverage": 0.9847808974022566,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-15",
+      "intersection_rows": 3753,
+      "valid_label_rows": 3814,
+      "coverage": 0.9840062926061878,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-16",
+      "intersection_rows": 3753,
+      "valid_label_rows": 3814,
+      "coverage": 0.9840062926061878,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-17",
+      "intersection_rows": 3753,
+      "valid_label_rows": 3815,
+      "coverage": 0.9837483617300131,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-18",
+      "intersection_rows": 3752,
+      "valid_label_rows": 3816,
+      "coverage": 0.9832285115303984,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-19",
+      "intersection_rows": 3750,
+      "valid_label_rows": 3816,
+      "coverage": 0.9827044025157232,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-22",
+      "intersection_rows": 3748,
+      "valid_label_rows": 3816,
+      "coverage": 0.9821802935010482,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-23",
+      "intersection_rows": 3747,
+      "valid_label_rows": 3816,
+      "coverage": 0.9819182389937107,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-24",
+      "intersection_rows": 3743,
+      "valid_label_rows": 3813,
+      "coverage": 0.98164175190139,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-25",
+      "intersection_rows": 3742,
+      "valid_label_rows": 3814,
+      "coverage": 0.9811221814368117,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-26",
+      "intersection_rows": 3740,
+      "valid_label_rows": 3813,
+      "coverage": 0.980854969840021,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-29",
+      "intersection_rows": 3743,
+      "valid_label_rows": 3815,
+      "coverage": 0.9811271297509829,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-30",
+      "intersection_rows": 3742,
+      "valid_label_rows": 3813,
+      "coverage": 0.9813794912142669,
+      "below_floor": false
+    },
+    {
+      "day": "2025-12-31",
+      "intersection_rows": 3741,
+      "valid_label_rows": 3814,
+      "coverage": 0.980859989512323,
+      "below_floor": false
+    }
+  ]
+}
