@@ -1,0 +1,33 @@
+=== part 1: single-day fork test ===
+  2022.07.29 yeslab_357  target-A                   rows= 11200 codes= 5600 star= 588 (with value  441) nonstar_with_value= 4401 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2022.07.29 yeslab_381  control-same-table-as-A    rows= 11904 codes= 5952 star= 606 (with value  440) nonstar_with_value= 4388 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2022.07.29 yeslab_471  target-B                   rows=  5976 codes= 5976 star= 611 (with value  430) nonstar_with_value= 4109 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2022.07.29 yeslab_464  control-same-table-as-B    rows=  5955 codes= 5955 star= 606 (with value  435) nonstar_with_value= 4370 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2022.07.29 yeslab_484  control-same-owner-as-B    rows=  6009 codes= 6009 star= 613 (with value  432) nonstar_with_value= 4396 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.07.05 yeslab_357  target-A                   rows= 11200 codes= 5600 star= 588 (with value  540) nonstar_with_value= 4664 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.07.05 yeslab_381  control-same-table-as-A    rows= 11904 codes= 5952 star= 606 (with value  539) nonstar_with_value= 4649 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.07.05 yeslab_471  target-B                   rows=  5976 codes= 5976 star= 611 (with value  527) nonstar_with_value= 4298 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.07.05 yeslab_464  control-same-table-as-B    rows=  5955 codes= 5955 star= 606 (with value  531) nonstar_with_value= 4613 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.07.05 yeslab_484  control-same-owner-as-B    rows=  6009 codes= 6009 star= 613 (with value  531) nonstar_with_value= 4657 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.10.09 yeslab_357  target-A                   rows= 11200 codes= 5600 star= 588 (with value  561) nonstar_with_value= 4719 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.10.09 yeslab_381  control-same-table-as-A    rows= 11904 codes= 5952 star= 606 (with value  560) nonstar_with_value= 4711 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.10.09 yeslab_471  target-B                   rows=  5976 codes= 5976 star= 611 (with value  557) nonstar_with_value= 4375 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.10.09 yeslab_464  control-same-table-as-B    rows=  5955 codes= 5955 star= 606 (with value  558) nonstar_with_value= 4701 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.10.09 yeslab_484  control-same-owner-as-B    rows=  6009 codes= 6009 star= 613 (with value  557) nonstar_with_value= 4709 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+=== part 2: monthly cross-check on the two targets ===
+  2022.01 yeslab_357  dates= 19 codes= 5600 star= 588 (with value  387) nonstar_with_value= 4404 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2022.01 yeslab_471  dates= 19 codes= 5976 star= 611 (with value  375) nonstar_with_value= 4018 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2022.07 yeslab_357  dates= 21 codes= 5600 star= 588 (with value  441) nonstar_with_value= 4426 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2022.07 yeslab_471  dates= 21 codes= 5976 star= 611 (with value  430) nonstar_with_value= 4129 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.03 yeslab_357  dates= 23 codes= 5600 star= 588 (with value  509) nonstar_with_value= 4620 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.03 yeslab_471  dates= 23 codes= 5976 star= 611 (with value  506) nonstar_with_value= 4273 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.07 yeslab_357  dates= 21 codes= 5600 star= 588 (with value  550) nonstar_with_value= 4697 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.07 yeslab_471  dates= 21 codes= 5976 star= 611 (with value  540) nonstar_with_value= 4343 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.09 yeslab_357  dates= 20 codes= 5600 star= 588 (with value  560) nonstar_with_value= 4723 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.09 yeslab_471  dates= 20 codes= 5976 star= 611 (with value  557) nonstar_with_value= 4386 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.10 yeslab_357  dates= 17 codes= 5600 star= 588 (with value  562) nonstar_with_value= 4734 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.10 yeslab_471  dates= 17 codes= 5976 star= 611 (with value  560) nonstar_with_value= 4392 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.11 yeslab_357  dates= 22 codes= 5600 star= 588 (with value  565) nonstar_with_value= 4748 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+  2023.11 yeslab_471  dates= 22 codes= 5976 star= 611 (with value  562) nonstar_with_value= 4408 -> STAR_PRESENT_WITH_VALUE_UPSTREAM
+
+wrote /data/zhangyudong/qrv2_research_artifacts/star_upstream_coverage_probe.json

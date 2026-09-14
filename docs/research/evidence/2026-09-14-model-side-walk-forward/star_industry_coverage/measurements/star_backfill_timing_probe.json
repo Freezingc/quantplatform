@@ -1,0 +1,282 @@
+{
+  "factor_daily": {
+    "yeslab_357": {
+      "per_month": {
+        "2023-07": {
+          "created_at_max": "2026-09-03 15:52:23.775",
+          "created_at_min": "2026-09-03 15:52:23.775",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 69763,
+          "run_id_max": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "run_id_min": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 0
+        },
+        "2023-08": {
+          "created_at_max": "2026-09-03 15:52:23.775",
+          "created_at_min": "2026-09-03 15:52:23.775",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 77834,
+          "run_id_max": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "run_id_min": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 0
+        },
+        "2023-09": {
+          "created_at_max": "2026-09-03 15:52:23.775",
+          "created_at_min": "2026-09-03 15:52:23.775",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 69051,
+          "run_id_max": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "run_id_min": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 1286
+        },
+        "2023-10": {
+          "created_at_max": "2026-09-03 15:52:23.775",
+          "created_at_min": "2026-09-03 15:52:23.775",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 63367,
+          "run_id_max": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "run_id_min": "c56c2c27-3eb7-4c76-a2f2-892a144d7b4d",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 5522
+        }
+      },
+      "rows": 280015
+    },
+    "yeslab_381": {
+      "per_month": {
+        "2023-07": {
+          "created_at_max": "2026-09-03 15:55:36.414",
+          "created_at_min": "2026-09-03 15:55:36.414",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 76360,
+          "run_id_max": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "run_id_min": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 6596
+        },
+        "2023-08": {
+          "created_at_max": "2026-09-03 15:55:36.414",
+          "created_at_min": "2026-09-03 15:55:36.414",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 84270,
+          "run_id_max": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "run_id_min": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 6458
+        },
+        "2023-09": {
+          "created_at_max": "2026-09-03 15:55:36.414",
+          "created_at_min": "2026-09-03 15:55:36.414",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 73981,
+          "run_id_max": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "run_id_min": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 6230
+        },
+        "2023-10": {
+          "created_at_max": "2026-09-03 15:55:36.414",
+          "created_at_min": "2026-09-03 15:55:36.414",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 63370,
+          "run_id_max": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "run_id_min": "dc0da20f-0332-4bf4-8419-acafcb408390",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 5539
+        }
+      },
+      "rows": 297981
+    },
+    "yeslab_471": {
+      "per_month": {
+        "2023-07": {
+          "created_at_max": "2026-09-03 16:20:18.181",
+          "created_at_min": "2026-09-03 16:20:18.181",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 69416,
+          "run_id_max": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "run_id_min": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 0
+        },
+        "2023-08": {
+          "created_at_max": "2026-09-03 16:20:18.181",
+          "created_at_min": "2026-09-03 16:20:18.181",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 77667,
+          "run_id_max": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "run_id_min": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 0
+        },
+        "2023-09": {
+          "created_at_max": "2026-09-03 16:20:18.181",
+          "created_at_min": "2026-09-03 16:20:18.181",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 68919,
+          "run_id_max": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "run_id_min": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 1286
+        },
+        "2023-10": {
+          "created_at_max": "2026-09-03 16:20:18.181",
+          "created_at_min": "2026-09-03 16:20:18.181",
+          "data_versions": [
+            "715af5a14a4b"
+          ],
+          "rows": 63282,
+          "run_id_max": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "run_id_min": "13492641-8a88-44a2-bd38-1b687359aff5",
+          "source_watermark_id_max": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "source_watermark_id_min": "d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a",
+          "star_rows": 5522
+        }
+      },
+      "rows": 279284
+    }
+  },
+  "factor_daily_columns": [
+    "signal_date",
+    "ts_code",
+    "factor_id",
+    "factor_version",
+    "universe_id",
+    "value",
+    "run_id",
+    "data_version",
+    "created_at",
+    "source_watermark_id",
+    "record_hash"
+  ],
+  "factor_quarantine_distinct_factors": 23,
+  "factor_quarantine_reasons": {
+    "NO_FINITE_VALUE": 536627
+  },
+  "factor_quarantine_span": {
+    "hi": "2025-01-27 00:00:00",
+    "lo": "2025-01-02 00:00:00",
+    "n2": "536627"
+  },
+  "factor_quarantine_total_rows": 536627,
+  "upstream_columns": {
+    "factor_data10": [
+      "ts_code",
+      "trade_date",
+      "factor_name",
+      "value"
+    ],
+    "factor_data8": [
+      "ts_code",
+      "trade_date",
+      "factor_name",
+      "value"
+    ]
+  },
+  "upstream_star_sample": {
+    "factor_data10": {
+      "columns": [
+        "ts_code",
+        "trade_date",
+        "factor_name",
+        "value"
+      ],
+      "rows": 5976,
+      "sample": [
+        {
+          "factor_name": "AttentionSpillover",
+          "trade_date": "2023-07-05 00:00:00",
+          "ts_code": "688701.SH",
+          "value": "2.4413158932968275"
+        },
+        {
+          "factor_name": "AttentionSpillover",
+          "trade_date": "2023-07-05 00:00:00",
+          "ts_code": "688158.SH",
+          "value": "-1.234506821656673"
+        },
+        {
+          "factor_name": "AttentionSpillover",
+          "trade_date": "2023-07-05 00:00:00",
+          "ts_code": "688221.SH",
+          "value": "2.1413550176761573"
+        }
+      ],
+      "star_finite": 527,
+      "star_inf": 0,
+      "star_rows": 611,
+      "star_value_max": 14.530296664244364,
+      "star_value_min": -57.433175755928
+    },
+    "factor_data8": {
+      "columns": [
+        "ts_code",
+        "trade_date",
+        "factor_name",
+        "value"
+      ],
+      "rows": 11200,
+      "sample": [
+        {
+          "factor_name": "行业内收益标准化绝对值",
+          "trade_date": "2023-07-05 00:00:00",
+          "ts_code": "688701.SH",
+          "value": "0.04277829302419919"
+        },
+        {
+          "factor_name": "行业内收益标准化绝对值",
+          "trade_date": "2023-07-05 00:00:00",
+          "ts_code": "688701.SH",
+          "value": "0.04277829302419919"
+        },
+        {
+          "factor_name": "行业内收益标准化绝对值",
+          "trade_date": "2023-07-05 00:00:00",
+          "ts_code": "688158.SH",
+          "value": "1.2331925827076375"
+        }
+      ],
+      "star_finite": 1080,
+      "star_inf": 0,
+      "star_rows": 1176,
+      "star_value_max": 11.714749757936685,
+      "star_value_min": 0.00046303081476640925
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
+  "description": "Byte copies of the SW2021 level-1 industry membership files the frozen-chain replay read from research_v2/artifacts/tushare_cache. Vendored because the vendor restates this history: re-fetching the same security today returns a different industry and in_date.",
+  "file_count": 32,
+  "files": {
+    "pit_industry_members_801010_SI.json": {
+      "bytes": 21271,
+      "sha256": "33a26f6c058e35b45beb58411deac0079c2d80d098ba03c4a1ecaf9012e01b25"
+    },
+    "pit_industry_members_801030_SI.json": {
+      "bytes": 80795,
+      "sha256": "dd5442164c9d36236d83202a662ca844285a841e1de43986bda3f26c7e566169"
+    },
+    "pit_industry_members_801040_SI.json": {
+      "bytes": 9268,
+      "sha256": "3558fdea6ef6ab655c33b34c488ba90296467d6449b638a0b4ef129ee1dff421"
+    },
+    "pit_industry_members_801050_SI.json": {
+      "bytes": 26601,
+      "sha256": "b8885e4ab7e7010d4836226bb62249f0a695de1015b5676c174e7932f003822c"
+    },
+    "pit_industry_members_801080_SI.json": {
+      "bytes": 72993,
+      "sha256": "2e7b0db99e679dec4f5f50868275b50c54b3d45b7593aa7180ad266e58dc980a"
+    },
+    "pit_industry_members_801110_SI.json": {
+      "bytes": 17325,
+      "sha256": "2d21e57782607942359e012f9ea888dea87c99031293fcd1cf673b015d57a60a"
+    },
+    "pit_industry_members_801120_SI.json": {
+      "bytes": 19747,
+      "sha256": "f8ddd6e9802a340cb0582f08a73bfddf06a6c565e4234838e2dba29e6618157d"
+    },
+    "pit_industry_members_801130_SI.json": {
+      "bytes": 22203,
+      "sha256": "b39d71f3fe4e978ffada048a246543cfbdde07953f73a0b90c71ea3ce92599b5"
+    },
+    "pit_industry_members_801140_SI.json": {
+      "bytes": 30635,
+      "sha256": "136563dc55adc21c8e2a49ae73e51c6664e126aa33034805bd209ed4f297b02e"
+    },
+    "pit_industry_members_801150_SI.json": {
+      "bytes": 66227,
+      "sha256": "aec65e0340b413462472711e067dc112958b590629cb933c9b552ebf326c0958"
+    },
+    "pit_industry_members_801160_SI.json": {
+      "bytes": 32047,
+      "sha256": "a37d0325982ef587792ac8b68d978ae5696622302d550ccd19c68cc1f7274343"
+    },
+    "pit_industry_members_801170_SI.json": {
+      "bytes": 20549,
+      "sha256": "7381ca9760159a73fdaf4926d56938eb610f2044f138e3e1bedbd93c3872637c"
+    },
+    "pit_industry_members_801180_SI.json": {
+      "bytes": 29349,
+      "sha256": "3986726d78aa7a5725110e1b04141db23083c9fb5476c76836562bd717afcb74"
+    },
+    "pit_industry_members_801200_SI.json": {
+      "bytes": 23307,
+      "sha256": "41c01ea5a0bcbef0fac236416b456581ab0f327dc3583afdd1e5314ed7bcb6e0"
+    },
+    "pit_industry_members_801210_SI.json": {
+      "bytes": 15149,
+      "sha256": "8ef80b162f0f4310dd5af8ef57232cb1989269d4befdf1c09fc985d58872dbb8"
+    },
+    "pit_industry_members_801230_SI.json": {
+      "bytes": 22955,
+      "sha256": "c35e5b961a967c192c6da74d9ae407fc3d9c3eceadba24ead2b602a55852a30b"
+    },
+    "pit_industry_members_801710_SI.json": {
+      "bytes": 14029,
+      "sha256": "779756164fc1fcb70f6e090877c329fb3d59efb867c4e01428c5290b5b1bf6c8"
+    },
+    "pit_industry_members_801720_SI.json": {
+      "bytes": 24553,
+      "sha256": "d6bb4914d6ab08e06a1d686edcda8499f5d1675d65f08c2779075f14c35790c0"
+    },
+    "pit_industry_members_801730_SI.json": {
+      "bytes": 55387,
+      "sha256": "233ac5d89fca417b08b436a6ea2c4e8ce0800fd8b04d5911a46806cb0a97000c"
+    },
+    "pit_industry_members_801740_SI.json": {
+      "bytes": 18353,
+      "sha256": "4f22546f711c53d0097223e387a9b6e601d71bbb6a917228c3eff8b4009e190e"
+    },
+    "pit_industry_members_801750_SI.json": {
+      "bytes": 45025,
+      "sha256": "b68ca6c32916f168ee5f9dd569b5b63d797e9be0e54b4e33569b18e6ccfc2bbd"
+    },
+    "pit_industry_members_801760_SI.json": {
+      "bytes": 25717,
+      "sha256": "955622809cebb078442f202a9aee7f92785df5e4d742f9c1fee6452f0940ef7b"
+    },
+    "pit_industry_members_801770_SI.json": {
+      "bytes": 20691,
+      "sha256": "da8b6b67ab5a1f4764e20bd065ce94e86823abdf8d74f9d950228f5f04db9d6d"
+    },
+    "pit_industry_members_801780_SI.json": {
+      "bytes": 4945,
+      "sha256": "2f31ba409e6f3ff60b25118826605b961f9a5e53e320bc9e8429d9f263c8d335"
+    },
+    "pit_industry_members_801790_SI.json": {
+      "bytes": 12689,
+      "sha256": "c9d0ff3a30aba13c036a0095b51e98cbee7ce153f7c270b42234d007160064ce"
+    },
+    "pit_industry_members_801880_SI.json": {
+      "bytes": 39283,
+      "sha256": "9bb21796288a9ccc015090d9a0d7eb454420b99f25ad62bf61c0bd93d3dcbd77"
+    },
+    "pit_industry_members_801890_SI.json": {
+      "bytes": 83697,
+      "sha256": "ca050d492fd1e0a1a6ca0acabd7a058274a2521cd0c64df7adf751c41a052f7f"
+    },
+    "pit_industry_members_801950_SI.json": {
+      "bytes": 4999,
+      "sha256": "0273c020306704961ab1eba9ad70484efa3170661d22da1600f25a938e4ee2be"
+    },
+    "pit_industry_members_801960_SI.json": {
+      "bytes": 6319,
+      "sha256": "604983564ab9f7461db6953ae92b8bfeef6d00267564acbb0c44b1574566387b"
+    },
+    "pit_industry_members_801970_SI.json": {
+      "bytes": 16985,
+      "sha256": "2781e884f9123157cf2e99a20b5da980b983d9e9a4782e23750ade4babb3a3ac"
+    },
+    "pit_industry_members_801980_SI.json": {
+      "bytes": 4093,
+      "sha256": "766ce1b88a5e703d5223211e44f4f52697cbc5819730719a53fd6811a3c4cab3"
+    },
+    "pit_industry_sw2021_l1_classification.json": {
+      "bytes": 4103,
+      "sha256": "2d50dfed3c5d195ed5c396a14ddecbe5db7473af874649e4b6875ca65af3c67e"
+    }
+  },
+  "source_dir": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/tushare_cache"
+}

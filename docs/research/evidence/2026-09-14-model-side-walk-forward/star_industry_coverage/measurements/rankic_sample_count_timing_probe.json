@@ -1,0 +1,335 @@
+{
+  "columns": [
+    "signal_date",
+    "factor_id",
+    "factor_version",
+    "factor_name",
+    "rank_ic",
+    "sample_count",
+    "evaluation_scope",
+    "label_id",
+    "label_version",
+    "run_id",
+    "data_version",
+    "created_at",
+    "source_watermark_id",
+    "record_hash"
+  ],
+  "days": {
+    "2022.07.29": [
+      {
+        "created_at": "2026-08-02 12:29:02.126000",
+        "data_version": "917283b8e85d2d95198cb225dc2dfc7fe4118b868e8bea93b98c41adddf6eedf",
+        "factor_id": "yeslab_0",
+        "rank_ic": "-0.15214159307498396",
+        "sample_count": "3349",
+        "signal_date": "2022-07-29 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 12:29:02.126000",
+        "data_version": "917283b8e85d2d95198cb225dc2dfc7fe4118b868e8bea93b98c41adddf6eedf",
+        "factor_id": "yeslab_206",
+        "rank_ic": "-0.13965708027310852",
+        "sample_count": "3278",
+        "signal_date": "2022-07-29 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 12:29:02.126000",
+        "data_version": "917283b8e85d2d95198cb225dc2dfc7fe4118b868e8bea93b98c41adddf6eedf",
+        "factor_id": "yeslab_357",
+        "rank_ic": "-0.046066153304981546",
+        "sample_count": "3355",
+        "signal_date": "2022-07-29 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 12:29:02.126000",
+        "data_version": "917283b8e85d2d95198cb225dc2dfc7fe4118b868e8bea93b98c41adddf6eedf",
+        "factor_id": "yeslab_381",
+        "rank_ic": "-0.13589127465739054",
+        "sample_count": "3349",
+        "signal_date": "2022-07-29 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 12:29:02.126000",
+        "data_version": "917283b8e85d2d95198cb225dc2dfc7fe4118b868e8bea93b98c41adddf6eedf",
+        "factor_id": "yeslab_464",
+        "rank_ic": "-0.13291508459352847",
+        "sample_count": "3343",
+        "signal_date": "2022-07-29 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 12:29:02.126000",
+        "data_version": "917283b8e85d2d95198cb225dc2dfc7fe4118b868e8bea93b98c41adddf6eedf",
+        "factor_id": "yeslab_471",
+        "rank_ic": "0.1895020929062157",
+        "sample_count": "3255",
+        "signal_date": "2022-07-29 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 12:29:02.126000",
+        "data_version": "917283b8e85d2d95198cb225dc2dfc7fe4118b868e8bea93b98c41adddf6eedf",
+        "factor_id": "yeslab_484",
+        "rank_ic": "-0.19172096062416394",
+        "sample_count": "3355",
+        "signal_date": "2022-07-29 00:00:00"
+      }
+    ],
+    "2023.07.05": [
+      {
+        "created_at": "2026-08-02 10:54:22.001000",
+        "data_version": "efc272732ec08cf6bc1ba1aeca4e8ef9fc59c48e628279a31961c68f3d89c10c",
+        "factor_id": "yeslab_0",
+        "rank_ic": "-0.09047833280158028",
+        "sample_count": "3622",
+        "signal_date": "2023-07-05 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 10:54:22.001000",
+        "data_version": "efc272732ec08cf6bc1ba1aeca4e8ef9fc59c48e628279a31961c68f3d89c10c",
+        "factor_id": "yeslab_206",
+        "rank_ic": "-0.0377135437906359",
+        "sample_count": "3580",
+        "signal_date": "2023-07-05 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 10:54:22.001000",
+        "data_version": "efc272732ec08cf6bc1ba1aeca4e8ef9fc59c48e628279a31961c68f3d89c10c",
+        "factor_id": "yeslab_357",
+        "rank_ic": "-0.09587183991726411",
+        "sample_count": "3626",
+        "signal_date": "2023-07-05 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 10:54:22.001000",
+        "data_version": "efc272732ec08cf6bc1ba1aeca4e8ef9fc59c48e628279a31961c68f3d89c10c",
+        "factor_id": "yeslab_381",
+        "rank_ic": "-0.1034872035444907",
+        "sample_count": "3622",
+        "signal_date": "2023-07-05 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 10:54:22.001000",
+        "data_version": "efc272732ec08cf6bc1ba1aeca4e8ef9fc59c48e628279a31961c68f3d89c10c",
+        "factor_id": "yeslab_464",
+        "rank_ic": "-0.0982413744812288",
+        "sample_count": "3612",
+        "signal_date": "2023-07-05 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 10:54:22.001000",
+        "data_version": "efc272732ec08cf6bc1ba1aeca4e8ef9fc59c48e628279a31961c68f3d89c10c",
+        "factor_id": "yeslab_471",
+        "rank_ic": "0.10499263392014228",
+        "sample_count": "3550",
+        "signal_date": "2023-07-05 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 10:54:22.001000",
+        "data_version": "efc272732ec08cf6bc1ba1aeca4e8ef9fc59c48e628279a31961c68f3d89c10c",
+        "factor_id": "yeslab_484",
+        "rank_ic": "-0.22622537080333058",
+        "sample_count": "3627",
+        "signal_date": "2023-07-05 00:00:00"
+      }
+    ],
+    "2023.09.15": [
+      {
+        "created_at": "2026-08-02 11:01:29.700000",
+        "data_version": "01c9089749a3fa46e14ff56dd63eb6ff7c93a02b56a725ac8a81a8bfb9409a7d",
+        "factor_id": "yeslab_0",
+        "rank_ic": "-0.11019569470645292",
+        "sample_count": "3696",
+        "signal_date": "2023-09-15 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:01:29.700000",
+        "data_version": "01c9089749a3fa46e14ff56dd63eb6ff7c93a02b56a725ac8a81a8bfb9409a7d",
+        "factor_id": "yeslab_206",
+        "rank_ic": "-0.007866737040439033",
+        "sample_count": "3673",
+        "signal_date": "2023-09-15 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:01:29.700000",
+        "data_version": "01c9089749a3fa46e14ff56dd63eb6ff7c93a02b56a725ac8a81a8bfb9409a7d",
+        "factor_id": "yeslab_357",
+        "rank_ic": "-0.06671665079214881",
+        "sample_count": "3700",
+        "signal_date": "2023-09-15 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:01:29.700000",
+        "data_version": "01c9089749a3fa46e14ff56dd63eb6ff7c93a02b56a725ac8a81a8bfb9409a7d",
+        "factor_id": "yeslab_381",
+        "rank_ic": "-0.08855769509343828",
+        "sample_count": "3696",
+        "signal_date": "2023-09-15 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:01:29.700000",
+        "data_version": "01c9089749a3fa46e14ff56dd63eb6ff7c93a02b56a725ac8a81a8bfb9409a7d",
+        "factor_id": "yeslab_464",
+        "rank_ic": "-0.0691914486916298",
+        "sample_count": "3693",
+        "signal_date": "2023-09-15 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:01:29.700000",
+        "data_version": "01c9089749a3fa46e14ff56dd63eb6ff7c93a02b56a725ac8a81a8bfb9409a7d",
+        "factor_id": "yeslab_471",
+        "rank_ic": "0.07139159417899676",
+        "sample_count": "3630",
+        "signal_date": "2023-09-15 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:01:29.700000",
+        "data_version": "01c9089749a3fa46e14ff56dd63eb6ff7c93a02b56a725ac8a81a8bfb9409a7d",
+        "factor_id": "yeslab_484",
+        "rank_ic": "0.003646371731592646",
+        "sample_count": "3700",
+        "signal_date": "2023-09-15 00:00:00"
+      }
+    ],
+    "2023.10.09": [
+      {
+        "created_at": "2026-08-02 11:07:36.565000",
+        "data_version": "9f3a73d8f1a53917c9c9cd8673b5dd6becb234c84fd14c1844cbd15ce7ec86ad",
+        "factor_id": "yeslab_0",
+        "rank_ic": "0.08857290122475078",
+        "sample_count": "3710",
+        "signal_date": "2023-10-09 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:07:36.565000",
+        "data_version": "9f3a73d8f1a53917c9c9cd8673b5dd6becb234c84fd14c1844cbd15ce7ec86ad",
+        "factor_id": "yeslab_206",
+        "rank_ic": "0.018730128631429192",
+        "sample_count": "3694",
+        "signal_date": "2023-10-09 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:07:36.565000",
+        "data_version": "9f3a73d8f1a53917c9c9cd8673b5dd6becb234c84fd14c1844cbd15ce7ec86ad",
+        "factor_id": "yeslab_357",
+        "rank_ic": "-0.020591089049455884",
+        "sample_count": "3713",
+        "signal_date": "2023-10-09 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:07:36.565000",
+        "data_version": "9f3a73d8f1a53917c9c9cd8673b5dd6becb234c84fd14c1844cbd15ce7ec86ad",
+        "factor_id": "yeslab_381",
+        "rank_ic": "0.06979030858161718",
+        "sample_count": "3710",
+        "signal_date": "2023-10-09 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:07:36.565000",
+        "data_version": "9f3a73d8f1a53917c9c9cd8673b5dd6becb234c84fd14c1844cbd15ce7ec86ad",
+        "factor_id": "yeslab_464",
+        "rank_ic": "0.11443904374848804",
+        "sample_count": "3708",
+        "signal_date": "2023-10-09 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:07:36.565000",
+        "data_version": "9f3a73d8f1a53917c9c9cd8673b5dd6becb234c84fd14c1844cbd15ce7ec86ad",
+        "factor_id": "yeslab_471",
+        "rank_ic": "0.05946163562135036",
+        "sample_count": "3647",
+        "signal_date": "2023-10-09 00:00:00"
+      },
+      {
+        "created_at": "2026-08-02 11:07:36.565000",
+        "data_version": "9f3a73d8f1a53917c9c9cd8673b5dd6becb234c84fd14c1844cbd15ce7ec86ad",
+        "factor_id": "yeslab_484",
+        "rank_ic": "-0.033668692137472006",
+        "sample_count": "3713",
+        "signal_date": "2023-10-09 00:00:00"
+      }
+    ]
+  },
+  "monthly": [
+    {
+      "days": 23,
+      "factor_id": "yeslab_357",
+      "max": 3685,
+      "mean_sample_count": 3663.6521739130435,
+      "min": 3647,
+      "month": "2023-08",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 23,
+      "factor_id": "yeslab_381",
+      "max": 3681,
+      "mean_sample_count": 3660.0434782608695,
+      "min": 3643,
+      "month": "2023-08",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 23,
+      "factor_id": "yeslab_471",
+      "max": 3617,
+      "mean_sample_count": 3594.8695652173915,
+      "min": 3580,
+      "month": "2023-08",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 20,
+      "factor_id": "yeslab_357",
+      "max": 3713,
+      "mean_sample_count": 3698.4,
+      "min": 3684,
+      "month": "2023-09",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 20,
+      "factor_id": "yeslab_381",
+      "max": 3710,
+      "mean_sample_count": 3694.75,
+      "min": 3682,
+      "month": "2023-09",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 20,
+      "factor_id": "yeslab_471",
+      "max": 3646,
+      "mean_sample_count": 3630.05,
+      "min": 3618,
+      "month": "2023-09",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 17,
+      "factor_id": "yeslab_357",
+      "max": 3740,
+      "mean_sample_count": 3727.529411764706,
+      "min": 3713,
+      "month": "2023-10",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 17,
+      "factor_id": "yeslab_381",
+      "max": 3736,
+      "mean_sample_count": 3723.6470588235293,
+      "min": 3710,
+      "month": "2023-10",
+      "vintage": "2026-08-02"
+    },
+    {
+      "days": 17,
+      "factor_id": "yeslab_471",
+      "max": 3672,
+      "mean_sample_count": 3661.235294117647,
+      "min": 3647,
+      "month": "2023-10",
+      "vintage": "2026-08-02"
+    }
+  ]
+}

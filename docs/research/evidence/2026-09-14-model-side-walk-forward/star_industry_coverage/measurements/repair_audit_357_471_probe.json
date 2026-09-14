@@ -1,0 +1,57 @@
+{
+  "factor_repair_audit": {
+    "columns": [
+      "as_of_date",
+      "logical_partition",
+      "factor_id",
+      "factor_version",
+      "source_table",
+      "source_factor_name",
+      "repair_method",
+      "source_rows",
+      "candidate_rows",
+      "exact_duplicate_groups",
+      "exact_duplicate_rows",
+      "conflict_groups",
+      "nonfinite_rows",
+      "overlap_finite_rows",
+      "fillable_rows",
+      "filled_rows",
+      "added_rows",
+      "remaining_nonfinite_rows",
+      "mismatch_rows",
+      "max_abs_diff",
+      "max_rel_diff",
+      "pit_violation_rows",
+      "unresolved_rows",
+      "decision_status",
+      "rules_version",
+      "run_id",
+      "data_version",
+      "created_at",
+      "source_watermark_id",
+      "record_hash"
+    ],
+    "total_rows": 0
+  },
+  "factor_repair_quarantine": {
+    "columns": [
+      "observation_date",
+      "ts_code",
+      "factor_id",
+      "factor_version",
+      "factor_name",
+      "reason",
+      "source_value",
+      "candidate_value",
+      "repair_method",
+      "candidate_hash",
+      "run_id",
+      "data_version",
+      "created_at",
+      "source_watermark_id",
+      "record_hash"
+    ],
+    "total_rows": 0
+  }
+}

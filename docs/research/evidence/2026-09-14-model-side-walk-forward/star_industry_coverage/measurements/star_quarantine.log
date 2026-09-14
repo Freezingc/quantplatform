@@ -1,0 +1,13 @@
+=== part 1: the two dropped days ===
+  2022.07.29 yeslab_357  no quarantine rows
+  2022.07.29 yeslab_471  no quarantine rows
+  2022.07.29 yeslab_381  no quarantine rows
+  2023.07.05 yeslab_357  no quarantine rows
+  2023.07.05 yeslab_471  no quarantine rows
+  2023.07.05 yeslab_381  no quarantine rows
+=== part 2: across the October 2023 breakpoint ===
+  yeslab_357: no quarantine rows in 2023.06.01..2023.11.30
+  yeslab_471: no quarantine rows in 2023.06.01..2023.11.30
+  yeslab_381: no quarantine rows in 2023.06.01..2023.11.30
+
+wrote /data/zhangyudong/qrv2_research_artifacts/star_quarantine_reason_probe.json

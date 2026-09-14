@@ -1,0 +1,234 @@
+{
+  "days": {
+    "2022-07-29": {
+      "dataset": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "factors": {
+        "yeslab_357": {
+          "factor_daily": {
+            "data_versions": [
+              "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a"
+            ],
+            "panel_missing_star_recovered_by_table": 0,
+            "panel_missing_star_total": 181,
+            "per_data_version": {
+              "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a": {
+                "codes": 3073,
+                "is_consumed": true,
+                "is_pinned": true,
+                "rows": 3073,
+                "star_codes": 0,
+                "star_codes_with_value": 0
+              }
+            },
+            "rows": 3073,
+            "star_codes_with_value_any_version": 0
+          },
+          "panel_column": "f01",
+          "panel_missing_rows": 283,
+          "panel_missing_star": 181,
+          "panel_missing_star_sample": [
+            "688001.SH",
+            "688002.SH",
+            "688003.SH",
+            "688005.SH",
+            "688006.SH"
+          ]
+        },
+        "yeslab_381": {
+          "factor_daily": {
+            "data_versions": [
+              "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a"
+            ],
+            "panel_missing_star_recovered_by_table": 0,
+            "panel_missing_star_total": 0,
+            "per_data_version": {
+              "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a": {
+                "codes": 3353,
+                "is_consumed": true,
+                "is_pinned": true,
+                "rows": 3353,
+                "star_codes": 181,
+                "star_codes_with_value": 181
+              }
+            },
+            "rows": 3353,
+            "star_codes_with_value_any_version": 181
+          },
+          "panel_column": "f04",
+          "panel_missing_rows": 3,
+          "panel_missing_star": 0,
+          "panel_missing_star_sample": []
+        },
+        "yeslab_471": {
+          "factor_daily": {
+            "data_versions": [
+              "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a"
+            ],
+            "panel_missing_star_recovered_by_table": 0,
+            "panel_missing_star_total": 181,
+            "per_data_version": {
+              "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a": {
+                "codes": 3059,
+                "is_consumed": true,
+                "is_pinned": true,
+                "rows": 3059,
+                "star_codes": 0,
+                "star_codes_with_value": 0
+              }
+            },
+            "rows": 3059,
+            "star_codes_with_value_any_version": 0
+          },
+          "panel_column": "f12",
+          "panel_missing_rows": 297,
+          "panel_missing_star": 181,
+          "panel_missing_star_sample": [
+            "688001.SH",
+            "688002.SH",
+            "688003.SH",
+            "688005.SH",
+            "688006.SH"
+          ]
+        }
+      },
+      "manifest_data_version": "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a",
+      "panel_valid_label_rows": 3355,
+      "partition": "2022-07",
+      "pin_matches_manifest": true,
+      "published_pin_data_version": "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a",
+      "upstream": {
+        "duplicate_rows_in_table": 5600,
+        "factor_name": "行业内收益标准化绝对值",
+        "panel_missing_for_yeslab_357": 283,
+        "present_upstream_star_with_value": 181,
+        "present_upstream_with_value": 283,
+        "table": "factor_data8"
+      },
+      "year": 2022
+    },
+    "2023-07-05": {
+      "dataset": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "factors": {
+        "yeslab_357": {
+          "factor_daily": {
+            "data_versions": [
+              "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3"
+            ],
+            "panel_missing_star_recovered_by_table": 0,
+            "panel_missing_star_total": 318,
+            "per_data_version": {
+              "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3": {
+                "codes": 3274,
+                "is_consumed": true,
+                "is_pinned": true,
+                "rows": 3274,
+                "star_codes": 0,
+                "star_codes_with_value": 0
+              }
+            },
+            "rows": 3274,
+            "star_codes_with_value_any_version": 0
+          },
+          "panel_column": "f01",
+          "panel_missing_rows": 354,
+          "panel_missing_star": 318,
+          "panel_missing_star_sample": [
+            "688001.SH",
+            "688002.SH",
+            "688003.SH",
+            "688004.SH",
+            "688005.SH"
+          ]
+        },
+        "yeslab_381": {
+          "factor_daily": {
+            "data_versions": [
+              "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3"
+            ],
+            "panel_missing_star_recovered_by_table": 0,
+            "panel_missing_star_total": 0,
+            "per_data_version": {
+              "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3": {
+                "codes": 3625,
+                "is_consumed": true,
+                "is_pinned": true,
+                "rows": 3625,
+                "star_codes": 318,
+                "star_codes_with_value": 318
+              }
+            },
+            "rows": 3625,
+            "star_codes_with_value_any_version": 318
+          },
+          "panel_column": "f04",
+          "panel_missing_rows": 3,
+          "panel_missing_star": 0,
+          "panel_missing_star_sample": []
+        },
+        "yeslab_471": {
+          "factor_daily": {
+            "data_versions": [
+              "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3"
+            ],
+            "panel_missing_star_recovered_by_table": 0,
+            "panel_missing_star_total": 318,
+            "per_data_version": {
+              "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3": {
+                "codes": 3258,
+                "is_consumed": true,
+                "is_pinned": true,
+                "rows": 3258,
+                "star_codes": 0,
+                "star_codes_with_value": 0
+              }
+            },
+            "rows": 3258,
+            "star_codes_with_value_any_version": 0
+          },
+          "panel_column": "f12",
+          "panel_missing_rows": 370,
+          "panel_missing_star": 318,
+          "panel_missing_star_sample": [
+            "688001.SH",
+            "688002.SH",
+            "688003.SH",
+            "688004.SH",
+            "688005.SH"
+          ]
+        }
+      },
+      "manifest_data_version": "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3",
+      "panel_valid_label_rows": 3627,
+      "partition": "2023-07",
+      "pin_matches_manifest": true,
+      "published_pin_data_version": "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3",
+      "upstream": {
+        "duplicate_rows_in_table": 5600,
+        "factor_name": "行业内收益标准化绝对值",
+        "panel_missing_for_yeslab_357": 354,
+        "present_upstream_star_with_value": 318,
+        "present_upstream_with_value": 353,
+        "table": "factor_data8"
+      },
+      "year": 2023
+    }
+  },
+  "published_pins": {
+    "2022-07": {
+      "data_version": "70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a",
+      "published_at": "2026-09-05 10:32:32.853000"
+    },
+    "2023-07": {
+      "data_version": "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3",
+      "published_at": "2026-09-05 10:32:32.880000"
+    },
+    "2023-09": {
+      "data_version": "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3",
+      "published_at": "2026-09-05 10:32:32.884000"
+    },
+    "2023-10": {
+      "data_version": "715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3",
+      "published_at": "2026-09-05 10:32:32.886000"
+    }
+  }
+}

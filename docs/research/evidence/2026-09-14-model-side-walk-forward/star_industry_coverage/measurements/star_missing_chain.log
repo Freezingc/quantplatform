@@ -1,0 +1,30 @@
+dense mapping: {'f00': 'yeslab_206', 'f01': 'yeslab_357', 'f04': 'yeslab_381', 'f09': 'yeslab_425', 'f10': 'yeslab_443_reg30_max20_v1', 'f11': 'yeslab_464', 'f12': 'yeslab_471', 'f13': 'yeslab_484', 'f14': 'yeslab_96'}
+published factor_daily partitions: 144
+
+=== 2022-07-29 (test/year=2022, fold dataset 226a8dfc497c) ===
+  panel valid-label rows: 3355; manifest factor_daily[2022-07]=70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a; published pin=70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a; same=True
+  panel  yeslab_357  (f01) missing= 283 of which STAR= 181
+  panel  yeslab_471  (f12) missing= 297 of which STAR= 181
+  panel  yeslab_381  (f04) missing=   3 of which STAR=   0
+  f_daily yeslab_357  rows=  3073 versions=['70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a'] star_with_value=   0 panel-missing-Star-recovered=0/181
+          version 70c7c07aa9252291 rows=  3073 star_codes=   0 star_with_value=   0 pinned=True consumed=True
+  f_daily yeslab_471  rows=  3059 versions=['70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a'] star_with_value=   0 panel-missing-Star-recovered=0/181
+          version 70c7c07aa9252291 rows=  3059 star_codes=   0 star_with_value=   0 pinned=True consumed=True
+  f_daily yeslab_381  rows=  3353 versions=['70c7c07aa9252291e5fe8ba3a60f61a384ce9793bb6940ad4b045f7bd0774b6a'] star_with_value= 181 panel-missing-Star-recovered=0/0
+          version 70c7c07aa9252291 rows=  3353 star_codes= 181 star_with_value= 181 pinned=True consumed=True
+  upstream factor_data8: of the 283 codes the panel says are missing for yeslab_357, 283 have a non-null value upstream on that same day (STAR: 181); duplicate rows in table=5600
+
+=== 2023-07-05 (test/year=2023, fold dataset eb9bba1b5a0b) ===
+  panel valid-label rows: 3627; manifest factor_daily[2023-07]=715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3; published pin=715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3; same=True
+  panel  yeslab_357  (f01) missing= 354 of which STAR= 318
+  panel  yeslab_471  (f12) missing= 370 of which STAR= 318
+  panel  yeslab_381  (f04) missing=   3 of which STAR=   0
+  f_daily yeslab_357  rows=  3274 versions=['715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3'] star_with_value=   0 panel-missing-Star-recovered=0/318
+          version 715af5a14a4b0967 rows=  3274 star_codes=   0 star_with_value=   0 pinned=True consumed=True
+  f_daily yeslab_471  rows=  3258 versions=['715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3'] star_with_value=   0 panel-missing-Star-recovered=0/318
+          version 715af5a14a4b0967 rows=  3258 star_codes=   0 star_with_value=   0 pinned=True consumed=True
+  f_daily yeslab_381  rows=  3625 versions=['715af5a14a4b0967b538966073ce4c66f9345887fa18e61a3ef0cdcc7cf13ea3'] star_with_value= 318 panel-missing-Star-recovered=0/0
+          version 715af5a14a4b0967 rows=  3625 star_codes= 318 star_with_value= 318 pinned=True consumed=True
+  upstream factor_data8: of the 354 codes the panel says are missing for yeslab_357, 353 have a non-null value upstream on that same day (STAR: 318); duplicate rows in table=5600
+
+wrote /data/zhangyudong/qrv2_research_artifacts/star_missing_chain_probe.json

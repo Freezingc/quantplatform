@@ -19,6 +19,7 @@
 | `comparison_interim.md` | `research_v2/scripts/summarize_candidate_comparison.py`（主分支 `39ee96a`） | **工具渲染**的跨候选对比：可比性分组与排除理由、G1–G6 矩阵、两两增量矩阵（带"共享基线恒等式"校验）、领先候选的逐年分布与逐折最差 seed。同输入两次渲染 md5 全同 `c79e5545ebad6d36c3e935935176f3b7`。**M2/M3 出报告后重跑即得计划 Task 5.1 的那份文档** |
 | `yearly_baseline_deltas/` | `research_v2/scripts/analyze_yearly_baseline_deltas.py`（主分支 `78216af`，sha256 前缀 `c36aadec52042ac4`） | 三个已完成候选各一份 json + md：**基线在候选 945 日集上的逐年值与逐年增量**（此前任何工件里都没有）、四道逐位验收的实测值、**24 个不可评日的逐日清单**、`coverage_attribution`（**逐侧**覆盖率：候选四年恒为 **1.0000**、基线 0.89–0.99、**24 天全部由基线一侧决定**）、以及关掉 0.90 地板后的敏感性重算（结论更强，且与基线自己的签名报告**逐位相同**） |
 | `dense_factor_coverage/` | `research_v2/scripts/analyze_dense_factor_coverage.py`（主分支 `f96c4b2`） | 那 24 天的**再上一层原因**：稠密因子不完整的逐年/逐月/逐日份额、缺失**组合**与**嵌套**判定、受影响证券的代码前缀分布与科创板占比。结论：`yeslab_357` 与 `yeslab_471` 成对且嵌套地对**科创板 688/689** 证券缺失、**止于 2023 年 9 月**，而"不完整份额 > 10% 的日子"与被丢掉的 24 天**逐日相同** |
+| `star_industry_coverage/` | 7 个**只读**探针（`probes/`，select-only 查 `dfs://YesLab` 与 `dfs://QuantResearchV2Test`，最后一个只读本地缓存）+ `make_provenance.py` | 那 24 天的**根因，且推翻了 `dense_factor_coverage/` 留下的成因方向**：不是因子生产端，而是**我们重放时的 PIT 行业输入**。`materialize_frozen_factor_daily.py` 只给 `PIT_FACTORS = {yeslab_357, yeslab_363, yeslab_471}` 传行业提供方，而 SW2021 成分缓存里**科创板最早的 `in_date` 是 2023-09-25**（559 只同日入册；非科创板到 1990-12-10）。含四段链路同日对齐（上游有值 → `factor_daily` 科创板 0 行 → pin==manifest → 面板报缺）、两处算术闭合（1,286÷4 交易日=321.5/日；8 月 RankIC 时序证明当时截面完整）、三条被排除的假设、`689009.SH` 四年全缺的解释、论文措辞与三个处置选项。**行业缓存 32 份原件已随包复制**——数据商重述过这段历史，重新取数不能复现 |
 | `reproduction_audits/` | `research_v2/scripts/verify_prediction_reproduction.py`（主分支既有工具，本轮首次对这两个运行使用） | **预测复现审计**的 JSON 摘要：`m0r_v2` 四折 3,557,762 行与 `m1_full_v1` 四折 3,553,163 行，**全部 `identical=true`、`max_absolute_difference=0.0`**；含机器读出的 registry 状态（`WALK_FORWARD_PASSED` / `UNREGISTERED`）与实际打分线程数（52 / 1）。这是"分数确由该 bundle 算出"的唯一证据——签名链只证明归属 |
 | `extract_from_reports.py` | — | 只读提取器，stdlib only |
 | `vendor_sources.py` | — | 原件复制器，同时重算 `vendored/MANIFEST.json` |
@@ -76,3 +77,8 @@ M2 出报告后请重跑一次提取器，并把叙述文档升到 v0.2、用最
 
 2026-09-14（UTC 时间戳见 `provenance.json` 的 `extracted_at_utc`），
 主树 HEAD `c490353`、分支 `codex/publish-quant-platform`、工作树干净。
+
+`star_industry_coverage/` 是同日 23:55 追加的一批（根因排查），
+**自带独立的 `provenance.json`**（由 `make_provenance.py` 生成，记当时的主树 HEAD、分支与是否干净、
+7 个探针与 11 份测量输出的 sha256、10 份被引用源文件的 sha256、行业缓存的合并 sha256）。
+引用该目录时以它自己的 `provenance.json` 为准。

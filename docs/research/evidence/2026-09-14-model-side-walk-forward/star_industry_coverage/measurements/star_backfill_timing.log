@@ -1,0 +1,34 @@
+=== factor_quarantine: is the table populated at all? ===
+  total rows: 536627
+  span: {'lo': '2025-01-02 00:00:00', 'hi': '2025-01-27 00:00:00', 'n2': '536627'}
+  distinct factors quarantined: 23
+  reasons: {'NO_FINITE_VALUE': 536627}
+
+=== upstream table columns (does YesLab record a write time?) ===
+  factor_data8: ['ts_code', 'trade_date', 'factor_name', 'value']
+  factor_data10: ['ts_code', 'trade_date', 'factor_name', 'value']
+
+=== factor_daily: one materialization run or two? ===
+  factor_daily columns: ['signal_date', 'ts_code', 'factor_id', 'factor_version', 'universe_id', 'value', 'run_id', 'data_version', 'created_at', 'source_watermark_id', 'record_hash']
+  yeslab_357 2023-07: rows= 69763 star=    0 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:52:23.775 created_at_min=2026-09-03 15:52:23.775 run_id_max=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d run_id_min=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_357 2023-08: rows= 77834 star=    0 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:52:23.775 created_at_min=2026-09-03 15:52:23.775 run_id_max=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d run_id_min=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_357 2023-09: rows= 69051 star= 1286 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:52:23.775 created_at_min=2026-09-03 15:52:23.775 run_id_max=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d run_id_min=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_357 2023-10: rows= 63367 star= 5522 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:52:23.775 created_at_min=2026-09-03 15:52:23.775 run_id_max=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d run_id_min=c56c2c27-3eb7-4c76-a2f2-892a144d7b4d source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_471 2023-07: rows= 69416 star=    0 versions=['715af5a14a4b'] created_at_max=2026-09-03 16:20:18.181 created_at_min=2026-09-03 16:20:18.181 run_id_max=13492641-8a88-44a2-bd38-1b687359aff5 run_id_min=13492641-8a88-44a2-bd38-1b687359aff5 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_471 2023-08: rows= 77667 star=    0 versions=['715af5a14a4b'] created_at_max=2026-09-03 16:20:18.181 created_at_min=2026-09-03 16:20:18.181 run_id_max=13492641-8a88-44a2-bd38-1b687359aff5 run_id_min=13492641-8a88-44a2-bd38-1b687359aff5 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_471 2023-09: rows= 68919 star= 1286 versions=['715af5a14a4b'] created_at_max=2026-09-03 16:20:18.181 created_at_min=2026-09-03 16:20:18.181 run_id_max=13492641-8a88-44a2-bd38-1b687359aff5 run_id_min=13492641-8a88-44a2-bd38-1b687359aff5 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_471 2023-10: rows= 63282 star= 5522 versions=['715af5a14a4b'] created_at_max=2026-09-03 16:20:18.181 created_at_min=2026-09-03 16:20:18.181 run_id_max=13492641-8a88-44a2-bd38-1b687359aff5 run_id_min=13492641-8a88-44a2-bd38-1b687359aff5 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_381 2023-07: rows= 76360 star= 6596 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:55:36.414 created_at_min=2026-09-03 15:55:36.414 run_id_max=dc0da20f-0332-4bf4-8419-acafcb408390 run_id_min=dc0da20f-0332-4bf4-8419-acafcb408390 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_381 2023-08: rows= 84270 star= 6458 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:55:36.414 created_at_min=2026-09-03 15:55:36.414 run_id_max=dc0da20f-0332-4bf4-8419-acafcb408390 run_id_min=dc0da20f-0332-4bf4-8419-acafcb408390 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_381 2023-09: rows= 73981 star= 6230 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:55:36.414 created_at_min=2026-09-03 15:55:36.414 run_id_max=dc0da20f-0332-4bf4-8419-acafcb408390 run_id_min=dc0da20f-0332-4bf4-8419-acafcb408390 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+  yeslab_381 2023-10: rows= 63370 star= 5539 versions=['715af5a14a4b'] created_at_max=2026-09-03 15:55:36.414 created_at_min=2026-09-03 15:55:36.414 run_id_max=dc0da20f-0332-4bf4-8419-acafcb408390 run_id_min=dc0da20f-0332-4bf4-8419-acafcb408390 source_watermark_id_max=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a source_watermark_id_min=d11b78431c13378f0a99a7fa7d26e98557704bd4662aa3c30514e8c1a4a5f10a
+
+=== upstream STAR rows on a pre-breakpoint day, all columns ===
+  factor_data8/行业内收益标准化绝对值: star_rows=1176 finite=1080 inf=0 range=[0.00046303081476640925, 11.714749757936685]
+          {'ts_code': '688701.SH', 'trade_date': '2023-07-05 00:00:00', 'factor_name': '行业内收益标准化绝对值', 'value': '0.04277829302419919'}
+          {'ts_code': '688701.SH', 'trade_date': '2023-07-05 00:00:00', 'factor_name': '行业内收益标准化绝对值', 'value': '0.04277829302419919'}
+  factor_data10/AttentionSpillover: star_rows=611 finite=527 inf=0 range=[-57.433175755928, 14.530296664244364]
+          {'ts_code': '688701.SH', 'trade_date': '2023-07-05 00:00:00', 'factor_name': 'AttentionSpillover', 'value': '2.4413158932968275'}
+          {'ts_code': '688158.SH', 'trade_date': '2023-07-05 00:00:00', 'factor_name': 'AttentionSpillover', 'value': '-1.234506821656673'}
+
+wrote /data/zhangyudong/qrv2_research_artifacts/star_backfill_timing_probe.json

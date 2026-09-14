@@ -1,0 +1,63 @@
+{
+  "cited_source_missing": [],
+  "cited_source_sha256": {
+    "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md": "0650aa787ef9496c9dc476bf7ff9b736ad9abf11863dca8bc408417327c20358",
+    "research_v2/configs/factors/source_catalog.yaml": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad",
+    "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
+    "research_v2/scripts/audit_tushare_pit_industry.py": "195a6377554d703a91d165810b9899eeb2ee952ffd7c5f08b28cae2482499312",
+    "research_v2/scripts/materialize_frozen_factor_daily.py": "27da63ee4a0c86ca32961c6bd854ebf5187e7d097fff27153d41d568efa34d83",
+    "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+    "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
+    "research_v2/src/research_v2/factors/deduplication.py": "b5f9f73204c62049ecc181198d5c21a321aefae515ee684ab8d43dbc35ca028a",
+    "research_v2/src/research_v2/factors/materializer.py": "2bd81fa24b6b25d03591ebbd45e5fc0c1ba760ac799d0838621ca27dc1b16418",
+    "research_v2/src/research_v2/factors/source_evaluation.py": "cd2810e8fbf5eec44c0180b2fbcff2592bccd2446593e7a7186466f5aa55c3b3"
+  },
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "parquet panels and fold caches (read in place, never copied)",
+    "database exports beyond the aggregate counts quoted in root_cause.md"
+  ],
+  "generated_at_utc": "2026-09-14T15:57:22+00:00",
+  "generator": {
+    "path": "make_provenance.py",
+    "sha256": "cbe4edd3e024e2b254f5af61ecaf7c22047b8ab760fd2c269f75be4c821a5bcb"
+  },
+  "measurements": {
+    "industry_cache_star_coverage.json": "2b2640d0ae53a5a9e1ae0d2ee90b5b188b49ec341b2215bc382a62be7c33bb7f",
+    "rankic_sample_count_timing_probe.json": "8773ec2a4eafaa8560b2a92b7125ff1805aae0447e96ed0cec0e865ca9ff305e",
+    "repair_audit_357_471_probe.json": "09b98274f6764a6f1c40cbde90b59159188a0961db1fc65de60cbd6a0cc795d5",
+    "star_backfill_timing.log": "ae773c380827c97e7668992f331364a4cb84552e6bb91e8c01e1659ee596d2a2",
+    "star_backfill_timing_probe.json": "bf0d7c7783cf82fdea32e34af47e44753fb58e72fe043d42fe5567075e701b19",
+    "star_missing_chain.log": "00b594a7afdf1a4c0a1a80e274e5d2af75d9e76e7dd04212c9ab8fce10cd9295",
+    "star_missing_chain_probe.json": "24350d8f9dc4182f3378b459d4c79024ddbcbff2daa671602bee5a76baa98901",
+    "star_quarantine.log": "be889b5d0a096ebcdc9563bc0f8c424fbfc2f1dabc45e448232e7e2f7a6cb46d",
+    "star_quarantine_reason_probe.json": "4db032cc58e17af09b260cf029bc37fa2d39715cdf3b8c5053aea953b0523552",
+    "star_upstream_coverage_probe.json": "f2a0e61ed1ec4437ba877bfc5a4ba1368665a7b1c311202f81462f0f056d71f4",
+    "star_upstream_probe.log": "1ccf6b1754c137fca64d3b6dee61cc0c71aa561bc1092f66c1f50660ea97fed6"
+  },
+  "probe_scripts": {
+    "industry_cache_star_coverage.py": "841b3c50a131dd9cba08a56aeb51eaafc43f8e4c6a38c7822629f2e9fa113d43",
+    "rankic_sample_count_timing.py": "2e09d6560970080c5cd9ce5c3996793afa1b34b65bd2fbfd76523eb863e916a4",
+    "repair_audit_357_471.py": "d8298ba9247616650733885ccc56d9926118308bed49311b2924688627ee43a7",
+    "star_backfill_timing.py": "0f9d010e49b5ac0c6cde65f18a0c57d0f702ae701cd82c99897b7db180d4f1d1",
+    "star_missing_chain.py": "ff17d61011adb87232e11dad16e7396fa5d1a24f9856b9f37b4cca3672abee70",
+    "star_quarantine_reason.py": "b31fa6c13560fe48475dfc34e173bfb72dcfd2de3be8cc9de557f47d5e49e506",
+    "star_upstream_coverage.py": "19f1d3727beed2409619558bf18b2e2dd341f7386eac11cf75bb7d58612707b1"
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "adc34f02099f03428da6b7acf0305d2f20674e2e",
+    "dirty": false,
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+    "subject": "docs: the serving thread contract is implemented and mutation-checked on a branch awaiting the post-M3 merge window, with the acceptance line re-measured rather than assumed"
+  },
+  "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
+  "this_evidence_branch": {
+    "branch": "codex/research-conditional-factor-review",
+    "commit_at_generation": "26be7e9795f9533835e25b4d843ed2def6149331"
+  },
+  "vendored_industry_cache": {
+    "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
+    "file_count": 32
+  }
+}

@@ -1,0 +1,405 @@
+{
+  "generated_at": "2026-09-14",
+  "monthly": {
+    "2022.01.01..2022.01.31": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4404,
+        "null_values": 32850,
+        "rows": 212800,
+        "star_codes": 588,
+        "star_codes_with_value": 387,
+        "star_rows": 22344,
+        "star_rows_with_value": 14490,
+        "trade_dates": 19,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4018,
+        "null_values": 30972,
+        "rows": 113544,
+        "star_codes": 611,
+        "star_codes_with_value": 375,
+        "star_rows": 11609,
+        "star_rows_with_value": 6985,
+        "trade_dates": 19,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2022.07.01..2022.07.31": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4426,
+        "null_values": 32354,
+        "rows": 235200,
+        "star_codes": 588,
+        "star_codes_with_value": 441,
+        "star_rows": 24696,
+        "star_rows_with_value": 18312,
+        "trade_dates": 21,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4129,
+        "null_values": 30659,
+        "rows": 125496,
+        "star_codes": 611,
+        "star_codes_with_value": 430,
+        "star_rows": 12831,
+        "star_rows_with_value": 8956,
+        "trade_dates": 21,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2023.03.01..2023.03.31": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4620,
+        "null_values": 22586,
+        "rows": 257600,
+        "star_codes": 588,
+        "star_codes_with_value": 509,
+        "star_rows": 27048,
+        "star_rows_with_value": 23390,
+        "trade_dates": 23,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4273,
+        "null_values": 28005,
+        "rows": 137448,
+        "star_codes": 611,
+        "star_codes_with_value": 506,
+        "star_rows": 14053,
+        "star_rows_with_value": 11573,
+        "trade_dates": 23,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2023.07.01..2023.07.31": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4697,
+        "null_values": 16224,
+        "rows": 235200,
+        "star_codes": 588,
+        "star_codes_with_value": 550,
+        "star_rows": 24696,
+        "star_rows_with_value": 22816,
+        "trade_dates": 21,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4343,
+        "null_values": 23781,
+        "rows": 125496,
+        "star_codes": 611,
+        "star_codes_with_value": 540,
+        "star_rows": 12831,
+        "star_rows_with_value": 11172,
+        "trade_dates": 21,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2023.09.01..2023.09.30": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4723,
+        "null_values": 13114,
+        "rows": 224000,
+        "star_codes": 588,
+        "star_codes_with_value": 560,
+        "star_rows": 23520,
+        "star_rows_with_value": 22340,
+        "trade_dates": 20,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4386,
+        "null_values": 20992,
+        "rows": 119520,
+        "star_codes": 611,
+        "star_codes_with_value": 557,
+        "star_rows": 12220,
+        "star_rows_with_value": 11087,
+        "trade_dates": 20,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2023.10.01..2023.10.31": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4734,
+        "null_values": 10648,
+        "rows": 190400,
+        "star_codes": 588,
+        "star_codes_with_value": 562,
+        "star_rows": 19992,
+        "star_rows_with_value": 19104,
+        "trade_dates": 17,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4392,
+        "null_values": 17628,
+        "rows": 101592,
+        "star_codes": 611,
+        "star_codes_with_value": 560,
+        "star_rows": 10387,
+        "star_rows_with_value": 9493,
+        "trade_dates": 17,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2023.11.01..2023.11.30": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4748,
+        "null_values": 13094,
+        "rows": 246400,
+        "star_codes": 588,
+        "star_codes_with_value": 565,
+        "star_rows": 25872,
+        "star_rows_with_value": 24774,
+        "trade_dates": 22,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4408,
+        "null_values": 22657,
+        "rows": 131472,
+        "star_codes": 611,
+        "star_codes_with_value": 562,
+        "star_rows": 13442,
+        "star_rows_with_value": 12358,
+        "trade_dates": 22,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    }
+  },
+  "safety": "select-only on dfs://YesLab",
+  "single_day": {
+    "2022.07.29": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4401,
+        "null_values": 1516,
+        "rows": 11200,
+        "star_codes": 588,
+        "star_codes_with_value": 441,
+        "star_rows": 1176,
+        "star_rows_with_value": 882,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_381": {
+        "distinct_codes": 5952,
+        "non_star_codes": 5346,
+        "non_star_codes_with_value": 4388,
+        "null_values": 2248,
+        "rows": 11904,
+        "star_codes": 606,
+        "star_codes_with_value": 440,
+        "star_rows": 1212,
+        "star_rows_with_value": 880,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_464": {
+        "distinct_codes": 5955,
+        "non_star_codes": 5349,
+        "non_star_codes_with_value": 4370,
+        "null_values": 1150,
+        "rows": 5955,
+        "star_codes": 606,
+        "star_codes_with_value": 435,
+        "star_rows": 606,
+        "star_rows_with_value": 435,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4109,
+        "null_values": 1437,
+        "rows": 5976,
+        "star_codes": 611,
+        "star_codes_with_value": 430,
+        "star_rows": 611,
+        "star_rows_with_value": 430,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_484": {
+        "distinct_codes": 6009,
+        "non_star_codes": 5396,
+        "non_star_codes_with_value": 4396,
+        "null_values": 1181,
+        "rows": 6009,
+        "star_codes": 613,
+        "star_codes_with_value": 432,
+        "star_rows": 613,
+        "star_rows_with_value": 432,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2023.07.05": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4664,
+        "null_values": 792,
+        "rows": 11200,
+        "star_codes": 588,
+        "star_codes_with_value": 540,
+        "star_rows": 1176,
+        "star_rows_with_value": 1080,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_381": {
+        "distinct_codes": 5952,
+        "non_star_codes": 5346,
+        "non_star_codes_with_value": 4649,
+        "null_values": 1528,
+        "rows": 11904,
+        "star_codes": 606,
+        "star_codes_with_value": 539,
+        "star_rows": 1212,
+        "star_rows_with_value": 1078,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_464": {
+        "distinct_codes": 5955,
+        "non_star_codes": 5349,
+        "non_star_codes_with_value": 4613,
+        "null_values": 811,
+        "rows": 5955,
+        "star_codes": 606,
+        "star_codes_with_value": 531,
+        "star_rows": 606,
+        "star_rows_with_value": 531,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4298,
+        "null_values": 1151,
+        "rows": 5976,
+        "star_codes": 611,
+        "star_codes_with_value": 527,
+        "star_rows": 611,
+        "star_rows_with_value": 527,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_484": {
+        "distinct_codes": 6009,
+        "non_star_codes": 5396,
+        "non_star_codes_with_value": 4657,
+        "null_values": 821,
+        "rows": 6009,
+        "star_codes": 613,
+        "star_codes_with_value": 531,
+        "star_rows": 613,
+        "star_rows_with_value": 531,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    },
+    "2023.10.09": {
+      "yeslab_357": {
+        "distinct_codes": 5600,
+        "non_star_codes": 5012,
+        "non_star_codes_with_value": 4719,
+        "null_values": 640,
+        "rows": 11200,
+        "star_codes": 588,
+        "star_codes_with_value": 561,
+        "star_rows": 1176,
+        "star_rows_with_value": 1122,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_381": {
+        "distinct_codes": 5952,
+        "non_star_codes": 5346,
+        "non_star_codes_with_value": 4711,
+        "null_values": 1362,
+        "rows": 11904,
+        "star_codes": 606,
+        "star_codes_with_value": 560,
+        "star_rows": 1212,
+        "star_rows_with_value": 1120,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_464": {
+        "distinct_codes": 5955,
+        "non_star_codes": 5349,
+        "non_star_codes_with_value": 4701,
+        "null_values": 696,
+        "rows": 5955,
+        "star_codes": 606,
+        "star_codes_with_value": 558,
+        "star_rows": 606,
+        "star_rows_with_value": 558,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_471": {
+        "distinct_codes": 5976,
+        "non_star_codes": 5365,
+        "non_star_codes_with_value": 4375,
+        "null_values": 1044,
+        "rows": 5976,
+        "star_codes": 611,
+        "star_codes_with_value": 557,
+        "star_rows": 611,
+        "star_rows_with_value": 557,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      },
+      "yeslab_484": {
+        "distinct_codes": 6009,
+        "non_star_codes": 5396,
+        "non_star_codes_with_value": 4709,
+        "null_values": 743,
+        "rows": 6009,
+        "star_codes": 613,
+        "star_codes_with_value": 557,
+        "star_rows": 613,
+        "star_rows_with_value": 557,
+        "trade_dates": 1,
+        "verdict": "STAR_PRESENT_WITH_VALUE_UPSTREAM"
+      }
+    }
+  }
+}
