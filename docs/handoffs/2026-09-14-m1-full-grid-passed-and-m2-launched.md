@@ -1488,3 +1488,57 @@ OOS 窗口里几乎每一天都不可评，**G6 会变成 ≈0.001**——
 三条都属所有者决定，本轮**一条都没做**。证据：研究分支
 `docs/research/evidence/…/dense_intersection_screen/finding.md` §16
 （4 份 JSON + 4 份终端记录，provenance 全部 sha256）。
+
+## 25. 【2026-09-15 03:20 增补】M3 的发射链已**逐环核过**（不再是一句"发射包已备好"），并量出一个**有日期的残余风险**
+
+§5.1 第 3 条一直写着"M3 发射包已备好"。那是**断言**。本轮把它拆成七环逐一核，
+全部只读（读代码、读常量、跑既有测试），未改任何文件、未碰 M2。
+**结论：七环全部相符**，而第 8 条那个日期是真风险。
+
+| # | 环节 | 核对方式 | 结果 |
+|---|---|---|---|
+| 1 | 发射命令 | 看守 `launch_m3()` 与**正在跑的** M2 命令行逐项比 | 同构：同基线工件/报告、`--factor-source frozen_v2`、`--prior-report M1=… M2=…`、`--torch-threads 1`、`--resume`；差异都是刻意的（`--family M3`、`m3_v1`、48 路、2.5 GiB/worker） |
+| 2 | `model_id` ↔ 预检轮询路径 | 驱动 `_run_full_cross_section:2314` 写 `f"{family.lower()}-{fold_id.lower()}"`；bundle 存 `workspace/models/`；看守第 467 行轮询 `WS/models/{PREFIX}-{fold}/checksums.sha256` | **逐字符相符**（`m3_v1/models/m3-f1/…`）。这正是 §7.1 为 M2 核过、而 M3 从未核过的那一对 |
+| 3 | card 家族白名单 | 驱动 `M3_FAMILY_NAME` vs `_MODEL_CARD_FAMILIES["M3"]` | `SET_ATTENTION` ∈ `{M3, SET_ATTENTION}` → **blocker 4 那一类不存在** |
+| 4 | `model_code_version` | 驱动 `M3_MODEL_CODE_VERSION` vs loader `_MODEL_CODE_VERSIONS[SET_ATTENTION]` | 两边都是 `set-attention-1`，**逐字符相同** → **blocker 6 那一类不存在** |
+| 5 | bundle config 形状 | `SetAttentionConfig` 字段 vs `m3_config_grid()` 的键 | 配置类是 `{dropout, hidden_dim, inducing_points, num_blocks, num_heads, raw_factor_count}`，网格多一个 `learning_rate`（会被 `torch_bundle_config` 剥掉）——**与 M2 blocker 5 同形状，且那条已修**，预检只比冻结 config 自己的键 |
+| 6 | 装箱与 makespan | `len(m3_config_grid(None))` | **16 格 × 3 seed = 48 次拟合 = 48 路**，恰好一轮种子级、每 worker 1 次拟合 → 整折 makespan 是 **1 × 最慢格**（不是 M2 的 3 ×），与 §5.1 第 3 条的判断一致 |
+| 7 | 测试覆盖 | 在**主树**（M3 将来跑的就是这份代码）跑 loader / reproduction / set_attention / family_batch_dispatch / 驱动 CLI / evaluation | **315 passed / 1 skipped（37.44s）**，其中含 loader 真的构造出 `SET_ATTENTION`、以及 `_recompute_static_torch` 对 `SET_ATTENTION` bundle 的复算——**那正是逐折复现审计走的路径** |
+
+**内存前置（看守第 6 阶段，`MEM_FLOOR_GIB = 140`）**：当前 `MemAvailable = 204,728,024 kB = 195.2 GiB`，
+余量 **55 GiB**；而 M2 的 **25 个进程共占 310.0 GiB**，看守第 1 阶段要求 M2 驱动**已退出**才继续，
+所以检查发生时那 310 GiB 已经释放。另一用户的 4 个常驻进程（86.5 GiB、已跑 28 天）
+**已经计在** 195.2 里面。**这条前置不会触发。**
+（swap 7 GiB 用满、仅剩 86 MB，但 §7.1 已记 `si/so = 0`，静止。）
+
+### 25.1 唯一有日期的残余风险：M3 预检看守的等待预算在 **2026-09-28 21:00:40** 到期
+
+M3 的逐折预检看守（pid **529385**）是 **2026-09-14 21:00:40** 启的，带
+`--discover-driver --wait-for-driver-hours 336`，即 **截止 2026-09-28 21:00:40**。
+M2 的 ETA 是 **09-23 至 09-25**，所以余量是 **3.88 天**（对 ETA 区间末端而言）。
+
+**等待逻辑本身是对的**（本轮读过）：`--discover-driver` 时 `DRIVER_PID = None`，
+`driver_alive()` 于是**每次按命令行重新扫描**（`find_driver(CARRIER)`），
+所以 M3 一发射就会被发现，不会记着"启动时没有驱动"而永不轮询。
+**到期也不是静默死掉**：它写 `m3_fold_preflight.ALARM` 并 `return 1`；
+若链式看守的 `m2_m3_chain_watcher.ABORT` 已存在，它**安静退出且不重复报警**
+（避免"一个没人信的告警文件"）。链式看守自己**没有**等待 M2 报告的总截止时间
+（它那个 `deadline` 只是报告稳定性观察窗），所以它不会先放弃。
+
+**若 M2 滑过 09-28 21:00**：M3 会在**没有逐折预检**的情况下跑起来。补救就是重启这个看守
+（等待预算重新计满），命令与现在跑的这条逐字相同：
+
+```bash
+setsid nohup /data/zhangyudong/.conda/envs/quantyd/bin/python \
+  /data/zhangyudong/qrv2_research_artifacts/m2_fold_preflight_watcher.py \
+  --workspace /data/zhangyudong/qrv2_research_artifacts/m3_v1 \
+  --carrier M3 --prefix m3 --discover-driver --wait-for-driver-hours 336 \
+  --stop-marker /data/zhangyudong/qrv2_research_artifacts/m2_m3_chain_watcher.ABORT \
+  --log /data/zhangyudong/qrv2_research_artifacts/m3_fold_preflight.log \
+  --alarm /data/zhangyudong/qrv2_research_artifacts/m3_fold_preflight.ALARM \
+  > /dev/null 2>&1 < /dev/null & disown
+```
+
+**接手时的检查顺序**（比读日志快）：`ls /data/zhangyudong/qrv2_research_artifacts/ | grep -Ei 'abort|alarm'`
+应为空；`pgrep -af m2_fold_preflight_watcher` 应有**两条**（M2 的 529186 与 M3 的 529385）；
+`pgrep -af m2_m3_chain_watcher` 应有 320418。
