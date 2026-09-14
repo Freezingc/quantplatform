@@ -1,7 +1,9 @@
 # 设计：让 torch 线程数随工件旅行，并让服务侧无法悄悄用宿主默认值（2026-09-14）
 
-**状态：设计已定，实现被合并窗口挡住。** 本文写给下一个能动手的人（很可能就是本会话的后续），
-目的是让他**执行**而不是**重新推导**。发现过程与证据在
+**状态：已在分支 `codex/serving-thread-contract` 上实现、测好、变异检验过，等 M3 跑完后与
+`codex/deferred-driver-fixes` 的两条修复同批合并（约 09-25 之后）。主工作树未被触碰。**
+实现结果见本文末尾的 §7；下面 §1–§6 是当初的设计与其依据，保持原样以便对照。
+发现过程与证据在
 `docs/reports/2026-09-14-m1-full-grid-shadow-approval-preconditions.md` §3.1，本文不重复叙述，
 只写约束、设计与验收。
 
@@ -103,3 +105,66 @@
 * 不动 M2/M3 的运行参数；它们的 bundle 会是 4 字段 card，
   因此**它们的线程数只能来自各自工作区的检查点 manifest**（`torch_intraop_threads: 1`），
   这一点要写进它们的判定文档，别让下一个人以为工件里应该有。
+
+---
+
+## 7. 实现结果（2026-09-14 22:55，分支 `codex/serving-thread-contract`）
+
+设计里的三部分都做了，另外把 §4 的测试清单逐条落实并**逐条做了变异检验**。
+改动 6 个文件、+492/−29 行：驱动（card 写入）、`artifact_loader`（读取/拒绝/钉线程/未校验绑定）、
+`reproduction`（card 与检查点一致性）与三个测试文件。
+
+### 7.1 与设计的一致与差别
+
+* **card 字段**：`torch_model_card(..., torch_intraop_threads)` 为**必填关键字参数**
+  （省略即 `TypeError`，这是刻意的：可选参数会让"忘了传"重新变成静默缺口），
+  写入前校验为正整数（`0` / `-1` / `"1"` / `True` / `1.0` / `None` 全部 `ValueError`）。
+* **取值来源**：新增 `_card_torch_threads(execution_threads)`——并行运行传
+  `execution.torch_threads`（驱动本来就强制它非空，且 worker 就是按它钉的），
+  串行运行回落到 `describe_runtime_environment().torch_intraop_threads`（即宿主实际值）。
+  **两条路都与检查点 manifest 记录的是同一个数**，所以 §3.3 的一致性校验才有意义。
+* **服务侧**：`load_inference_artifact(..., serving_torch_threads=None)`。
+  解析顺序是 **card 优先、调用方补位**；两者都有且**不一致时拒绝**（不猜、不调和）。
+  torch 家族两者都缺 → **拒绝加载**，错误消息直接给出两条补救路径。
+  钉线程用 `_pin_serving_threads`：`configure_torch_threads` 抛 `RuntimeError`
+  （inter-op 池已启动）时**不静默放过**，而是比对当前线程数，不一致就报错。
+* **评价侧刻意不拒绝**：`load_bundle_for_evaluation` 照旧加载旧 bundle，
+  只把 `torch_intraop_threads` 记进 `unverified_bindings`。
+  理由是硬的：复现审计走的正是这条路，**拒绝就等于让全部历史工件不可审计**。
+* **审计侧**：`_require_card_threads_to_agree_with_the_run(card, workspace, fold_id)`
+  在**两个入口**（整跑与 `--fold`）都被调用；card 无字段则跳过（历史工件），
+  字段畸形则拒绝，与检查点记录不一致则拒绝。
+
+### 7.2 门禁与验收（§5 的逐条核对）
+
+| 项 | 结果 |
+|---|---|
+| `ruff`（`src`、`tests`、被改脚本） | 全清 |
+| `mypy src` | 170 文件清 |
+| `pytest tests -q` | **2187 passed / 46 skipped / 0 failed**（基线 2168/46，净增 19 个测试） |
+| **对已发布工件零影响**（§5 最硬的一条） | 用**改动后**的代码重跑两个领先候选的整跑复现审计：`m0r_v2` 四折全 `identical=true`、`max_absolute_difference=0.0`、3,557,762 行；`m1_full_v1` 同样四折全 0.0、3,553,163 行。日志存为 `$A/reproduction_audit_{m0r_v2,m1_full_v1}.post_thread_contract.log` |
+| 与另两条修复的冲突 | 无：`codex/deferred-driver-fixes` 改驱动的两处（缓存助手、`parse_args`）与本分支改的 `torch_model_card` / 四个 card 调用点不重叠；合并时仍需重跑全门禁 |
+
+### 7.3 变异检验（每条守卫都证明过它能失败）
+
+| 变异 | 被抓到的测试 |
+|---|---|
+| 删掉服务侧的拒绝分支（旧 bundle 直接用宿主默认线程服务） | `test_a_legacy_torch_bundle_is_refused_for_serving_unless_the_caller_states_a_count` |
+| 从**两个审计入口**删掉 card/检查点一致性调用 | `test_the_per_fold_audit_refuses_a_card_contradicting_the_run_checkpoints` |
+| 从 `unverified_bindings` 里去掉该绑定（缺口重新变成静默） | 3 条测试失败（含 `test_the_evaluation_path_still_loads_a_legacy_torch_bundle`） |
+| `_card_torch_threads` 硬编码返回 1（忽略运行申报值） | `test_the_card_thread_count_prefers_the_declared_parallel_count` |
+| `card_torch_threads` 改成宽松解析（接受 `"1"` / `1.0` / `True`） | `test_card_torch_threads_accepts_only_a_positive_integer` |
+
+**其中第二条是被变异检验救回来的**：最初那 5 条 card/检查点测试**直接调用私有助手**，
+删掉两个入口的调用后它们**全部照旧通过**——守卫存在但没接线，正是本仓库反复吃亏的形状。
+补的是一条走 `verify_fold_predictions_reproduce` **入口**的接线测试
+（给 stub 真实 bundle 摘要以通过冻结折校验，从而走到线程这一步），
+以及它的反向对照（card 与检查点一致时，审计必须**越过**这道检查、因别的原因失败）。
+
+### 7.4 合并前还要做的事
+
+1. 等 M2 与 M3 都跑完（链式看守在 M2 验收后**立即**发射 M3，中间没有安全窗口）。
+2. 与 `codex/deferred-driver-fixes` 一起合并，然后**重跑全门禁**（主线在此期间可能已前进）。
+3. 合并**只影响此后新写的 bundle**：M0R / M1 / M2 / M3 的 card 都是 4 字段，
+   它们的服务线程数只能来自各自工作区的检查点 manifest（都是 1），
+   或按 §3.2 的临时措施在部署侧钉住。**这一点要写进 M2 与 M3 的判定文档。**

@@ -899,6 +899,72 @@ M2 驱动 pid 3588838 存活约 1d03h、F1 **18/24**、无 `*.ABORT` / `*.ALARM`
 主分支 `981a48a`、研究分支 `26be7e9`，均已推送；
 研究分支的 `problems_found.md` D 节已追加这条服务侧前置（因为它是"结果可验证"这个主张的边界条件）。
 `run_real_candidate_training.py` 的 sha256 与 mtime 仍未变。
+
+---
+
+## 18. 【2026-09-14 23:00 增补】§17.2 那条缺陷已经修好了，放在分支上等合并窗口
+
+**分支 `codex/serving-thread-contract`（提交 `b70ad8a`，未合并）**，
+worktree 在 `/data/zhangyudong/qrv2_worktrees/serving-thread-contract`。
+设计与实现结果都在 `docs/superpowers/specs/2026-09-14-serving-thread-contract-design.md`
+（§1–§6 是设计，**§7 是实现结果、门禁与变异检验**）。改动 6 个文件、+492/−29 行。
+
+**三部分**：
+
+1. **card 带上线程数**：`torch_model_card(..., torch_intraop_threads)` 是**必填关键字**
+   （省略即 `TypeError`——可选参数会让"忘了传"重新变成静默缺口），写入前校验为正整数。
+   取值来自新的 `_card_torch_threads()`：并行运行用 `execution.torch_threads`
+   （驱动本来就强制非空、worker 就是按它钉的），串行运行用实测的宿主值——
+   **两条路都与检查点 manifest 记录的是同一个数**，所以第 3 部分的一致性校验才有意义。
+2. **服务侧不许猜**：`load_inference_artifact(..., serving_torch_threads=None)`，
+   card 优先、调用方补位；两者都有且不一致 → **拒绝**（不调和）；
+   torch 家族两者都缺 → **拒绝加载**并在消息里给出两条补救路径。
+   钉线程时若 inter-op 池已启动（`RuntimeError`），**比对当前线程数、不一致就报错**，不静默放过。
+   **评价侧刻意不拒绝**：`load_bundle_for_evaluation` 照旧加载旧 bundle，
+   只把该绑定记进 `unverified_bindings`——复现审计走这条路，拒绝就等于让全部历史工件不可审计。
+3. **审计侧交叉校验**：`_require_card_threads_to_agree_with_the_run()` 在**整跑与 `--fold` 两个入口**
+   都调用；card 无字段则跳过（历史工件）、字段畸形则拒绝、与检查点记录不一致则拒绝。
+
+**门禁**：`ruff` 清、`mypy src` 170 文件清、`pytest tests -q` **2187 passed / 46 skipped / 0 failed**
+（基线 2168/46，净增 19）。**设计里最硬的那条验收是重测的、不是假定的**：
+用改动后的代码重跑两个领先候选的整跑复现审计，
+`m0r_v2` 与 `m1_full_v1` **四折仍全部 `identical=true`、`max_absolute_difference=0.0`**
+（3,557,762 行与 3,553,163 行）。日志存为
+`$A/reproduction_audit_{m0r_v2,m1_full_v1}.post_thread_contract.log`。
+
+**五处守卫全部做过变异检验**，其中一处是变异检验救回来的：
+最初那 5 条 card/检查点测试**直接调用私有助手**，把两个入口的调用删掉后它们**全部照旧通过**
+（守卫存在但没接线）。补了一条走 `verify_fold_predictions_reproduce` **入口**的接线测试
+（给 stub 真实 bundle 摘要以通过冻结折校验），外加它的反向对照
+（card 与检查点一致时审计必须**越过**这道检查、因别的原因失败）。
+其余四处变异分别被：服务侧拒绝分支、`unverified_bindings` 里的该绑定（3 条测试）、
+`_card_torch_threads` 的申报值优先、`card_torch_threads` 的严格类型校验抓到。
+
+### 18.1 合并窗口：现在是**三条**驱动改动一起合，且已核实互不重叠
+
+| 分支 | 改驱动的哪里 |
+|---|---|
+| `codex/deferred-driver-fixes`（`4f44e12`、`1dbc36c`） | fold-cache 原子写入助手；`parse_args` 里的 `_requested_folds` |
+| `codex/serving-thread-contract`（`b70ad8a`） | `torch_model_card` 与它的四个调用点、`_card_torch_threads` |
+
+**文件集重叠但函数不重叠**（都动 `run_real_candidate_training.py`），
+合并顺序建议先 `deferred-driver-fixes` 再本分支，合并后**必须重跑全门禁**。
+**窗口仍是 M2 与 M3 都跑完之后**（链式看守在 M2 验收后立即发射 M3，中间没有安全窗口）。
+
+### 18.2 一条要写进 M2 / M3 判定文档的事实
+
+合并**只影响此后新写的 bundle**：**M0R / M1 / M2 / M3 的 card 都是 4 字段**，
+它们的服务线程数只能来自各自工作区的检查点 manifest（都是 **1**），
+或按 §17.2 的临时措施在部署侧钉住。别让下一个人以为工件里应该有这个字段。
+
+### 18.3 状态（23:00 实测）
+
+M2 驱动 pid 3588838 存活 **1d04h**、**F1 18/24**；剩下的 6 格都在**第 3 个 seed** 上
+（22:42 仍在落检查点：`m2-f1-c18-20260803-…-epoch-3`、22:37 `c19-…-epoch-7`），
+worker 100% CPU、RSS 约 17 GiB，无 `*.ABORT` / `*.ALARM`。
+三个看守都在且 PPID=1（320418 / 529186 / 529385）。
+主工作树未被本轮任何改动触碰：`run_real_candidate_training.py` 的 sha256 仍是
+`33742880f314ca21`、mtime 仍是 `2026-09-12 00:50:33.890987021`。
 另外核过一件事：**报告与晋级证据里不含任何 git 提交号**
 （只有 `model_code_version` / `data_version` / `schema_version` 这类逻辑版本），
 所以主线前进不会让验收 A 的"逐字节相同"失效。
