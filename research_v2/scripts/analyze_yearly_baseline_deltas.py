@@ -291,7 +291,96 @@ def describe_unevaluable_days(
         "label_day_count": label_days,
         "candidate_invalid_days": candidate_invalid,
         "baseline_invalid_days_on_the_same_frame": baseline_invalid,
+        "note": (
+            "Both frames here are the MATCHED pair the evaluator scores: evaluate_frozen_oos "
+            "calls _match_prediction_coverage first, so 'candidate' below means the candidate's "
+            "scores restricted to the rows the baseline artifact also carries. Read "
+            "coverage_attribution for the unmatched sides."
+        ),
         "by_year": candidate_by_year,
+    }
+
+
+def coverage_attribution(
+    candidates: pd.DataFrame, baselines: pd.DataFrame, labels: pd.DataFrame
+) -> dict[str, Any]:
+    """Which side of the pair decides the evaluable day set, measured per year.
+
+    A day is evaluable only when the MATCHED pair covers at least 0.90 of that day's valid-label
+    rows, so the day set is governed by whichever side is thinner. Measuring the two sides
+    separately is what turns "24 days were dropped" into "24 days were dropped because of X".
+    For the frozen-v2 runs the answer is the baseline: the candidate scores every valid-label row
+    on every day (coverage 1.0000), while the best_simple artifact exists exactly on the rows
+    where all nine dense baseline-eligible factors are finite, which is 89-99% of the cross
+    section depending on the day -- straddling the 0.90 floor.
+    """
+    keys = ["signal_date", "ts_code"]
+    frame = labels.loc[:, keys + ["raw_return_5d", "label_valid"]].copy()
+    frame["label_valid"] = frame["label_valid"].fillna(False).astype(bool)
+    frame = frame.loc[
+        frame["label_valid"] & pd.to_numeric(frame["raw_return_5d"], errors="coerce").notna()
+    ]
+    for name, source in (("candidate", candidates), ("baseline", baselines)):
+        scores = source.loc[:, keys + ["score"]].copy()
+        scores["score"] = pd.to_numeric(scores["score"], errors="coerce")
+        # Keep only rows that actually carry a finite score, then let the left join's NaN mark the
+        # rows that do not. notna() yields a bool column directly, so no fillna downcast is needed.
+        column = f"{name}_score"
+        scores = scores.loc[scores["score"].notna(), keys].assign(**{column: 1.0})
+        frame = frame.merge(scores, on=keys, how="left")
+        frame[f"has_{name}"] = frame[column].notna()
+        frame = frame.drop(columns=[column])
+    frame["has_pair"] = frame["has_candidate"] & frame["has_baseline"]
+    frame["day"] = pd.to_datetime(frame["signal_date"]).dt.date
+    grouped = frame.groupby("day")[["has_candidate", "has_baseline", "has_pair"]].agg(
+        valid_label_rows=("has_candidate", "size"),
+        candidate_rows=("has_candidate", "sum"),
+        baseline_rows=("has_baseline", "sum"),
+        pair_rows=("has_pair", "sum"),
+    )
+    grouped["year"] = pd.to_datetime(grouped.index.astype(str)).year
+    for side in ("candidate", "baseline", "pair"):
+        grouped[f"{side}_coverage"] = grouped[f"{side}_rows"] / grouped["valid_label_rows"]
+    floor = 0.90
+    by_year: dict[str, Any] = {}
+    for year, group in grouped.groupby("year", sort=True):
+        below_pair = group.loc[group["pair_coverage"] < floor]
+        by_year[str(int(year))] = {
+            "days": int(len(group)),
+            "median_candidate_coverage": float(group["candidate_coverage"].median()),
+            "median_baseline_coverage": float(group["baseline_coverage"].median()),
+            "median_pair_coverage": float(group["pair_coverage"].median()),
+            "min_pair_coverage": float(group["pair_coverage"].min()),
+            "days_pair_below_floor": int(len(below_pair)),
+            "days_candidate_below_floor": int((group["candidate_coverage"] < floor).sum()),
+            "days_baseline_below_floor": int((group["baseline_coverage"] < floor).sum()),
+            "days_dropped_by_the_baseline_side": int(
+                (
+                    (group["pair_coverage"] < floor) & (group["candidate_coverage"] >= floor)
+                ).sum()
+            ),
+            "days_passing_by_less_than_0.005": int(
+                (
+                    (group["pair_coverage"] >= floor) & (group["pair_coverage"] < floor + 0.005)
+                ).sum()
+            ),
+            "pair_coverage_dates_below_floor": [
+                str(day) for day in below_pair.index.astype(str)
+            ],
+        }
+    return {
+        "coverage_floor": floor,
+        "by_year": by_year,
+        "totals": {
+            "days": int(len(grouped)),
+            "days_pair_below_floor": int((grouped["pair_coverage"] < floor).sum()),
+            "days_dropped_by_the_baseline_side": int(
+                (
+                    (grouped["pair_coverage"] < floor)
+                    & (grouped["candidate_coverage"] >= floor)
+                ).sum()
+            ),
+        },
     }
 
 
@@ -423,6 +512,7 @@ def analyse(
     unevaluable = describe_unevaluable_days(
         evaluation.daily_rank_ic, baseline_daily, label_days
     )
+    attribution = coverage_attribution(candidates, baselines, labels)
     if mismatches:
         return {"accepted": False, "mismatches": mismatches}
     return {
@@ -452,6 +542,7 @@ def analyse(
             },
         },
         "unevaluable_days": unevaluable,
+        "coverage_attribution": attribution,
         "pooled": {
             "candidate_mean_rank_ic": evaluation.summary.mean_rank_ic,
             "baseline_mean_rank_ic_on_candidate_days": baseline_summary.mean_rank_ic,
@@ -568,6 +659,36 @@ def render_markdown(result: dict[str, Any]) -> str:
         "`ScoreHealthEvidence.passes` requires `0.90 <= coverage <= 1.0`, at least 10 unique "
         "scores and a score standard deviation above 1e-6. The median coverage column says which "
         "of the two it was, and the exact dates are in the JSON output.",
+        "",
+        "Both frames in that table are the MATCHED pair the evaluator actually scores: "
+        "`evaluate_frozen_oos` calls `_match_prediction_coverage` first, so the coverage shown is "
+        "the intersection's, not either side's own. The next table separates the two sides, which "
+        "is what identifies which one drops the day.",
+        "",
+        "### Which side of the pair decides the day set",
+        "",
+        "| Year | Days | Median candidate coverage | Median baseline coverage | Median pair "
+        "coverage | Min pair | Pair below the 0.90 floor | Of those, days the candidate side alone "
+        "would have passed | Passing by <0.005 |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    attribution = result.get("coverage_attribution") or {}
+    for year, entry in sorted((attribution.get("by_year") or {}).items()):
+        lines.append(
+            f"| {year} | {entry['days']} | {entry['median_candidate_coverage']:.4f} | "
+            f"{entry['median_baseline_coverage']:.4f} | {entry['median_pair_coverage']:.4f} | "
+            f"{entry['min_pair_coverage']:.4f} | {entry['days_pair_below_floor']} | "
+            f"{entry['days_dropped_by_the_baseline_side']} | "
+            f"{entry['days_passing_by_less_than_0.005']} |"
+        )
+    totals = attribution.get("totals") or {}
+    dropped = totals.get("days_pair_below_floor", 0)
+    by_baseline = totals.get("days_dropped_by_the_baseline_side", 0)
+    lines += [
+        "",
+        f"Of the {dropped} OOS days the matched pair could not pass the floor, **{by_baseline}** "
+        "were days the candidate side alone would have passed -- i.e. days dropped by the "
+        "baseline artifact's row coverage rather than by anything the candidate did.",
         "",
         "Method: the frames are rebuilt from the signed selection, prediction and dataset",
         "artifacts with the evaluator's own checks; the baseline branch is a replay of",

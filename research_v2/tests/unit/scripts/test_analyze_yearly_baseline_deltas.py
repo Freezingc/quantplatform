@@ -111,6 +111,89 @@ class TestPredictionIdsByFold:
         assert module.prediction_ids_by_fold(tmp_path / "absent") == {}
 
 
+class TestCoverageAttribution:
+    """Which side of the matched pair drops an OOS day. This is the finding, so it gets tests."""
+
+    def _frames(
+        self, candidate_share: dict[str, float], baseline_share: dict[str, float], rows: int = 100
+    ) -> tuple[Any, Any, Any]:
+        import pandas as pd
+
+        label_rows = []
+        for day in sorted(candidate_share):
+            for index in range(rows):
+                label_rows.append(
+                    {
+                        "signal_date": day,
+                        "ts_code": f"{index:06d}.SZ",
+                        "raw_return_5d": 0.01 * index,
+                        "label_valid": True,
+                    }
+                )
+        labels = pd.DataFrame(label_rows)
+
+        def side(shares: dict[str, float]) -> Any:
+            rows_out = []
+            for day, share in shares.items():
+                for index in range(int(round(share * rows))):
+                    rows_out.append(
+                        {"signal_date": day, "ts_code": f"{index:06d}.SZ", "score": 0.01 * index}
+                    )
+            return pd.DataFrame(rows_out)
+
+        return labels, side(candidate_share), side(baseline_share)
+
+    def test_a_day_dropped_by_the_baseline_side_is_attributed_to_the_baseline(self) -> None:
+        labels, candidates, baselines = self._frames(
+            {"2023-07-04": 1.0, "2023-07-05": 1.0},
+            {"2023-07-04": 1.0, "2023-07-05": 0.80},
+        )
+        result = module.coverage_attribution(candidates, baselines, labels)
+        year = result["by_year"]["2023"]
+        assert year["days"] == 2
+        assert year["median_candidate_coverage"] == 1.0
+        assert year["days_pair_below_floor"] == 1
+        assert year["days_candidate_below_floor"] == 0
+        assert year["days_baseline_below_floor"] == 1
+        assert year["days_dropped_by_the_baseline_side"] == 1
+        assert year["pair_coverage_dates_below_floor"] == ["2023-07-05"]
+        assert result["totals"]["days_dropped_by_the_baseline_side"] == 1
+
+    def test_a_day_dropped_by_the_candidate_side_is_not_blamed_on_the_baseline(self) -> None:
+        labels, candidates, baselines = self._frames(
+            {"2023-07-04": 1.0, "2023-07-05": 0.80},
+            {"2023-07-04": 1.0, "2023-07-05": 1.0},
+        )
+        result = module.coverage_attribution(candidates, baselines, labels)
+        year = result["by_year"]["2023"]
+        assert year["days_pair_below_floor"] == 1
+        assert year["days_candidate_below_floor"] == 1
+        assert year["days_dropped_by_the_baseline_side"] == 0
+
+    def test_exactly_ninety_percent_passes_and_is_counted_as_knife_edge(self) -> None:
+        # 1000 rows a day so 0.900 and 0.950 are exactly representable as row counts.
+        labels, candidates, baselines = self._frames(
+            {"2023-07-04": 1.0, "2023-07-05": 1.0},
+            {"2023-07-04": 0.90, "2023-07-05": 0.95},
+            rows=1000,
+        )
+        result = module.coverage_attribution(candidates, baselines, labels)
+        year = result["by_year"]["2023"]
+        # The floor in ScoreHealthEvidence.passes is 0.90 <= coverage, so 0.900 exactly passes.
+        assert year["days_pair_below_floor"] == 0
+        assert year["days_passing_by_less_than_0.005"] == 1
+        assert year["min_pair_coverage"] == 0.9
+
+    def test_invalid_label_rows_are_not_counted_in_the_denominator(self) -> None:
+        labels, candidates, baselines = self._frames({"2023-07-05": 1.0}, {"2023-07-05": 1.0})
+        # Ten of the hundred rows lose their label: coverage must be measured against 90.
+        labels.loc[labels.index[:10], "label_valid"] = False
+        result = module.coverage_attribution(candidates, baselines, labels)
+        year = result["by_year"]["2023"]
+        assert year["median_pair_coverage"] == 1.0
+        assert year["days_pair_below_floor"] == 0
+
+
 class TestRenderMarkdown:
     def _result(self) -> dict[str, Any]:
         return {
