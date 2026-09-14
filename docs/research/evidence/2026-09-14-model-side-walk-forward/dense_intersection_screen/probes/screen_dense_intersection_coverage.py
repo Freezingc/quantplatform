@@ -62,6 +62,34 @@ GATES_PATH = RESEARCH_V2 / "src" / "research_v2" / "evaluation" / "gates.py"
 #     return 0.90 <= coverage <= 1.0 and self.unique_score_count >= 10 and score_std > 1e-6
 _FLOOR_PATTERN = re.compile(r"([0-9]*\.?[0-9]+)\s*<=\s*coverage\s*<=\s*1\.0")
 DEFAULT_FLOOR = 0.90
+# Factor ids reach the database inside a quoted IN-list. The frozen set already contains an id with
+# an underscore and digits (yeslab_443_reg30_max20_v1), so the character class has to allow both;
+# what it must not allow is anything that could close the quote.
+_FACTOR_ID_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
+
+
+def parse_factor_list(raw: str) -> list[str]:
+    """Validate an explicit factor list, refusing the shapes that would fake a clean result.
+
+    A repeated id makes ``having count(*) = k`` unreachable, so the intersection query returns no
+    days at all and the screen reports nothing below the floor -- indistinguishable from a factor
+    set that covers everything. An id containing a quote would break out of the IN-list. Both are
+    refused here rather than discovered as a mysteriously perfect report.
+    """
+    ids = [item.strip() for item in raw.split(",")]
+    ids = [item for item in ids if item]
+    if not ids:
+        raise ValueError("--factors needs at least one factor id")
+    invalid = [item for item in ids if not _FACTOR_ID_PATTERN.fullmatch(item)]
+    if invalid:
+        raise ValueError(f"--factors contains ids with unsupported characters: {invalid[:4]}")
+    duplicates = sorted({item for item in ids if ids.count(item) > 1})
+    if duplicates:
+        raise ValueError(
+            f"--factors contains duplicates: {duplicates[:4]}; a repeated id would make the "
+            "intersection clause unsatisfiable and the screen would report a false all-clear"
+        )
+    return ids
 
 
 class FloorNotFoundError(RuntimeError):
@@ -355,9 +383,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--factor-source",
         choices=("dense_v2", "all_v2"),
-        default="dense_v2",
+        default=None,
         help="dense_v2 is the nine factors the frozen best_simple baseline is defined on, which is "
         "the intersection the evaluator's floor actually sees; all_v2 is the full frozen fifteen",
+    )
+    parser.add_argument(
+        "--factors",
+        default=None,
+        help="an explicit comma-separated factor list, for screening a candidate factor set before "
+        "it is committed to the driver's frozen constants; overrides --factor-source",
     )
     parser.add_argument(
         "--floor",
@@ -383,6 +417,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    if args.factors is not None and args.factor_source is not None:
+        parser.error("--factors and --factor-source cannot both be given")
+    explicit: list[str] | None = None
+    if args.factors is not None:
+        try:
+            explicit = parse_factor_list(args.factors)
+        except ValueError as error:
+            parser.error(str(error))
+
     floor = args.floor if args.floor is not None else current_floor()
     floor_source = "command line" if args.floor is not None else f"parsed from {GATES_PATH}"
 
@@ -390,13 +433,17 @@ def main(argv: list[str] | None = None) -> int:
     from walk_forward_common import new_holder
     from walk_forward_factor_daily import FROZEN_FACTOR_SET_V2, FROZEN_FACTOR_SET_V2_DENSE
 
-    factor_ids = (
-        tuple(FROZEN_FACTOR_SET_V2_DENSE)
-        if args.factor_source == "dense_v2"
-        else tuple(FROZEN_FACTOR_SET_V2)
-    )
+    if explicit is not None:
+        factor_ids: tuple[str, ...] = tuple(explicit)
+        factor_source = "explicit"
+    else:
+        source = args.factor_source or "dense_v2"
+        factor_ids = tuple(
+            FROZEN_FACTOR_SET_V2_DENSE if source == "dense_v2" else FROZEN_FACTOR_SET_V2
+        )
+        factor_source = source
     print(
-        f"window {args.start} .. {args.end}; factor source {args.factor_source} "
+        f"window {args.start} .. {args.end}; factor source {factor_source} "
         f"({len(factor_ids)} factors); floor {floor} ({floor_source})",
         flush=True,
     )
@@ -438,7 +485,7 @@ def main(argv: list[str] | None = None) -> int:
 
     payload: dict[str, Any] = {
         "window": [args.start.isoformat(), args.end.isoformat()],
-        "factor_source": args.factor_source,
+        "factor_source": factor_source,
         "floor": floor,
         "floor_source": floor_source,
         "diagnostics": diagnostics,

@@ -16,6 +16,7 @@ authoritative.
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -263,3 +264,85 @@ def test_collect_returns_the_per_day_counts_the_pure_layer_needs(monkeypatch) ->
     assert denominator == {date(2023, 7, 5): 3627, date(2023, 7, 6): 3630}
     assert diagnostics["factor_count"] == 1
     assert diagnostics["partitions_resolved"] >= 1
+
+
+# ---------------------------------------------------------------------------------------------
+# an explicit factor list: the pending factor-set decision has to be answerable without editing the
+# driver's frozen constants, which is the one file the running M2 driver re-imports per fold
+# ---------------------------------------------------------------------------------------------
+
+
+def _patch_main(monkeypatch, captured: dict):
+    """Fake the database and the frozen-set import so main() can run end to end."""
+    import walk_forward_factor_daily as WFF
+
+    day = pd.Timestamp("2023-07-05")
+
+    def fake_query(holder: object, sql: str):
+        captured.setdefault("sql", []).append(sql)
+        if "ej(" in sql:
+            return True, pd.DataFrame([{"signal_date": day, "n": 3230}])
+        if "label_daily" in sql:
+            return True, pd.DataFrame([{"signal_date": day, "n": 3627}])
+        raise AssertionError(f"unexpected query: {sql}")
+
+    def fake_current_versions(holder: object, object_name: str) -> dict[str, str]:
+        return {"2023-07": _FACTOR_PIN if object_name == "factor_daily" else _LABEL_PIN}
+
+    monkeypatch.setattr(COMMON, "query", fake_query)
+    monkeypatch.setattr(COMMON, "current_versions", fake_current_versions)
+    monkeypatch.setattr(COMMON, "new_holder", lambda: {})
+    monkeypatch.setattr(WFF, "FROZEN_FACTOR_SET_V2", ("frozen_a", "frozen_b"))
+    monkeypatch.setattr(WFF, "FROZEN_FACTOR_SET_V2_DENSE", ("frozen_a",))
+
+
+def test_explicit_factor_list_overrides_the_frozen_source(monkeypatch, tmp_path) -> None:
+    """A candidate factor set can be screened without touching the driver's frozen constants."""
+    captured: dict = {}
+    _patch_main(monkeypatch, captured)
+    out = tmp_path / "screen.json"
+    code = M.main([
+        "--start", "2023-07-01", "--end", "2023-07-31",
+        "--factors", "yeslab_11,yeslab_22,yeslab_33",
+        "--json", str(out),
+    ])
+    assert code == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert payload["factor_source"] == "explicit"
+    assert payload["diagnostics"]["factor_ids"] == ["yeslab_11", "yeslab_22", "yeslab_33"]
+    sql = next(statement for statement in captured["sql"] if "ej(" in statement)
+    assert "having count(*) = 3" in sql
+    assert "yeslab_22" in sql
+    assert "frozen_a" not in sql
+
+
+def test_the_default_factor_source_is_unchanged_by_the_new_flag(monkeypatch, tmp_path) -> None:
+    """Adding --factors must not change what an existing invocation measures."""
+    captured: dict = {}
+    _patch_main(monkeypatch, captured)
+    out = tmp_path / "screen.json"
+    assert M.main(["--start", "2023-07-01", "--end", "2023-07-31", "--json", str(out)]) == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert payload["factor_source"] == "dense_v2"
+    assert payload["diagnostics"]["factor_ids"] == ["frozen_a"]
+
+
+def test_an_explicit_list_cannot_silently_shrink_the_intersection(monkeypatch, tmp_path) -> None:
+    """Duplicates, empties and a clash with --factor-source are all refused.
+
+    A repeated id would make `having count(*) = k` unreachable, so the query would return no days at
+    all and the screen would report a perfect zero -- the same shape as a factor set that covers
+    nothing, which is the one failure this instrument must not confuse with success.
+    """
+    captured: dict = {}
+    _patch_main(monkeypatch, captured)
+    out = tmp_path / "screen.json"
+    base = ["--start", "2023-07-01", "--end", "2023-07-31", "--json", str(out)]
+    with pytest.raises(SystemExit):
+        M.main([*base, "--factors", "yeslab_1,yeslab_1"])
+    with pytest.raises(SystemExit):
+        M.main([*base, "--factors", "  "])
+    with pytest.raises(SystemExit):
+        M.main([*base, "--factors", "yeslab_1", "--factor-source", "all_v2"])
+    with pytest.raises(SystemExit):
+        M.main([*base, "--factors", "yeslab_1; drop table x"])

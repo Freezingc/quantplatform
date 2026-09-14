@@ -329,6 +329,39 @@ python scripts/screen_dense_intersection_coverage.py \
 生成器 `probes/make_m2_preregistration.py` 直接读仪器的 JSON 产出这两个文件，
 并在登记里记下来源测量的 sha256——**没有一个数字是手抄的**，
 所以登记不可能与它声称依据的那次测量不一致。
+
+## 15. `--factors`：让"换因子名单"这个待定决定可以在**不改驱动**的前提下先算一遍
+
+§11 的结论是"换名单之前该先跑这台仪器"。但仪器原本只认驱动里的两个冻结常量
+（`FROZEN_FACTOR_SET_V2_DENSE` / `FROZEN_FACTOR_SET_V2`），要试算一个**候选名单**
+就得去改 `walk_forward_factor_daily.py` 里的常量——**而那正是 M2 在飞时绝对不能碰的文件**
+（驱动每折从磁盘重新导入它）。所以"先算一遍"在原来是不可能的：
+要么改危险文件，要么等九天。
+
+现在加了 `--factors id1,id2,…`，显式名单优先于 `--factor-source`，两者同时给会报错。
+
+**等价性已实测**：用 `--factors` 显式列出稠密 9（与 `dense_v2` 完全相同的九个 id）跑
+2022–2025，结果 **predicted 24 vs measured 24、`identical=True`**，与走冻结常量那一路逐日相同
+（`measurements/run_explicit_factor_list_2022_2025.log`）。即显式路径不是另一套逻辑，
+只是换了一个 id 来源。
+
+**四种会被拒绝的输入，以及为什么必须在入口拒绝**：
+
+| 输入 | 拒绝理由（实测输出） | 不拒绝会怎样 |
+|---|---|---|
+| `yeslab_1,yeslab_1` | `contains duplicates …` | **重复 id 会让 `having count(*) = k` 永不可满足**，交集查询返回 0 天，报告会显示"没有任何一天跌破地板"——与"因子集覆盖完美"**同一个形状**，这是本仪器唯一不能犯的错 |
+| 空白 | `needs at least one factor id` | 同上，空名单也是 0 天 |
+| `yeslab_1; drop table x` | `ids with unsupported characters` | id 要进带引号的 IN-list，能闭合引号就能改语义 |
+| 同时给 `--factor-source` | `cannot both be given` | 两个来源静默取其一，等于没告诉用户到底量了哪个集合 |
+
+第一条是这组校验的真正理由：**失败模式不是报错，是"看起来全清"**。
+三处变异检验分别去掉重复校验、去掉字符校验、把默认源悄悄改成 `all_v2`，
+各自被对应测试杀死；另有一条测试专门钉住"不加新旗标时默认仍是 `dense_v2`"，
+防止这次新增改变既有调用的语义。
+
+**给所有者的一句话**：15 个因子的名单一旦定了，先跑
+`--factors <新名单里的稠密子集>`（60 秒），确认预测的跌破天数是 0 或可接受，
+**再**去动驱动的冻结常量；顺序反过来就得重跑整条链。
 | `measurements/predicted_coverage_train_window_2014_2021.json` / `run_2014_2021.log` | §10 的逐日与逐年结果 |
 | `measurements/predicted_coverage_all15_2022_2025.json` / `run_all15_2022_2025.log` | §11 的全 15 因子口径 |
 | `measurements/candidate_feature_nan_m0r_v2.json` / `.log` | §12 的逐列、逐年、逐行缺失画像 |
