@@ -102,6 +102,81 @@ W=24 给 3 × 1.437 = 4.31，W=16 给约 6.5，W=12 给约 7.5 —— **24 路�
 
 ## 5. 待办（按顺序）
 
+### 4.1 M2 之后也已经自动化了：两个新监视器（2026-09-14 14:47 起在跑）
+
+M1→M2 那一环的监视器已经跑完并成功，所以同样的模式延伸到了后面两环。
+**现在有三个进程在跑**：M2 驱动（pid 3588838）、链式监视器、逐折预检监视器。
+
+**(1) `m2_m3_chain_watcher.py`（pid 188088）——M2 通过后自动发射 M3。**
+与 M1→M2 那个同构，但**多了一道更强的检查**，并且**每个检查都做过负向对照**：
+
+| 阶段 | 内容 | 失败时 |
+|---|---|---|
+| 1 wait | `m2_v1/report.json` 存在、稳定、M2 驱动已退出 | 继续等 |
+| 2 gates | `family=M2`、`mode=full`、`oos.all_passed=true` | 中止，不发 M3 |
+| **3 registry** | **`load_walk_forward_evidence` 从签名的 `promotion_evidence.json` 独立重算 G1–G6，六道必须与报告逐位相同** | 中止 |
+| 4 C′ | 四折胜出格的最终拟合检查点与搜索阶段逐字节相同 | 中止 |
+| 5 A | `--resume` 重跑，报告 md5 逐字节相同 | 中止 |
+| 6 memory | `MemAvailable ≥ 140 GiB`（M3 48 路 × 2.5 GiB + 0.6 = 120.6，/0.9 = 134，留余量取 140） | 等 30 分钟后中止 |
+| 7 launch | M3：48 路、钉 1 线程、`--prior-report M1=m1_full_v1/report.json --prior-report M2=m2_v1/report.json` | — |
+
+第 3 阶段是新增的，理由是它比验收 A 更贴近 M3 真正依赖的东西：
+M3 的前置只需要"M2 过了门"，而**门数值能否从签名证据独立重算出来**正是这件事的实质；
+A 测的是可复现性（也重要，但那是另一回事）。
+**两个方向都验过**：对 `m1_full_v1` 的真实证据返回 True 并给出 sha256 `e941274d44922d2a118a70ca`；
+把 G4 的观测值改成 0.123456 后返回 False 并精确指出
+`G4: registry PASS/0.007826986071187494 vs report PASS/0.123456`。
+
+C′ 还带一条**防空通过**的守卫：找不到可比对的 (搜索, 最终) 检查点对时**报失败而不是报 0/0 相同**。
+这条守卫在开发时就抓到了我自己的参数化 bug（见下）。
+
+**(2) `m2_fold_preflight_watcher.py`（pid 206286）——M2 每折一完成就跑一次评价预检。**
+动机是时间差：M2 的评价阶段在四折全跑完后**只做一次**（约 09-23），
+而**五个阻塞项里的五个都只在评价阶段发作**；但每折的 bundle 与签名预测**一折一落地就存在**。
+**M2 又是这条边界上风险最高的家族**：它是时序的，而且 card 的家族**由胜者决定**
+（`m2_card_family(winning) = f"TEMPORAL_{winning}"`，GRU 或 TCN 在搜索跑完前不可知）——
+那正是 blocker 4（card family 不在评价器白名单里）与 blocker 6（loader 没有 `TEMPORAL_TCN`
+条目、TCN 赢了也无法服务）出事的位置。
+**折 1 发现是可修的一天，折 4 之后发现是白跑的八天。**
+
+它照抄评价器的逐折路径（`_require_verified_model_bundle`、两个预测工件的验签与
+`_require_candidate_evidence` / `_require_best_simple_evidence`、`load_split` +
+`_labels_with_lineage`、`_validate_oos_frame` × 3），**并加了 M1 预检不需要的一项**：
+card 的家族必须同时在评价器的 `_MODEL_CARD_FAMILIES[CARRIER]` 白名单里、
+且 `artifact_loader` 能用它构造出模型（构造出的 `model_family` 还要等于 card 上写的那个）。
+
+**这个脚本已在 M1 的四折上端到端验证过**（`--workspace m1_full_v1 --carrier M1 --prefix m1 --once`）：
+**四折全部 PASSED、无告警**，包括 loader 真的构造出了模型
+（`ResidualMLP, 70657 params`，与 F2 胜者 c14 `hidden 128/blocks 2` 的参数量吻合）、
+冻结 config 与搜索胜者的比较键为 `['dropout','hidden_dim','num_blocks']` 且无失配。
+顺带核实了一个此前没记的事实：**F4 的 best_simple 是 B3，而 F1–F3 是 B2**（逐折基线选择不同）。
+
+**开发中它先抓到了我自己的两个 bug，都值得记**：
+
+* **参数化漏了一处**：`preflight()` 里写死了 `_MODEL_CARD_FAMILIES.get("M2")`，
+  而我用 `--carrier M1` 测试，于是它拿 M1 的 `RESIDUAL_MLP` 去比 M2 的白名单并**正确报警**。
+  报警是对的、参数化是错的——已改成用 `CARRIER`。
+  （这次误报顺带暴露了一个有用事实：`_MODEL_CARD_FAMILIES["M2"]` 实际是
+  `{'M2','TEMPORAL_GRU','TEMPORAL_TCN'}`，**载体名自身也在白名单里**，
+  因为它是用 `{carrier: {carrier, *names} …}` 构造的。）
+* **"冻结 config == 搜索胜者"这个比较对 M2 会误判**：`torch_bundle_config`
+  会**剥掉**架构 config dataclass 没声明的字段（M2 剥掉 `family` 与 `learning_rate`），
+  所以 bundle 的 config 只有 `{raw_factor_count, hidden_dim, dropout}`，
+  而搜索记录里的 config 有 `{family, hidden_dim, dropout, learning_rate}`。
+  直接比会失败。已改成**只比冻结 config 自己的键、要求交集非空（防空通过）、
+  并另外通过 card 的家族来校验胜者的架构选择**（`TEMPORAL_{winner.family}` 必须等于 card family）。
+  实测确认：`TemporalGRUConfig`/`TemporalTCNConfig` 的字段都是
+  `raw_factor_count/hidden_dim/dropout`，与 loader 的 `model_config_fields` 逐项相同。
+
+**两个监视器都在 git 树外**（`/data/zhangyudong/qrv2_research_artifacts/`），
+因为它们含有本次运行专属的硬编码（pid 3588838、工作区路径）。
+日志：`m2_m3_chain_watcher.log`、`m2_fold_preflight.log`；
+告警文件：`m2_m3_chain_watcher.ABORT`、`m2_fold_preflight.ALARM`、
+成功标记 `m2_m3_chain_watcher.LAUNCHED`。
+**接手时先看这三个文件是否存在**，它们比读日志快。
+
+### 5.1 原待办清单
+
 1. **等 M2**（预计 09-23 至 09-25）。监控：`ls m2_v1/search/F1 | wc -l` 应到 24；
    日志 0 错误；worker RSS 最大值不超 17.1 GiB；每折的护栏复查不被拒。
 2. **M2 跑完后**：做与 M1 相同的三项验收（门 / C′ / A）+ §4.2 判定归档。
