@@ -262,6 +262,18 @@ M1 全网格是四个可能不同的模型各走一折。
   （sha256 `e941274d44922d2a118a70cac34dc528…`），
   **registry 独立重算的 G1–G6 与报告逐位相同**。
 * 归档判定文档与运行工作区里的 `verdict.md` md5 全同（`f31293f38389f5c52c0d4ec2efbe614e`）。
+* **预测复现审计（2026-09-14 20:50 补做，此前是缺的一环）**：
+  签名链证明的是"分数被记录在这个 bundle 名下"（归属），**不是**"分数确由这个 bundle 算出"（复现）。
+  本轮对**两个领先候选**跑了复现审计（从已发布 bundle 与 TEST 分片重算全部打分再逐行比对）：
+  `m0r_v2` 四折 **3,557,762 行**、`m1_full_v1` 四折 **3,553,163 行**，
+  **全部 `identical=true`、`max_absolute_difference=0.0`**。
+  M1 那份是在**该运行自己记录的 1 线程**下打分的（已训练的 torch bundle 前向不是线程稳定的：
+  同一 bundle 在 16/52 线程下差 4.8e-05 / 4.9e-05，是近似并列股票的秩反转），
+  这一点是"0.0"有意义的前提。审计摘要在 `evidence/…/reproduction_audits/`，
+  完整叙述见 `evidence/…/vendored/docs/reports/2026-09-14-prediction-reproduction-audits.md`。
+  顺带被机器确认：`m1_full_v1` 的 `registry_status` 是 **`UNREGISTERED`**
+  （六道门全过但从未注册；F6.1 的 `WALK_FORWARD_PASSED → SHADOW` 以"已在册"为前提，
+  所以若要让 M1 进影子，注册是必须先走的一步——治理动作，未代为执行）。
 
 ---
 

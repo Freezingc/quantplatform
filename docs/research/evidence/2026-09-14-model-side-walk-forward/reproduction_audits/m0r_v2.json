@@ -1,0 +1,42 @@
+{
+  "folds": [
+    {
+      "family": "LGBM_RANKREG",
+      "fold_id": "F1",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m0r-f1",
+      "row_count": 804575
+    },
+    {
+      "family": "LGBM_RANKREG",
+      "fold_id": "F2",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m0r-f2",
+      "row_count": 882426
+    },
+    {
+      "family": "LGBM_RANKREG",
+      "fold_id": "F3",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m0r-f3",
+      "row_count": 932167
+    },
+    {
+      "family": "LGBM_RANKREG",
+      "fold_id": "F4",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m0r-f4",
+      "row_count": 938594
+    }
+  ],
+  "model_id": "sha256:32315c89fb9a65b8ceab193036fc3a0a870d24f2e6d99c6ff74049dccc75788b",
+  "registry_status": "WALK_FORWARD_PASSED",
+  "reproduced": true,
+  "scored_under_torch_threads": 52,
+  "threads_requested": null,
+  "total_rows": 3557762
+}

@@ -1,0 +1,42 @@
+{
+  "folds": [
+    {
+      "family": "RESIDUAL_MLP",
+      "fold_id": "F1",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m1-f1",
+      "row_count": 803572
+    },
+    {
+      "family": "RESIDUAL_MLP",
+      "fold_id": "F2",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m1-f2",
+      "row_count": 881863
+    },
+    {
+      "family": "RESIDUAL_MLP",
+      "fold_id": "F3",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m1-f3",
+      "row_count": 931411
+    },
+    {
+      "family": "RESIDUAL_MLP",
+      "fold_id": "F4",
+      "identical": true,
+      "max_absolute_difference": 0.0,
+      "model_artifact_id": "m1-f4",
+      "row_count": 936317
+    }
+  ],
+  "model_id": "sha256:5d01ec8f2d1fa5ed700b6a8c20cfdedf75634e7a9c16b1b5e3cd4c723976c832",
+  "registry_status": "UNREGISTERED",
+  "reproduced": true,
+  "scored_under_torch_threads": 1,
+  "threads_requested": 1,
+  "total_rows": 3553163
+}

@@ -132,8 +132,30 @@ selection id / model id / fold / dataset 与冻结选择逐一对上、
 `_require_verified_model_bundle` 把 bundle 摘要与重新哈希对上），
 **但这条链证明的是"这些分数被记录在这个 bundle 名下"，不是"这些分数确由这个 bundle 算出"**。
 持有信任根的人可以在正确的 metadata 下签署任意分数 bytes，而现有每一道检查都会通过。
-补位的是**独立的复现审计**（从已发布工件重算预测），它已在 M1 的四折上跑完；
-写论文时若主张"结果可验证"，应说明**是复现审计而不是签名链**在支撑这个主张。
+补位的是**独立的复现审计**（从已发布工件重算预测）。
+**【2026-09-14 20:50 更新：这一环现在对两个领先候选都补齐了】**
+此前只在 `m1_parallel_v1`（M1 载体）上跑过，而**被引用得最多的两个运行没有审计过**；
+本轮补上，结果**四折全部 `identical=true`、`max_absolute_difference=0.0`**：
+
+| 工作区 | 家族 | 复核行数 | registry 状态（机器读出） | 打分线程 |
+|---|---|---|---|---|
+| `m0r_v2` | LGBM_RANKREG | **3,557,762** | **`WALK_FORWARD_PASSED`** | 52（宿主默认；LightGBM 无 torch 检查点可钉） |
+| `m1_full_v1` | RESIDUAL_MLP | **3,553,163** | **`UNREGISTERED`** | **1**（运行自己记录的值） |
+
+JSON 摘要在 `reproduction_audits/`，原始日志在
+`/data/zhangyudong/qrv2_research_artifacts/reproduction_audit_{m0r_v2,m1_full_v1}.log`，
+完整叙述见 `vendored/docs/reports/2026-09-14-prediction-reproduction-audits.md`。
+
+**两个必须一起说的点**：
+（a）"0.0" 之所以有意义，是因为审计**把自己钉到该运行记录的线程数**——
+已训练的 torch bundle 前向**不是线程稳定**的（同一 bundle 在 16 线程差 4.8e-05、
+52 线程差 4.9e-05，量级是近似并列股票的**秩反转**，不是末位舍入）；
+（b）审计对**任何**分数或行集差异都抛错并非零退出，所以它**可以直接当门禁用**。
+
+**写论文时若主张"结果可验证"，应说明是复现审计而不是签名链在支撑这个主张**，
+并且说明它回答的是"存下来的分数是否确由这个 bundle 算出"——
+"这个 bundle 是否由那次搜索选出"由验收 C′（检查点逐字节比对）回答，
+"这次运行能否从头重跑"由验收 A（`--resume` 报告逐字节相同）回答，三者不可互相替代。
 
 出处：`vendored/docs/handoffs/2026-09-09-model-status-fail-open-finding.md`；
 `vendored/docs/handoffs/2026-09-11-m1-evaluation-crash-lineage-and-footprint.md` §8.1。
