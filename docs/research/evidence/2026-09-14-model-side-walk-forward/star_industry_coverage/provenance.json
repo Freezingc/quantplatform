@@ -1,7 +1,7 @@
 {
   "cited_source_missing": [],
   "cited_source_sha256": {
-    "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md": "0650aa787ef9496c9dc476bf7ff9b736ad9abf11863dca8bc408417327c20358",
+    "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md": "6d6776b0a55cf8160ae248511fdb0e719ea87045a06d3ab2bb72f3c70184fc13",
     "research_v2/configs/factors/source_catalog.yaml": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad",
     "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
     "research_v2/scripts/audit_tushare_pit_industry.py": "195a6377554d703a91d165810b9899eeb2ee952ffd7c5f08b28cae2482499312",
@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-14T15:57:22+00:00",
+  "generated_at_utc": "2026-09-14T16:08:42+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "cbe4edd3e024e2b254f5af61ecaf7c22047b8ab760fd2c269f75be4c821a5bcb"
@@ -46,15 +46,15 @@
   },
   "repository_main_tree": {
     "branch": "codex/publish-quant-platform",
-    "commit": "adc34f02099f03428da6b7acf0305d2f20674e2e",
+    "commit": "6a3cc42f9262d04a2d3a8e554addaf531601c30b",
     "dirty": false,
     "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
-    "subject": "docs: the serving thread contract is implemented and mutation-checked on a branch awaiting the post-M3 merge window, with the acceptance line re-measured rather than assumed"
+    "subject": "docs(reports): the dense-coverage report's cause and its handoff direction were both wrong, and the correction is measured -- the frozen chain replays these two factors and the industry file it replays from has no STAR-Market member before 2023-09-25"
   },
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "26be7e9795f9533835e25b4d843ed2def6149331"
+    "commit_at_generation": "2352e0d86df07ac74a91c4bf946a936630214ed3"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
