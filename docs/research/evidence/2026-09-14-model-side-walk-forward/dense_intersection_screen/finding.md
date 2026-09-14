@@ -290,6 +290,45 @@ python scripts/screen_dense_intersection_coverage.py \
 | `probes/probe_dense_per_day_attribution.py` | §10 的归因：逐日逐因子覆盖率、"当日最弱因子"计数（复用钉住分母的采集器） |
 | `measurements/dense_per_day_attribution_2015h2.json` / `dense_attribution_2015.log` | §10 归因的机读输出与终端记录（2015-06..12） |
 | `measurements/frozen_v2_coverage_train_2014_2021.json` | 训练窗口上 15 个因子各自的 median/p05/min（钉住分母），§10 的逐因子背景 |
+| `probes/make_m2_preregistration.py` | §14 的登记生成器：从仪器的 JSON 直接产出登记文件，**没有一个数字是手抄的** |
+| `measurements/m2_preregistration.json` / `.md` | §14 的事前预测登记（含来源测量的 sha256 与推翻条件） |
+
+## 14. 事前预测登记：M2 的评价还没跑，它必须产出什么已经写死了
+
+上面所有验证都是**事后的**——拿仪器去对一个已经跑完的运行。这留下一个合理的质疑：
+一台能"复现"已知答案的仪器，可能只是把已知答案换了个算法重算一遍。
+所以本轮把预测**写在 M2 的评价阶段之前**（登记时刻 2026-09-14T18:19:37Z = 09-15 02:19 CST，
+当时 M2 仍在 F1 的搜索阶段，19/24，`report.json` 不存在）。
+
+登记的前提是明确的：M2 发射时用的基线工件与 `m0r_v2` / `m1_full_v1` **是同一套**
+（`baseline_v2/baseline_oos` + `baseline_v2/report.json`，见驱动命令行），
+而候选一侧给每个有效标签行都打分。所以这个日集是 M2 **已经拿到的输入**的性质，可以先写死。
+
+**预测（逐折）**：
+
+| 折 | TEST 年 | 天数 | 跌破地板 | **预测可评天** | 覆盖率 min |
+|---|---|---|---|---|---|
+| F1 | 2022 | 242 | 1 | **241** | 0.895082 |
+| F2 | 2023 | 242 | 23 | **219** | 0.890267 |
+| F3 | 2024 | 242 | 0 | **242** | 0.971115 |
+| F4 | 2025 | 243 | 0 | **243** | 0.980855 |
+| 合计 | — | **969** | **24** | **945** | — |
+
+即 **G6 = 945/969 = 0.9752321981424149**、候选逐日覆盖率恒为 **1.0000**、
+`days_dropped_by_the_baseline_side = 24/24`。
+
+**推翻条件（已写进登记文件）**：M2 的签名报告若在**任何一项**上不符——945/969、某一折的可评天数、
+某一年的覆盖率 min/median、或候选逐日覆盖率不是 1.0000——那就说明
+`m0r_v2`/`m1_full_v1` 与 M2 之间**有输入变了**（基线工件、标签、因子集或地板），
+**在解释清楚之前不应接受 M2 的数字**。
+
+**它不能被当成什么**：一致只说明 M2 的评价消费了同一套冻结输入，
+**不说明候选好坏**，也不说明那 24 天该被丢掉（成因与处置见
+`star_industry_coverage/root_cause.md` 与 `coverage_gates_vs_the_intersection_floor/finding.md`）。
+
+生成器 `probes/make_m2_preregistration.py` 直接读仪器的 JSON 产出这两个文件，
+并在登记里记下来源测量的 sha256——**没有一个数字是手抄的**，
+所以登记不可能与它声称依据的那次测量不一致。
 | `measurements/predicted_coverage_train_window_2014_2021.json` / `run_2014_2021.log` | §10 的逐日与逐年结果 |
 | `measurements/predicted_coverage_all15_2022_2025.json` / `run_all15_2022_2025.log` | §11 的全 15 因子口径 |
 | `measurements/candidate_feature_nan_m0r_v2.json` / `.log` | §12 的逐列、逐年、逐行缺失画像 |
