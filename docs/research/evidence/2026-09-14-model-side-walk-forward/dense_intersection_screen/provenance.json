@@ -1,0 +1,59 @@
+{
+  "cited_source_missing": [],
+  "cited_source_sha256": {
+    "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md": "6d6776b0a55cf8160ae248511fdb0e719ea87045a06d3ab2bb72f3c70184fc13",
+    "research_v2/scripts/analyze_yearly_baseline_deltas.py": "c36aadec52042ac478877ea1e98ff3e7e65ca4cab399e992127b6bd2b10cda33",
+    "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+    "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
+    "research_v2/src/research_v2/evaluation/gates.py": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9",
+    "research_v2/src/research_v2/evaluation/walk_forward.py": "6772f2821303d31041a39d3d61491fa67823cbed1e0f02ad5224e1a4f8093887"
+  },
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "parquet panels and fold caches",
+    "per-security rows: only per-day aggregates leave the database"
+  ],
+  "generated_at_utc": "2026-09-14T17:50:37+00:00",
+  "generator": {
+    "path": "make_provenance.py",
+    "sha256": "390fc72b8a4942525198ad4921a790fe87f0424c339cbbab7d581d03375304bf"
+  },
+  "instrument_branch": {
+    "branch": "codex/dense-intersection-screen",
+    "commit_at_generation": "c162073606e56fbdd1d6bdd578aca0da6eabf67c",
+    "merged": false,
+    "sources_missing": [],
+    "sources_sha256": {
+      "research_v2/scripts/screen_dense_intersection_coverage.py": "655b49169a6ede9a93338c6484585f5caee88a19dced4d38575968d47aa536fd",
+      "research_v2/tests/unit/scripts/test_screen_dense_intersection_coverage.py": "e58c4987da25def6371c6f6e7d07a7d77df889ca03d3495fb2fe6105f216cf0d"
+    },
+    "worktree": "/data/zhangyudong/qrv2_worktrees/dense-intersection-screen"
+  },
+  "measurements": {
+    "predicted_unevaluable_days_2022_2025.json": "0feb740b88d0ac1224480cadef6d988079a86dcc999d9ec3b2731e73a07f7cf9",
+    "run_2022_2025.log": "163f78bb270f754b318355456be44b08fdace737b980afbc27ab99e3abe42ac2",
+    "run_2022_2025_unrestricted_numerator.log": "fcaa80839339615ce3f98d17960a3d027556179b7720dcd6f191c4b919d32b29"
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "25c3315d6b4e9daebd170d92ce8209c8a0eec091",
+    "dirty": false,
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+    "subject": "docs(handoff): the 24 days have a root cause on our side of the chain, the gates that should have caught them are structurally unable to, and the denominator defect that hid it is fixed on a branch awaiting the merge window"
+  },
+  "safety": "read-only investigation and a read-only instrument: SELECT-only queries against dfs://QuantResearchV2Test. No database write, no weight loading, no artifact mutation, no threshold change, and nothing in the repository calls the instrument.",
+  "score_health_floor": {
+    "file": "research_v2/src/research_v2/evaluation/gates.py",
+    "matches": [
+      {
+        "line_number": 35,
+        "text": "return 0.90 <= coverage <= 1.0 and self.unique_score_count >= 10 and score_std > 1e-6"
+      }
+    ],
+    "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
+  },
+  "this_evidence_branch": {
+    "branch": "codex/research-conditional-factor-review",
+    "commit_at_generation": "6d57dff2e6eb8f7c57e9240b5877bcadd2211298"
+  }
+}
