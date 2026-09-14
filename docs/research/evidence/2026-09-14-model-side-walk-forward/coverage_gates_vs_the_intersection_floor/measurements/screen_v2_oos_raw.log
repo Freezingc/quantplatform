@@ -1,0 +1,32 @@
+window 2022-01-01 .. 2025-12-31 (oos_2022_2025); frozen-v2 factors: 15; dense subset: 9
+universe trading days in window: raw=969 pinned=969; denominator in use: raw
+  days with >1 is_member version: 20; days missing a pinned version: none
+  inflated: 2025-01-07 raw=19603 pinned=3915 x5.007 (4 versions)
+  inflated: 2025-01-06 raw=19595 pinned=3915 x5.005 (4 versions)
+  inflated: 2025-01-03 raw=19564 pinned=3912 x5.001 (4 versions)
+  inflated: 2025-01-02 raw=19560 pinned=3912 x5.0 (4 versions)
+  inflated: 2025-01-08 raw=19610 pinned=3922 x5.0 (4 versions)
+live-screen gates: median>=0.7, p05>=0.3, min_monthly_day_ratio>=0.9, duplicates==0
+snapshot-style gates applied to the same counts: median>=0.8, p05>=0.7, monthly>=0.7, valid_days>=120, day_ratio>=0.8, duplicates==0
+
+factor                         dense       days day_ratio  min_mon  median     p05     min  dups  live / snapshot-style
+yeslab_206                     DENSE   969/969     1.0000   1.0000  0.9872  0.9758  0.1970     0  PASS / PASS
+yeslab_357                     DENSE   969/969     1.0000   1.0000  0.9992  0.9115  0.1998     0  PASS / PASS
+yeslab_372                             969/969     1.0000   1.0000  0.4562  0.1083  0.0192     0  FAIL / FAIL median 0.4562 < 0.8; p05 0.1083 < 0.7
+yeslab_375                             969/969     1.0000   1.0000  0.4593  0.2517  0.0373     0  FAIL / FAIL median 0.4593 < 0.8; p05 0.2517 < 0.7
+yeslab_381                     DENSE   969/969     1.0000   1.0000  0.9992  0.9978  0.1997     0  PASS / PASS
+yeslab_384                             969/969     1.0000   1.0000  0.4823  0.2750  0.0414     0  FAIL / FAIL median 0.4823 < 0.8; p05 0.2750 < 0.7
+yeslab_389                             969/969     1.0000   1.0000  0.4788  0.1113  0.0189     0  FAIL / FAIL median 0.4788 < 0.8; p05 0.1113 < 0.7
+yeslab_390                             969/969     1.0000   1.0000  0.4791  0.1115  0.0194     0  FAIL / FAIL median 0.4791 < 0.8; p05 0.1115 < 0.7
+yeslab_406                             969/969     1.0000   1.0000  0.4608  0.2537  0.0374     0  FAIL / FAIL median 0.4608 < 0.8; p05 0.2537 < 0.7
+yeslab_425                     DENSE   969/969     1.0000   1.0000  0.9983  0.9954  0.1995     0  PASS / PASS
+yeslab_443_reg30_max20_v1      DENSE   969/969     1.0000   1.0000  0.9896  0.9795  0.1975     0  PASS / PASS
+yeslab_464                     DENSE   969/969     1.0000   1.0000  0.9975  0.9939  0.1994     0  PASS / PASS
+yeslab_471                     DENSE   969/969     1.0000   1.0000  0.9931  0.9069  0.1991     0  PASS / PASS
+yeslab_484                     DENSE   969/969     1.0000   1.0000  1.0000  1.0000  0.1999     0  PASS / PASS
+yeslab_96                      DENSE   969/969     1.0000   1.0000  0.9961  0.9911  0.1992     0  PASS / PASS
+
+live-screen ELIGIBILITY_FAIL: ['yeslab_372', 'yeslab_375', 'yeslab_384', 'yeslab_389', 'yeslab_390', 'yeslab_406']
+snapshot-style FAIL:          ['yeslab_372', 'yeslab_375', 'yeslab_384', 'yeslab_389', 'yeslab_390', 'yeslab_406']
+
+wrote /data/zhangyudong/qrv2_research_artifacts/frozen_v2_coverage_oos_2022_2025.raw.json

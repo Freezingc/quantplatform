@@ -1,0 +1,54 @@
+{
+  "cited_source_missing": [],
+  "cited_source_sha256": {
+    "docs/handoffs/2026-09-06-c-plan-audit-decision-list.md": "faf48c511b2cb24c39cbfb19c6b9d9196a7f8da6c16f25d6ce745c02ab3ddfa8",
+    "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md": "6d6776b0a55cf8160ae248511fdb0e719ea87045a06d3ab2bb72f3c70184fc13",
+    "research_v2/scripts/record_structural_quality_snapshot.py": "537eb03d5b9ab00d739c06dec88984968d87c67e097fd2264faf788e7c7b792a",
+    "research_v2/scripts/screen_factor_daily_coverage.py": "e278b3f1171a44e5475c25a8eff91b5aea08fb3eaec9b8e302d58168977d3533",
+    "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+    "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
+    "research_v2/src/research_v2/evaluation/gates.py": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9",
+    "research_v2/src/research_v2/evaluation/walk_forward.py": "6772f2821303d31041a39d3d61491fa67823cbed1e0f02ad5224e1a4f8093887"
+  },
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "parquet panels and fold caches (read in place for cross-checks, never copied)",
+    "per-security rows: only server-side per-day aggregates leave the database"
+  ],
+  "generated_at_utc": "2026-09-14T16:43:39+00:00",
+  "generator": {
+    "path": "make_provenance.py",
+    "sha256": "e6e9c8ee559758e0072c6cdd3621abb5d3ddcf0a45aca7f826d44d5669e6d17d"
+  },
+  "measurements": {
+    "frozen_v2_coverage_oos_2022_2025.pinned.json": "b3362b1b1eab01199e65a644f15f8acb7c8a24cc298e8ec3439610197936035e",
+    "frozen_v2_coverage_oos_2022_2025.raw.json": "73a4bf30f7e38ab89c9ffeb5cd2800a981dd660560544866b1b8b794e22b709e",
+    "screen_v2_oos_pinned.log": "ec49141be2c71583f690bb336b26579076198bbfaed362b0899afac3a8922123",
+    "screen_v2_oos_raw.log": "fae979367d523b9fe7119537cc5badf688e1e7b2e2b3faf874b6817d710ab255"
+  },
+  "probe_scripts": {
+    "screen_frozen_v2_factor_daily_coverage.py": "2f5ba4d9dd3bb75d5d142382cc7251b1a5c8c9829ada695847cf6c209239de9d"
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "6a3cc42f9262d04a2d3a8e554addaf531601c30b",
+    "dirty": false,
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+    "subject": "docs(reports): the dense-coverage report's cause and its handoff direction were both wrong, and the correction is measured -- the frozen chain replays these two factors and the industry file it replays from has no STAR-Market member before 2023-09-25"
+  },
+  "safety": "read-only investigation: SELECT-only aggregate queries against dfs://QuantResearchV2Test. No database write, no weight loading, no artifact mutation, and no production script was edited -- the screen reuses the existing script's pure functions by import instead of changing them.",
+  "score_health_floor": {
+    "file": "research_v2/src/research_v2/evaluation/gates.py",
+    "matches": [
+      {
+        "line_number": 35,
+        "text": "return 0.90 <= coverage <= 1.0 and self.unique_score_count >= 10 and score_std > 1e-6"
+      }
+    ],
+    "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
+  },
+  "this_evidence_branch": {
+    "branch": "codex/research-conditional-factor-review",
+    "commit_at_generation": "fd013561255b6f877fda1c73fec06ebcceb46a64"
+  }
+}
