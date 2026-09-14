@@ -4,6 +4,14 @@
 这个目录放的是**机读证据 + 被引用的原件副本**，全部是文本；
 **没有权重、没有检查点、没有 parquet 面板、没有数据库导出**。
 
+**如果要做的决定是"那 24 个不可评日怎么办"，直接读
+[`../../2026-09-15-the-24-days-decision-sheet-v0.1.md`](../../2026-09-15-the-24-days-decision-sheet-v0.1.md)**：
+四个选项的价格表（跌破天数 / G6 / 余量 / 对照强度 / 前置条件 / 是否开新谱系）、
+三个已被实测排除的"伪选项"、以及一个此前没人量过的悬崖——
+**地板上调 0.005 就会让 G6 从 0.9752 掉到 0.9319 而不及格**。
+它下面的每一个数字都由 `dense_intersection_screen/probes/analyze_floor_sensitivity.py`
+从仪器输出生成，机读件在 `dense_intersection_screen/measurements/floor_sensitivity.json`。
+
 ## 文件
 
 | 文件 | 生成方式 | 内容 |

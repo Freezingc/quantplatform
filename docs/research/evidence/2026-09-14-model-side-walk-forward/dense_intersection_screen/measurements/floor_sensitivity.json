@@ -1,0 +1,588 @@
+{
+  "g6_threshold": 0.95,
+  "floor_in_force": 0.9,
+  "floor_sweep": [
+    0.85,
+    0.87,
+    0.88,
+    0.885,
+    0.89,
+    0.895,
+    0.9,
+    0.905,
+    0.91,
+    0.915,
+    0.92,
+    0.93,
+    0.95
+  ],
+  "configs": {
+    "稠密9（现状）": {
+      "days": 969,
+      "coverage_min": 0.8902674386545354,
+      "coverage_median": 0.9845428346869269,
+      "largest_floor_that_keeps_every_day": 0.8902674386545354,
+      "slack_of_that_floor_below_the_one_in_force": 0.00973256134546463,
+      "sweep": [
+        {
+          "floor": 0.85,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.87,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.88,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.885,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.89,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.895,
+          "days_below_floor": 1,
+          "valid_days": 968,
+          "g6": 0.9989680082559339,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.9,
+          "days_below_floor": 24,
+          "valid_days": 945,
+          "g6": 0.9752321981424149,
+          "g6_passes": true,
+          "is_the_floor_in_force": true
+        },
+        {
+          "floor": 0.905,
+          "days_below_floor": 66,
+          "valid_days": 903,
+          "g6": 0.9318885448916409,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.91,
+          "days_below_floor": 144,
+          "valid_days": 825,
+          "g6": 0.8513931888544891,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.915,
+          "days_below_floor": 206,
+          "valid_days": 763,
+          "g6": 0.7874097007223942,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.92,
+          "days_below_floor": 241,
+          "valid_days": 728,
+          "g6": 0.7512899896800825,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.93,
+          "days_below_floor": 321,
+          "valid_days": 648,
+          "g6": 0.6687306501547987,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.95,
+          "days_below_floor": 420,
+          "valid_days": 549,
+          "g6": 0.56656346749226,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        }
+      ],
+      "histogram_0_005_bins_0_87_to_0_96": {
+        "0.890": 1,
+        "0.895": 23,
+        "0.900": 42,
+        "0.905": 78,
+        "0.910": 62,
+        "0.915": 35,
+        "0.920": 52,
+        "0.925": 28,
+        "0.930": 3,
+        "0.935": 17,
+        "0.940": 42,
+        "0.945": 37
+      },
+      "days_within_0_005_above_the_floor": 42,
+      "days_within_0_005_below_the_floor": 23,
+      "source": {
+        "path": "/tmp/dense_intersection_2022_2025_v2.json",
+        "factor_count": 9,
+        "factor_ids": [
+          "yeslab_206",
+          "yeslab_357",
+          "yeslab_381",
+          "yeslab_425",
+          "yeslab_443_reg30_max20_v1",
+          "yeslab_464",
+          "yeslab_471",
+          "yeslab_484",
+          "yeslab_96"
+        ],
+        "floor_used_by_the_instrument": 0.9,
+        "days_below_floor_as_measured": 24
+      }
+    },
+    "去掉357+471": {
+      "days": 969,
+      "coverage_min": 0.9713701431492843,
+      "coverage_median": 0.9872631251941597,
+      "largest_floor_that_keeps_every_day": 0.9713701431492843,
+      "slack_of_that_floor_below_the_one_in_force": -0.07137014314928425,
+      "sweep": [
+        {
+          "floor": 0.85,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.87,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.88,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.885,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.89,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.895,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.9,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": true
+        },
+        {
+          "floor": 0.905,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.91,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.915,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.92,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.93,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.95,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        }
+      ],
+      "histogram_0_005_bins_0_87_to_0_96": {},
+      "days_within_0_005_above_the_floor": 0,
+      "days_within_0_005_below_the_floor": 0,
+      "source": {
+        "path": "/tmp/loo_minusboth.json",
+        "factor_count": 7,
+        "factor_ids": [
+          "yeslab_206",
+          "yeslab_381",
+          "yeslab_425",
+          "yeslab_443_reg30_max20_v1",
+          "yeslab_464",
+          "yeslab_484",
+          "yeslab_96"
+        ],
+        "floor_used_by_the_instrument": 0.9,
+        "days_below_floor_as_measured": 0
+      }
+    },
+    "去掉206": {
+      "days": 969,
+      "coverage_min": 0.8921974083264406,
+      "coverage_median": 0.9867007672634271,
+      "largest_floor_that_keeps_every_day": 0.8921974083264406,
+      "slack_of_that_floor_below_the_one_in_force": 0.007802591673559456,
+      "sweep": [
+        {
+          "floor": 0.85,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.87,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.88,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.885,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.89,
+          "days_below_floor": 0,
+          "valid_days": 969,
+          "g6": 1.0,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.895,
+          "days_below_floor": 1,
+          "valid_days": 968,
+          "g6": 0.9989680082559339,
+          "g6_passes": true,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.9,
+          "days_below_floor": 3,
+          "valid_days": 966,
+          "g6": 0.9969040247678018,
+          "g6_passes": true,
+          "is_the_floor_in_force": true
+        },
+        {
+          "floor": 0.905,
+          "days_below_floor": 56,
+          "valid_days": 913,
+          "g6": 0.9422084623323014,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.91,
+          "days_below_floor": 98,
+          "valid_days": 871,
+          "g6": 0.8988648090815273,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.915,
+          "days_below_floor": 167,
+          "valid_days": 802,
+          "g6": 0.8276573787409701,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.92,
+          "days_below_floor": 223,
+          "valid_days": 746,
+          "g6": 0.7698658410732714,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.93,
+          "days_below_floor": 308,
+          "valid_days": 661,
+          "g6": 0.6821465428276574,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.95,
+          "days_below_floor": 414,
+          "valid_days": 555,
+          "g6": 0.5727554179566563,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        }
+      ],
+      "histogram_0_005_bins_0_87_to_0_96": {
+        "0.890": 1,
+        "0.895": 2,
+        "0.900": 53,
+        "0.905": 42,
+        "0.910": 69,
+        "0.915": 56,
+        "0.920": 23,
+        "0.925": 62,
+        "0.930": 14,
+        "0.935": 7,
+        "0.940": 37,
+        "0.945": 48,
+        "0.950": 6
+      },
+      "days_within_0_005_above_the_floor": 53,
+      "days_within_0_005_below_the_floor": 2,
+      "source": {
+        "path": "/tmp/loo_drop_yeslab_206.json",
+        "factor_count": 8,
+        "factor_ids": [
+          "yeslab_357",
+          "yeslab_381",
+          "yeslab_425",
+          "yeslab_443_reg30_max20_v1",
+          "yeslab_464",
+          "yeslab_471",
+          "yeslab_484",
+          "yeslab_96"
+        ],
+        "floor_used_by_the_instrument": 0.9,
+        "days_below_floor_as_measured": 3
+      }
+    },
+    "全15因子": {
+      "days": 969,
+      "coverage_min": 0.018964633521271142,
+      "coverage_median": 0.21940430551459747,
+      "largest_floor_that_keeps_every_day": 0.018964633521271142,
+      "slack_of_that_floor_below_the_one_in_force": 0.8810353664787289,
+      "sweep": [
+        {
+          "floor": 0.85,
+          "days_below_floor": 965,
+          "valid_days": 4,
+          "g6": 0.0041279669762641896,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.87,
+          "days_below_floor": 965,
+          "valid_days": 4,
+          "g6": 0.0041279669762641896,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.88,
+          "days_below_floor": 965,
+          "valid_days": 4,
+          "g6": 0.0041279669762641896,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.885,
+          "days_below_floor": 966,
+          "valid_days": 3,
+          "g6": 0.0030959752321981426,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.89,
+          "days_below_floor": 967,
+          "valid_days": 2,
+          "g6": 0.0020639834881320948,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.895,
+          "days_below_floor": 967,
+          "valid_days": 2,
+          "g6": 0.0020639834881320948,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.9,
+          "days_below_floor": 968,
+          "valid_days": 1,
+          "g6": 0.0010319917440660474,
+          "g6_passes": false,
+          "is_the_floor_in_force": true
+        },
+        {
+          "floor": 0.905,
+          "days_below_floor": 968,
+          "valid_days": 1,
+          "g6": 0.0010319917440660474,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.91,
+          "days_below_floor": 968,
+          "valid_days": 1,
+          "g6": 0.0010319917440660474,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.915,
+          "days_below_floor": 968,
+          "valid_days": 1,
+          "g6": 0.0010319917440660474,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.92,
+          "days_below_floor": 968,
+          "valid_days": 1,
+          "g6": 0.0010319917440660474,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.93,
+          "days_below_floor": 968,
+          "valid_days": 1,
+          "g6": 0.0010319917440660474,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        },
+        {
+          "floor": 0.95,
+          "days_below_floor": 968,
+          "valid_days": 1,
+          "g6": 0.0010319917440660474,
+          "g6_passes": false,
+          "is_the_floor_in_force": false
+        }
+      ],
+      "histogram_0_005_bins_0_87_to_0_96": {
+        "0.880": 1,
+        "0.885": 1,
+        "0.895": 1,
+        "0.955": 1
+      },
+      "days_within_0_005_above_the_floor": 0,
+      "days_within_0_005_below_the_floor": 1,
+      "source": {
+        "path": "/tmp/dense_intersection_all15_2022_2025.json",
+        "factor_count": 15,
+        "factor_ids": [
+          "yeslab_206",
+          "yeslab_357",
+          "yeslab_372",
+          "yeslab_375",
+          "yeslab_381",
+          "yeslab_384",
+          "yeslab_389",
+          "yeslab_390",
+          "yeslab_406",
+          "yeslab_425",
+          "yeslab_443_reg30_max20_v1",
+          "yeslab_464",
+          "yeslab_471",
+          "yeslab_484",
+          "yeslab_96"
+        ],
+        "floor_used_by_the_instrument": 0.9,
+        "days_below_floor_as_measured": 968
+      }
+    }
+  }
+}

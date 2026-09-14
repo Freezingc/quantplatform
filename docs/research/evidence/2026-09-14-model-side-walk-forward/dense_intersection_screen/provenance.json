@@ -13,7 +13,7 @@
     "parquet panels and fold caches",
     "per-security rows: only per-day aggregates leave the database"
   ],
-  "generated_at_utc": "2026-09-14T19:56:17+00:00",
+  "generated_at_utc": "2026-09-14T20:03:18+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "9b5cfa92bd5b412fbcd1808bc8dda105635e3feebcbcab37fa199d44aaf36a66"
@@ -40,6 +40,8 @@
     "dense_per_day_attribution_2015h2.json": "9211e0f1cf93adad7fe3a6f3962f7b0120ce10a2efb8fb384f117e031443eb1a",
     "dense_per_day_attribution_2016.json": "f503ee8fb47a7eb1de52f587fd6cbdfb6b21ff3817b59b2ca96bd9d2df3a09de",
     "dense_per_day_attribution_2017.json": "ac8594bb89e63a8eecec2d4594002f30bdd7b3f0851ad0f86581b740e769ef99",
+    "floor_sensitivity.json": "a50b424bba5bbcb76c6ac0e1a9acfd7f4d660b623d6be488c167c0e61e0d291d",
+    "floor_sensitivity.md": "916dd68ce58297e1f27b7cb018f4f8749f677072b674579b4a08f0b9f246e80b",
     "frozen_v2_coverage_train_2014_2021.json": "3d44b60ca8dbe1d6b2b777800364009289df71e81c85b7357dd70ece269dfa8c",
     "industry_cache_both_sources.json": "03d1cfeb42e34055ea38844e71178ffb382c9b6638fa88274bd157bab9a65cad",
     "industry_label_census.json": "02269d66e0f70f225aa3a1efc23b996a10c1cd799888ad998e4345bed99c1235",
@@ -79,6 +81,7 @@
   },
   "probe_note": "screen_dense_intersection_coverage.py and its tests are copies of the files on the instrument branch and are hashed there too; profile_candidate_feature_nan.py and probe_dense_per_day_attribution.py are local read-only probes that exist only here and in /data/zhangyudong/qrv2_research_artifacts",
   "probes": {
+    "analyze_floor_sensitivity.py": "dc536c49a45ae260a495308b150eace9f2ac985a27403cc98957a9cf37a4ebae",
     "make_m2_preregistration.py": "027c43a5aadcd77782b17030b4c096600d39a2b5a1b4f7c6a125fe3ab44c96cb",
     "probe_dense_per_day_attribution.py": "9928dd7d79902067f39b00b02a5e550d188e2c1390e125ad09a43a75b48f123e",
     "probe_industry_cache_both_sources.py": "7aea14975c451bd97c967a33f8c79f3c3b7d742a5d6e72920b8a6913a9358d52",
@@ -89,10 +92,10 @@
   },
   "repository_main_tree": {
     "branch": "codex/publish-quant-platform",
-    "commit": "4a7e3bcefc8acdaaf302906e63185641e4b658ed",
+    "commit": "cc52de7e6b99bdcc94f21cd807a291fc58eb3621",
     "dirty": false,
     "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
-    "subject": "docs(handoff): the cutover hole is one of nine, on a vendor schedule -- and the single dropped day of 2022 is that schedule landing on a year the STAR gap had already thinned, so its cause is two things, not one"
+    "subject": "docs(handoff): the complete leave-one-out matrix qualifies the advice given two sections earlier, and the promotion-evidence link into the chain watcher's stage 3 is verified against a real artifact rather than against the code's intentions"
   },
   "safety": "read-only investigation and a read-only instrument: SELECT-only queries against dfs://QuantResearchV2Test. No database write, no weight loading, no artifact mutation, no threshold change, and nothing in the repository calls the instrument.",
   "score_health_floor": {
@@ -107,6 +110,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "4f86699a893fbb9d62eac5da98329e0239918db0"
+    "commit_at_generation": "d2f78fbc2e475b88dd902ee64d081970bd465b4f"
   }
 }
