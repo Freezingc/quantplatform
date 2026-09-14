@@ -157,6 +157,17 @@ JSON 摘要在 `reproduction_audits/`，原始日志在
 "这个 bundle 是否由那次搜索选出"由验收 C′（检查点逐字节比对）回答，
 "这次运行能否从头重跑"由验收 A（`--resume` 报告逐字节相同）回答，三者不可互相替代。
 
+**【2026-09-14 21:05 再更新：M2 与 M3 的复现审计已自动化到逐折】**
+逐折预检看守现在在每折的证据检查全过之后，追加一次
+`verify_prediction_reproduction.py --fold <F>`（子进程执行，因为审计要在进程启动时钉 torch 线程数，
+而 inter-op 一个进程只能配一次）。所以**M2 的每一折一落地就会被重算一遍分数**，
+而不必等到四折跑完的评价阶段；M3 同理。
+凡不是真通过一律告警：非零退出、退出 0 但无摘要、摘要非法 JSON、
+**摘要里 folds 为空**（什么都没比的真空通过）、任何一折不 identical、以及超时
+（告警文案明写"超时不是通过，该折分数处于未验证状态"）。
+八种结局都做过对照测试（21/21 通过）。
+**含义**：本文 v0.2 里将要填的 M2/M3 数字，会在它们出现之前就已经逐折通过复现审计。
+
 出处：`vendored/docs/handoffs/2026-09-09-model-status-fail-open-finding.md`；
 `vendored/docs/handoffs/2026-09-11-m1-evaluation-crash-lineage-and-footprint.md` §8.1。
 
