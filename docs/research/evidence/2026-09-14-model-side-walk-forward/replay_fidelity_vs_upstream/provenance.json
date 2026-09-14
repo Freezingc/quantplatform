@@ -18,7 +18,7 @@
     "path": "research_v2/configs/factors/source_catalog.yaml",
     "sha256": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad"
   },
-  "generated_at_utc": "2026-09-14T23:39:26+00:00",
+  "generated_at_utc": "2026-09-14T23:52:00+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "d4baec523afea29135dea960e56b9825ebd40a1f9d037fce272dc9c157a3c0f9"
@@ -35,6 +35,14 @@
     "cause_yeslab_471.json": {
       "bytes": 13444,
       "sha256": "9fa74bc4e55ae1c57f2c9836d95cdf08c8a4981bd858b958d65f948a62d6827e"
+    },
+    "cs_max_argmax.json": {
+      "bytes": 2621,
+      "sha256": "f6c8ae78e680da6071ac6b656771f1d36e3d3c7c018571a61ef54fc3e8919db0"
+    },
+    "cs_max_argmax_early.json": {
+      "bytes": 3223,
+      "sha256": "250dd0a82767168671a051ec085686497b3e5824a8b96a677f3f32e9da2774be"
     },
     "cs_registry_completeness.json": {
       "bytes": 46201,
@@ -68,6 +76,10 @@
       "bytes": 11795,
       "sha256": "5b4e64ea8d9bcaa033c83cbe6329b2db55daf01aac8434de9fe4267247561e49"
     },
+    "probe_464_raw_vs_adjusted.json": {
+      "bytes": 1761,
+      "sha256": "33db89934093f9d1a218d4c4e97a9acedcfaa4806c4f65cebfb78c0615c50b93"
+    },
     "replay_fidelity_census.json": {
       "bytes": 73520,
       "sha256": "cc59b9a9f67d96b7e4e7257d21aed596d244855b897bee77ab6a67995f909a2c"
@@ -99,8 +111,8 @@
   },
   "narratives": {
     "finding.md": {
-      "bytes": 78991,
-      "sha256": "e7994b260ed024ff3d61422bbefb1ba548fb9861dbcef6f1f78ad9ae1232bd32"
+      "bytes": 86245,
+      "sha256": "1b1241c259e4102d079e59aad66a25dd9b8497870116a021253848ebfbbf6ca9"
     }
   },
   "probe_scripts": {
@@ -112,9 +124,17 @@
       "bytes": 10138,
       "sha256": "ea7144f96f96d8a42754a62f3ce97e99de670065a34b7a319f4095dd1622fca8"
     },
+    "probe_464_raw_vs_adjusted_close.py": {
+      "bytes": 9323,
+      "sha256": "7ec56eb6f3d88a61163515a1ff60ef3821b492ce0a381f74da209eac0fe4854d"
+    },
     "probe_464_warmup_test.py": {
       "bytes": 11606,
       "sha256": "6d447f6b31c736605ab8d7da579cc522bf4834fa631e8306d89cff6c20ec13ea"
+    },
+    "probe_cs_max_argmax.py": {
+      "bytes": 10425,
+      "sha256": "b55d888c1fb6ca10f4e4f04573f2b6a2f7fc07be3f32c0567db0cb193dfdeed5"
     },
     "probe_cs_registry_completeness.py": {
       "bytes": 7851,
@@ -163,6 +183,6 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "ef6230a774f7ccd862d59e76d8cf1a9a1174a59c"
+    "commit_at_generation": "6e32bea0d1fa0e74be1b321fe27663be3e2fb5b2"
   }
 }

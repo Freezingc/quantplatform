@@ -1,0 +1,51 @@
+{
+ "question": "Does GP_095 / yeslab_464 diverge because the replay uses raw close where production used adjusted close, or the reverse?",
+ "day": "2024-11-18",
+ "panel_window": [
+  "2023-09-01",
+  "2024-12-31"
+ ],
+ "trading_days": 322,
+ "securities": 5436,
+ "adj_factor_cell_coverage": 0.9848268273620994,
+ "recomputed_raw_close": {
+  "factor_daily": {
+   "pairs": 3888,
+   "spearman": 0.9714555231491486,
+   "pearson": 0.9819369458059066,
+   "exact_match_rate": 0.0,
+   "median_relative_difference": 0.12415256915309611,
+   "std_ratio": 0.9220023964842011
+  },
+  "upstream_GP_095": {
+   "pairs": 5067,
+   "spearman": 0.751838739771194,
+   "pearson": 0.8600934485055526,
+   "exact_match_rate": 0.0,
+   "median_relative_difference": 0.2793266880971887,
+   "std_ratio": 1.064988313627113
+  }
+ },
+ "recomputed_hfq_close": {
+  "factor_daily": {
+   "pairs": 3888,
+   "spearman": 0.9540458539975656,
+   "pearson": 0.9776036856380289,
+   "exact_match_rate": 0.0,
+   "median_relative_difference": 0.12921959819217088,
+   "std_ratio": 0.9245039225238069
+  },
+  "upstream_GP_095": {
+   "pairs": 5067,
+   "spearman": 0.7173226382212692,
+   "pearson": 0.8371785485437984,
+   "exact_match_rate": 0.0,
+   "median_relative_difference": 0.32613839589274113,
+   "std_ratio": 1.0652458012939552
+  }
+ },
+ "verdict": "Against upstream GP_095 the raw-close recomputation reaches Spearman 0.751838739771194 and the hfq-close one 0.7173226382212692; against the published factor_daily the same two reach 0.9714555231491486 and 0.9540458539975656. ADJUSTMENT IS NOT THE DIFFERENCE -- both conventions land about equally close to factor_daily, so the raw-versus-adjusted close hypothesis is excluded too.",
+ "database_writes": false,
+ "weights_written": false,
+ "cache_writes": false
+}
