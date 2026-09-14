@@ -1,0 +1,227 @@
+{
+  "cache_dir": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/tushare_cache",
+  "sources": {
+    "SW2014": {
+      "active_membership_as_of": [
+        {
+          "active_members": 1577,
+          "active_star_members": 0,
+          "as_of": "2014-01-02",
+          "industries": 17
+        },
+        {
+          "active_members": 1581,
+          "active_star_members": 0,
+          "as_of": "2014-01-31",
+          "industries": 17
+        },
+        {
+          "active_members": 1597,
+          "active_star_members": 0,
+          "as_of": "2014-02-20",
+          "industries": 17
+        },
+        {
+          "active_members": 2509,
+          "active_star_members": 0,
+          "as_of": "2014-02-21",
+          "industries": 28
+        },
+        {
+          "active_members": 2512,
+          "active_star_members": 0,
+          "as_of": "2014-03-03",
+          "industries": 28
+        },
+        {
+          "active_members": 2578,
+          "active_star_members": 0,
+          "as_of": "2014-12-31",
+          "industries": 28
+        },
+        {
+          "active_members": 2757,
+          "active_star_members": 0,
+          "as_of": "2015-07-05",
+          "industries": 28
+        },
+        {
+          "active_members": 3675,
+          "active_star_members": 0,
+          "as_of": "2020-01-02",
+          "industries": 28
+        },
+        {
+          "active_members": 4195,
+          "active_star_members": 0,
+          "as_of": "2021-12-09",
+          "industries": 28
+        },
+        {
+          "active_members": 3663,
+          "active_star_members": 0,
+          "as_of": "2021-12-10",
+          "industries": 28
+        },
+        {
+          "active_members": 4189,
+          "active_star_members": 0,
+          "as_of": "2023-07-05",
+          "industries": 27
+        },
+        {
+          "active_members": 4812,
+          "active_star_members": 539,
+          "as_of": "2023-09-25",
+          "industries": 27
+        },
+        {
+          "active_members": 4815,
+          "active_star_members": 540,
+          "as_of": "2023-10-09",
+          "industries": 27
+        }
+      ],
+      "boards": {
+        "non_star": {
+          "codes": 4866,
+          "earliest_in_date": "1990-12-10",
+          "rows": 6946
+        },
+        "star": {
+          "codes": 595,
+          "earliest_in_date": "2023-09-25",
+          "rows": 605
+        }
+      },
+      "in_date_by_month_first_six": {
+        "1990-12": 6,
+        "1991-01": 1,
+        "1991-06": 1,
+        "1992-01": 1,
+        "1992-03": 2,
+        "1992-04": 3
+      },
+      "provenance": {
+        "classification_exists": true,
+        "classification_file": "pit_industry_sw2014_l1_classification.json",
+        "classification_sha256": "4286220861acab9f7265f9b293cb93bd3d38e285fb369288d9a265f04874ca1f",
+        "combined_sha256": "7092afa78fa1d6b48a1df6dd62ddbb295a664987840ffd8afee0bd91dbb8ed42",
+        "files": 28,
+        "pattern": "pit_industry_sw2014_members_*_SI.json",
+        "rows": 7551
+      }
+    },
+    "SW2021": {
+      "active_membership_as_of": [
+        {
+          "active_members": 1577,
+          "active_star_members": 0,
+          "as_of": "2014-01-02",
+          "industries": 20
+        },
+        {
+          "active_members": 1581,
+          "active_star_members": 0,
+          "as_of": "2014-01-31",
+          "industries": 20
+        },
+        {
+          "active_members": 1596,
+          "active_star_members": 0,
+          "as_of": "2014-02-20",
+          "industries": 20
+        },
+        {
+          "active_members": 2491,
+          "active_star_members": 0,
+          "as_of": "2014-02-21",
+          "industries": 31
+        },
+        {
+          "active_members": 2494,
+          "active_star_members": 0,
+          "as_of": "2014-03-03",
+          "industries": 31
+        },
+        {
+          "active_members": 2560,
+          "active_star_members": 0,
+          "as_of": "2014-12-31",
+          "industries": 31
+        },
+        {
+          "active_members": 2743,
+          "active_star_members": 0,
+          "as_of": "2015-07-05",
+          "industries": 31
+        },
+        {
+          "active_members": 3664,
+          "active_star_members": 0,
+          "as_of": "2020-01-02",
+          "industries": 31
+        },
+        {
+          "active_members": 4184,
+          "active_star_members": 0,
+          "as_of": "2021-12-09",
+          "industries": 31
+        },
+        {
+          "active_members": 3806,
+          "active_star_members": 0,
+          "as_of": "2021-12-10",
+          "industries": 31
+        },
+        {
+          "active_members": 4415,
+          "active_star_members": 0,
+          "as_of": "2023-07-05",
+          "industries": 31
+        },
+        {
+          "active_members": 5058,
+          "active_star_members": 558,
+          "as_of": "2023-09-25",
+          "industries": 31
+        },
+        {
+          "active_members": 5061,
+          "active_star_members": 559,
+          "as_of": "2023-10-09",
+          "industries": 31
+        }
+      ],
+      "boards": {
+        "non_star": {
+          "codes": 4885,
+          "earliest_in_date": "1990-12-10",
+          "rows": 7109
+        },
+        "star": {
+          "codes": 612,
+          "earliest_in_date": "2023-09-25",
+          "rows": 624
+        }
+      },
+      "in_date_by_month_first_six": {
+        "1990-12": 6,
+        "1991-01": 1,
+        "1991-06": 1,
+        "1992-01": 1,
+        "1992-03": 2,
+        "1992-04": 3
+      },
+      "provenance": {
+        "classification_exists": true,
+        "classification_file": "pit_industry_sw2021_l1_classification.json",
+        "classification_sha256": "2d50dfed3c5d195ed5c396a14ddecbe5db7473af874649e4b6875ca65af3c67e",
+        "combined_sha256": "f67802bf74287055cba9e048dcd71c3d423f530e10f4cfa3c877d56e854bd807",
+        "files": 31,
+        "pattern": "pit_industry_members_*_SI.json",
+        "rows": 7733
+      }
+    }
+  }
+}
