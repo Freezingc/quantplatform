@@ -1,0 +1,136 @@
+{
+ "question": "Do the 2014 left edge and the 2021-12-10 cutover hole also disappear under index_member_all, i.e. is option 1 a training-window fix and not only an OOS fix?",
+ "interval_rule": "active(d) = in_date <= d < out_date (right-exclusive), the vendor's own rule",
+ "sources": {
+  "cache_index_member": {
+   "source": "cache (index_member)",
+   "shape_1_star_board_wide_absence": {
+    "max_active_star_before_2023_09_25": 0,
+    "active_star_on_2022_07_29": 0,
+    "active_star_on_2023_07_05": 0,
+    "first_day_active_star_nonzero": "2023-09-25"
+   },
+   "shape_2_left_edge_2014": {
+    "industries_on_2014_01_02": 20,
+    "industries_on_2014_02_20": 20,
+    "industries_on_2014_02_21": 31,
+    "active_min_over_edge": 1648,
+    "active_on_2014_02_21": 2579,
+    "registrations_on_2014_02_21": 912,
+    "edge_days_below_full_industry_count": 36
+   },
+   "shape_3_cutover_hole_2021_12_10": {
+    "expirations_on_2021_12_10": 535,
+    "registrations_on_2021_12_10": 3,
+    "registrations_on_2021_12_13": 393,
+    "active_on_2021_12_09": 4338,
+    "active_on_2021_12_10": 3806,
+    "active_on_2021_12_13": 4198,
+    "hole_present": true
+   },
+   "largest_single_day_drop": {
+    "day": "2021-12-10",
+    "delta": -532
+   },
+   "days_with_a_drop_of_50_or_more": 9
+  },
+  "member_all": {
+   "source": "index_member_all",
+   "shape_1_star_board_wide_absence": {
+    "max_active_star_before_2023_09_25": 563,
+    "active_star_on_2022_07_29": 446,
+    "active_star_on_2023_07_05": 546,
+    "first_day_active_star_nonzero": "2019-06-26"
+   },
+   "shape_2_left_edge_2014": {
+    "industries_on_2014_01_02": 31,
+    "industries_on_2014_02_20": 31,
+    "industries_on_2014_02_21": 31,
+    "active_min_over_edge": 2475,
+    "active_on_2014_02_21": 2598,
+    "registrations_on_2014_02_21": 1,
+    "edge_days_below_full_industry_count": 0
+   },
+   "shape_3_cutover_hole_2021_12_10": {
+    "expirations_on_2021_12_10": 1,
+    "registrations_on_2021_12_10": 10,
+    "registrations_on_2021_12_13": 1,
+    "active_on_2021_12_09": 4803,
+    "active_on_2021_12_10": 4812,
+    "active_on_2021_12_13": 4813,
+    "hole_present": false
+   },
+   "largest_single_day_drop": {
+    "day": "2021-07-29",
+    "delta": -559
+   },
+   "days_with_a_drop_of_50_or_more": 8
+  }
+ },
+ "database_writes": false,
+ "weights_written": false,
+ "verdict": [
+  {
+   "shape": "STAR board-wide absence",
+   "cache": {
+    "max_active_star_before_2023_09_25": 0,
+    "active_star_on_2022_07_29": 0,
+    "active_star_on_2023_07_05": 0,
+    "first_day_active_star_nonzero": "2023-09-25"
+   },
+   "member_all": {
+    "max_active_star_before_2023_09_25": 563,
+    "active_star_on_2022_07_29": 446,
+    "active_star_on_2023_07_05": 546,
+    "first_day_active_star_nonzero": "2019-06-26"
+   }
+  },
+  {
+   "shape": "2014 left edge",
+   "cache": {
+    "industries_on_2014_01_02": 20,
+    "industries_on_2014_02_20": 20,
+    "industries_on_2014_02_21": 31,
+    "active_min_over_edge": 1648,
+    "active_on_2014_02_21": 2579,
+    "registrations_on_2014_02_21": 912,
+    "edge_days_below_full_industry_count": 36
+   },
+   "member_all": {
+    "industries_on_2014_01_02": 31,
+    "industries_on_2014_02_20": 31,
+    "industries_on_2014_02_21": 31,
+    "active_min_over_edge": 2475,
+    "active_on_2014_02_21": 2598,
+    "registrations_on_2014_02_21": 1,
+    "edge_days_below_full_industry_count": 0
+   }
+  },
+  {
+   "shape": "2021-12-10 cutover hole",
+   "cache": {
+    "expirations_on_2021_12_10": 535,
+    "registrations_on_2021_12_10": 3,
+    "registrations_on_2021_12_13": 393,
+    "active_on_2021_12_09": 4338,
+    "active_on_2021_12_10": 3806,
+    "active_on_2021_12_13": 4198,
+    "hole_present": true
+   },
+   "member_all": {
+    "expirations_on_2021_12_10": 1,
+    "registrations_on_2021_12_10": 10,
+    "registrations_on_2021_12_13": 1,
+    "active_on_2021_12_09": 4803,
+    "active_on_2021_12_10": 4812,
+    "active_on_2021_12_13": 4813,
+    "hole_present": false
+   }
+  }
+ ],
+ "answer": {
+  "shape_1": "REPAIRED by member_all",
+  "shape_2": "REPAIRED (industries on 2014-01-02: cache 20 vs member_all 31)",
+  "shape_3": "REPAIRED (expirations on 2021-12-10: cache 535 vs member_all 1)"
+ }
+}

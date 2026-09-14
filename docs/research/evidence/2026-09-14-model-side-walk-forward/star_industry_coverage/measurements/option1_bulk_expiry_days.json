@@ -1,0 +1,361 @@
+{
+ "question": "Are the nine bulk-expiry dates a property of the vendor's calendar, or of the index_member API the cache was built from?",
+ "threshold": 50,
+ "cache_index_member": {
+  "count": 21,
+  "days": [
+   {
+    "day": "2014-02-21",
+    "active": 2579,
+    "delta": 912,
+    "registrations": 912,
+    "expirations": 0
+   },
+   {
+    "day": "2014-07-02",
+    "active": 2581,
+    "delta": 50,
+    "registrations": 50,
+    "expirations": 0
+   },
+   {
+    "day": "2015-06-30",
+    "active": 2777,
+    "delta": -54,
+    "registrations": 0,
+    "expirations": 54
+   },
+   {
+    "day": "2015-07-01",
+    "active": 2834,
+    "delta": 57,
+    "registrations": 57,
+    "expirations": 0
+   },
+   {
+    "day": "2016-06-30",
+    "active": 2862,
+    "delta": -80,
+    "registrations": 0,
+    "expirations": 80
+   },
+   {
+    "day": "2016-07-01",
+    "active": 2949,
+    "delta": 87,
+    "registrations": 87,
+    "expirations": 0
+   },
+   {
+    "day": "2017-06-30",
+    "active": 3236,
+    "delta": -125,
+    "registrations": 0,
+    "expirations": 125
+   },
+   {
+    "day": "2017-07-03",
+    "active": 3363,
+    "delta": 127,
+    "registrations": 127,
+    "expirations": 0
+   },
+   {
+    "day": "2018-07-13",
+    "active": 3536,
+    "delta": -93,
+    "registrations": 0,
+    "expirations": 93
+   },
+   {
+    "day": "2018-07-16",
+    "active": 3632,
+    "delta": 96,
+    "registrations": 96,
+    "expirations": 0
+   },
+   {
+    "day": "2019-07-05",
+    "active": 3600,
+    "delta": -123,
+    "registrations": 1,
+    "expirations": 124
+   },
+   {
+    "day": "2019-07-08",
+    "active": 3721,
+    "delta": 121,
+    "registrations": 121,
+    "expirations": 0
+   },
+   {
+    "day": "2021-12-10",
+    "active": 3806,
+    "delta": -532,
+    "registrations": 3,
+    "expirations": 535
+   },
+   {
+    "day": "2021-12-13",
+    "active": 4198,
+    "delta": 392,
+    "registrations": 393,
+    "expirations": 1
+   },
+   {
+    "day": "2022-07-29",
+    "active": 4149,
+    "delta": -143,
+    "registrations": 0,
+    "expirations": 143
+   },
+   {
+    "day": "2022-08-01",
+    "active": 4294,
+    "delta": 145,
+    "registrations": 145,
+    "expirations": 0
+   },
+   {
+    "day": "2023-09-25",
+    "active": 5058,
+    "delta": 558,
+    "registrations": 558,
+    "expirations": 0
+   },
+   {
+    "day": "2024-07-30",
+    "active": 5037,
+    "delta": -68,
+    "registrations": 0,
+    "expirations": 68
+   },
+   {
+    "day": "2024-07-31",
+    "active": 5105,
+    "delta": 68,
+    "registrations": 68,
+    "expirations": 0
+   },
+   {
+    "day": "2026-07-01",
+    "active": 5138,
+    "delta": -58,
+    "registrations": 1,
+    "expirations": 59
+   },
+   {
+    "day": "2026-07-02",
+    "active": 5197,
+    "delta": 59,
+    "registrations": 59,
+    "expirations": 0
+   }
+  ]
+ },
+ "member_all": {
+  "count": 17,
+  "days": [
+   {
+    "day": "2015-01-15",
+    "active": 2700,
+    "delta": 57,
+    "registrations": 57,
+    "expirations": 0
+   },
+   {
+    "day": "2017-06-28",
+    "active": 3189,
+    "delta": -101,
+    "registrations": 8,
+    "expirations": 109
+   },
+   {
+    "day": "2017-06-29",
+    "active": 3313,
+    "delta": 124,
+    "registrations": 124,
+    "expirations": 0
+   },
+   {
+    "day": "2018-07-12",
+    "active": 3482,
+    "delta": -70,
+    "registrations": 0,
+    "expirations": 70
+   },
+   {
+    "day": "2018-07-13",
+    "active": 3561,
+    "delta": 79,
+    "registrations": 79,
+    "expirations": 0
+   },
+   {
+    "day": "2019-07-23",
+    "active": 3617,
+    "delta": -86,
+    "registrations": 0,
+    "expirations": 86
+   },
+   {
+    "day": "2019-07-24",
+    "active": 3718,
+    "delta": 101,
+    "registrations": 101,
+    "expirations": 0
+   },
+   {
+    "day": "2021-07-29",
+    "active": 4008,
+    "delta": -559,
+    "registrations": 5,
+    "expirations": 564
+   },
+   {
+    "day": "2021-07-30",
+    "active": 4621,
+    "delta": 613,
+    "registrations": 613,
+    "expirations": 0
+   },
+   {
+    "day": "2022-07-28",
+    "active": 4795,
+    "delta": -243,
+    "registrations": 0,
+    "expirations": 243
+   },
+   {
+    "day": "2022-07-29",
+    "active": 5050,
+    "delta": 255,
+    "registrations": 255,
+    "expirations": 0
+   },
+   {
+    "day": "2023-07-03",
+    "active": 5369,
+    "delta": -74,
+    "registrations": 0,
+    "expirations": 74
+   },
+   {
+    "day": "2023-07-04",
+    "active": 5444,
+    "delta": 75,
+    "registrations": 75,
+    "expirations": 0
+   },
+   {
+    "day": "2024-07-29",
+    "active": 5500,
+    "delta": -117,
+    "registrations": 0,
+    "expirations": 117
+   },
+   {
+    "day": "2024-07-30",
+    "active": 5618,
+    "delta": 118,
+    "registrations": 118,
+    "expirations": 0
+   },
+   {
+    "day": "2026-06-30",
+    "active": 5792,
+    "delta": -69,
+    "registrations": 0,
+    "expirations": 69
+   },
+   {
+    "day": "2026-07-01",
+    "active": 5862,
+    "delta": 70,
+    "registrations": 70,
+    "expirations": 0
+   }
+  ]
+ },
+ "the_nine_dates_cited_in_finding_10_3": {
+  "2015-06-30": {
+   "in_cache_list": true,
+   "in_member_all_list": false
+  },
+  "2016-06-30": {
+   "in_cache_list": true,
+   "in_member_all_list": false
+  },
+  "2017-06-30": {
+   "in_cache_list": true,
+   "in_member_all_list": false
+  },
+  "2018-07-13": {
+   "in_cache_list": true,
+   "in_member_all_list": true
+  },
+  "2019-07-05": {
+   "in_cache_list": true,
+   "in_member_all_list": false
+  },
+  "2021-12-10": {
+   "in_cache_list": true,
+   "in_member_all_list": false
+  },
+  "2022-07-29": {
+   "in_cache_list": true,
+   "in_member_all_list": true
+  },
+  "2024-07-30": {
+   "in_cache_list": true,
+   "in_member_all_list": true
+  },
+  "2026-07-01": {
+   "in_cache_list": true,
+   "in_member_all_list": true
+  }
+ },
+ "survive_the_switch": [
+  "2018-07-13",
+  "2022-07-29",
+  "2024-07-30",
+  "2026-07-01"
+ ],
+ "cache_only_artifacts": [
+  "2014-02-21",
+  "2014-07-02",
+  "2015-06-30",
+  "2015-07-01",
+  "2016-06-30",
+  "2016-07-01",
+  "2017-06-30",
+  "2017-07-03",
+  "2018-07-16",
+  "2019-07-05",
+  "2019-07-08",
+  "2021-12-10",
+  "2021-12-13",
+  "2022-08-01",
+  "2023-09-25",
+  "2024-07-31",
+  "2026-07-02"
+ ],
+ "member_all_only": [
+  "2015-01-15",
+  "2017-06-28",
+  "2017-06-29",
+  "2018-07-12",
+  "2019-07-23",
+  "2019-07-24",
+  "2021-07-29",
+  "2021-07-30",
+  "2022-07-28",
+  "2023-07-03",
+  "2023-07-04",
+  "2024-07-29",
+  "2026-06-30"
+ ],
+ "database_writes": false,
+ "weights_written": false,
+ "verdict": "17 of 21 large-change days in the cache disappear under index_member_all, including 5 of the nine dates cited in finding.md 10.3; 4 survive."
+}

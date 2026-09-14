@@ -1,0 +1,76 @@
+{
+ "question": "If option 1 were implemented by REPLACING the cache with index_member_all instead of UNION-ing, which currently-passing OOS days would start failing?",
+ "method": "coverage_if_replaced = (intersection_rows_now - securities_losing_their_label) / valid_label_rows_now; an upper bound, because it ignores the STAR rows the same switch adds on that day",
+ "floor": 0.9,
+ "days_examined": 7,
+ "days": [
+  {
+   "day": "2022-01-20",
+   "lose": 20,
+   "valid_label_rows": 3148,
+   "intersection_rows": 2967,
+   "coverage_now": 0.9425031766200762,
+   "coverage_if_replaced_upper_bound": 0.9361499364675985,
+   "would_drop_below_floor": false
+  },
+  {
+   "day": "2022-02-17",
+   "lose": 20,
+   "valid_label_rows": 3172,
+   "intersection_rows": 2977,
+   "coverage_now": 0.9385245901639344,
+   "coverage_if_replaced_upper_bound": 0.932219419924338,
+   "would_drop_below_floor": false
+  },
+  {
+   "day": "2022-06-30",
+   "lose": 20,
+   "valid_label_rows": 3316,
+   "intersection_rows": 3057,
+   "coverage_now": 0.9218938480096501,
+   "coverage_if_replaced_upper_bound": 0.9158624849215923,
+   "would_drop_below_floor": false
+  },
+  {
+   "day": "2022-07-28",
+   "lose": 245,
+   "valid_label_rows": 3354,
+   "intersection_rows": 3096,
+   "coverage_now": 0.9230769230769231,
+   "coverage_if_replaced_upper_bound": 0.8500298151460942,
+   "would_drop_below_floor": true
+  },
+  {
+   "day": "2023-07-03",
+   "lose": 77,
+   "valid_label_rows": 3617,
+   "intersection_rows": 3257,
+   "coverage_now": 0.9004700027647221,
+   "coverage_if_replaced_upper_bound": 0.8791816422449544,
+   "would_drop_below_floor": true
+  },
+  {
+   "day": "2024-07-29",
+   "lose": 123,
+   "valid_label_rows": 3865,
+   "intersection_rows": 3830,
+   "coverage_now": 0.9909443725743855,
+   "coverage_if_replaced_upper_bound": 0.9591203104786546,
+   "would_drop_below_floor": false
+  },
+  {
+   "day": "2025-08-08",
+   "lose": 21,
+   "valid_label_rows": 3829,
+   "intersection_rows": 3764,
+   "coverage_now": 0.9830242883259337,
+   "coverage_if_replaced_upper_bound": 0.9775398276312353,
+   "would_drop_below_floor": false
+  }
+ ],
+ "would_newly_drop": [
+  "2022-07-28",
+  "2023-07-03"
+ ],
+ "database_writes": false
+}
