@@ -1,0 +1,77 @@
+{
+  "baseline_eligibility_rationale": "Baselines B0-B3 are computed on FROZEN_FACTOR_SET_V2_DENSE only. The six sparse candidate-only factors are NaN on roughly half of all days by formula (their sparsity IS the candidate signal), so admitting them to the baseline would make the G4 bar a dishonest simple-model reference. Consequence for any write-up: the candidate's information set strictly contains the baseline's by design; G4 measures improvement over an honest simple reference, not over an information-matched control.",
+  "canonical_feature_names_v2": [
+    "f00",
+    "f01",
+    "f02",
+    "f03",
+    "f04",
+    "f05",
+    "f06",
+    "f07",
+    "f08",
+    "f09",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f14"
+  ],
+  "counts": {
+    "FROZEN_FACTOR_SET_V1": 17,
+    "FROZEN_FACTOR_SET_V2": 15,
+    "FROZEN_FACTOR_SET_V2_DENSE": 9
+  },
+  "extracted_at_utc": "2026-09-14T07:58:47+00:00",
+  "sets": {
+    "FROZEN_FACTOR_SET_V1": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_372",
+      "yeslab_375",
+      "yeslab_381",
+      "yeslab_384",
+      "yeslab_389",
+      "yeslab_390",
+      "yeslab_398",
+      "yeslab_405",
+      "yeslab_406",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_484",
+      "yeslab_96"
+    ],
+    "FROZEN_FACTOR_SET_V2": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_372",
+      "yeslab_375",
+      "yeslab_381",
+      "yeslab_384",
+      "yeslab_389",
+      "yeslab_390",
+      "yeslab_406",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_484",
+      "yeslab_96"
+    ],
+    "FROZEN_FACTOR_SET_V2_DENSE": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_484",
+      "yeslab_96"
+    ]
+  },
+  "source_file": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/scripts/walk_forward_factor_daily.py",
+  "source_sha256": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11"
+}

@@ -1,0 +1,374 @@
+{
+  "by_workspace": {
+    "baseline_v2": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.08705554536301544,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.749827362339925,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": null,
+          "status": "NOT_APPLICABLE",
+          "threshold": null
+        },
+        "G5": {
+          "observed_value": 0.2823906544640189,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 969,
+      "yearly_mean_rank_ic": {
+        "2022": 0.08118566121294693,
+        "2023": 0.07806425016339068,
+        "2024": 0.09060417297861999,
+        "2025": 0.09832154338626425
+      }
+    },
+    "m0_v2": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.08886655268930639,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.29774432336555,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.003639686415604998,
+          "status": "FAIL",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.28386395957816063,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.08857110716724456,
+        "2023": 0.06468476916434975,
+        "2024": 0.09962589027862422,
+        "2025": 0.1002379653072796
+      }
+    },
+    "m0_v3": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.08942912316040101,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.383336031329783,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.004202256886699618,
+          "status": "FAIL",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.2819499174544475,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.08857110716724456,
+        "2023": 0.06710309031954875,
+        "2024": 0.09962589027862422,
+        "2025": 0.10024626474018432
+      }
+    },
+    "m0r_resume_a": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.09437596139252168,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.905448712183105,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.009149095118820283,
+          "status": "PASS",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.27908240329707823,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.09312791086598766,
+        "2023": 0.07299840359660018,
+        "2024": 0.10452343097784839,
+        "2025": 0.10477422351002139
+      }
+    },
+    "m0r_resume_c": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.09437596139252168,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.905448712183105,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.009149095118820283,
+          "status": "PASS",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.27908240329707823,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.09312791086598766,
+        "2023": 0.07299840359660018,
+        "2024": 0.10452343097784839,
+        "2025": 0.10477422351002139
+      }
+    },
+    "m0r_v2": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.09437596139252168,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.905448712183105,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.009149095118820283,
+          "status": "PASS",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.27908240329707823,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.09312791086598766,
+        "2023": 0.07299840359660018,
+        "2024": 0.10452343097784839,
+        "2025": 0.10477422351002139
+      }
+    },
+    "m0r_v3": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.09437596139252168,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.905448712183105,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.009149095118820283,
+          "status": "PASS",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.27908240329707823,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.09312791086598766,
+        "2023": 0.07299840359660018,
+        "2024": 0.10452343097784839,
+        "2025": 0.10477422351002139
+      }
+    },
+    "m1_full_v1": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.09305385234488889,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 12.47214210303097,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.007826986071187494,
+          "status": "PASS",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.28362613392846053,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.09108292259097288,
+        "2023": 0.07301122210159235,
+        "2024": 0.10501793764711861,
+        "2025": 0.10115682127837078
+      }
+    },
+    "m1_parallel_v1": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.09107146897541744,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 11.851545300156666,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.005844602701716051,
+          "status": "PASS",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.2895447960542549,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9752321981424149,
+          "status": "PASS",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 945,
+      "yearly_mean_rank_ic": {
+        "2022": 0.08658804088798126,
+        "2023": 0.06962697392150208,
+        "2024": 0.10486958771009264,
+        "2025": 0.10110318030088321
+      }
+    }
+  },
+  "extracted_at_utc": "2026-09-14T07:58:47+00:00"
+}

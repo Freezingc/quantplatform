@@ -1,0 +1,143 @@
+{
+  "files": [
+    {
+      "bytes": 15514,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "41295a50ae23d2b7ad9667fa839442f2b6590ec1caf67bdf59ad7b5e1b2198de",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-12-candidate-standings-comparison.md",
+      "vendored_as": "vendored/docs/reports/2026-09-12-candidate-standings-comparison.md"
+    },
+    {
+      "bytes": 2731,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "40f90192bca71871bbf6458d750d6ffd1b4ec9bf849e4cb91c8b922ff6423696",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-12-m0r-real-candidate-walk-forward.md",
+      "vendored_as": "vendored/docs/reports/2026-09-12-m0r-real-candidate-walk-forward.md"
+    },
+    {
+      "bytes": 12813,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "2b9a6e5bcbbc16dcb7ece4d79340492e32eebff1b974f87f9f360f2a753c591c",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-12-m0r-shadow-approval-preconditions.md",
+      "vendored_as": "vendored/docs/reports/2026-09-12-m0r-shadow-approval-preconditions.md"
+    },
+    {
+      "bytes": 2465,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "9281dba625f8c508a0cc9215d9cc8a6a6756d6d113aab37e672efe4ef9d48131",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/reports/2026-09-13-m1-full-grid-real-candidate-walk-forward.md",
+      "vendored_as": "vendored/docs/reports/2026-09-13-m1-full-grid-real-candidate-walk-forward.md"
+    },
+    {
+      "bytes": 32774,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "3324b6ce663ec616e412bec208fde4478e778a6ab6f4294b79baf6f3286dcef2",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-08-m0-attribution-and-carrier-findings.md",
+      "vendored_as": "vendored/docs/handoffs/2026-09-08-m0-attribution-and-carrier-findings.md"
+    },
+    {
+      "bytes": 8044,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "8cd5e94981dda1e7bbc65a108ddbbf037b6d763f363f7494150dfd9cae6ba1f1",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-09-sparse-factor-value-alignment-brief.md",
+      "vendored_as": "vendored/docs/handoffs/2026-09-09-sparse-factor-value-alignment-brief.md"
+    },
+    {
+      "bytes": 27582,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "599f7f7e85fe33aab6a552a96c88ac078d3e6824e9473e9756631aa70761f142",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-09-model-status-fail-open-finding.md",
+      "vendored_as": "vendored/docs/handoffs/2026-09-09-model-status-fail-open-finding.md"
+    },
+    {
+      "bytes": 44184,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "fc7b5ec5720768cfdea5e2aac28b0f2696220018a5d3ea803c1e90c5562e892c",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-11-m1-evaluation-crash-lineage-and-footprint.md",
+      "vendored_as": "vendored/docs/handoffs/2026-09-11-m1-evaluation-crash-lineage-and-footprint.md"
+    },
+    {
+      "bytes": 58577,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "fa67e07fc78d872e558a57b031f76f6db2ca3091c4771e344adca0827090c53a",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-12-m1-full-grid-launch-and-measured-cost-model.md",
+      "vendored_as": "vendored/docs/handoffs/2026-09-12-m1-full-grid-launch-and-measured-cost-model.md"
+    },
+    {
+      "bytes": 16955,
+      "git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+      "kind": "repository-document",
+      "sha256": "e527b745716e1cbd6b3ccd2266ba678180a20f0c9029d74cb4637f6ee89b979c",
+      "source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/docs/handoffs/2026-09-14-m1-full-grid-passed-and-m2-launched.md",
+      "vendored_as": "vendored/docs/handoffs/2026-09-14-m1-full-grid-passed-and-m2-launched.md"
+    },
+    {
+      "bytes": 48655,
+      "git_head": null,
+      "kind": "signed-run-report",
+      "sha256": "873ef887fac37a9191335cec7ad1a50b5674d1b950215fd4f65ef9f83ddc9d3d",
+      "source": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/report.json",
+      "vendored_as": "vendored/artifacts/baseline_v2_report.json"
+    },
+    {
+      "bytes": 51897,
+      "git_head": null,
+      "kind": "signed-run-report",
+      "sha256": "cbf25c5d5ecc153af0581dfa62a65616bed6c80790fa5b5fad9603076a2c85aa",
+      "source": "/data/zhangyudong/qrv2_research_artifacts/m0_v2/report.json",
+      "vendored_as": "vendored/artifacts/m0_v2_report.json"
+    },
+    {
+      "bytes": 54957,
+      "git_head": null,
+      "kind": "signed-run-report",
+      "sha256": "41a90d62fd710ef44b3988109c5df545f7766b3a2bff28e58aaf156882aac3cb",
+      "source": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/report.json",
+      "vendored_as": "vendored/artifacts/m0_v3_report.json"
+    },
+    {
+      "bytes": 5723,
+      "git_head": null,
+      "kind": "signed-run-report",
+      "sha256": "d16b5708c4cdc96130080e17ea6f6d3e2b2ae48e5dad23c88cf0d07591a0701a",
+      "source": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/report.json",
+      "vendored_as": "vendored/artifacts/m0r_v2_report.json"
+    },
+    {
+      "bytes": 5723,
+      "git_head": null,
+      "kind": "signed-run-report",
+      "sha256": "d16b5708c4cdc96130080e17ea6f6d3e2b2ae48e5dad23c88cf0d07591a0701a",
+      "source": "/data/zhangyudong/qrv2_research_artifacts/m0r_v3/report.json",
+      "vendored_as": "vendored/artifacts/m0r_v3_report.json"
+    },
+    {
+      "bytes": 4871,
+      "git_head": null,
+      "kind": "signed-run-report",
+      "sha256": "427bb58403bebf64b02bc410ae5a43cc51db2fe565fa3825348af253d29e6c23",
+      "source": "/data/zhangyudong/qrv2_research_artifacts/m1_parallel_v1/report.json",
+      "vendored_as": "vendored/artifacts/m1_parallel_v1_report.json"
+    },
+    {
+      "bytes": 48935,
+      "git_head": null,
+      "kind": "signed-run-report",
+      "sha256": "6da61acaa08555ae464858534bfa70dfc8f2da108f224eff95396f918c4fbfbc",
+      "source": "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1/report.json",
+      "vendored_as": "vendored/artifacts/m1_full_v1_report.json"
+    }
+  ],
+  "generated_at_utc": "2026-09-14T08:01:31+00:00",
+  "note": "Vendored copies. The authoritative originals live on branch codex/publish-quant-platform (documents) and in the artifacts tree (run reports). Compare sha256 before quoting.",
+  "repository_git_head": "c4903538e216c7fdd884ab49f292c2da35ad2b3a"
+}

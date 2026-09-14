@@ -1,0 +1,37 @@
+{
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "parquet panels and fold caches",
+    "promotion_evidence.json payloads (hashed, not copied: 129 KB each)",
+    "anything requiring a database connection"
+  ],
+  "extracted_at_utc": "2026-09-14T07:58:47+00:00",
+  "extractor": {
+    "path": "/data/zhangyudong/qrv2_worktrees/research-conditional-factor-review/docs/research/evidence/2026-09-14-model-side-walk-forward/extract_from_reports.py",
+    "sha256": "750b6e4e736c2c29c3fe246b991c752b6a7fa0e442662c8995d382d84612821d"
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "c4903538e216c7fdd884ab49f292c2da35ad2b3a",
+    "dirty": false,
+    "subject": "docs(handoff): the two deferred driver fixes are implemented, tested and mutation-checked on a worktree branch, with the merge window and the reason for it written down"
+  },
+  "source_file_sha256": {
+    "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
+    "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/report.json": "873ef887fac37a9191335cec7ad1a50b5674d1b950215fd4f65ef9f83ddc9d3d",
+    "/data/zhangyudong/qrv2_research_artifacts/m0_v2/report.json": "cbf25c5d5ecc153af0581dfa62a65616bed6c80790fa5b5fad9603076a2c85aa",
+    "/data/zhangyudong/qrv2_research_artifacts/m0_v3/report.json": "41a90d62fd710ef44b3988109c5df545f7766b3a2bff28e58aaf156882aac3cb",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_resume_a/promotion_evidence.json": "92b000c0d246556baf6dd077abe9e5f926ea69fd5840998c6af594b78b0c6d48",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_resume_a/report.json": "d16b5708c4cdc96130080e17ea6f6d3e2b2ae48e5dad23c88cf0d07591a0701a",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_resume_c/promotion_evidence.json": "92b000c0d246556baf6dd077abe9e5f926ea69fd5840998c6af594b78b0c6d48",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_resume_c/report.json": "d16b5708c4cdc96130080e17ea6f6d3e2b2ae48e5dad23c88cf0d07591a0701a",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/promotion_evidence.json": "92b000c0d246556baf6dd077abe9e5f926ea69fd5840998c6af594b78b0c6d48",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/report.json": "d16b5708c4cdc96130080e17ea6f6d3e2b2ae48e5dad23c88cf0d07591a0701a",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_v3/promotion_evidence.json": "92b000c0d246556baf6dd077abe9e5f926ea69fd5840998c6af594b78b0c6d48",
+    "/data/zhangyudong/qrv2_research_artifacts/m0r_v3/report.json": "d16b5708c4cdc96130080e17ea6f6d3e2b2ae48e5dad23c88cf0d07591a0701a",
+    "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1/promotion_evidence.json": "e941274d44922d2a118a70cac34dc5286244ffd81dbfe98eb2002003d1a2d56a",
+    "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1/report.json": "6da61acaa08555ae464858534bfa70dfc8f2da108f224eff95396f918c4fbfbc",
+    "/data/zhangyudong/qrv2_research_artifacts/m1_parallel_v1/promotion_evidence.json": "f934b5c6464a530d8f078957eec723698bc94c1e9f858078308e572dbac6d200",
+    "/data/zhangyudong/qrv2_research_artifacts/m1_parallel_v1/report.json": "427bb58403bebf64b02bc410ae5a43cc51db2fe565fa3825348af253d29e6c23"
+  }
+}

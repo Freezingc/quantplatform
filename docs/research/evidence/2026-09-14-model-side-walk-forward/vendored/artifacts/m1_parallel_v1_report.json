@@ -1,0 +1,165 @@
+{
+  "family": "M1",
+  "mode": "full",
+  "folds": [
+    {
+      "fold_id": "F1",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "model_id": "m1-f1",
+      "best_config": {
+        "hidden_dim": 64,
+        "num_blocks": 1,
+        "dropout": 0.0
+      },
+      "search_results": [
+        {
+          "config": {
+            "hidden_dim": 64,
+            "num_blocks": 1,
+            "dropout": 0.0
+          },
+          "ensemble_validation_rank_ic": 0.056057666322798204,
+          "seed_validation_rank_ic": {
+            "20260801": 0.04697782260461206,
+            "20260802": 0.052457092506752845,
+            "20260803": 0.061353544679677595
+          },
+          "worst_seed": 20260801
+        }
+      ],
+      "baseline_selection_id": "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9",
+      "model_selection_id": "6ca4883fbb152ebcc33c2d6ef7171ed85837bdb89a3b25ec72d95182173a0cc1"
+    },
+    {
+      "fold_id": "F2",
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "model_id": "m1-f2",
+      "best_config": {
+        "hidden_dim": 64,
+        "num_blocks": 1,
+        "dropout": 0.0
+      },
+      "search_results": [
+        {
+          "config": {
+            "hidden_dim": 64,
+            "num_blocks": 1,
+            "dropout": 0.0
+          },
+          "ensemble_validation_rank_ic": 0.09030626306078236,
+          "seed_validation_rank_ic": {
+            "20260801": 0.08694103835285717,
+            "20260802": 0.08914081165836735,
+            "20260803": 0.0905491649658664
+          },
+          "worst_seed": 20260801
+        }
+      ],
+      "baseline_selection_id": "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74",
+      "model_selection_id": "c7f6ad41a7ecf49c05b7c46ca8b0541ca51dafd1bf1967a47d7de3204639c5de"
+    },
+    {
+      "fold_id": "F3",
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "model_id": "m1-f3",
+      "best_config": {
+        "hidden_dim": 64,
+        "num_blocks": 1,
+        "dropout": 0.0
+      },
+      "search_results": [
+        {
+          "config": {
+            "hidden_dim": 64,
+            "num_blocks": 1,
+            "dropout": 0.0
+          },
+          "ensemble_validation_rank_ic": 0.08220521556268619,
+          "seed_validation_rank_ic": {
+            "20260801": 0.08073502591228603,
+            "20260802": 0.08111227533045227,
+            "20260803": 0.08296285534633206
+          },
+          "worst_seed": 20260801
+        }
+      ],
+      "baseline_selection_id": "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565",
+      "model_selection_id": "06f4d91a65719badadcf489646aded4bda0467d1172833fa4c72f750e07c0591"
+    },
+    {
+      "fold_id": "F4",
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "model_id": "m1-f4",
+      "best_config": {
+        "hidden_dim": 64,
+        "num_blocks": 1,
+        "dropout": 0.0
+      },
+      "search_results": [
+        {
+          "config": {
+            "hidden_dim": 64,
+            "num_blocks": 1,
+            "dropout": 0.0
+          },
+          "ensemble_validation_rank_ic": 0.09967804374342573,
+          "seed_validation_rank_ic": {
+            "20260801": 0.1020737810823674,
+            "20260802": 0.09665082697816853,
+            "20260803": 0.09513150710051263
+          },
+          "worst_seed": 20260803
+        }
+      ],
+      "baseline_selection_id": "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219",
+      "model_selection_id": "39190f87e82a690da909f274a08793e19d24cae97cf0109267f103ff12ac7791"
+    }
+  ],
+  "oos": {
+    "valid_day_count": 945,
+    "mean_rank_ic": 0.09107146897541744,
+    "icir": 0.7125687083805781,
+    "hac_t_statistic": 11.851545300156666,
+    "baseline_mean_rank_ic": 0.0852268662737014,
+    "delta_rank_ic": 0.005844602701716051,
+    "yearly_mean_rank_ic": {
+      "2022": 0.08658804088798126,
+      "2023": 0.06962697392150208,
+      "2024": 0.10486958771009264,
+      "2025": 0.10110318030088321
+    },
+    "gates": {
+      "G1": {
+        "status": "PASS",
+        "observed_value": 0.09107146897541744,
+        "threshold": 0.03
+      },
+      "G2": {
+        "status": "PASS",
+        "observed_value": 11.851545300156666,
+        "threshold": 2.0
+      },
+      "G3": {
+        "status": "PASS",
+        "observed_value": 1.0,
+        "threshold": 0.7
+      },
+      "G4": {
+        "status": "PASS",
+        "observed_value": 0.005844602701716051,
+        "threshold": 0.005
+      },
+      "G5": {
+        "status": "PASS",
+        "observed_value": 0.2895447960542549,
+        "threshold": 0.5
+      },
+      "G6": {
+        "status": "PASS",
+        "observed_value": 0.9752321981424149,
+        "threshold": 0.95
+      }
+    },
+    "all_passed": true
+  }
+}
