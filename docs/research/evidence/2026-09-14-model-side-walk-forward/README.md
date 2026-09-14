@@ -17,6 +17,7 @@
 | `provenance.json` | 同上 | 所有被读文件的 sha256、主树 git HEAD 与分支、提取时刻、刻意排除的内容清单 |
 | `problems_found.md` | 手写，逐条给出出处 | 问题记录：评估阶段六个阻塞点、成本模型三次低估（含本轮我自己的一次 ETA 误算）、stale 门禁默认值、四处永不触发的守卫、两个驱动缺陷、GPU/内存/主机与治理未决项 |
 | `comparison_interim.md` | `research_v2/scripts/summarize_candidate_comparison.py`（主分支 `39ee96a`） | **工具渲染**的跨候选对比：可比性分组与排除理由、G1–G6 矩阵、两两增量矩阵（带"共享基线恒等式"校验）、领先候选的逐年分布与逐折最差 seed。同输入两次渲染 md5 全同 `c79e5545ebad6d36c3e935935176f3b7`。**M2/M3 出报告后重跑即得计划 Task 5.1 的那份文档** |
+| `yearly_baseline_deltas/` | `research_v2/scripts/analyze_yearly_baseline_deltas.py`（主分支，sha256 前缀 `33f8f8a12ac91d76`） | 三个已完成候选各一份 json + md：**基线在候选 945 日集上的逐年值与逐年增量**（此前任何工件里都没有）、四道逐位验收的实测值、**24 个不可评日的逐日清单与覆盖率诊断**（推翻了"稀疏因子导致"的旧说法）、以及关掉 0.90 覆盖率地板后的敏感性重算（结论更强，且与基线自己的签名报告逐位相同） |
 | `extract_from_reports.py` | — | 只读提取器，stdlib only |
 | `vendor_sources.py` | — | 原件复制器，同时重算 `vendored/MANIFEST.json` |
 | `vendored/` | `vendor_sources.py` | 9 份仓库文档 + 7 份签名 `report.json` 的**逐字节副本**，`MANIFEST.json` 记源路径、sha256、取值时的 git HEAD |
@@ -38,6 +39,19 @@
 cd docs/research/evidence/2026-09-14-model-side-walk-forward
 python3 extract_from_reports.py   # 默认 --artifacts /data/zhangyudong/qrv2_research_artifacts
 python3 vendor_sources.py         # 默认 --repo /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX
+```
+
+重跑逐年增量分析（每个工作区约 20 分钟、单进程约 8 GiB 峰值、**只读**；
+`m0r_v2` 与 `m1_full_v1` 带 `--sensitivity-no-score-health`，已被取代的载体不带）：
+
+```bash
+cd /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2
+A=/data/zhangyudong/qrv2_research_artifacts
+for W in m0r_v2 m1_full_v1; do
+  python scripts/analyze_yearly_baseline_deltas.py --workspace $A/$W --report $A/$W/report.json \
+    --key $A/secrets/selection_evidence_hmac.key --sensitivity-no-score-health \
+    --out-json $A/yearly_baseline_deltas/$W.json --out-md $A/yearly_baseline_deltas/$W.md
+done
 ```
 
 重渲染 `comparison_interim.md`（在主工作树里跑，M2/M3 报告落地后把 `--report` 补上即可）：

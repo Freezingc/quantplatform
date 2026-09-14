@@ -1,0 +1,179 @@
+{
+  "acceptance": {
+    "A_reproduces_the_signed_report": {
+      "baseline_mean_rank_ic": {
+        "replayed": 0.0852268662737014,
+        "report": 0.0852268662737014
+      },
+      "delta_rank_ic": {
+        "replayed": 0.005844602701716051,
+        "report": 0.005844602701716051
+      },
+      "mean_rank_ic": {
+        "replayed": 0.09107146897541744,
+        "report": 0.09107146897541744
+      },
+      "valid_day_count": {
+        "replayed": 945,
+        "report": 945
+      }
+    },
+    "B_baseline_branch_reproduces_the_pooled_baseline": {
+      "evaluator": 0.0852268662737014,
+      "replayed": 0.0852268662737014
+    },
+    "C_day_weighted_yearly_deltas_rebuild_the_pooled_delta": {
+      "pooled": 0.005844602701716051,
+      "rebuilt": 0.0058446027017160455,
+      "total_days": 945
+    },
+    "D_valid_day_ratio_rebuilds_g6": {
+      "label_day_count": 969,
+      "rebuilt": 0.9752321981424149,
+      "report": 0.9752321981424149
+    }
+  },
+  "accepted": true,
+  "family": "M1",
+  "minimum_cross_section": 30,
+  "pooled": {
+    "baseline_mean_rank_ic_before_coverage_matching": 0.0852268662737014,
+    "baseline_mean_rank_ic_on_candidate_days": 0.0852268662737014,
+    "baseline_valid_days": 945,
+    "baseline_valid_days_before_coverage_matching": 945,
+    "candidate_mean_rank_ic": 0.09107146897541744,
+    "candidate_valid_days": 945,
+    "delta_rank_ic": 0.005844602701716051
+  },
+  "report": "/data/zhangyudong/qrv2_research_artifacts/m1_parallel_v1/report.json",
+  "report_sha256": "427bb58403bebf64b02bc410ae5a43cc51db2fe565fa3825348af253d29e6c23",
+  "sensitivity_without_score_health": null,
+  "unevaluable_days": {
+    "baseline_invalid_days_on_the_same_frame": 24,
+    "by_year": {
+      "2022": {
+        "baseline_invalid_days_same_frame": 1,
+        "invalid_dates": [
+          "2022-07-29"
+        ],
+        "invalid_days": 1,
+        "label_dates": 242,
+        "median_coverage_on_invalid_days": 0.8950819672131147,
+        "median_sample_count_on_invalid_days": 3003.0,
+        "median_valid_label_count_on_invalid_days": 3355.0,
+        "valid_days": 241
+      },
+      "2023": {
+        "baseline_invalid_days_same_frame": 23,
+        "invalid_dates": [
+          "2023-04-28",
+          "2023-05-10",
+          "2023-05-11",
+          "2023-05-12",
+          "2023-05-16",
+          "2023-05-19",
+          "2023-06-21",
+          "2023-06-26",
+          "2023-06-27",
+          "2023-06-28",
+          "2023-06-29",
+          "2023-06-30",
+          "2023-07-05",
+          "2023-07-06",
+          "2023-07-07",
+          "2023-07-10",
+          "2023-07-11",
+          "2023-07-12",
+          "2023-07-13",
+          "2023-07-14",
+          "2023-07-17",
+          "2023-07-18",
+          "2023-07-19"
+        ],
+        "invalid_days": 23,
+        "label_dates": 242,
+        "median_coverage_on_invalid_days": 0.8989010989010989,
+        "median_sample_count_on_invalid_days": 3255.0,
+        "median_valid_label_count_on_invalid_days": 3623.0,
+        "valid_days": 219
+      },
+      "2024": {
+        "baseline_invalid_days_same_frame": 0,
+        "invalid_dates": [],
+        "invalid_days": 0,
+        "label_dates": 242,
+        "median_coverage_on_invalid_days": null,
+        "median_sample_count_on_invalid_days": null,
+        "median_valid_label_count_on_invalid_days": null,
+        "valid_days": 242
+      },
+      "2025": {
+        "baseline_invalid_days_same_frame": 0,
+        "invalid_dates": [],
+        "invalid_days": 0,
+        "label_dates": 243,
+        "median_coverage_on_invalid_days": null,
+        "median_sample_count_on_invalid_days": null,
+        "median_valid_label_count_on_invalid_days": null,
+        "valid_days": 243
+      }
+    },
+    "candidate_invalid_days": 24,
+    "label_day_count": 969
+  },
+  "workspace": "/data/zhangyudong/qrv2_research_artifacts/m1_parallel_v1",
+  "yearly": [
+    {
+      "baseline_days_lost_to_coverage_matching": 0,
+      "baseline_mean_rank_ic_before_coverage_matching": 0.08063676032509293,
+      "baseline_mean_rank_ic_on_candidate_days": 0.08063676032509293,
+      "baseline_mean_rank_ic_on_days_lost_to_matching": null,
+      "baseline_valid_days": 241,
+      "baseline_valid_days_before_coverage_matching": 241,
+      "candidate_mean_rank_ic": 0.08658804088798126,
+      "candidate_valid_days": 241,
+      "delta_rank_ic": 0.005951280562888336,
+      "status": "OK",
+      "year": 2022
+    },
+    {
+      "baseline_days_lost_to_coverage_matching": 0,
+      "baseline_mean_rank_ic_before_coverage_matching": 0.06980632185667657,
+      "baseline_mean_rank_ic_on_candidate_days": 0.06980632185667657,
+      "baseline_mean_rank_ic_on_days_lost_to_matching": null,
+      "baseline_valid_days": 219,
+      "baseline_valid_days_before_coverage_matching": 219,
+      "candidate_mean_rank_ic": 0.06962697392150208,
+      "candidate_valid_days": 219,
+      "delta_rank_ic": -0.00017934793517448977,
+      "status": "OK",
+      "year": 2023
+    },
+    {
+      "baseline_days_lost_to_coverage_matching": 0,
+      "baseline_mean_rank_ic_before_coverage_matching": 0.09060417297861999,
+      "baseline_mean_rank_ic_on_candidate_days": 0.09060417297861999,
+      "baseline_mean_rank_ic_on_days_lost_to_matching": null,
+      "baseline_valid_days": 242,
+      "baseline_valid_days_before_coverage_matching": 242,
+      "candidate_mean_rank_ic": 0.10486958771009264,
+      "candidate_valid_days": 242,
+      "delta_rank_ic": 0.01426541473147265,
+      "status": "OK",
+      "year": 2024
+    },
+    {
+      "baseline_days_lost_to_coverage_matching": 0,
+      "baseline_mean_rank_ic_before_coverage_matching": 0.09832154338626425,
+      "baseline_mean_rank_ic_on_candidate_days": 0.09832154338626425,
+      "baseline_mean_rank_ic_on_days_lost_to_matching": null,
+      "baseline_valid_days": 243,
+      "baseline_valid_days_before_coverage_matching": 243,
+      "candidate_mean_rank_ic": 0.10110318030088321,
+      "candidate_valid_days": 243,
+      "delta_rank_ic": 0.002781636914618954,
+      "status": "OK",
+      "year": 2025
+    }
+  ]
+}
