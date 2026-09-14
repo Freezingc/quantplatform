@@ -1,0 +1,96 @@
+{
+  "baseline": {
+    "artifacts": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos",
+    "note": "the same frozen best_simple artifacts m0r_v2, m1_full_v1 and every later carrier are scored against",
+    "report": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/report.json"
+  },
+  "carrier": "M3",
+  "falsification": "If M3's signed report disagrees with any of these -- the 945/969 day count, a fold's valid-day count, a per-year coverage min or median, or candidate daily coverage of 1.0000 -- then an input changed between m0r_v2/m1_full_v1 and M3 (baseline artifact, labels, factor set, or the floor) and M3's numbers must not be accepted until the difference is explained. Agreement is evidence the evaluation consumed the same frozen inputs; it is not evidence that the candidate is good.",
+  "predictions": {
+    "candidate_side_daily_coverage": 1.0,
+    "days_dropped_by_the_baseline_side": 24,
+    "g6_ratio": 0.9752321981424149,
+    "g6_valid_score_days": "945/969",
+    "per_fold": {
+      "F1": {
+        "days": 242,
+        "days_below_floor": 1,
+        "expected_coverage_median": 0.9253990284831323,
+        "expected_coverage_min": 0.8950819672131147,
+        "expected_valid_days": 241,
+        "test_year": 2022
+      },
+      "F2": {
+        "days": 242,
+        "days_below_floor": 23,
+        "expected_coverage_median": 0.9092936592336784,
+        "expected_coverage_min": 0.8902674386545354,
+        "expected_valid_days": 219,
+        "test_year": 2023
+      },
+      "F3": {
+        "days": 242,
+        "days_below_floor": 0,
+        "expected_coverage_median": 0.9924234358393046,
+        "expected_coverage_min": 0.9711145194274029,
+        "expected_valid_days": 242,
+        "test_year": 2024
+      },
+      "F4": {
+        "days": 243,
+        "days_below_floor": 0,
+        "expected_coverage_median": 0.9859442882698697,
+        "expected_coverage_min": 0.980854969840021,
+        "expected_valid_days": 243,
+        "test_year": 2025
+      }
+    },
+    "unevaluable_dates": [
+      "2022-07-29",
+      "2023-04-28",
+      "2023-05-10",
+      "2023-05-11",
+      "2023-05-12",
+      "2023-05-16",
+      "2023-05-19",
+      "2023-06-21",
+      "2023-06-26",
+      "2023-06-27",
+      "2023-06-28",
+      "2023-06-29",
+      "2023-06-30",
+      "2023-07-05",
+      "2023-07-06",
+      "2023-07-07",
+      "2023-07-10",
+      "2023-07-11",
+      "2023-07-12",
+      "2023-07-13",
+      "2023-07-14",
+      "2023-07-17",
+      "2023-07-18",
+      "2023-07-19"
+    ]
+  },
+  "registered_at_utc": "2026-09-14T19:48:14+00:00",
+  "source_measurement": {
+    "factor_ids": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_484",
+      "yeslab_96"
+    ],
+    "factor_source": "dense_v2",
+    "floor": 0.9,
+    "instrument": "screen_dense_intersection_coverage.py (codex/dense-intersection-screen)",
+    "path": "/tmp/dense_intersection_2022_2025_v2.json",
+    "sha256": "0feb740b88d0ac1224480cadef6d988079a86dcc999d9ec3b2731e73a07f7cf9"
+  },
+  "status": "PRE-REGISTERED BEFORE M3'S EVALUATION STAGE RAN",
+  "workspace": "/data/zhangyudong/qrv2_research_artifacts/m3_v1"
+}

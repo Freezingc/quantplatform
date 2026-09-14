@@ -1,4 +1,4 @@
-"""Pre-register what M2's evaluation stage must produce, before it runs, with no number retyped.
+"""Pre-register what a carrier's evaluation stage must produce, before it runs, with no number retyped.
 
 The dense-intersection screen predicts the unevaluable OOS day set from published tables alone. M2
 is still inside its search stage, so its evaluation has not run and its report does not exist. That
@@ -11,7 +11,14 @@ baseline_v2/report.json, i.e. the same frozen best_simple artifacts that m0r_v2 
 scored against, and the candidate side scores every valid-label row. So the day set is a property of
 inputs M2 already has, and the prediction is falsifiable the moment its report lands.
 
-Usage: make_m2_preregistration.py --instrument <json> --out-json <json> --out-md <md>
+Every carrier in the chain is scored against the same frozen best_simple baseline artifacts and the
+same frozen dense factor set, so the predicted day set is a property of inputs the carrier already
+has -- which is what makes it registrable before the run finishes. M3 is registered here for the same
+reason M2 is: two carriers predicted independently from one measurement, and each checked against its
+own signed report when it lands.
+
+Usage: make_m2_preregistration.py --instrument <json> --out-json <json> --out-md <md> \
+    [--carrier M2] [--workspace /data/.../m2_v1]
 """
 from __future__ import annotations
 
@@ -31,6 +38,12 @@ def main() -> None:
     parser.add_argument("--instrument", type=Path, required=True)
     parser.add_argument("--out-json", type=Path, required=True)
     parser.add_argument("--out-md", type=Path, required=True)
+    parser.add_argument("--carrier", default="M2", help="which run this registration is for")
+    parser.add_argument(
+        "--workspace",
+        default="/data/zhangyudong/qrv2_research_artifacts/m2_v1",
+        help="the run workspace whose report.json must match this prediction",
+    )
     args = parser.parse_args()
 
     measured = json.loads(args.instrument.read_text(encoding="utf-8"))
@@ -56,13 +69,16 @@ def main() -> None:
     total_valid = sum(entry["expected_valid_days"] for entry in by_year.values())
     payload = {
         "registered_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "status": "PRE-REGISTERED BEFORE M2's EVALUATION STAGE RAN",
-        "carrier": "M2",
-        "workspace": "/data/zhangyudong/qrv2_research_artifacts/m2_v1",
+        "status": f"PRE-REGISTERED BEFORE {args.carrier}'S EVALUATION STAGE RAN",
+        "carrier": args.carrier,
+        "workspace": args.workspace,
         "baseline": {
             "artifacts": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos",
             "report": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/report.json",
-            "note": "the same frozen best_simple artifacts m0r_v2 and m1_full_v1 were scored against",
+            "note": (
+                "the same frozen best_simple artifacts m0r_v2, m1_full_v1 and every later carrier "
+                "are scored against"
+            ),
         },
         "source_measurement": {
             "path": str(args.instrument),
@@ -91,12 +107,13 @@ def main() -> None:
             "unevaluable_dates": summary["days_below_floor_list"],
         },
         "falsification": (
-            "If M2's signed report disagrees with any of these -- the 945/969 day count, a fold's "
-            "valid-day count, a per-year coverage min or median, or candidate daily coverage of "
-            "1.0000 -- then an input changed between m0r_v2/m1_full_v1 and M2 (baseline artifact, "
-            "labels, factor set, or the floor) and M2's numbers must not be accepted until the "
-            "difference is explained. Agreement is evidence the evaluation consumed the same frozen "
-            "inputs; it is not evidence that the candidate is good."
+            f"If {args.carrier}'s signed report disagrees with any of these -- the 945/969 day "
+            "count, a fold's valid-day count, a per-year coverage min or median, or candidate daily "
+            f"coverage of 1.0000 -- then an input changed between m0r_v2/m1_full_v1 and "
+            f"{args.carrier} (baseline artifact, labels, factor set, or the floor) and "
+            f"{args.carrier}'s numbers must not be accepted until the difference is explained. "
+            "Agreement is evidence the evaluation consumed the same frozen inputs; it is not "
+            "evidence that the candidate is good."
         ),
     }
     args.out_json.write_text(
@@ -104,16 +121,16 @@ def main() -> None:
     )
 
     lines = [
-        "# M2 评价阶段的事前预测登记（在评价跑之前写下）",
+        f"# {args.carrier} 评价阶段的事前预测登记（在评价跑之前写下）",
         "",
         f"登记时刻（UTC）：{payload['registered_at_utc']}。",
         f"来源测量：`{args.instrument.name}`（sha256 `{payload['source_measurement']['sha256'][:16]}…`），",
         f"仪器 `screen_dense_intersection_coverage.py`，因子源 `{measured['factor_source']}`"
         f"（{len(payload['source_measurement']['factor_ids'])} 个），地板 {floor}（从 `gates.py` 解析）。",
         "",
-        "**M2 发射时用的基线工件与 `m0r_v2` / `m1_full_v1` 是同一套**"
+        f"**{args.carrier} 发射时用的基线工件与 `m0r_v2` / `m1_full_v1` 是同一套**"
         "（`baseline_v2/baseline_oos` + `baseline_v2/report.json`），候选一侧给每个有效标签行都打分，",
-        "所以这个日集是 M2 **已经拿到的输入**的性质，可以在它的评价阶段跑完之前就写死。",
+        f"所以这个日集是 {args.carrier} **已经拿到的输入**的性质，可以在它的评价阶段跑完之前就写死。",
         "",
         "## 预测",
         "",

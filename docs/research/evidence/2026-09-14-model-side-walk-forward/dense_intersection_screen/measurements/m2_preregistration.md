@@ -1,6 +1,6 @@
 # M2 评价阶段的事前预测登记（在评价跑之前写下）
 
-登记时刻（UTC）：2026-09-14T18:19:37+00:00。
+登记时刻（UTC）：2026-09-14T19:48:32+00:00。
 来源测量：`dense_intersection_2022_2025_v2.json`（sha256 `0feb740b88d0ac12…`），
 仪器 `screen_dense_intersection_coverage.py`，因子源 `dense_v2`（9 个），地板 0.9（从 `gates.py` 解析）。
 
