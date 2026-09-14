@@ -17,12 +17,13 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-14T21:08:00+00:00",
+  "generated_at_utc": "2026-09-14T22:36:46+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "19ff9dcfafcf0206b8dd4c6f7ea5531a79b098f8455c9da3b8cfbf025d7ccbd7"
   },
   "measurements": {
+    "cache_ambiguity_tiebreak.json": "2072ebc4ebb7ccd1ad6d781302d70d59ca639b1fe9909de79312b3a56d00c3b8",
     "cache_halves_not_independent.json": "5a49b82f5f45bb6de9cc795585c849f243a59f64d10877ceccc2ce656dbc87bc",
     "industry_cache_star_coverage.json": "2b2640d0ae53a5a9e1ae0d2ee90b5b188b49ec341b2215bc382a62be7c33bb7f",
     "option1_bulk_expiry_days.json": "9a9641ec2948a8d22337d0dd7b53eec3e0a66e8190bbb0e95c1c0dbc3d65a567",
@@ -48,10 +49,13 @@
     "star_quarantine.log": "be889b5d0a096ebcdc9563bc0f8c424fbfc2f1dabc45e448232e7e2f7a6cb46d",
     "star_quarantine_reason_probe.json": "4db032cc58e17af09b260cf029bc37fa2d39715cdf3b8c5053aea953b0523552",
     "star_upstream_coverage_probe.json": "f2a0e61ed1ec4437ba877bfc5a4ba1368665a7b1c311202f81462f0f056d71f4",
-    "star_upstream_probe.log": "1ccf6b1754c137fca64d3b6dee61cc0c71aa561bc1092f66c1f50660ea97fed6"
+    "star_upstream_probe.log": "1ccf6b1754c137fca64d3b6dee61cc0c71aa561bc1092f66c1f50660ea97fed6",
+    "union_precedence_cache.json": "5f2661d045c39be743395d0bd3087f84d3bbaa7818410b1dd1360d00d68aafa3",
+    "union_precedence_member_all.json": "39e99278e7fb800e1f9d5ab20fda2946e2977d65b52b58cbbadddd9797b2fab5",
+    "union_precedence_surgical.json": "4b2e8df832522b951a742a10537f00eaf8e24b11c47f8dbace6c92e025ebbe82"
   },
   "narratives": {
-    "option1_feasibility.md": "4f579a92b0b95a119667712c8dc47053589e90a4a3797c2159c9010b59a34eee",
+    "option1_feasibility.md": "79f950eb125c25b05f3ef060ead79f612dc3a1590a9f0601a959cb198eef9ce2",
     "root_cause.md": "7c719821cbcad9766baa3ee1a725ae8ef63d363306cefae8bc725f68e71a0390"
   },
   "probe_scripts": {
@@ -59,12 +63,14 @@
     "fetch_member_all.py": "cc1195cd8abffbae518449a00c69d7c0e3a74ee4588b16e02a0dc7052c0deb89",
     "industry_cache_star_coverage.py": "841b3c50a131dd9cba08a56aeb51eaafc43f8e4c6a38c7822629f2e9fa113d43",
     "probe_bulk_expiry_days.py": "44fb3a40cbb127cf9e70363d25043a0a520f0ebda3efe3a569b68454b214aeef",
+    "probe_cache_ambiguity_tiebreak.py": "3df0a030995d83f28b6ef2c9d3491eb7dd1e7d0663abc0246bad5987b2ffc968",
     "probe_cache_halves_not_independent.py": "d6a36d3523cbc1bf0b7f38269ab2384f9f3e8f3373692c23f7a1970c14ad33b7",
     "probe_gap_row_classification.py": "4bc850b79f348835930bf1fa3fddda36f61972d3a4afea5c978f3b35db34822d",
     "probe_label_switch_winners_losers.py": "f1165057234a678ca4c2fae77e75190e93376ac989cefcb7ab22c11d799a1a4b",
     "probe_other_failure_shapes.py": "0b542869aed5befa8917b52471c4f9452fa19847600ff5e0c515d5142f9975ef",
     "probe_star_rows_all_precutover.py": "856dfeaba331c3892da2edc059c9d830ee90cb34dd7f6e5c1f374bfbc8ea0309",
     "probe_star_rows_in_denominator.py": "033d257a213891cb211e40c7e7cb8c1f2e1ce3b91eab77fa5a96bb31f9c8c39f",
+    "probe_union_precedence_rule.py": "6089a3083aab5876f724038f2e318dca495cd75dd7036485f51e9ffc00bbc7cc",
     "project_option1.py": "92303a360990122390fe7d4d444263cb79a7cc961656df6e0b43a94a30be877d",
     "project_option1_implementations.py": "1cacd2de6f8cbe13dc110883c91d9031bb6e450a4d95a466d9998e3bae0aa012",
     "rankic_sample_count_timing.py": "2e09d6560970080c5cd9ce5c3996793afa1b34b65bd2fbfd76523eb863e916a4",
@@ -84,7 +90,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "b8f7c930e149a625a67e7c2b83c827fafda91a06"
+    "commit_at_generation": "16facc19badd168b96c5f3ab06d5f9fa6f8589b9"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
