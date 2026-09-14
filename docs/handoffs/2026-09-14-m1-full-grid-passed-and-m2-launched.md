@@ -1311,3 +1311,67 @@ OOS 窗口里几乎每一天都不可评，**G6 会变成 ≈0.001**——
 这是 §11 那条等式（基线键集 = 九稠密全有限的行集）在**另一个数据源**上的独立复核。
 
 **M2 仍未受影响**：驱动 pid 3588838 存活，F1 19/24，三个看守都在，无 `*.ABORT` / `*.ALARM`。
+
+## 22. 【2026-09-15 02:35 增补】合并窗口已经**先演过一遍**：四个分支按此顺序干净合并、全门禁通过、测试数逐条对账
+
+四个待合并分支里有**两个都改了 M2 驱动本体**
+（`codex/deferred-driver-fixes` 与 `codex/serving-thread-contract` 都动
+`scripts/run_real_candidate_training.py` 与 `tests/unit/scripts/test_run_real_candidate_training.py`），
+所以"到时候再合"是有真实撞车风险的。本轮在**一次性 scratch worktree** 里把整个合并序列真跑了一遍
+（`git worktree add --detach`，合完即 `git worktree remove`，**未推送任何合并提交**，主树与 M2 全程未受影响）。
+
+**顺序与结果**（基线 = `4fff381`，即本文 §21 之后的 publish HEAD）：
+
+| 步 | 合并分支 | 结果 | 模拟提交（仅本地，已随 worktree 丢弃） |
+|---|---|---|---|
+| 1 | `codex/deferred-driver-fixes`（`1dbc36c`） | **干净** | `7fe099b` |
+| 2 | `codex/serving-thread-contract`（`b70ad8a`） | **干净** | `0d1f989` |
+| 3 | `codex/coverage-screen-denominator`（`3746208`） | **干净** | `21806a3` |
+| 4 | `codex/dense-intersection-screen`（`c162073`） | **干净** | `77e189c` |
+
+**文本无冲突不等于语义正确**，所以还查了两件事：
+
+1. **四处改动在合并树里共存**：`write_fold_cache_atomic` 在 `walk_forward_common.py` 与
+   `walk_forward_factor_daily.py` 各 2 处、`_requested_folds` 在驱动里 2 处、
+   `artifact_loader.py` 的线程契约在、两个筛查脚本（`screen_factor_daily_coverage.py` 修好的版本
+   与新增的 `screen_dense_intersection_coverage.py`）都在。
+2. **合并树上跑全量门禁**：`pytest tests -q` → **2229 passed / 46 skipped（160.78s）、0 失败**。
+   **测试数逐条对账**：基线 4fff381 收集 **2214**，
+   `deferred-driver-fixes` +21、`serving-thread-contract` +19、`coverage-screen-denominator` +8、
+   `dense-intersection-screen` +13，**2214 + 61 = 2275 = 2229 + 46**。
+   对得上说明**合并过程没有静默丢掉任何一个测试**——这是"干净合并"最需要复核的一点，
+   因为两个分支改同一个测试文件时，最典型的失败模式就是其中一方的测试在合并里消失。
+
+**给合并窗口的结论**：按上表顺序合即可；合并后**仍须重跑一次全门禁**（主线到那时会前进），
+但已经知道**不会有冲突、也不会有测试丢失**。合并时机不变：**M2 与 M3 都跑完之后**，
+因为这四个分支里有两个改的是 M2/M3 正在用的驱动本体。
+
+### 22.1 另外：M2 的评价结果已经被**事前登记**，落地时先对这张表
+
+`dense_intersection_screen` 那台仪器（§20）到目前为止做的都是**事后**对照。
+本轮把预测写在了 M2 评价阶段**之前**（登记时刻 **2026-09-14T18:19:37Z = 09-15 02:19 CST**，
+当时 M2 仍在 F1 搜索阶段 19/24、`report.json` 不存在）：
+
+| 折 | TEST 年 | 天数 | 跌破地板 | **预测可评天** | 覆盖率 min |
+|---|---|---|---|---|---|
+| F1 | 2022 | 242 | 1 | **241** | 0.895082 |
+| F2 | 2023 | 242 | 23 | **219** | 0.890267 |
+| F3 | 2024 | 242 | 0 | **242** | 0.971115 |
+| F4 | 2025 | 243 | 0 | **243** | 0.980855 |
+| 合计 | — | **969** | **24** | **945** | — |
+
+即 **G6 = 945/969 = 0.9752321981424149**、候选逐日覆盖率恒为 **1.0000**、
+`days_dropped_by_the_baseline_side = 24/24`。
+前提是 M2 发射时用的基线工件与 `m0r_v2` / `m1_full_v1` 是同一套
+（`baseline_v2/baseline_oos` + `baseline_v2/report.json`，见驱动命令行）。
+
+**M2 报告落地时第一件事就是对这张表**：任何一项不符
+（945/969、某折可评天数、某年覆盖率 min/median、候选覆盖率不是 1.0000）
+都意味着**输入在两次运行之间变了**（基线工件 / 标签 / 因子集 / 地板），
+**在解释清楚之前不要接受 M2 的数字**。反过来，一致也**只**说明评价消费了同一套冻结输入，
+不说明候选好坏、也不说明那 24 天该被丢掉。
+
+登记文件（含来源测量的 sha256 与推翻条件，生成器直接读仪器 JSON、**没有一个数字是手抄的**）：
+分支 `codex/research-conditional-factor-review` 的
+`docs/research/evidence/…/dense_intersection_screen/measurements/m2_preregistration.{json,md}`
+（提交 `d791b9c`），叙述见同目录 `finding.md` §14。
