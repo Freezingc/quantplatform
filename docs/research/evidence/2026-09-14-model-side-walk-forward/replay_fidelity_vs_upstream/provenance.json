@@ -18,12 +18,16 @@
     "path": "research_v2/configs/factors/source_catalog.yaml",
     "sha256": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad"
   },
-  "generated_at_utc": "2026-09-14T23:16:02+00:00",
+  "generated_at_utc": "2026-09-14T23:28:44+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "d4baec523afea29135dea960e56b9825ebd40a1f9d037fce272dc9c157a3c0f9"
   },
   "measurements": {
+    "bj_extremes_in_replay_panel.json": {
+      "bytes": 2259,
+      "sha256": "25c79dd2a4aa34ab542f31a754767fb6ab1be20913c53c0204781badb6824851"
+    },
     "cause_yeslab_464.json": {
       "bytes": 13397,
       "sha256": "d6cdf3012bc234ddf8113cfcf5a6989b8b6bb74f4bf05bd73e7ed93b3a4dfca3"
@@ -44,9 +48,17 @@
       "bytes": 6325,
       "sha256": "7305e3e7418b6902110733903032ad8d158fcfdfafb3c17899e2574025de4a8c"
     },
+    "panel_composition_valued_basis.json": {
+      "bytes": 3472,
+      "sha256": "d3c45a2308fb56e7e4347e2229eb7b777b119bca8b59c645f5e7fff453a4863a"
+    },
     "panel_gap_vs_fidelity_swing.json": {
       "bytes": 4284,
       "sha256": "47b3836217295c429ec94f24e1bfa9c385e31f7425a8c42b08fa66cae3de75b7"
+    },
+    "panel_suffix_breakdown.json": {
+      "bytes": 2711,
+      "sha256": "d6a84d52ee002e60d57864dd1ccc52879eb0ccf2e49fdc13c666bd4dd89990d4"
     },
     "probe_206_scale_cause.json": {
       "bytes": 11795,
@@ -68,6 +80,10 @@
       "bytes": 1139,
       "sha256": "b7b4a228241df945423d86f8c6d3fde10fc00af0f1e8f9aea3ca7bbe93b6d485"
     },
+    "upstream_only_status.json": {
+      "bytes": 5256,
+      "sha256": "0c6d0f954b3c6f3a69dbb314226847750c6f9ba2b190aa9a3bd461514831e200"
+    },
     "upstream_referent_coverage.json": {
       "bytes": 7542,
       "sha256": "ac1366dfe83ee362d86595bf04706b5a21ce31ff756ae9a09c076a4e49d5b38b"
@@ -79,11 +95,15 @@
   },
   "narratives": {
     "finding.md": {
-      "bytes": 61970,
-      "sha256": "f2840ffd73460f4dfc5332b1c6deccce0b9ca058c4d0a9e27d1a3f608c7ad683"
+      "bytes": 70630,
+      "sha256": "8e3ff2efe5b1df3128f437115c28f9124eb1416cc293cb6412ebc4eff7748800"
     }
   },
   "probe_scripts": {
+    "fetch_stock_basic.py": {
+      "bytes": 959,
+      "sha256": "bb63135097f2c19c0310b587f7914b593ad245243b65d568ba4b3978dd4b4d2b"
+    },
     "probe_206_scale_cause.py": {
       "bytes": 10138,
       "sha256": "ea7144f96f96d8a42754a62f3ce97e99de670065a34b7a319f4095dd1622fca8"
@@ -116,6 +136,10 @@
       "bytes": 7445,
       "sha256": "95b6e1ed3b01fdc2b3f49a4ce9009e7ac213024bb8fccadc2a8e61e0db335a4b"
     },
+    "probe_upstream_only_status.py": {
+      "bytes": 9017,
+      "sha256": "5fb28eb0eb7744bc613e585269f47a07982251d3979763f275e800cd04b1243f"
+    },
     "probe_upstream_referent_coverage.py": {
       "bytes": 5578,
       "sha256": "590220fed7205441ab4eaffbf204f2195b149e3fbb4611138559cafa260d4717"
@@ -131,6 +155,6 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "e06d3af3b1202771333ba30ed28637829893c940"
+    "commit_at_generation": "0b2c474206680de7f5ea975c204a228df37fffcc"
   }
 }

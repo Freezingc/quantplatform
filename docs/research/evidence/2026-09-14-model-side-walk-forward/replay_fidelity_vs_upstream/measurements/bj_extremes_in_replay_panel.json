@@ -1,0 +1,88 @@
+{
+ "question": "Do BSE securities in the replay market panel occupy the extremes of the cross-sectional inputs that GP_Factor_095_Calculator ranks and z-scores?",
+ "why_it_matters": "GP_Factor_095_Calculator applies cs_zscore(close), cs_rank, and cs_max over the WHOLE panel the calculator receives. materialize_frozen_factor_daily.py:125 calls fetch_full_tushare_shsz_market with neither --exclude-bj nor the BJ old-to-new alias remap (both exist in audit_formula_replay_tushare.py:174,186 and are off by default), so .BJ securities are in that panel. BSE has a 30% daily price limit against 10% main board and 20% GEM/STAR, so its pct_chg range is structurally wider.",
+ "days": {
+  "20220315": {
+   "panel": 4802,
+   "by_exchange_pct_chg": {
+    "BJ": {
+     "count": 148,
+     "min": -30.663,
+     "max": 13.514,
+     "std": 4.3755
+    },
+    "SH": {
+     "count": 2055,
+     "min": -18.383,
+     "max": 44.01,
+     "std": 3.1731
+    },
+    "SZ": {
+     "count": 2599,
+     "min": -22.38,
+     "max": 20.014,
+     "std": 3.0165
+    }
+   },
+   "top1pct_pct_chg_share_BJ": 0.0833,
+   "bottom1pct_pct_chg_share_BJ": 0.1042,
+   "top1pct_amount_share_BJ": 0.0,
+   "BJ_share_of_panel": 0.0308
+  },
+  "20230705": {
+   "panel": 5208,
+   "by_exchange_pct_chg": {
+    "BJ": {
+     "count": 205,
+     "min": -10.688,
+     "max": 24.431,
+     "std": 3.2508
+    },
+    "SH": {
+     "count": 2217,
+     "min": -12.467,
+     "max": 12.908,
+     "std": 2.0217
+    },
+    "SZ": {
+     "count": 2786,
+     "min": -16.086,
+     "max": 66.266,
+     "std": 2.6235
+    }
+   },
+   "top1pct_pct_chg_share_BJ": 0.0962,
+   "bottom1pct_pct_chg_share_BJ": 0.0385,
+   "top1pct_amount_share_BJ": 0.0,
+   "BJ_share_of_panel": 0.0394
+  },
+  "20250808": {
+   "panel": 5411,
+   "by_exchange_pct_chg": {
+    "BJ": {
+     "count": 270,
+     "min": -12.532,
+     "max": 246.894,
+     "std": 15.3907
+    },
+    "SH": {
+     "count": 2277,
+     "min": -10.274,
+     "max": 140.678,
+     "std": 3.9325
+    },
+    "SZ": {
+     "count": 2864,
+     "min": -15.986,
+     "max": 20.011,
+     "std": 2.6384
+    }
+   },
+   "top1pct_pct_chg_share_BJ": 0.0926,
+   "bottom1pct_pct_chg_share_BJ": 0.0741,
+   "top1pct_amount_share_BJ": 0.0,
+   "BJ_share_of_panel": 0.0499
+  }
+ },
+ "database_writes": false
+}

@@ -1,0 +1,213 @@
+{
+ "question": "Suffix breakdown of the panel differences: is the upstream-only set BSE, and is the replay-only 920-prefix set also BSE?",
+ "days": {
+  "2022-03-15": {
+   "upstream_valued_only_suffix": [
+    [
+     "BJ",
+     109
+    ]
+   ],
+   "replay_only_suffix": [
+    [
+     "BJ",
+     148
+    ],
+    [
+     "SZ",
+     18
+    ],
+    [
+     "SH",
+     14
+    ]
+   ],
+   "replay_panel_suffix": [
+    [
+     "SZ",
+     2599
+    ],
+    [
+     "SH",
+     2055
+    ],
+    [
+     "BJ",
+     148
+    ]
+   ],
+   "upstream_all_rows_suffix": [
+    [
+     "SZ",
+     3012
+    ],
+    [
+     "SH",
+     2391
+    ],
+    [
+     "BJ",
+     552
+    ]
+   ],
+   "replay_only_920_sample": [
+    "920000.BJ",
+    "920006.BJ",
+    "920010.BJ",
+    "920014.BJ",
+    "920017.BJ",
+    "920021.BJ"
+   ],
+   "replay_only_nonBJ_sample": [
+    "000959.SZ",
+    "000981.SZ",
+    "001266.SZ",
+    "002341.SZ",
+    "002408.SZ",
+    "002429.SZ",
+    "002505.SZ",
+    "002665.SZ"
+   ],
+   "replay_only_nonBJ_count": 32
+  },
+  "2023-07-05": {
+   "upstream_valued_only_suffix": [
+    [
+     "BJ",
+     200
+    ]
+   ],
+   "replay_only_suffix": [
+    [
+     "BJ",
+     205
+    ],
+    [
+     "SZ",
+     42
+    ],
+    [
+     "SH",
+     17
+    ]
+   ],
+   "replay_panel_suffix": [
+    [
+     "SZ",
+     2786
+    ],
+    [
+     "SH",
+     2217
+    ],
+    [
+     "BJ",
+     205
+    ]
+   ],
+   "upstream_all_rows_suffix": [
+    [
+     "SZ",
+     3012
+    ],
+    [
+     "SH",
+     2391
+    ],
+    [
+     "BJ",
+     552
+    ]
+   ],
+   "replay_only_920_sample": [
+    "920000.BJ",
+    "920001.BJ",
+    "920006.BJ",
+    "920010.BJ",
+    "920014.BJ",
+    "920017.BJ"
+   ],
+   "replay_only_nonBJ_sample": [
+    "000004.SZ",
+    "000038.SZ",
+    "000546.SZ",
+    "000571.SZ",
+    "000656.SZ",
+    "000691.SZ",
+    "000790.SZ",
+    "000996.SZ"
+   ],
+   "replay_only_nonBJ_count": 59
+  },
+  "2025-08-08": {
+   "upstream_valued_only_suffix": [
+    [
+     "BJ",
+     241
+    ]
+   ],
+   "replay_only_suffix": [
+    [
+     "BJ",
+     244
+    ],
+    [
+     "SZ",
+     14
+    ],
+    [
+     "SH",
+     8
+    ]
+   ],
+   "replay_panel_suffix": [
+    [
+     "SZ",
+     2864
+    ],
+    [
+     "SH",
+     2277
+    ],
+    [
+     "BJ",
+     270
+    ]
+   ],
+   "upstream_all_rows_suffix": [
+    [
+     "SZ",
+     3012
+    ],
+    [
+     "SH",
+     2391
+    ],
+    [
+     "BJ",
+     552
+    ]
+   ],
+   "replay_only_920_sample": [
+    "920000.BJ",
+    "920001.BJ",
+    "920005.BJ",
+    "920006.BJ",
+    "920007.BJ",
+    "920010.BJ"
+   ],
+   "replay_only_nonBJ_sample": [
+    "000953.SZ",
+    "001221.SZ",
+    "001267.SZ",
+    "002090.SZ",
+    "002176.SZ",
+    "002778.SZ",
+    "300174.SZ",
+    "300329.SZ"
+   ],
+   "replay_only_nonBJ_count": 22
+  }
+ },
+ "database_writes": false
+}

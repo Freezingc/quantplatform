@@ -534,3 +534,33 @@ formulas*"。`REPLAY_DEFINITIONS["yeslab_206"]` 指的是 `Bias_Vol_Demean_60_Ca
 而是**对整个 OOS 窗口（969 天）一处都修不了**；而选项 1（并集）会**全窗口**修好。
 **这使 §9.3 的"互不支配"更偏向选项 1**：选项 4 的上限优势只有 0.984501 对 0.976751（+0.008），
 而它放弃的是一个覆盖全部 969 天、中位 10.6% 的正确性修复。
+
+### 9.7 同日再追加（07:35）：一条**治理不一致**，与那 24 天无关但影响所有含全局截面算子的因子
+
+追查 `yeslab_464` 的机制时量到的（`evidence/…/replay_fidelity_vs_upstream/finding.md` §16）。
+先更正一处：§9 之外那份 finding 的 §15.1 曾说"重放面板是上游的严格子集、相差 9%–19%"，
+**那是拿上游含 NULL 的全部行比出来的假象**（上游对主名单每只证券每日都留一行、算不出填 NULL，
+每日期恒定 5,955 行）。按**有值行**重比：Jaccard **0.9103–0.9412**，
+**重放面板反而更大**（每天多 149–266 只），而**真正的 SH/SZ 差异只有每天 22–59 只（0.4%–1.2%）**。
+剩下的差**几乎全是北交所新旧代码错配**：上游有值而重放没有的 **100% 是 `.BJ`**
+（旧代码段 `430xxx`/`83xxxx`/`87xxxx`），重放有而上游没值的主体也是 `.BJ`（新代码段 `920xxx`）。
+
+**于是一条不一致浮出来**：`materialize_frozen_factor_daily.py:125` 调
+`fetch_full_tushare_shsz_market(...)`，而它（`audit_formula_replay_tushare.py:311-350`）
+逐日调 `api().daily(trade_date=...)`、**没有任何交易所过滤**——函数名叫 `shsz`，
+但 Tushare 的 `daily` 返回 `.BJ`，实测面板**每天含 148–270 只 `.BJ`（3.08%/3.94%/4.99%）**。
+而同一仓库里：`audit_formula_replay_tushare.py:174` 有 *"exclude .BJ securities from the replay universe"*
+开关、`:186` 有 *"old-to-new BJ code alias artifact; **disabled by default**"*（`:593-613` 有实现）、
+`:1041` 有 `.BJ` 过滤；`audit_tushare_pit_industry.py` 输出写着 `"excluded_exchanges": ["BJ"]`；
+宇宙是 `cn_liquid_a`，且**宇宙限制发生在计算器跑完之后**。
+**即 BJ 进入了影响每一只 SH/SZ 证券取值的 `cs_*` 截面算子，却在管线其他环节被明确排除，
+而物料化两个可用开关一个都没用。**
+
+**为什么这不是小事**：BJ 占面板 3%–5%，却占 `pct_chg` **上 1% 极值的 8.3%–9.6%**（约 2–3 倍超额代表，
+与北交所 30% 涨跌停一致），而 `GP_Factor_095_Calculator` 的 `_v17 = cs_zscore(pct_chg)` 正是回归的 y。
+受影响的至少是 `464`（9 个全局截面算子）、`425`（3 个）、`381`（2 个）。
+
+**本文不代为决定**：把 BJ 移出截面会让**所有含全局截面算子的因子值都变**，等于又一次新谱系；
+而 `excluded_exchanges: ["BJ"]` 与 `cn_liquid_a` 都指向"本该移出"。**这是所有者的决定。**
+**一个便宜的下一步**（本文未做）：在任一采样日重算 `_v13`（60 日峰度）取 argmax，
+看它是不是 `.BJ`——这能一次性判定 §9.7 与 `464` 摆动之间的因果。

@@ -1,0 +1,258 @@
+{
+ "question": "What ARE the securities upstream valued but the replay panel lacks, and what are the ones the replay has but upstream did not value?",
+ "days": {
+  "2022-03-15": {
+   "replay_panel": 4802,
+   "upstream_all_rows": 5955,
+   "upstream_valued": 4731,
+   "upstream_valued_only": 109,
+   "replay_only_vs_valued": 180,
+   "jaccard_valued": 0.9411525147627774,
+   "upstream_valued_only_prefixes": [
+    [
+     "832",
+     16
+    ],
+    [
+     "831",
+     11
+    ],
+    [
+     "833",
+     11
+    ],
+    [
+     "430",
+     10
+    ],
+    [
+     "836",
+     10
+    ],
+    [
+     "835",
+     9
+    ]
+   ],
+   "replay_only_prefixes": [
+    [
+     "920",
+     148
+    ],
+    [
+     "301",
+     7
+    ],
+    [
+     "002",
+     6
+    ],
+    [
+     "603",
+     5
+    ],
+    [
+     "688",
+     5
+    ],
+    [
+     "600",
+     4
+    ]
+   ],
+   "upstream_valued_only_sample": [
+    "430017.BJ",
+    "430047.BJ",
+    "430090.BJ",
+    "430139.BJ",
+    "430198.BJ",
+    "430418.BJ",
+    "430476.BJ",
+    "430489.BJ",
+    "430510.BJ",
+    "430556.BJ"
+   ],
+   "replay_only_sample": [
+    "000959.SZ",
+    "000981.SZ",
+    "001266.SZ",
+    "002341.SZ",
+    "002408.SZ",
+    "002429.SZ",
+    "002505.SZ",
+    "002665.SZ",
+    "002761.SZ",
+    "300495.SZ"
+   ]
+  },
+  "2023-07-05": {
+   "replay_panel": 5208,
+   "upstream_all_rows": 5955,
+   "upstream_valued": 5144,
+   "upstream_valued_only": 200,
+   "replay_only_vs_valued": 264,
+   "jaccard_valued": 0.9142011834319527,
+   "upstream_valued_only_prefixes": [
+    [
+     "831",
+     22
+    ],
+    [
+     "836",
+     21
+    ],
+    [
+     "833",
+     19
+    ],
+    [
+     "832",
+     18
+    ],
+    [
+     "430",
+     16
+    ],
+    [
+     "834",
+     14
+    ]
+   ],
+   "replay_only_prefixes": [
+    [
+     "920",
+     205
+    ],
+    [
+     "301",
+     14
+    ],
+    [
+     "002",
+     11
+    ],
+    [
+     "688",
+     9
+    ],
+    [
+     "000",
+     8
+    ],
+    [
+     "300",
+     8
+    ]
+   ],
+   "upstream_valued_only_sample": [
+    "430017.BJ",
+    "430047.BJ",
+    "430090.BJ",
+    "430139.BJ",
+    "430198.BJ",
+    "430300.BJ",
+    "430418.BJ",
+    "430425.BJ",
+    "430476.BJ",
+    "430478.BJ"
+   ],
+   "replay_only_sample": [
+    "000004.SZ",
+    "000038.SZ",
+    "000546.SZ",
+    "000571.SZ",
+    "000656.SZ",
+    "000691.SZ",
+    "000790.SZ",
+    "000996.SZ",
+    "002211.SZ",
+    "002341.SZ"
+   ]
+  },
+  "2025-08-08": {
+   "replay_panel": 5411,
+   "upstream_all_rows": 5955,
+   "upstream_valued": 5386,
+   "upstream_valued_only": 241,
+   "replay_only_vs_valued": 266,
+   "jaccard_valued": 0.9102972399150743,
+   "upstream_valued_only_prefixes": [
+    [
+     "836",
+     27
+    ],
+    [
+     "832",
+     25
+    ],
+    [
+     "831",
+     24
+    ],
+    [
+     "833",
+     22
+    ],
+    [
+     "873",
+     22
+    ],
+    [
+     "835",
+     16
+    ]
+   ],
+   "replay_only_prefixes": [
+    [
+     "920",
+     244
+    ],
+    [
+     "300",
+     6
+    ],
+    [
+     "002",
+     3
+    ],
+    [
+     "600",
+     3
+    ],
+    [
+     "001",
+     2
+    ],
+    [
+     "301",
+     2
+    ]
+   ],
+   "upstream_valued_only_sample": [
+    "430017.BJ",
+    "430047.BJ",
+    "430090.BJ",
+    "430139.BJ",
+    "430198.BJ",
+    "430300.BJ",
+    "430418.BJ",
+    "430425.BJ",
+    "430476.BJ",
+    "430478.BJ"
+   ],
+   "replay_only_sample": [
+    "000953.SZ",
+    "001221.SZ",
+    "001267.SZ",
+    "002090.SZ",
+    "002176.SZ",
+    "002778.SZ",
+    "300174.SZ",
+    "300329.SZ",
+    "300527.SZ",
+    "300554.SZ"
+   ]
+  }
+ },
+ "database_writes": false
+}
