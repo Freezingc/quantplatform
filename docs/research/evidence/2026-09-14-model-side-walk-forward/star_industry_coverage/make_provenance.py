@@ -38,6 +38,36 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def vendored_member_all(here: Path) -> dict:
+    """Hash the second vendor API's byte copy, the same way the industry cache is hashed.
+
+    Added 2026-09-15: option 1's feasibility rests on what pro.index_member_all returned on one
+    particular day, so that answer is vendored and hashed rather than quoted. Returns an absent
+    record instead of raising when the directory is missing, so this generator still runs on a
+    checkout that predates the fetch.
+    """
+    directory = here / "vendored_member_all"
+    if not directory.is_dir():
+        return {"present": False}
+    files = {
+        path.name: {"sha256": sha256(path), "bytes": path.stat().st_size}
+        for path in sorted(directory.glob("*.json"))
+        if path.name != "MANIFEST.json"
+    }
+    combined = hashlib.sha256()
+    for name in sorted(files):
+        combined.update(hashlib.sha256(name.encode()).digest())
+        combined.update(bytes.fromhex(files[name]["sha256"]))
+    manifest_path = directory / "MANIFEST.json"
+    return {
+        "present": True,
+        "file_count": len(files),
+        "files": files,
+        "combined_sha256": combined.hexdigest(),
+        "manifest_sha256": sha256(manifest_path) if manifest_path.is_file() else None,
+    }
+
+
 def git(repo: Path, *args: str) -> str:
     return subprocess.run(
         ["git", "-C", str(repo), *args], capture_output=True, text=True, check=True
@@ -52,8 +82,12 @@ def main() -> None:
     manifest = {
         "description": (
             "Byte copies of the SW2021 level-1 industry membership files the frozen-chain replay read "
-            "from research_v2/artifacts/tushare_cache. Vendored because the vendor restates this "
-            "history: re-fetching the same security today returns a different industry and in_date."
+            "from research_v2/artifacts/tushare_cache. Vendored because these are the exact bytes the "
+            "replay saw, and the API that produced them (pro.index_member) clamps every STAR-Market "
+            "in_date to 2023-09-25. An earlier version of this description said the vendor restates "
+            "this history; that was wrong, and option1_feasibility.md section 1 corrects it -- the one "
+            "security it was based on (688002.SH) changed industry on 2026-08-21, a week AFTER this "
+            "cache was built on 2026-08-14, so the cache was right when it was taken."
         ),
         "source_dir": str(args.repo / "research_v2" / "artifacts" / "tushare_cache"),
         "files": {},
@@ -110,6 +144,8 @@ def main() -> None:
             "file_count": manifest["file_count"],
             "combined_sha256": manifest["combined_sha256"],
         },
+        "vendored_member_all": vendored_member_all(HERE),
+        "narratives": {path.name: sha256(path) for path in sorted(HERE.glob("*.md"))},
         "excluded_by_design": [
             "model weights / checkpoints (*.pt)",
             "parquet panels and fold caches (read in place, never copied)",
@@ -122,6 +158,10 @@ def main() -> None:
     print(f"vendored {manifest['file_count']} cache files, combined {manifest['combined_sha256'][:16]}…")
     print(f"hashed {len(provenance['probe_scripts'])} probes, {len(provenance['measurements'])} measurements, "
           f"{len(provenance['cited_source_sha256'])} cited sources")
+    vma = provenance["vendored_member_all"]
+    if vma.get("present"):
+        print(f"vendored_member_all {vma['file_count']} files, combined {vma['combined_sha256'][:16]}…")
+    print(f"hashed {len(provenance['narratives'])} narratives")
     if provenance["cited_source_missing"]:
         print(f"WARNING missing cited sources: {provenance['cited_source_missing']}")
     print(f"wrote {HERE / 'provenance.json'}")

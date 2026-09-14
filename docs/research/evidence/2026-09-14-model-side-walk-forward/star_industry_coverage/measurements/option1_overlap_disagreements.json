@@ -1,0 +1,12 @@
+{
+ "window": "2023-09-25..2025-12-31 every 10th business day",
+ "count": 1,
+ "detail": [
+  {
+   "day": "2024-05-20",
+   "code": "688292.SH",
+   "cache_l1": "801770.SI",
+   "member_all_l1": "801750.SI"
+  }
+ ]
+}

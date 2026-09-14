@@ -1,6 +1,6 @@
 {
   "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
-  "description": "Byte copies of the SW2021 level-1 industry membership files the frozen-chain replay read from research_v2/artifacts/tushare_cache. Vendored because the vendor restates this history: re-fetching the same security today returns a different industry and in_date.",
+  "description": "Byte copies of the SW2021 level-1 industry membership files the frozen-chain replay read from research_v2/artifacts/tushare_cache. Vendored because these are the exact bytes the replay saw, and the API that produced them (pro.index_member) clamps every STAR-Market in_date to 2023-09-25. An earlier version of this description said the vendor restates this history; that was wrong, and option1_feasibility.md section 1 corrects it -- the one security it was based on (688002.SH) changed industry on 2026-08-21, a week AFTER this cache was built on 2026-08-14, so the cache was right when it was taken.",
   "file_count": 32,
   "files": {
     "pit_industry_members_801010_SI.json": {

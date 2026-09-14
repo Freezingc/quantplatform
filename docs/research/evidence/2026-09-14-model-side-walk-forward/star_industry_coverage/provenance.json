@@ -1,7 +1,7 @@
 {
   "cited_source_missing": [],
   "cited_source_sha256": {
-    "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md": "6d6776b0a55cf8160ae248511fdb0e719ea87045a06d3ab2bb72f3c70184fc13",
+    "docs/reports/2026-09-14-dense-factor-coverage-gap-and-the-24-days.md": "e98140be98917ccef45fab600dd7f745408bc9388fbdeec91d2d8f8a36b1443d",
     "research_v2/configs/factors/source_catalog.yaml": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad",
     "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
     "research_v2/scripts/audit_tushare_pit_industry.py": "195a6377554d703a91d165810b9899eeb2ee952ffd7c5f08b28cae2482499312",
@@ -17,13 +17,19 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-14T16:08:42+00:00",
+  "generated_at_utc": "2026-09-14T20:42:23+00:00",
   "generator": {
     "path": "make_provenance.py",
-    "sha256": "cbe4edd3e024e2b254f5af61ecaf7c22047b8ab760fd2c269f75be4c821a5bcb"
+    "sha256": "19ff9dcfafcf0206b8dd4c6f7ea5531a79b098f8455c9da3b8cfbf025d7ccbd7"
   },
   "measurements": {
+    "cache_halves_not_independent.json": "5a49b82f5f45bb6de9cc795585c849f243a59f64d10877ceccc2ce656dbc87bc",
     "industry_cache_star_coverage.json": "2b2640d0ae53a5a9e1ae0d2ee90b5b188b49ec341b2215bc382a62be7c33bb7f",
+    "option1_overlap_disagreements.json": "0715ea3b2d1b45ed75c78fb2f025b95e07e9489b2d3a91e6c95d8f6df077ee6c",
+    "option1_price.json": "1bfb2809bf31f762dfc750f8192e30393f0a8a0bd87dd30a054982a6cb128e90",
+    "option1_projected_post_backfill.json": "8be45c74577d7d900fecfb5fb487b920d636aa29241ab5905ef23ec88dfd72aa",
+    "option1_star_rows_in_denominator.json": "35ee35c13483cd40c0826a13442aa93c22402fd12787a7999825aa44dfb53341",
+    "option1_vendor_api_feasibility.json": "d36c64b246c53c1caba4437c912fafde21e578e45375d350429264af88594be4",
     "rankic_sample_count_timing_probe.json": "8773ec2a4eafaa8560b2a92b7125ff1805aae0447e96ed0cec0e865ca9ff305e",
     "repair_audit_357_471_probe.json": "09b98274f6764a6f1c40cbde90b59159188a0961db1fc65de60cbd6a0cc795d5",
     "star_backfill_timing.log": "ae773c380827c97e7668992f331364a4cb84552e6bb91e8c01e1659ee596d2a2",
@@ -35,8 +41,17 @@
     "star_upstream_coverage_probe.json": "f2a0e61ed1ec4437ba877bfc5a4ba1368665a7b1c311202f81462f0f056d71f4",
     "star_upstream_probe.log": "1ccf6b1754c137fca64d3b6dee61cc0c71aa561bc1092f66c1f50660ea97fed6"
   },
+  "narratives": {
+    "option1_feasibility.md": "6980a5507549c4c12a312e3064da4260a19c76e39cf857e4206e7d2f6f726367",
+    "root_cause.md": "9fa7cf7b481bb9b6c8a82b8268209f0150ff2736a8681c0acca31ff4e1e22073"
+  },
   "probe_scripts": {
+    "analyze_backfill_feasibility.py": "3ff51401dca04aadb9d96c03caf095c1f614d6857f2d9c197db8bc788ef672d2",
+    "fetch_member_all.py": "cc1195cd8abffbae518449a00c69d7c0e3a74ee4588b16e02a0dc7052c0deb89",
     "industry_cache_star_coverage.py": "841b3c50a131dd9cba08a56aeb51eaafc43f8e4c6a38c7822629f2e9fa113d43",
+    "probe_cache_halves_not_independent.py": "d6a36d3523cbc1bf0b7f38269ab2384f9f3e8f3373692c23f7a1970c14ad33b7",
+    "probe_star_rows_in_denominator.py": "033d257a213891cb211e40c7e7cb8c1f2e1ce3b91eab77fa5a96bb31f9c8c39f",
+    "project_option1.py": "92303a360990122390fe7d4d444263cb79a7cc961656df6e0b43a94a30be877d",
     "rankic_sample_count_timing.py": "2e09d6560970080c5cd9ce5c3996793afa1b34b65bd2fbfd76523eb863e916a4",
     "repair_audit_357_471.py": "d8298ba9247616650733885ccc56d9926118308bed49311b2924688627ee43a7",
     "star_backfill_timing.py": "0f9d010e49b5ac0c6cde65f18a0c57d0f702ae701cd82c99897b7db180d4f1d1",
@@ -46,18 +61,34 @@
   },
   "repository_main_tree": {
     "branch": "codex/publish-quant-platform",
-    "commit": "6a3cc42f9262d04a2d3a8e554addaf531601c30b",
+    "commit": "2502014df94a07bc8e52d621e3a7f65e92640858",
     "dirty": false,
     "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
-    "subject": "docs(reports): the dense-coverage report's cause and its handoff direction were both wrong, and the correction is measured -- the frozen chain replays these two factors and the industry file it replays from has no STAR-Market member before 2023-09-25"
+    "subject": "docs(handoff): a one-page price list for the 24 days, and the cliff that makes 'tighten the health check slightly' a gate-failing change -- 42 days sit within 0.005 above the floor, so 0.905 turns G6 from 0.9752 to 0.9319"
   },
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "2352e0d86df07ac74a91c4bf946a936630214ed3"
+    "commit_at_generation": "05e15664d0036a8b90085f62481867e1db0ac697"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
     "file_count": 32
+  },
+  "vendored_member_all": {
+    "combined_sha256": "67badc1b6fc8a7f645d263fde86b33c16f7a6dc6dda87f6d260f464f280a6368",
+    "file_count": 2,
+    "files": {
+      "member_all_combined.json": {
+        "bytes": 1050880,
+        "sha256": "3488aa4c5b3580ae99233d72babfbb023f5ba57926fd90e9b9ec9707f5f08d39"
+      },
+      "sw2021_l1_classification.json": {
+        "bytes": 3910,
+        "sha256": "da2d8c949305a09bc57173aa2b8d450b7210346d001d88143a0bb9acfbda933a"
+      }
+    },
+    "manifest_sha256": "e6eb40011770a4bb42c2a6763b61c0cab0948311220a2363ed09878711e6ac2c",
+    "present": true
   }
 }

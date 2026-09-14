@@ -1,0 +1,219 @@
+[
+ {
+  "index_code": "801010.SI",
+  "industry_name": "农林牧渔",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801030.SI",
+  "industry_name": "基础化工",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801040.SI",
+  "industry_name": "钢铁",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801050.SI",
+  "industry_name": "有色金属",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801080.SI",
+  "industry_name": "电子",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801880.SI",
+  "industry_name": "汽车",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801110.SI",
+  "industry_name": "家用电器",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801120.SI",
+  "industry_name": "食品饮料",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801130.SI",
+  "industry_name": "纺织服饰",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801140.SI",
+  "industry_name": "轻工制造",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801150.SI",
+  "industry_name": "医药生物",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801160.SI",
+  "industry_name": "公用事业",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801170.SI",
+  "industry_name": "交通运输",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801180.SI",
+  "industry_name": "房地产",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801200.SI",
+  "industry_name": "商贸零售",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801210.SI",
+  "industry_name": "社会服务",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801780.SI",
+  "industry_name": "银行",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801790.SI",
+  "industry_name": "非银金融",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801230.SI",
+  "industry_name": "综合",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801710.SI",
+  "industry_name": "建筑材料",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801720.SI",
+  "industry_name": "建筑装饰",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801730.SI",
+  "industry_name": "电力设备",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801890.SI",
+  "industry_name": "机械设备",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801740.SI",
+  "industry_name": "国防军工",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801750.SI",
+  "industry_name": "计算机",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801760.SI",
+  "industry_name": "传媒",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801770.SI",
+  "industry_name": "通信",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801950.SI",
+  "industry_name": "煤炭",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801960.SI",
+  "industry_name": "石油石化",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801970.SI",
+  "industry_name": "环保",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ },
+ {
+  "index_code": "801980.SI",
+  "industry_name": "美容护理",
+  "level": "L1",
+  "parent_code": "0",
+  "src": "SW2021"
+ }
+]

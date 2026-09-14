@@ -1,0 +1,50 @@
+{
+ "claim_under_test": "the SW2014 and SW2021 cache halves are two independent measurements",
+ "verdict": "REFUTED -- 27 of 27 overlapping industry files are byte-identical (identity rate 1.0000), both halves reach the same earliest STAR in_date (same), and no sw2021-named member files exist at all. index_member takes no src argument, so the two halves are one dataset wearing two names.",
+ "builder_api": "pro.index_member(index_code=..., fields='index_code,con_code,in_date,out_date,is_new')",
+ "builder_takes_a_src_argument": false,
+ "classification_sizes": {
+  "sw2014": 28,
+  "sw2021": 31
+ },
+ "l1_codes_sw2014_only": [
+  "801020.SI"
+ ],
+ "l1_codes_sw2021_only": [
+  "801950.SI",
+  "801960.SI",
+  "801970.SI",
+  "801980.SI"
+ ],
+ "member_files": {
+  "legacy_pit_industry_members": 31,
+  "pit_industry_sw2014_members": 28,
+  "pit_industry_sw2021_members": 0,
+  "note_sw2021": "no sw2021-named member files exist; fetch_pit_members falls back to the legacy names, so the SW2021 half of the census IS the legacy half"
+ },
+ "legacy_code_set_equals": {
+  "sw2021_l1_codes": true,
+  "sw2014_l1_codes": true
+ },
+ "comparison": {
+  "codes_present_in_both_halves": 27,
+  "byte_identical": 27,
+  "different": [],
+  "identity_rate": 1.0
+ },
+ "star_min_in_date_per_half": {
+  "legacy_used_as_SW2021": {
+   "rows": 7733,
+   "star_rows": 624,
+   "star_min_in_date": "20230925",
+   "all_min_in_date": "19901210"
+  },
+  "sw2014": {
+   "rows": 7551,
+   "star_rows": 605,
+   "star_min_in_date": "20230925",
+   "all_min_in_date": "19901210"
+  }
+ },
+ "database_writes": false
+}

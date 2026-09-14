@@ -1,0 +1,128 @@
+{
+ "projected_post_backfill": [
+  {
+   "day": "2022-07-29",
+   "coverage": 0.9490312965722801,
+   "residual_non_star_rows": 171
+  },
+  {
+   "day": "2023-04-28",
+   "coverage": 0.9921546651723172,
+   "residual_non_star_rows": 28
+  },
+  {
+   "day": "2023-05-10",
+   "coverage": 0.9919039642657733,
+   "residual_non_star_rows": 29
+  },
+  {
+   "day": "2023-05-11",
+   "coverage": 0.9907924107142857,
+   "residual_non_star_rows": 33
+  },
+  {
+   "day": "2023-05-12",
+   "coverage": 0.99079754601227,
+   "residual_non_star_rows": 33
+  },
+  {
+   "day": "2023-05-16",
+   "coverage": 0.9899777282850779,
+   "residual_non_star_rows": 36
+  },
+  {
+   "day": "2023-05-19",
+   "coverage": 0.9897021987197329,
+   "residual_non_star_rows": 37
+  },
+  {
+   "day": "2023-06-21",
+   "coverage": 0.9870058059165054,
+   "residual_non_star_rows": 47
+  },
+  {
+   "day": "2023-06-26",
+   "coverage": 0.9870093974571587,
+   "residual_non_star_rows": 47
+  },
+  {
+   "day": "2023-06-27",
+   "coverage": 0.9870058059165054,
+   "residual_non_star_rows": 47
+  },
+  {
+   "day": "2023-06-28",
+   "coverage": 0.9861878453038674,
+   "residual_non_star_rows": 50
+  },
+  {
+   "day": "2023-06-29",
+   "coverage": 0.9861992823626828,
+   "residual_non_star_rows": 50
+  },
+  {
+   "day": "2023-06-30",
+   "coverage": 0.9861992823626828,
+   "residual_non_star_rows": 50
+  },
+  {
+   "day": "2023-07-05",
+   "coverage": 0.9779432037496554,
+   "residual_non_star_rows": 80
+  },
+  {
+   "day": "2023-07-06",
+   "coverage": 0.9870416322029225,
+   "residual_non_star_rows": 47
+  },
+  {
+   "day": "2023-07-07",
+   "coverage": 0.9856788763426053,
+   "residual_non_star_rows": 52
+  },
+  {
+   "day": "2023-07-10",
+   "coverage": 0.9856749311294766,
+   "residual_non_star_rows": 52
+  },
+  {
+   "day": "2023-07-11",
+   "coverage": 0.9856867602532342,
+   "residual_non_star_rows": 52
+  },
+  {
+   "day": "2023-07-12",
+   "coverage": 0.9856946354883082,
+   "residual_non_star_rows": 52
+  },
+  {
+   "day": "2023-07-13",
+   "coverage": 0.9856985698569857,
+   "residual_non_star_rows": 52
+  },
+  {
+   "day": "2023-07-14",
+   "coverage": 0.985973597359736,
+   "residual_non_star_rows": 51
+  },
+  {
+   "day": "2023-07-17",
+   "coverage": 0.9865347622973344,
+   "residual_non_star_rows": 49
+  },
+  {
+   "day": "2023-07-18",
+   "coverage": 0.9868059373282023,
+   "residual_non_star_rows": 48
+  },
+  {
+   "day": "2023-07-19",
+   "coverage": 0.9876373626373627,
+   "residual_non_star_rows": 45
+  }
+ ],
+ "projected_coverage_min": 0.9490312965722801,
+ "projected_coverage_min_day": "2022-07-29",
+ "floor": 0.9,
+ "margin_above_floor": 0.049031296572280114
+}

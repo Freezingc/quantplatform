@@ -1,0 +1,24 @@
+{
+ "description": "Byte copy of the full SW2021 level-1 PIT membership table as returned by pro.index_member_all(l1_code=..., is_new in {Y,N}) on 2026-09-15, fetched because the cache in use was built from pro.index_member(index_code=...), which clamps every STAR-Market in_date to 2023-09-25. Vendored so the feasibility finding can be re-checked offline against the vendor's answer as it stood on this date, and so a later refetch that differs is a measurable event rather than a memory.",
+ "fetched_at_utc": "2026-09-14T20:33:30+00:00",
+ "api": "pro.index_member_all(l1_code=<each of the 31 SW2021 L1 codes>, is_new in {'Y','N'})",
+ "fields": "l1_code,l1_name,ts_code,in_date,out_date,is_new,src",
+ "fetcher": "probes/fetch_member_all.py",
+ "file_count": 2,
+ "files": {
+  "member_all_combined.json": {
+   "bytes": 1050880,
+   "sha256": "3488aa4c5b3580ae99233d72babfbb023f5ba57926fd90e9b9ec9707f5f08d39"
+  },
+  "sw2021_l1_classification.json": {
+   "bytes": 3910,
+   "sha256": "da2d8c949305a09bc57173aa2b8d450b7210346d001d88143a0bb9acfbda933a"
+  }
+ },
+ "combined_sha256": "3488aa4c5b3580ae99233d72babfbb023f5ba57926fd90e9b9ec9707f5f08d39",
+ "rows": 7912,
+ "star_rows": 718,
+ "star_codes": 621,
+ "star_min_in_date": "20190626",
+ "star_max_in_date": "20260828"
+}
