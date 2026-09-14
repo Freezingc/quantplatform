@@ -16,6 +16,7 @@
 | `in_progress_search_records.json` | 同上 | **M2 中途快照**：逐格搜索记录（配置、集成与逐 seed 验证 RankIC、记录 sha256 与写入时刻）。**验证集口径，不是 OOS** |
 | `provenance.json` | 同上 | 所有被读文件的 sha256、主树 git HEAD 与分支、提取时刻、刻意排除的内容清单 |
 | `problems_found.md` | 手写，逐条给出出处 | 问题记录：评估阶段六个阻塞点、成本模型三次低估（含本轮我自己的一次 ETA 误算）、stale 门禁默认值、四处永不触发的守卫、两个驱动缺陷、GPU/内存/主机与治理未决项 |
+| `comparison_interim.md` | `research_v2/scripts/summarize_candidate_comparison.py`（主分支 `39ee96a`） | **工具渲染**的跨候选对比：可比性分组与排除理由、G1–G6 矩阵、两两增量矩阵（带"共享基线恒等式"校验）、领先候选的逐年分布与逐折最差 seed。同输入两次渲染 md5 全同 `c79e5545ebad6d36c3e935935176f3b7`。**M2/M3 出报告后重跑即得计划 Task 5.1 的那份文档** |
 | `extract_from_reports.py` | — | 只读提取器，stdlib only |
 | `vendor_sources.py` | — | 原件复制器，同时重算 `vendored/MANIFEST.json` |
 | `vendored/` | `vendor_sources.py` | 9 份仓库文档 + 7 份签名 `report.json` 的**逐字节副本**，`MANIFEST.json` 记源路径、sha256、取值时的 git HEAD |
@@ -37,6 +38,18 @@
 cd docs/research/evidence/2026-09-14-model-side-walk-forward
 python3 extract_from_reports.py   # 默认 --artifacts /data/zhangyudong/qrv2_research_artifacts
 python3 vendor_sources.py         # 默认 --repo /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX
+```
+
+重渲染 `comparison_interim.md`（在主工作树里跑，M2/M3 报告落地后把 `--report` 补上即可）：
+
+```bash
+cd /data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2
+A=/data/zhangyudong/qrv2_research_artifacts
+python scripts/summarize_candidate_comparison.py \
+  --report M0R=$A/m0r_v2/report.json --report M1-full=$A/m1_full_v1/report.json \
+  --report M1-carrier=$A/m1_parallel_v1/report.json --report M0-refined=$A/m0_v3/report.json \
+  --report M0-base=$A/m0_v2/report.json --report M0R-replicate=$A/m0r_v3/report.json \
+  --baseline-report $A/baseline_v2/report.json --out comparison_interim.md
 ```
 
 `in_progress_search_records.json` 会随 M2 的进度变化；其余文件只在有新运行归档后才变。
