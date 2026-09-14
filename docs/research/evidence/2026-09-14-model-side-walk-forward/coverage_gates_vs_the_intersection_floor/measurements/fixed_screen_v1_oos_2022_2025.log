@@ -1,0 +1,26 @@
+window 2022-01-01 .. 2025-12-31; universe trading days: 969
+denominator: same-day universe_daily members with is_member=1 (C6.3), counted once per member and resolved to the published data_version
+version resolution: 20 day(s) had more than one published universe version; worst inflation 4.00536398467433
+gates: median>=0.7, p05>=0.3, min_monthly_day_ratio>=0.9, duplicates==0
+
+factor                               days  day_ratio  min_month   median      p05      min   dups  status
+yeslab_206                       969/969      1.0000     1.0000   0.9873   0.9795   0.9737      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_357                       969/969      1.0000     1.0000   0.9992   0.9131   0.9024      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_372                       969/969      1.0000     1.0000   0.4637   0.1141   0.0192      0  ELIGIBILITY_FAIL ['LOW_MEDIAN_SAMPLE_COVERAGE', 'LOW_P05_SAMPLE_COVERAGE']
+yeslab_375                       969/969      1.0000     1.0000   0.4608   0.2705   0.1363      0  ELIGIBILITY_FAIL ['LOW_MEDIAN_SAMPLE_COVERAGE', 'LOW_P05_SAMPLE_COVERAGE']
+yeslab_381                       969/969      1.0000     1.0000   0.9992   0.9980   0.9957      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_384                       969/969      1.0000     1.0000   0.4827   0.2956   0.1605      0  ELIGIBILITY_FAIL ['LOW_MEDIAN_SAMPLE_COVERAGE', 'LOW_P05_SAMPLE_COVERAGE']
+yeslab_389                       969/969      1.0000     1.0000   0.4854   0.1191   0.0189      0  ELIGIBILITY_FAIL ['LOW_MEDIAN_SAMPLE_COVERAGE', 'LOW_P05_SAMPLE_COVERAGE']
+yeslab_390                       969/969      1.0000     1.0000   0.4863   0.1189   0.0194      0  ELIGIBILITY_FAIL ['LOW_MEDIAN_SAMPLE_COVERAGE', 'LOW_P05_SAMPLE_COVERAGE']
+yeslab_398                       969/969      1.0000     1.0000   0.9975   0.9942   0.9909      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_405                       969/969      1.0000     1.0000   0.9992   0.9980   0.9957      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_406                       969/969      1.0000     1.0000   0.4633   0.2735   0.1373      0  ELIGIBILITY_FAIL ['LOW_MEDIAN_SAMPLE_COVERAGE', 'LOW_P05_SAMPLE_COVERAGE']
+yeslab_425                       969/969      1.0000     1.0000   0.9983   0.9960   0.9927      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_443_reg30_max20_v1        969/969      1.0000     1.0000   0.9896   0.9828   0.9761      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_464                       969/969      1.0000     1.0000   0.9975   0.9942   0.9909      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_471                       969/969      1.0000     1.0000   0.9936   0.9091   0.8980      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_484                       969/969      1.0000     1.0000   1.0000   1.0000   0.9980      0  PASS ['COVERAGE_GATE_PASS']
+yeslab_96                        969/969      1.0000     1.0000   0.9961   0.9919   0.9866      0  PASS ['COVERAGE_GATE_PASS']
+
+PASS 11/17; ELIGIBILITY_FAIL: ['yeslab_372', 'yeslab_375', 'yeslab_384', 'yeslab_389', 'yeslab_390', 'yeslab_406']
+json written: /tmp/screen_v1_oos_fixed.json

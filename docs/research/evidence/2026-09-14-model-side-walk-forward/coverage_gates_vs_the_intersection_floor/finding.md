@@ -198,3 +198,42 @@ done
   本文的分母是 universe 成员，与面板的有效标签行**不是同一个分母**，两处数字不可直接相减。
 * `min_monthly_day_ratio` 与 `day_ratio` 在两种分母下都是 1.0000：多版本只放大**行数**，
   不改变"这一天有没有行"，所以月度/日度存在性类的门完全不受这个陷阱影响。
+
+## 9. 后续：分母缺陷已修在分支上（**未合并**），并用真实库端到端复验过
+
+§5 那个缺陷已经实现修复，放在分支 **`codex/coverage-screen-denominator`**
+（worktree `/data/zhangyudong/qrv2_worktrees/coverage-screen-denominator`，从 `6a3cc42` 起，提交 `3746208`）。
+**没有合并**——与 `codex/deferred-driver-fixes`、`codex/serving-thread-contract` 同一批，
+等 M2 与 M3 都跑完；届时必须重跑全门禁。改动只在
+`research_v2/scripts/screen_factor_daily_coverage.py` 与它的测试：
+
+* **分母**按 `published_version` 解析，并按 `(signal_date, ts_code)` 去重
+  （只解析版本还不够：2025-01-09 有一个版本自身把每个键写了两遍）；
+* **分子**同样按 pin 解析——`factor_daily` 也累积版本，不解析就可能读出 >1.0 的覆盖率
+  （持久化快照里 `yeslab_357` 的 median **1.0016** 就是这个形状）。
+  本窗口实测 `factor_daily` 侧 `keys_with_more_than_one_version = 0`，
+  即**分子从未真被污染，被污染的只有分母**，但脚本不该依赖这一点继续成立；
+* **重复键检查限制在已发布版本内**：原内层分组不含 `data_version`，
+  于是"每版本各一行"被读成冲突——**一次正常重发布就能让因子背上 `DUPLICATE_BUSINESS_KEYS` 而出局**；
+* **fail-closed**：某天有行、但所在分区没有任何已发布版本 → 抛 `UnpublishedPartitionError`，
+  而不是把那天悄悄从窗口里删掉（`screen_factor` 不把 universe 未覆盖的天算作因子失分，
+  静默跳过等于偷偷缩短窗口）。`published_version` 对 `universe_daily` 是 2014-01..2026-07 连续、
+  对 `factor_daily` 是 2014-01..2025-12 连续，所以现有窗口都不会触发；
+* **诊断同时报旧口径**（`legacy_denominator`）：最坏放大 **5.0072**、20 天、逐日 legacy_rows 对
+  published_members。之所以要单独报，是因为"按版本去重后"的比较给出的是 **4.005**，
+  而读旧报告的人需要的是前一个数。
+
+**门禁（worktree 内实跑）**：`ruff` 全清；`mypy` 回到基线（只剩 `walk_forward_common.py`
+那条既有的 dolphindb stub 报错，与主树逐字相同）；`pytest tests -q`
+**2176 passed / 46 skipped（161.34s）**，基线提交 `6a3cc42` 收集 2214、本分支收集 2222，
+即 **+8 个测试、0 失败**。**5 处变异全部被对应测试杀死**：分母改回 raw、内层去掉 `ts_code`、
+重复键查询去掉版本过滤、fail-closed 改成静默跳过、删掉 legacy 诊断。
+
+**真实库端到端复验**（修好的脚本本体，不是探针）：跑 `2022-01-01..2025-12-31` 得
+**PASS 11/17**、失败者正是那 6 个稀疏因子；稠密因子 min = **0.9737 / 0.9024 / 0.8980 / 0.9980**，
+与本目录探针逐位相同；诊断报出 `days_with_more_than_one_universe_version = 20`、
+`legacy_denominator.worst_inflation = 5.007151979565773`（2025-01-07：19,603 对 3,915）。
+
+**门的退出码不变**（这一点必须说清，因为 `preflight_frozen_baseline.py` 的门 3 取的就是退出码）：
+门只读 median / p05 / 月度 / day_ratio / dups，**不读 min**；
+两种分母下 PASS/FAIL 名单逐因子相同（§2 与本节两次实测一致）。

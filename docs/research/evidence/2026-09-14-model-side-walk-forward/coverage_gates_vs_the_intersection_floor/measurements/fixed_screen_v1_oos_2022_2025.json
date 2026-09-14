@@ -1,0 +1,346 @@
+{
+  "window": [
+    "2022-01-01",
+    "2025-12-31"
+  ],
+  "universe_day_count": 969,
+  "denominator_diagnostics": {
+    "denominator": "distinct published universe_daily members with is_member=1",
+    "numerator": "published factor_daily rows (not deduplicated, so duplicates stay visible)",
+    "universe_partitions_resolved": 48,
+    "factor_partitions_resolved": 48,
+    "days_with_more_than_one_universe_version": 20,
+    "worst_universe_inflation": 4.00536398467433,
+    "universe": {
+      "keys_with_more_than_one_version": 20,
+      "worst_inflation": 4.00536398467433,
+      "worst_examples": [
+        {
+          "key": [
+            "2025-01-07"
+          ],
+          "raw": 15681,
+          "published": 3915
+        },
+        {
+          "key": [
+            "2025-01-06"
+          ],
+          "raw": 15675,
+          "published": 3915
+        },
+        {
+          "key": [
+            "2025-01-03"
+          ],
+          "raw": 15651,
+          "published": 3912
+        },
+        {
+          "key": [
+            "2025-01-02"
+          ],
+          "raw": 15648,
+          "published": 3912
+        },
+        {
+          "key": [
+            "2025-01-08"
+          ],
+          "raw": 15688,
+          "published": 3922
+        }
+      ]
+    },
+    "factor": {
+      "keys_with_more_than_one_version": 0,
+      "worst_inflation": null,
+      "worst_examples": []
+    }
+  },
+  "gates": {
+    "coverage": 0.7,
+    "p05": 0.3,
+    "monthly_day_ratio": 0.9
+  },
+  "factors": [
+    {
+      "factor_id": "yeslab_206",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.9872561768530559,
+      "p05_coverage_ratio": 0.9794918885827977,
+      "minimum_coverage_ratio": 0.9736682808716707,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_357",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.9992179353493222,
+      "p05_coverage_ratio": 0.9130913091309131,
+      "minimum_coverage_ratio": 0.902425578831312,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_372",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.46373626373626375,
+      "p05_coverage_ratio": 0.1140562248995984,
+      "minimum_coverage_ratio": 0.019171779141104295,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": false,
+      "eligibility_status": "ELIGIBILITY_FAIL",
+      "reason_codes": [
+        "LOW_MEDIAN_SAMPLE_COVERAGE",
+        "LOW_P05_SAMPLE_COVERAGE"
+      ]
+    },
+    {
+      "factor_id": "yeslab_375",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.4607918263090677,
+      "p05_coverage_ratio": 0.2705452648056353,
+      "minimum_coverage_ratio": 0.13625866050808313,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": false,
+      "eligibility_status": "ELIGIBILITY_FAIL",
+      "reason_codes": [
+        "LOW_MEDIAN_SAMPLE_COVERAGE",
+        "LOW_P05_SAMPLE_COVERAGE"
+      ]
+    },
+    {
+      "factor_id": "yeslab_381",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.99923273657289,
+      "p05_coverage_ratio": 0.9979586629242153,
+      "minimum_coverage_ratio": 0.9957369062119367,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_384",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.48271276595744683,
+      "p05_coverage_ratio": 0.2956376771325368,
+      "minimum_coverage_ratio": 0.1605128205128205,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": false,
+      "eligibility_status": "ELIGIBILITY_FAIL",
+      "reason_codes": [
+        "LOW_MEDIAN_SAMPLE_COVERAGE",
+        "LOW_P05_SAMPLE_COVERAGE"
+      ]
+    },
+    {
+      "factor_id": "yeslab_389",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.4854423292273236,
+      "p05_coverage_ratio": 0.11912708600770218,
+      "minimum_coverage_ratio": 0.018916155419222903,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": false,
+      "eligibility_status": "ELIGIBILITY_FAIL",
+      "reason_codes": [
+        "LOW_MEDIAN_SAMPLE_COVERAGE",
+        "LOW_P05_SAMPLE_COVERAGE"
+      ]
+    },
+    {
+      "factor_id": "yeslab_390",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.4862821948488242,
+      "p05_coverage_ratio": 0.11887034659820282,
+      "minimum_coverage_ratio": 0.019427402862985686,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": false,
+      "eligibility_status": "ELIGIBILITY_FAIL",
+      "reason_codes": [
+        "LOW_MEDIAN_SAMPLE_COVERAGE",
+        "LOW_P05_SAMPLE_COVERAGE"
+      ]
+    },
+    {
+      "factor_id": "yeslab_398",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.9975083056478405,
+      "p05_coverage_ratio": 0.9942493946731235,
+      "minimum_coverage_ratio": 0.9908647990255786,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_405",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.99923273657289,
+      "p05_coverage_ratio": 0.9979586629242153,
+      "minimum_coverage_ratio": 0.9957369062119367,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_406",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.4633255024797703,
+      "p05_coverage_ratio": 0.27351097178683387,
+      "minimum_coverage_ratio": 0.13728509109571466,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": false,
+      "eligibility_status": "ELIGIBILITY_FAIL",
+      "reason_codes": [
+        "LOW_MEDIAN_SAMPLE_COVERAGE",
+        "LOW_P05_SAMPLE_COVERAGE"
+      ]
+    },
+    {
+      "factor_id": "yeslab_425",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.99833748960931,
+      "p05_coverage_ratio": 0.9959931310818546,
+      "minimum_coverage_ratio": 0.9926918392204629,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_443_reg30_max20_v1",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.9895643099399948,
+      "p05_coverage_ratio": 0.9827904118008605,
+      "minimum_coverage_ratio": 0.976089588377724,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_464",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.9975083056478405,
+      "p05_coverage_ratio": 0.9942493946731235,
+      "minimum_coverage_ratio": 0.9908647990255786,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_471",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.9935831622176592,
+      "p05_coverage_ratio": 0.9091160986422832,
+      "minimum_coverage_ratio": 0.8980154355016539,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_484",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 1.0,
+      "p05_coverage_ratio": 1.0,
+      "minimum_coverage_ratio": 0.9979586629242153,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    },
+    {
+      "factor_id": "yeslab_96",
+      "expected_day_count": 969,
+      "valid_day_count": 969,
+      "day_ratio": 1.0,
+      "minimum_monthly_day_ratio": 1.0,
+      "median_coverage_ratio": 0.9960978147762747,
+      "p05_coverage_ratio": 0.9919378059314714,
+      "minimum_coverage_ratio": 0.9866017052375152,
+      "duplicate_row_count": 0,
+      "coverage_gate_pass": true,
+      "eligibility_status": "PASS",
+      "reason_codes": [
+        "COVERAGE_GATE_PASS"
+      ]
+    }
+  ]
+}
