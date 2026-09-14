@@ -1,0 +1,401 @@
+{
+ "question": "Why is replayed yeslab_206 about twice the scale of the stored value?",
+ "factor_id": "yeslab_206",
+ "display_name": "60日成交量去均值相对偏离",
+ "owner": "suyanning",
+ "source_table": "factor_data5",
+ "source_factor_name": "60日成交量去均值相对偏离",
+ "unit": "UNKNOWN",
+ "databases_read": [
+  "dfs://YesLab",
+  "dfs://QuantResearchV2Test"
+ ],
+ "days": [
+  "2022-03-15",
+  "2022-07-29",
+  "2023-07-05",
+  "2023-10-09",
+  "2024-06-17",
+  "2025-03-17"
+ ],
+ "cause_1_deduplication": {
+  "keys_whose_rows_disagree_total": 0,
+  "keys_with_multiple_rows_total": 0,
+  "max_spread_within_a_key": 0.0,
+  "verdict": "RULED OUT -- no upstream key disagrees with itself, so the dedup pick cannot explain the ratio",
+  "per_day": [
+   {
+    "day": "2022-03-15",
+    "upstream_rows": 5937,
+    "distinct_codes": 4589,
+    "keys_with_multiple_rows": 0,
+    "keys_whose_rows_disagree": 0,
+    "max_spread_within_a_key": 0.0
+   },
+   {
+    "day": "2022-07-29",
+    "upstream_rows": 5937,
+    "distinct_codes": 4641,
+    "keys_with_multiple_rows": 0,
+    "keys_whose_rows_disagree": 0,
+    "max_spread_within_a_key": 0.0
+   },
+   {
+    "day": "2023-07-05",
+    "upstream_rows": 5937,
+    "distinct_codes": 4965,
+    "keys_with_multiple_rows": 0,
+    "keys_whose_rows_disagree": 0,
+    "max_spread_within_a_key": 0.0
+   },
+   {
+    "day": "2023-10-09",
+    "upstream_rows": 5937,
+    "distinct_codes": 5171,
+    "keys_with_multiple_rows": 0,
+    "keys_whose_rows_disagree": 0,
+    "max_spread_within_a_key": 0.0
+   },
+   {
+    "day": "2024-06-17",
+    "upstream_rows": 5937,
+    "distinct_codes": 5197,
+    "keys_with_multiple_rows": 0,
+    "keys_whose_rows_disagree": 0,
+    "max_spread_within_a_key": 0.0
+   },
+   {
+    "day": "2025-03-17",
+    "upstream_rows": 5937,
+    "distinct_codes": 5279,
+    "keys_with_multiple_rows": 0,
+    "keys_whose_rows_disagree": 0,
+    "max_spread_within_a_key": 0.0
+   }
+  ]
+ },
+ "cause_1b_ratio_under_four_dedup_rules": {
+  "first": {
+   "min": 1.7803175875184372,
+   "max": 2.372393349602704,
+   "median_spearman": 0.7605682866013597,
+   "median_ols_slope": 1.834011079340161
+  },
+  "mean": {
+   "min": 1.7803175875184372,
+   "max": 2.372393349602704,
+   "median_spearman": 0.7605682866013597,
+   "median_ols_slope": 1.834011079340161
+  },
+  "max": {
+   "min": 1.7803175875184372,
+   "max": 2.372393349602704,
+   "median_spearman": 0.7605682866013597,
+   "median_ols_slope": 1.834011079340161
+  },
+  "min": {
+   "min": 1.7803175875184372,
+   "max": 2.372393349602704,
+   "median_spearman": 0.7605682866013597,
+   "median_ols_slope": 1.834011079340161
+  }
+ },
+ "cause_2_other_names_in_the_same_table": {
+  "names_in_table": 50,
+  "names_scored_against_the_replayed_column": 35,
+  "top_5_by_spearman": [
+   {
+    "factor_name": "60日成交量均线乖离率",
+    "pairs": 3694,
+    "spearman": 0.4111282651323848,
+    "std_ratio": 1.8046575999837136,
+    "exact_match_rate": 0.0
+   },
+   {
+    "factor_name": "量价齐飞乘换手率5日均值",
+    "pairs": 3694,
+    "spearman": 0.29080859530535347,
+    "std_ratio": 0.513436406624311,
+    "exact_match_rate": 0.0
+   },
+   {
+    "factor_name": "量价齐飞加换手率",
+    "pairs": 3694,
+    "spearman": 0.2894845014257589,
+    "std_ratio": 0.44154379271912825,
+    "exact_match_rate": 0.0
+   },
+   {
+    "factor_name": "价格均值标准差乖离乘短期成交量波动",
+    "pairs": 3694,
+    "spearman": 0.2596266696594588,
+    "std_ratio": 1.6152126567110742e-05,
+    "exact_match_rate": 0.0
+   },
+   {
+    "factor_name": "60日价格均线乖离率",
+    "pairs": 3694,
+    "spearman": 0.2432148102158834,
+    "std_ratio": 15.446775359873607,
+    "exact_match_rate": 0.0
+   }
+  ],
+  "best_alternative_beats_the_catalog_name": false
+ },
+ "cause_3_shape": {
+  "std_ratio_range_across_days": [
+   1.7803175875184372,
+   2.372393349602704
+  ]
+ },
+ "per_day": [
+  {
+   "day": "2022-03-15",
+   "replayed_std": 1.408657708468096,
+   "replayed_mean": 0.69149147386987,
+   "first": {
+    "pairs": 3161,
+    "upstream_std": 0.6406941233732193,
+    "std_ratio": 2.1986430920445947,
+    "spearman": 0.7208701346917351,
+    "ols_slope_replayed_on_upstream": 1.9223175398660113,
+    "ols_intercept": -0.16658139209586903,
+    "median_ratio_pointwise": 1.3235616787015794
+   },
+   "mean": {
+    "pairs": 3161,
+    "upstream_std": 0.6406941233732193,
+    "std_ratio": 2.1986430920445947,
+    "spearman": 0.7208701346917351,
+    "ols_slope_replayed_on_upstream": 1.9223175398660113,
+    "ols_intercept": -0.16658139209586903,
+    "median_ratio_pointwise": 1.3235616787015794
+   },
+   "max": {
+    "pairs": 3161,
+    "upstream_std": 0.6406941233732193,
+    "std_ratio": 2.1986430920445947,
+    "spearman": 0.7208701346917351,
+    "ols_slope_replayed_on_upstream": 1.9223175398660113,
+    "ols_intercept": -0.16658139209586903,
+    "median_ratio_pointwise": 1.3235616787015794
+   },
+   "min": {
+    "pairs": 3161,
+    "upstream_std": 0.6406941233732193,
+    "std_ratio": 2.1986430920445947,
+    "spearman": 0.7208701346917351,
+    "ols_slope_replayed_on_upstream": 1.9223175398660113,
+    "ols_intercept": -0.16658139209586903,
+    "median_ratio_pointwise": 1.3235616787015794
+   }
+  },
+  {
+   "day": "2022-07-29",
+   "replayed_std": 1.9200693721341655,
+   "replayed_mean": 0.8083909430944831,
+   "first": {
+    "pairs": 3278,
+    "upstream_std": 0.8093385409530475,
+    "std_ratio": 2.372393349602704,
+    "spearman": 0.7679662612962856,
+    "ols_slope_replayed_on_upstream": 2.004352386359353,
+    "ols_intercept": -0.24640345618663934,
+    "median_ratio_pointwise": 0.9163253325032947
+   },
+   "mean": {
+    "pairs": 3278,
+    "upstream_std": 0.8093385409530475,
+    "std_ratio": 2.372393349602704,
+    "spearman": 0.7679662612962856,
+    "ols_slope_replayed_on_upstream": 2.004352386359353,
+    "ols_intercept": -0.24640345618663934,
+    "median_ratio_pointwise": 0.9163253325032947
+   },
+   "max": {
+    "pairs": 3278,
+    "upstream_std": 0.8093385409530475,
+    "std_ratio": 2.372393349602704,
+    "spearman": 0.7679662612962856,
+    "ols_slope_replayed_on_upstream": 2.004352386359353,
+    "ols_intercept": -0.24640345618663934,
+    "median_ratio_pointwise": 0.9163253325032947
+   },
+   "min": {
+    "pairs": 3278,
+    "upstream_std": 0.8093385409530475,
+    "std_ratio": 2.372393349602704,
+    "spearman": 0.7679662612962856,
+    "ols_slope_replayed_on_upstream": 2.004352386359353,
+    "ols_intercept": -0.24640345618663934,
+    "median_ratio_pointwise": 0.9163253325032947
+   }
+  },
+  {
+   "day": "2023-07-05",
+   "replayed_std": 1.7810509499450824,
+   "replayed_mean": 0.8166741544225591,
+   "first": {
+    "pairs": 3581,
+    "upstream_std": 0.8959493897773726,
+    "std_ratio": 1.9878923634153507,
+    "spearman": 0.7855487384206441,
+    "ols_slope_replayed_on_upstream": 1.830886463095285,
+    "ols_intercept": -0.2596897325515629,
+    "median_ratio_pointwise": 0.8741307478810734
+   },
+   "mean": {
+    "pairs": 3581,
+    "upstream_std": 0.8959493897773726,
+    "std_ratio": 1.9878923634153507,
+    "spearman": 0.7855487384206441,
+    "ols_slope_replayed_on_upstream": 1.830886463095285,
+    "ols_intercept": -0.2596897325515629,
+    "median_ratio_pointwise": 0.8741307478810734
+   },
+   "max": {
+    "pairs": 3581,
+    "upstream_std": 0.8959493897773726,
+    "std_ratio": 1.9878923634153507,
+    "spearman": 0.7855487384206441,
+    "ols_slope_replayed_on_upstream": 1.830886463095285,
+    "ols_intercept": -0.2596897325515629,
+    "median_ratio_pointwise": 0.8741307478810734
+   },
+   "min": {
+    "pairs": 3581,
+    "upstream_std": 0.8959493897773726,
+    "std_ratio": 1.9878923634153507,
+    "spearman": 0.7855487384206441,
+    "ols_slope_replayed_on_upstream": 1.830886463095285,
+    "ols_intercept": -0.2596897325515629,
+    "median_ratio_pointwise": 0.8741307478810734
+   }
+  },
+  {
+   "day": "2023-10-09",
+   "replayed_std": 1.5473218671730442,
+   "replayed_mean": 0.6950108931503686,
+   "first": {
+    "pairs": 3694,
+    "upstream_std": 0.7174962815744907,
+    "std_ratio": 2.1565573326422887,
+    "spearman": 0.6596470632654216,
+    "ols_slope_replayed_on_upstream": 1.8371356955850369,
+    "ols_intercept": -0.18214460690910186,
+    "median_ratio_pointwise": 0.8998918482053819
+   },
+   "mean": {
+    "pairs": 3694,
+    "upstream_std": 0.7174962815744907,
+    "std_ratio": 2.1565573326422887,
+    "spearman": 0.6596470632654216,
+    "ols_slope_replayed_on_upstream": 1.8371356955850369,
+    "ols_intercept": -0.18214460690910186,
+    "median_ratio_pointwise": 0.8998918482053819
+   },
+   "max": {
+    "pairs": 3694,
+    "upstream_std": 0.7174962815744907,
+    "std_ratio": 2.1565573326422887,
+    "spearman": 0.6596470632654216,
+    "ols_slope_replayed_on_upstream": 1.8371356955850369,
+    "ols_intercept": -0.18214460690910186,
+    "median_ratio_pointwise": 0.8998918482053819
+   },
+   "min": {
+    "pairs": 3694,
+    "upstream_std": 0.7174962815744907,
+    "std_ratio": 2.1565573326422887,
+    "spearman": 0.6596470632654216,
+    "ols_slope_replayed_on_upstream": 1.8371356955850369,
+    "ols_intercept": -0.18214460690910186,
+    "median_ratio_pointwise": 0.8998918482053819
+   }
+  },
+  {
+   "day": "2024-06-17",
+   "replayed_std": 0.98392423086735,
+   "replayed_mean": 0.5757760382984586,
+   "first": {
+    "pairs": 3795,
+    "upstream_std": 0.503308536056433,
+    "std_ratio": 1.9549126636648746,
+    "spearman": 0.8350248919448648,
+    "ols_slope_replayed_on_upstream": 1.7102759402708163,
+    "ols_intercept": -0.28442078761387535,
+    "median_ratio_pointwise": 0.8639398255738102
+   },
+   "mean": {
+    "pairs": 3795,
+    "upstream_std": 0.503308536056433,
+    "std_ratio": 1.9549126636648746,
+    "spearman": 0.8350248919448648,
+    "ols_slope_replayed_on_upstream": 1.7102759402708163,
+    "ols_intercept": -0.28442078761387535,
+    "median_ratio_pointwise": 0.8639398255738102
+   },
+   "max": {
+    "pairs": 3795,
+    "upstream_std": 0.503308536056433,
+    "std_ratio": 1.9549126636648746,
+    "spearman": 0.8350248919448648,
+    "ols_slope_replayed_on_upstream": 1.7102759402708163,
+    "ols_intercept": -0.28442078761387535,
+    "median_ratio_pointwise": 0.8639398255738102
+   },
+   "min": {
+    "pairs": 3795,
+    "upstream_std": 0.503308536056433,
+    "std_ratio": 1.9549126636648746,
+    "spearman": 0.8350248919448648,
+    "ols_slope_replayed_on_upstream": 1.7102759402708163,
+    "ols_intercept": -0.28442078761387535,
+    "median_ratio_pointwise": 0.8639398255738102
+   }
+  },
+  {
+   "day": "2025-03-17",
+   "replayed_std": 1.2821581666023492,
+   "replayed_mean": 0.6988567898104663,
+   "first": {
+    "pairs": 3869,
+    "upstream_std": 0.7201850813536779,
+    "std_ratio": 1.7803175875184372,
+    "spearman": 0.7531703119064337,
+    "ols_slope_replayed_on_upstream": 1.6500551689493699,
+    "ols_intercept": -0.13643823388771473,
+    "median_ratio_pointwise": 1.0474601511525863
+   },
+   "mean": {
+    "pairs": 3869,
+    "upstream_std": 0.7201850813536779,
+    "std_ratio": 1.7803175875184372,
+    "spearman": 0.7531703119064337,
+    "ols_slope_replayed_on_upstream": 1.6500551689493699,
+    "ols_intercept": -0.13643823388771473,
+    "median_ratio_pointwise": 1.0474601511525863
+   },
+   "max": {
+    "pairs": 3869,
+    "upstream_std": 0.7201850813536779,
+    "std_ratio": 1.7803175875184372,
+    "spearman": 0.7531703119064337,
+    "ols_slope_replayed_on_upstream": 1.6500551689493699,
+    "ols_intercept": -0.13643823388771473,
+    "median_ratio_pointwise": 1.0474601511525863
+   },
+   "min": {
+    "pairs": 3869,
+    "upstream_std": 0.7201850813536779,
+    "std_ratio": 1.7803175875184372,
+    "spearman": 0.7531703119064337,
+    "ols_slope_replayed_on_upstream": 1.6500551689493699,
+    "ols_intercept": -0.13643823388771473,
+    "median_ratio_pointwise": 1.0474601511525863
+   }
+  }
+ ],
+ "database_writes": false,
+ "weights_written": false
+}
