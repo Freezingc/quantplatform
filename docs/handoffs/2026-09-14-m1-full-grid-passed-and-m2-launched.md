@@ -642,6 +642,64 @@ M3 实例跑的是**同一个文件**，只是参数不同。
 M2 驱动存活 1d01h26m、F1 18/24、无告警；三个看守都在（320418 / 215628 / 459020，PPID 均为 1）。
 临时 worktree `dense-coverage` 已清理，现存两个：`deferred-driver-fixes`（等 M3 后合并）
 与 `research-conditional-factor-review`（论文用）。
+
+---
+
+## 14. 【2026-09-14 21:00 增补】复现审计补上了缺的那一环：两个领先候选**四折全部逐位相同**
+
+§D（研究分支问题记录）里那条"签名链证明的是**归属**、不是**复现**"一直缺后半段的证据：
+复现审计此前只在 `m1_parallel_v1`（M1 载体，09-11）上跑过，
+而**被引用得最多的两个运行从未审计**。本轮用既有工具
+`research_v2/scripts/verify_prediction_reproduction.py` 补齐（只读、不连数据库）：
+
+| 工作区 | 家族 | 复核行数 | identical / max abs diff | registry 状态（机器读出） | 打分线程 |
+|---|---|---|---|---|---|
+| `m0r_v2` | LGBM_RANKREG | **3,557,762** | 四折全 **true / 0.0** | **`WALK_FORWARD_PASSED`** | 52（宿主默认；LightGBM 无 torch 检查点可钉） |
+| `m1_full_v1` | RESIDUAL_MLP | **3,553,163** | 四折全 **true / 0.0** | **`UNREGISTERED`** | **1**（该运行自己记录的值） |
+
+报告 `docs/reports/2026-09-14-prediction-reproduction-audits.md`（提交 `5d8837d`），
+原始日志 `$A/reproduction_audit_{m0r_v2,m1_full_v1}.log`，
+JSON 摘要也复制进了研究分支的 `reproduction_audits/`（提交 `4186baf`，已推送）。
+两个工作区并行跑约 **18 分钟**。
+
+**三点必须一起转述，否则"0.0"会被误读**：
+
+1. **审计把自己钉到该运行记录的线程数**（`recorded_run_threads()` 从工作区自己的检查点 manifest 读，
+   混合多个值直接拒绝）。已训练的 torch bundle 前向**不是线程稳定**的：
+   同一份 `m1_v2` F1 bundle 在 1/2/4/8 线程下逐位相同，**16 线程差 4.805844e-05、52 线程差 4.923683e-05**，
+   量级是**近似并列股票的秩反转**（会改选股名次），不是末位舍入。
+2. **它对任何差异都抛错并非零退出**（`_compare_scores` → `ReproductionError`），
+   `"reproduced": true` 只在四折全同时才会被写出，所以**可以直接当门禁用**。
+3. **三者不可互相替代**：复现审计答"存下来的分数是否确由这个 bundle 算出"；
+   验收 C′ 答"这个 bundle 是否由那次搜索选出"（检查点逐字节比对）；
+   验收 A 答"这次运行能否从头重跑"（`--resume` 报告逐字节相同）。
+
+**给下一班的建议（本轮未做）**：M2 每折落地后跑一次
+`verify_prediction_reproduction.py --workspace $A/m2_v1 --fold F1`（`--fold` 可重复、
+不需要 report、不查 registry，正是为在跑的运行设计的）。
+**逐折预检看守不重算分数**（它查证据链、card family 白名单、loader 可构造性、冻结 config 与胜者一致），
+所以复现审计补的是它不覆盖的那一块；而 M2 是时序家族、TEST 面板要从三个已发布分片重建 20 日窗口，
+**是最值得逐折提前验的一个**。
+
+### 14.1 红线文件的完整性快照（本轮所有操作之后核过）
+
+| 文件 | sha256 前 16 位 | mtime |
+|---|---|---|
+| `research_v2/artifacts/diagnostics/factor_daily_materialization/materialization_status.json` | `44ab75f6d073f9d9` | 2026-09-07 16:36 |
+| `…/materialization_status.md` | `fdea7ba855bdcd6c` | 2026-09-07 16:36 |
+| `/tmp/frozen_chain_hold.txt` | `a47a7fe690126116` | 2026-09-05 21:56 |
+| `research_v2/scripts/run_real_candidate_training.py` | `33742880f314ca21` | 2026-09-12 00:50:33.890987021 |
+
+四个都早于今天所有操作、`git status` 干净，即**本轮零改动**。
+（`/tmp/frozen_chain_hold.txt` 本身值得一读：它记的正是 2014 年 `dropna(subset=全部 17 因子)`
+只剩 **11.6%** 覆盖率而暂停冻结链的决定——与今天测到的"稠密因子完整性决定可评日集"是同一类问题，
+只是当年更极端。）
+
+### 14.2 状态（21:00 实测）
+
+M2 驱动 pid 3588838 存活 1d02h、**F1 18/24**、无 `*.ABORT` / `*.ALARM`；
+三个看守都在且 PPID=1（链式 320418、M2 逐折 215628、M3 逐折 459020）。
+主分支 `5d8837d`、研究分支 `4186baf`，均已推送。ETA 口径不变（09-23 至 09-25）。
 另外核过一件事：**报告与晋级证据里不含任何 git 提交号**
 （只有 `model_code_version` / `data_version` / `schema_version` 这类逻辑版本），
 所以主线前进不会让验收 A 的"逐字节相同"失效。
