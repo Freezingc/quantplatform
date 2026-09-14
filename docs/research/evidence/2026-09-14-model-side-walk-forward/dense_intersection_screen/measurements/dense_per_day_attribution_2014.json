@@ -1,0 +1,4563 @@
+{
+  "window": [
+    "2014-01-01",
+    "2014-12-31"
+  ],
+  "factor_ids": [
+    "yeslab_206",
+    "yeslab_357",
+    "yeslab_381",
+    "yeslab_425",
+    "yeslab_443_reg30_max20_v1",
+    "yeslab_464",
+    "yeslab_471",
+    "yeslab_484",
+    "yeslab_96"
+  ],
+  "days": [
+    {
+      "day": "2014-01-02",
+      "universe_rows": 1672,
+      "min_factor_coverage": 0.5927033492822966,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.864833,
+        "yeslab_357": 0.618421,
+        "yeslab_381": 0.994617,
+        "yeslab_425": 0.982656,
+        "yeslab_443_reg30_max20_v1": 0.88756,
+        "yeslab_464": 0.979067,
+        "yeslab_471": 0.592703,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.95933
+      },
+      "product_of_coverages": 0.258279
+    },
+    {
+      "day": "2014-01-03",
+      "universe_rows": 1667,
+      "min_factor_coverage": 0.5926814637072585,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.866227,
+        "yeslab_357": 0.617277,
+        "yeslab_381": 0.994001,
+        "yeslab_425": 0.983203,
+        "yeslab_443_reg30_max20_v1": 0.892621,
+        "yeslab_464": 0.979604,
+        "yeslab_471": 0.592681,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.961008
+      },
+      "product_of_coverages": 0.26026
+    },
+    {
+      "day": "2014-01-06",
+      "universe_rows": 1667,
+      "min_factor_coverage": 0.5896820635872826,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.862028,
+        "yeslab_357": 0.613677,
+        "yeslab_381": 0.993401,
+        "yeslab_425": 0.981404,
+        "yeslab_443_reg30_max20_v1": 0.889622,
+        "yeslab_464": 0.976005,
+        "yeslab_471": 0.589682,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.961008
+      },
+      "product_of_coverages": 0.253767
+    },
+    {
+      "day": "2014-01-07",
+      "universe_rows": 1668,
+      "min_factor_coverage": 0.5905275779376499,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.86271,
+        "yeslab_357": 0.615707,
+        "yeslab_381": 0.991007,
+        "yeslab_425": 0.982014,
+        "yeslab_443_reg30_max20_v1": 0.889688,
+        "yeslab_464": 0.973621,
+        "yeslab_471": 0.590528,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.96223
+      },
+      "product_of_coverages": 0.254437
+    },
+    {
+      "day": "2014-01-08",
+      "universe_rows": 1671,
+      "min_factor_coverage": 0.5906642728904847,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.862358,
+        "yeslab_357": 0.6152,
+        "yeslab_381": 0.991622,
+        "yeslab_425": 0.981448,
+        "yeslab_443_reg30_max20_v1": 0.887493,
+        "yeslab_464": 0.973668,
+        "yeslab_471": 0.590664,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.962298
+      },
+      "product_of_coverages": 0.253597
+    },
+    {
+      "day": "2014-01-09",
+      "universe_rows": 1672,
+      "min_factor_coverage": 0.5915071770334929,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.863038,
+        "yeslab_357": 0.614833,
+        "yeslab_381": 0.991029,
+        "yeslab_425": 0.98445,
+        "yeslab_443_reg30_max20_v1": 0.89055,
+        "yeslab_464": 0.974282,
+        "yeslab_471": 0.591507,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.963517
+      },
+      "product_of_coverages": 0.255994
+    },
+    {
+      "day": "2014-01-10",
+      "universe_rows": 1672,
+      "min_factor_coverage": 0.5897129186602871,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.860048,
+        "yeslab_357": 0.613636,
+        "yeslab_381": 0.992225,
+        "yeslab_425": 0.982656,
+        "yeslab_443_reg30_max20_v1": 0.886364,
+        "yeslab_464": 0.973086,
+        "yeslab_471": 0.589713,
+        "yeslab_484": 0.999402,
+        "yeslab_96": 0.960526
+      },
+      "product_of_coverages": 0.251246
+    },
+    {
+      "day": "2014-01-13",
+      "universe_rows": 1670,
+      "min_factor_coverage": 0.5880239520958084,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.858084,
+        "yeslab_357": 0.613174,
+        "yeslab_381": 0.993413,
+        "yeslab_425": 0.982635,
+        "yeslab_443_reg30_max20_v1": 0.886228,
+        "yeslab_464": 0.973653,
+        "yeslab_471": 0.588024,
+        "yeslab_484": 0.999401,
+        "yeslab_96": 0.959281
+      },
+      "product_of_coverages": 0.249842
+    },
+    {
+      "day": "2014-01-14",
+      "universe_rows": 1671,
+      "min_factor_coverage": 0.587672052663076,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.85757,
+        "yeslab_357": 0.612807,
+        "yeslab_381": 0.991023,
+        "yeslab_425": 0.980251,
+        "yeslab_443_reg30_max20_v1": 0.882705,
+        "yeslab_464": 0.971275,
+        "yeslab_471": 0.587672,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.955117
+      },
+      "product_of_coverages": 0.245677
+    },
+    {
+      "day": "2014-01-15",
+      "universe_rows": 1672,
+      "min_factor_coverage": 0.5825358851674641,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.857057,
+        "yeslab_357": 0.608852,
+        "yeslab_381": 0.991029,
+        "yeslab_425": 0.980263,
+        "yeslab_443_reg30_max20_v1": 0.882177,
+        "yeslab_464": 0.973684,
+        "yeslab_471": 0.582536,
+        "yeslab_484": 0.999402,
+        "yeslab_96": 0.953349
+      },
+      "product_of_coverages": 0.241679
+    },
+    {
+      "day": "2014-01-16",
+      "universe_rows": 1664,
+      "min_factor_coverage": 0.5835336538461539,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.859375,
+        "yeslab_357": 0.609976,
+        "yeslab_381": 0.993389,
+        "yeslab_425": 0.98137,
+        "yeslab_443_reg30_max20_v1": 0.885817,
+        "yeslab_464": 0.97476,
+        "yeslab_471": 0.583534,
+        "yeslab_484": 0.999399,
+        "yeslab_96": 0.956731
+      },
+      "product_of_coverages": 0.246198
+    },
+    {
+      "day": "2014-01-17",
+      "universe_rows": 1666,
+      "min_factor_coverage": 0.5840336134453782,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.855942,
+        "yeslab_357": 0.609244,
+        "yeslab_381": 0.991597,
+        "yeslab_425": 0.980792,
+        "yeslab_443_reg30_max20_v1": 0.882353,
+        "yeslab_464": 0.97419,
+        "yeslab_471": 0.584034,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.956783
+      },
+      "product_of_coverages": 0.243604
+    },
+    {
+      "day": "2014-01-20",
+      "universe_rows": 1669,
+      "min_factor_coverage": 0.5811863391252247,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.858598,
+        "yeslab_357": 0.60695,
+        "yeslab_381": 0.989814,
+        "yeslab_425": 0.980228,
+        "yeslab_443_reg30_max20_v1": 0.881965,
+        "yeslab_464": 0.970641,
+        "yeslab_471": 0.581186,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.953865
+      },
+      "product_of_coverages": 0.239958
+    },
+    {
+      "day": "2014-01-21",
+      "universe_rows": 1674,
+      "min_factor_coverage": 0.578853046594982,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.856033,
+        "yeslab_357": 0.608124,
+        "yeslab_381": 0.989247,
+        "yeslab_425": 0.977897,
+        "yeslab_443_reg30_max20_v1": 0.879928,
+        "yeslab_464": 0.970131,
+        "yeslab_471": 0.578853,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.953405
+      },
+      "product_of_coverages": 0.237249
+    },
+    {
+      "day": "2014-01-22",
+      "universe_rows": 1675,
+      "min_factor_coverage": 0.5791044776119403,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.854925,
+        "yeslab_357": 0.608358,
+        "yeslab_381": 0.988657,
+        "yeslab_425": 0.978507,
+        "yeslab_443_reg30_max20_v1": 0.880597,
+        "yeslab_464": 0.968358,
+        "yeslab_471": 0.579104,
+        "yeslab_484": 0.999403,
+        "yeslab_96": 0.953433
+      },
+      "product_of_coverages": 0.236754
+    },
+    {
+      "day": "2014-01-23",
+      "universe_rows": 1676,
+      "min_factor_coverage": 0.5793556085918854,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.854415,
+        "yeslab_357": 0.607995,
+        "yeslab_381": 0.989857,
+        "yeslab_425": 0.97852,
+        "yeslab_443_reg30_max20_v1": 0.879475,
+        "yeslab_464": 0.968974,
+        "yeslab_471": 0.579356,
+        "yeslab_484": 0.999403,
+        "yeslab_96": 0.955847
+      },
+      "product_of_coverages": 0.237313
+    },
+    {
+      "day": "2014-01-24",
+      "universe_rows": 1680,
+      "min_factor_coverage": 0.5773809523809523,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.852381,
+        "yeslab_357": 0.607143,
+        "yeslab_381": 0.990476,
+        "yeslab_425": 0.977976,
+        "yeslab_443_reg30_max20_v1": 0.877381,
+        "yeslab_464": 0.970833,
+        "yeslab_471": 0.577381,
+        "yeslab_484": 0.99881,
+        "yeslab_96": 0.954167
+      },
+      "product_of_coverages": 0.234963
+    },
+    {
+      "day": "2014-01-27",
+      "universe_rows": 1680,
+      "min_factor_coverage": 0.575595238095238,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.850595,
+        "yeslab_357": 0.607143,
+        "yeslab_381": 0.989286,
+        "yeslab_425": 0.975,
+        "yeslab_443_reg30_max20_v1": 0.87381,
+        "yeslab_464": 0.966071,
+        "yeslab_471": 0.575595,
+        "yeslab_484": 0.997619,
+        "yeslab_96": 0.951786
+      },
+      "product_of_coverages": 0.22982
+    },
+    {
+      "day": "2014-01-28",
+      "universe_rows": 1679,
+      "min_factor_coverage": 0.5783204288266826,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.852293,
+        "yeslab_357": 0.609291,
+        "yeslab_381": 0.988684,
+        "yeslab_425": 0.976176,
+        "yeslab_443_reg30_max20_v1": 0.87433,
+        "yeslab_464": 0.967242,
+        "yeslab_471": 0.57832,
+        "yeslab_484": 0.997618,
+        "yeslab_96": 0.952948
+      },
+      "product_of_coverages": 0.23303
+    },
+    {
+      "day": "2014-01-29",
+      "universe_rows": 1676,
+      "min_factor_coverage": 0.5787589498806682,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.853819,
+        "yeslab_357": 0.609189,
+        "yeslab_381": 0.991647,
+        "yeslab_425": 0.977327,
+        "yeslab_443_reg30_max20_v1": 0.880668,
+        "yeslab_464": 0.96957,
+        "yeslab_471": 0.578759,
+        "yeslab_484": 0.998807,
+        "yeslab_96": 0.955251
+      },
+      "product_of_coverages": 0.237685
+    },
+    {
+      "day": "2014-01-30",
+      "universe_rows": 1680,
+      "min_factor_coverage": 0.5785714285714286,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.854167,
+        "yeslab_357": 0.607143,
+        "yeslab_381": 0.992262,
+        "yeslab_425": 0.977381,
+        "yeslab_443_reg30_max20_v1": 0.878571,
+        "yeslab_464": 0.968452,
+        "yeslab_471": 0.578571,
+        "yeslab_484": 0.99881,
+        "yeslab_96": 0.952381
+      },
+      "product_of_coverages": 0.235521
+    },
+    {
+      "day": "2014-02-07",
+      "universe_rows": 1672,
+      "min_factor_coverage": 0.5795454545454546,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.861842,
+        "yeslab_357": 0.605263,
+        "yeslab_381": 0.995813,
+        "yeslab_425": 0.983852,
+        "yeslab_443_reg30_max20_v1": 0.885766,
+        "yeslab_464": 0.976675,
+        "yeslab_471": 0.579545,
+        "yeslab_484": 0.999402,
+        "yeslab_96": 0.959928
+      },
+      "product_of_coverages": 0.245819
+    },
+    {
+      "day": "2014-02-10",
+      "universe_rows": 1666,
+      "min_factor_coverage": 0.5816326530612245,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.861345,
+        "yeslab_357": 0.604442,
+        "yeslab_381": 0.995798,
+        "yeslab_425": 0.984394,
+        "yeslab_443_reg30_max20_v1": 0.888355,
+        "yeslab_464": 0.97599,
+        "yeslab_471": 0.581633,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.962785
+      },
+      "product_of_coverages": 0.247789
+    },
+    {
+      "day": "2014-02-11",
+      "universe_rows": 1668,
+      "min_factor_coverage": 0.5833333333333334,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.860911,
+        "yeslab_357": 0.606715,
+        "yeslab_381": 0.994005,
+        "yeslab_425": 0.983813,
+        "yeslab_443_reg30_max20_v1": 0.886691,
+        "yeslab_464": 0.973621,
+        "yeslab_471": 0.583333,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.960432
+      },
+      "product_of_coverages": 0.247052
+    },
+    {
+      "day": "2014-02-12",
+      "universe_rows": 1672,
+      "min_factor_coverage": 0.5807416267942583,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.85945,
+        "yeslab_357": 0.606459,
+        "yeslab_381": 0.995215,
+        "yeslab_425": 0.985048,
+        "yeslab_443_reg30_max20_v1": 0.885167,
+        "yeslab_464": 0.974282,
+        "yeslab_471": 0.580742,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.958732
+      },
+      "product_of_coverages": 0.245351
+    },
+    {
+      "day": "2014-02-13",
+      "universe_rows": 1668,
+      "min_factor_coverage": 0.5821342925659473,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.863309,
+        "yeslab_357": 0.607914,
+        "yeslab_381": 0.995204,
+        "yeslab_425": 0.98801,
+        "yeslab_443_reg30_max20_v1": 0.885492,
+        "yeslab_464": 0.976619,
+        "yeslab_471": 0.582134,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.960432
+      },
+      "product_of_coverages": 0.249506
+    },
+    {
+      "day": "2014-02-14",
+      "universe_rows": 1664,
+      "min_factor_coverage": 0.5835336538461539,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.865385,
+        "yeslab_357": 0.606971,
+        "yeslab_381": 0.995793,
+        "yeslab_425": 0.989183,
+        "yeslab_443_reg30_max20_v1": 0.890625,
+        "yeslab_464": 0.979567,
+        "yeslab_471": 0.583534,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.963341
+      },
+      "product_of_coverages": 0.253745
+    },
+    {
+      "day": "2014-02-17",
+      "universe_rows": 1659,
+      "min_factor_coverage": 0.5828812537673297,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.865582,
+        "yeslab_357": 0.605787,
+        "yeslab_381": 0.997589,
+        "yeslab_425": 0.990958,
+        "yeslab_443_reg30_max20_v1": 0.892706,
+        "yeslab_464": 0.980711,
+        "yeslab_471": 0.582881,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.965642
+      },
+      "product_of_coverages": 0.255435
+    },
+    {
+      "day": "2014-02-18",
+      "universe_rows": 1658,
+      "min_factor_coverage": 0.5802171290711701,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.862485,
+        "yeslab_357": 0.603136,
+        "yeslab_381": 0.996984,
+        "yeslab_425": 0.989144,
+        "yeslab_443_reg30_max20_v1": 0.891435,
+        "yeslab_464": 0.981303,
+        "yeslab_471": 0.580217,
+        "yeslab_484": 0.999397,
+        "yeslab_96": 0.964415
+      },
+      "product_of_coverages": 0.250957
+    },
+    {
+      "day": "2014-02-19",
+      "universe_rows": 1661,
+      "min_factor_coverage": 0.5809753160746538,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.862733,
+        "yeslab_357": 0.605057,
+        "yeslab_381": 0.994582,
+        "yeslab_425": 0.989163,
+        "yeslab_443_reg30_max20_v1": 0.892234,
+        "yeslab_464": 0.981939,
+        "yeslab_471": 0.580975,
+        "yeslab_484": 0.999398,
+        "yeslab_96": 0.962673
+      },
+      "product_of_coverages": 0.251489
+    },
+    {
+      "day": "2014-02-20",
+      "universe_rows": 1657,
+      "min_factor_coverage": 0.5805672902836452,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.866023,
+        "yeslab_357": 0.605914,
+        "yeslab_381": 0.992758,
+        "yeslab_425": 0.986723,
+        "yeslab_443_reg30_max20_v1": 0.89318,
+        "yeslab_464": 0.981291,
+        "yeslab_471": 0.580567,
+        "yeslab_484": 0.999396,
+        "yeslab_96": 0.963186
+      },
+      "product_of_coverages": 0.251778
+    },
+    {
+      "day": "2014-02-21",
+      "universe_rows": 1664,
+      "min_factor_coverage": 0.8605769230769231,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.860577,
+        "yeslab_357": 0.994591,
+        "yeslab_381": 0.987981,
+        "yeslab_425": 0.982572,
+        "yeslab_443_reg30_max20_v1": 0.890024,
+        "yeslab_464": 0.977764,
+        "yeslab_471": 0.955529,
+        "yeslab_484": 0.999399,
+        "yeslab_96": 0.959135
+      },
+      "product_of_coverages": 0.662286
+    },
+    {
+      "day": "2014-02-24",
+      "universe_rows": 1662,
+      "min_factor_coverage": 0.8610108303249098,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.861011,
+        "yeslab_357": 0.99639,
+        "yeslab_381": 0.987966,
+        "yeslab_425": 0.982551,
+        "yeslab_443_reg30_max20_v1": 0.890493,
+        "yeslab_464": 0.976534,
+        "yeslab_471": 0.955475,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.96089
+      },
+      "product_of_coverages": 0.664885
+    },
+    {
+      "day": "2014-02-25",
+      "universe_rows": 1660,
+      "min_factor_coverage": 0.8626506024096385,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.862651,
+        "yeslab_357": 0.996988,
+        "yeslab_381": 0.987952,
+        "yeslab_425": 0.981325,
+        "yeslab_443_reg30_max20_v1": 0.891566,
+        "yeslab_464": 0.976506,
+        "yeslab_471": 0.957229,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.960843
+      },
+      "product_of_coverages": 0.667683
+    },
+    {
+      "day": "2014-02-26",
+      "universe_rows": 1660,
+      "min_factor_coverage": 0.8632530120481928,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.863253,
+        "yeslab_357": 0.998193,
+        "yeslab_381": 0.990361,
+        "yeslab_425": 0.980723,
+        "yeslab_443_reg30_max20_v1": 0.892771,
+        "yeslab_464": 0.974699,
+        "yeslab_471": 0.957831,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.962651
+      },
+      "product_of_coverages": 0.671523
+    },
+    {
+      "day": "2014-02-27",
+      "universe_rows": 1667,
+      "min_factor_coverage": 0.859628074385123,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.859628,
+        "yeslab_357": 0.993401,
+        "yeslab_381": 0.989202,
+        "yeslab_425": 0.976005,
+        "yeslab_443_reg30_max20_v1": 0.889622,
+        "yeslab_464": 0.970006,
+        "yeslab_471": 0.955609,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.960408
+      },
+      "product_of_coverages": 0.652962
+    },
+    {
+      "day": "2014-02-28",
+      "universe_rows": 1670,
+      "min_factor_coverage": 0.8574850299401198,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.857485,
+        "yeslab_357": 0.994611,
+        "yeslab_381": 0.988024,
+        "yeslab_425": 0.971856,
+        "yeslab_443_reg30_max20_v1": 0.888623,
+        "yeslab_464": 0.967665,
+        "yeslab_471": 0.95509,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.959281
+      },
+      "product_of_coverages": 0.645181
+    },
+    {
+      "day": "2014-03-03",
+      "universe_rows": 1660,
+      "min_factor_coverage": 0.8614457831325302,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.861446,
+        "yeslab_357": 0.996386,
+        "yeslab_381": 0.989157,
+        "yeslab_425": 0.974699,
+        "yeslab_443_reg30_max20_v1": 0.889157,
+        "yeslab_464": 0.971084,
+        "yeslab_471": 0.959639,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.963253
+      },
+      "product_of_coverages": 0.660502
+    },
+    {
+      "day": "2014-03-04",
+      "universe_rows": 1662,
+      "min_factor_coverage": 0.8604091456077015,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.860409,
+        "yeslab_357": 0.99639,
+        "yeslab_381": 0.987966,
+        "yeslab_425": 0.977136,
+        "yeslab_443_reg30_max20_v1": 0.887485,
+        "yeslab_464": 0.970517,
+        "yeslab_471": 0.96089,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.962696
+      },
+      "product_of_coverages": 0.659415
+    },
+    {
+      "day": "2014-03-05",
+      "universe_rows": 1666,
+      "min_factor_coverage": 0.8595438175270108,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.859544,
+        "yeslab_357": 0.995198,
+        "yeslab_381": 0.987995,
+        "yeslab_425": 0.97419,
+        "yeslab_443_reg30_max20_v1": 0.885354,
+        "yeslab_464": 0.966987,
+        "yeslab_471": 0.956182,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.959784
+      },
+      "product_of_coverages": 0.646886
+    },
+    {
+      "day": "2014-03-06",
+      "universe_rows": 1663,
+      "min_factor_coverage": 0.862297053517739,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.862297,
+        "yeslab_357": 0.998196,
+        "yeslab_381": 0.99098,
+        "yeslab_425": 0.97715,
+        "yeslab_443_reg30_max20_v1": 0.886951,
+        "yeslab_464": 0.966326,
+        "yeslab_471": 0.957306,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.958509
+      },
+      "product_of_coverages": 0.655495
+    },
+    {
+      "day": "2014-03-07",
+      "universe_rows": 1667,
+      "min_factor_coverage": 0.8614277144571085,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.861428,
+        "yeslab_357": 0.996401,
+        "yeslab_381": 0.991002,
+        "yeslab_425": 0.976605,
+        "yeslab_443_reg30_max20_v1": 0.884223,
+        "yeslab_464": 0.964007,
+        "yeslab_471": 0.953209,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.955609
+      },
+      "product_of_coverages": 0.644996
+    },
+    {
+      "day": "2014-03-10",
+      "universe_rows": 1665,
+      "min_factor_coverage": 0.8606606606606607,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.860661,
+        "yeslab_357": 0.996997,
+        "yeslab_381": 0.99039,
+        "yeslab_425": 0.974775,
+        "yeslab_443_reg30_max20_v1": 0.885285,
+        "yeslab_464": 0.963964,
+        "yeslab_471": 0.94955,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.952553
+      },
+      "product_of_coverages": 0.639421
+    },
+    {
+      "day": "2014-03-11",
+      "universe_rows": 1663,
+      "min_factor_coverage": 0.8586891160553217,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.858689,
+        "yeslab_357": 0.995791,
+        "yeslab_381": 0.989176,
+        "yeslab_425": 0.971137,
+        "yeslab_443_reg30_max20_v1": 0.881539,
+        "yeslab_464": 0.960914,
+        "yeslab_471": 0.945881,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.948888
+      },
+      "product_of_coverages": 0.624504
+    },
+    {
+      "day": "2014-03-12",
+      "universe_rows": 1662,
+      "min_factor_coverage": 0.8610108303249098,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.861011,
+        "yeslab_357": 0.996992,
+        "yeslab_381": 0.988568,
+        "yeslab_425": 0.974128,
+        "yeslab_443_reg30_max20_v1": 0.883875,
+        "yeslab_464": 0.962696,
+        "yeslab_471": 0.945247,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.947653
+      },
+      "product_of_coverages": 0.630082
+    },
+    {
+      "day": "2014-03-13",
+      "universe_rows": 1657,
+      "min_factor_coverage": 0.8617984308992155,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.861798,
+        "yeslab_357": 0.995775,
+        "yeslab_381": 0.98974,
+        "yeslab_425": 0.97586,
+        "yeslab_443_reg30_max20_v1": 0.882317,
+        "yeslab_464": 0.964393,
+        "yeslab_471": 0.944478,
+        "yeslab_484": 0.999396,
+        "yeslab_96": 0.946892
+      },
+      "product_of_coverages": 0.630355
+    },
+    {
+      "day": "2014-03-14",
+      "universe_rows": 1656,
+      "min_factor_coverage": 0.8635265700483091,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.863527,
+        "yeslab_357": 0.997585,
+        "yeslab_381": 0.990942,
+        "yeslab_425": 0.977053,
+        "yeslab_443_reg30_max20_v1": 0.885266,
+        "yeslab_464": 0.964372,
+        "yeslab_471": 0.944444,
+        "yeslab_484": 0.999396,
+        "yeslab_96": 0.945652
+      },
+      "product_of_coverages": 0.635559
+    },
+    {
+      "day": "2014-03-17",
+      "universe_rows": 1656,
+      "min_factor_coverage": 0.8605072463768116,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.860507,
+        "yeslab_357": 0.994565,
+        "yeslab_381": 0.989734,
+        "yeslab_425": 0.975242,
+        "yeslab_443_reg30_max20_v1": 0.883454,
+        "yeslab_464": 0.961353,
+        "yeslab_471": 0.939614,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.943841
+      },
+      "product_of_coverages": 0.622205
+    },
+    {
+      "day": "2014-03-18",
+      "universe_rows": 1657,
+      "min_factor_coverage": 0.8569704284852142,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.85697,
+        "yeslab_357": 0.996379,
+        "yeslab_381": 0.989137,
+        "yeslab_425": 0.97586,
+        "yeslab_443_reg30_max20_v1": 0.882921,
+        "yeslab_464": 0.963186,
+        "yeslab_471": 0.939046,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.943874
+      },
+      "product_of_coverages": 0.621252
+    },
+    {
+      "day": "2014-03-19",
+      "universe_rows": 1656,
+      "min_factor_coverage": 0.856280193236715,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.85628,
+        "yeslab_357": 0.997585,
+        "yeslab_381": 0.990942,
+        "yeslab_425": 0.974034,
+        "yeslab_443_reg30_max20_v1": 0.881039,
+        "yeslab_464": 0.964372,
+        "yeslab_471": 0.939614,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.944444
+      },
+      "product_of_coverages": 0.62166
+    },
+    {
+      "day": "2014-03-20",
+      "universe_rows": 1658,
+      "min_factor_coverage": 0.8540410132689988,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.854041,
+        "yeslab_357": 0.993969,
+        "yeslab_381": 0.987334,
+        "yeslab_425": 0.974065,
+        "yeslab_443_reg30_max20_v1": 0.879976,
+        "yeslab_464": 0.962606,
+        "yeslab_471": 0.93848,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.942702
+      },
+      "product_of_coverages": 0.611818
+    },
+    {
+      "day": "2014-03-21",
+      "universe_rows": 1660,
+      "min_factor_coverage": 0.8530120481927711,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.853012,
+        "yeslab_357": 0.996386,
+        "yeslab_381": 0.989157,
+        "yeslab_425": 0.974699,
+        "yeslab_443_reg30_max20_v1": 0.880723,
+        "yeslab_464": 0.962651,
+        "yeslab_471": 0.937952,
+        "yeslab_484": 0.999398,
+        "yeslab_96": 0.943373
+      },
+      "product_of_coverages": 0.614368
+    },
+    {
+      "day": "2014-03-24",
+      "universe_rows": 1652,
+      "min_factor_coverage": 0.8523002421307506,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.8523,
+        "yeslab_357": 0.996973,
+        "yeslab_381": 0.989709,
+        "yeslab_425": 0.975787,
+        "yeslab_443_reg30_max20_v1": 0.880751,
+        "yeslab_464": 0.964286,
+        "yeslab_471": 0.940678,
+        "yeslab_484": 0.999395,
+        "yeslab_96": 0.943099
+      },
+      "product_of_coverages": 0.617921
+    },
+    {
+      "day": "2014-03-25",
+      "universe_rows": 1655,
+      "min_factor_coverage": 0.8537764350453172,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.853776,
+        "yeslab_357": 0.995166,
+        "yeslab_381": 0.987311,
+        "yeslab_425": 0.973414,
+        "yeslab_443_reg30_max20_v1": 0.879758,
+        "yeslab_464": 0.961934,
+        "yeslab_471": 0.937764,
+        "yeslab_484": 0.999396,
+        "yeslab_96": 0.940785
+      },
+      "product_of_coverages": 0.609287
+    },
+    {
+      "day": "2014-03-26",
+      "universe_rows": 1654,
+      "min_factor_coverage": 0.8518742442563483,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.851874,
+        "yeslab_357": 0.995768,
+        "yeslab_381": 0.987908,
+        "yeslab_425": 0.972793,
+        "yeslab_443_reg30_max20_v1": 0.879081,
+        "yeslab_464": 0.961911,
+        "yeslab_471": 0.935913,
+        "yeslab_484": 0.999395,
+        "yeslab_96": 0.940145
+      },
+      "product_of_coverages": 0.60618
+    },
+    {
+      "day": "2014-03-27",
+      "universe_rows": 1648,
+      "min_factor_coverage": 0.8543689320388349,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.854369,
+        "yeslab_357": 0.996359,
+        "yeslab_381": 0.987257,
+        "yeslab_425": 0.970874,
+        "yeslab_443_reg30_max20_v1": 0.877427,
+        "yeslab_464": 0.961772,
+        "yeslab_471": 0.936286,
+        "yeslab_484": 0.998786,
+        "yeslab_96": 0.941748
+      },
+      "product_of_coverages": 0.606392
+    },
+    {
+      "day": "2014-03-28",
+      "universe_rows": 1654,
+      "min_factor_coverage": 0.8464328899637243,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.846433,
+        "yeslab_357": 0.993954,
+        "yeslab_381": 0.983676,
+        "yeslab_425": 0.970375,
+        "yeslab_443_reg30_max20_v1": 0.871826,
+        "yeslab_464": 0.958888,
+        "yeslab_471": 0.93289,
+        "yeslab_484": 0.998186,
+        "yeslab_96": 0.937122
+      },
+      "product_of_coverages": 0.585849
+    },
+    {
+      "day": "2014-03-31",
+      "universe_rows": 1643,
+      "min_factor_coverage": 0.8484479610468655,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.848448,
+        "yeslab_357": 0.99574,
+        "yeslab_381": 0.984784,
+        "yeslab_425": 0.969568,
+        "yeslab_443_reg30_max20_v1": 0.870968,
+        "yeslab_464": 0.957395,
+        "yeslab_471": 0.934267,
+        "yeslab_484": 0.999391,
+        "yeslab_96": 0.938527
+      },
+      "product_of_coverages": 0.589436
+    },
+    {
+      "day": "2014-04-01",
+      "universe_rows": 1638,
+      "min_factor_coverage": 0.847985347985348,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.847985,
+        "yeslab_357": 0.994505,
+        "yeslab_381": 0.984127,
+        "yeslab_425": 0.967643,
+        "yeslab_443_reg30_max20_v1": 0.869353,
+        "yeslab_464": 0.958486,
+        "yeslab_471": 0.935897,
+        "yeslab_484": 0.999389,
+        "yeslab_96": 0.93956
+      },
+      "product_of_coverages": 0.588074
+    },
+    {
+      "day": "2014-04-02",
+      "universe_rows": 1639,
+      "min_factor_coverage": 0.8511287370347773,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.851129,
+        "yeslab_357": 0.99817,
+        "yeslab_381": 0.985357,
+        "yeslab_425": 0.970714,
+        "yeslab_443_reg30_max20_v1": 0.873093,
+        "yeslab_464": 0.958511,
+        "yeslab_471": 0.937157,
+        "yeslab_484": 0.99939,
+        "yeslab_96": 0.938987
+      },
+      "product_of_coverages": 0.598066
+    },
+    {
+      "day": "2014-04-03",
+      "universe_rows": 1642,
+      "min_factor_coverage": 0.8483556638246041,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.848356,
+        "yeslab_357": 0.995737,
+        "yeslab_381": 0.986602,
+        "yeslab_425": 0.969549,
+        "yeslab_443_reg30_max20_v1": 0.872107,
+        "yeslab_464": 0.959196,
+        "yeslab_471": 0.934227,
+        "yeslab_484": 0.999391,
+        "yeslab_96": 0.939099
+      },
+      "product_of_coverages": 0.592667
+    },
+    {
+      "day": "2014-04-04",
+      "universe_rows": 1644,
+      "min_factor_coverage": 0.8491484184914841,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.849148,
+        "yeslab_357": 0.99635,
+        "yeslab_381": 0.987226,
+        "yeslab_425": 0.969586,
+        "yeslab_443_reg30_max20_v1": 0.870438,
+        "yeslab_464": 0.959246,
+        "yeslab_471": 0.935523,
+        "yeslab_484": 0.999392,
+        "yeslab_96": 0.942214
+      },
+      "product_of_coverages": 0.595671
+    },
+    {
+      "day": "2014-04-08",
+      "universe_rows": 1637,
+      "min_factor_coverage": 0.8478924862553452,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.847892,
+        "yeslab_357": 0.997557,
+        "yeslab_381": 0.990226,
+        "yeslab_425": 0.971289,
+        "yeslab_443_reg30_max20_v1": 0.868662,
+        "yeslab_464": 0.958461,
+        "yeslab_471": 0.937691,
+        "yeslab_484": 0.999389,
+        "yeslab_96": 0.940745
+      },
+      "product_of_coverages": 0.597108
+    },
+    {
+      "day": "2014-04-09",
+      "universe_rows": 1640,
+      "min_factor_coverage": 0.8439024390243902,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.843902,
+        "yeslab_357": 0.996341,
+        "yeslab_381": 0.986585,
+        "yeslab_425": 0.969512,
+        "yeslab_443_reg30_max20_v1": 0.865244,
+        "yeslab_464": 0.959146,
+        "yeslab_471": 0.934756,
+        "yeslab_484": 0.99939,
+        "yeslab_96": 0.937195
+      },
+      "product_of_coverages": 0.584353
+    },
+    {
+      "day": "2014-04-10",
+      "universe_rows": 1638,
+      "min_factor_coverage": 0.8424908424908425,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842491,
+        "yeslab_357": 0.996947,
+        "yeslab_381": 0.9884,
+        "yeslab_425": 0.969475,
+        "yeslab_443_reg30_max20_v1": 0.86569,
+        "yeslab_464": 0.958486,
+        "yeslab_471": 0.932845,
+        "yeslab_484": 0.999389,
+        "yeslab_96": 0.937118
+      },
+      "product_of_coverages": 0.583437
+    },
+    {
+      "day": "2014-04-11",
+      "universe_rows": 1632,
+      "min_factor_coverage": 0.8425245098039216,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842525,
+        "yeslab_357": 0.998162,
+        "yeslab_381": 0.990196,
+        "yeslab_425": 0.973039,
+        "yeslab_443_reg30_max20_v1": 0.866422,
+        "yeslab_464": 0.958946,
+        "yeslab_471": 0.933824,
+        "yeslab_484": 0.999387,
+        "yeslab_96": 0.936275
+      },
+      "product_of_coverages": 0.588248
+    },
+    {
+      "day": "2014-04-14",
+      "universe_rows": 1627,
+      "min_factor_coverage": 0.842040565457898,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842041,
+        "yeslab_357": 0.996927,
+        "yeslab_381": 0.991395,
+        "yeslab_425": 0.9748,
+        "yeslab_443_reg30_max20_v1": 0.866626,
+        "yeslab_464": 0.960664,
+        "yeslab_471": 0.933006,
+        "yeslab_484": 0.999385,
+        "yeslab_96": 0.938537
+      },
+      "product_of_coverages": 0.591058
+    },
+    {
+      "day": "2014-04-15",
+      "universe_rows": 1628,
+      "min_factor_coverage": 0.8402948402948403,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.840295,
+        "yeslab_357": 0.997543,
+        "yeslab_381": 0.993243,
+        "yeslab_425": 0.978501,
+        "yeslab_443_reg30_max20_v1": 0.863636,
+        "yeslab_464": 0.961916,
+        "yeslab_471": 0.934275,
+        "yeslab_484": 0.999386,
+        "yeslab_96": 0.939189
+      },
+      "product_of_coverages": 0.593485
+    },
+    {
+      "day": "2014-04-16",
+      "universe_rows": 1627,
+      "min_factor_coverage": 0.8432698217578365,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.84327,
+        "yeslab_357": 0.998771,
+        "yeslab_381": 0.996312,
+        "yeslab_425": 0.979103,
+        "yeslab_443_reg30_max20_v1": 0.869699,
+        "yeslab_464": 0.964352,
+        "yeslab_471": 0.938537,
+        "yeslab_484": 0.999385,
+        "yeslab_96": 0.94161
+      },
+      "product_of_coverages": 0.608578
+    },
+    {
+      "day": "2014-04-17",
+      "universe_rows": 1627,
+      "min_factor_coverage": 0.8408113091579594,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.840811,
+        "yeslab_357": 0.995083,
+        "yeslab_381": 0.992624,
+        "yeslab_425": 0.979717,
+        "yeslab_443_reg30_max20_v1": 0.866011,
+        "yeslab_464": 0.964966,
+        "yeslab_471": 0.936693,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.943454
+      },
+      "product_of_coverages": 0.600893
+    },
+    {
+      "day": "2014-04-18",
+      "universe_rows": 1624,
+      "min_factor_coverage": 0.8423645320197044,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842365,
+        "yeslab_357": 0.997537,
+        "yeslab_381": 0.992611,
+        "yeslab_425": 0.980911,
+        "yeslab_443_reg30_max20_v1": 0.865764,
+        "yeslab_464": 0.966749,
+        "yeslab_471": 0.940271,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.943966
+      },
+      "product_of_coverages": 0.607799
+    },
+    {
+      "day": "2014-04-21",
+      "universe_rows": 1618,
+      "min_factor_coverage": 0.8430160692212608,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.843016,
+        "yeslab_357": 0.995674,
+        "yeslab_381": 0.991965,
+        "yeslab_425": 0.980841,
+        "yeslab_443_reg30_max20_v1": 0.865266,
+        "yeslab_464": 0.96848,
+        "yeslab_471": 0.940667,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.943758
+      },
+      "product_of_coverages": 0.607553
+    },
+    {
+      "day": "2014-04-22",
+      "universe_rows": 1620,
+      "min_factor_coverage": 0.841358024691358,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841358,
+        "yeslab_357": 0.993827,
+        "yeslab_381": 0.987037,
+        "yeslab_425": 0.979012,
+        "yeslab_443_reg30_max20_v1": 0.86358,
+        "yeslab_464": 0.965432,
+        "yeslab_471": 0.938889,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.945062
+      },
+      "product_of_coverages": 0.59774
+    },
+    {
+      "day": "2014-04-23",
+      "universe_rows": 1623,
+      "min_factor_coverage": 0.8428835489833642,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842884,
+        "yeslab_357": 0.996303,
+        "yeslab_381": 0.988293,
+        "yeslab_425": 0.979667,
+        "yeslab_443_reg30_max20_v1": 0.8626,
+        "yeslab_464": 0.967344,
+        "yeslab_471": 0.942083,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.945779
+      },
+      "product_of_coverages": 0.604495
+    },
+    {
+      "day": "2014-04-24",
+      "universe_rows": 1622,
+      "min_factor_coverage": 0.844019728729963,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.84402,
+        "yeslab_357": 0.996301,
+        "yeslab_381": 0.988286,
+        "yeslab_425": 0.979038,
+        "yeslab_443_reg30_max20_v1": 0.861282,
+        "yeslab_464": 0.968557,
+        "yeslab_471": 0.942663,
+        "yeslab_484": 0.999383,
+        "yeslab_96": 0.946979
+      },
+      "product_of_coverages": 0.605516
+    },
+    {
+      "day": "2014-04-25",
+      "universe_rows": 1621,
+      "min_factor_coverage": 0.8439235040098705,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.843924,
+        "yeslab_357": 0.995682,
+        "yeslab_381": 0.986428,
+        "yeslab_425": 0.977791,
+        "yeslab_443_reg30_max20_v1": 0.858112,
+        "yeslab_464": 0.968538,
+        "yeslab_471": 0.942628,
+        "yeslab_484": 0.998766,
+        "yeslab_96": 0.946946
+      },
+      "product_of_coverages": 0.600517
+    },
+    {
+      "day": "2014-04-28",
+      "universe_rows": 1613,
+      "min_factor_coverage": 0.8462492250464972,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.846249,
+        "yeslab_357": 0.9969,
+        "yeslab_381": 0.990081,
+        "yeslab_425": 0.978301,
+        "yeslab_443_reg30_max20_v1": 0.859268,
+        "yeslab_464": 0.970862,
+        "yeslab_471": 0.942963,
+        "yeslab_484": 0.99938,
+        "yeslab_96": 0.947303
+      },
+      "product_of_coverages": 0.608547
+    },
+    {
+      "day": "2014-04-29",
+      "universe_rows": 1617,
+      "min_factor_coverage": 0.8441558441558441,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.844156,
+        "yeslab_357": 0.993816,
+        "yeslab_381": 0.987631,
+        "yeslab_425": 0.973408,
+        "yeslab_443_reg30_max20_v1": 0.859617,
+        "yeslab_464": 0.969079,
+        "yeslab_471": 0.941249,
+        "yeslab_484": 0.999382,
+        "yeslab_96": 0.946197
+      },
+      "product_of_coverages": 0.597997
+    },
+    {
+      "day": "2014-04-30",
+      "universe_rows": 1620,
+      "min_factor_coverage": 0.8419753086419753,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841975,
+        "yeslab_357": 0.995679,
+        "yeslab_381": 0.987037,
+        "yeslab_425": 0.973457,
+        "yeslab_443_reg30_max20_v1": 0.859877,
+        "yeslab_464": 0.966049,
+        "yeslab_471": 0.941358,
+        "yeslab_484": 0.999383,
+        "yeslab_96": 0.94321
+      },
+      "product_of_coverages": 0.593744
+    },
+    {
+      "day": "2014-05-05",
+      "universe_rows": 1608,
+      "min_factor_coverage": 0.845771144278607,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.845771,
+        "yeslab_357": 0.997512,
+        "yeslab_381": 0.989428,
+        "yeslab_425": 0.975746,
+        "yeslab_443_reg30_max20_v1": 0.864428,
+        "yeslab_464": 0.968905,
+        "yeslab_471": 0.94403,
+        "yeslab_484": 0.999378,
+        "yeslab_96": 0.949627
+      },
+      "product_of_coverages": 0.611183
+    },
+    {
+      "day": "2014-05-06",
+      "universe_rows": 1608,
+      "min_factor_coverage": 0.8420398009950248,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.84204,
+        "yeslab_357": 0.995647,
+        "yeslab_381": 0.987562,
+        "yeslab_425": 0.973259,
+        "yeslab_443_reg30_max20_v1": 0.863806,
+        "yeslab_464": 0.96704,
+        "yeslab_471": 0.94403,
+        "yeslab_484": 0.999378,
+        "yeslab_96": 0.948383
+      },
+      "product_of_coverages": 0.602269
+    },
+    {
+      "day": "2014-05-07",
+      "universe_rows": 1611,
+      "min_factor_coverage": 0.8417132216014898,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841713,
+        "yeslab_357": 0.997517,
+        "yeslab_381": 0.99131,
+        "yeslab_425": 0.977033,
+        "yeslab_443_reg30_max20_v1": 0.862818,
+        "yeslab_464": 0.96586,
+        "yeslab_471": 0.945996,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.950962
+      },
+      "product_of_coverages": 0.609662
+    },
+    {
+      "day": "2014-05-08",
+      "universe_rows": 1607,
+      "min_factor_coverage": 0.8431860609831985,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.843186,
+        "yeslab_357": 0.998133,
+        "yeslab_381": 0.993777,
+        "yeslab_425": 0.979465,
+        "yeslab_443_reg30_max20_v1": 0.863721,
+        "yeslab_464": 0.969508,
+        "yeslab_471": 0.950218,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.955196
+      },
+      "product_of_coverages": 0.622631
+    },
+    {
+      "day": "2014-05-09",
+      "universe_rows": 1607,
+      "min_factor_coverage": 0.8419415059116366,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841942,
+        "yeslab_357": 0.996889,
+        "yeslab_381": 0.992533,
+        "yeslab_425": 0.97822,
+        "yeslab_443_reg30_max20_v1": 0.86621,
+        "yeslab_464": 0.967642,
+        "yeslab_471": 0.951462,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.955196
+      },
+      "product_of_coverages": 0.620772
+    },
+    {
+      "day": "2014-05-12",
+      "universe_rows": 1608,
+      "min_factor_coverage": 0.8364427860696517,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.836443,
+        "yeslab_357": 0.995647,
+        "yeslab_381": 0.991915,
+        "yeslab_425": 0.976368,
+        "yeslab_443_reg30_max20_v1": 0.864428,
+        "yeslab_464": 0.964552,
+        "yeslab_471": 0.948383,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.950249
+      },
+      "product_of_coverages": 0.606046
+    },
+    {
+      "day": "2014-05-13",
+      "universe_rows": 1609,
+      "min_factor_coverage": 0.8359229334990678,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.835923,
+        "yeslab_357": 0.998135,
+        "yeslab_381": 0.99192,
+        "yeslab_425": 0.977004,
+        "yeslab_443_reg30_max20_v1": 0.866377,
+        "yeslab_464": 0.968303,
+        "yeslab_471": 0.947794,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.951523
+      },
+      "product_of_coverages": 0.611759
+    },
+    {
+      "day": "2014-05-14",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8318858560794045,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.831886,
+        "yeslab_357": 0.995658,
+        "yeslab_381": 0.989454,
+        "yeslab_425": 0.979529,
+        "yeslab_443_reg30_max20_v1": 0.866005,
+        "yeslab_464": 0.967742,
+        "yeslab_471": 0.94727,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.949752
+      },
+      "product_of_coverages": 0.605272
+    },
+    {
+      "day": "2014-05-15",
+      "universe_rows": 1614,
+      "min_factor_coverage": 0.8314745972738538,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.831475,
+        "yeslab_357": 0.997522,
+        "yeslab_381": 0.990087,
+        "yeslab_425": 0.980173,
+        "yeslab_443_reg30_max20_v1": 0.864932,
+        "yeslab_464": 0.967162,
+        "yeslab_471": 0.945477,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.946716
+      },
+      "product_of_coverages": 0.602698
+    },
+    {
+      "day": "2014-05-16",
+      "universe_rows": 1615,
+      "min_factor_coverage": 0.8340557275541796,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.834056,
+        "yeslab_357": 0.998762,
+        "yeslab_381": 0.99257,
+        "yeslab_425": 0.980805,
+        "yeslab_443_reg30_max20_v1": 0.864396,
+        "yeslab_464": 0.96904,
+        "yeslab_471": 0.944892,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.949845
+      },
+      "product_of_coverages": 0.609663
+    },
+    {
+      "day": "2014-05-19",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8343672456575683,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.834367,
+        "yeslab_357": 0.997519,
+        "yeslab_381": 0.991935,
+        "yeslab_425": 0.983251,
+        "yeslab_443_reg30_max20_v1": 0.864764,
+        "yeslab_464": 0.968983,
+        "yeslab_471": 0.94665,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.950372
+      },
+      "product_of_coverages": 0.61196
+    },
+    {
+      "day": "2014-05-20",
+      "universe_rows": 1615,
+      "min_factor_coverage": 0.83343653250774,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.833437,
+        "yeslab_357": 0.995666,
+        "yeslab_381": 0.99195,
+        "yeslab_425": 0.980805,
+        "yeslab_443_reg30_max20_v1": 0.866873,
+        "yeslab_464": 0.971517,
+        "yeslab_471": 0.945511,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.947988
+      },
+      "product_of_coverages": 0.609444
+    },
+    {
+      "day": "2014-05-21",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8356079404466501,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.835608,
+        "yeslab_357": 0.997519,
+        "yeslab_381": 0.993176,
+        "yeslab_425": 0.980149,
+        "yeslab_443_reg30_max20_v1": 0.867866,
+        "yeslab_464": 0.972705,
+        "yeslab_471": 0.94603,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.953474
+      },
+      "product_of_coverages": 0.617859
+    },
+    {
+      "day": "2014-05-22",
+      "universe_rows": 1615,
+      "min_factor_coverage": 0.83343653250774,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.833437,
+        "yeslab_357": 0.996285,
+        "yeslab_381": 0.990712,
+        "yeslab_425": 0.979567,
+        "yeslab_443_reg30_max20_v1": 0.866873,
+        "yeslab_464": 0.970898,
+        "yeslab_471": 0.949226,
+        "yeslab_484": 0.999381,
+        "yeslab_96": 0.952941
+      },
+      "product_of_coverages": 0.613103
+    },
+    {
+      "day": "2014-05-23",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8349875930521092,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.834988,
+        "yeslab_357": 0.998139,
+        "yeslab_381": 0.991315,
+        "yeslab_425": 0.98139,
+        "yeslab_443_reg30_max20_v1": 0.869727,
+        "yeslab_464": 0.973945,
+        "yeslab_471": 0.951613,
+        "yeslab_484": 0.998759,
+        "yeslab_96": 0.954715
+      },
+      "product_of_coverages": 0.623213
+    },
+    {
+      "day": "2014-05-26",
+      "universe_rows": 1609,
+      "min_factor_coverage": 0.836544437538844,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.836544,
+        "yeslab_357": 0.996892,
+        "yeslab_381": 0.99192,
+        "yeslab_425": 0.980112,
+        "yeslab_443_reg30_max20_v1": 0.868241,
+        "yeslab_464": 0.972654,
+        "yeslab_471": 0.950901,
+        "yeslab_484": 0.999378,
+        "yeslab_96": 0.95463
+      },
+      "product_of_coverages": 0.621139
+    },
+    {
+      "day": "2014-05-27",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8374689826302729,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.837469,
+        "yeslab_357": 0.995658,
+        "yeslab_381": 0.990074,
+        "yeslab_425": 0.980769,
+        "yeslab_443_reg30_max20_v1": 0.868486,
+        "yeslab_464": 0.968983,
+        "yeslab_471": 0.949752,
+        "yeslab_484": 0.998759,
+        "yeslab_96": 0.951613
+      },
+      "product_of_coverages": 0.615069
+    },
+    {
+      "day": "2014-05-28",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8356079404466501,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.835608,
+        "yeslab_357": 0.995658,
+        "yeslab_381": 0.989454,
+        "yeslab_425": 0.978908,
+        "yeslab_443_reg30_max20_v1": 0.867246,
+        "yeslab_464": 0.967122,
+        "yeslab_471": 0.94603,
+        "yeslab_484": 0.997519,
+        "yeslab_96": 0.953474
+      },
+      "product_of_coverages": 0.608146
+    },
+    {
+      "day": "2014-05-29",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8393300248138957,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.83933,
+        "yeslab_357": 0.998139,
+        "yeslab_381": 0.988834,
+        "yeslab_425": 0.978288,
+        "yeslab_443_reg30_max20_v1": 0.869107,
+        "yeslab_464": 0.969603,
+        "yeslab_471": 0.951613,
+        "yeslab_484": 0.998139,
+        "yeslab_96": 0.954094
+      },
+      "product_of_coverages": 0.618904
+    },
+    {
+      "day": "2014-05-30",
+      "universe_rows": 1613,
+      "min_factor_coverage": 0.8388096714197149,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.83881,
+        "yeslab_357": 0.99752,
+        "yeslab_381": 0.989461,
+        "yeslab_425": 0.977681,
+        "yeslab_443_reg30_max20_v1": 0.868568,
+        "yeslab_464": 0.968382,
+        "yeslab_471": 0.949783,
+        "yeslab_484": 0.99876,
+        "yeslab_96": 0.951643
+      },
+      "product_of_coverages": 0.614598
+    },
+    {
+      "day": "2014-06-03",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.8425,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.8425,
+        "yeslab_357": 0.99625,
+        "yeslab_381": 0.9925,
+        "yeslab_425": 0.984375,
+        "yeslab_443_reg30_max20_v1": 0.873125,
+        "yeslab_464": 0.97625,
+        "yeslab_471": 0.954375,
+        "yeslab_484": 0.99875,
+        "yeslab_96": 0.96
+      },
+      "product_of_coverages": 0.639608
+    },
+    {
+      "day": "2014-06-04",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8428927680798005,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842893,
+        "yeslab_357": 0.99813,
+        "yeslab_381": 0.993766,
+        "yeslab_425": 0.983791,
+        "yeslab_443_reg30_max20_v1": 0.871571,
+        "yeslab_464": 0.977556,
+        "yeslab_471": 0.956359,
+        "yeslab_484": 0.998753,
+        "yeslab_96": 0.958853
+      },
+      "product_of_coverages": 0.641832
+    },
+    {
+      "day": "2014-06-05",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.844375,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.844375,
+        "yeslab_357": 0.998125,
+        "yeslab_381": 0.99375,
+        "yeslab_425": 0.984375,
+        "yeslab_443_reg30_max20_v1": 0.873125,
+        "yeslab_464": 0.97625,
+        "yeslab_471": 0.955625,
+        "yeslab_484": 0.99875,
+        "yeslab_96": 0.9575
+      },
+      "product_of_coverages": 0.642212
+    },
+    {
+      "day": "2014-06-06",
+      "universe_rows": 1601,
+      "min_factor_coverage": 0.8444722048719551,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.844472,
+        "yeslab_357": 0.998126,
+        "yeslab_381": 0.993754,
+        "yeslab_425": 0.983136,
+        "yeslab_443_reg30_max20_v1": 0.874453,
+        "yeslab_464": 0.976265,
+        "yeslab_471": 0.955028,
+        "yeslab_484": 0.998751,
+        "yeslab_96": 0.958776
+      },
+      "product_of_coverages": 0.642921
+    },
+    {
+      "day": "2014-06-09",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.844375,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.844375,
+        "yeslab_357": 0.99875,
+        "yeslab_381": 0.995,
+        "yeslab_425": 0.98375,
+        "yeslab_443_reg30_max20_v1": 0.875625,
+        "yeslab_464": 0.9775,
+        "yeslab_471": 0.954375,
+        "yeslab_484": 0.998125,
+        "yeslab_96": 0.959375
+      },
+      "product_of_coverages": 0.645695
+    },
+    {
+      "day": "2014-06-10",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.844375,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.844375,
+        "yeslab_357": 0.995625,
+        "yeslab_381": 0.99375,
+        "yeslab_425": 0.98375,
+        "yeslab_443_reg30_max20_v1": 0.875,
+        "yeslab_464": 0.975625,
+        "yeslab_471": 0.954375,
+        "yeslab_484": 0.998125,
+        "yeslab_96": 0.9575
+      },
+      "product_of_coverages": 0.639922
+    },
+    {
+      "day": "2014-06-11",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8423028785982478,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842303,
+        "yeslab_357": 0.998748,
+        "yeslab_381": 0.993116,
+        "yeslab_425": 0.984981,
+        "yeslab_443_reg30_max20_v1": 0.874218,
+        "yeslab_464": 0.976846,
+        "yeslab_471": 0.954318,
+        "yeslab_484": 0.998748,
+        "yeslab_96": 0.959324
+      },
+      "product_of_coverages": 0.642559
+    },
+    {
+      "day": "2014-06-12",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.8427318295739349,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.842732,
+        "yeslab_357": 0.997494,
+        "yeslab_381": 0.993108,
+        "yeslab_425": 0.984336,
+        "yeslab_443_reg30_max20_v1": 0.874687,
+        "yeslab_464": 0.974937,
+        "yeslab_471": 0.955514,
+        "yeslab_484": 0.998747,
+        "yeslab_96": 0.9599
+      },
+      "product_of_coverages": 0.641929
+    },
+    {
+      "day": "2014-06-13",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.843358395989975,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.843358,
+        "yeslab_357": 0.996241,
+        "yeslab_381": 0.991228,
+        "yeslab_425": 0.983083,
+        "yeslab_443_reg30_max20_v1": 0.873434,
+        "yeslab_464": 0.974937,
+        "yeslab_471": 0.95614,
+        "yeslab_484": 0.998747,
+        "yeslab_96": 0.957393
+      },
+      "product_of_coverages": 0.637403
+    },
+    {
+      "day": "2014-06-16",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.8414786967418546,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841479,
+        "yeslab_357": 0.994987,
+        "yeslab_381": 0.989975,
+        "yeslab_425": 0.98183,
+        "yeslab_443_reg30_max20_v1": 0.872807,
+        "yeslab_464": 0.973058,
+        "yeslab_471": 0.951128,
+        "yeslab_484": 0.998747,
+        "yeslab_96": 0.955514
+      },
+      "product_of_coverages": 0.627349
+    },
+    {
+      "day": "2014-06-17",
+      "universe_rows": 1602,
+      "min_factor_coverage": 0.8414481897627965,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841448,
+        "yeslab_357": 0.993134,
+        "yeslab_381": 0.984395,
+        "yeslab_425": 0.977528,
+        "yeslab_443_reg30_max20_v1": 0.871411,
+        "yeslab_464": 0.970037,
+        "yeslab_471": 0.94819,
+        "yeslab_484": 0.999376,
+        "yeslab_96": 0.951311
+      },
+      "product_of_coverages": 0.612761
+    },
+    {
+      "day": "2014-06-18",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.841875,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841875,
+        "yeslab_357": 0.996875,
+        "yeslab_381": 0.984375,
+        "yeslab_425": 0.976875,
+        "yeslab_443_reg30_max20_v1": 0.874375,
+        "yeslab_464": 0.969375,
+        "yeslab_471": 0.948125,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.95125
+      },
+      "product_of_coverages": 0.616933
+    },
+    {
+      "day": "2014-06-19",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8416770963704631,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.841677,
+        "yeslab_357": 0.998123,
+        "yeslab_381": 0.985607,
+        "yeslab_425": 0.976846,
+        "yeslab_443_reg30_max20_v1": 0.876095,
+        "yeslab_464": 0.969337,
+        "yeslab_471": 0.949312,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.954318
+      },
+      "product_of_coverages": 0.622282
+    },
+    {
+      "day": "2014-06-20",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.845,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.845,
+        "yeslab_357": 0.998125,
+        "yeslab_381": 0.988125,
+        "yeslab_425": 0.97625,
+        "yeslab_443_reg30_max20_v1": 0.8775,
+        "yeslab_464": 0.97125,
+        "yeslab_471": 0.95125,
+        "yeslab_484": 0.999375,
+        "yeslab_96": 0.95375
+      },
+      "product_of_coverages": 0.62871
+    },
+    {
+      "day": "2014-06-23",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8404255319148937,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.840426,
+        "yeslab_357": 0.99562,
+        "yeslab_381": 0.989987,
+        "yeslab_425": 0.974343,
+        "yeslab_443_reg30_max20_v1": 0.871089,
+        "yeslab_464": 0.968085,
+        "yeslab_471": 0.945557,
+        "yeslab_484": 0.998748,
+        "yeslab_96": 0.949937
+      },
+      "product_of_coverages": 0.610589
+    },
+    {
+      "day": "2014-06-24",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.838125,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.838125,
+        "yeslab_357": 0.995625,
+        "yeslab_381": 0.989375,
+        "yeslab_425": 0.970625,
+        "yeslab_443_reg30_max20_v1": 0.869375,
+        "yeslab_464": 0.965,
+        "yeslab_471": 0.944375,
+        "yeslab_484": 0.99875,
+        "yeslab_96": 0.948125
+      },
+      "product_of_coverages": 0.601199
+    },
+    {
+      "day": "2014-06-25",
+      "universe_rows": 1593,
+      "min_factor_coverage": 0.8411801632140615,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.84118,
+        "yeslab_357": 0.998117,
+        "yeslab_381": 0.988701,
+        "yeslab_425": 0.969868,
+        "yeslab_443_reg30_max20_v1": 0.871312,
+        "yeslab_464": 0.963591,
+        "yeslab_471": 0.946642,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.950408
+      },
+      "product_of_coverages": 0.608149
+    },
+    {
+      "day": "2014-06-26",
+      "universe_rows": 1593,
+      "min_factor_coverage": 0.8411801632140615,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.84118,
+        "yeslab_357": 0.995606,
+        "yeslab_381": 0.986817,
+        "yeslab_425": 0.96924,
+        "yeslab_443_reg30_max20_v1": 0.869429,
+        "yeslab_464": 0.960452,
+        "yeslab_471": 0.946014,
+        "yeslab_484": 0.999372,
+        "yeslab_96": 0.948525
+      },
+      "product_of_coverages": 0.59983
+    },
+    {
+      "day": "2014-06-27",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8396994364433312,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.839699,
+        "yeslab_357": 0.997495,
+        "yeslab_381": 0.988729,
+        "yeslab_425": 0.97057,
+        "yeslab_443_reg30_max20_v1": 0.867251,
+        "yeslab_464": 0.961803,
+        "yeslab_471": 0.942392,
+        "yeslab_484": 0.999374,
+        "yeslab_96": 0.944897
+      },
+      "product_of_coverages": 0.596642
+    },
+    {
+      "day": "2014-06-30",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8340638697557922,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.834064,
+        "yeslab_357": 0.995617,
+        "yeslab_381": 0.989355,
+        "yeslab_425": 0.974327,
+        "yeslab_443_reg30_max20_v1": 0.862868,
+        "yeslab_464": 0.959299,
+        "yeslab_471": 0.936756,
+        "yeslab_484": 0.999374,
+        "yeslab_96": 0.941766
+      },
+      "product_of_coverages": 0.584177
+    },
+    {
+      "day": "2014-07-01",
+      "universe_rows": 1592,
+      "min_factor_coverage": 0.8385678391959799,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.838568,
+        "yeslab_357": 0.978015,
+        "yeslab_381": 0.988065,
+        "yeslab_425": 0.978015,
+        "yeslab_443_reg30_max20_v1": 0.865578,
+        "yeslab_464": 0.96294,
+        "yeslab_471": 0.927136,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.94598
+      },
+      "product_of_coverages": 0.579356
+    },
+    {
+      "day": "2014-07-02",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.838125,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.838125,
+        "yeslab_357": 0.996875,
+        "yeslab_381": 0.988125,
+        "yeslab_425": 0.976875,
+        "yeslab_443_reg30_max20_v1": 0.8675,
+        "yeslab_464": 0.961875,
+        "yeslab_471": 0.94125,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.9425
+      },
+      "product_of_coverages": 0.597001
+    },
+    {
+      "day": "2014-07-03",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8369905956112853,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.836991,
+        "yeslab_357": 0.996865,
+        "yeslab_381": 0.98558,
+        "yeslab_425": 0.972414,
+        "yeslab_443_reg30_max20_v1": 0.865204,
+        "yeslab_464": 0.959248,
+        "yeslab_471": 0.935423,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.936677
+      },
+      "product_of_coverages": 0.581497
+    },
+    {
+      "day": "2014-07-04",
+      "universe_rows": 1593,
+      "min_factor_coverage": 0.8367859384808537,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.836786,
+        "yeslab_357": 0.997489,
+        "yeslab_381": 0.984934,
+        "yeslab_425": 0.971124,
+        "yeslab_443_reg30_max20_v1": 0.865035,
+        "yeslab_464": 0.961707,
+        "yeslab_471": 0.932203,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.936598
+      },
+      "product_of_coverages": 0.579888
+    },
+    {
+      "day": "2014-07-07",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8355222013758599,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.835522,
+        "yeslab_357": 0.996873,
+        "yeslab_381": 0.985616,
+        "yeslab_425": 0.972483,
+        "yeslab_443_reg30_max20_v1": 0.861789,
+        "yeslab_464": 0.961851,
+        "yeslab_471": 0.930582,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.938086
+      },
+      "product_of_coverages": 0.577688
+    },
+    {
+      "day": "2014-07-08",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8334376956793988,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.833438,
+        "yeslab_357": 0.996243,
+        "yeslab_381": 0.98685,
+        "yeslab_425": 0.969944,
+        "yeslab_443_reg30_max20_v1": 0.859111,
+        "yeslab_464": 0.960551,
+        "yeslab_471": 0.933626,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.934878
+      },
+      "product_of_coverages": 0.572445
+    },
+    {
+      "day": "2014-07-09",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8347934918648311,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.834793,
+        "yeslab_357": 0.998748,
+        "yeslab_381": 0.988736,
+        "yeslab_425": 0.971214,
+        "yeslab_443_reg30_max20_v1": 0.863579,
+        "yeslab_464": 0.959324,
+        "yeslab_471": 0.932416,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.934919
+      },
+      "product_of_coverages": 0.578204
+    },
+    {
+      "day": "2014-07-10",
+      "universe_rows": 1601,
+      "min_factor_coverage": 0.8294815740162399,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.829482,
+        "yeslab_357": 0.996252,
+        "yeslab_381": 0.987508,
+        "yeslab_425": 0.96877,
+        "yeslab_443_reg30_max20_v1": 0.857589,
+        "yeslab_464": 0.957527,
+        "yeslab_471": 0.92817,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.931918
+      },
+      "product_of_coverages": 0.561529
+    },
+    {
+      "day": "2014-07-11",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8285356695869838,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.828536,
+        "yeslab_357": 0.996245,
+        "yeslab_381": 0.987484,
+        "yeslab_425": 0.968711,
+        "yeslab_443_reg30_max20_v1": 0.855444,
+        "yeslab_464": 0.958073,
+        "yeslab_471": 0.925532,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.929912
+      },
+      "product_of_coverages": 0.556962
+    },
+    {
+      "day": "2014-07-14",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8261413383364603,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.826141,
+        "yeslab_357": 0.994997,
+        "yeslab_381": 0.986867,
+        "yeslab_425": 0.966854,
+        "yeslab_443_reg30_max20_v1": 0.853659,
+        "yeslab_464": 0.953096,
+        "yeslab_471": 0.923077,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.932458
+      },
+      "product_of_coverages": 0.549267
+    },
+    {
+      "day": "2014-07-15",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8242651657285803,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.824265,
+        "yeslab_357": 0.997498,
+        "yeslab_381": 0.985616,
+        "yeslab_425": 0.96873,
+        "yeslab_443_reg30_max20_v1": 0.853033,
+        "yeslab_464": 0.954346,
+        "yeslab_471": 0.92808,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.933083
+      },
+      "product_of_coverages": 0.553436
+    },
+    {
+      "day": "2014-07-16",
+      "universe_rows": 1601,
+      "min_factor_coverage": 0.8257339163023111,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.825734,
+        "yeslab_357": 0.996252,
+        "yeslab_381": 0.986883,
+        "yeslab_425": 0.96877,
+        "yeslab_443_reg30_max20_v1": 0.853217,
+        "yeslab_464": 0.95253,
+        "yeslab_471": 0.929419,
+        "yeslab_484": 0.999375,
+        "yeslab_96": 0.933791
+      },
+      "product_of_coverages": 0.554401
+    },
+    {
+      "day": "2014-07-17",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.824375,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.824375,
+        "yeslab_357": 0.9975,
+        "yeslab_381": 0.9875,
+        "yeslab_425": 0.968125,
+        "yeslab_443_reg30_max20_v1": 0.849375,
+        "yeslab_464": 0.9525,
+        "yeslab_471": 0.925625,
+        "yeslab_484": 0.99875,
+        "yeslab_96": 0.93
+      },
+      "product_of_coverages": 0.546821
+    },
+    {
+      "day": "2014-07-18",
+      "universe_rows": 1603,
+      "min_factor_coverage": 0.825951341235184,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.825951,
+        "yeslab_357": 0.998752,
+        "yeslab_381": 0.991266,
+        "yeslab_425": 0.972551,
+        "yeslab_443_reg30_max20_v1": 0.850905,
+        "yeslab_464": 0.955708,
+        "yeslab_471": 0.928883,
+        "yeslab_484": 0.998752,
+        "yeslab_96": 0.932626
+      },
+      "product_of_coverages": 0.559562
+    },
+    {
+      "day": "2014-07-21",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.8208020050125313,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.820802,
+        "yeslab_357": 0.994987,
+        "yeslab_381": 0.988722,
+        "yeslab_425": 0.972431,
+        "yeslab_443_reg30_max20_v1": 0.846491,
+        "yeslab_464": 0.95614,
+        "yeslab_471": 0.926065,
+        "yeslab_484": 0.997494,
+        "yeslab_96": 0.932331
+      },
+      "product_of_coverages": 0.547337
+    },
+    {
+      "day": "2014-07-22",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8221665623043206,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.822167,
+        "yeslab_357": 0.997495,
+        "yeslab_381": 0.990607,
+        "yeslab_425": 0.971822,
+        "yeslab_443_reg30_max20_v1": 0.848466,
+        "yeslab_464": 0.956168,
+        "yeslab_471": 0.92799,
+        "yeslab_484": 0.997495,
+        "yeslab_96": 0.929242
+      },
+      "product_of_coverages": 0.550948
+    },
+    {
+      "day": "2014-07-23",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8198254364089775,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.819825,
+        "yeslab_357": 0.995636,
+        "yeslab_381": 0.988155,
+        "yeslab_425": 0.971945,
+        "yeslab_443_reg30_max20_v1": 0.846633,
+        "yeslab_464": 0.955112,
+        "yeslab_471": 0.92394,
+        "yeslab_484": 0.996883,
+        "yeslab_96": 0.928304
+      },
+      "product_of_coverages": 0.542022
+    },
+    {
+      "day": "2014-07-24",
+      "universe_rows": 1608,
+      "min_factor_coverage": 0.822139303482587,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.822139,
+        "yeslab_357": 0.995647,
+        "yeslab_381": 0.986318,
+        "yeslab_425": 0.972015,
+        "yeslab_443_reg30_max20_v1": 0.843905,
+        "yeslab_464": 0.958333,
+        "yeslab_471": 0.924751,
+        "yeslab_484": 0.996269,
+        "yeslab_96": 0.929726
+      },
+      "product_of_coverages": 0.543635
+    },
+    {
+      "day": "2014-07-25",
+      "universe_rows": 1609,
+      "min_factor_coverage": 0.8210068365444375,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.821007,
+        "yeslab_357": 0.996892,
+        "yeslab_381": 0.98757,
+        "yeslab_425": 0.973275,
+        "yeslab_443_reg30_max20_v1": 0.843381,
+        "yeslab_464": 0.958981,
+        "yeslab_471": 0.92542,
+        "yeslab_484": 0.998757,
+        "yeslab_96": 0.931013
+      },
+      "product_of_coverages": 0.547503
+    },
+    {
+      "day": "2014-07-28",
+      "universe_rows": 1608,
+      "min_factor_coverage": 0.8159203980099502,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.81592,
+        "yeslab_357": 0.996269,
+        "yeslab_381": 0.985075,
+        "yeslab_425": 0.971393,
+        "yeslab_443_reg30_max20_v1": 0.839552,
+        "yeslab_464": 0.957711,
+        "yeslab_471": 0.924751,
+        "yeslab_484": 0.998134,
+        "yeslab_96": 0.930348
+      },
+      "product_of_coverages": 0.537069
+    },
+    {
+      "day": "2014-07-29",
+      "universe_rows": 1608,
+      "min_factor_coverage": 0.8208955223880597,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.820896,
+        "yeslab_357": 0.999378,
+        "yeslab_381": 0.99005,
+        "yeslab_425": 0.976368,
+        "yeslab_443_reg30_max20_v1": 0.843284,
+        "yeslab_464": 0.962065,
+        "yeslab_471": 0.930348,
+        "yeslab_484": 0.999378,
+        "yeslab_96": 0.935945
+      },
+      "product_of_coverages": 0.559876
+    },
+    {
+      "day": "2014-07-30",
+      "universe_rows": 1606,
+      "min_factor_coverage": 0.8212951432129514,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.821295,
+        "yeslab_357": 0.997509,
+        "yeslab_381": 0.992528,
+        "yeslab_425": 0.976339,
+        "yeslab_443_reg30_max20_v1": 0.845579,
+        "yeslab_464": 0.963263,
+        "yeslab_471": 0.933375,
+        "yeslab_484": 0.999377,
+        "yeslab_96": 0.938356
+      },
+      "product_of_coverages": 0.565994
+    },
+    {
+      "day": "2014-07-31",
+      "universe_rows": 1612,
+      "min_factor_coverage": 0.8169975186104218,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.816998,
+        "yeslab_357": 0.996898,
+        "yeslab_381": 0.992556,
+        "yeslab_425": 0.975806,
+        "yeslab_443_reg30_max20_v1": 0.842432,
+        "yeslab_464": 0.96402,
+        "yeslab_471": 0.932382,
+        "yeslab_484": 0.998759,
+        "yeslab_96": 0.936725
+      },
+      "product_of_coverages": 0.558827
+    },
+    {
+      "day": "2014-08-01",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.823125,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.823125,
+        "yeslab_357": 0.99875,
+        "yeslab_381": 0.995,
+        "yeslab_425": 0.9825,
+        "yeslab_443_reg30_max20_v1": 0.85,
+        "yeslab_464": 0.97125,
+        "yeslab_471": 0.940625,
+        "yeslab_484": 0.99875,
+        "yeslab_96": 0.94625
+      },
+      "product_of_coverages": 0.589804
+    },
+    {
+      "day": "2014-08-04",
+      "universe_rows": 1603,
+      "min_factor_coverage": 0.8203368683718029,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.820337,
+        "yeslab_357": 0.996257,
+        "yeslab_381": 0.99189,
+        "yeslab_425": 0.980661,
+        "yeslab_443_reg30_max20_v1": 0.846538,
+        "yeslab_464": 0.971304,
+        "yeslab_471": 0.938241,
+        "yeslab_484": 0.997505,
+        "yeslab_96": 0.945103
+      },
+      "product_of_coverages": 0.578171
+    },
+    {
+      "day": "2014-08-05",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8204488778054863,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.820449,
+        "yeslab_357": 0.996259,
+        "yeslab_381": 0.990648,
+        "yeslab_425": 0.979426,
+        "yeslab_443_reg30_max20_v1": 0.847257,
+        "yeslab_464": 0.970075,
+        "yeslab_471": 0.939526,
+        "yeslab_484": 0.99813,
+        "yeslab_96": 0.942643
+      },
+      "product_of_coverages": 0.576207
+    },
+    {
+      "day": "2014-08-06",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.8225,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.8225,
+        "yeslab_357": 0.998125,
+        "yeslab_381": 0.991875,
+        "yeslab_425": 0.981875,
+        "yeslab_443_reg30_max20_v1": 0.848125,
+        "yeslab_464": 0.970625,
+        "yeslab_471": 0.94,
+        "yeslab_484": 0.998125,
+        "yeslab_96": 0.945
+      },
+      "product_of_coverages": 0.583566
+    },
+    {
+      "day": "2014-08-07",
+      "universe_rows": 1601,
+      "min_factor_coverage": 0.8219862585883823,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.821986,
+        "yeslab_357": 0.995628,
+        "yeslab_381": 0.988757,
+        "yeslab_425": 0.980012,
+        "yeslab_443_reg30_max20_v1": 0.846971,
+        "yeslab_464": 0.971268,
+        "yeslab_471": 0.940037,
+        "yeslab_484": 0.998751,
+        "yeslab_96": 0.945034
+      },
+      "product_of_coverages": 0.578815
+    },
+    {
+      "day": "2014-08-08",
+      "universe_rows": 1601,
+      "min_factor_coverage": 0.820737039350406,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.820737,
+        "yeslab_357": 0.998751,
+        "yeslab_381": 0.991255,
+        "yeslab_425": 0.983136,
+        "yeslab_443_reg30_max20_v1": 0.848844,
+        "yeslab_464": 0.971893,
+        "yeslab_471": 0.943161,
+        "yeslab_484": 0.998751,
+        "yeslab_96": 0.948782
+      },
+      "product_of_coverages": 0.589001
+    },
+    {
+      "day": "2014-08-11",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.820625,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.820625,
+        "yeslab_357": 0.998125,
+        "yeslab_381": 0.993125,
+        "yeslab_425": 0.981875,
+        "yeslab_443_reg30_max20_v1": 0.848125,
+        "yeslab_464": 0.97125,
+        "yeslab_471": 0.945625,
+        "yeslab_484": 0.998125,
+        "yeslab_96": 0.9525
+      },
+      "product_of_coverages": 0.591493
+    },
+    {
+      "day": "2014-08-12",
+      "universe_rows": 1603,
+      "min_factor_coverage": 0.8184653774173425,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.818465,
+        "yeslab_357": 0.998129,
+        "yeslab_381": 0.993138,
+        "yeslab_425": 0.981909,
+        "yeslab_443_reg30_max20_v1": 0.844042,
+        "yeslab_464": 0.973799,
+        "yeslab_471": 0.946974,
+        "yeslab_484": 0.999376,
+        "yeslab_96": 0.953213
+      },
+      "product_of_coverages": 0.590688
+    },
+    {
+      "day": "2014-08-13",
+      "universe_rows": 1601,
+      "min_factor_coverage": 0.8157401623985009,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.81574,
+        "yeslab_357": 0.995003,
+        "yeslab_381": 0.992505,
+        "yeslab_425": 0.980012,
+        "yeslab_443_reg30_max20_v1": 0.840725,
+        "yeslab_464": 0.971268,
+        "yeslab_471": 0.947533,
+        "yeslab_484": 0.998751,
+        "yeslab_96": 0.950656
+      },
+      "product_of_coverages": 0.579973
+    },
+    {
+      "day": "2014-08-14",
+      "universe_rows": 1602,
+      "min_factor_coverage": 0.817103620474407,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.817104,
+        "yeslab_357": 0.996879,
+        "yeslab_381": 0.990012,
+        "yeslab_425": 0.977528,
+        "yeslab_443_reg30_max20_v1": 0.841448,
+        "yeslab_464": 0.97191,
+        "yeslab_471": 0.946317,
+        "yeslab_484": 0.998127,
+        "yeslab_96": 0.948814
+      },
+      "product_of_coverages": 0.577759
+    },
+    {
+      "day": "2014-08-15",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8148379052369077,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.814838,
+        "yeslab_357": 0.99813,
+        "yeslab_381": 0.990648,
+        "yeslab_425": 0.979426,
+        "yeslab_443_reg30_max20_v1": 0.842269,
+        "yeslab_464": 0.970698,
+        "yeslab_471": 0.944514,
+        "yeslab_484": 0.99813,
+        "yeslab_96": 0.949501
+      },
+      "product_of_coverages": 0.577531
+    },
+    {
+      "day": "2014-08-18",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8167604752970606,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.81676,
+        "yeslab_357": 0.997498,
+        "yeslab_381": 0.990619,
+        "yeslab_425": 0.981238,
+        "yeslab_443_reg30_max20_v1": 0.841151,
+        "yeslab_464": 0.970607,
+        "yeslab_471": 0.945591,
+        "yeslab_484": 0.998124,
+        "yeslab_96": 0.948718
+      },
+      "product_of_coverages": 0.578935
+    },
+    {
+      "day": "2014-08-19",
+      "universe_rows": 1601,
+      "min_factor_coverage": 0.8151155527795128,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.815116,
+        "yeslab_357": 0.994379,
+        "yeslab_381": 0.989382,
+        "yeslab_425": 0.978139,
+        "yeslab_443_reg30_max20_v1": 0.836977,
+        "yeslab_464": 0.968145,
+        "yeslab_471": 0.942536,
+        "yeslab_484": 0.998751,
+        "yeslab_96": 0.947533
+      },
+      "product_of_coverages": 0.566942
+    },
+    {
+      "day": "2014-08-20",
+      "universe_rows": 1602,
+      "min_factor_coverage": 0.815230961298377,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.815231,
+        "yeslab_357": 0.998752,
+        "yeslab_381": 0.990637,
+        "yeslab_425": 0.980649,
+        "yeslab_443_reg30_max20_v1": 0.837703,
+        "yeslab_464": 0.968165,
+        "yeslab_471": 0.944444,
+        "yeslab_484": 0.999376,
+        "yeslab_96": 0.949438
+      },
+      "product_of_coverages": 0.57488
+    },
+    {
+      "day": "2014-08-21",
+      "universe_rows": 1607,
+      "min_factor_coverage": 0.8139390168014935,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813939,
+        "yeslab_357": 0.996889,
+        "yeslab_381": 0.989421,
+        "yeslab_425": 0.979465,
+        "yeslab_443_reg30_max20_v1": 0.836963,
+        "yeslab_464": 0.969508,
+        "yeslab_471": 0.94524,
+        "yeslab_484": 0.998755,
+        "yeslab_96": 0.949596
+      },
+      "product_of_coverages": 0.572014
+    },
+    {
+      "day": "2014-08-22",
+      "universe_rows": 1605,
+      "min_factor_coverage": 0.8130841121495327,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813084,
+        "yeslab_357": 0.998754,
+        "yeslab_381": 0.991277,
+        "yeslab_425": 0.980062,
+        "yeslab_443_reg30_max20_v1": 0.843614,
+        "yeslab_464": 0.971963,
+        "yeslab_471": 0.94704,
+        "yeslab_484": 0.998754,
+        "yeslab_96": 0.952648
+      },
+      "product_of_coverages": 0.582902
+    },
+    {
+      "day": "2014-08-25",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.811875,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811875,
+        "yeslab_357": 0.998125,
+        "yeslab_381": 0.993125,
+        "yeslab_425": 0.978125,
+        "yeslab_443_reg30_max20_v1": 0.8425,
+        "yeslab_464": 0.970625,
+        "yeslab_471": 0.946875,
+        "yeslab_484": 0.99875,
+        "yeslab_96": 0.95
+      },
+      "product_of_coverages": 0.578318
+    },
+    {
+      "day": "2014-08-26",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8137931034482758,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813793,
+        "yeslab_357": 0.998119,
+        "yeslab_381": 0.99373,
+        "yeslab_425": 0.982445,
+        "yeslab_443_reg30_max20_v1": 0.845768,
+        "yeslab_464": 0.974295,
+        "yeslab_471": 0.948589,
+        "yeslab_484": 0.998746,
+        "yeslab_96": 0.951724
+      },
+      "product_of_coverages": 0.589195
+    },
+    {
+      "day": "2014-08-27",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8115216030056356,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811522,
+        "yeslab_357": 0.995617,
+        "yeslab_381": 0.992486,
+        "yeslab_425": 0.980589,
+        "yeslab_443_reg30_max20_v1": 0.845335,
+        "yeslab_464": 0.971196,
+        "yeslab_471": 0.946149,
+        "yeslab_484": 0.998748,
+        "yeslab_96": 0.951158
+      },
+      "product_of_coverages": 0.58024
+    },
+    {
+      "day": "2014-08-28",
+      "universe_rows": 1593,
+      "min_factor_coverage": 0.8085373509102323,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808537,
+        "yeslab_357": 0.997489,
+        "yeslab_381": 0.991839,
+        "yeslab_425": 0.98054,
+        "yeslab_443_reg30_max20_v1": 0.844319,
+        "yeslab_464": 0.971124,
+        "yeslab_471": 0.947269,
+        "yeslab_484": 0.998117,
+        "yeslab_96": 0.94978
+      },
+      "product_of_coverages": 0.577529
+    },
+    {
+      "day": "2014-08-29",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8080050031269543,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808005,
+        "yeslab_357": 0.995622,
+        "yeslab_381": 0.989368,
+        "yeslab_425": 0.978737,
+        "yeslab_443_reg30_max20_v1": 0.844903,
+        "yeslab_464": 0.968105,
+        "yeslab_471": 0.943715,
+        "yeslab_484": 0.998124,
+        "yeslab_96": 0.948718
+      },
+      "product_of_coverages": 0.569409
+    },
+    {
+      "day": "2014-09-01",
+      "universe_rows": 1584,
+      "min_factor_coverage": 0.8150252525252525,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.815025,
+        "yeslab_357": 0.994949,
+        "yeslab_381": 0.988636,
+        "yeslab_425": 0.982323,
+        "yeslab_443_reg30_max20_v1": 0.84596,
+        "yeslab_464": 0.974116,
+        "yeslab_471": 0.950126,
+        "yeslab_484": 0.999369,
+        "yeslab_96": 0.956439
+      },
+      "product_of_coverages": 0.58937
+    },
+    {
+      "day": "2014-09-02",
+      "universe_rows": 1590,
+      "min_factor_coverage": 0.8113207547169812,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811321,
+        "yeslab_357": 0.995597,
+        "yeslab_381": 0.98805,
+        "yeslab_425": 0.978616,
+        "yeslab_443_reg30_max20_v1": 0.845912,
+        "yeslab_464": 0.971069,
+        "yeslab_471": 0.949686,
+        "yeslab_484": 0.999371,
+        "yeslab_96": 0.953459
+      },
+      "product_of_coverages": 0.580566
+    },
+    {
+      "day": "2014-09-03",
+      "universe_rows": 1592,
+      "min_factor_coverage": 0.8084170854271356,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808417,
+        "yeslab_357": 0.996231,
+        "yeslab_381": 0.985553,
+        "yeslab_425": 0.977387,
+        "yeslab_443_reg30_max20_v1": 0.845477,
+        "yeslab_464": 0.968593,
+        "yeslab_471": 0.947864,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.952261
+      },
+      "product_of_coverages": 0.57344
+    },
+    {
+      "day": "2014-09-04",
+      "universe_rows": 1591,
+      "min_factor_coverage": 0.8082966687617851,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808297,
+        "yeslab_357": 0.996857,
+        "yeslab_381": 0.986172,
+        "yeslab_425": 0.976744,
+        "yeslab_443_reg30_max20_v1": 0.846009,
+        "yeslab_464": 0.969202,
+        "yeslab_471": 0.945946,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.949089
+      },
+      "product_of_coverages": 0.571346
+    },
+    {
+      "day": "2014-09-05",
+      "universe_rows": 1602,
+      "min_factor_coverage": 0.8064918851435705,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806492,
+        "yeslab_357": 0.993134,
+        "yeslab_381": 0.984395,
+        "yeslab_425": 0.971286,
+        "yeslab_443_reg30_max20_v1": 0.845818,
+        "yeslab_464": 0.966916,
+        "yeslab_471": 0.941323,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.945069
+      },
+      "product_of_coverages": 0.557175
+    },
+    {
+      "day": "2014-09-09",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.8101503759398496,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.81015,
+        "yeslab_357": 0.997494,
+        "yeslab_381": 0.986216,
+        "yeslab_425": 0.969925,
+        "yeslab_443_reg30_max20_v1": 0.845865,
+        "yeslab_464": 0.964912,
+        "yeslab_471": 0.939223,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.941729
+      },
+      "product_of_coverages": 0.558045
+    },
+    {
+      "day": "2014-09-10",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8067542213883677,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806754,
+        "yeslab_357": 0.995622,
+        "yeslab_381": 0.984991,
+        "yeslab_425": 0.968105,
+        "yeslab_443_reg30_max20_v1": 0.843652,
+        "yeslab_464": 0.961226,
+        "yeslab_471": 0.934959,
+        "yeslab_484": 0.999375,
+        "yeslab_96": 0.939337
+      },
+      "product_of_coverages": 0.545157
+    },
+    {
+      "day": "2014-09-11",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.8070175438596491,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.807018,
+        "yeslab_357": 0.996867,
+        "yeslab_381": 0.984962,
+        "yeslab_425": 0.966165,
+        "yeslab_443_reg30_max20_v1": 0.842105,
+        "yeslab_464": 0.959273,
+        "yeslab_471": 0.932957,
+        "yeslab_484": 0.998747,
+        "yeslab_96": 0.936717
+      },
+      "product_of_coverages": 0.539791
+    },
+    {
+      "day": "2014-09-12",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8066332916145181,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806633,
+        "yeslab_357": 0.996245,
+        "yeslab_381": 0.988736,
+        "yeslab_425": 0.966834,
+        "yeslab_443_reg30_max20_v1": 0.842303,
+        "yeslab_464": 0.957447,
+        "yeslab_471": 0.933041,
+        "yeslab_484": 0.998123,
+        "yeslab_96": 0.938048
+      },
+      "product_of_coverages": 0.541212
+    },
+    {
+      "day": "2014-09-15",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8037617554858935,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.803762,
+        "yeslab_357": 0.996865,
+        "yeslab_381": 0.986207,
+        "yeslab_425": 0.966144,
+        "yeslab_443_reg30_max20_v1": 0.841379,
+        "yeslab_464": 0.953605,
+        "yeslab_471": 0.931661,
+        "yeslab_484": 0.996865,
+        "yeslab_96": 0.936677
+      },
+      "product_of_coverages": 0.532867
+    },
+    {
+      "day": "2014-09-16",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.8070175438596491,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.807018,
+        "yeslab_357": 0.99812,
+        "yeslab_381": 0.987469,
+        "yeslab_425": 0.968045,
+        "yeslab_443_reg30_max20_v1": 0.841479,
+        "yeslab_464": 0.954887,
+        "yeslab_471": 0.932331,
+        "yeslab_484": 0.994987,
+        "yeslab_96": 0.938596
+      },
+      "product_of_coverages": 0.5387
+    },
+    {
+      "day": "2014-09-17",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8023764853033146,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.802376,
+        "yeslab_357": 0.996248,
+        "yeslab_381": 0.987492,
+        "yeslab_425": 0.966854,
+        "yeslab_443_reg30_max20_v1": 0.8399,
+        "yeslab_464": 0.95122,
+        "yeslab_471": 0.933083,
+        "yeslab_484": 0.996873,
+        "yeslab_96": 0.935585
+      },
+      "product_of_coverages": 0.53063
+    },
+    {
+      "day": "2014-09-18",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8027551659361303,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.802755,
+        "yeslab_357": 0.996243,
+        "yeslab_381": 0.988729,
+        "yeslab_425": 0.966187,
+        "yeslab_443_reg30_max20_v1": 0.840326,
+        "yeslab_464": 0.951158,
+        "yeslab_471": 0.930495,
+        "yeslab_484": 0.996869,
+        "yeslab_96": 0.935504
+      },
+      "product_of_coverages": 0.529889
+    },
+    {
+      "day": "2014-09-19",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8043887147335423,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.804389,
+        "yeslab_357": 0.996238,
+        "yeslab_381": 0.988715,
+        "yeslab_425": 0.97116,
+        "yeslab_443_reg30_max20_v1": 0.841379,
+        "yeslab_464": 0.953605,
+        "yeslab_471": 0.932915,
+        "yeslab_484": 0.998119,
+        "yeslab_96": 0.934796
+      },
+      "product_of_coverages": 0.537394
+    },
+    {
+      "day": "2014-09-22",
+      "universe_rows": 1588,
+      "min_factor_coverage": 0.8066750629722922,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806675,
+        "yeslab_357": 0.997481,
+        "yeslab_381": 0.988665,
+        "yeslab_425": 0.971662,
+        "yeslab_443_reg30_max20_v1": 0.844458,
+        "yeslab_464": 0.95529,
+        "yeslab_471": 0.93136,
+        "yeslab_484": 0.998111,
+        "yeslab_96": 0.935139
+      },
+      "product_of_coverages": 0.542068
+    },
+    {
+      "day": "2014-09-23",
+      "universe_rows": 1592,
+      "min_factor_coverage": 0.8077889447236181,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.807789,
+        "yeslab_357": 0.996859,
+        "yeslab_381": 0.988693,
+        "yeslab_425": 0.972362,
+        "yeslab_443_reg30_max20_v1": 0.846734,
+        "yeslab_464": 0.954774,
+        "yeslab_471": 0.930276,
+        "yeslab_484": 0.998116,
+        "yeslab_96": 0.933417
+      },
+      "product_of_coverages": 0.542422
+    },
+    {
+      "day": "2014-09-24",
+      "universe_rows": 1594,
+      "min_factor_coverage": 0.8111668757841907,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811167,
+        "yeslab_357": 0.998118,
+        "yeslab_381": 0.99059,
+        "yeslab_425": 0.973651,
+        "yeslab_443_reg30_max20_v1": 0.847553,
+        "yeslab_464": 0.956713,
+        "yeslab_471": 0.930364,
+        "yeslab_484": 0.998118,
+        "yeslab_96": 0.933501
+      },
+      "product_of_coverages": 0.548892
+    },
+    {
+      "day": "2014-09-25",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8105065666041276,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810507,
+        "yeslab_357": 0.996248,
+        "yeslab_381": 0.990619,
+        "yeslab_425": 0.97561,
+        "yeslab_443_reg30_max20_v1": 0.845528,
+        "yeslab_464": 0.9606,
+        "yeslab_471": 0.928705,
+        "yeslab_484": 0.997498,
+        "yeslab_96": 0.931832
+      },
+      "product_of_coverages": 0.547149
+    },
+    {
+      "day": "2014-09-26",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8061097256857855,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.80611,
+        "yeslab_357": 0.995012,
+        "yeslab_381": 0.989401,
+        "yeslab_425": 0.975062,
+        "yeslab_443_reg30_max20_v1": 0.843516,
+        "yeslab_464": 0.958853,
+        "yeslab_471": 0.924564,
+        "yeslab_484": 0.99813,
+        "yeslab_96": 0.929551
+      },
+      "product_of_coverages": 0.536871
+    },
+    {
+      "day": "2014-09-29",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8060075093867334,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806008,
+        "yeslab_357": 0.998123,
+        "yeslab_381": 0.989987,
+        "yeslab_425": 0.974969,
+        "yeslab_443_reg30_max20_v1": 0.843554,
+        "yeslab_464": 0.961202,
+        "yeslab_471": 0.926783,
+        "yeslab_484": 0.998748,
+        "yeslab_96": 0.93179
+      },
+      "product_of_coverages": 0.543029
+    },
+    {
+      "day": "2014-09-30",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8054862842892768,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.805486,
+        "yeslab_357": 0.993766,
+        "yeslab_381": 0.986908,
+        "yeslab_425": 0.973192,
+        "yeslab_443_reg30_max20_v1": 0.841022,
+        "yeslab_464": 0.959476,
+        "yeslab_471": 0.925187,
+        "yeslab_484": 0.99813,
+        "yeslab_96": 0.930175
+      },
+      "product_of_coverages": 0.532893
+    },
+    {
+      "day": "2014-10-08",
+      "universe_rows": 1583,
+      "min_factor_coverage": 0.8123815540113708,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.812382,
+        "yeslab_357": 0.996841,
+        "yeslab_381": 0.989893,
+        "yeslab_425": 0.98168,
+        "yeslab_443_reg30_max20_v1": 0.849021,
+        "yeslab_464": 0.972205,
+        "yeslab_471": 0.934934,
+        "yeslab_484": 0.998737,
+        "yeslab_96": 0.939356
+      },
+      "product_of_coverages": 0.569747
+    },
+    {
+      "day": "2014-10-09",
+      "universe_rows": 1588,
+      "min_factor_coverage": 0.8079345088161209,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.807935,
+        "yeslab_357": 0.997481,
+        "yeslab_381": 0.989924,
+        "yeslab_425": 0.978589,
+        "yeslab_443_reg30_max20_v1": 0.845718,
+        "yeslab_464": 0.967884,
+        "yeslab_471": 0.93136,
+        "yeslab_484": 0.998111,
+        "yeslab_96": 0.935768
+      },
+      "product_of_coverages": 0.5559
+    },
+    {
+      "day": "2014-10-10",
+      "universe_rows": 1588,
+      "min_factor_coverage": 0.8054156171284634,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.805416,
+        "yeslab_357": 0.99937,
+        "yeslab_381": 0.988035,
+        "yeslab_425": 0.97733,
+        "yeslab_443_reg30_max20_v1": 0.844458,
+        "yeslab_464": 0.966625,
+        "yeslab_471": 0.930101,
+        "yeslab_484": 0.998741,
+        "yeslab_96": 0.938917
+      },
+      "product_of_coverages": 0.553358
+    },
+    {
+      "day": "2014-10-13",
+      "universe_rows": 1580,
+      "min_factor_coverage": 0.8069620253164557,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806962,
+        "yeslab_357": 0.998734,
+        "yeslab_381": 0.991139,
+        "yeslab_425": 0.977848,
+        "yeslab_443_reg30_max20_v1": 0.843671,
+        "yeslab_464": 0.967722,
+        "yeslab_471": 0.936076,
+        "yeslab_484": 0.998734,
+        "yeslab_96": 0.940506
+      },
+      "product_of_coverages": 0.560732
+    },
+    {
+      "day": "2014-10-14",
+      "universe_rows": 1583,
+      "min_factor_coverage": 0.8104864181933038,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810486,
+        "yeslab_357": 0.997473,
+        "yeslab_381": 0.991156,
+        "yeslab_425": 0.977258,
+        "yeslab_443_reg30_max20_v1": 0.843967,
+        "yeslab_464": 0.967783,
+        "yeslab_471": 0.936829,
+        "yeslab_484": 0.998105,
+        "yeslab_96": 0.941251
+      },
+      "product_of_coverages": 0.562916
+    },
+    {
+      "day": "2014-10-15",
+      "universe_rows": 1583,
+      "min_factor_coverage": 0.8142766898294378,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.814277,
+        "yeslab_357": 0.998105,
+        "yeslab_381": 0.993051,
+        "yeslab_425": 0.977258,
+        "yeslab_443_reg30_max20_v1": 0.845862,
+        "yeslab_464": 0.969046,
+        "yeslab_471": 0.938724,
+        "yeslab_484": 0.998737,
+        "yeslab_96": 0.944409
+      },
+      "product_of_coverages": 0.57243
+    },
+    {
+      "day": "2014-10-16",
+      "universe_rows": 1586,
+      "min_factor_coverage": 0.8139974779319041,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813997,
+        "yeslab_357": 0.996847,
+        "yeslab_381": 0.991803,
+        "yeslab_425": 0.977932,
+        "yeslab_443_reg30_max20_v1": 0.844893,
+        "yeslab_464": 0.967213,
+        "yeslab_471": 0.93947,
+        "yeslab_484": 0.997478,
+        "yeslab_96": 0.945776
+      },
+      "product_of_coverages": 0.570012
+    },
+    {
+      "day": "2014-10-17",
+      "universe_rows": 1592,
+      "min_factor_coverage": 0.8096733668341709,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809673,
+        "yeslab_357": 0.997487,
+        "yeslab_381": 0.990578,
+        "yeslab_425": 0.975503,
+        "yeslab_443_reg30_max20_v1": 0.842965,
+        "yeslab_464": 0.966709,
+        "yeslab_471": 0.939698,
+        "yeslab_484": 0.996859,
+        "yeslab_96": 0.943467
+      },
+      "product_of_coverages": 0.562068
+    },
+    {
+      "day": "2014-10-20",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8100313479623824,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810031,
+        "yeslab_357": 0.996238,
+        "yeslab_381": 0.989969,
+        "yeslab_425": 0.977429,
+        "yeslab_443_reg30_max20_v1": 0.843887,
+        "yeslab_464": 0.96489,
+        "yeslab_471": 0.937931,
+        "yeslab_484": 0.996865,
+        "yeslab_96": 0.941066
+      },
+      "product_of_coverages": 0.55945
+    },
+    {
+      "day": "2014-10-21",
+      "universe_rows": 1592,
+      "min_factor_coverage": 0.8103015075376885,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810302,
+        "yeslab_357": 0.998744,
+        "yeslab_381": 0.990578,
+        "yeslab_425": 0.978643,
+        "yeslab_443_reg30_max20_v1": 0.843593,
+        "yeslab_464": 0.965452,
+        "yeslab_471": 0.937814,
+        "yeslab_484": 0.996859,
+        "yeslab_96": 0.942839
+      },
+      "product_of_coverages": 0.563204
+    },
+    {
+      "day": "2014-10-22",
+      "universe_rows": 1596,
+      "min_factor_coverage": 0.8095238095238095,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809524,
+        "yeslab_357": 0.995614,
+        "yeslab_381": 0.990602,
+        "yeslab_425": 0.978697,
+        "yeslab_443_reg30_max20_v1": 0.841479,
+        "yeslab_464": 0.966165,
+        "yeslab_471": 0.93797,
+        "yeslab_484": 0.997494,
+        "yeslab_96": 0.941103
+      },
+      "product_of_coverages": 0.559369
+    },
+    {
+      "day": "2014-10-23",
+      "universe_rows": 1591,
+      "min_factor_coverage": 0.8089252042740415,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808925,
+        "yeslab_357": 0.996857,
+        "yeslab_381": 0.989943,
+        "yeslab_425": 0.978001,
+        "yeslab_443_reg30_max20_v1": 0.837838,
+        "yeslab_464": 0.963545,
+        "yeslab_471": 0.935889,
+        "yeslab_484": 0.997486,
+        "yeslab_96": 0.940289
+      },
+      "product_of_coverages": 0.553243
+    },
+    {
+      "day": "2014-10-24",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8094043887147335,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809404,
+        "yeslab_357": 0.998119,
+        "yeslab_381": 0.99185,
+        "yeslab_425": 0.978056,
+        "yeslab_443_reg30_max20_v1": 0.837618,
+        "yeslab_464": 0.968025,
+        "yeslab_471": 0.937931,
+        "yeslab_484": 0.997492,
+        "yeslab_96": 0.94232
+      },
+      "product_of_coverages": 0.560233
+    },
+    {
+      "day": "2014-10-27",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.809255784865541,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809256,
+        "yeslab_357": 0.995622,
+        "yeslab_381": 0.988743,
+        "yeslab_425": 0.977486,
+        "yeslab_443_reg30_max20_v1": 0.833646,
+        "yeslab_464": 0.968105,
+        "yeslab_471": 0.934959,
+        "yeslab_484": 0.998124,
+        "yeslab_96": 0.938712
+      },
+      "product_of_coverages": 0.550539
+    },
+    {
+      "day": "2014-10-28",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8079800498753117,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.80798,
+        "yeslab_357": 0.995636,
+        "yeslab_381": 0.988778,
+        "yeslab_425": 0.975062,
+        "yeslab_443_reg30_max20_v1": 0.834165,
+        "yeslab_464": 0.968204,
+        "yeslab_471": 0.935786,
+        "yeslab_484": 0.99813,
+        "yeslab_96": 0.938903
+      },
+      "product_of_coverages": 0.549332
+    },
+    {
+      "day": "2014-10-29",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8061288305190745,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806129,
+        "yeslab_357": 0.998749,
+        "yeslab_381": 0.989994,
+        "yeslab_425": 0.976235,
+        "yeslab_443_reg30_max20_v1": 0.834271,
+        "yeslab_464": 0.966854,
+        "yeslab_471": 0.935585,
+        "yeslab_484": 0.998124,
+        "yeslab_96": 0.939962
+      },
+      "product_of_coverages": 0.550927
+    },
+    {
+      "day": "2014-10-30",
+      "universe_rows": 1600,
+      "min_factor_coverage": 0.80375,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.80375,
+        "yeslab_357": 0.99625,
+        "yeslab_381": 0.988125,
+        "yeslab_425": 0.974375,
+        "yeslab_443_reg30_max20_v1": 0.833125,
+        "yeslab_464": 0.96375,
+        "yeslab_471": 0.935,
+        "yeslab_484": 0.99875,
+        "yeslab_96": 0.94125
+      },
+      "product_of_coverages": 0.544096
+    },
+    {
+      "day": "2014-10-31",
+      "universe_rows": 1604,
+      "min_factor_coverage": 0.8067331670822943,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.806733,
+        "yeslab_357": 0.995636,
+        "yeslab_381": 0.988155,
+        "yeslab_425": 0.973815,
+        "yeslab_443_reg30_max20_v1": 0.837905,
+        "yeslab_464": 0.96384,
+        "yeslab_471": 0.937032,
+        "yeslab_484": 0.99813,
+        "yeslab_96": 0.938903
+      },
+      "product_of_coverages": 0.548143
+    },
+    {
+      "day": "2014-11-03",
+      "universe_rows": 1583,
+      "min_factor_coverage": 0.8180669614655717,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.818067,
+        "yeslab_357": 0.998105,
+        "yeslab_381": 0.991788,
+        "yeslab_425": 0.981049,
+        "yeslab_443_reg30_max20_v1": 0.850284,
+        "yeslab_464": 0.9741,
+        "yeslab_471": 0.9482,
+        "yeslab_484": 0.998737,
+        "yeslab_96": 0.958307
+      },
+      "product_of_coverages": 0.597169
+    },
+    {
+      "day": "2014-11-04",
+      "universe_rows": 1584,
+      "min_factor_coverage": 0.8207070707070707,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.820707,
+        "yeslab_357": 0.996843,
+        "yeslab_381": 0.989268,
+        "yeslab_425": 0.981061,
+        "yeslab_443_reg30_max20_v1": 0.849747,
+        "yeslab_464": 0.974116,
+        "yeslab_471": 0.955177,
+        "yeslab_484": 0.999369,
+        "yeslab_96": 0.957702
+      },
+      "product_of_coverages": 0.600849
+    },
+    {
+      "day": "2014-11-05",
+      "universe_rows": 1592,
+      "min_factor_coverage": 0.8153266331658291,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.815327,
+        "yeslab_357": 0.994975,
+        "yeslab_381": 0.987437,
+        "yeslab_425": 0.976759,
+        "yeslab_443_reg30_max20_v1": 0.845477,
+        "yeslab_464": 0.968593,
+        "yeslab_471": 0.948492,
+        "yeslab_484": 0.999372,
+        "yeslab_96": 0.952889
+      },
+      "product_of_coverages": 0.578745
+    },
+    {
+      "day": "2014-11-06",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8121477770820288,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.812148,
+        "yeslab_357": 0.996243,
+        "yeslab_381": 0.988103,
+        "yeslab_425": 0.972448,
+        "yeslab_443_reg30_max20_v1": 0.841578,
+        "yeslab_464": 0.96556,
+        "yeslab_471": 0.944897,
+        "yeslab_484": 0.999374,
+        "yeslab_96": 0.946149
+      },
+      "product_of_coverages": 0.564436
+    },
+    {
+      "day": "2014-11-07",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8108954289292424,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810895,
+        "yeslab_357": 0.999374,
+        "yeslab_381": 0.989355,
+        "yeslab_425": 0.976832,
+        "yeslab_443_reg30_max20_v1": 0.841578,
+        "yeslab_464": 0.966187,
+        "yeslab_471": 0.944271,
+        "yeslab_484": 0.999374,
+        "yeslab_96": 0.946775
+      },
+      "product_of_coverages": 0.568973
+    },
+    {
+      "day": "2014-11-10",
+      "universe_rows": 1591,
+      "min_factor_coverage": 0.8089252042740415,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808925,
+        "yeslab_357": 0.997486,
+        "yeslab_381": 0.991201,
+        "yeslab_425": 0.979258,
+        "yeslab_443_reg30_max20_v1": 0.839723,
+        "yeslab_464": 0.967945,
+        "yeslab_471": 0.942803,
+        "yeslab_484": 1.0,
+        "yeslab_96": 0.947203
+      },
+      "product_of_coverages": 0.568493
+    },
+    {
+      "day": "2014-11-11",
+      "universe_rows": 1597,
+      "min_factor_coverage": 0.8071383844708829,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.807138,
+        "yeslab_357": 0.996869,
+        "yeslab_381": 0.992486,
+        "yeslab_425": 0.976832,
+        "yeslab_443_reg30_max20_v1": 0.838447,
+        "yeslab_464": 0.967439,
+        "yeslab_471": 0.94114,
+        "yeslab_484": 0.999374,
+        "yeslab_96": 0.943018
+      },
+      "product_of_coverages": 0.561218
+    },
+    {
+      "day": "2014-11-12",
+      "universe_rows": 1599,
+      "min_factor_coverage": 0.8086303939962477,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.80863,
+        "yeslab_357": 0.997498,
+        "yeslab_381": 0.993746,
+        "yeslab_425": 0.978737,
+        "yeslab_443_reg30_max20_v1": 0.8399,
+        "yeslab_464": 0.966229,
+        "yeslab_471": 0.939337,
+        "yeslab_484": 0.999375,
+        "yeslab_96": 0.943715
+      },
+      "product_of_coverages": 0.564029
+    },
+    {
+      "day": "2014-11-13",
+      "universe_rows": 1598,
+      "min_factor_coverage": 0.8097622027534418,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809762,
+        "yeslab_357": 0.997497,
+        "yeslab_381": 0.991865,
+        "yeslab_425": 0.980601,
+        "yeslab_443_reg30_max20_v1": 0.841677,
+        "yeslab_464": 0.968711,
+        "yeslab_471": 0.941176,
+        "yeslab_484": 0.999374,
+        "yeslab_96": 0.946183
+      },
+      "product_of_coverages": 0.570069
+    },
+    {
+      "day": "2014-11-14",
+      "universe_rows": 1602,
+      "min_factor_coverage": 0.8089887640449438,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808989,
+        "yeslab_357": 0.997503,
+        "yeslab_381": 0.991885,
+        "yeslab_425": 0.978777,
+        "yeslab_443_reg30_max20_v1": 0.840824,
+        "yeslab_464": 0.970037,
+        "yeslab_471": 0.941948,
+        "yeslab_484": 0.998752,
+        "yeslab_96": 0.947566
+      },
+      "product_of_coverages": 0.569625
+    },
+    {
+      "day": "2014-11-17",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8094043887147335,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809404,
+        "yeslab_357": 0.997492,
+        "yeslab_381": 0.993103,
+        "yeslab_425": 0.979937,
+        "yeslab_443_reg30_max20_v1": 0.840752,
+        "yeslab_464": 0.968025,
+        "yeslab_471": 0.942947,
+        "yeslab_484": 0.998119,
+        "yeslab_96": 0.946082
+      },
+      "product_of_coverages": 0.569404
+    },
+    {
+      "day": "2014-11-18",
+      "universe_rows": 1595,
+      "min_factor_coverage": 0.8119122257053292,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811912,
+        "yeslab_357": 0.996865,
+        "yeslab_381": 0.992476,
+        "yeslab_425": 0.980564,
+        "yeslab_443_reg30_max20_v1": 0.840752,
+        "yeslab_464": 0.969279,
+        "yeslab_471": 0.94232,
+        "yeslab_484": 0.997492,
+        "yeslab_96": 0.947962
+      },
+      "product_of_coverages": 0.571949
+    },
+    {
+      "day": "2014-11-19",
+      "universe_rows": 1592,
+      "min_factor_coverage": 0.8121859296482412,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.812186,
+        "yeslab_357": 0.999372,
+        "yeslab_381": 0.994347,
+        "yeslab_425": 0.984296,
+        "yeslab_443_reg30_max20_v1": 0.843593,
+        "yeslab_464": 0.97299,
+        "yeslab_471": 0.94598,
+        "yeslab_484": 0.998744,
+        "yeslab_96": 0.950377
+      },
+      "product_of_coverages": 0.58549
+    },
+    {
+      "day": "2014-11-20",
+      "universe_rows": 1580,
+      "min_factor_coverage": 0.8151898734177215,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.81519,
+        "yeslab_357": 0.998101,
+        "yeslab_381": 0.994304,
+        "yeslab_425": 0.98481,
+        "yeslab_443_reg30_max20_v1": 0.846835,
+        "yeslab_464": 0.972785,
+        "yeslab_471": 0.948101,
+        "yeslab_484": 0.998734,
+        "yeslab_96": 0.95
+      },
+      "product_of_coverages": 0.590404
+    },
+    {
+      "day": "2014-11-21",
+      "universe_rows": 1587,
+      "min_factor_coverage": 0.8097038437303088,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809704,
+        "yeslab_357": 0.996849,
+        "yeslab_381": 0.993699,
+        "yeslab_425": 0.984247,
+        "yeslab_443_reg30_max20_v1": 0.8431,
+        "yeslab_464": 0.972275,
+        "yeslab_471": 0.942029,
+        "yeslab_484": 0.99811,
+        "yeslab_96": 0.94833
+      },
+      "product_of_coverages": 0.577012
+    },
+    {
+      "day": "2014-11-24",
+      "universe_rows": 1583,
+      "min_factor_coverage": 0.8111181301326595,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811118,
+        "yeslab_357": 0.997473,
+        "yeslab_381": 0.994315,
+        "yeslab_425": 0.984839,
+        "yeslab_443_reg30_max20_v1": 0.847757,
+        "yeslab_464": 0.9741,
+        "yeslab_471": 0.945673,
+        "yeslab_484": 0.998737,
+        "yeslab_96": 0.951358
+      },
+      "product_of_coverages": 0.587875
+    },
+    {
+      "day": "2014-11-25",
+      "universe_rows": 1586,
+      "min_factor_coverage": 0.8095838587641866,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809584,
+        "yeslab_357": 0.996217,
+        "yeslab_381": 0.991173,
+        "yeslab_425": 0.982976,
+        "yeslab_443_reg30_max20_v1": 0.848045,
+        "yeslab_464": 0.974149,
+        "yeslab_471": 0.945776,
+        "yeslab_484": 0.998108,
+        "yeslab_96": 0.947667
+      },
+      "product_of_coverages": 0.58073
+    },
+    {
+      "day": "2014-11-26",
+      "universe_rows": 1588,
+      "min_factor_coverage": 0.8091939546599496,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.809194,
+        "yeslab_357": 0.996851,
+        "yeslab_381": 0.989295,
+        "yeslab_425": 0.981108,
+        "yeslab_443_reg30_max20_v1": 0.850756,
+        "yeslab_464": 0.971662,
+        "yeslab_471": 0.943325,
+        "yeslab_484": 0.998111,
+        "yeslab_96": 0.948992
+      },
+      "product_of_coverages": 0.578294
+    },
+    {
+      "day": "2014-11-27",
+      "universe_rows": 1585,
+      "min_factor_coverage": 0.8082018927444795,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808202,
+        "yeslab_357": 0.997476,
+        "yeslab_381": 0.989905,
+        "yeslab_425": 0.981073,
+        "yeslab_443_reg30_max20_v1": 0.851735,
+        "yeslab_464": 0.972871,
+        "yeslab_471": 0.943849,
+        "yeslab_484": 0.997476,
+        "yeslab_96": 0.948896
+      },
+      "product_of_coverages": 0.579563
+    },
+    {
+      "day": "2014-11-28",
+      "universe_rows": 1587,
+      "min_factor_coverage": 0.8071833648393195,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.807183,
+        "yeslab_357": 0.995589,
+        "yeslab_381": 0.987398,
+        "yeslab_425": 0.979836,
+        "yeslab_443_reg30_max20_v1": 0.848771,
+        "yeslab_464": 0.970384,
+        "yeslab_471": 0.942659,
+        "yeslab_484": 0.99811,
+        "yeslab_96": 0.94833
+      },
+      "product_of_coverages": 0.57138
+    },
+    {
+      "day": "2014-12-01",
+      "universe_rows": 1568,
+      "min_factor_coverage": 0.8125,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.8125,
+        "yeslab_357": 0.996811,
+        "yeslab_381": 0.989796,
+        "yeslab_425": 0.981505,
+        "yeslab_443_reg30_max20_v1": 0.853954,
+        "yeslab_464": 0.97449,
+        "yeslab_471": 0.949617,
+        "yeslab_484": 0.999362,
+        "yeslab_96": 0.953444
+      },
+      "product_of_coverages": 0.592452
+    },
+    {
+      "day": "2014-12-02",
+      "universe_rows": 1573,
+      "min_factor_coverage": 0.8111888111888111,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811189,
+        "yeslab_357": 0.993643,
+        "yeslab_381": 0.985378,
+        "yeslab_425": 0.975207,
+        "yeslab_443_reg30_max20_v1": 0.850604,
+        "yeslab_464": 0.969485,
+        "yeslab_471": 0.944692,
+        "yeslab_484": 0.998729,
+        "yeslab_96": 0.949777
+      },
+      "product_of_coverages": 0.572374
+    },
+    {
+      "day": "2014-12-03",
+      "universe_rows": 1576,
+      "min_factor_coverage": 0.8134517766497462,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813452,
+        "yeslab_357": 0.996193,
+        "yeslab_381": 0.984137,
+        "yeslab_425": 0.972716,
+        "yeslab_443_reg30_max20_v1": 0.852792,
+        "yeslab_464": 0.967005,
+        "yeslab_471": 0.945431,
+        "yeslab_484": 0.998731,
+        "yeslab_96": 0.950508
+      },
+      "product_of_coverages": 0.574147
+    },
+    {
+      "day": "2014-12-04",
+      "universe_rows": 1575,
+      "min_factor_coverage": 0.813968253968254,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813968,
+        "yeslab_357": 0.99619,
+        "yeslab_381": 0.984762,
+        "yeslab_425": 0.972063,
+        "yeslab_443_reg30_max20_v1": 0.853333,
+        "yeslab_464": 0.966349,
+        "yeslab_471": 0.945397,
+        "yeslab_484": 0.99873,
+        "yeslab_96": 0.949841
+      },
+      "product_of_coverages": 0.57404
+    },
+    {
+      "day": "2014-12-05",
+      "universe_rows": 1580,
+      "min_factor_coverage": 0.8107594936708861,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810759,
+        "yeslab_357": 0.99557,
+        "yeslab_381": 0.982278,
+        "yeslab_425": 0.968354,
+        "yeslab_443_reg30_max20_v1": 0.849367,
+        "yeslab_464": 0.962658,
+        "yeslab_471": 0.941139,
+        "yeslab_484": 0.998101,
+        "yeslab_96": 0.94557
+      },
+      "product_of_coverages": 0.557599
+    },
+    {
+      "day": "2014-12-08",
+      "universe_rows": 1576,
+      "min_factor_coverage": 0.8083756345177665,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.808376,
+        "yeslab_357": 0.996827,
+        "yeslab_381": 0.986041,
+        "yeslab_425": 0.968909,
+        "yeslab_443_reg30_max20_v1": 0.847081,
+        "yeslab_464": 0.959391,
+        "yeslab_471": 0.937817,
+        "yeslab_484": 0.998096,
+        "yeslab_96": 0.94099
+      },
+      "product_of_coverages": 0.55107
+    },
+    {
+      "day": "2014-12-09",
+      "universe_rows": 1576,
+      "min_factor_coverage": 0.8109137055837563,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810914,
+        "yeslab_357": 0.994924,
+        "yeslab_381": 0.985406,
+        "yeslab_425": 0.966371,
+        "yeslab_443_reg30_max20_v1": 0.846447,
+        "yeslab_464": 0.956853,
+        "yeslab_471": 0.935279,
+        "yeslab_484": 0.998096,
+        "yeslab_96": 0.939086
+      },
+      "product_of_coverages": 0.545491
+    },
+    {
+      "day": "2014-12-10",
+      "universe_rows": 1580,
+      "min_factor_coverage": 0.8132911392405063,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813291,
+        "yeslab_357": 0.996203,
+        "yeslab_381": 0.986076,
+        "yeslab_425": 0.96519,
+        "yeslab_443_reg30_max20_v1": 0.847468,
+        "yeslab_464": 0.955063,
+        "yeslab_471": 0.934177,
+        "yeslab_484": 0.998734,
+        "yeslab_96": 0.936709
+      },
+      "product_of_coverages": 0.545452
+    },
+    {
+      "day": "2014-12-11",
+      "universe_rows": 1578,
+      "min_factor_coverage": 0.8143219264892269,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.814322,
+        "yeslab_357": 0.996831,
+        "yeslab_381": 0.987326,
+        "yeslab_425": 0.965779,
+        "yeslab_443_reg30_max20_v1": 0.845374,
+        "yeslab_464": 0.953739,
+        "yeslab_471": 0.931559,
+        "yeslab_484": 0.998733,
+        "yeslab_96": 0.935361
+      },
+      "product_of_coverages": 0.543092
+    },
+    {
+      "day": "2014-12-12",
+      "universe_rows": 1580,
+      "min_factor_coverage": 0.8132911392405063,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813291,
+        "yeslab_357": 0.996203,
+        "yeslab_381": 0.986709,
+        "yeslab_425": 0.965823,
+        "yeslab_443_reg30_max20_v1": 0.849367,
+        "yeslab_464": 0.953797,
+        "yeslab_471": 0.929747,
+        "yeslab_484": 0.998101,
+        "yeslab_96": 0.93481
+      },
+      "product_of_coverages": 0.542618
+    },
+    {
+      "day": "2014-12-15",
+      "universe_rows": 1581,
+      "min_factor_coverage": 0.8140417457305503,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.814042,
+        "yeslab_357": 0.99747,
+        "yeslab_381": 0.988615,
+        "yeslab_425": 0.970272,
+        "yeslab_443_reg30_max20_v1": 0.850095,
+        "yeslab_464": 0.953827,
+        "yeslab_471": 0.931689,
+        "yeslab_484": 0.99747,
+        "yeslab_96": 0.938014
+      },
+      "product_of_coverages": 0.550534
+    },
+    {
+      "day": "2014-12-16",
+      "universe_rows": 1585,
+      "min_factor_coverage": 0.8151419558359622,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.815142,
+        "yeslab_357": 0.994953,
+        "yeslab_381": 0.987382,
+        "yeslab_425": 0.970978,
+        "yeslab_443_reg30_max20_v1": 0.849842,
+        "yeslab_464": 0.952681,
+        "yeslab_471": 0.934385,
+        "yeslab_484": 0.998107,
+        "yeslab_96": 0.935647
+      },
+      "product_of_coverages": 0.549327
+    },
+    {
+      "day": "2014-12-17",
+      "universe_rows": 1584,
+      "min_factor_coverage": 0.8162878787878788,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.816288,
+        "yeslab_357": 0.998106,
+        "yeslab_381": 0.988636,
+        "yeslab_425": 0.972222,
+        "yeslab_443_reg30_max20_v1": 0.849747,
+        "yeslab_464": 0.954545,
+        "yeslab_471": 0.932449,
+        "yeslab_484": 0.998737,
+        "yeslab_96": 0.934975
+      },
+      "product_of_coverages": 0.553076
+    },
+    {
+      "day": "2014-12-18",
+      "universe_rows": 1576,
+      "min_factor_coverage": 0.8128172588832487,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.812817,
+        "yeslab_357": 0.996193,
+        "yeslab_381": 0.989213,
+        "yeslab_425": 0.972081,
+        "yeslab_443_reg30_max20_v1": 0.843909,
+        "yeslab_464": 0.95368,
+        "yeslab_471": 0.927665,
+        "yeslab_484": 0.998731,
+        "yeslab_96": 0.932741
+      },
+      "product_of_coverages": 0.541537
+    },
+    {
+      "day": "2014-12-19",
+      "universe_rows": 1576,
+      "min_factor_coverage": 0.8140862944162437,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.814086,
+        "yeslab_357": 0.996827,
+        "yeslab_381": 0.988579,
+        "yeslab_425": 0.972716,
+        "yeslab_443_reg30_max20_v1": 0.844543,
+        "yeslab_464": 0.958756,
+        "yeslab_471": 0.928934,
+        "yeslab_484": 0.998096,
+        "yeslab_96": 0.932741
+      },
+      "product_of_coverages": 0.546432
+    },
+    {
+      "day": "2014-12-22",
+      "universe_rows": 1573,
+      "min_factor_coverage": 0.8118245390972664,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811825,
+        "yeslab_357": 0.99555,
+        "yeslab_381": 0.989828,
+        "yeslab_425": 0.972664,
+        "yeslab_443_reg30_max20_v1": 0.840432,
+        "yeslab_464": 0.959949,
+        "yeslab_471": 0.924984,
+        "yeslab_484": 0.998093,
+        "yeslab_96": 0.93007
+      },
+      "product_of_coverages": 0.539038
+    },
+    {
+      "day": "2014-12-23",
+      "universe_rows": 1574,
+      "min_factor_coverage": 0.8106734434561627,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.810673,
+        "yeslab_357": 0.994917,
+        "yeslab_381": 0.987294,
+        "yeslab_425": 0.972681,
+        "yeslab_443_reg30_max20_v1": 0.838628,
+        "yeslab_464": 0.958704,
+        "yeslab_471": 0.923761,
+        "yeslab_484": 0.998729,
+        "yeslab_96": 0.926938
+      },
+      "product_of_coverages": 0.532551
+    },
+    {
+      "day": "2014-12-24",
+      "universe_rows": 1569,
+      "min_factor_coverage": 0.8100701083492671,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.81007,
+        "yeslab_357": 0.997451,
+        "yeslab_381": 0.987253,
+        "yeslab_425": 0.972594,
+        "yeslab_443_reg30_max20_v1": 0.838751,
+        "yeslab_464": 0.95921,
+        "yeslab_471": 0.922881,
+        "yeslab_484": 0.998725,
+        "yeslab_96": 0.92543
+      },
+      "product_of_coverages": 0.532422
+    },
+    {
+      "day": "2014-12-25",
+      "universe_rows": 1573,
+      "min_factor_coverage": 0.8111888111888111,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.811189,
+        "yeslab_357": 0.993643,
+        "yeslab_381": 0.984743,
+        "yeslab_425": 0.971392,
+        "yeslab_443_reg30_max20_v1": 0.838525,
+        "yeslab_464": 0.956771,
+        "yeslab_471": 0.919263,
+        "yeslab_484": 0.998729,
+        "yeslab_96": 0.92562
+      },
+      "product_of_coverages": 0.52567
+    },
+    {
+      "day": "2014-12-26",
+      "universe_rows": 1572,
+      "min_factor_coverage": 0.8091603053435115,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.80916,
+        "yeslab_357": 0.996819,
+        "yeslab_381": 0.984733,
+        "yeslab_425": 0.970738,
+        "yeslab_443_reg30_max20_v1": 0.83715,
+        "yeslab_464": 0.958015,
+        "yeslab_471": 0.92112,
+        "yeslab_484": 0.998728,
+        "yeslab_96": 0.926209
+      },
+      "product_of_coverages": 0.526889
+    },
+    {
+      "day": "2014-12-29",
+      "universe_rows": 1572,
+      "min_factor_coverage": 0.8136132315521628,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.813613,
+        "yeslab_357": 0.995547,
+        "yeslab_381": 0.986005,
+        "yeslab_425": 0.970102,
+        "yeslab_443_reg30_max20_v1": 0.838422,
+        "yeslab_464": 0.957379,
+        "yeslab_471": 0.918575,
+        "yeslab_484": 0.996819,
+        "yeslab_96": 0.929389
+      },
+      "product_of_coverages": 0.529239
+    },
+    {
+      "day": "2014-12-30",
+      "universe_rows": 1585,
+      "min_factor_coverage": 0.8031545741324921,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.803155,
+        "yeslab_357": 0.988013,
+        "yeslab_381": 0.976656,
+        "yeslab_425": 0.960252,
+        "yeslab_443_reg30_max20_v1": 0.82776,
+        "yeslab_464": 0.948265,
+        "yeslab_471": 0.914826,
+        "yeslab_484": 0.996215,
+        "yeslab_96": 0.919874
+      },
+      "product_of_coverages": 0.489714
+    },
+    {
+      "day": "2014-12-31",
+      "universe_rows": 1584,
+      "min_factor_coverage": 0.8055555555555556,
+      "worst_factor": "yeslab_206",
+      "coverages": {
+        "yeslab_206": 0.805556,
+        "yeslab_357": 0.997475,
+        "yeslab_381": 0.979798,
+        "yeslab_425": 0.960227,
+        "yeslab_443_reg30_max20_v1": 0.828914,
+        "yeslab_464": 0.949495,
+        "yeslab_471": 0.916035,
+        "yeslab_484": 0.996843,
+        "yeslab_96": 0.920455
+      },
+      "product_of_coverages": 0.500094
+    }
+  ],
+  "worst_days": [
+    {
+      "day": "2014-01-27",
+      "universe_rows": 1680,
+      "min_factor_coverage": 0.575595238095238,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.850595,
+        "yeslab_357": 0.607143,
+        "yeslab_381": 0.989286,
+        "yeslab_425": 0.975,
+        "yeslab_443_reg30_max20_v1": 0.87381,
+        "yeslab_464": 0.966071,
+        "yeslab_471": 0.575595,
+        "yeslab_484": 0.997619,
+        "yeslab_96": 0.951786
+      },
+      "product_of_coverages": 0.22982
+    },
+    {
+      "day": "2014-01-24",
+      "universe_rows": 1680,
+      "min_factor_coverage": 0.5773809523809523,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.852381,
+        "yeslab_357": 0.607143,
+        "yeslab_381": 0.990476,
+        "yeslab_425": 0.977976,
+        "yeslab_443_reg30_max20_v1": 0.877381,
+        "yeslab_464": 0.970833,
+        "yeslab_471": 0.577381,
+        "yeslab_484": 0.99881,
+        "yeslab_96": 0.954167
+      },
+      "product_of_coverages": 0.234963
+    },
+    {
+      "day": "2014-01-28",
+      "universe_rows": 1679,
+      "min_factor_coverage": 0.5783204288266826,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.852293,
+        "yeslab_357": 0.609291,
+        "yeslab_381": 0.988684,
+        "yeslab_425": 0.976176,
+        "yeslab_443_reg30_max20_v1": 0.87433,
+        "yeslab_464": 0.967242,
+        "yeslab_471": 0.57832,
+        "yeslab_484": 0.997618,
+        "yeslab_96": 0.952948
+      },
+      "product_of_coverages": 0.23303
+    },
+    {
+      "day": "2014-01-30",
+      "universe_rows": 1680,
+      "min_factor_coverage": 0.5785714285714286,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.854167,
+        "yeslab_357": 0.607143,
+        "yeslab_381": 0.992262,
+        "yeslab_425": 0.977381,
+        "yeslab_443_reg30_max20_v1": 0.878571,
+        "yeslab_464": 0.968452,
+        "yeslab_471": 0.578571,
+        "yeslab_484": 0.99881,
+        "yeslab_96": 0.952381
+      },
+      "product_of_coverages": 0.235521
+    },
+    {
+      "day": "2014-01-29",
+      "universe_rows": 1676,
+      "min_factor_coverage": 0.5787589498806682,
+      "worst_factor": "yeslab_471",
+      "coverages": {
+        "yeslab_206": 0.853819,
+        "yeslab_357": 0.609189,
+        "yeslab_381": 0.991647,
+        "yeslab_425": 0.977327,
+        "yeslab_443_reg30_max20_v1": 0.880668,
+        "yeslab_464": 0.96957,
+        "yeslab_471": 0.578759,
+        "yeslab_484": 0.998807,
+        "yeslab_96": 0.955251
+      },
+      "product_of_coverages": 0.237685
+    }
+  ],
+  "weakest_factor_day_counts": {
+    "yeslab_471": 31,
+    "yeslab_206": 214
+  },
+  "per_factor_summary": {
+    "yeslab_206": {
+      "median": 0.833437,
+      "min": 0.802376
+    },
+    "yeslab_357": {
+      "median": 0.996341,
+      "min": 0.603136
+    },
+    "yeslab_381": {
+      "median": 0.989734,
+      "min": 0.976656
+    },
+    "yeslab_425": {
+      "median": 0.977258,
+      "min": 0.960227
+    },
+    "yeslab_443_reg30_max20_v1": {
+      "median": 0.859617,
+      "min": 0.82776
+    },
+    "yeslab_464": {
+      "median": 0.967642,
+      "min": 0.948265
+    },
+    "yeslab_471": {
+      "median": 0.938724,
+      "min": 0.575595
+    },
+    "yeslab_484": {
+      "median": 0.999371,
+      "min": 0.994987
+    },
+    "yeslab_96": {
+      "median": 0.946946,
+      "min": 0.919874
+    }
+  }
+}

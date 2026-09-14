@@ -1,0 +1,29 @@
+window 2016-01-01 .. 2016-12-31; universe days: 244; factors: 9
+
+the 5 days whose weakest dense factor is lowest:
+  2016-01-05 weakest=yeslab_206 0.7677 (universe 1636)
+      206=0.768, 443_reg30_max20_v1=0.815, 471=0.938, 96=0.943, 464=0.969, 425=0.977, 381=0.988, 484=0.991, 357=0.998
+  2016-01-04 weakest=yeslab_206 0.7689 (universe 1631)
+      206=0.769, 443_reg30_max20_v1=0.817, 471=0.940, 96=0.944, 464=0.970, 425=0.977, 381=0.988, 484=0.992, 357=0.995
+  2016-01-12 weakest=yeslab_206 0.7707 (universe 1653)
+      206=0.771, 443_reg30_max20_v1=0.826, 471=0.941, 96=0.946, 464=0.966, 425=0.976, 381=0.990, 484=0.992, 357=0.995
+  2016-01-06 weakest=yeslab_206 0.7713 (universe 1640)
+      206=0.771, 443_reg30_max20_v1=0.821, 471=0.939, 96=0.944, 464=0.970, 425=0.977, 381=0.988, 484=0.991, 357=0.998
+  2016-01-13 weakest=yeslab_206 0.7714 (universe 1658)
+      206=0.771, 443_reg30_max20_v1=0.823, 471=0.940, 96=0.943, 464=0.966, 425=0.976, 484=0.992, 381=0.992, 357=0.999
+
+how often each factor is the weakest over the whole window:
+  yeslab_206                    244 days
+
+per-factor median/min of daily coverage in this window:
+  yeslab_206                   median=0.8299 min=0.7677
+  yeslab_357                   median=0.9978 min=0.9758
+  yeslab_381                   median=0.9911 min=0.9788
+  yeslab_425                   median=0.9802 min=0.9623
+  yeslab_443_reg30_max20_v1    median=0.8640 min=0.8141
+  yeslab_464                   median=0.9712 min=0.9434
+  yeslab_471                   median=0.9479 min=0.9154
+  yeslab_484                   median=0.9973 min=0.9905
+  yeslab_96                    median=0.9514 min=0.9201
+
+wrote /data/zhangyudong/qrv2_research_artifacts/dense_per_day_attribution_2016.json
