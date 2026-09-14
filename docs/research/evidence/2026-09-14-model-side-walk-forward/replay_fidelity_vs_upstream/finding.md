@@ -1208,3 +1208,68 @@ ts_regression_slope_20(cs_rank(ts_mean_5(gt(lt(ts_skewness_20(ts_regression_slop
 * **没有**验证我的转录与 `GP_Factor_095_Calculator` **逐行等价**——
   只验证了 `_slope` 的闭式等价（4e-16）。转录是逐步照抄的，但**没有单元测试盯着它**。
 * 没有对 `yeslab_471` 做同样的重算（它的链是逐日 Python 循环 + 行业分组，成本更高）。
+
+---
+
+## 19. §17 的暴露面：**主要是潜在的，但已经有一处真实发生**——`audit_preclose_variant.py` 把一个登记在案的全截面因子固定在 v2 宇宙上算
+
+§17.6 提到 `--restrict-to-v2-universe` 会覆盖全市场扩展，但没有追它的实际用法。追完之后可以把暴露面说准。
+
+### 19.1 三个开关**只出现在单元测试里**
+
+在仓库内搜 `--full-market`、`--exclude-bj`、`--restrict-to-v2-universe` 的**调用记录**，
+命中的全部在 `research_v2/tests/unit/scripts/test_audit_formula_replay_tushare.py`
+（`:43`、`:302-303`、`:328-330`、`:353-354`、`:377-379`、`:404-405`、`:435-436`、`:459-460`、`:483-484`、`:507` …）。
+**没有任何被记录的生产调用用过这三个开关**，所以**没有证据表明某次已归档的 464 审计被缩小过面板**。
+
+### 19.2 三个导入方的面板口径：两个安全，**一个不安全**
+
+| 脚本 | 面板来源 | 它审计的因子 | 判定 |
+|---|---|---|---|
+| `materialize_frozen_factor_daily.py:125` | `fetch_full_tushare_shsz_market`（**全市场**） | 冻结集 | **安全**（已发布值不受影响） |
+| `audit_pretraining_regime_redundancy.py:140,148` | `fetch_full_tushare_shsz_market` + `TushareMarketSession(client, market, 全部 market 代码)` | `206_median_abs_v2`、`443_reg30_max20_v1` 等 | **安全** |
+| `evaluate_alpha429_turnover_variants.py:23` | 只导入 `normalize_tushare_market`（归一化函数，不建面板） | `429`/`165`/`168`，三者**全局截面算子均为 0** | **安全** |
+| **`audit_preclose_variant.py:90`** | **`codes = tuple(_query_v2_universe_codes(client, args.start, args.end))`（硬编码，无开关可关）** | **`FACTOR_ID = "yeslab_155"`** | **不安全** |
+
+`_query_v2_universe_codes`（`audit_formula_replay_tushare.py:506-516`）取的是
+`dfs://QuantResearchV2Test` 的 `universe_daily_latest` 里 `is_member == true` 的证券，
+即 **`cn_liquid_a` 宇宙**——按本证据包多处实测约 **3,200–3,900** 只，
+而全市场面板是 **5,400–5,500** 只（§18.1）。**缩到约 70%。**
+
+### 19.3 为什么 `yeslab_155` 这一处是**实质**问题，不只是形式问题
+
+* `yeslab_155` **在** `FULL_CROSS_SECTION_FACTOR_IDS` 里（`in_registry = True`）——
+  也就是说**这份名单自己认定它需要全截面**；
+* 它的计算器是 `SkipDemeanAbsCalculator`，扫到 1 个全局截面算子 `axis1_mean`；
+  而这个名字本身就是"**跳过（某段）后做截面去均值的绝对值**"——
+  **截面均值就是这个因子的定义量**，不是链条中一个可有可无的中间步骤；
+* 面板从 ~5,400 缩到 ~3,800，**截面均值本身就变**，于是**每一只证券的值都变**。
+  与 `cs_max` 不同，均值不是极值敏感型，所以幅度会小得多，但**方向是系统性的**（不是噪声）。
+
+**结论**：`audit_preclose_variant.py` 产出的 `yeslab_155` 审计结果，
+是在一个**该因子登记为"需要全截面"、而脚本硬编码收窄到 v2 宇宙**的面板上算出来的。
+**这是 §17.6 那个矛盾的一个已发生的实例**，而且是**硬编码**的——
+不是"某人加了 `--restrict-to-v2-universe`"，而是脚本里写死的，**无法用开关关掉**。
+
+### 19.4 建议（本文不代为执行）
+
+1. **`audit_preclose_variant.py` 的面板应当与它审计的因子的登记状态一致**：
+   既然 `yeslab_155` 在名单里，就该用全市场面板，
+   或者**显式记录**"本审计在 v2 宇宙上运行，与已发布值的口径不同"。
+2. **§17.5 的那条测试断言应当扩展到"面板来源"**：
+   不只断言 `has_global_cs_operators ⇒ requires_full_cross_section([fid])`，
+   还要断言**任何**调用 `_replay_factor` 的脚本，若因子需要全截面，则**不得**把 `codes` 收窄。
+   这条能同时抓住 CLI 开关路径与硬编码路径。
+3. **本文没有判定 `audit_preclose_variant.py` 的既有结论是否因此翻转。**
+   它审计的是 `yeslab_155`（**不在**冻结 v2 十五因子里），
+   所以**不影响那 24 天、不影响四个选项的价格、不影响任何已发布的走查结果**；
+   影响的是**那份 preclose 变体审计自己的结论**。**要判定就得用全市场面板重跑一次，本文没有做。**
+
+### 19.5 §19 没有做的事
+
+* **没有重跑** `audit_preclose_variant.py`，所以**没有**量化面板收窄对 `yeslab_155` 值的实际影响，
+  也**没有**判定它的既有结论是否翻转。
+* 只搜了**仓库内**的调用记录。若有人在仓库外（shell 历史、CI、别的分支）跑过带那三个开关的命令，
+  本文看不到。**"没有证据表明"不等于"没有发生过"。**
+* 没有检查 `数据库/daily_task_new`、`数据库/build_factor` 等**生产侧**脚本的面板口径——
+  它们不在 `research_v2` 内，而 §14/§18 已说明生产侧口径本来就与重放侧不同（静态行业 vs PIT）。
