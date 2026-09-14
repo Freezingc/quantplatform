@@ -139,7 +139,12 @@ Expected：报告 JSON 含 `baseline_oos_artifacts` 六个路径；数值与
 - [x] **3.3 报告生成**：`build_candidate_report(result, baseline_frames)` —
   G1–G6（含 G4 Δ）+ 相对 B0/B1/B2/B3 各自增量 + 参数量 + 训练时长 +
   最差 seed + 因子集与数据版本记录；判定 `WALK_FORWARD_PASSED` / `FAILED`。
-- [ ] **3.4 全量运行**（1–2 卡，预计 6–24 小时）：
+- [x] **3.4 全量运行**（1–2 卡，预计 6–24 小时）：
+      **【已完成 2026-09-13 17:42】** 工作区 `m1_full_v1`，全 27 格 × 4 折 × 3 seed，
+      41 路并行、钉 1 线程，**六道门全过**，G4 = **+0.007826986071187494**。
+      **本项标注的"1–2 卡，预计 6–24 小时"错了约 40 倍**：实际是 **CPU 41 核、41.0 小时**
+      （09-12 02:05 → 09-13 17:42），GPU 对本家族是**反向优化**（本节 2026-09-05 19:01 设备基准：
+      M1 最小格 CPU 333.7 对 CUDA 973.9 ms/日，慢 2.92 倍）。偏差全过程见本节六次修正的记录。
 
 ```bash
 setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
@@ -643,9 +648,27 @@ setsid nohup bash -c '/data/zhangyudong/.conda/envs/quantyd/bin/python \
       且重启会丢掉当时 41 个 worker 各约 2 个 epoch 的在飞进度（搜索记录尚未落盘，`--resume` 无从采纳）。
       若所有者愿意占 81 核，这是一次约 20 分钟代价换约 8.5 小时的可选项。
 
-- [ ] **3.5 判定归档**：通过则渲染判定文档到
+- [x] **3.5 判定归档**：通过则渲染判定文档到
   `docs/reports/<date>-m1-real-candidate-walk-forward.md`（复用判定器模式），
   更新主计划 10.2；失败则归档失败报告并分析（不得用 2026 数据补救）。
+
+      **【已完成 2026-09-14 11:35】** 判定文档已渲染到
+      `docs/reports/2026-09-13-m1-full-grid-real-candidate-walk-forward.md`
+      （`summarize_real_candidate_walk_forward.py` 直接生成，输出 `M1 candidate: WALK_FORWARD_PASSED`；
+      同一输入渲染到 `m1_full_v1/verdict.md` 与 docs 两处，**md5 全同 `f31293f38389f5c52c0d4ec2efbe614e`**）。
+      **归档前做的两项验收都通过了**：
+      **验收 A**——同工作区 `--resume` 重跑（18:00:15 → 18:54:56，四折整折采纳、零次拟合），
+      两份报告 **md5 逐字节相同 `600a1fd945324a2bfa2af8de9b5ed954`**。
+      **这是该判据第一次在 27 格规模上被验证**：此前的五份逐字节相同报告全部来自
+      **单配置**的 M0R，而 M1 载体也只搜了 1 格，所以"由采纳记录按原网格顺序用同一个 `max`
+      重建 `best_config` 与 `search_results`"这句话此前只在 1 条记录上验过。
+      **验收 C′**——四折胜出格的最终拟合检查点与其搜索阶段检查点**逐字节相同，54/54**
+      （F1 c15、F2 c14、F3 c12、F4 c16）。
+      另外**评价预检**在 F1/F2/F3 完成时就已逐折跑过（`_require_verified_model_bundle`、
+      `_require_candidate_evidence`、`_require_best_simple_evidence`、`_validate_oos_frame` 全 PASSED），
+      链条最后一环也已验证：`load_walk_forward_evidence` 接受 `promotion_evidence.json`
+      （sha256 `e941274d44922d2a118a70ca…`），**registry 独立重算的 G1–G6 与报告逐位相同**。
+      **注**：`5.2 更新主计划 10.2` 仍**未做**——它要求 M1–M3 全部结果，M2 正在跑、M3 未发射。
 
       **归档前必须做的两项验收（2026-09-12 02:55 补，都是本次全网格运行才第一次具备条件的检查）**
 
