@@ -669,3 +669,122 @@ approved_repair_variants_excluded_from_the_census      = [yeslab_206, yeslab_443
   但**没有**做全窗口扫描，所以"0.636 是全局最差"这句话**不成立**，只能说"是这 9 天里最差"。
 * 上市时长只按**日历日**分组，没有按**交易日**；180 个日历日约 120 个交易日，
   与 `replay_lookback_days = 180` 不是同一单位。**但由于年轻组样本为 0，这个单位差不影响结论。**
+
+---
+
+## 14. 机制找到了：读了 `数据库/factor_calculators/` 之后，七个可比因子的档位**结构上可解释**
+
+§13 把 `464` 收窄到"计算器特异"就停了，因为那两个计算器在 `数据库/` 下、不在 `research_v2`。
+本节把它们读了（**只读**，一行未改），机制随之清楚，而且**覆盖全部七个可比因子**，不只是三个。
+
+### 14.1 关键事实：生产与重放用的是**两套不同的行业分类**
+
+`数据库/factor_calculators/base.py` 的 `get_industry_labels`：
+
+```python
+provider = self.industry_provider
+if provider is not None:
+    labels = provider.get_industry_labels(date_values, code_values)   # 重放路径：日期感知的 PIT 分类
+    ...
+info = self.fetcher.get_stock_industry_info()                          # 生产路径：静态快照
+mapping = info.set_index("ts_code")["l1_name"]
+return pd.DataFrame([values.copy() for _ in date_values], ...)         # 每一天用同一份标签
+```
+
+而 `base.py` 里 `industry_provider` 的注释**自己写明**：
+
+> *"Optional date-aware industry source used by canonical rematerialization. **None preserves the
+> historical static `stock_info_table` behavior.**"*
+
+`AttentionSpilloverCalculator._get_industry_map()` 同样：`industry_provider` 非空就直接 `return None`，
+否则查 `dfs://YesLab` 的 `stock_info_table.industry`（**静态、无日期**）。
+
+**所以：数据商生产 `GP_095`/`AttentionSpillover`/`行业内收益标准化绝对值` 时用的是静态行业快照，
+而 `materialize_frozen_factor_daily.py` 因为把 `357`/`471` 放进 `PIT_FACTORS`、传入了
+`VersionedPITIndustryProvider`，重放时用的是日期感知的申万 PIT 分类。**
+这不是 bug，是**有意的口径变更**（docstring 里叫 "canonical rematerialization"），
+但它意味着 `357` 与 `471` 的"重放 vs 上游"比较，**天然就比的是两套行业划分下的组统计量**。
+
+### 14.2 结构对应：全局截面算子越多，档位越差
+
+`数据库/factor_calculators/` 下逐个清点（`cs_rank`/`cs_zscore`/`cs_max`/`axis=1` 的截面聚合、
+以及行业分组），与实测档位对齐：
+
+| 因子 | 计算器 | 全局截面/分组算子 | 吃行业 | 档 | Spearman（最低–中位） |
+|---|---|---|---|---|---|
+| `yeslab_96` | `ModifiedDayReversalCalculator` | **0** | 否 | **A**（rel 6.7e-16） | 0.887–0.988 |
+| `yeslab_484` | `HerdingCSADStd21Calculator`（+`HerdingCSADCore`） | **0**（子类）；内核是**局部邻域** | 否 | **A**（rel 3.7e-07） | 0.994–0.999 |
+| `yeslab_425` | `GP_Factor_056_Calculator` | 3 | 否 | A/C（rel 5.4e-03） | 0.969–0.998 |
+| `yeslab_381` | `GP_Factor_012_Calculator` | 2 | 否 | **B**（秩全同、值不同） | 0.993–**1.000** |
+| `yeslab_357` | `IndustryStandAbsCalculator` | 3 | **是** | **C**（rel 6.3e-02） | 0.948–0.980 |
+| `yeslab_464` | `GP_Factor_095_Calculator` | **9** | 否 | **D** | **0.636**–0.906 |
+| `yeslab_471` | `AttentionSpilloverCalculator` | 3 | **是** | **D** | **0.479**–0.861 |
+
+两个 A 档因子**自身文件里全局截面算子为 0**。`484` 的截面步骤在 `HerdingCSADCore.py` 里，
+而且是**局部**的——"对每只股票选取收益相关性最高的 `group_size - 1 = 9` 只股票"再算群组 CSAD，
+**对面板里多了谁少了谁不敏感**（除非那 9 个最近邻本身变了）。这正好解释了它为什么能复现到 0.999。
+
+**`464` 是算子最多的一个（9 个）**，其中致命的是这一行：
+
+```python
+_v13 = _v12.rolling(60).kurt()      # ts_kurtosis_60
+_v14 = _v13.max(axis=1)             # cs_max  ← 把整个截面压成"一条市场级序列"
+_v15 = _v14.rolling(5).mean(); _v16 = _v15.rolling(5).mean()   # 这条序列随后是回归的 x
+```
+
+`cs_max` 取的是**全市场 60 日峰度的最大值**，然后经两次 5 日均值成为**所有证券共用的回归自变量 `x`**。
+加上 `_v7 = cs_zscore(close)`、`_v11 = cs_rank(_v10)`、`_v17 = cs_zscore(pct_chg)`，
+**这个因子的每一只证券的值都是整个面板的函数**，而 `cs_max` 对"极值那一只在不在面板里"极度敏感。
+
+面板**确实**不同：重放侧的市场面板（`tushare_cache/daily_*.json`）逐日为
+**4,737（2022-01-04）→ 4,829 → 5,063 → 5,062 → 5,206（2023-07-06）→ 5,329（2023-12-29）**，
+而上游 `GP_095` 同日为 **~5,250–5,400**。**2022 年初差到约 500 只。**
+`cs_zscore`/`cs_rank` 按构造会把**尺度**钉住，而**排序**随面板构成变化——
+**这就是"尺度几乎对、排序不对、且逐日摆动"的形状**，与 §11 实测（std 比 0.852–1.144、
+斜率 0.600–1.060、Spearman 0.636–0.988）逐项吻合。
+
+**`471` 则是另一种放大**：它按**行业 × 市值三分位**分组，组内做**留一 peer 均值**
+（`_leave_one_out_spillover`: `(sum − a_i)/(m−1) − a_i`），而三分位边界由 `_assign_size_bucket`
+在**组内**按 `pct ≤ 0.3 / > 0.7` 划。所以行业划分一变，**组成员和分层边界一起变**，
+peer 集合**离散地**跳变——这解释了它为什么比 `357` 差得多：
+`357` 只是**1 日收益的组内 z-score**（`ABS((daily_ret − industry_mean_ret) / industry_std_ret)`），
+组成员小幅变化只让均值/标准差小幅移动；`471` 是 **21 日注意力代理的组内留一 peer 均值 + 三分位分层**，
+组成员变化会**换掉整个 peer 集合**。
+
+### 14.3 更正 §13.3 的"未解释"
+
+§13.3 说 `464` "只剩计算器这一个来源，本文没有候选机制"。**现在有了**：
+**全局截面算子（尤其 `cs_max`）+ 重放与生产的面板构成不同**。
+证据链：① 计算器源码里 `cs_max` 把截面压成一条共用序列；② 面板大小实测差到约 500 只（2022 年初）；
+③ `cs_zscore`/`cs_rank` 按构造保尺度、不保排序；④ 同表同日的 `484` 用**局部邻域**统计，复现到 0.999。
+
+**但这仍是"结构上充分的解释"，不是"已验证的因果"**：要证实，需要在**与生产完全相同的面板**上
+重算 `GP_Factor_095_Calculator` 并看 Spearman 是否回到 ~1。**本文没有做**（那需要一次真实重放）。
+
+### 14.4 这一节改变了对 `357`/`471` 的定性
+
+在 §14.1 之前，"重放与上游不一致"读起来像缺陷。读完源码后应当这样陈述：
+
+* **`357` 与 `471` 的不一致是**有意的口径变更**的结果**——重放用日期感知的 PIT 行业分类，
+  生产用静态快照。`base.py` 的注释与 `PIT_FACTORS` 的存在都是明证。
+* **因此"哪个对"不是本文能裁决的**，而且答案取决于研究目的：
+  PIT 分类**避免前视**（用当日已知的行业），静态快照**与数据商发布的因子值一致**。
+  对走查回测，**PIT 才是正确选择**；对"复现上游因子"，静态才对。
+  **冻结链选的是前者，这与预注册口径一致。**
+* **论文里应当这样写**：`357`/`471` 是**在 PIT 行业口径下重算**的版本，
+  与数据商在静态行业口径下发布的同名因子**不是同一个量**；
+  差异幅度已量化（`357` 相对差中位 6.3e-02、Spearman ≥0.948；`471` 精确率恒 0、Spearman 0.479–0.883）。
+* **`464` 与 `96`/`484`/`425`/`381` 不吃行业**，所以它们的差异**不能**用口径变更解释；
+  `464` 的解释是 §14.2 的全局截面算子 + 面板构成，`381` 是 B 档（秩全同、值差一个尺度形状），
+  `96`/`484` 是浮点级。
+
+### 14.5 §14 没有做的事
+
+* **没有在与生产相同的面板上重算任何因子**——§14.2 的机制是"结构上充分"，不是"已验证因果"。
+* 没有量化"面板差约 500 只"对 `cs_max` 的**具体**影响（那需要逐日重算）。
+* 没有核对 `fetch_full_tushare_shsz_market` 的**筛选规则**与数据商生产面板的差异**在哪**
+  （停牌、ST、B 股、北交所、上市不足 N 日等）——只量了**大小**差，没有量**成分**差。
+* 没有读 `GP_Factor_012_Calculator`（381）与 `GP_Factor_056_Calculator`（425）的正文来解释
+  B 档与 A/C 档的形状，只清点了算子数。
+* `Bias_Vol_Demean_60_Calculator`（规范版 206）也清点了（**0 个截面算子**），
+  但它**没有被使用**——`206` 走中位数修复分支（§12）。

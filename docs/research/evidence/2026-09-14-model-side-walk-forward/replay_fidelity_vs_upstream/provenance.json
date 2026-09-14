@@ -18,7 +18,7 @@
     "path": "research_v2/configs/factors/source_catalog.yaml",
     "sha256": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad"
   },
-  "generated_at_utc": "2026-09-14T22:54:44+00:00",
+  "generated_at_utc": "2026-09-14T23:07:01+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "d4baec523afea29135dea960e56b9825ebd40a1f9d037fce272dc9c157a3c0f9"
@@ -71,8 +71,8 @@
   },
   "narratives": {
     "finding.md": {
-      "bytes": 48012,
-      "sha256": "21a0d7ac285fac6f0cb52b8698a065d4d5950e9780ece7f00bee7c40ee881262"
+      "bytes": 56344,
+      "sha256": "d7340e43f5ea5d9bd1dd8ef07e493c5bfcd4380bd49d66ba22fb59a78ec18b6a"
     }
   },
   "probe_scripts": {
@@ -119,6 +119,6 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "dfb0214ccad181958bbbd490ea829199ab93bd93"
+    "commit_at_generation": "0427b6136461f7ed5fd3b0c639a24ad12ef56899"
   }
 }
