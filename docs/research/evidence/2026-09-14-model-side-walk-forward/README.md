@@ -18,9 +18,11 @@
 | `problems_found.md` | 手写，逐条给出出处 | 问题记录：评估阶段六个阻塞点、成本模型三次低估（含本轮我自己的一次 ETA 误算）、stale 门禁默认值、四处永不触发的守卫、两个驱动缺陷、GPU/内存/主机与治理未决项 |
 | `comparison_interim.md` | `research_v2/scripts/summarize_candidate_comparison.py`（主分支 `39ee96a`） | **工具渲染**的跨候选对比：可比性分组与排除理由、G1–G6 矩阵、两两增量矩阵（带"共享基线恒等式"校验）、领先候选的逐年分布与逐折最差 seed。同输入两次渲染 md5 全同 `c79e5545ebad6d36c3e935935176f3b7`。**M2/M3 出报告后重跑即得计划 Task 5.1 的那份文档** |
 | `yearly_baseline_deltas/` | `research_v2/scripts/analyze_yearly_baseline_deltas.py`（主分支 `78216af`，sha256 前缀 `c36aadec52042ac4`） | 三个已完成候选各一份 json + md：**基线在候选 945 日集上的逐年值与逐年增量**（此前任何工件里都没有）、四道逐位验收的实测值、**24 个不可评日的逐日清单**、`coverage_attribution`（**逐侧**覆盖率：候选四年恒为 **1.0000**、基线 0.89–0.99、**24 天全部由基线一侧决定**）、以及关掉 0.90 地板后的敏感性重算（结论更强，且与基线自己的签名报告**逐位相同**） |
+| `dense_factor_coverage/` | `research_v2/scripts/analyze_dense_factor_coverage.py`（主分支 `f96c4b2`） | 那 24 天的**再上一层原因**：稠密因子不完整的逐年/逐月/逐日份额、缺失**组合**与**嵌套**判定、受影响证券的代码前缀分布与科创板占比。结论：`yeslab_357` 与 `yeslab_471` 成对且嵌套地对**科创板 688/689** 证券缺失、**止于 2023 年 9 月**，而"不完整份额 > 10% 的日子"与被丢掉的 24 天**逐日相同** |
 | `extract_from_reports.py` | — | 只读提取器，stdlib only |
 | `vendor_sources.py` | — | 原件复制器，同时重算 `vendored/MANIFEST.json` |
-| `vendored/` | `vendor_sources.py` | 10 份仓库文档 + 7 份签名 `report.json` 的**逐字节副本**，`MANIFEST.json` 记源路径、sha256、取值时的 git HEAD。新增的一份是 `docs/reports/2026-09-14-yearly-deltas-and-the-24-unevaluable-days.md`——逐年增量与那 24 天归属分析的完整方法、§4.1 逐侧覆盖率表、§4.2 的设计观察与三种处置、§6 敏感性、§8 边界 |
+| `vendored/` | `vendor_sources.py` | 12 份仓库文档 + 7 份签名 `report.json` 的**逐字节副本**，`MANIFEST.json` 记源路径、sha256、取值时的 git HEAD。新增的一份是 `docs/reports/2026-09-14-yearly-deltas-and-the-24-unevaluable-days.md`——逐年增量与那 24 天归属分析的完整方法、§4.1 逐侧覆盖率表、§4.2 的设计观察与三种处置、§6 敏感性、§8 边界 |
+| `vendored/docs/reports/2026-09-14-*.md` | 同上 | 两份新报告：逐年增量与 24 天归属（含 §4.1 逐侧覆盖率表、§4.2 设计观察与三种处置、§6 敏感性）、以及稠密因子覆盖缺口的完整叙述（含给因子侧的移交问题与论文方法学段落该怎么写） |
 
 ## 为什么要复制原件
 
