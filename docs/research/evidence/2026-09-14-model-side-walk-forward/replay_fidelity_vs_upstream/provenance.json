@@ -18,7 +18,7 @@
     "path": "research_v2/configs/factors/source_catalog.yaml",
     "sha256": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad"
   },
-  "generated_at_utc": "2026-09-14T23:07:01+00:00",
+  "generated_at_utc": "2026-09-14T23:16:02+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "d4baec523afea29135dea960e56b9825ebd40a1f9d037fce272dc9c157a3c0f9"
@@ -39,6 +39,14 @@
     "option3_upstream_ceiling.json": {
       "bytes": 19175,
       "sha256": "a150130404f933793f73fc61580806fa35ae213c26c60d0cfcc3233916975552"
+    },
+    "panel_composition.json": {
+      "bytes": 6325,
+      "sha256": "7305e3e7418b6902110733903032ad8d158fcfdfafb3c17899e2574025de4a8c"
+    },
+    "panel_gap_vs_fidelity_swing.json": {
+      "bytes": 4284,
+      "sha256": "47b3836217295c429ec94f24e1bfa9c385e31f7425a8c42b08fa66cae3de75b7"
     },
     "probe_206_scale_cause.json": {
       "bytes": 11795,
@@ -71,8 +79,8 @@
   },
   "narratives": {
     "finding.md": {
-      "bytes": 56344,
-      "sha256": "d7340e43f5ea5d9bd1dd8ef07e493c5bfcd4380bd49d66ba22fb59a78ec18b6a"
+      "bytes": 61970,
+      "sha256": "f2840ffd73460f4dfc5332b1c6deccce0b9ca058c4d0a9e27d1a3f608c7ad683"
     }
   },
   "probe_scripts": {
@@ -95,6 +103,10 @@
     "probe_option3_upstream_ceiling.py": {
       "bytes": 12718,
       "sha256": "8806b07c4dc25057d94c0866031edc9ccfafd5a5d2ce319956b56fbd48eb06c6"
+    },
+    "probe_panel_composition.py": {
+      "bytes": 6427,
+      "sha256": "bb47fc9d279789c56a8bcc76ba6eddde93ed82a2ae9e8f1d6e8676a4ae343682"
     },
     "probe_replay_fidelity_census.py": {
       "bytes": 8763,
@@ -119,6 +131,6 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "0427b6136461f7ed5fd3b0c639a24ad12ef56899"
+    "commit_at_generation": "e06d3af3b1202771333ba30ed28637829893c940"
   }
 }

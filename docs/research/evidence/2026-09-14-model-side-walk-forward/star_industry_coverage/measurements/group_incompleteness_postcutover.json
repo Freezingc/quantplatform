@@ -1,0 +1,5468 @@
+{
+ "question": "How incomplete were the industry groups that yeslab_357 and yeslab_471 were computed on?",
+ "code_basis": {
+  "yeslab_357": "base.py:112-118 industry_zscore_and_skew -- valid = values.notna() & groups.notna(); the group mean and std are transformed over `valid` only",
+  "yeslab_471": "AttentionSpilloverCalculator._calculate -- row_df.dropna(subset=['attention','mv','industry']) before groupby('industry') and market-cap tercile bucketing",
+  "consequence": "a security with no label is excluded from its industry's statistics, so every OTHER member of that industry is measured against an incomplete group"
+ },
+ "union_rule": "index_member_all preferred, cache as fallback",
+ "window": [
+  "2023-09-25",
+  "2025-12-31"
+ ],
+ "business_days": 593,
+ "per_day": {
+  "industries_with_any_missing_member": {
+   "median": 30.0,
+   "max": 30,
+   "of_industries_median": 31.0
+  },
+  "median_missing_share_of_a_group": {
+   "min": 0.0851063829787234,
+   "median": 0.1056338028169014,
+   "max": 0.11888111888111888
+  },
+  "worst_industry_missing_share_on_any_day": 0.5714285714285714,
+  "total_members_used_median": 5113.0,
+  "total_members_under_union_median": 5660.0
+ },
+ "per_industry_distribution_of_missing_share": {
+  "industry_days": 18383,
+  "industry_days_with_a_missing_member": 17789,
+  "share_of_industry_days_affected": 0.9676875373986835,
+  "missing_count_quantiles": {
+   "0.5": 13.0,
+   "0.9": 39.0,
+   "0.99": 69.0
+  },
+  "missing_share_quantiles": {
+   "0.5": 0.09973045822102426,
+   "0.9": 0.14473684210526316,
+   "0.99": 0.4594594594594595
+  },
+  "worst_ten_industry_days": [
+   {
+    "day": "2025-12-02",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-03",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-04",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-05",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-08",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-09",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-10",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-11",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-12",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   },
+   {
+    "day": "2025-12-15",
+    "l1": "801230.SI",
+    "members_used": 15,
+    "members_under_union": 35,
+    "missing": 20,
+    "missing_share": 0.5714285714285714
+   }
+  ]
+ },
+ "what_this_does_not_say": "This sizes the INCIDENCE -- how much of each group was missing -- not the MAGNITUDE of the resulting change in any security's factor value. Magnitude needs a replay, which is the owner-gated next step and was not run here.",
+ "per_day_rows": [
+  {
+   "day": "2023-09-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5058,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-09-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5058,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-09-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5060,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-09-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-09-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5061,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5063,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5063,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5063,
+   "total_members_under_union": 5523
+  },
+  {
+   "day": "2023-10-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5065,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5065,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5065,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5067,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5067,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5067,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5067,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0851063829787234,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5069,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5068,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5068,
+   "total_members_under_union": 5530
+  },
+  {
+   "day": "2023-10-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5068,
+   "total_members_under_union": 5535
+  },
+  {
+   "day": "2023-10-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0880952380952381,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5069,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-10-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0880952380952381,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5070,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0880952380952381,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5070,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0880952380952381,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5070,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0880952380952381,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5070,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5071,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5072,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5073,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5073,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5074,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5074,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5075,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5075,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.08776595744680851,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5075,
+   "total_members_under_union": 5541
+  },
+  {
+   "day": "2023-11-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09018567639257294,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5075,
+   "total_members_under_union": 5548
+  },
+  {
+   "day": "2023-11-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5077,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5077,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5077,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5078,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5079,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5079,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5079,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5079,
+   "total_members_under_union": 5554
+  },
+  {
+   "day": "2023-11-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5078,
+   "total_members_under_union": 5555
+  },
+  {
+   "day": "2023-12-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5078,
+   "total_members_under_union": 5561
+  },
+  {
+   "day": "2023-12-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5079,
+   "total_members_under_union": 5561
+  },
+  {
+   "day": "2023-12-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5080,
+   "total_members_under_union": 5562
+  },
+  {
+   "day": "2023-12-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5081,
+   "total_members_under_union": 5562
+  },
+  {
+   "day": "2023-12-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5080,
+   "total_members_under_union": 5562
+  },
+  {
+   "day": "2023-12-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5080,
+   "total_members_under_union": 5565
+  },
+  {
+   "day": "2023-12-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5082,
+   "total_members_under_union": 5565
+  },
+  {
+   "day": "2023-12-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5083,
+   "total_members_under_union": 5566
+  },
+  {
+   "day": "2023-12-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09259259259259259,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5084,
+   "total_members_under_union": 5566
+  },
+  {
+   "day": "2023-12-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5084,
+   "total_members_under_union": 5567
+  },
+  {
+   "day": "2023-12-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09234828496042216,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5084,
+   "total_members_under_union": 5567
+  },
+  {
+   "day": "2023-12-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09234828496042216,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5084,
+   "total_members_under_union": 5567
+  },
+  {
+   "day": "2023-12-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09234828496042216,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5084,
+   "total_members_under_union": 5568
+  },
+  {
+   "day": "2023-12-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09234828496042216,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5084,
+   "total_members_under_union": 5568
+  },
+  {
+   "day": "2023-12-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09234828496042216,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5086,
+   "total_members_under_union": 5569
+  },
+  {
+   "day": "2023-12-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5087,
+   "total_members_under_union": 5575
+  },
+  {
+   "day": "2023-12-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5085,
+   "total_members_under_union": 5575
+  },
+  {
+   "day": "2023-12-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5085,
+   "total_members_under_union": 5575
+  },
+  {
+   "day": "2023-12-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5089,
+   "total_members_under_union": 5575
+  },
+  {
+   "day": "2023-12-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5088,
+   "total_members_under_union": 5576
+  },
+  {
+   "day": "2023-12-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5089,
+   "total_members_under_union": 5578
+  },
+  {
+   "day": "2024-01-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5089,
+   "total_members_under_union": 5578
+  },
+  {
+   "day": "2024-01-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5092,
+   "total_members_under_union": 5578
+  },
+  {
+   "day": "2024-01-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5093,
+   "total_members_under_union": 5578
+  },
+  {
+   "day": "2024-01-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5094,
+   "total_members_under_union": 5578
+  },
+  {
+   "day": "2024-01-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5095,
+   "total_members_under_union": 5579
+  },
+  {
+   "day": "2024-01-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5095,
+   "total_members_under_union": 5581
+  },
+  {
+   "day": "2024-01-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5096,
+   "total_members_under_union": 5581
+  },
+  {
+   "day": "2024-01-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5097,
+   "total_members_under_union": 5581
+  },
+  {
+   "day": "2024-01-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5097,
+   "total_members_under_union": 5582
+  },
+  {
+   "day": "2024-01-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5097,
+   "total_members_under_union": 5584
+  },
+  {
+   "day": "2024-01-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5096,
+   "total_members_under_union": 5584
+  },
+  {
+   "day": "2024-01-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5096,
+   "total_members_under_union": 5584
+  },
+  {
+   "day": "2024-01-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5097,
+   "total_members_under_union": 5584
+  },
+  {
+   "day": "2024-01-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5099,
+   "total_members_under_union": 5585
+  },
+  {
+   "day": "2024-01-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5098,
+   "total_members_under_union": 5587
+  },
+  {
+   "day": "2024-01-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5099,
+   "total_members_under_union": 5587
+  },
+  {
+   "day": "2024-01-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5100,
+   "total_members_under_union": 5587
+  },
+  {
+   "day": "2024-01-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5099,
+   "total_members_under_union": 5587
+  },
+  {
+   "day": "2024-01-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5100,
+   "total_members_under_union": 5587
+  },
+  {
+   "day": "2024-01-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5101,
+   "total_members_under_union": 5589
+  },
+  {
+   "day": "2024-01-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5101,
+   "total_members_under_union": 5589
+  },
+  {
+   "day": "2024-01-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5101,
+   "total_members_under_union": 5589
+  },
+  {
+   "day": "2024-01-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5589
+  },
+  {
+   "day": "2024-02-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5589
+  },
+  {
+   "day": "2024-02-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5102,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5103,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5104,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5104,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5104,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5105,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5591
+  },
+  {
+   "day": "2024-02-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5593
+  },
+  {
+   "day": "2024-03-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5106,
+   "total_members_under_union": 5597
+  },
+  {
+   "day": "2024-03-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5106,
+   "total_members_under_union": 5597
+  },
+  {
+   "day": "2024-03-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5106,
+   "total_members_under_union": 5597
+  },
+  {
+   "day": "2024-03-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5597
+  },
+  {
+   "day": "2024-03-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5597
+  },
+  {
+   "day": "2024-03-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5597
+  },
+  {
+   "day": "2024-03-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5597
+  },
+  {
+   "day": "2024-03-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5599
+  },
+  {
+   "day": "2024-03-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5599
+  },
+  {
+   "day": "2024-03-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5599
+  },
+  {
+   "day": "2024-03-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5599
+  },
+  {
+   "day": "2024-03-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5603
+  },
+  {
+   "day": "2024-03-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5603
+  },
+  {
+   "day": "2024-03-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5109,
+   "total_members_under_union": 5603
+  },
+  {
+   "day": "2024-03-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5109,
+   "total_members_under_union": 5603
+  },
+  {
+   "day": "2024-03-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5109,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-03-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09473684210526316,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-03-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5107,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-03-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5109,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-03-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-03-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5108,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5109,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5110,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5110,
+   "total_members_under_union": 5605
+  },
+  {
+   "day": "2024-04-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5111,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5111,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5112,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5112,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5112,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5114,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5114,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5114,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-04-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-05-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-05-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-05-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-05-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-05-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-05-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5607
+  },
+  {
+   "day": "2024-05-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5609
+  },
+  {
+   "day": "2024-05-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5609
+  },
+  {
+   "day": "2024-05-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5609
+  },
+  {
+   "day": "2024-05-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5609
+  },
+  {
+   "day": "2024-05-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5609
+  },
+  {
+   "day": "2024-05-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5114,
+   "total_members_under_union": 5609
+  },
+  {
+   "day": "2024-05-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5114,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5115,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5112,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5115,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5115,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5115,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5115,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5610
+  },
+  {
+   "day": "2024-05-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5114,
+   "total_members_under_union": 5611
+  },
+  {
+   "day": "2024-05-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5114,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.40540540540540543,
+   "total_members_used": 5113,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09333333333333334,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09585492227979274,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09585492227979274,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09585492227979274,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09585492227979274,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09585492227979274,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09585492227979274,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09585492227979274,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5614
+  },
+  {
+   "day": "2024-06-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-06-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-07-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-07-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-07-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0979381443298969,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5617
+  },
+  {
+   "day": "2024-07-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0979381443298969,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5619
+  },
+  {
+   "day": "2024-07-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0979381443298969,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5621
+  },
+  {
+   "day": "2024-07-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0979381443298969,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5621
+  },
+  {
+   "day": "2024-07-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.0979381443298969,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5621
+  },
+  {
+   "day": "2024-07-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5621
+  },
+  {
+   "day": "2024-07-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5621
+  },
+  {
+   "day": "2024-07-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09536082474226804,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5103,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09803921568627451,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5037,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-07-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09743589743589744,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-08-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09743589743589744,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5623
+  },
+  {
+   "day": "2024-08-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09743589743589744,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5627
+  },
+  {
+   "day": "2024-08-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09743589743589744,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5627
+  },
+  {
+   "day": "2024-08-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09743589743589744,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5627
+  },
+  {
+   "day": "2024-08-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09859154929577464,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5628
+  },
+  {
+   "day": "2024-08-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.09859154929577464,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5628
+  },
+  {
+   "day": "2024-08-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5103,
+   "total_members_under_union": 5628
+  },
+  {
+   "day": "2024-08-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5103,
+   "total_members_under_union": 5628
+  },
+  {
+   "day": "2024-08-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5628
+  },
+  {
+   "day": "2024-08-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5101,
+   "total_members_under_union": 5628
+  },
+  {
+   "day": "2024-08-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5100,
+   "total_members_under_union": 5628
+  },
+  {
+   "day": "2024-08-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5631
+  },
+  {
+   "day": "2024-08-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5631
+  },
+  {
+   "day": "2024-08-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5632
+  },
+  {
+   "day": "2024-08-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5099,
+   "total_members_under_union": 5632
+  },
+  {
+   "day": "2024-08-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5633
+  },
+  {
+   "day": "2024-08-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5633
+  },
+  {
+   "day": "2024-08-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5097,
+   "total_members_under_union": 5633
+  },
+  {
+   "day": "2024-08-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5633
+  },
+  {
+   "day": "2024-08-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5097,
+   "total_members_under_union": 5633
+  },
+  {
+   "day": "2024-08-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10187667560321716,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5633
+  },
+  {
+   "day": "2024-08-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10427807486631016,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5095,
+   "total_members_under_union": 5636
+  },
+  {
+   "day": "2024-09-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10427807486631016,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5636
+  },
+  {
+   "day": "2024-09-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10427807486631016,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5636
+  },
+  {
+   "day": "2024-09-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10427807486631016,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5636
+  },
+  {
+   "day": "2024-09-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10427807486631016,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5636
+  },
+  {
+   "day": "2024-09-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5638
+  },
+  {
+   "day": "2024-09-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5096,
+   "total_members_under_union": 5638
+  },
+  {
+   "day": "2024-09-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5638
+  },
+  {
+   "day": "2024-09-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5099,
+   "total_members_under_union": 5638
+  },
+  {
+   "day": "2024-09-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5099,
+   "total_members_under_union": 5638
+  },
+  {
+   "day": "2024-09-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5641
+  },
+  {
+   "day": "2024-09-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5641
+  },
+  {
+   "day": "2024-09-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5641
+  },
+  {
+   "day": "2024-09-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5641
+  },
+  {
+   "day": "2024-09-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5097,
+   "total_members_under_union": 5641
+  },
+  {
+   "day": "2024-09-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5643
+  },
+  {
+   "day": "2024-09-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5643
+  },
+  {
+   "day": "2024-09-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5643
+  },
+  {
+   "day": "2024-09-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5644
+  },
+  {
+   "day": "2024-09-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5097,
+   "total_members_under_union": 5644
+  },
+  {
+   "day": "2024-09-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-09-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5098,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5099,
+   "total_members_under_union": 5646
+  },
+  {
+   "day": "2024-10-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5099,
+   "total_members_under_union": 5649
+  },
+  {
+   "day": "2024-10-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5100,
+   "total_members_under_union": 5649
+  },
+  {
+   "day": "2024-10-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5100,
+   "total_members_under_union": 5649
+  },
+  {
+   "day": "2024-10-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5099,
+   "total_members_under_union": 5649
+  },
+  {
+   "day": "2024-10-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5099,
+   "total_members_under_union": 5649
+  },
+  {
+   "day": "2024-10-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5100,
+   "total_members_under_union": 5651
+  },
+  {
+   "day": "2024-10-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5100,
+   "total_members_under_union": 5651
+  },
+  {
+   "day": "2024-10-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5100,
+   "total_members_under_union": 5651
+  },
+  {
+   "day": "2024-10-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5101,
+   "total_members_under_union": 5651
+  },
+  {
+   "day": "2024-10-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10372340425531915,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5102,
+   "total_members_under_union": 5651
+  },
+  {
+   "day": "2024-10-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10372340425531915,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5102,
+   "total_members_under_union": 5651
+  },
+  {
+   "day": "2024-10-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10372340425531915,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5102,
+   "total_members_under_union": 5651
+  },
+  {
+   "day": "2024-10-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5102,
+   "total_members_under_union": 5653
+  },
+  {
+   "day": "2024-10-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5102,
+   "total_members_under_union": 5653
+  },
+  {
+   "day": "2024-10-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5104,
+   "total_members_under_union": 5654
+  },
+  {
+   "day": "2024-11-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5657
+  },
+  {
+   "day": "2024-11-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5105,
+   "total_members_under_union": 5657
+  },
+  {
+   "day": "2024-11-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5657
+  },
+  {
+   "day": "2024-11-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5106,
+   "total_members_under_union": 5657
+  },
+  {
+   "day": "2024-11-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5657
+  },
+  {
+   "day": "2024-11-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5660
+  },
+  {
+   "day": "2024-11-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5658
+  },
+  {
+   "day": "2024-11-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5660
+  },
+  {
+   "day": "2024-11-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5660
+  },
+  {
+   "day": "2024-11-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5660
+  },
+  {
+   "day": "2024-11-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5108,
+   "total_members_under_union": 5662
+  },
+  {
+   "day": "2024-11-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5107,
+   "total_members_under_union": 5662
+  },
+  {
+   "day": "2024-11-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5662
+  },
+  {
+   "day": "2024-11-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5662
+  },
+  {
+   "day": "2024-11-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5662
+  },
+  {
+   "day": "2024-11-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5664
+  },
+  {
+   "day": "2024-11-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-11-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5109,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-11-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5110,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-11-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5110,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-11-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5111,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-12-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5111,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-12-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5112,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-12-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5112,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-12-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5112,
+   "total_members_under_union": 5666
+  },
+  {
+   "day": "2024-12-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5112,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5113,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5113,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5114,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5115,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5114,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5114,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5115,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10526315789473684,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5116,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5116,
+   "total_members_under_union": 5669
+  },
+  {
+   "day": "2024-12-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5116,
+   "total_members_under_union": 5674
+  },
+  {
+   "day": "2024-12-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5116,
+   "total_members_under_union": 5674
+  },
+  {
+   "day": "2024-12-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5116,
+   "total_members_under_union": 5677
+  },
+  {
+   "day": "2024-12-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10610079575596817,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5113,
+   "total_members_under_union": 5677
+  },
+  {
+   "day": "2024-12-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10610079575596817,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5113,
+   "total_members_under_union": 5677
+  },
+  {
+   "day": "2024-12-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5118,
+   "total_members_under_union": 5678
+  },
+  {
+   "day": "2024-12-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5117,
+   "total_members_under_union": 5678
+  },
+  {
+   "day": "2024-12-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5119,
+   "total_members_under_union": 5679
+  },
+  {
+   "day": "2025-01-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5119,
+   "total_members_under_union": 5679
+  },
+  {
+   "day": "2025-01-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5120,
+   "total_members_under_union": 5678
+  },
+  {
+   "day": "2025-01-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5120,
+   "total_members_under_union": 5682
+  },
+  {
+   "day": "2025-01-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5120,
+   "total_members_under_union": 5682
+  },
+  {
+   "day": "2025-01-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5121,
+   "total_members_under_union": 5682
+  },
+  {
+   "day": "2025-01-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5121,
+   "total_members_under_union": 5682
+  },
+  {
+   "day": "2025-01-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10596026490066225,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5121,
+   "total_members_under_union": 5681
+  },
+  {
+   "day": "2025-01-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5122,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5123,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5123,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5123,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5123,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5125,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5125,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5125,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-01-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5127,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5128,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5128,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5128,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5684
+  },
+  {
+   "day": "2025-02-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5687
+  },
+  {
+   "day": "2025-02-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5687
+  },
+  {
+   "day": "2025-02-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5687
+  },
+  {
+   "day": "2025-02-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5687
+  },
+  {
+   "day": "2025-02-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5687
+  },
+  {
+   "day": "2025-02-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5690
+  },
+  {
+   "day": "2025-02-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5690
+  },
+  {
+   "day": "2025-02-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5691
+  },
+  {
+   "day": "2025-02-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5691
+  },
+  {
+   "day": "2025-02-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5691
+  },
+  {
+   "day": "2025-02-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5130,
+   "total_members_under_union": 5694
+  },
+  {
+   "day": "2025-03-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.43243243243243246,
+   "total_members_used": 5129,
+   "total_members_under_union": 5694
+  },
+  {
+   "day": "2025-03-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5128,
+   "total_members_under_union": 5694
+  },
+  {
+   "day": "2025-03-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5128,
+   "total_members_under_union": 5694
+  },
+  {
+   "day": "2025-03-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5128,
+   "total_members_under_union": 5694
+  },
+  {
+   "day": "2025-03-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5127,
+   "total_members_under_union": 5697
+  },
+  {
+   "day": "2025-03-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5129,
+   "total_members_under_union": 5697
+  },
+  {
+   "day": "2025-03-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5131,
+   "total_members_under_union": 5697
+  },
+  {
+   "day": "2025-03-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5130,
+   "total_members_under_union": 5697
+  },
+  {
+   "day": "2025-03-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5130,
+   "total_members_under_union": 5697
+  },
+  {
+   "day": "2025-03-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5130,
+   "total_members_under_union": 5700
+  },
+  {
+   "day": "2025-03-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5130,
+   "total_members_under_union": 5700
+  },
+  {
+   "day": "2025-03-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5133,
+   "total_members_under_union": 5700
+  },
+  {
+   "day": "2025-03-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5133,
+   "total_members_under_union": 5700
+  },
+  {
+   "day": "2025-03-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5132,
+   "total_members_under_union": 5700
+  },
+  {
+   "day": "2025-03-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5132,
+   "total_members_under_union": 5703
+  },
+  {
+   "day": "2025-03-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5132,
+   "total_members_under_union": 5704
+  },
+  {
+   "day": "2025-03-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5133,
+   "total_members_under_union": 5704
+  },
+  {
+   "day": "2025-03-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5134,
+   "total_members_under_union": 5704
+  },
+  {
+   "day": "2025-03-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5135,
+   "total_members_under_union": 5704
+  },
+  {
+   "day": "2025-03-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5136,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-03-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5137,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5138,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5138,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5140,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5140,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5140,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5140,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5140,
+   "total_members_under_union": 5706
+  },
+  {
+   "day": "2025-04-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5140,
+   "total_members_under_union": 5708
+  },
+  {
+   "day": "2025-04-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5141,
+   "total_members_under_union": 5708
+  },
+  {
+   "day": "2025-04-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5141,
+   "total_members_under_union": 5708
+  },
+  {
+   "day": "2025-04-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5142,
+   "total_members_under_union": 5708
+  },
+  {
+   "day": "2025-04-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5143,
+   "total_members_under_union": 5708
+  },
+  {
+   "day": "2025-04-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5143,
+   "total_members_under_union": 5708
+  },
+  {
+   "day": "2025-04-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5144,
+   "total_members_under_union": 5710
+  },
+  {
+   "day": "2025-04-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5144,
+   "total_members_under_union": 5710
+  },
+  {
+   "day": "2025-04-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5145,
+   "total_members_under_union": 5710
+  },
+  {
+   "day": "2025-04-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5146,
+   "total_members_under_union": 5710
+  },
+  {
+   "day": "2025-04-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5147,
+   "total_members_under_union": 5710
+  },
+  {
+   "day": "2025-04-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5145,
+   "total_members_under_union": 5713
+  },
+  {
+   "day": "2025-04-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4594594594594595,
+   "total_members_used": 5146,
+   "total_members_under_union": 5713
+  },
+  {
+   "day": "2025-04-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5142,
+   "total_members_under_union": 5713
+  },
+  {
+   "day": "2025-04-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5142,
+   "total_members_under_union": 5713
+  },
+  {
+   "day": "2025-05-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5142,
+   "total_members_under_union": 5713
+  },
+  {
+   "day": "2025-05-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5142,
+   "total_members_under_union": 5713
+  },
+  {
+   "day": "2025-05-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5142,
+   "total_members_under_union": 5713
+  },
+  {
+   "day": "2025-05-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5714
+  },
+  {
+   "day": "2025-05-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5714
+  },
+  {
+   "day": "2025-05-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5714
+  },
+  {
+   "day": "2025-05-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1056338028169014,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5715
+  },
+  {
+   "day": "2025-05-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5141,
+   "total_members_under_union": 5715
+  },
+  {
+   "day": "2025-05-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5715
+  },
+  {
+   "day": "2025-05-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5715
+  },
+  {
+   "day": "2025-05-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5715
+  },
+  {
+   "day": "2025-05-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5717
+  },
+  {
+   "day": "2025-05-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5717
+  },
+  {
+   "day": "2025-05-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5717
+  },
+  {
+   "day": "2025-05-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5717
+  },
+  {
+   "day": "2025-05-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5717
+  },
+  {
+   "day": "2025-05-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.10875331564986737,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5147,
+   "total_members_under_union": 5719
+  },
+  {
+   "day": "2025-05-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5147,
+   "total_members_under_union": 5719
+  },
+  {
+   "day": "2025-05-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5147,
+   "total_members_under_union": 5720
+  },
+  {
+   "day": "2025-05-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5146,
+   "total_members_under_union": 5720
+  },
+  {
+   "day": "2025-05-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5146,
+   "total_members_under_union": 5720
+  },
+  {
+   "day": "2025-05-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5146,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5146,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5146,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5146,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11016949152542373,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5146,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.1111111111111111,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5722
+  },
+  {
+   "day": "2025-06-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5145,
+   "total_members_under_union": 5724
+  },
+  {
+   "day": "2025-06-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.4864864864864865,
+   "total_members_used": 5144,
+   "total_members_under_union": 5724
+  },
+  {
+   "day": "2025-06-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5135135135135135,
+   "total_members_used": 5143,
+   "total_members_under_union": 5724
+  },
+  {
+   "day": "2025-06-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5135135135135135,
+   "total_members_used": 5143,
+   "total_members_under_union": 5724
+  },
+  {
+   "day": "2025-06-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5135135135135135,
+   "total_members_used": 5143,
+   "total_members_under_union": 5725
+  },
+  {
+   "day": "2025-06-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5143,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-06-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5143,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5143,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5143,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5143,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5143,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5143,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5144,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5144,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5144,
+   "total_members_under_union": 5727
+  },
+  {
+   "day": "2025-07-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5144,
+   "total_members_under_union": 5730
+  },
+  {
+   "day": "2025-07-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5144,
+   "total_members_under_union": 5730
+  },
+  {
+   "day": "2025-07-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5145,
+   "total_members_under_union": 5730
+  },
+  {
+   "day": "2025-07-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5145,
+   "total_members_under_union": 5730
+  },
+  {
+   "day": "2025-07-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5146,
+   "total_members_under_union": 5730
+  },
+  {
+   "day": "2025-07-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5146,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5146,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5146,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5147,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5147,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5147,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5147,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5147,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5149,
+   "total_members_under_union": 5732
+  },
+  {
+   "day": "2025-07-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5149,
+   "total_members_under_union": 5733
+  },
+  {
+   "day": "2025-08-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5149,
+   "total_members_under_union": 5734
+  },
+  {
+   "day": "2025-08-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5149,
+   "total_members_under_union": 5734
+  },
+  {
+   "day": "2025-08-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5149,
+   "total_members_under_union": 5735
+  },
+  {
+   "day": "2025-08-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5150,
+   "total_members_under_union": 5735
+  },
+  {
+   "day": "2025-08-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5150,
+   "total_members_under_union": 5735
+  },
+  {
+   "day": "2025-08-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5405405405405406,
+   "total_members_used": 5150,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 29,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5277777777777778,
+   "total_members_used": 5150,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11290322580645161,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5134,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5151,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5151,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5736
+  },
+  {
+   "day": "2025-08-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5739
+  },
+  {
+   "day": "2025-08-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-08-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-08-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-08-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-08-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-08-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-09-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-09-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-09-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-09-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11038961038961038,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5741
+  },
+  {
+   "day": "2025-09-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5745
+  },
+  {
+   "day": "2025-09-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5746
+  },
+  {
+   "day": "2025-09-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5747
+  },
+  {
+   "day": "2025-09-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5747
+  },
+  {
+   "day": "2025-09-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5151,
+   "total_members_under_union": 5747
+  },
+  {
+   "day": "2025-09-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5151,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5749
+  },
+  {
+   "day": "2025-09-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5752
+  },
+  {
+   "day": "2025-09-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5151,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-09-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5152,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-09-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5153,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5155,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5156,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5156,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5158,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5158,
+   "total_members_under_union": 5757
+  },
+  {
+   "day": "2025-10-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5158,
+   "total_members_under_union": 5761
+  },
+  {
+   "day": "2025-10-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5158,
+   "total_members_under_union": 5761
+  },
+  {
+   "day": "2025-10-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5158,
+   "total_members_under_union": 5761
+  },
+  {
+   "day": "2025-10-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5158,
+   "total_members_under_union": 5761
+  },
+  {
+   "day": "2025-10-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5158,
+   "total_members_under_union": 5761
+  },
+  {
+   "day": "2025-10-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5159,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-10-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5159,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-10-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5159,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-10-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5160,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-10-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5160,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-10-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5161,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-11-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5161,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-11-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5164,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-11-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5164,
+   "total_members_under_union": 5763
+  },
+  {
+   "day": "2025-11-06",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11140583554376658,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5164,
+   "total_members_under_union": 5766
+  },
+  {
+   "day": "2025-11-07",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11375661375661375,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5164,
+   "total_members_under_union": 5769
+  },
+  {
+   "day": "2025-11-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11375661375661375,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5163,
+   "total_members_under_union": 5769
+  },
+  {
+   "day": "2025-11-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11375661375661375,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5163,
+   "total_members_under_union": 5769
+  },
+  {
+   "day": "2025-11-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11375661375661375,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5164,
+   "total_members_under_union": 5769
+  },
+  {
+   "day": "2025-11-13",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11375661375661375,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5165,
+   "total_members_under_union": 5769
+  },
+  {
+   "day": "2025-11-14",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5166,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5166,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5166,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5165,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-20",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5165,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-21",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5166,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5166,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5168,
+   "total_members_under_union": 5771
+  },
+  {
+   "day": "2025-11-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5168,
+   "total_members_under_union": 5773
+  },
+  {
+   "day": "2025-11-27",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5167,
+   "total_members_under_union": 5773
+  },
+  {
+   "day": "2025-11-28",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5555555555555556,
+   "total_members_used": 5167,
+   "total_members_under_union": 5773
+  },
+  {
+   "day": "2025-12-01",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5428571428571428,
+   "total_members_used": 5168,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-02",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5167,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-03",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5168,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-04",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5168,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-05",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5168,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-08",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5167,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-09",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11612903225806452,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5167,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-10",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11428571428571428,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5167,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-11",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5166,
+   "total_members_under_union": 5778
+  },
+  {
+   "day": "2025-12-12",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5168,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-15",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5169,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-16",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5169,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-17",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5170,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-18",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5170,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-19",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5169,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-22",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5169,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-23",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5170,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-24",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5171,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-25",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11635220125786164,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5173,
+   "total_members_under_union": 5786
+  },
+  {
+   "day": "2025-12-26",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11888111888111888,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5171,
+   "total_members_under_union": 5788
+  },
+  {
+   "day": "2025-12-29",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11888111888111888,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5168,
+   "total_members_under_union": 5790
+  },
+  {
+   "day": "2025-12-30",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11598746081504702,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5174,
+   "total_members_under_union": 5790
+  },
+  {
+   "day": "2025-12-31",
+   "industries": 31,
+   "industries_with_any_missing_member": 30,
+   "median_missing_share": 0.11598746081504702,
+   "max_missing_share": 0.5714285714285714,
+   "total_members_used": 5176,
+   "total_members_under_union": 5790
+  }
+ ],
+ "database_writes": false,
+ "weights_written": false
+}

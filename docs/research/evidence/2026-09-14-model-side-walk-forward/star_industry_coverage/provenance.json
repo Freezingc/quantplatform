@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-14T23:10:16+00:00",
+  "generated_at_utc": "2026-09-14T23:18:00+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "19ff9dcfafcf0206b8dd4c6f7ea5531a79b098f8455c9da3b8cfbf025d7ccbd7"
@@ -25,6 +25,8 @@
   "measurements": {
     "cache_ambiguity_tiebreak.json": "2072ebc4ebb7ccd1ad6d781302d70d59ca639b1fe9909de79312b3a56d00c3b8",
     "cache_halves_not_independent.json": "5a49b82f5f45bb6de9cc795585c849f243a59f64d10877ceccc2ce656dbc87bc",
+    "group_incompleteness_postcutover.json": "2193e67e0abf892c9199ab1572b268743eb06345438759a5a3f7048454b820e2",
+    "group_incompleteness_training.json": "86029c8667c7cd03bf127e75483afb390d14cdf77e1f6295140b6d4a56a3d5ee",
     "group_membership_propagation.json": "e8de0d5ea79cdbfbd67ead21d4486ea2a11a5ce2ede6ea4839c1506061fcd0a4",
     "industry_cache_star_coverage.json": "2b2640d0ae53a5a9e1ae0d2ee90b5b188b49ec341b2215bc382a62be7c33bb7f",
     "industry_group_incompleteness.json": "4785968e3d940c0d553f355877a5593261443b8850d2ded58ea11d34218ad2c9",
@@ -94,7 +96,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "0427b6136461f7ed5fd3b0c639a24ad12ef56899"
+    "commit_at_generation": "e06d3af3b1202771333ba30ed28637829893c940"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",

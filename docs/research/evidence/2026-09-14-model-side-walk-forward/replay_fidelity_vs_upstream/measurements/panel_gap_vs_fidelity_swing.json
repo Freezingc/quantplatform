@@ -1,0 +1,153 @@
+{
+ "question": "Does the size of the panel-composition gap explain the day-to-day swing in replay fidelity?",
+ "panel_composition_facts": {
+  "in_replay_only_on_all_days": 0,
+  "replay_panel_is_a_strict_subset": true,
+  "upstream_only_per_day": [
+   1153,
+   1105,
+   747,
+   673,
+   621,
+   606,
+   603,
+   575,
+   544
+  ],
+  "jaccard_range": [
+   0.8063811922753988,
+   0.9086481947942905
+  ],
+  "upstream_only_are_mostly_non_star": true
+ },
+ "correlations_with_the_composition_gap_size": {
+  "sp464": {
+   "pearson_vs_upstream_only": -0.2875604637861593,
+   "spearman_vs_upstream_only": -0.11666666666666665,
+   "pearson_vs_jaccard": 0.2875604637861594
+  },
+  "sp471": {
+   "pearson_vs_upstream_only": -0.6612040727633234,
+   "spearman_vs_upstream_only": -0.4666666666666666,
+   "pearson_vs_jaccard": 0.6612040727633235
+  },
+  "sp484": {
+   "pearson_vs_upstream_only": 0.3165085042045364,
+   "spearman_vs_upstream_only": -0.016666666666666666,
+   "pearson_vs_jaccard": -0.3165085042045361
+  },
+  "sp357": {
+   "pearson_vs_upstream_only": -0.10474103324523656,
+   "spearman_vs_upstream_only": -0.4666666666666666,
+   "pearson_vs_jaccard": 0.10474103324523619
+  },
+  "sp381": {
+   "pearson_vs_upstream_only": 0.46292615529058245,
+   "spearman_vs_upstream_only": 0.65,
+   "pearson_vs_jaccard": -0.4629261552905829
+  }
+ },
+ "days": [
+  {
+   "day": "2022-03-15",
+   "upstream_only": 1153,
+   "jaccard": 0.8063811922753988,
+   "replay_panel": 4802,
+   "sp464": 0.6356826547063269,
+   "sp471": 0.4792194323973327,
+   "sp484": 0.9990166755987209,
+   "sp357": 0.9797123139059352,
+   "sp381": 0.9998314627958458
+  },
+  {
+   "day": "2022-07-29",
+   "upstream_only": 1105,
+   "jaccard": 0.8144416456759026,
+   "replay_panel": 4850,
+   "sp464": 0.9805278739973001,
+   "sp471": 0.8706571255140187,
+   "sp484": 0.9991985688807341,
+   "sp357": 0.9762982942753767,
+   "sp381": 0.9998913336450553
+  },
+  {
+   "day": "2023-07-05",
+   "upstream_only": 747,
+   "jaccard": 0.87455919395466,
+   "replay_panel": 5208,
+   "sp464": 0.8094702134026512,
+   "sp471": 0.8695668680598524,
+   "sp484": 0.9986710979165518,
+   "sp357": 0.9747328880537076,
+   "sp381": 0.9996013062651944
+  },
+  {
+   "day": "2023-10-09",
+   "upstream_only": 673,
+   "jaccard": 0.8869857262804366,
+   "replay_panel": 5282,
+   "sp464": 0.9835167661603316,
+   "sp471": 0.8155780567007366,
+   "sp484": 0.9975124206301762,
+   "sp357": 0.994237105107507,
+   "sp381": 0.9999681195702794
+  },
+  {
+   "day": "2024-01-15",
+   "upstream_only": 621,
+   "jaccard": 0.8957178841309824,
+   "replay_panel": 5334,
+   "sp464": 0.9880123817626257,
+   "sp471": 0.8504282236192079,
+   "sp484": 0.9973159743912754,
+   "sp357": 0.9484136592296576,
+   "sp381": 0.9929588651739975
+  },
+  {
+   "day": "2024-06-17",
+   "upstream_only": 606,
+   "jaccard": 0.8982367758186398,
+   "replay_panel": 5349,
+   "sp464": 0.8231337827033481,
+   "sp471": 0.8574292888453044,
+   "sp484": 0.9998883439003496,
+   "sp357": 0.9956986952738242,
+   "sp381": 0.9997309287670243
+  },
+  {
+   "day": "2024-11-18",
+   "upstream_only": 603,
+   "jaccard": 0.8987405541561713,
+   "replay_panel": 5352,
+   "sp464": 0.7004655586700159,
+   "sp471": 0.8812582206525726,
+   "sp484": 0.9995855495447281,
+   "sp357": 0.9801589712315087,
+   "sp381": 0.9991516763193382
+  },
+  {
+   "day": "2025-03-17",
+   "upstream_only": 575,
+   "jaccard": 0.9034424853064652,
+   "replay_panel": 5380,
+   "sp464": 0.9474146354387785,
+   "sp471": 0.882857348978941,
+   "sp484": 0.9993402022996645,
+   "sp357": 0.9824373271144642,
+   "sp381": 0.9942543433875243
+  },
+  {
+   "day": "2025-08-08",
+   "upstream_only": 544,
+   "jaccard": 0.9086481947942905,
+   "replay_panel": 5411,
+   "sp464": 0.9057058352349872,
+   "sp471": 0.8609010294398586,
+   "sp484": 0.9944364793985475,
+   "sp357": 0.9874188621783055,
+   "sp381": 0.9973298492724803
+  }
+ ],
+ "verdict": "The panels differ materially and the replay panel is a strict subset, so the necessary condition for the cs_max mechanism holds. But the SIZE of the composition gap does not track the day-to-day swing: pearson(gap, spearman_464) = -0.288, and 2022-07-29 has the second-largest gap with the second-BEST rank correlation. Composition difference permits the mechanism; it does not by itself explain the magnitude or the swing.",
+ "database_writes": false
+}
