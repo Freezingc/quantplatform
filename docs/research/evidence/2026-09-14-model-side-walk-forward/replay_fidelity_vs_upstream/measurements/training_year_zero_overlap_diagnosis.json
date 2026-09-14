@@ -1,0 +1,54 @@
+{
+ "question": "Why did the training-year fidelity census return zero overlap before 2020?",
+ "columns": [
+  "day",
+  "factor_daily_rows",
+  "upstream_rows_for_yeslab_206",
+  "upstream_rows_all_names_in_factor_data5"
+ ],
+ "rows": [
+  {
+   "day": "2014-06-16",
+   "factor_daily_rows": 23302,
+   "upstream_rows_206": 0,
+   "upstream_rows_all_names": 0
+  },
+  {
+   "day": "2015-07-15",
+   "factor_daily_rows": 11443,
+   "upstream_rows_206": 0,
+   "upstream_rows_all_names": 0
+  },
+  {
+   "day": "2016-06-15",
+   "factor_daily_rows": 26753,
+   "upstream_rows_206": 0,
+   "upstream_rows_all_names": 0
+  },
+  {
+   "day": "2017-03-15",
+   "factor_daily_rows": 24211,
+   "upstream_rows_206": 0,
+   "upstream_rows_all_names": 0
+  },
+  {
+   "day": "2019-08-15",
+   "factor_daily_rows": 35911,
+   "upstream_rows_206": 0,
+   "upstream_rows_all_names": 0
+  },
+  {
+   "day": "2020-06-15",
+   "factor_daily_rows": 37075,
+   "upstream_rows_206": 5937,
+   "upstream_rows_all_names": 471333
+  },
+  {
+   "day": "2021-12-09",
+   "factor_daily_rows": 44157,
+   "upstream_rows_206": 5937,
+   "upstream_rows_all_names": 471333
+  }
+ ],
+ "database_writes": false
+}

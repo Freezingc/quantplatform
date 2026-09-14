@@ -1,0 +1,362 @@
+{
+ "question": "For how much of the walk-forward window does an authoritative upstream referent exist at all?",
+ "method": "row count of each dense factor's own (source_table, source_factor_name) in dfs://YesLab over ONE trading week per year, 06-10..06-20; a zero means no referent that year",
+ "why_a_week_not_a_year": "a full-year scan of these tables did not return in ten minutes; a week returns in under a second",
+ "why_a_week_not_a_day": "so that one missing date cannot read as a missing year",
+ "window_per_year": {
+  "2014": [
+   "2014.06.10",
+   "2014.06.20"
+  ],
+  "2015": [
+   "2015.06.10",
+   "2015.06.20"
+  ],
+  "2016": [
+   "2016.06.10",
+   "2016.06.20"
+  ],
+  "2017": [
+   "2017.06.10",
+   "2017.06.20"
+  ],
+  "2018": [
+   "2018.06.10",
+   "2018.06.20"
+  ],
+  "2019": [
+   "2019.06.10",
+   "2019.06.20"
+  ],
+  "2020": [
+   "2020.06.10",
+   "2020.06.20"
+  ],
+  "2021": [
+   "2021.06.10",
+   "2021.06.20"
+  ],
+  "2022": [
+   "2022.06.10",
+   "2022.06.20"
+  ],
+  "2023": [
+   "2023.06.10",
+   "2023.06.20"
+  ],
+  "2024": [
+   "2024.06.10",
+   "2024.06.20"
+  ],
+  "2025": [
+   "2025.06.10",
+   "2025.06.20"
+  ]
+ },
+ "dense_nine": [
+  "yeslab_206",
+  "yeslab_357",
+  "yeslab_381",
+  "yeslab_425",
+  "yeslab_443_reg30_max20_v1",
+  "yeslab_464",
+  "yeslab_471",
+  "yeslab_484",
+  "yeslab_96"
+ ],
+ "factors_without_a_catalog_entry": [
+  "yeslab_443_reg30_max20_v1"
+ ],
+ "years": [
+  2014,
+  2015,
+  2016,
+  2017,
+  2018,
+  2019,
+  2020,
+  2021,
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "per_factor": {
+  "yeslab_206": {
+   "in_catalog": true,
+   "source_table": "factor_data5",
+   "source_factor_name": "60日成交量去均值相对偏离",
+   "owner": "suyanning",
+   "display_name": "60日成交量去均值相对偏离",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 47496,
+    "2021": 35622,
+    "2022": 41559,
+    "2023": 41559,
+    "2024": 47496,
+    "2025": 53433
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 5937
+  },
+  "yeslab_357": {
+   "in_catalog": true,
+   "source_table": "factor_data8",
+   "source_factor_name": "行业内收益标准化绝对值",
+   "owner": "suyanning",
+   "display_name": "行业内收益标准化绝对值",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 89600,
+    "2021": 67200,
+    "2022": 78400,
+    "2023": 78400,
+    "2024": 89600,
+    "2025": 100800
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 11200
+  },
+  "yeslab_381": {
+   "in_catalog": true,
+   "source_table": "factor_data8",
+   "source_factor_name": "GP_012",
+   "owner": "suyanning",
+   "display_name": "GP_012",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 95232,
+    "2021": 71424,
+    "2022": 83328,
+    "2023": 83328,
+    "2024": 95232,
+    "2025": 107136
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 11904
+  },
+  "yeslab_425": {
+   "in_catalog": true,
+   "source_table": "factor_data9",
+   "source_factor_name": "GP_056",
+   "owner": "suyanning",
+   "display_name": "GP_056",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 47632,
+    "2021": 35724,
+    "2022": 41678,
+    "2023": 41678,
+    "2024": 47632,
+    "2025": 53586
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 5954
+  },
+  "yeslab_443_reg30_max20_v1": {
+   "in_catalog": false,
+   "note": "a repair variant; it has no upstream referent by construction"
+  },
+  "yeslab_464": {
+   "in_catalog": true,
+   "source_table": "factor_data10",
+   "source_factor_name": "GP_095",
+   "owner": "suyanning",
+   "display_name": "GP_095",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 47640,
+    "2021": 35730,
+    "2022": 41685,
+    "2023": 41685,
+    "2024": 47640,
+    "2025": 53595
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 5955
+  },
+  "yeslab_471": {
+   "in_catalog": true,
+   "source_table": "factor_data10",
+   "source_factor_name": "AttentionSpillover",
+   "owner": "zhangyudong",
+   "display_name": "AttentionSpillover",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 47808,
+    "2021": 35856,
+    "2022": 41832,
+    "2023": 41832,
+    "2024": 47808,
+    "2025": 53784
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 5976
+  },
+  "yeslab_484": {
+   "in_catalog": true,
+   "source_table": "factor_data10",
+   "source_factor_name": "羊群效应_CSAD波动率21",
+   "owner": "zhangyudong",
+   "display_name": "羊群效应_CSAD波动率21",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 48072,
+    "2021": 36054,
+    "2022": 42063,
+    "2023": 42063,
+    "2024": 48072,
+    "2025": 54081
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 6009
+  },
+  "yeslab_96": {
+   "in_catalog": true,
+   "source_table": "factor_data3",
+   "source_factor_name": "修正日间反转",
+   "owner": "suyanning",
+   "display_name": "修正日间反转",
+   "rows_in_the_one_week_window_per_year": {
+    "2014": 0,
+    "2015": 0,
+    "2016": 0,
+    "2017": 0,
+    "2018": 0,
+    "2019": 0,
+    "2020": 94992,
+    "2021": 71244,
+    "2022": 83118,
+    "2023": 83118,
+    "2024": 94992,
+    "2025": 106866
+   },
+   "first_year_with_rows": 2020,
+   "training_years_2014_2021_without_a_referent": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+   ],
+   "oos_years_2022_2025_without_a_referent": [],
+   "rows_per_date_implied_by_2020": 11874
+  }
+ },
+ "database_writes": false,
+ "weights_written": false,
+ "verdict": {
+  "catalogued_dense_factors": 8,
+  "factors_whose_upstream_referent_starts_after_2014": 8,
+  "earliest_year_any_factor_has_a_referent": 2020,
+  "training_years_with_no_referent_for_any_dense_factor": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019
+  ],
+  "oos_years_with_no_referent": []
+ }
+}
