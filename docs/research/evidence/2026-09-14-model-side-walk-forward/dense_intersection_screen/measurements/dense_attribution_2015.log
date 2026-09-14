@@ -1,0 +1,35 @@
+window 2015-06-01 .. 2015-12-31; universe days: 146; factors: 9
+
+the 8 days whose weakest dense factor is lowest:
+  2015-08-13 weakest=yeslab_206 0.4443 (universe 1454)
+      206=0.444, 443_reg30_max20_v1=0.464, 471=0.864, 96=0.882, 464=0.956, 425=0.972, 381=0.990, 357=0.999, 484=0.999
+  2015-08-12 weakest=yeslab_206 0.4444 (universe 1447)
+      206=0.444, 443_reg30_max20_v1=0.463, 471=0.858, 96=0.871, 464=0.957, 425=0.971, 381=0.988, 357=0.998, 484=0.999
+  2015-08-20 weakest=yeslab_206 0.4454 (universe 1466)
+      206=0.445, 443_reg30_max20_v1=0.471, 471=0.918, 96=0.926, 464=0.950, 425=0.968, 381=0.990, 357=0.995, 484=0.998
+  2015-08-14 weakest=yeslab_206 0.4465 (universe 1458)
+      206=0.447, 443_reg30_max20_v1=0.467, 471=0.877, 96=0.909, 464=0.955, 425=0.968, 381=0.988, 357=0.995, 484=0.999
+  2015-08-18 weakest=yeslab_206 0.4465 (universe 1458)
+      206=0.447, 443_reg30_max20_v1=0.468, 471=0.912, 96=0.921, 464=0.953, 425=0.968, 381=0.989, 357=0.998, 484=0.998
+  2015-08-11 weakest=yeslab_206 0.4467 (universe 1444)
+      206=0.447, 443_reg30_max20_v1=0.463, 471=0.823, 96=0.865, 464=0.958, 425=0.972, 381=0.990, 357=0.997, 484=0.999
+  2015-08-21 weakest=yeslab_206 0.4469 (universe 1468)
+      206=0.447, 443_reg30_max20_v1=0.473, 471=0.922, 96=0.926, 464=0.951, 425=0.969, 381=0.989, 357=0.999, 484=0.999
+  2015-08-24 weakest=yeslab_206 0.4479 (universe 1467)
+      206=0.448, 443_reg30_max20_v1=0.473, 471=0.918, 96=0.922, 464=0.952, 425=0.971, 381=0.988, 357=0.997, 484=0.998
+
+how often each factor is the weakest over the whole window:
+  yeslab_206                    146 days
+
+per-factor median/min of daily coverage in this window:
+  yeslab_206                   median=0.7162 min=0.4443
+  yeslab_357                   median=0.9973 min=0.7877
+  yeslab_381                   median=0.9890 min=0.6209
+  yeslab_425                   median=0.9735 min=0.5549
+  yeslab_443_reg30_max20_v1    median=0.7665 min=0.4630
+  yeslab_464                   median=0.9621 min=0.5419
+  yeslab_471                   median=0.9252 min=0.5234
+  yeslab_484                   median=0.9973 min=0.9914
+  yeslab_96                    median=0.9308 min=0.5253
+
+wrote /data/zhangyudong/qrv2_research_artifacts/dense_per_day_attribution_2015h2.json

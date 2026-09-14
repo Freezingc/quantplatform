@@ -113,6 +113,15 @@ def main() -> None:
         "measurements": {
             path.name: sha256(path) for path in sorted((HERE / "measurements").iterdir())
         },
+        "probes": {
+            path.name: sha256(path) for path in sorted((HERE / "probes").glob("*.py"))
+        },
+        "probe_note": (
+            "screen_dense_intersection_coverage.py and its tests are copies of the files on the "
+            "instrument branch and are hashed there too; profile_candidate_feature_nan.py and "
+            "probe_dense_per_day_attribution.py are local read-only probes that exist only here "
+            "and in /data/zhangyudong/qrv2_research_artifacts"
+        ),
         "excluded_by_design": [
             "model weights / checkpoints (*.pt)",
             "parquet panels and fold caches",

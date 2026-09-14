@@ -1,0 +1,32 @@
+window 2014-01-01 .. 2021-12-31; factor source dense_v2 (9 factors); floor 0.9 (parsed from /data/zhangyudong/qrv2_worktrees/dense-intersection-screen/research_v2/src/research_v2/evaluation/gates.py)
+  intersection measured for 2014
+  intersection measured for 2015
+  intersection measured for 2016
+  intersection measured for 2017
+  intersection measured for 2018
+  intersection measured for 2019
+  intersection measured for 2020
+  intersection measured for 2021
+days measured: 1948; predicted below the floor: 1045
+coverage: min 0.44530154277699857, median 0.8943662277131288
+  2014:  245 days, 245 below floor, coverage min/median 0.5169/0.8169
+  2015:  244 days, 244 below floor, coverage min/median 0.4453/0.7631
+  2016:  243 days, 243 below floor, coverage min/median 0.7699/0.8317
+  2017:  243 days, 241 below floor, coverage min/median 0.8462/0.8854
+  2018:  243 days,  71 below floor, coverage min/median 0.8864/0.9081
+  2019:  244 days,   0 below floor, coverage min/median 0.9346/0.9701
+  2020:  243 days,   0 below floor, coverage min/median 0.9583/0.9701
+  2021:  243 days,   1 below floor, coverage min/median 0.8496/0.9428
+worst days:
+  2015-08-13 0.4453 BELOW floor (635/1426)
+  2015-09-30 0.4460 BELOW floor (652/1462)
+  2015-08-12 0.4463 BELOW floor (632/1416)
+  2015-10-08 0.4469 BELOW floor (652/1459)
+  2015-09-29 0.4470 BELOW floor (658/1472)
+  2015-08-11 0.4473 BELOW floor (632/1413)
+  2015-08-14 0.4490 BELOW floor (638/1421)
+  2015-09-24 0.4492 BELOW floor (659/1467)
+  2015-09-25 0.4493 BELOW floor (656/1460)
+  2015-07-31 0.4506 BELOW floor (638/1416)
+
+json written: /tmp/dense_intersection_2014_2021.json
