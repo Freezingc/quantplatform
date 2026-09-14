@@ -13,7 +13,7 @@
     "parquet panels and fold caches",
     "per-security rows: only per-day aggregates leave the database"
   ],
-  "generated_at_utc": "2026-09-14T19:31:55+00:00",
+  "generated_at_utc": "2026-09-14T19:39:42+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "9b5cfa92bd5b412fbcd1808bc8dda105635e3feebcbcab37fa199d44aaf36a66"
@@ -42,6 +42,7 @@
     "dense_per_day_attribution_2017.json": "ac8594bb89e63a8eecec2d4594002f30bdd7b3f0851ad0f86581b740e769ef99",
     "frozen_v2_coverage_train_2014_2021.json": "3d44b60ca8dbe1d6b2b777800364009289df71e81c85b7357dd70ece269dfa8c",
     "industry_cache_both_sources.json": "03d1cfeb42e34055ea38844e71178ffb382c9b6638fa88274bd157bab9a65cad",
+    "industry_label_census.json": "02269d66e0f70f225aa3a1efc23b996a10c1cd799888ad998e4345bed99c1235",
     "leave_out_357_2022_2025.json": "ccf5036bfeb44ab056cb61ec7f2420b0726da8bfe13f4fb039028a12babc6a28",
     "leave_out_357_2022_2025.log": "c6180b30cee0bafe382a5b75bc2dd61833688af911500e3885336e6b8523179c",
     "leave_out_471_2022_2025.json": "e7e63cb0ddd19538e7e71e13abd41d2612d5f01bd45aa3ae981fd90c5173f882",
@@ -65,16 +66,17 @@
     "make_m2_preregistration.py": "54376bdb756028eccde67d06efc981c70d89f73c52662ba578d66f40dea28b1a",
     "probe_dense_per_day_attribution.py": "9928dd7d79902067f39b00b02a5e550d188e2c1390e125ad09a43a75b48f123e",
     "probe_industry_cache_both_sources.py": "7aea14975c451bd97c967a33f8c79f3c3b7d742a5d6e72920b8a6913a9358d52",
+    "probe_industry_label_census.py": "88bdb68082bc846f8ebe4c571343f19f962caca882209d33bd1cddc52b329bbb",
     "profile_candidate_feature_nan.py": "3b1c830e2db58d0c67c79e8d743ac56890709cb4164e6e08b763f87d1f932565",
     "screen_dense_intersection_coverage.py": "1caea316c52f05604e1b5669ef9af2dd9e4296c59e36f8e440f1c21d164e1776",
     "test_screen_dense_intersection_coverage.py": "632ca4e08e302b33c50c6dd9a3cab647bd16ec968497f8c9b3d7816b6c7cc4e4"
   },
   "repository_main_tree": {
     "branch": "codex/publish-quant-platform",
-    "commit": "849613ca063f0013915fe330b7f7a7109dba1700",
+    "commit": "293d78b4e62f27e9459480d09e466cf8f669f604",
     "dirty": false,
     "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
-    "subject": "docs(handoff): §21(2) attributed four years of thinness from one year of measurement -- 2014, 2016 and 2017 are now measured, and the binding factor is yeslab_206 alone on 848 of 879 days, not the pair of repair variants"
+    "subject": "docs(handoff): the PIT industry dependency fails in three date-exact shapes, and the third is new -- the cutover date itself is a one-day hole, because 535 memberships expire on 2021-12-10 under a right-exclusive interval while their 393 replacements start on 2021-12-13"
   },
   "safety": "read-only investigation and a read-only instrument: SELECT-only queries against dfs://QuantResearchV2Test. No database write, no weight loading, no artifact mutation, no threshold change, and nothing in the repository calls the instrument.",
   "score_health_floor": {
@@ -89,6 +91,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "9c189abc076d1926001005b89a17d0f04a52d72a"
+    "commit_at_generation": "9dbddefcf1d22742d24981965b29439f7500face"
   }
 }

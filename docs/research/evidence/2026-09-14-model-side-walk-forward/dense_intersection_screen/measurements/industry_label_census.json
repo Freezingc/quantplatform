@@ -1,0 +1,352 @@
+{
+  "business_days": 3392,
+  "cache_dir": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/tushare_cache",
+  "drop_threshold": 50,
+  "interval_rule": "active(d) = in_date <= d < out_date (right-exclusive)",
+  "oos_window": [
+    "2022-01-01",
+    "2025-12-31"
+  ],
+  "sources": {
+    "SW2014": {
+      "active_first_day": 1577,
+      "active_last_day": 4967,
+      "active_max": 4967,
+      "active_min": 1577,
+      "drop_days": [
+        {
+          "active": 2693,
+          "day": "2015-06-30",
+          "delta": -59,
+          "expirations": 59,
+          "registrations": 0
+        },
+        {
+          "active": 2775,
+          "day": "2016-06-30",
+          "delta": -85,
+          "expirations": 85,
+          "registrations": 0
+        },
+        {
+          "active": 3134,
+          "day": "2017-06-30",
+          "delta": -130,
+          "expirations": 130,
+          "registrations": 0
+        },
+        {
+          "active": 3429,
+          "day": "2018-07-13",
+          "delta": -94,
+          "expirations": 94,
+          "registrations": 0
+        },
+        {
+          "active": 3494,
+          "day": "2019-07-05",
+          "delta": -123,
+          "expirations": 124,
+          "registrations": 1
+        },
+        {
+          "active": 3663,
+          "day": "2021-12-10",
+          "delta": -532,
+          "expirations": 534,
+          "registrations": 2
+        },
+        {
+          "active": 3939,
+          "day": "2022-07-29",
+          "delta": -138,
+          "expirations": 138,
+          "registrations": 0
+        },
+        {
+          "active": 4792,
+          "day": "2024-07-30",
+          "delta": -66,
+          "expirations": 66,
+          "registrations": 0
+        },
+        {
+          "active": 4900,
+          "day": "2026-07-01",
+          "delta": -51,
+          "expirations": 52,
+          "registrations": 1
+        }
+      ],
+      "drops_inside_oos_window": [
+        {
+          "active": 3939,
+          "day": "2022-07-29",
+          "delta": -138,
+          "expirations": 138,
+          "registrations": 0
+        },
+        {
+          "active": 4792,
+          "day": "2024-07-30",
+          "delta": -66,
+          "expirations": 66,
+          "registrations": 0
+        }
+      ],
+      "gain_days": [
+        {
+          "active": 2509,
+          "day": "2014-02-21",
+          "delta": 912,
+          "registrations": 912
+        },
+        {
+          "active": 2510,
+          "day": "2014-07-02",
+          "delta": 50,
+          "registrations": 50
+        },
+        {
+          "active": 2752,
+          "day": "2015-07-01",
+          "delta": 59,
+          "registrations": 59
+        },
+        {
+          "active": 2862,
+          "day": "2016-07-01",
+          "delta": 87,
+          "registrations": 87
+        },
+        {
+          "active": 3265,
+          "day": "2017-07-03",
+          "delta": 131,
+          "registrations": 131
+        },
+        {
+          "active": 3525,
+          "day": "2018-07-16",
+          "delta": 96,
+          "registrations": 96
+        },
+        {
+          "active": 3618,
+          "day": "2019-07-08",
+          "delta": 124,
+          "registrations": 124
+        },
+        {
+          "active": 3989,
+          "day": "2021-12-13",
+          "delta": 326,
+          "registrations": 393
+        },
+        {
+          "active": 4073,
+          "day": "2022-08-01",
+          "delta": 134,
+          "registrations": 134
+        },
+        {
+          "active": 4812,
+          "day": "2023-09-25",
+          "delta": 539,
+          "registrations": 539
+        },
+        {
+          "active": 4855,
+          "day": "2024-07-31",
+          "delta": 63,
+          "registrations": 63
+        },
+        {
+          "active": 4959,
+          "day": "2026-07-02",
+          "delta": 59,
+          "registrations": 59
+        }
+      ],
+      "provenance": {
+        "combined_sha256": "7092afa78fa1d6b48a1df6dd62ddbb295a664987840ffd8afee0bd91dbb8ed42",
+        "files": 28,
+        "pattern": "pit_industry_sw2014_members_*_SI.json",
+        "rows": 7551
+      },
+      "star_first_nonzero_day": "2023-09-25"
+    },
+    "SW2021": {
+      "active_first_day": 1648,
+      "active_last_day": 5205,
+      "active_max": 5205,
+      "active_min": 1648,
+      "drop_days": [
+        {
+          "active": 2777,
+          "day": "2015-06-30",
+          "delta": -54,
+          "expirations": 54,
+          "registrations": 0
+        },
+        {
+          "active": 2862,
+          "day": "2016-06-30",
+          "delta": -80,
+          "expirations": 80,
+          "registrations": 0
+        },
+        {
+          "active": 3236,
+          "day": "2017-06-30",
+          "delta": -125,
+          "expirations": 125,
+          "registrations": 0
+        },
+        {
+          "active": 3536,
+          "day": "2018-07-13",
+          "delta": -93,
+          "expirations": 93,
+          "registrations": 0
+        },
+        {
+          "active": 3600,
+          "day": "2019-07-05",
+          "delta": -123,
+          "expirations": 124,
+          "registrations": 1
+        },
+        {
+          "active": 3806,
+          "day": "2021-12-10",
+          "delta": -532,
+          "expirations": 535,
+          "registrations": 3
+        },
+        {
+          "active": 4149,
+          "day": "2022-07-29",
+          "delta": -143,
+          "expirations": 143,
+          "registrations": 0
+        },
+        {
+          "active": 5037,
+          "day": "2024-07-30",
+          "delta": -68,
+          "expirations": 68,
+          "registrations": 0
+        },
+        {
+          "active": 5138,
+          "day": "2026-07-01",
+          "delta": -58,
+          "expirations": 59,
+          "registrations": 1
+        }
+      ],
+      "drops_inside_oos_window": [
+        {
+          "active": 4149,
+          "day": "2022-07-29",
+          "delta": -143,
+          "expirations": 143,
+          "registrations": 0
+        },
+        {
+          "active": 5037,
+          "day": "2024-07-30",
+          "delta": -68,
+          "expirations": 68,
+          "registrations": 0
+        }
+      ],
+      "gain_days": [
+        {
+          "active": 2579,
+          "day": "2014-02-21",
+          "delta": 912,
+          "registrations": 912
+        },
+        {
+          "active": 2581,
+          "day": "2014-07-02",
+          "delta": 50,
+          "registrations": 50
+        },
+        {
+          "active": 2834,
+          "day": "2015-07-01",
+          "delta": 57,
+          "registrations": 57
+        },
+        {
+          "active": 2949,
+          "day": "2016-07-01",
+          "delta": 87,
+          "registrations": 87
+        },
+        {
+          "active": 3363,
+          "day": "2017-07-03",
+          "delta": 127,
+          "registrations": 127
+        },
+        {
+          "active": 3632,
+          "day": "2018-07-16",
+          "delta": 96,
+          "registrations": 96
+        },
+        {
+          "active": 3721,
+          "day": "2019-07-08",
+          "delta": 121,
+          "registrations": 121
+        },
+        {
+          "active": 4198,
+          "day": "2021-12-13",
+          "delta": 392,
+          "registrations": 393
+        },
+        {
+          "active": 4294,
+          "day": "2022-08-01",
+          "delta": 145,
+          "registrations": 145
+        },
+        {
+          "active": 5058,
+          "day": "2023-09-25",
+          "delta": 558,
+          "registrations": 558
+        },
+        {
+          "active": 5105,
+          "day": "2024-07-31",
+          "delta": 68,
+          "registrations": 68
+        },
+        {
+          "active": 5197,
+          "day": "2026-07-02",
+          "delta": 59,
+          "registrations": 59
+        }
+      ],
+      "provenance": {
+        "combined_sha256": "f67802bf74287055cba9e048dcd71c3d423f530e10f4cfa3c877d56e854bd807",
+        "files": 31,
+        "pattern": "pit_industry_members_*_SI.json",
+        "rows": 7733
+      },
+      "star_first_nonzero_day": "2023-09-25"
+    }
+  },
+  "window": [
+    "2014-01-01",
+    "2026-12-31"
+  ]
+}
