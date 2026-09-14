@@ -34,6 +34,94 @@
     }
   },
   "accepted": true,
+  "coverage_attribution": {
+    "by_year": {
+      "2022": {
+        "days": 242,
+        "days_baseline_below_floor": 1,
+        "days_candidate_below_floor": 0,
+        "days_dropped_by_the_baseline_side": 1,
+        "days_pair_below_floor": 1,
+        "days_passing_by_less_than_0.005": 0,
+        "median_baseline_coverage": 0.9253990284831323,
+        "median_candidate_coverage": 1.0,
+        "median_pair_coverage": 0.9253990284831323,
+        "min_pair_coverage": 0.8950819672131147,
+        "pair_coverage_dates_below_floor": [
+          "2022-07-29"
+        ]
+      },
+      "2023": {
+        "days": 242,
+        "days_baseline_below_floor": 23,
+        "days_candidate_below_floor": 0,
+        "days_dropped_by_the_baseline_side": 23,
+        "days_pair_below_floor": 23,
+        "days_passing_by_less_than_0.005": 42,
+        "median_baseline_coverage": 0.9092936592336784,
+        "median_candidate_coverage": 1.0,
+        "median_pair_coverage": 0.9092936592336784,
+        "min_pair_coverage": 0.8902674386545354,
+        "pair_coverage_dates_below_floor": [
+          "2023-04-28",
+          "2023-05-10",
+          "2023-05-11",
+          "2023-05-12",
+          "2023-05-16",
+          "2023-05-19",
+          "2023-06-21",
+          "2023-06-26",
+          "2023-06-27",
+          "2023-06-28",
+          "2023-06-29",
+          "2023-06-30",
+          "2023-07-05",
+          "2023-07-06",
+          "2023-07-07",
+          "2023-07-10",
+          "2023-07-11",
+          "2023-07-12",
+          "2023-07-13",
+          "2023-07-14",
+          "2023-07-17",
+          "2023-07-18",
+          "2023-07-19"
+        ]
+      },
+      "2024": {
+        "days": 242,
+        "days_baseline_below_floor": 0,
+        "days_candidate_below_floor": 0,
+        "days_dropped_by_the_baseline_side": 0,
+        "days_pair_below_floor": 0,
+        "days_passing_by_less_than_0.005": 0,
+        "median_baseline_coverage": 0.9924234358393046,
+        "median_candidate_coverage": 1.0,
+        "median_pair_coverage": 0.9924234358393046,
+        "min_pair_coverage": 0.9711145194274029,
+        "pair_coverage_dates_below_floor": []
+      },
+      "2025": {
+        "days": 243,
+        "days_baseline_below_floor": 0,
+        "days_candidate_below_floor": 0,
+        "days_dropped_by_the_baseline_side": 0,
+        "days_pair_below_floor": 0,
+        "days_passing_by_less_than_0.005": 0,
+        "median_baseline_coverage": 0.9859442882698697,
+        "median_candidate_coverage": 1.0,
+        "median_pair_coverage": 0.9859442882698697,
+        "min_pair_coverage": 0.980854969840021,
+        "pair_coverage_dates_below_floor": []
+      }
+    },
+    "coverage_floor": 0.9,
+    "totals": {
+      "days": 969,
+      "days_dropped_by_the_baseline_side": 24,
+      "days_pair_below_floor": 24
+    }
+  },
   "family": "M1",
   "minimum_cross_section": 30,
   "pooled": {
@@ -166,7 +254,8 @@
       }
     },
     "candidate_invalid_days": 24,
-    "label_day_count": 969
+    "label_day_count": 969,
+    "note": "Both frames here are the MATCHED pair the evaluator scores: evaluate_frozen_oos calls _match_prediction_coverage first, so 'candidate' below means the candidate's scores restricted to the rows the baseline artifact also carries. Read coverage_attribution for the unmatched sides."
   },
   "workspace": "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1",
   "yearly": [

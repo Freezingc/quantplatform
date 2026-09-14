@@ -30,6 +30,19 @@ The label frame offers a scoreable cross-section on 969 OOS days (that count is 
 
 A day is unevaluable when fewer than 30 rows carry both a valid label and a finite score, or when the production score-health thresholds reject it -- `ScoreHealthEvidence.passes` requires `0.90 <= coverage <= 1.0`, at least 10 unique scores and a score standard deviation above 1e-6. The median coverage column says which of the two it was, and the exact dates are in the JSON output.
 
+Both frames in that table are the MATCHED pair the evaluator actually scores: `evaluate_frozen_oos` calls `_match_prediction_coverage` first, so the coverage shown is the intersection's, not either side's own. The next table separates the two sides, which is what identifies which one drops the day.
+
+### Which side of the pair decides the day set
+
+| Year | Days | Median candidate coverage | Median baseline coverage | Median pair coverage | Min pair | Pair below the 0.90 floor | Of those, days the candidate side alone would have passed | Passing by <0.005 |
+|---|---|---|---|---|---|---|---|---|
+| 2022 | 242 | 1.0000 | 0.9254 | 0.9254 | 0.8951 | 1 | 1 | 0 |
+| 2023 | 242 | 1.0000 | 0.9093 | 0.9093 | 0.8903 | 23 | 23 | 42 |
+| 2024 | 242 | 1.0000 | 0.9924 | 0.9924 | 0.9711 | 0 | 0 | 0 |
+| 2025 | 243 | 1.0000 | 0.9859 | 0.9859 | 0.9809 | 0 | 0 | 0 |
+
+Of the 24 OOS days the matched pair could not pass the floor, **24** were days the candidate side alone would have passed -- i.e. days dropped by the baseline artifact's row coverage rather than by anything the candidate did.
+
 Method: the frames are rebuilt from the signed selection, prediction and dataset
 artifacts with the evaluator's own checks; the baseline branch is a replay of
 `model_evaluator.evaluate_frozen_oos`'s baseline path plus `summarize_rank_ic_by_year`.
