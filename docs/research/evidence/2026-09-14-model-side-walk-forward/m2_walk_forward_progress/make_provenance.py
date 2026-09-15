@@ -42,6 +42,15 @@ CITED_SOURCES = (
     "research_v2/src/research_v2/inference/torch_scoring.py",
     "research_v2/src/research_v2/inference/builder.py",
     "research_v2/configs/models/temporal.yaml",
+    # §BM reads the grid definitions straight out of these, and its whole argument is that the
+    # yaml `search_space` blocks and the driver's own `m{1,2,3}_config_grid()` functions disagree
+    # for M3 (64 declared vs 16 run). Pinning both sides is what makes that claim checkable
+    # later rather than a statement about files that may since have moved.
+    "research_v2/src/research_v2/training/search.py",
+    "research_v2/src/research_v2/training/cross_section_search.py",
+    "research_v2/src/research_v2/models/families.py",
+    "research_v2/configs/models/set_attention.yaml",
+    "research_v2/configs/models/residual_mlp.yaml",
 )
 G4_FILE = "research_v2/src/research_v2/evaluation/gates.py"
 DRIVER_FILE = "research_v2/scripts/run_real_candidate_training.py"

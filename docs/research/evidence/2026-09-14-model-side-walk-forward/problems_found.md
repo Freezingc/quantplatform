@@ -6315,3 +6315,91 @@ return residual.rolling(max_window, min_periods=max_window).max()
 **没有**对基线 B2 做任何种子敏感性测量（BL.5 第 2 条因此只是一个"不能说"的声明，不是一个结论）；
 **没有**改任何仓库代码、**没有**改 `run_real_candidate_training.py`、**没有**写库、**没有**产出权重、
 **没有**给任何进程发信号（M2 驱动 pid 3588838 全程在跑）。
+
+
+## BM. 【已闭合，2026-09-15 20:50，**并收窄 §BL.3 那条效率建议的适用范围**】**M3 的网格早就被手写收窄过了，而 §BL 的分轴检验反过来给这个收窄做了背书**：`set_attention.yaml` 声明的是 **64** 个组合（`hidden{64,128} × heads{2,4} × inducing{32,64} × blocks{1,2} × dropout{0.0,0.1} × lr{3e-4,1e-3}`，超出 E7 预算 30），而驱动实际跑的是 `m3_config_grid()` 里**把 `dropout=0.1`、`learning_rate=0.0003` 固定死**之后的 **16** 个（`2^4` 全正交析因）。**§BL.3 在 M2 上测出 `lr=3e-4` 显著更优（`F=42.40`、`p=9.6e-09`）、`dropout` 是惰性轴（`p=0.669`、跨度 0.001119 小于一个标准误 0.0013310）——正好是 M3 固定死的那两个轴，且方向一致**。顺带查出**一条治理不一致**：三个 yaml 里的 `search_space` 块**生产代码从来不读**，唯一读它的 `build_pre_registered_trials` 只被测试调用；而它一旦真被用于 M3 那 64 格，`search.py:506` 会**按 fold 绑定的 config hash 排序截断到 30**，得到的是一个**伪随机子集、不再正交**——**M3 的手写收窄恰好避开了这一点**
+
+**只读**：本节全部由源码与 yaml 读出，**没有运行任何训练、没有 import 或执行仓库模块、没有触库、没有改任何文件**。
+M2 驱动 pid 3588838 全程在跑；`run_real_candidate_training.py` 的 sha256 经 `provenance.json` 钉住为
+`33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113` 前后一致（本节开头与结尾各核一次，主工作树 dirty=0）。
+
+### BM.1 三个族的"yaml 声明"与"驱动实跑"对照
+
+| 族 | 模型 | yaml `search_space` 声明 | 驱动实跑 | 上限 30 是否吃紧 | 一致？ |
+|---|---|---|---|---|---|
+| **M1** | `ResidualMLP` | `hidden{64,128,256} × blocks{1,2,3} × dropout{0,0.1,0.2}` = **27** | `m1_config_grid()`（`:2042`）= **27** | 否（27 ≤ 30） | **逐格相同** |
+| **M2** | `TemporalGRU`/`TemporalTCN` | `family{GRU,TCN} × hidden{64,128} × dropout{0,0.1,0.2} × lr{3e-4,1e-3}` = **24** | `m2_config_grid()`（`:2784`）= **24** | 否（24 ≤ 30） | **逐格相同**（与 F1 实跑出的 24 个检索记录一致） |
+| **M3** | `SetAttention`（`families.py:61`） | 6 轴各 2 水平 = **64** | `m3_config_grid()`（`:2736`）= **16**，`dropout=0.1` 与 `lr=3e-4` 固定 | 若按 yaml 走则**严重超出**（64 > 30） | **不一致：声明 64、实跑 16** |
+
+**M3 的不一致是"有记录的不一致"**——`m3_config_grid` 的 docstring 自己写着：
+*"The yaml space has 64 combinations (above the E7 budget of 30); the documented reduction fixes
+dropout=0.1 and learning_rate=0.0003 and searches hidden_dim x num_heads x inducing_points x num_blocks (16)."*
+**所以这不是漂移，是一次已声明的预算收窄。但 yaml 仍然对外广告着一个没有任何代码会去搜的 64 格空间，而没有任何测试把 yaml 与驱动的网格对照过。**
+这与 §D（四处"永不触发的守卫"）、§V（`FULL_CROSS_SECTION_FACTOR_IDS` 手工名单漏掉 30 个）是**同一类**问题：
+**声明物与执行物各活各的，中间没有校验。**
+
+### BM.2 `search_space` 是**未被消费**的声明
+
+- `grep -rn "search_space" --include=*.py --include=*.yaml .` 的全部非测试命中：
+  `training/search.py` 的 **482/489/490/491/494** 行（即 `build_pre_registered_trials` 的形参与内部使用），
+  以及三个 yaml 里的 `search_space:` 键本身（`residual_mlp.yaml:7`、`set_attention.yaml:9`、`temporal.yaml:15`）。
+- `build_pre_registered_trials` 的调用方**只有测试**：`tests/leakage/test_model_selection_scope.py:53`、
+  `tests/unit/training/test_pre_registered_search.py:{36,42,48,66,82}`。
+  **生产路径（`run_real_candidate_training.py`）一次都没有调用它**，而是用自己的 `m{1,2,3}_config_grid()`。
+- yaml 并非完全没用：`tests/unit/scripts/test_walk_forward_factor_daily.py:{307-316,420-421}` 读它的
+  `raw_factor_count_min/max`，`temporal_batches.py:11` 的 docstring 把 `configs/models/temporal.yaml` 引为
+  `minimum_valid_history_length` 契约的出处。**所以被测试钉住的是"因子数下界"与"历史长度契约"，不是 `search_space`。**
+
+**准确表述：`search_space` 三个块是纯文档，且其中 M3 那一块与实跑网格不符。**
+
+### BM.3 §BL 反过来给 M3 的收窄做了背书（**但只在"方向一致"这个强度上**）
+
+M3 固定死的两个轴，恰好是 §BL.3 在 M2 的 72 个观测上做过区组检验的两个轴：
+
+| M3 的固定选择 | §BL.3 在 M2 上的实测 | 是否支持 |
+|---|---|---|
+| `learning_rate = 0.0003` | `3e-4` 显著优于 `1e-3`：跨度 **0.005251**、`F=42.40`、**`p=9.6e-09`** | **支持**，且是四轴里最强的 |
+| `dropout = 0.1` | `dropout` 是惰性轴：跨度 **0.001119 < 一个标准误 0.0013310**、`F=0.40`、**`p=0.669`**（未区组化 `p=0.919`） | **支持**——固定在任何水平都无可测损失 |
+| `hidden_dim ∈ {64,128}` 仍搜 | `hidden=64` 显著优于 128：`F=20.41`、`p=2.5e-05` | **保留搜索是对的**（M2 里它是真轴） |
+| `num_heads / inducing_points / num_blocks` 仍搜 | M2 无对应轴 | **无从判断** |
+
+**这条背书的强度必须说清（本节不夸大）**：
+1. **它是跨架构外推。** M2 是时序族（GRU/TCN，带 `history_length=20`），M3 是静态集合族（`SetAttention`）。
+   **dropout 在时序族上惰性，不等于它在注意力族上惰性**——注意力模型通常对正则更敏感。
+   §4420/§4539 已经记过同类"按机制推断但未验证 M3"的保留意见，本节是**同一类**保留。
+2. **所以正确表述是**：*"M3 的预算收窄在 M2 的数据上找不到反例，且它固定的两个轴之一（`lr`）是 M2 里效应最强的轴、
+   另一个（`dropout`）是 M2 里唯一测不出效应的轴——这个收窄因此是**有证据支持的**，而不是纯粹的预算妥协。
+   但它没有在 M3 自己的架构上被验证过。"*
+3. **一条可执行的、便宜的验证**：M3 的 16 格是 `2^4` 全正交析因，**所以 §BL 的区组化分轴检验可以原样套用到 M3**
+   （残差 df `(16−1)(3−1) = 30`）。**M3 跑完后第一件事就应当是重跑 `probe_m2_f1_variance_decomposition.py` 的同一套分析**，
+   用来检验"固定 `dropout=0.1`"在注意力族上是否仍然无可测损失。
+
+### BM.4 §BL.3 那条效率建议的适用范围要收窄（**本节对自己上一节的更正**）
+
+§BL.3 写了：*"把 `dropout` 固定为单值可以把网格缩小 3 倍而不损失可测分辨率"*。**这句话对三个在跑的族都不适用**：
+
+| 对象 | 能否照 §BL.3 收窄 | 原因 |
+|---|---|---|
+| **M2（在跑）** | **不能** | 网格已冻结、驱动正被 24 个 worker 逐折重导入；改 `m2_config_grid()` 就是改在跑的实验，且会破坏预注册的输入同一性 |
+| **M3（待跑）** | **不能——因为已经做过了** | `dropout` 与 `lr` 早已固定；且 **16 ≤ 30，上限根本不吃紧**，再砍也不会省下任何一次运行 |
+| **M1（已跑完）** | 无意义 | 27 格已成历史，且 M1 的 `dropout` 轴本节没有测过 |
+
+**准确表述**：§BL.3 那条省 3 倍的建议，**只对"未来新增的、网格在 30 上限之下的族"有效**
+（例如若要重跑 M2 或新增一个时序变体，`dropout` 可以从 3 水平降到 1 水平，把 24 格降到 8 格）。
+**它不是一笔现在就能兑现的节省。** §BL.3 当时没有检查 M3 的实际网格就下了这个判断，本节补上。
+
+### BM.5 与 §BL.6 那条"合并四折"红利的衔接
+
+M3 的 16 格也是 `2^4` 全正交，且**四折共用同一组三个种子**（与 M2 同一套 `20260801/02/03`，由 §BL.6 在 F1 上确认）。
+**所以 M3 也能做同一件免费的事**：四折合并后残差 df 从 30 涨到 **120**，配置均值标准误降到约一半。
+**M3 只有 16 格、比 M2 的 24 格少，单折功效更低——所以合并四折对 M3 的边际价值比 M2 更大。**
+
+### BM.6 本节没有做的事
+
+**没有**运行 M3、**没有**改 `set_attention.yaml`、**没有**改 `m3_config_grid()`、**没有**改任何仓库文件；
+**没有**测 `dropout` 在 `SetAttention` 上的真实效应（BM.3 的保留意见因此仍然开着）；
+**没有**核对 E7 预算"30"这个数的出处文档（只从两处 docstring 与 `search.py:489` 的 `1 <= maximum_trials <= 30` 读到它）；
+**没有**验证 `build_pre_registered_trials` 的 hash 截断在 64→30 时**实际**会产生多不平衡的子集
+（本节只指出它不是设计过的正交分数，没有量化它的轴间相关）；
+**没有**对 M1 的 27 格做 §BL 那套方差分解（M1 已跑完，数据可得，但本轮没有做）；
+**没有**写库、**没有**产出权重、**没有**给任何进程发信号。

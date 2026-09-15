@@ -1,6 +1,8 @@
 {
   "cited_source_missing": [],
   "cited_source_sha256": {
+    "research_v2/configs/models/residual_mlp.yaml": "4abc9f91a4d7fc3ab294a3b51f89a0bbb135bdd11d8f0379eb5647a6a5f779f9",
+    "research_v2/configs/models/set_attention.yaml": "2f488a31c18eb05e961c1222dfad0514e1ad2dfa7dec75af7fe2610a567df04d",
     "research_v2/configs/models/temporal.yaml": "49deee3da68c7a7f9ae89174e80daf662aa64b6168715fa9a4e5a5dd0087c86d",
     "research_v2/scripts/run_real_candidate_training.py": "33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113",
     "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
@@ -13,7 +15,10 @@
     "research_v2/src/research_v2/evaluation/walk_forward.py": "6772f2821303d31041a39d3d61491fa67823cbed1e0f02ad5224e1a4f8093887",
     "research_v2/src/research_v2/inference/builder.py": "287cba0a1443621d96b812e354d53df3e49c0a13e338800b4b91b19151d4b2bf",
     "research_v2/src/research_v2/inference/torch_scoring.py": "68cc7289e413e12a90b67a175f62342832000081a2dda4afeea29d1fd868b32f",
+    "research_v2/src/research_v2/models/families.py": "51d7affc1907faec8ac6e8fee3429e87b5e60a13705cf2a7adccf504a741f97c",
+    "research_v2/src/research_v2/training/cross_section_search.py": "e876ca2cc6dc222d5e82f1adaaabe75324d20f5849947a3431bfa87d6299fe0f",
     "research_v2/src/research_v2/training/ensemble.py": "aa72f44197386926ecff1523aa4eefa022ff17e26fa6727f5f8ebe4412fdd5c1",
+    "research_v2/src/research_v2/training/search.py": "c5fd4fc13b28692035ab56f49d7489255e2b16913fd821edafe48da6e0475219",
     "research_v2/src/research_v2/training/search_metrics.py": "73db157ec170bf4457df2cb4f5908cce44d96a54be778ebddad910208b2be2d5",
     "research_v2/src/research_v2/training/temporal_batches.py": "476556b7aaf39fbb53ffbdbc2abf4d6978d8be8216f825e28c11dd5f91ac67b5",
     "research_v2/src/research_v2/training/temporal_search.py": "dd0ef90294eb66ead22e8d984c8b007d54ee45647f69c7c48f5ca7977ebdf876"
@@ -42,10 +47,10 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-15T12:33:38+00:00",
+  "generated_at_utc": "2026-09-15T12:51:04+00:00",
   "generator": {
     "path": "make_provenance.py",
-    "sha256": "6077be7f44efd6ac20bee540c68cbbf251d5c81fab5b2f1385b6783012e25355"
+    "sha256": "1ed9ce77de12cc950ff39b35af6ab11bedacfe40eebecca46016b9bc006b8036"
   },
   "measurements": {
     "candidate_side_validation_coverage.json": "3966c9ce065ec7848b02dfff57615439e4d810e9904448e51017d83e9d4e20d0",
@@ -84,6 +89,6 @@
   "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "bbdcbf2bf8906f52eddf61e877251b90218f1c3f"
+    "commit_at_generation": "ab2e65b457aaf4455ecd4ad80ec42f4689ce91db"
   }
 }
