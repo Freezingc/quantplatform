@@ -1,0 +1,692 @@
+{
+  "factors": {
+    "yeslab_372": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 1708799,
+      "ratio_frozen_over_store": {
+        "max": 0.4447096260938743,
+        "median": 0.3521645021645022,
+        "min": 0.23809523809523808,
+        "n_days": 969,
+        "p01": 0.29457461332411644,
+        "p05": 0.3165862147298448,
+        "p95": 0.4014904692514382,
+        "std": 0.026509759526810776
+      },
+      "role": "sparse cluster-A",
+      "source_name": "GP_003",
+      "store_valued_rows_total": 4856600,
+      "table": "factor_data8",
+      "twelve_lowest_ratio_days": {
+        "2022-04-20": {
+          "frozen": 785,
+          "ratio": 0.29779969650986343,
+          "store_valued": 2636
+        },
+        "2023-05-23": {
+          "frozen": 724,
+          "ratio": 0.28616600790513835,
+          "store_valued": 2530
+        },
+        "2023-08-18": {
+          "frozen": 535,
+          "ratio": 0.2436247723132969,
+          "store_valued": 2196
+        },
+        "2023-11-22": {
+          "frozen": 704,
+          "ratio": 0.2894736842105263,
+          "store_valued": 2432
+        },
+        "2023-12-05": {
+          "frozen": 352,
+          "ratio": 0.26426426426426425,
+          "store_valued": 1332
+        },
+        "2023-12-13": {
+          "frozen": 966,
+          "ratio": 0.29577464788732394,
+          "store_valued": 3266
+        },
+        "2023-12-20": {
+          "frozen": 600,
+          "ratio": 0.23809523809523808,
+          "store_valued": 2520
+        },
+        "2024-01-31": {
+          "frozen": 291,
+          "ratio": 0.2869822485207101,
+          "store_valued": 1014
+        },
+        "2024-05-23": {
+          "frozen": 361,
+          "ratio": 0.24066666666666667,
+          "store_valued": 1500
+        },
+        "2024-06-19": {
+          "frozen": 952,
+          "ratio": 0.2920245398773006,
+          "store_valued": 3260
+        },
+        "2025-05-15": {
+          "frozen": 791,
+          "ratio": 0.27484364141765116,
+          "store_valued": 2878
+        },
+        "2025-09-04": {
+          "frozen": 1357,
+          "ratio": 0.286892177589852,
+          "store_valued": 4730
+        }
+      }
+    },
+    "yeslab_375": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 1700433,
+      "ratio_frozen_over_store": {
+        "max": 0.6589414343877231,
+        "median": 0.23597645429362882,
+        "min": 0.04957913236518361,
+        "n_days": 969,
+        "p01": 0.10320116752880756,
+        "p05": 0.1303032643120117,
+        "p95": 0.4984142309321126,
+        "std": 0.11049007604901089
+      },
+      "role": "sparse cluster-B, the §BB gap",
+      "source_name": "GP_006",
+      "store_valued_rows_total": 7151468,
+      "table": "factor_data8",
+      "twelve_lowest_ratio_days": {
+        "2022-02-08": {
+          "frozen": 869,
+          "ratio": 0.10316989196248368,
+          "store_valued": 8423
+        },
+        "2022-07-26": {
+          "frozen": 891,
+          "ratio": 0.10869830425765524,
+          "store_valued": 8197
+        },
+        "2022-09-20": {
+          "frozen": 921,
+          "ratio": 0.10318171633430429,
+          "store_valued": 8926
+        },
+        "2024-03-15": {
+          "frozen": 733,
+          "ratio": 0.07501023331968891,
+          "store_valued": 9772
+        },
+        "2024-07-05": {
+          "frozen": 774,
+          "ratio": 0.08804459105903766,
+          "store_valued": 8791
+        },
+        "2024-08-28": {
+          "frozen": 769,
+          "ratio": 0.09752694990488268,
+          "store_valued": 7885
+        },
+        "2024-11-04": {
+          "frozen": 531,
+          "ratio": 0.05491209927611169,
+          "store_valued": 9670
+        },
+        "2024-11-05": {
+          "frozen": 536,
+          "ratio": 0.04957913236518361,
+          "store_valued": 10811
+        },
+        "2025-01-07": {
+          "frozen": 1032,
+          "ratio": 0.10321032103210322,
+          "store_valued": 9999
+        },
+        "2025-01-13": {
+          "frozen": 619,
+          "ratio": 0.09156804733727811,
+          "store_valued": 6760
+        },
+        "2025-05-12": {
+          "frozen": 811,
+          "ratio": 0.08742050231755956,
+          "store_valued": 9277
+        },
+        "2025-09-24": {
+          "frozen": 822,
+          "ratio": 0.08317312556915916,
+          "store_valued": 9883
+        }
+      }
+    },
+    "yeslab_381": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 3554855,
+      "ratio_frozen_over_store": {
+        "max": 0.36977554179566563,
+        "median": 0.3532264449722882,
+        "min": 0.33297849691292314,
+        "n_days": 969,
+        "p01": 0.3334632052473871,
+        "p05": 0.33601009994304354,
+        "p95": 0.3652195003350554,
+        "std": 0.008164422293423916
+      },
+      "role": "CONTROL dense, factor_data8",
+      "source_name": "GP_012",
+      "store_valued_rows_total": 10055718,
+      "table": "factor_data8",
+      "twelve_lowest_ratio_days": {
+        "2022-01-04": {
+          "frozen": 3123,
+          "ratio": 0.3330844709897611,
+          "store_valued": 9376
+        },
+        "2022-01-05": {
+          "frozen": 3125,
+          "ratio": 0.33301364023870417,
+          "store_valued": 9384
+        },
+        "2022-01-06": {
+          "frozen": 3128,
+          "ratio": 0.33297849691292314,
+          "store_valued": 9394
+        },
+        "2022-01-07": {
+          "frozen": 3133,
+          "ratio": 0.3333688018727389,
+          "store_valued": 9398
+        },
+        "2022-01-17": {
+          "frozen": 3143,
+          "ratio": 0.33343942287290473,
+          "store_valued": 9426
+        },
+        "2022-01-25": {
+          "frozen": 3148,
+          "ratio": 0.3335452426361517,
+          "store_valued": 9438
+        },
+        "2022-01-27": {
+          "frozen": 3149,
+          "ratio": 0.33329805249788313,
+          "store_valued": 9448
+        },
+        "2022-01-28": {
+          "frozen": 3152,
+          "ratio": 0.33347439695302583,
+          "store_valued": 9452
+        },
+        "2022-02-07": {
+          "frozen": 3149,
+          "ratio": 0.3330865242225513,
+          "store_valued": 9454
+        },
+        "2022-02-08": {
+          "frozen": 3149,
+          "ratio": 0.3330160744500846,
+          "store_valued": 9456
+        },
+        "2022-02-09": {
+          "frozen": 3154,
+          "ratio": 0.3331924783435453,
+          "store_valued": 9466
+        },
+        "2022-02-10": {
+          "frozen": 3158,
+          "ratio": 0.33340371621621623,
+          "store_valued": 9472
+        }
+      }
+    },
+    "yeslab_384": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 1775979,
+      "ratio_frozen_over_store": {
+        "max": 0.41504065040650406,
+        "median": 0.362057946314444,
+        "min": 0.3176168024003429,
+        "n_days": 969,
+        "p01": 0.32815032572915415,
+        "p05": 0.3356596894049569,
+        "p95": 0.3944819946637684,
+        "std": 0.017158342178615026
+      },
+      "role": "sparse cluster-B",
+      "source_name": "GP_015",
+      "store_valued_rows_total": 4919620,
+      "table": "factor_data8",
+      "twelve_lowest_ratio_days": {
+        "2022-01-06": {
+          "frozen": 1770,
+          "ratio": 0.329608938547486,
+          "store_valued": 5370
+        },
+        "2022-01-25": {
+          "frozen": 1742,
+          "ratio": 0.32768999247554553,
+          "store_valued": 5316
+        },
+        "2022-05-09": {
+          "frozen": 1140,
+          "ratio": 0.3231292517006803,
+          "store_valued": 3528
+        },
+        "2022-05-13": {
+          "frozen": 1225,
+          "ratio": 0.32614483493077745,
+          "store_valued": 3756
+        },
+        "2023-08-22": {
+          "frozen": 1644,
+          "ratio": 0.31947143412359114,
+          "store_valued": 5146
+        },
+        "2023-09-01": {
+          "frozen": 1482,
+          "ratio": 0.3176168024003429,
+          "store_valued": 4666
+        },
+        "2023-11-28": {
+          "frozen": 1424,
+          "ratio": 0.31956912028725315,
+          "store_valued": 4456
+        },
+        "2023-12-06": {
+          "frozen": 1439,
+          "ratio": 0.31864481842338355,
+          "store_valued": 4516
+        },
+        "2024-01-02": {
+          "frozen": 1905,
+          "ratio": 0.3282219159200551,
+          "store_valued": 5804
+        },
+        "2024-06-07": {
+          "frozen": 1418,
+          "ratio": 0.327634011090573,
+          "store_valued": 4328
+        },
+        "2025-03-25": {
+          "frozen": 1455,
+          "ratio": 0.3279981965734896,
+          "store_valued": 4436
+        },
+        "2025-03-26": {
+          "frozen": 1216,
+          "ratio": 0.32186341979883537,
+          "store_valued": 3778
+        }
+      }
+    },
+    "yeslab_389": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 1764582,
+      "ratio_frozen_over_store": {
+        "max": 0.4441362916006339,
+        "median": 0.35056818181818183,
+        "min": 0.2410480349344978,
+        "n_days": 969,
+        "p01": 0.2935127222121196,
+        "p05": 0.31592990219371186,
+        "p95": 0.3987361660079051,
+        "std": 0.02589211180668077
+      },
+      "role": "sparse cluster-A",
+      "source_name": "GP_020",
+      "store_valued_rows_total": 5035754,
+      "table": "factor_data9",
+      "twelve_lowest_ratio_days": {
+        "2022-04-20": {
+          "frozen": 805,
+          "ratio": 0.2929403202328967,
+          "store_valued": 2748
+        },
+        "2022-09-14": {
+          "frozen": 745,
+          "ratio": 0.2946993670886076,
+          "store_valued": 2528
+        },
+        "2023-05-23": {
+          "frozen": 762,
+          "ratio": 0.2849663425579656,
+          "store_valued": 2674
+        },
+        "2023-08-18": {
+          "frozen": 552,
+          "ratio": 0.2410480349344978,
+          "store_valued": 2290
+        },
+        "2023-11-22": {
+          "frozen": 739,
+          "ratio": 0.285769528228925,
+          "store_valued": 2586
+        },
+        "2023-12-05": {
+          "frozen": 358,
+          "ratio": 0.26957831325301207,
+          "store_valued": 1328
+        },
+        "2023-12-20": {
+          "frozen": 642,
+          "ratio": 0.24117205108940645,
+          "store_valued": 2662
+        },
+        "2024-01-31": {
+          "frozen": 298,
+          "ratio": 0.28435114503816794,
+          "store_valued": 1048
+        },
+        "2024-05-23": {
+          "frozen": 365,
+          "ratio": 0.24108322324966974,
+          "store_valued": 1514
+        },
+        "2024-06-19": {
+          "frozen": 1030,
+          "ratio": 0.293782087849401,
+          "store_valued": 3506
+        },
+        "2025-05-15": {
+          "frozen": 836,
+          "ratio": 0.28396739130434784,
+          "store_valued": 2944
+        },
+        "2025-09-04": {
+          "frozen": 1389,
+          "ratio": 0.2871021083092187,
+          "store_valued": 4838
+        }
+      }
+    },
+    "yeslab_390": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 1766763,
+      "ratio_frozen_over_store": {
+        "max": 0.4472843450479233,
+        "median": 0.35375275938189843,
+        "min": 0.24567243675099867,
+        "n_days": 969,
+        "p01": 0.29566233222071703,
+        "p05": 0.31956934599070563,
+        "p95": 0.4028192371475953,
+        "std": 0.025895515512132334
+      },
+      "role": "sparse cluster-A",
+      "source_name": "GP_021",
+      "store_valued_rows_total": 4993718,
+      "table": "factor_data9",
+      "twelve_lowest_ratio_days": {
+        "2022-04-20": {
+          "frozen": 808,
+          "ratio": 0.2964049889948643,
+          "store_valued": 2726
+        },
+        "2022-04-25": {
+          "frozen": 95,
+          "ratio": 0.29874213836477986,
+          "store_valued": 318
+        },
+        "2023-05-23": {
+          "frozen": 769,
+          "ratio": 0.2932875667429443,
+          "store_valued": 2622
+        },
+        "2023-08-18": {
+          "frozen": 553,
+          "ratio": 0.2532051282051282,
+          "store_valued": 2184
+        },
+        "2023-11-22": {
+          "frozen": 744,
+          "ratio": 0.2892690513219285,
+          "store_valued": 2572
+        },
+        "2023-12-05": {
+          "frozen": 359,
+          "ratio": 0.2639705882352941,
+          "store_valued": 1360
+        },
+        "2023-12-20": {
+          "frozen": 642,
+          "ratio": 0.2465437788018433,
+          "store_valued": 2604
+        },
+        "2024-01-31": {
+          "frozen": 298,
+          "ratio": 0.2876447876447876,
+          "store_valued": 1036
+        },
+        "2024-05-23": {
+          "frozen": 369,
+          "ratio": 0.24567243675099867,
+          "store_valued": 1502
+        },
+        "2024-06-19": {
+          "frozen": 1034,
+          "ratio": 0.29408418657565416,
+          "store_valued": 3516
+        },
+        "2025-05-15": {
+          "frozen": 836,
+          "ratio": 0.27518104015799866,
+          "store_valued": 3038
+        },
+        "2025-09-04": {
+          "frozen": 1388,
+          "ratio": 0.28760878574388726,
+          "store_valued": 4826
+        }
+      }
+    },
+    "yeslab_406": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 1711443,
+      "ratio_frozen_over_store": {
+        "max": 0.8485675306957708,
+        "median": 0.7267080745341615,
+        "min": 0.6338846669646848,
+        "n_days": 969,
+        "p01": 0.6570619776344319,
+        "p05": 0.6724731421930318,
+        "p95": 0.7946772499124547,
+        "std": 0.03659962630452126
+      },
+      "role": "sparse cluster-B",
+      "source_name": "GP_037",
+      "store_valued_rows_total": 2361372,
+      "table": "factor_data9",
+      "twelve_lowest_ratio_days": {
+        "2022-01-06": {
+          "frozen": 1703,
+          "ratio": 0.6582914572864321,
+          "store_valued": 2587
+        },
+        "2022-01-25": {
+          "frozen": 1661,
+          "ratio": 0.6570411392405063,
+          "store_valued": 2528
+        },
+        "2022-05-09": {
+          "frozen": 1055,
+          "ratio": 0.6540607563546187,
+          "store_valued": 1613
+        },
+        "2023-02-09": {
+          "frozen": 1847,
+          "ratio": 0.6561278863232682,
+          "store_valued": 2815
+        },
+        "2023-08-22": {
+          "frozen": 1579,
+          "ratio": 0.637979797979798,
+          "store_valued": 2475
+        },
+        "2023-09-01": {
+          "frozen": 1418,
+          "ratio": 0.6338846669646848,
+          "store_valued": 2237
+        },
+        "2023-11-28": {
+          "frozen": 1372,
+          "ratio": 0.6378428637842863,
+          "store_valued": 2151
+        },
+        "2023-12-06": {
+          "frozen": 1375,
+          "ratio": 0.6359851988899168,
+          "store_valued": 2162
+        },
+        "2024-01-02": {
+          "frozen": 1849,
+          "ratio": 0.6570717839374556,
+          "store_valued": 2814
+        },
+        "2024-06-07": {
+          "frozen": 1309,
+          "ratio": 0.6509199403281949,
+          "store_valued": 2011
+        },
+        "2025-03-25": {
+          "frozen": 1377,
+          "ratio": 0.6532258064516129,
+          "store_valued": 2108
+        },
+        "2025-03-26": {
+          "frozen": 1139,
+          "ratio": 0.6409679234665167,
+          "store_valued": 1777
+        }
+      }
+    },
+    "yeslab_425": {
+      "days_in_either": 969,
+      "days_in_frozen": 969,
+      "days_in_store": 969,
+      "days_where_frozen_has_rows_but_store_has_none": 0,
+      "days_where_store_has_values_but_frozen_has_none": 0,
+      "days_with_several_data_versions": 0,
+      "frozen_rows_total": 3551104,
+      "ratio_frozen_over_store": {
+        "max": 0.7412221144519884,
+        "median": 0.7077651515151515,
+        "min": 0.6689332766680833,
+        "n_days": 969,
+        "p01": 0.6698067202142722,
+        "p05": 0.674273360236817,
+        "p95": 0.7309787713695285,
+        "std": 0.01597311405946923
+      },
+      "role": "CONTROL dense, factor_data9",
+      "source_name": "GP_056",
+      "store_valued_rows_total": 5012719,
+      "table": "factor_data9",
+      "twelve_lowest_ratio_days": {
+        "2022-01-04": {
+          "frozen": 3119,
+          "ratio": 0.6698883161512027,
+          "store_valued": 4656
+        },
+        "2022-01-05": {
+          "frozen": 3121,
+          "ratio": 0.6695987985410856,
+          "store_valued": 4661
+        },
+        "2022-01-06": {
+          "frozen": 3126,
+          "ratio": 0.6698092993357617,
+          "store_valued": 4667
+        },
+        "2022-01-11": {
+          "frozen": 3134,
+          "ratio": 0.669801239581107,
+          "store_valued": 4679
+        },
+        "2022-01-17": {
+          "frozen": 3140,
+          "ratio": 0.6697952218430034,
+          "store_valued": 4688
+        },
+        "2022-01-20": {
+          "frozen": 3144,
+          "ratio": 0.6696485623003194,
+          "store_valued": 4695
+        },
+        "2022-01-25": {
+          "frozen": 3145,
+          "ratio": 0.6697189097103918,
+          "store_valued": 4696
+        },
+        "2022-01-27": {
+          "frozen": 3146,
+          "ratio": 0.6696466581524053,
+          "store_valued": 4698
+        },
+        "2022-01-28": {
+          "frozen": 3148,
+          "ratio": 0.66921768707483,
+          "store_valued": 4704
+        },
+        "2022-02-07": {
+          "frozen": 3148,
+          "ratio": 0.6689332766680833,
+          "store_valued": 4706
+        },
+        "2022-02-08": {
+          "frozen": 3148,
+          "ratio": 0.6690754516471838,
+          "store_valued": 4705
+        },
+        "2022-02-09": {
+          "frozen": 3152,
+          "ratio": 0.6694987255734919,
+          "store_valued": 4708
+        }
+      }
+    }
+  },
+  "generated_at_local": "2026-09-15T17:34:08",
+  "question": "Over the whole 2022-2025 OOS window, does each frozen factor's daily row count track the YesLab store's daily valued-row count, and if not, on which days and for which factor?",
+  "safety": "SELECT-only; no calculator was executed, no database was written",
+  "why_the_ratio_is_not_one": "the frozen table is restricted to the official universe per date while the store covers a wider code set, so the ratio sits near that universe-in share (~0.36 for GP_012); only DEVIATIONS from a factor's own typical ratio are informative",
+  "window": {
+    "end": "2025.12.31",
+    "start": "2022.01.01"
+  }
+}

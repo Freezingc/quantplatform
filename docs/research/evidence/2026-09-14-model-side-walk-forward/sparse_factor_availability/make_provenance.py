@@ -27,6 +27,18 @@ CITED_SOURCES = (
     "research_v2/artifacts/diagnostics/factor_set_frozen_v2.json",
     "research_v2/configs/factors/source_catalog.yaml",
     "research_v2/scripts/materialize_frozen_factor_daily.py",
+    "research_v2/scripts/audit_formula_replay_consistency.py",
+    "research_v2/scripts/audit_formula_replay_tushare.py",
+    # the six sparse calculators and the two dense controls §BD reads; they live under a
+    # non-ASCII directory in the main tree and are opened read-only
+    "数据库/factor_calculators/GP_Factor_003_Calculator.py",
+    "数据库/factor_calculators/GP_Factor_006_Calculator.py",
+    "数据库/factor_calculators/GP_Factor_012_Calculator.py",
+    "数据库/factor_calculators/GP_Factor_015_Calculator.py",
+    "数据库/factor_calculators/GP_Factor_020_Calculator.py",
+    "数据库/factor_calculators/GP_Factor_021_Calculator.py",
+    "数据库/factor_calculators/GP_Factor_037_Calculator.py",
+    "数据库/factor_calculators/GP_Factor_056_Calculator.py",
 )
 SPARSITY_COMMENT_FILE = "research_v2/scripts/walk_forward_factor_daily.py"
 
