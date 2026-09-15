@@ -6,7 +6,10 @@ Two things are pinned on purpose:
   * the G4 threshold line in evaluation/gates.py, because §AS.1 turns "baseline OOS mean + 0.005" into
     a concrete number M2 must clear -- if that 0.005 ever moves, this record should show that it moved;
   * the sha256 of scripts/run_real_candidate_training.py, the driver the live M2 run re-imports per
-    fold. Hashing it here is how this pack proves it was never edited while the run was in flight.
+    fold. Hashing it here is how this pack proves it was never edited while the run was in flight. The
+    same reasoning covers every other file §AU and §AX quote -- temporal_batches.py, walk_forward.py,
+    temporal_search.py, orchestration.py and the rest are all imported by the running job, so their
+    hashes are the evidence that this pack read them rather than changed them.
 
 Usage: python make_provenance.py [--repo /data/.../Quant-Platform-Prod_CODEX]
 """
@@ -25,8 +28,19 @@ REPO_DEFAULT = Path("/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX")
 CITED_SOURCES = (
     "research_v2/scripts/run_real_candidate_training.py",
     "research_v2/scripts/walk_forward_common.py",
+    "research_v2/scripts/walk_forward_factor_daily.py",
     "research_v2/src/research_v2/evaluation/gates.py",
     "research_v2/src/research_v2/evaluation/walk_forward.py",
+    "research_v2/src/research_v2/evaluation/model_walk_forward.py",
+    "research_v2/src/research_v2/evaluation/model_evaluator.py",
+    "research_v2/src/research_v2/evaluation/rank_ic.py",
+    "research_v2/src/research_v2/training/search_metrics.py",
+    "research_v2/src/research_v2/training/temporal_batches.py",
+    "research_v2/src/research_v2/training/temporal_search.py",
+    "research_v2/src/research_v2/training/ensemble.py",
+    "research_v2/src/research_v2/baselines/orchestration.py",
+    "research_v2/src/research_v2/inference/torch_scoring.py",
+    "research_v2/configs/models/temporal.yaml",
 )
 G4_FILE = "research_v2/src/research_v2/evaluation/gates.py"
 DRIVER_FILE = "research_v2/scripts/run_real_candidate_training.py"

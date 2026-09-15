@@ -1,10 +1,21 @@
 {
   "cited_source_missing": [],
   "cited_source_sha256": {
+    "research_v2/configs/models/temporal.yaml": "49deee3da68c7a7f9ae89174e80daf662aa64b6168715fa9a4e5a5dd0087c86d",
     "research_v2/scripts/run_real_candidate_training.py": "33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113",
     "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+    "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
+    "research_v2/src/research_v2/baselines/orchestration.py": "db3d4c0ec6c04bb024bf403bf8bc3ab92c4dae7e00012418afd8e99fabcd72c5",
     "research_v2/src/research_v2/evaluation/gates.py": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9",
-    "research_v2/src/research_v2/evaluation/walk_forward.py": "6772f2821303d31041a39d3d61491fa67823cbed1e0f02ad5224e1a4f8093887"
+    "research_v2/src/research_v2/evaluation/model_evaluator.py": "4e4c80a336c01d1c36a764d8189c588f0176360dbb15dcb35bf38cff7078e0b1",
+    "research_v2/src/research_v2/evaluation/model_walk_forward.py": "a4fb504060433b538650ca7b2e2b81225a8d39140fa8b606ead0f0086701125e",
+    "research_v2/src/research_v2/evaluation/rank_ic.py": "5089732da9f5349a53835ad70ea08c36b167469c8b4a950aa5053396ae260d31",
+    "research_v2/src/research_v2/evaluation/walk_forward.py": "6772f2821303d31041a39d3d61491fa67823cbed1e0f02ad5224e1a4f8093887",
+    "research_v2/src/research_v2/inference/torch_scoring.py": "68cc7289e413e12a90b67a175f62342832000081a2dda4afeea29d1fd868b32f",
+    "research_v2/src/research_v2/training/ensemble.py": "aa72f44197386926ecff1523aa4eefa022ff17e26fa6727f5f8ebe4412fdd5c1",
+    "research_v2/src/research_v2/training/search_metrics.py": "73db157ec170bf4457df2cb4f5908cce44d96a54be778ebddad910208b2be2d5",
+    "research_v2/src/research_v2/training/temporal_batches.py": "476556b7aaf39fbb53ffbdbc2abf4d6978d8be8216f825e28c11dd5f91ac67b5",
+    "research_v2/src/research_v2/training/temporal_search.py": "dd0ef90294eb66ead22e8d984c8b007d54ee45647f69c7c48f5ca7977ebdf876"
   },
   "driver_script_never_edited": {
     "file": "research_v2/scripts/run_real_candidate_training.py",
@@ -30,28 +41,32 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-15T07:56:17+00:00",
+  "generated_at_utc": "2026-09-15T08:23:27+00:00",
   "generator": {
     "path": "make_provenance.py",
-    "sha256": "2b14c1d5e7de5facc843d6ddbc84bcb3570e0d6f0efd3c21c490d3d9805193d1"
+    "sha256": "bfebc970254250c331e03859621f62064dcb81273de76f9687ac13f15c88ec50"
   },
   "measurements": {
     "candidate_side_validation_coverage.json": "3966c9ce065ec7848b02dfff57615439e4d810e9904448e51017d83e9d4e20d0",
+    "g6_exact_under_temporal_eligibility.json": "fa5ef50e9c30c6318976ac446a245bcefff9101d93294d561ba8478db1ffd36f",
     "g6_projection_under_m2_row_deficit.json": "a178e7c94e38f0d3cda9b125c58360820e9f2c32052b44849eafcf90836cd2a7",
     "intersection_effect_f1_validation.json": "c6be35fb8b166966a0dd308465f39bb45cf543e35ee3fa6b33f43012f120e633",
     "m2_f1_grid_and_standing.json": "df4b5586aeaf6379e2d8cb9153e0dbccd4939e2b5b068590b220cd261054029b",
     "m2_f1_grid_and_standing.md": "351a2e6e7f9828b19e26488186d490e7414b2ee2ef16171b3b64f23e330a2bc8",
     "m2_f1_unscoreable_rows.json": "fc19d59034af25734108860b598c716b283c247408a768f5009a0305344aeee9",
     "m2_progress_stall_v2_startup_snapshot.log": "b04326a358ff018549969c0356b4551bcca477639462bbdfe5b855f7a20c5b18",
+    "temporal_eligibility_exact.json": "a0b5045e50a620e56764730679001128ab4a616f9b35ea56746fb700377fc3cd",
     "validation_rowset_asymmetry.json": "78841e7bc7ec4b50b60b9e34d709611b496a254c567ed066e7530fbcf6442c7c",
     "validation_rowset_asymmetry.md": "4bc6c6cc6135e78554e4687df36e37ab7936abca44ae4ca3d2b2a4e257a9921d",
     "watcher_v2_deployment.json": "350f81911e998286ae34b29092460120cc53479d8020f0392b95b97789341008"
   },
   "probe_scripts": {
     "m2_progress_stall_watcher_v2.py": "14d4d52737e6b28a5c646dc68d898adfbf79384e309f3e022cd8a24dc2c4c0a7",
+    "probe_exact_g6_under_temporal_eligibility.py": "aea38f50a0a7bb3709f1668dc2e603cccefd20841bfa3d6cf50e7cbc6a491e46",
     "probe_m2_f1_grid_and_standing.py": "332555c61c25066a68ff68723daf7a2992cd85efabef06c357a565db2548a5c3",
     "probe_m2_unscoreable_rows.py": "7e32539e501e31906d1351a177cb2211e2348d22e8772deaf22568e7956b31b6",
     "probe_project_g6_under_m2_row_deficit.py": "42090460dae448cb9fb727ee9cbb90c6b317d724c05f08b809c246ec65f0e426",
+    "probe_temporal_eligibility_exact.py": "63a446e6235d924720d8ec91a752eded4cd231a4baf0317e7eb1f153e82eacf4",
     "probe_validation_rowset_asymmetry.py": "bba10b18e67e2af4b425db0bc9a52ae1ee8c94ae1896ec7f30bab039ce0f529b",
     "probe_watch_handover.py": "e8c17a2c6dd85616ae3313479fbfc8135375f94cf0506ea263f09e4fae09e11f"
   },
@@ -65,6 +80,6 @@
   "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "84f306fa21f25096e3daddd41a4605a7d97651fb"
+    "commit_at_generation": "f173edf60ed62efdd5565f60973ec5d44fd361d5"
   }
 }

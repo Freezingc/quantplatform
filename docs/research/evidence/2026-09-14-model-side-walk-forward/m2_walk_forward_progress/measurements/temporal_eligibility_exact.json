@@ -1,0 +1,234 @@
+{
+  "constants": {
+    "history_length": 20,
+    "minimum_valid_history_length": 15,
+    "minimum_valid_stocks": 30
+  },
+  "database_access": false,
+  "generated_at_local": "2026-09-15T16:10:47",
+  "headline": {
+    "folds_where_the_guard_would_raise": [
+      "F1",
+      "F2",
+      "F3",
+      "F4"
+    ],
+    "total_scoreable_test_rows_not_scored": 17306,
+    "what_that_means": "walk_forward._require_candidate_covers_the_scoreable_labels raises ValueError when the scoreable label rows are not a subset of the candidate's keys. Its docstring reasons that torch carriers drop only unlabelled rows -- true of build_static_training_batches, not of build_temporal_training_batches, which also drops short-history rows. If the numbers here hold, M2's OOS stage ends in that ValueError rather than in a gate verdict."
+  },
+  "model_loaded": false,
+  "question": "Can M2's scored row set be reconstructed exactly from source, and if so, how many scoreable TEST rows will it be missing -- the number walk_forward's coverage guard raises on?",
+  "read_only": true,
+  "step1_validation_reconstruction": {
+    "actual_keys": 691097,
+    "actual_minus_predicted": 0,
+    "diagnostics": {
+      "dates_emitted": 237,
+      "dates_in_scope": 237,
+      "dates_suppressed_by_minimum_valid_stocks": 0,
+      "min_eligible_securities_on_any_emitted_date": 2780,
+      "panel_rows": 2993479,
+      "rows_dropped_for_short_history_in_scope": 4722,
+      "rows_eligible_in_scope": 691097,
+      "rows_in_scope": 696906,
+      "rows_valid_label_in_scope": 695819
+    },
+    "examples_of_disagreement": [],
+    "identical": true,
+    "predicted_keys": 691097,
+    "predicted_minus_actual": 0,
+    "symmetric_difference": 0,
+    "verdict": "the reconstruction reproduces M2's real scored key set exactly, so step 2 is a computation rather than a projection"
+  },
+  "step2_test_side": {
+    "F1": {
+      "candidate_keys_outside_the_scoreable_set": 0,
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "diagnostics": {
+        "dates_emitted": 242,
+        "dates_in_scope": 242,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3094,
+        "panel_rows": 3798054,
+        "rows_dropped_for_short_history_in_scope": 6333,
+        "rows_eligible_in_scope": 797239,
+        "rows_in_scope": 804575,
+        "rows_valid_label_in_scope": 803572
+      },
+      "guard_message_would_be": "6333 rows with a usable label are not scored by the candidate",
+      "missing_by_signal_date": {
+        "dates_affected": 242,
+        "dates_total": 242,
+        "first_ten": {
+          "2022-01-04": 28,
+          "2022-01-05": 31,
+          "2022-01-06": 33,
+          "2022-01-07": 33,
+          "2022-01-10": 35,
+          "2022-01-11": 36,
+          "2022-01-12": 37,
+          "2022-01-13": 36,
+          "2022-01-14": 33,
+          "2022-01-17": 33
+        },
+        "max_per_date": 50,
+        "median_per_date": 25.0,
+        "min_per_date": 11
+      },
+      "missing_securities": {
+        "count": 502,
+        "median_first_appearance": "2022-07-05",
+        "of_those_first_appearing_on_the_test_window_open": 28,
+        "securities_in_the_test_frame": 4342,
+        "test_window_start": "2022-01-04"
+      },
+      "predicted_candidate_keys": 797239,
+      "rows_with_a_usable_label_not_scored_by_the_candidate": 6333,
+      "scoreable_test_rows": 803572,
+      "test_rows": 804575,
+      "the_guard_would_raise": true
+    },
+    "F2": {
+      "candidate_keys_outside_the_scoreable_set": 0,
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "diagnostics": {
+        "dates_emitted": 242,
+        "dates_in_scope": 242,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3478,
+        "panel_rows": 4205787,
+        "rows_dropped_for_short_history_in_scope": 5709,
+        "rows_eligible_in_scope": 876154,
+        "rows_in_scope": 882426,
+        "rows_valid_label_in_scope": 881863
+      },
+      "guard_message_would_be": "5709 rows with a usable label are not scored by the candidate",
+      "missing_by_signal_date": {
+        "dates_affected": 242,
+        "dates_total": 242,
+        "first_ten": {
+          "2023-01-03": 34,
+          "2023-01-04": 37,
+          "2023-01-05": 38,
+          "2023-01-06": 39,
+          "2023-01-09": 40,
+          "2023-01-10": 37,
+          "2023-01-11": 35,
+          "2023-01-12": 34,
+          "2023-01-13": 35,
+          "2023-01-16": 35
+        },
+        "max_per_date": 41,
+        "median_per_date": 23.0,
+        "min_per_date": 8
+      },
+      "missing_securities": {
+        "count": 443,
+        "median_first_appearance": "2023-06-06",
+        "of_those_first_appearing_on_the_test_window_open": 34,
+        "securities_in_the_test_frame": 4716,
+        "test_window_start": "2023-01-03"
+      },
+      "predicted_candidate_keys": 876154,
+      "rows_with_a_usable_label_not_scored_by_the_candidate": 5709,
+      "scoreable_test_rows": 881863,
+      "test_rows": 882426,
+      "the_guard_would_raise": true
+    },
+    "F3": {
+      "candidate_keys_outside_the_scoreable_set": 0,
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "diagnostics": {
+        "dates_emitted": 242,
+        "dates_in_scope": 242,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3757,
+        "panel_rows": 4582910,
+        "rows_dropped_for_short_history_in_scope": 3603,
+        "rows_eligible_in_scope": 927808,
+        "rows_in_scope": 932167,
+        "rows_valid_label_in_scope": 931411
+      },
+      "guard_message_would_be": "3603 rows with a usable label are not scored by the candidate",
+      "missing_by_signal_date": {
+        "dates_affected": 242,
+        "dates_total": 242,
+        "first_ten": {
+          "2024-01-02": 15,
+          "2024-01-03": 16,
+          "2024-01-04": 20,
+          "2024-01-05": 21,
+          "2024-01-08": 22,
+          "2024-01-09": 24,
+          "2024-01-10": 26,
+          "2024-01-11": 26,
+          "2024-01-12": 28,
+          "2024-01-15": 27
+        },
+        "max_per_date": 28,
+        "median_per_date": 14.5,
+        "min_per_date": 2
+      },
+      "missing_securities": {
+        "count": 279,
+        "median_first_appearance": "2024-06-17",
+        "of_those_first_appearing_on_the_test_window_open": 15,
+        "securities_in_the_test_frame": 4883,
+        "test_window_start": "2024-01-02"
+      },
+      "predicted_candidate_keys": 927808,
+      "rows_with_a_usable_label_not_scored_by_the_candidate": 3603,
+      "scoreable_test_rows": 931411,
+      "test_rows": 932167,
+      "the_guard_would_raise": true
+    },
+    "F4": {
+      "candidate_keys_outside_the_scoreable_set": 0,
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "diagnostics": {
+        "dates_emitted": 243,
+        "dates_in_scope": 243,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3802,
+        "panel_rows": 4893642,
+        "rows_dropped_for_short_history_in_scope": 1661,
+        "rows_eligible_in_scope": 934656,
+        "rows_in_scope": 938594,
+        "rows_valid_label_in_scope": 936317
+      },
+      "guard_message_would_be": "1661 rows with a usable label are not scored by the candidate",
+      "missing_by_signal_date": {
+        "dates_affected": 242,
+        "dates_total": 243,
+        "first_ten": {
+          "2025-01-02": 9,
+          "2025-01-03": 9,
+          "2025-01-06": 9,
+          "2025-01-07": 11,
+          "2025-01-08": 12,
+          "2025-01-09": 11,
+          "2025-01-10": 11,
+          "2025-01-13": 11,
+          "2025-01-14": 11,
+          "2025-01-15": 11
+        },
+        "max_per_date": 12,
+        "median_per_date": 7.0,
+        "min_per_date": 1
+      },
+      "missing_securities": {
+        "count": 132,
+        "median_first_appearance": "2025-05-28",
+        "of_those_first_appearing_on_the_test_window_open": 9,
+        "securities_in_the_test_frame": 4912,
+        "test_window_start": "2025-01-02"
+      },
+      "predicted_candidate_keys": 934656,
+      "rows_with_a_usable_label_not_scored_by_the_candidate": 1661,
+      "scoreable_test_rows": 936317,
+      "test_rows": 938594,
+      "the_guard_would_raise": true
+    }
+  },
+  "weights_loaded": false
+}

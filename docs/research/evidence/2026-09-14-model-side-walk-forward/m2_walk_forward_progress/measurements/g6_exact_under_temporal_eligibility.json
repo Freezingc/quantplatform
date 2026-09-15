@@ -1,0 +1,193 @@
+{
+  "database_access": false,
+  "folds": {
+    "F1": {
+      "baseline_key_rows": 746521,
+      "candidate_key_rows": 797239,
+      "coverage_baseline_only": {
+        "median": 0.9253990284831323,
+        "min": 0.8950819672131147
+      },
+      "coverage_matched": {
+        "median": 0.9210503902766505,
+        "min": 0.8900149031296573
+      },
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "days_below_floor_baseline_only": 1,
+      "days_below_floor_matched": 1,
+      "days_near_the_floor_baseline_only": {
+        "in_[0.900,0.905)": 0,
+        "in_[0.905,0.910)": 9
+      },
+      "days_pushed_below_by_the_candidate": 0,
+      "eligibility_diagnostics": {
+        "dates_emitted": 242,
+        "dates_in_scope": 242,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3094,
+        "panel_rows": 3798054,
+        "rows_dropped_for_short_history_in_scope": 6333,
+        "rows_eligible_in_scope": 797239,
+        "rows_in_scope": 804575,
+        "rows_valid_label_in_scope": 803572
+      },
+      "matched_rows": 742372,
+      "per_day_delta": {
+        "days_changed": 242,
+        "days_total": 242,
+        "max": -0.0024929884699282923,
+        "median": -0.005014151405255851,
+        "min": -0.00954727440714509
+      },
+      "rows_the_candidate_lacks_that_the_baseline_has": 4149,
+      "scoreable_rows": 803572
+    },
+    "F2": {
+      "baseline_key_rows": 820309,
+      "candidate_key_rows": 876154,
+      "coverage_baseline_only": {
+        "median": 0.9092936592336784,
+        "min": 0.8902674386545354
+      },
+      "coverage_matched": {
+        "median": 0.9046041186955425,
+        "min": 0.8858560794044665
+      },
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "days_below_floor_baseline_only": 23,
+      "days_below_floor_matched": 63,
+      "days_near_the_floor_baseline_only": {
+        "in_[0.900,0.905)": 42,
+        "in_[0.905,0.910)": 69
+      },
+      "days_pushed_below_by_the_candidate": 40,
+      "eligibility_diagnostics": {
+        "dates_emitted": 242,
+        "dates_in_scope": 242,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3478,
+        "panel_rows": 4205787,
+        "rows_dropped_for_short_history_in_scope": 5709,
+        "rows_eligible_in_scope": 876154,
+        "rows_in_scope": 882426,
+        "rows_valid_label_in_scope": 881863
+      },
+      "matched_rows": 816159,
+      "per_day_delta": {
+        "days_changed": 242,
+        "days_total": 242,
+        "max": -0.001958589815332923,
+        "median": -0.004448151580936366,
+        "min": -0.008688569101276133
+      },
+      "rows_the_candidate_lacks_that_the_baseline_has": 4150,
+      "scoreable_rows": 881863
+    },
+    "F3": {
+      "baseline_key_rows": 923745,
+      "candidate_key_rows": 927808,
+      "coverage_baseline_only": {
+        "median": 0.9924234358393046,
+        "min": 0.9711145194274029
+      },
+      "coverage_matched": {
+        "median": 0.9889482082588037,
+        "min": 0.9695807770961146
+      },
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "days_below_floor_baseline_only": 0,
+      "days_below_floor_matched": 0,
+      "days_near_the_floor_baseline_only": {
+        "in_[0.900,0.905)": 0,
+        "in_[0.905,0.910)": 0
+      },
+      "days_pushed_below_by_the_candidate": 0,
+      "eligibility_diagnostics": {
+        "dates_emitted": 242,
+        "dates_in_scope": 242,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3757,
+        "panel_rows": 4582910,
+        "rows_dropped_for_short_history_in_scope": 3603,
+        "rows_eligible_in_scope": 927808,
+        "rows_in_scope": 932167,
+        "rows_valid_label_in_scope": 931411
+      },
+      "matched_rows": 920177,
+      "per_day_delta": {
+        "days_changed": 242,
+        "days_total": 242,
+        "max": -0.0005264543300869118,
+        "median": -0.003772511270453638,
+        "min": -0.007383966244725704
+      },
+      "rows_the_candidate_lacks_that_the_baseline_has": 3568,
+      "scoreable_rows": 931411
+    },
+    "F4": {
+      "baseline_key_rows": 922985,
+      "candidate_key_rows": 934656,
+      "coverage_baseline_only": {
+        "median": 0.9859442882698697,
+        "min": 0.980854969840021
+      },
+      "coverage_matched": {
+        "median": 0.9841228526808954,
+        "min": 0.978232362968791
+      },
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "days_below_floor_baseline_only": 0,
+      "days_below_floor_matched": 0,
+      "days_near_the_floor_baseline_only": {
+        "in_[0.900,0.905)": 0,
+        "in_[0.905,0.910)": 0
+      },
+      "days_pushed_below_by_the_candidate": 0,
+      "eligibility_diagnostics": {
+        "dates_emitted": 243,
+        "dates_in_scope": 243,
+        "dates_suppressed_by_minimum_valid_stocks": 0,
+        "min_eligible_securities_on_any_emitted_date": 3802,
+        "panel_rows": 4893642,
+        "rows_dropped_for_short_history_in_scope": 1661,
+        "rows_eligible_in_scope": 934656,
+        "rows_in_scope": 938594,
+        "rows_valid_label_in_scope": 936317
+      },
+      "matched_rows": 921348,
+      "per_day_delta": {
+        "days_changed": 242,
+        "days_total": 243,
+        "max": 0.0,
+        "median": -0.0017884517118037513,
+        "min": -0.003132341425215346
+      },
+      "rows_the_candidate_lacks_that_the_baseline_has": 1637,
+      "scoreable_rows": 936317
+    }
+  },
+  "generated_at_local": "2026-09-15T16:14:57",
+  "method": "candidate keys = the exact temporal eligibility set over the train+validation+test panel; baseline keys = all nine dense columns non-null (the reconstruction §AW step 1 matched to 0.00e+00 against the pre-registration on all four folds); the metric scores their intersection, as model_evaluator._match_prediction_coverage does; coverage per date = |intersection AND scoreable| / |scoreable|; a date below 0.90 is dropped",
+  "pooled": {
+    "aw_projection_was": {
+      "band": [
+        0.9318885448916409,
+        0.934984520123839
+      ],
+      "days_below_floor": 64,
+      "g6": 0.9339525283797729
+    },
+    "days_below_floor_baseline_only": 24,
+    "days_below_floor_with_m2": 64,
+    "g6_baseline_only": 0.9752321981424149,
+    "g6_denominator_used": 969,
+    "g6_gate_threshold": 0.95,
+    "g6_preregistered": 0.9752321981424149,
+    "g6_with_m2": 0.9339525283797729,
+    "g6_with_m2_clears_the_gate": false,
+    "oos_days": 969
+  },
+  "question": "With the eligibility rule taken from source and verified exact, what is M2's G6?",
+  "read_only": true,
+  "weights_loaded": false
+}

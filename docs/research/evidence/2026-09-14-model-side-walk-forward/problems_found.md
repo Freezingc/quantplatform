@@ -4363,6 +4363,19 @@ f10 yeslab_443_reg30_max20_v1     f11 yeslab_464   f12 yeslab_471   f13 yeslab_4
 
 ## AW. 【未闭合，需要所有者裁决，2026-09-15 15:56】**投影结果：M2 很可能因为自己的行缺口而 G6 不及格**——把 §AU 量到的机制按已验证的规则投到四个 test 切片上，跌破 0.90 地板的天数 **24 → 64（误差带 63–66）**，**G6 从 0.975232 掉到 0.9340（带 0.9319–0.9350），低于 0.95 的门**；而**预注册的可证伪条款会把这件事误诊成"输入变了"**——输入没有变，是 M2 是全项目**唯一带历史长度要求**的 carrier
 
+> **【16:22 更正，见 §AX】本节两处结论已被更精确的测量取代，读到这里的请先看 §AX。**
+> **(1) 本节是投影，§AX 是计算**：读了 `temporal_batches._batch_for_date` 之后， eligibility 规则
+> 不必再拟合——它只依赖数据集工件里已有的四列，而在 F1 验证上重建出的键集与 M2 真实写下的
+> **对称差为 0**。§AX 用这条精确规则重算，**G6 = 0.9339525283797729、跌破地板 24 → 64 天，
+> 与本节投影逐位相同**（本节的误差带 0.9319–0.9350 把真值包住了，中心值就是真值）。
+> **(2) 本节 §AW.7 的"路 2"不成立**：跨切片接续历史**已经做了**
+> （`temporal_search.py:155-173` 把 train+validation+test 三段拼成一个面板再切窗口）。
+> 缺口不是"没接历史"，而是**新上市证券在整个面板里就凑不满 15 行**——
+> **这是时序族的固有属性，不是实现缺陷，所以"修实现然后重跑"这条路不存在。**
+> **(3) 更要紧的是：M2 到不了 G6。** 四折全部会在 `walk_forward.py:269-308` 那个覆盖率守卫上抛
+> `ValueError`（`scoreable − candidate_keys` = **6,333 / 5,709 / 3,603 / 1,661**，合计 **17,306**），
+> **既没有 report 也没有任何门判决**。本节算出的 G6 是"**如果守卫被放宽**，M2 会得到什么"。
+
 仪器 `m2_walk_forward_progress/probes/probe_project_g6_under_m2_row_deficit.py` 与
 `probe_m2_unscoreable_rows.py`，机读件 `measurements/g6_projection_under_m2_row_deficit.json`、
 `measurements/candidate_side_validation_coverage.json`、`measurements/intersection_effect_f1_validation.json`。
@@ -4508,3 +4521,185 @@ F1 验证切片上 M2 的真实预测是存在的，所以可以在那里定规�
 **没有**验证 M3（`SetAttention`，静态族）是否真的不受影响；
 **没有**改任何仓库代码、**没有**改预注册、**没有**改冻结集、**没有**写库、**没有**产出权重、
 **没有**给 M2 或任何 watcher 之外的进程发信号。
+
+## AX. 【已闭合，2026-09-15 16:22；**并更正 §AW 两处**】**M2 到不了 G6**：四个 fold **全部**会在评估装配那一步抛 `ValueError`——F1/F2/F3/F4 分别有 **6,333 / 5,709 / 3,603 / 1,661** 行有效标签行候选打不出分（合计 **17,306**）；同时 §AW 那个投影已升级为**精确计算**，而数字**一字不差**：跌破地板 **24 → 64** 天，**G6 = 0.9339525283797729**
+
+仪器 `m2_walk_forward_progress/probes/probe_temporal_eligibility_exact.py` 与
+`probe_exact_g6_under_temporal_eligibility.py`，机读件
+`measurements/temporal_eligibility_exact.json`、`measurements/g6_exact_under_temporal_eligibility.json`。
+**只读**：不查库、**不加载任何权重或模型**、不写工件、不给任何进程发信号。
+**这一节全部由源码规则 + 已冻结的数据集工件算出，没有拟合、没有抽样、没有误差带。**
+
+### AX.1 规则不用再拟合了：**它就在源码里，而且在有真值的那一折上逐位复现**
+
+§AW 用的规则是在 F1 验证上拟合出来的（precision 0.9369 / recall 0.9723）。读源码之后不需要拟合了：
+
+| 位置 | 内容 |
+|---|---|
+| `training/temporal_batches.py:186-192` | `eligible_mask = observed & valid_row`；`observed_count = position - code_start + 1`（**该证券在面板里 T 及之前自己的行数**）；`length = min(history_length, observed_count)`；`kept = length >= minimum_valid_history_length` |
+| `training/temporal_batches.py:41-104` | 某个日期若合格证券数 < `minimum_valid_stocks`（默认 **30**）则**整天不发 batch** |
+| `scripts/run_real_candidate_training.py:3020` | **验证面板 = `prepared_train` + `prepared_validation`**，再按 `validation_dates` 过滤 |
+| `scripts/run_real_candidate_training.py:3028` → `training/temporal_search.py:155-173` | **测试面板 = train + validation + test 三段拼接**（其 docstring 原话：*"A TEST row is scored from a window that reaches back through validation into train, so the panel has to be all three concatenated"*） |
+| `configs/models/temporal.yaml:4-5` | `history_length: 20`、`minimum_valid_history_length: 15`（冻结契约） |
+| `inference/torch_scoring.py:104-112` | `prepare_frame` **逐行保持**（只做变换 + 重接业务键），**不可能改变任何计数** |
+
+**于是"某行能不能被打分"完全由四列决定**（`signal_date`、`ts_code`、`label_valid`、`raw_return_5d`），
+**而这四列就在不可变的数据集工件里**——**不需要模型、不需要权重、不需要跑任何东西就能算出 M2 的打分键集。**
+
+**验证（这一步不过，后面全不算）**：用这条规则重建 F1 验证侧的键集，与 M2 真实写下的
+`models/m2-f1/validation_predictions.parquet` 比——
+
+| 量 | 值 |
+|---|---|
+| 重建键数 / 实际键数 | **691,097 / 691,097** |
+| **对称差** | **0** |
+| 重建为合格但实际没有 / 实际有但重建不合格 | **0 / 0** |
+| 面板行数（train+validation） | 2,993,479 |
+| 落在验证日期内的行 | 696,906，其中有效标签 695,819 |
+| **因历史不足被丢的有效标签行** | **4,722**（= §AU 那个数，逐位相同） |
+| 被 `minimum_valid_stocks` 整天抑制的日期 | **0**（237 天全部发出，最少的一天有 2,780 个合格证券） |
+
+**所以 §AX 之后的一切是计算，不是投影。**
+
+### AX.2 §AW 的投影升级为计算：**数字一字不差**
+
+| fold（test 年） | 可打分行 | 基线键集 | M2 键集 | 交集 | 逐日覆盖率 Δ 中位 | 跌破 0.90 |
+|---|---|---|---|---|---|---|
+| F1（2022） | 803,572 | 746,521 | 797,239 | 742,372 | −0.005014 | **1 → 1** |
+| **F2（2023）** | 881,863 | 820,309 | 876,154 | 816,159 | −0.004448 | **23 → 63（推下去 40 天）** |
+| F3（2024） | 931,411 | 923,745 | 927,808 | 920,177 | −0.003773 | **0 → 0** |
+| F4（2025） | 936,317 | 922,985 | 934,656 | 921,348 | −0.001788 | **0 → 0** |
+| **合计** | — | — | — | — | — | **24 → 64** |
+
+- **G6 = (969 − 64) / 969 = 0.9339525283797729**，预注册写的是 **0.9752321981424149**，门是 **0.95** ⇒ **不及格**。
+- **与 §AW 那个用拟合规则做的投影逐位相同**（64 天、0.9339525283797729）。
+  **§AW 的误差带 0.9319–0.9350 把真值包住了，而且中心值就是真值**——
+  **这是一次罕见的"投影恰好命中计算"，本节把它记下来，因为它说明 §AW 那条拟合规则的方向是对的，
+  尽管它的行级 precision 只有 0.937。**
+- F1 的 `scoreable = 803,572` 与**守卫自己 docstring 里写的那个数逐位相同**
+  （*"on the real F1 fold, 803,572 of the TEST frame's 804,575 rows"*）——
+  **这是对"我重建的 scoreable 就是守卫用的那个 scoreable"的独立佐证。**
+- **新增的 40 天仍然全在 F2**，因为 F2 是唯一在地板附近堆积的切片（`[0.900,0.905)` 42 天、`[0.905,0.910)` 69 天）；
+  F3/F4 的 min 是 0.971115 / 0.980855，−0.004 的位移够不着。
+
+### AX.3 **但 M2 根本到不了 G6**：它会先在一个覆盖率守卫上抛异常
+
+`evaluation/walk_forward.py:269-308` 的 `_require_candidate_covers_the_scoreable_labels`：
+
+```python
+scoreable = _scoreable_label_keys(labels)          # label_valid & isfinite(raw_return_5d)
+if not scoreable.issubset(candidate_keys):
+    raise ValueError(
+        f"{name}: {len(scoreable - candidate_keys)} rows with a usable label are not scored by the candidate"
+    )
+```
+
+调用链：`run_real_candidate_training.py:3357` `walk_forward = evaluate_model_walk_forward(...)`
+→ `evaluation/model_walk_forward.py:123` `evaluate_walk_forward_oos(...)`
+→ `walk_forward.py:48` → `_assemble_oos_frames`（:140）→ **:211 逐折调用这个守卫**。
+**而 :3357 在 fold 循环之外**——**即四折全部训练完、全部写完 bundle 与预测工件之后才走到这里。**
+
+**精确算出差集**：
+
+| fold | `scoreable − candidate_keys` | `candidate_keys − scoreable`（"凭空发明"） | 守卫会抛吗 | 受影响日期 | 受影响证券 |
+|---|---|---|---|---|---|
+| F1 | **6,333** | 0 | **是** | 242/242（每日 11–50 行，中位 25） | **502** / 4,342 |
+| F2 | **5,709** | 0 | **是** | 242/242（每日 8–41，中位 23） | **443** / 4,716 |
+| F3 | **3,603** | 0 | **是** | 242/242（每日 2–28，中位 14.5） | **279** / 4,883 |
+| F4 | **1,661** | 0 | **是** | 242/243（每日 1–12，中位 7） | **132** / 4,912 |
+| **合计** | **17,306** | **0** | **四折全部** | — | — |
+
+**守卫的第一半（候选键必须落在 TEST 帧内）会通过——`invented` 四折都是 0；抛的是第二半。**
+报错文本会是：`F1 candidate predictions and labels: 6333 rows with a usable label are not scored by the candidate`。
+
+**这些证券是谁**：**新上市证券。** 它们在各 test 年里的**中位首次出现日是 2022-07-05 / 2023-06-06 /
+2024-06-17 / 2025-05-28**（窗口首日分别是 01-04 / 01-03 / 01-02 / 01-02），
+**其中只有 28 / 34 / 15 / 9 个是在窗口首日首次出现的**——
+**即它们分散在全年各处，每个都因为"在整个 train+validation+test 面板里累计不满 15 行"而在自己的前 14 个交易日无法被打分。**
+**行数逐年下降（6,333 → 1,661）与证券数逐年下降（502 → 132）一致。**
+
+### AX.4 **这个守卫的立论前提对时序族不成立，而它自己就记录了两次同类事故**
+
+守卫的 docstring 是这样论证"覆盖率而非同一性"这个放宽的：
+
+> *"The torch carriers build batches only from rows with a usable label -- both
+> `build_static_training_batches` and `build_temporal_training_batches` drop the others before scoring --
+> so their candidate keys are the label-valid subset: on the real F1 fold, 803,572 of the TEST frame's
+> 804,575 rows, the 1,003 missing ones being `label_valid=False`."*
+
+**这句话对静态族（M1 的 `build_static_training_batches`）是对的，对时序族是错的**：
+`build_temporal_training_batches` **除了丢无效标签行，还会丢历史不足 15 步的行**。
+**那个 803,572 是 M1 的数**；M2 在 F1 上只能给出 **797,239**。
+
+**而且 docstring 自己就记着这条守卫已经两次挡住过 torch 运行**：
+*"Requiring IDENTICAL keys here made one family's convention a universal rule, so no torch run could
+reach a verdict; both real M1 runs died at this check"*；
+旁边 `_require_baseline_covered_by_candidate` 的 docstring 也记着*"it was the third blocker behind
+which no torch family could reach a verdict"*。
+**本节找到的是同一类的第四个：前三个都被修掉了，这一个还没有被任何运行触发过，
+因为 M2 是第一个时序族、而它还没走到装配那一步。**
+
+### AX.5 **更正 §AW 两处**
+
+**更正一（重要）：§AW.7 的"路 2"不成立。**
+§AW 写的路 2 是"把'跨切片接续历史'当作时序族的实现缺陷来修"。
+**读完源码才知道：跨切片接续历史已经做了**——`temporal_test_panel_batches`
+（`temporal_search.py:155-173`）把 **train + validation + test 三段拼成一个面板**再切窗口，
+其 docstring 明确写了这是为了让 TEST 行能回看到 validation 与 train。
+**所以缺口不是"没接历史"，而是那些证券在整个面板里就没有 15 行历史可接——它们是 test 年里的新上市证券。**
+**这不是实现缺陷，是时序族的固有属性**：任何要求 ≥15 步历史的模型都无法给"上市第 1–14 个交易日"的新股打分。
+**因此"修实现然后重跑"这条路不存在**；能改的只有**守卫的口径**、**最短历史这个冻结契约**、
+或**把新股从可打分集合里按设计排除**——三者都是治理决定，不是 bug 修复。
+
+**更正二：§AW 的标题与结论说"M2 很可能因为自己的行缺口而 G6 不及格"。更准确的说法是
+"M2 到不了 G6"**：它会在装配阶段抛 `ValueError`，**既没有 report、也没有任何门判决**。
+**§AW 算出的 G6 = 0.9340 是"如果守卫被放宽，M2 会得到什么"，不是"M2 会得到什么"。**
+两个数都要留着，因为它们回答的是两个不同的问题。
+
+### AX.6 **好消息：那 4 天算力不会白费**
+
+`run_real_candidate_training.py:1493-1519` 的 `_adopt_completed_fold` docstring 原话：
+
+> *"A bundle is immutable and the prediction index refuses a second candidate for one fold, so a fold
+> that already finished cannot be retrained in place: without this the run would redo the fold's three
+> final fits -- hours -- and then die on the bundle write. **Adoption is therefore not an optimisation
+> layered on top of resume, it is the only way `--resume` can cross a fold boundary at all.**"*
+
+**F1 的工件已经落盘**（`models/m2-f1/` 全套 + `predictions/` 下两个工件：candidate 与 best_simple +
+签名的 model/baseline 选择证据），**driver 本来就带 `--resume` 启动**。
+**所以流程是**：M2 跑完四折（约 2.5 天）→ 在 :3357 抛 `ValueError` → **修守卫** → **用 `--resume` 重跑**
+→ 四折全部走 adoption（重新哈希 bundle、用验证器读签名证据、比对三个 dataset id 与 baseline 证据 id）
+→ **直接到装配与门判决，分钟级**。
+**即：训练成果保得住，代价是最后一步抛一次异常，以及一次必须由所有者批准的守卫修改。**
+
+**这也改变了 §AW.7 的排序**：**路 1（让它跑完）不仅是"信息价值最高"，而且是唯一不浪费算力的路**——
+因为无论走哪条路，那四折的 bundle 都是需要的；**提前停掉 M2 反而会丢掉 F1 已完成的部分并让谱系断裂。**
+
+### AX.7 重新排过的三条路（**本节仍然不代为裁决**）
+
+1. **让 M2 跑完 → 接受装配阶段的 `ValueError` → 由所有者批准放宽守卫 → `--resume` 重跑拿判决。**
+   **本节认为这条最优**：不浪费算力，且拿到的 G6（**0.9339525283797729**，AX.2 已精确算出）
+   与"为什么不及格"的完整成因链会一起进档案。
+   **放宽守卫必须带披露**——它存在的理由正是"不能让一个悄悄变窄的截面照样返回一个数字"，
+   **所以放宽的形式应当是"允许时序族的结构性缺口，但把缺口行数写进 report 并设一个上限"**，
+   而不是把检查删掉。
+2. **改 `minimum_valid_history_length`（冻结契约，`configs/models/temporal.yaml:5`）。**
+   降到 1 会让缺口消失，但会改变所有时序族的历史语义、需要新谱系，
+   而且**会让 M2 与已归档的 M1/M0R 在另一个轴上不可比**。**代价最大。**
+3. **把"上市未满 15 个交易日的新股"按设计排除出可打分集合**（即改 `_scoreable_label_keys` 的口径）。
+   **这会同时改变基线一侧的分母**，于是 945/969、G6 = 0.975232 这些已签名数字全部失效，
+   **所有已归档候选都要重算**。**影响面最广。**
+
+### AX.8 本节没有做的事
+
+**没有**改任何仓库代码——特别是**没有**碰 `walk_forward.py`、`temporal_batches.py`、
+`run_real_candidate_training.py`（**M2 正在跑并且按折重新导入它们**）；
+**没有**停 M2、**没有**给任何进程发信号（只读 `/proc` 与工件）；
+**没有**实际触发那个 `ValueError`（那需要跑到装配阶段，而本节不跑任何东西）——
+**AX.3 是"守卫的条件为真"的精确计算，不是"守卫已经抛了"的观测**；
+**没有**验证 `_adopt_completed_fold` 在四折都完成后真的一次性全adopt成功（它有自己的校验链，
+本节只读了它的 docstring 与调用位置）；
+**没有**评估放宽守卫的三种具体实现形式哪一种最合适（那是所有者的治理决定）；
+**没有**核对 `require_score_health=True` 除覆盖率外还启用的其它判据是否会独立改变天数
+（AX.2 的覆盖率口径已由 §AW 步骤 1 对四折逐位校验过）；
+**没有**写库、**没有**产出权重、**没有**改预注册或冻结集。

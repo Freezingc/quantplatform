@@ -526,6 +526,47 @@ M2 之后是 M3（`SetAttention`，静态族，16 格，48 路 = 16×3 恰好一
     **真正的原因是条款没有列进去的第五种：carrier 自己变了。
     那两条预注册预测在登记时就是错的——它们是从静态族的行为外推的。**
     证据在 `evidence/…/m2_walk_forward_progress/`，叙述在 `problems_found.md` §AU / §AW。
+    > **【同日追加，16:22，把上面第 11 条从"投影"升级为"计算"，并更正它两处】**
+    > 读了 `temporal_batches._batch_for_date` 之后，**这条 eligibility 规则不必再拟合**：
+    > 它只依赖不可变数据集工件里已有的四列（`signal_date`/`ts_code`/`label_valid`/`raw_return_5d`），
+    > **不需要模型、不需要权重、不需要跑任何东西**。
+    > **在 F1 验证上重建出的键集与 M2 真实写下的 `validation_predictions.parquet` 对称差为 0**
+    > （691,097 / 691,097，两个方向都是 0；因历史不足被丢 4,722 行，与上面那个数逐位相同）。
+    > **用它重算四个 test 切片，G6 = (969 − 64)/969 = `0.9339525283797729`，与上面那个投影逐位相同**
+    > （误差带 0.9319–0.9350 把真值包住了，中心值就是真值）。逐折：F1 跌破 1→1、**F2 23→63**、F3 0→0、F4 0→0。
+    > **更正一：上面"把跨切片接续历史当实现缺陷修掉"这条路不存在。**
+    > `temporal_search.temporal_test_panel_batches`（`temporal_search.py:155-173`）**已经把
+    > train + validation + test 三段拼成一个面板再切窗口**，其 docstring 明确写了这是为了让 TEST 行
+    > 回看到 validation 与 train。**缺口不是"没接历史"，而是新上市证券在整个面板里就凑不满 15 行**——
+    > 各 test 年受影响证券的**中位首次出现日是 2022-07-05 / 2023-06-06 / 2024-06-17 / 2025-05-28**，
+    > 只有 28 / 34 / 15 / 9 个在窗口首日首现。**这是时序族的固有属性，不是 bug。**
+    > **更正二，也是更要紧的一条：M2 到不了 G6。**
+    > `walk_forward.py:269-308` 的 `_require_candidate_covers_the_scoreable_labels` 要求
+    > **`scoreable ⊆ candidate_keys`**，否则 `raise ValueError`；调用链
+    > `run_real_candidate_training.py:3357 → model_walk_forward.py:123 → walk_forward.py:48 →
+    > _assemble_oos_frames(:140) → :211 逐折`，**而 :3357 在 fold 循环之外**。
+    > **精确算出的差集：F1 6,333 / F2 5,709 / F3 3,603 / F4 1,661，合计 17,306 行；四折全部会抛**
+    > （凭空发明的键四折都是 0，所以抛的是第二半）。
+    > **即 M2 会在四折全部训练完之后抛异常，既没有 report 也没有任何门判决**；
+    > **上面那个 G6 = 0.9340 是"如果守卫被放宽，M2 会得到什么"。**
+    > **守卫的立论前提对时序族不成立**：它的 docstring 说 torch carrier 只丢无效标签行
+    > （*"both `build_static_training_batches` and `build_temporal_training_batches` drop the others"*），
+    > **这对静态族（M1）对、对时序族错**——`build_temporal_training_batches` 还丢历史不足 15 步的行。
+    > **那个 803,572 是 M1 的数，M2 在 F1 上只能给 797,239。**
+    > 同一份 docstring 记着*"both real M1 runs died at this check"*，
+    > 旁边 `_require_baseline_covered_by_candidate` 记着*"the third blocker behind which no torch family
+    > could reach a verdict"*——**这是同一类的第四个，前三个都修掉了，这一个还没被触发过，
+    > 因为 M2 是第一个时序族、还没走到装配那一步。**
+    > **论文里必须写清的第三件事：那 4 天算力不会白费。**
+    > `_adopt_completed_fold`（`run_real_candidate_training.py:1493-1519`）的 docstring：
+    > *"Adoption is therefore not an optimisation layered on top of resume, it is the only way `--resume`
+    > can cross a fold boundary at all."* F1 的工件已全部落盘、driver 本来就带 `--resume`，
+    > **所以流程是：跑完四折 → 抛 `ValueError` → 由所有者批准放宽守卫 → `--resume` 重跑 →
+    > 四折走 adoption → 分钟级拿到门判决**。
+    > **放宽必须带披露**：守卫存在的理由正是"不能让一个悄悄变窄的截面照样返回一个数字"，
+    > 所以形式应当是"允许时序族的结构性缺口、但把缺口行数写进 report 并设上限"，而不是把检查删掉。
+    > 证据在 `evidence/…/m2_walk_forward_progress/measurements/temporal_eligibility_exact.json` 与
+    > `g6_exact_under_temporal_eligibility.json`，叙述在 `problems_found.md` §AX。
 
 ---
 
