@@ -13,7 +13,7 @@
     "parquet panels and fold caches",
     "per-security rows: only per-day aggregates leave the database"
   ],
-  "generated_at_utc": "2026-09-15T03:50:06+00:00",
+  "generated_at_utc": "2026-09-15T05:55:59+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "9b5cfa92bd5b412fbcd1808bc8dda105635e3feebcbcab37fa199d44aaf36a66"
@@ -75,6 +75,7 @@
     "m2_preregistration.md": "40b0bdeeb5da1291e83fc39994568d842f8a935d62274268a2acf42c776edd6f",
     "m3_preregistration.json": "2303bbace2a41eae153a8f91794b9f0e6afe87dc848ec1bfcaa0c592b4aca074",
     "m3_preregistration.md": "86f77e8bfcf4a328329593faca44958c3fca09f8cc90d5fb95aa0fe2499aa3b8",
+    "option1_plus_drop_206_443.json": "8f621e9ffe1ac6664955f9178915fc1022ea6e8802295802f158af58a9001781",
     "predicted_coverage_all15_2022_2025.json": "f1be99c5461b1d67257789dd1bad3bbc26fe6ad0a405ae4c9d95e1b9f1ddaeef",
     "predicted_coverage_explicit_factor_list_2022_2025.json": "dec9a5974dbf9a771e46f0dbdcab9a772cd5f73da6c92342d928e3392e9966bd",
     "predicted_coverage_train_window_2014_2021.json": "75b08d6b8de8ca9db28b64d7f11c503c97121f3b2faa3e9aff2f799982ff17e7",
@@ -93,6 +94,7 @@
     "probe_industry_cache_both_sources.py": "7aea14975c451bd97c967a33f8c79f3c3b7d742a5d6e72920b8a6913a9358d52",
     "probe_industry_label_census.py": "88bdb68082bc846f8ebe4c571343f19f962caca882209d33bd1cddc52b329bbb",
     "profile_candidate_feature_nan.py": "3b1c830e2db58d0c67c79e8d743ac56890709cb4164e6e08b763f87d1f932565",
+    "project_option1_plus_drop_206_443.py": "e0d809dc737531fe16e7c0e448658d960be30bc5b91697e58e859d494c4c4ff8",
     "screen_dense_intersection_coverage.py": "1caea316c52f05604e1b5669ef9af2dd9e4296c59e36f8e440f1c21d164e1776",
     "summarize_leave_one_out.py": "32c85b0a4a87e9d06294671b57878345107e02461f8d6879972feed5a43e1077",
     "test_screen_dense_intersection_coverage.py": "632ca4e08e302b33c50c6dd9a3cab647bd16ec968497f8c9b3d7816b6c7cc4e4"
@@ -117,6 +119,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "6aa18fe80444dd4c51f5f4e45349e80eec848ef6"
+    "commit_at_generation": "544f7d4952786e23c8ebf49ad2500c0c06c13341"
   }
 }
