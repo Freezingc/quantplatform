@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T05:23:55+00:00",
+  "generated_at_utc": "2026-09-15T05:40:35+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -603,6 +603,10 @@
       "bytes": 6657,
       "sha256": "44924e91efaccefc7e87a52707c03ca31c89356f20dd49440a0a6935d64f6bdb"
     },
+    "watch_pair_review_sparse_clusters.json": {
+      "bytes": 57572,
+      "sha256": "e05f406370ce4edf02d13f03923893926ee8a7f79d4a036ed2782f635fa3de84"
+    },
     "worst_postcutover_days.json": {
       "bytes": 218158,
       "sha256": "eb6ed20b191bdc9e542e4ddcfbbb04a97c96570cb2ebb31386390bfb089f1a2e"
@@ -773,6 +777,10 @@
       "bytes": 3641,
       "sha256": "d8298ba9247616650733885ccc56d9926118308bed49311b2924688627ee43a7"
     },
+    "review_watch_pairs_sparse_clusters.py": {
+      "bytes": 16594,
+      "sha256": "af339e1251005bcd0b9f8767bf6371181531903c4247b4834bb7a746d327e5db"
+    },
     "star_backfill_timing.py": {
       "bytes": 8269,
       "sha256": "0f9d010e49b5ac0c6cde65f18a0c57d0f702ae701cd82c99897b7db180d4f1d1"
@@ -812,7 +820,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "432d86cc72e72d1039614a3221849a96e6be14d1"
+    "commit_at_generation": "e1bcabcc48eecba0cfe83df42f6953c762d604d2"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
