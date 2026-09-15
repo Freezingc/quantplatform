@@ -22,7 +22,7 @@
     "the parquet panels themselves (read in place, never copied)",
     "per-security rows: only per-day coverage aggregates and per-factor summaries are recorded"
   ],
-  "generated_at_utc": "2026-09-15T09:47:24+00:00",
+  "generated_at_utc": "2026-09-15T10:02:59+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "af67821e5b612ba458572cdfd569e6400d1f90a336c92d4981cab70e6239db6d"
@@ -32,6 +32,8 @@
     "catalog_for_frozen_v2.json": "af87cb1aa32cc0fb22c5723ee47e02395113cbefa240c7610d998a1d259b0a94",
     "frozen_lineage_375.json": "2f3e8793bb788368700bddf4530aa39919974329d92d3f63b295f032f2d413c7",
     "gp006_codeset.json": "ed938600fe04c76fde4a34abe5a3dc20f883a8b037aaba0317a6b871edbf3ae4",
+    "regime_mechanism_daily.parquet": "5a2bda8c2ef450f47c48cc1b03955217373c9f175c5bbe567789e97305332d4c",
+    "regime_mechanism_direct.json": "0c7779966492edc57f1f202146f70e4dd16f4e4d28c813ec2f5019b7589a389c",
     "regime_shapes.json": "9319cd954a4bada3a36088b704c79c2134be8ea5a81f8076cef1deb02b565b6e",
     "replay_vs_store_daily.json": "6c776ecff9ba74bc3c65854908ce21622e86aa60a54895ee461acae429b0a09c",
     "sparse_availability_regime.json": "ffa55469e43335595cd506631ccc9d8e9071c878688f1a4b94ad539832f43292",
@@ -43,6 +45,7 @@
     "analyze_regime_shapes.py": "8d6e69abb27afc2d8b4e4b61419bc6647f433ec1b2f5453fef3e720837bfd88d",
     "probe_an_drift_reconciliation.py": "97ab9da3036d861a5812ee1b947d2a69d64d60e6121a9ea16fb7778fbb74650b",
     "probe_gp006_codeset.py": "2b8eb0ab1d28498e7c62c38b992ce5f29750b0f3e90cd2e8f8383fb837b8f44b",
+    "probe_regime_mechanism_direct.py": "e482807d3ae85ea62c23997022fd2eb08216ad0929f99a5c0cbd1af6fb8190d7",
     "probe_replay_vs_store_daily.py": "ec92dbd78dc6ca57836f149a4b431c339d235986bec99df19e3c5aca1265a98c",
     "probe_sparse_availability_regime.py": "27233787255b3fb4c3e91eb414a15c3f0def671b9a8b83fe3f7136c22f1054ab",
     "probe_sparse_factor_coverage_in_panels.py": "3f04debb1c75b8c23c0158e23f3183c79da952c307999331d1e325d415b348a1",
@@ -69,6 +72,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "ba4d166c0f2ab0f22aca615322b8d2b90a6f42b8"
+    "commit_at_generation": "e7b2d52e5f57e63b1035a6895604a5782bddec03"
   }
 }

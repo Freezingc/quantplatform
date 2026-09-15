@@ -1,0 +1,421 @@
+{
+  "base_assignment": {
+    "yeslab_372": "pct_chg_up",
+    "yeslab_375": "vol_up_20",
+    "yeslab_384": "vol_up_20",
+    "yeslab_389": "pct_chg_up",
+    "yeslab_390": "pct_chg_up",
+    "yeslab_406": "turnover_up_20"
+  },
+  "calculator_executed": false,
+  "controls_with_no_power_in_their_expression": [
+    "yeslab_381",
+    "yeslab_425",
+    "yeslab_357",
+    "yeslab_471"
+  ],
+  "database_access": false,
+  "days": 969,
+  "does_the_predicted_base_win_for_every_sparse_factor": {
+    "yeslab_357": {
+      "best_base": "turnover_up_20",
+      "best_pearson": 0.05400035899096823,
+      "predicted_base": null,
+      "prediction_matches": false
+    },
+    "yeslab_372": {
+      "best_base": "pct_chg_up",
+      "best_pearson": 0.9997444971124634,
+      "predicted_base": "pct_chg_up",
+      "prediction_matches": true
+    },
+    "yeslab_375": {
+      "best_base": "vol_up_20",
+      "best_pearson": 0.9997021539681975,
+      "predicted_base": "vol_up_20",
+      "prediction_matches": true
+    },
+    "yeslab_381": {
+      "best_base": "turnover_up_20",
+      "best_pearson": 0.05346817195785555,
+      "predicted_base": null,
+      "prediction_matches": false
+    },
+    "yeslab_384": {
+      "best_base": "vol_up_20",
+      "best_pearson": 0.9997857790193281,
+      "predicted_base": "vol_up_20",
+      "prediction_matches": true
+    },
+    "yeslab_389": {
+      "best_base": "pct_chg_up",
+      "best_pearson": 0.9988155866013045,
+      "predicted_base": "pct_chg_up",
+      "prediction_matches": true
+    },
+    "yeslab_390": {
+      "best_base": "pct_chg_up",
+      "best_pearson": 0.9988227289012677,
+      "predicted_base": "pct_chg_up",
+      "prediction_matches": true
+    },
+    "yeslab_406": {
+      "best_base": "turnover_up_20",
+      "best_pearson": 0.9999644991197135,
+      "predicted_base": "turnover_up_20",
+      "prediction_matches": true
+    },
+    "yeslab_425": {
+      "best_base": "turnover_up_20",
+      "best_pearson": 0.06294537230428791,
+      "predicted_base": null,
+      "prediction_matches": false
+    },
+    "yeslab_471": {
+      "best_base": "turnover_up_20",
+      "best_pearson": 0.0558747596244711,
+      "predicted_base": null,
+      "prediction_matches": false
+    }
+  },
+  "generated_at_local": "2026-09-15T17:57:37",
+  "market_source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/tushare_cache",
+  "network_access": false,
+  "per_factor": {
+    "yeslab_357": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.49933612479842726,
+          "mean_coverage_minus_mean_base": 0.4993355951644812,
+          "pearson": 0.0392009991331301,
+          "share_of_days_coverage_within_0.05_of_base": 0.015479876160990712,
+          "spearman": 0.0406173509520669
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.4886515958328309,
+          "mean_coverage_minus_mean_base": 0.488651595832831,
+          "pearson": 0.05400035899096823,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.04783365479978463
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.4839781669181384,
+          "mean_coverage_minus_mean_base": 0.48397816691813844,
+          "pearson": 0.046986896688125154,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.04134103789370326
+        }
+      },
+      "max_coverage": 0.999745287824758,
+      "mean_coverage": 0.9710149492530948,
+      "min_coverage": 0.902398676592225,
+      "predicted_base": null
+    },
+    "yeslab_372": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.008241553932454607,
+          "mean_coverage_minus_mean_base": 0.008214621570228287,
+          "pearson": 0.9997444971124634,
+          "share_of_days_coverage_within_0.05_of_base": 1.0,
+          "spearman": 0.9997284526111625
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.20798959462214647,
+          "mean_coverage_minus_mean_base": -0.0024693777614219203,
+          "pearson": 0.11236137267578182,
+          "share_of_days_coverage_within_0.05_of_base": 0.13003095975232198,
+          "spearman": 0.08647521520574114
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.20796484932670103,
+          "mean_coverage_minus_mean_base": -0.007142806676114499,
+          "pearson": 0.11186131112781764,
+          "share_of_days_coverage_within_0.05_of_base": 0.12280701754385964,
+          "spearman": 0.08599858013647053
+        }
+      },
+      "max_coverage": 0.9992301770592764,
+      "mean_coverage": 0.4798939756588419,
+      "min_coverage": 0.01922091235263967,
+      "predicted_base": "pct_chg_up",
+      "verdict": {
+        "mean_absolute_day_level_gap": 0.008241553932454607,
+        "mean_coverage_minus_mean_base": 0.008214621570228287,
+        "pearson": 0.9997444971124634,
+        "share_of_days_coverage_within_0.05_of_base": 1.0,
+        "spearman": 0.9997284526111625
+      }
+    },
+    "yeslab_375": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.20865192582677347,
+          "mean_coverage_minus_mean_base": 0.005670196005136796,
+          "pearson": 0.10051196557399154,
+          "share_of_days_coverage_within_0.05_of_base": 0.1197110423116615,
+          "spearman": 0.0708767304897771
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.005759346657710778,
+          "mean_coverage_minus_mean_base": -0.005013803326513411,
+          "pearson": 0.999575822826309,
+          "share_of_days_coverage_within_0.05_of_base": 1.0,
+          "spearman": 0.9994311241112003
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.009687232241205948,
+          "mean_coverage_minus_mean_base": -0.00968723224120599,
+          "pearson": 0.9997021539681975,
+          "share_of_days_coverage_within_0.05_of_base": 1.0,
+          "spearman": 0.999638302804799
+        }
+      },
+      "max_coverage": 0.9614791987673343,
+      "mean_coverage": 0.4773495500937504,
+      "min_coverage": 0.13643371017471737,
+      "predicted_base": "vol_up_20",
+      "verdict": {
+        "mean_absolute_day_level_gap": 0.009687232241205948,
+        "mean_coverage_minus_mean_base": -0.00968723224120599,
+        "pearson": 0.9997021539681975,
+        "share_of_days_coverage_within_0.05_of_base": 1.0,
+        "spearman": 0.999638302804799
+      }
+    },
+    "yeslab_381": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.5274527605289517,
+          "mean_coverage_minus_mean_base": 0.5274517012610594,
+          "pearson": -0.021428939668397297,
+          "share_of_days_coverage_within_0.05_of_base": 0.008255933952528379,
+          "spearman": -0.034335711552418595
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.5167677019294092,
+          "mean_coverage_minus_mean_base": 0.5167677019294092,
+          "pearson": 0.05346817195785555,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.047949796550963084
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.5120942730147168,
+          "mean_coverage_minus_mean_base": 0.5120942730147167,
+          "pearson": 0.05245963054913452,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.04632947821137927
+        }
+      },
+      "max_coverage": 1.0,
+      "mean_coverage": 0.9991310553496731,
+      "min_coverage": 0.9833844580777096,
+      "predicted_base": null
+    },
+    "yeslab_384": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.20888536396868895,
+          "mean_coverage_minus_mean_base": 0.02705476236024179,
+          "pearson": 0.09730213707159464,
+          "share_of_days_coverage_within_0.05_of_base": 0.13003095975232198,
+          "spearman": 0.06910015282173933
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.016370763028591643,
+          "mean_coverage_minus_mean_base": 0.016370763028591584,
+          "pearson": 0.9996307859392354,
+          "share_of_days_coverage_within_0.05_of_base": 1.0,
+          "spearman": 0.9994666485538354
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.011697863476168408,
+          "mean_coverage_minus_mean_base": 0.011697334113899005,
+          "pearson": 0.9997857790193281,
+          "share_of_days_coverage_within_0.05_of_base": 1.0,
+          "spearman": 0.9996785950576442
+        }
+      },
+      "max_coverage": 0.9743392353092122,
+      "mean_coverage": 0.4987341164488554,
+      "min_coverage": 0.16063638696433152,
+      "predicted_base": "vol_up_20",
+      "verdict": {
+        "mean_absolute_day_level_gap": 0.011697863476168408,
+        "mean_coverage_minus_mean_base": 0.011697334113899005,
+        "pearson": 0.9997857790193281,
+        "share_of_days_coverage_within_0.05_of_base": 1.0,
+        "spearman": 0.9996785950576442
+      }
+    },
+    "yeslab_389": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.023916521230488257,
+          "mean_coverage_minus_mean_base": 0.023903848627891022,
+          "pearson": 0.9988155866013045,
+          "share_of_days_coverage_within_0.05_of_base": 0.9917440660474717,
+          "spearman": 0.9993694195863146
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.21270861078288267,
+          "mean_coverage_minus_mean_base": 0.013219849296240815,
+          "pearson": 0.08878532997610775,
+          "share_of_days_coverage_within_0.05_of_base": 0.1259029927760578,
+          "spearman": 0.06937270871173132
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.21247516981861225,
+          "mean_coverage_minus_mean_base": 0.008546420381548236,
+          "pearson": 0.08835506819745714,
+          "share_of_days_coverage_within_0.05_of_base": 0.1259029927760578,
+          "spearman": 0.06894820946682344
+        }
+      },
+      "max_coverage": 0.9966641005901976,
+      "mean_coverage": 0.49558320271650463,
+      "min_coverage": 0.018964633521271142,
+      "predicted_base": "pct_chg_up",
+      "verdict": {
+        "mean_absolute_day_level_gap": 0.023916521230488257,
+        "mean_coverage_minus_mean_base": 0.023903848627891022,
+        "pearson": 0.9988155866013045,
+        "share_of_days_coverage_within_0.05_of_base": 0.9917440660474717,
+        "spearman": 0.9993694195863146
+      }
+    },
+    "yeslab_390": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.024509337759951302,
+          "mean_coverage_minus_mean_base": 0.024507755878496573,
+          "pearson": 0.9988227289012677,
+          "share_of_days_coverage_within_0.05_of_base": 0.9917440660474717,
+          "spearman": 0.9993742632320166
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.21276690792970063,
+          "mean_coverage_minus_mean_base": 0.013823756546846366,
+          "pearson": 0.08896632971881974,
+          "share_of_days_coverage_within_0.05_of_base": 0.12796697626418987,
+          "spearman": 0.06966727059879725
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.21252898150285535,
+          "mean_coverage_minus_mean_base": 0.009150327632153787,
+          "pearson": 0.08854770676181434,
+          "share_of_days_coverage_within_0.05_of_base": 0.1238390092879257,
+          "spearman": 0.06925663294878484
+        }
+      },
+      "max_coverage": 0.9997433923530922,
+      "mean_coverage": 0.4961871099671102,
+      "min_coverage": 0.019477191184008202,
+      "predicted_base": "pct_chg_up",
+      "verdict": {
+        "mean_absolute_day_level_gap": 0.024509337759951302,
+        "mean_coverage_minus_mean_base": 0.024507755878496573,
+        "pearson": 0.9988227289012677,
+        "share_of_days_coverage_within_0.05_of_base": 0.9917440660474717,
+        "spearman": 0.9993742632320166
+      }
+    },
+    "yeslab_406": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.2091914637609286,
+          "mean_coverage_minus_mean_base": 0.008773437989110566,
+          "pearson": 0.10131962094500513,
+          "share_of_days_coverage_within_0.05_of_base": 0.11867905056759546,
+          "spearman": 0.07280815447225687
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.0019183196672394936,
+          "mean_coverage_minus_mean_base": -0.0019105613425396406,
+          "pearson": 0.9999644991197135,
+          "share_of_days_coverage_within_0.05_of_base": 1.0,
+          "spearman": 0.9999421697301966
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.006583990257232233,
+          "mean_coverage_minus_mean_base": -0.0065839902572322195,
+          "pearson": 0.9997429584963627,
+          "share_of_days_coverage_within_0.05_of_base": 1.0,
+          "spearman": 0.9996342801711563
+        }
+      },
+      "max_coverage": 0.970490120605594,
+      "mean_coverage": 0.4804527920777242,
+      "min_coverage": 0.13746145940390544,
+      "predicted_base": "turnover_up_20",
+      "verdict": {
+        "mean_absolute_day_level_gap": 0.0019183196672394936,
+        "mean_coverage_minus_mean_base": -0.0019105613425396406,
+        "pearson": 0.9999644991197135,
+        "share_of_days_coverage_within_0.05_of_base": 1.0,
+        "spearman": 0.9999421697301966
+      }
+    },
+    "yeslab_425": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.5263938675939343,
+          "mean_coverage_minus_mean_base": 0.5263906897902574,
+          "pearson": -0.027696593437100216,
+          "share_of_days_coverage_within_0.05_of_base": 0.008255933952528379,
+          "spearman": -0.03542298833809088
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.5157066904586072,
+          "mean_coverage_minus_mean_base": 0.5157066904586072,
+          "pearson": 0.06294537230428791,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.062491864433810794
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.5110332615439146,
+          "mean_coverage_minus_mean_base": 0.5110332615439146,
+          "pearson": 0.05994271988844413,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.059911620218230946
+        }
+      },
+      "max_coverage": 1.0,
+      "mean_coverage": 0.998070043878871,
+      "min_coverage": 0.9833844580777096,
+      "predicted_base": null
+    },
+    "yeslab_471": {
+      "correlation_with_each_base": {
+        "pct_chg_up": {
+          "mean_absolute_day_level_gap": 0.4952705824286064,
+          "mean_coverage_minus_mean_base": 0.49526369718730656,
+          "pearson": 0.03552976207494907,
+          "share_of_days_coverage_within_0.05_of_base": 0.016511867905056758,
+          "spearman": 0.015405170281845688
+        },
+        "turnover_up_20": {
+          "mean_absolute_day_level_gap": 0.4845796978556564,
+          "mean_coverage_minus_mean_base": 0.48457969785565636,
+          "pearson": 0.0558747596244711,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.04657958242827571
+        },
+        "vol_up_20": {
+          "mean_absolute_day_level_gap": 0.47990626894096383,
+          "mean_coverage_minus_mean_base": 0.4799062689409638,
+          "pearson": 0.048622021379779425,
+          "share_of_days_coverage_within_0.05_of_base": 0.0030959752321981426,
+          "spearman": 0.04060386471766157
+        }
+      },
+      "max_coverage": 0.9994750656167979,
+      "mean_coverage": 0.9669430512759202,
+      "min_coverage": 0.8979873173421561,
+      "predicted_base": null
+    }
+  },
+  "question": "Is each sparse factor's daily availability the share of its cross-section whose power base is positive, as §BD's source reading predicts?",
+  "read_only": true,
+  "sparse_predictions_all_correct": true
+}
