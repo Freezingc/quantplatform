@@ -45,6 +45,9 @@ CITED_SOURCES = (
     "数据库/build_factor/template.py",
     "数据库/build_factor/builder.py",
     "research_v2/artifacts/diagnostics/factor_set_frozen_v1.json",
+    "research_v2/scripts/audit_canonical_candidate_pairs.py",
+    "research_v2/scripts/evaluate_alpha206_volume_variants.py",
+    "research_v2/scripts/repair_alpha443_window_scan.py",
 )
 SPARSITY_COMMENT_FILE = "research_v2/scripts/walk_forward_factor_daily.py"
 

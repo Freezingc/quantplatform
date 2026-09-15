@@ -4,9 +4,12 @@
     "research_v2/artifacts/diagnostics/factor_set_frozen_v1.json": "85f7240c8809f4319476d9334057c3f28032ed779a9f5691407d5e5864eb96d4",
     "research_v2/artifacts/diagnostics/factor_set_frozen_v2.json": "e472cfb93b3600c5a4c734fe611bf8d70dad0bb74dfaf96a42ed95462ab19e33",
     "research_v2/configs/factors/source_catalog.yaml": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad",
+    "research_v2/scripts/audit_canonical_candidate_pairs.py": "79efed39d639f1aae3f8cfc62c1b7824d6bae1fbc34cbaa9935e6aac9c3e1af2",
     "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
     "research_v2/scripts/audit_formula_replay_tushare.py": "02a189a0ac1826323844059890e9f160ccbce7834bf8b9fed7b36b73b5b8ed15",
+    "research_v2/scripts/evaluate_alpha206_volume_variants.py": "850e39868ca03cb917d8f504a7311cd583b4a41f7b1ad9c3d0fdfadda5deaaf5",
     "research_v2/scripts/materialize_frozen_factor_daily.py": "27da63ee4a0c86ca32961c6bd854ebf5187e7d097fff27153d41d568efa34d83",
+    "research_v2/scripts/repair_alpha443_window_scan.py": "0e92b8c695c4ed3468a796c0cbb82d5c45af498c91f50c53cd4a31cb8d976941",
     "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
     "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
     "数据库/build_factor/builder.py": "82505a4e06e5142707d822ef0f7e66108bbc4c22759fdbcb953af8b38454fe54",
@@ -28,10 +31,10 @@
     "the parquet panels themselves (read in place, never copied)",
     "per-security rows: only per-day coverage aggregates and per-factor summaries are recorded"
   ],
-  "generated_at_utc": "2026-09-15T11:13:21+00:00",
+  "generated_at_utc": "2026-09-15T11:24:00+00:00",
   "generator": {
     "path": "make_provenance.py",
-    "sha256": "fd3efc7d5e8e9a807f5083cdfa2e069ae9a76481c3cb4422d0c321259a4e0739"
+    "sha256": "31dc584f7f8e4478b5d3fec33c4dd029d0797a3837494016c3be2ebd5702dda3"
   },
   "measurements": {
     "an_drift_reconciliation.json": "35013eb6c120b0ab8fadda2df2f7854ad873278e6f9afea81439740025a59aed",
@@ -46,6 +49,7 @@
     "regime_mechanism_daily.parquet": "5a2bda8c2ef450f47c48cc1b03955217373c9f175c5bbe567789e97305332d4c",
     "regime_mechanism_direct.json": "0c7779966492edc57f1f202146f70e4dd16f4e4d28c813ec2f5019b7589a389c",
     "regime_shapes.json": "9319cd954a4bada3a36088b704c79c2134be8ea5a81f8076cef1deb02b565b6e",
+    "removed_factors_and_allnine_rows.json": "c62fd5629747c1ed6a386f6ce858c6b34e238ed23884cb7f4a6e37f1ae9d43ca",
     "replay_fidelity_census.json": "62b73c302c4f329fd37878af331fee89f90b5894018bf0397d47e98afb0e71e0",
     "replay_vs_store_daily.json": "6c776ecff9ba74bc3c65854908ce21622e86aa60a54895ee461acae429b0a09c",
     "sparse_availability_regime.json": "ffa55469e43335595cd506631ccc9d8e9071c878688f1a4b94ad539832f43292",
@@ -65,6 +69,7 @@
     "probe_gp006_values_vs_store.py": "8f1eac2558753e0c0a23946cab908d2abe29c3958feb7c2dfc6e18748090cee1",
     "probe_gp_translation_provenance.py": "a60012846b957599c712a714d79e24a444ad6f147b669ce99960118d9307e8da",
     "probe_regime_mechanism_direct.py": "e482807d3ae85ea62c23997022fd2eb08216ad0929f99a5c0cbd1af6fb8190d7",
+    "probe_removed_factors_and_allnine_rows.py": "93ffb85322d7ea25113378e3fae08010d288346d0d45e8d8aea04c5d1a7f528c",
     "probe_replay_fidelity_census.py": "9988d09bb9898168693058ad98e2f879c95ecf48b09b108db949eb350f2e64f9",
     "probe_replay_vs_store_daily.py": "ec92dbd78dc6ca57836f149a4b431c339d235986bec99df19e3c5aca1265a98c",
     "probe_sparse_availability_regime.py": "27233787255b3fb4c3e91eb414a15c3f0def671b9a8b83fe3f7136c22f1054ab",
@@ -93,6 +98,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "96ccc9ea7cbde05b32bd3ac80213d9406e7f02cf"
+    "commit_at_generation": "c28293fbadf29052314a78e233df03bcc02bcd0b"
   }
 }
