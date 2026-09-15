@@ -1,0 +1,769 @@
+{
+ "question": "§BO.9 open item: why is M1's configuration effect exactly zero while the tree carriers' are not? Is M1 genuinely hyperparameter-insensitive, or is that zero an artefact of power, of the axes M1 searched, or of M1's noise level?",
+ "reproduction_gate": {
+  "config_F": {
+   "this_probe": 0.5668063174883423,
+   "published": 0.5668,
+   "abs_diff": 6.317488342344468e-06
+  },
+  "config_p": {
+   "this_probe": 0.956632229756913,
+   "published": 0.9566,
+   "abs_diff": 3.2229756912971474e-05
+  },
+  "config_share": {
+   "this_probe": 0.013987035792306889,
+   "published": 0.014,
+   "abs_diff": 1.2964207693111698e-05
+  },
+  "resid_sd": {
+   "this_probe": 0.010669991871299713,
+   "published": 0.01067,
+   "abs_diff": 8.128700287532431e-09
+  }
+ },
+ "per_carrier": {
+  "M0-base": {
+   "workspace": "m0_v2",
+   "model_family": "LightGBM",
+   "layout": "report.json folds[].search_results[]",
+   "n_configs": 24,
+   "n_folds": 4,
+   "n_seeds": 3,
+   "n_obs": 288,
+   "grid_axes": {
+    "feature_fraction": [
+     "0.85"
+    ],
+    "learning_rate": [
+     "0.03",
+     "0.05"
+    ],
+    "max_depth": [
+     "4",
+     "6"
+    ],
+    "min_child_samples": [
+     "50",
+     "200"
+    ],
+    "num_leaves": [
+     "15",
+     "31",
+     "63"
+    ]
+   },
+   "grid_capacity_span": {
+    "hidden_dim_ratio": null,
+    "searches_learning_rate": true,
+    "searches_architecture_family": false,
+    "searches_depth": true
+   },
+   "config_F": 3.6392453927090602,
+   "config_p": 4.1053225286178405e-07,
+   "config_share_of_variance": 0.031990079994195716,
+   "df_config": 23,
+   "df_residual": 190,
+   "resid_sd": 0.005876792693252671,
+   "within_config_fold_seed_spread_sd": 0.005097386658558313,
+   "SS_within_config_fold": 0.007457221664345455,
+   "SS_seed_main": 0.0008952501160465363,
+   "within_cell_variation_explained_by_seed_identity": 0.12005142884875145,
+   "within_cell_variation_left_after_blocking_seed": 0.8799485711512482,
+   "sigA2_raw": 7.5959005157613385e-06,
+   "sigA2_truncated": 7.5959005157613385e-06,
+   "sigma_c_truncated": 0.0027560661305130792,
+   "config_mean_range": 0.01080021816595765,
+   "config_mean_sd_observed": 0.0032363495195024392,
+   "se_of_a_config_mean_pooled": 0.0016964839217105275,
+   "signal_to_noise_per_config_mean": 1.9076806317382007,
+   "axis_main_effects": {
+    "learning_rate": {
+     "levels": [
+      "0.03",
+      "0.05"
+     ],
+     "level_means": [
+      0.07506522655814116,
+      0.07487195876812969
+     ],
+     "n_obs_per_level": 144,
+     "level_spread_max_minus_min": 0.00019326779001146988,
+     "SS": 2.689375583226068e-06,
+     "df": 1,
+     "F": 0.07787009697495817,
+     "p": 0.7805083149265343,
+     "share_of_SS_tot": 2.9760955107023394e-05,
+     "share_of_SS_config": 0.0009303182459194609
+    },
+    "max_depth": {
+     "levels": [
+      "4",
+      "6"
+     ],
+     "level_means": [
+      0.07742514850888668,
+      0.07251203681738416
+     ],
+     "n_obs_per_level": 144,
+     "level_spread_max_minus_min": 0.00491311169150252,
+     "SS": 0.0017379839875088698,
+     "df": 1,
+     "F": 50.32282679011137,
+     "p": 2.508483829496497e-11,
+     "share_of_SS_tot": 0.01923274077134695,
+     "share_of_SS_config": 0.6012095241661335
+    },
+    "min_child_samples": {
+     "levels": [
+      "50",
+      "200"
+     ],
+     "level_means": [
+      0.0745919483037964,
+      0.07534523702247445
+     ],
+     "n_obs_per_level": 144,
+     "level_spread_max_minus_min": 0.0007532887186780524,
+     "SS": 4.085596034550878e-05,
+     "df": 1,
+     "F": 1.1829725881178201,
+     "p": 0.2781294536731525,
+     "share_of_SS_tot": 0.00045211699298558164,
+     "share_of_SS_config": 0.014133037274918157
+    },
+    "num_leaves": {
+     "levels": [
+      "15",
+      "31",
+      "63"
+     ],
+     "level_means": [
+      0.07666881353927636,
+      0.07476364277837656,
+      0.07347332167175336
+     ],
+     "n_obs_per_level": 96,
+     "level_spread_max_minus_min": 0.0031954918675230065,
+     "SS": 0.000496184718777297,
+     "df": 2,
+     "F": 7.18344295413211,
+     "p": 0.000983087096620686,
+     "share_of_SS_tot": 0.005490840041987866,
+     "share_of_SS_config": 0.17164196035096269
+    },
+    "_axis_total": {
+     "SS": 0.002277714042214902,
+     "df": 5,
+     "SS_config": 0.0028908124666178927,
+     "df_config": 23,
+     "SS_axis_interaction_remainder": 0.0006130984244029909,
+     "df_axis_interaction_remainder": 18
+    }
+   },
+   "sigma_c_upper_bound_95": {
+    "F_alpha_lower_quantile": 0.5578212013094707,
+    "lambda_upper": 5.52403563035257,
+    "sigma2_c_upper": 1.5898493262352207e-05,
+    "sigma_c_upper": 0.003987291469450435
+   }
+  },
+  "M0-refined": {
+   "workspace": "m0_v3",
+   "model_family": "LightGBM",
+   "layout": "report.json folds[].search_results[]",
+   "n_configs": 24,
+   "n_folds": 4,
+   "n_seeds": 3,
+   "n_obs": 288,
+   "grid_axes": {
+    "feature_fraction": [
+     "0.85"
+    ],
+    "lambda_l2": [
+     "0.0",
+     "1.0",
+     "10.0"
+    ],
+    "learning_rate": [
+     "0.03",
+     "0.05"
+    ],
+    "max_depth": [
+     "4",
+     "6"
+    ],
+    "min_child_samples": [
+     "200"
+    ],
+    "num_leaves": [
+     "15",
+     "63"
+    ]
+   },
+   "grid_capacity_span": {
+    "hidden_dim_ratio": null,
+    "searches_learning_rate": true,
+    "searches_architecture_family": false,
+    "searches_depth": true
+   },
+   "config_F": 4.1419910381159815,
+   "config_p": 1.9574223484582274e-08,
+   "config_share_of_variance": 0.029177431485692577,
+   "df_config": 23,
+   "df_residual": 190,
+   "resid_sd": 0.005223579634090687,
+   "within_config_fold_seed_spread_sd": 0.004622212557633056,
+   "SS_within_config_fold": 0.006131711642318984,
+   "SS_seed_main": 0.0009474126455184562,
+   "within_cell_variation_explained_by_seed_identity": 0.1545103065479689,
+   "within_cell_variation_left_after_blocking_seed": 0.8454896934520314,
+   "sigA2_raw": 7.144307450377605e-06,
+   "sigA2_truncated": 7.144307450377605e-06,
+   "sigma_c_truncated": 0.0026728837330451927,
+   "config_mean_range": 0.009841544754820103,
+   "config_mean_sd_observed": 0.0030688960229782176,
+   "se_of_a_config_mean_pooled": 0.0015079175539378525,
+   "signal_to_noise_per_config_mean": 2.0351882070501444,
+   "axis_main_effects": {
+    "lambda_l2": {
+     "levels": [
+      "0.0",
+      "1.0",
+      "10.0"
+     ],
+     "level_means": [
+      0.07556897612041663,
+      0.07494957860050071,
+      0.0755508039454723
+     ],
+     "n_obs_per_level": 96,
+     "level_spread_max_minus_min": 0.0006193975199159235,
+     "SS": 2.3854573793805173e-05,
+     "df": 2,
+     "F": 0.43712457784746955,
+     "p": 0.6465388569335989,
+     "share_of_SS_tot": 0.0002677597467432762,
+     "share_of_SS_config": 0.009176947150902393
+    },
+    "learning_rate": {
+     "levels": [
+      "0.03",
+      "0.05"
+     ],
+     "level_means": [
+      0.07522962444193652,
+      0.07548328133565656
+     ],
+     "n_obs_per_level": 144,
+     "level_spread_max_minus_min": 0.0002536568937200334,
+     "SS": 4.632611020682135e-06,
+     "df": 1,
+     "F": 0.16978112074029977,
+     "p": 0.6807708975295679,
+     "share_of_SS_tot": 5.199953536709539e-05,
+     "share_of_SS_config": 0.0017821834451944081
+    },
+    "max_depth": {
+     "levels": [
+      "4",
+      "6"
+     ],
+     "level_means": [
+      0.0776031443237361,
+      0.073109761453857
+     ],
+     "n_obs_per_level": 144,
+     "level_spread_max_minus_min": 0.004493382869879103,
+     "SS": 0.0014537152523032538,
+     "df": 1,
+     "F": 53.277385835206964,
+     "p": 7.690805284637107e-12,
+     "share_of_SS_tot": 0.016317475682363317,
+     "share_of_SS_config": 0.5592499014303142
+    },
+    "num_leaves": {
+     "levels": [
+      "15",
+      "63"
+     ],
+     "level_means": [
+      0.07659947271615569,
+      0.07411343306143738
+     ],
+     "n_obs_per_level": 144,
+     "level_spread_max_minus_min": 0.0024860396547183167,
+     "SS": 0.0004449883078679017,
+     "df": 1,
+     "F": 16.30843023272378,
+     "p": 7.80346109750361e-05,
+     "share_of_SS_tot": 0.004994847430448353,
+     "share_of_SS_config": 0.17118872964872262
+    },
+    "_axis_total": {
+     "SS": 0.0019271907449856427,
+     "df": 5,
+     "SS_config": 0.00259940189275902,
+     "df_config": 23,
+     "SS_axis_interaction_remainder": 0.0006722111477733771,
+     "df_axis_interaction_remainder": 18
+    }
+   },
+   "sigma_c_upper_bound_95": {
+    "F_alpha_lower_quantile": 0.5578212013094707,
+    "lambda_upper": 6.4253022803593085,
+    "sigma2_c_upper": 1.4609950950090754e-05,
+    "sigma_c_upper": 0.003822296554440897
+   }
+  },
+  "M1": {
+   "workspace": "m1_full_v1",
+   "model_family": "ResidualMLP",
+   "layout": "search/<fold>/c*.json",
+   "n_configs": 27,
+   "n_folds": 4,
+   "n_seeds": 3,
+   "n_obs": 324,
+   "grid_axes": {
+    "dropout": [
+     "0.0",
+     "0.1",
+     "0.2"
+    ],
+    "hidden_dim": [
+     "64",
+     "128",
+     "256"
+    ],
+    "num_blocks": [
+     "1",
+     "2",
+     "3"
+    ]
+   },
+   "grid_capacity_span": {
+    "hidden_dim_ratio": 4.0,
+    "searches_learning_rate": false,
+    "searches_architecture_family": false,
+    "searches_depth": true
+   },
+   "config_F": 0.5668063174883423,
+   "config_p": 0.956632229756913,
+   "config_share_of_variance": 0.013987035792306889,
+   "df_config": 26,
+   "df_residual": 214,
+   "resid_sd": 0.010669991871299713,
+   "within_config_fold_seed_spread_sd": 0.008871112353984361,
+   "SS_within_config_fold": 0.025419012910235503,
+   "SS_seed_main": 0.0010553854320446679,
+   "within_cell_variation_explained_by_seed_identity": 0.041519528542341415,
+   "within_cell_variation_left_after_blocking_seed": 0.9584804714576579,
+   "sigA2_raw": -4.109879091362809e-06,
+   "sigA2_truncated": 0.0,
+   "sigma_c_truncated": 0.0,
+   "config_mean_range": 0.007804613190878371,
+   "config_mean_sd_observed": 0.002318946913242594,
+   "se_of_a_config_mean_pooled": 0.003080161339573004,
+   "signal_to_noise_per_config_mean": 0.7528654046297668,
+   "axis_main_effects": {
+    "dropout": {
+     "levels": [
+      "0.0",
+      "0.1",
+      "0.2"
+     ],
+     "level_means": [
+      0.07714833955035172,
+      0.07580356458060614,
+      0.07600189215687078
+     ],
+     "n_obs_per_level": 108,
+     "level_spread_max_minus_min": 0.0013447749697455824,
+     "SS": 0.00011383542622009711,
+     "df": 2,
+     "F": 0.4999415877809537,
+     "p": 0.6072727415303429,
+     "share_of_SS_tot": 0.0009490015394624105,
+     "share_of_SS_config": 0.06784865310664163
+    },
+    "hidden_dim": {
+     "levels": [
+      "64",
+      "128",
+      "256"
+     ],
+     "level_means": [
+      0.077981421232174,
+      0.07642775327375055,
+      0.07454462178190407
+     ],
+     "n_obs_per_level": 108,
+     "level_spread_max_minus_min": 0.003436799450269923,
+     "SS": 0.0006397797168716853,
+     "df": 2,
+     "F": 2.809779855916338,
+     "p": 0.06244173731832003,
+     "share_of_SS_tot": 0.005333593911741903,
+     "share_of_SS_config": 0.3813241054745474
+    },
+    "num_blocks": {
+     "levels": [
+      "1",
+      "2",
+      "3"
+     ],
+     "level_means": [
+      0.07628965234012135,
+      0.0770870999620646,
+      0.07557704398564268
+     ],
+     "n_obs_per_level": 108,
+     "level_spread_max_minus_min": 0.0015100559764219257,
+     "SS": 0.00012326408742755973,
+     "df": 2,
+     "F": 0.5413503127379246,
+     "p": 0.5827567172852695,
+     "share_of_SS_tot": 0.0010276046096846033,
+     "share_of_SS_config": 0.07346836205636963
+    },
+    "_axis_total": {
+     "SS": 0.0008768792305193422,
+     "df": 6,
+     "SS_config": 0.0016777846133684544,
+     "df_config": 26,
+     "SS_axis_interaction_remainder": 0.0008009053828491122,
+     "df_axis_interaction_remainder": 20
+    }
+   },
+   "sigma_c_upper_bound_95": {
+    "F_alpha_lower_quantile": 0.580105565877512,
+    "lambda_upper": -0.022925565916700474,
+    "sigma_c_upper": 0.0,
+    "note": "bound is non-positive; even the upper bound is 0"
+   }
+  },
+  "M2": {
+   "workspace": "m2_v1",
+   "model_family": "TemporalGRU/TCN",
+   "layout": "search/<fold>/c*.json",
+   "n_configs": 24,
+   "n_folds": 1,
+   "n_seeds": 3,
+   "n_obs": 72,
+   "grid_axes": {
+    "dropout": [
+     "0.0",
+     "0.1",
+     "0.2"
+    ],
+    "family": [
+     "GRU",
+     "TCN"
+    ],
+    "hidden_dim": [
+     "64",
+     "128"
+    ],
+    "learning_rate": [
+     "0.0003",
+     "0.001"
+    ]
+   },
+   "grid_capacity_span": {
+    "hidden_dim_ratio": 2.0,
+    "searches_learning_rate": true,
+    "searches_architecture_family": true,
+    "searches_depth": false
+   },
+   "config_F": 8.763803422612279,
+   "config_p": 3.2428269582348503e-10,
+   "config_share_of_variance": 0.17242969927463184,
+   "df_config": 23,
+   "df_residual": 46,
+   "resid_sd": 0.0023054213227919596,
+   "within_config_fold_seed_spread_sd": 0.008509965039913154,
+   "SS_within_config_fold": 0.005141784853618631,
+   "SS_seed_main": 0.004897296349741781,
+   "within_cell_variation_explained_by_seed_identity": 0.9524506546195168,
+   "within_cell_variation_left_after_blocking_seed": 0.04754934538048448,
+   "sigA2_raw": 1.3754787559336889e-05,
+   "sigA2_truncated": 1.3754787559336889e-05,
+   "sigma_c_truncated": 0.0037087447417336354,
+   "config_mean_range": 0.014758384593227723,
+   "config_mean_sd_observed": 0.003940360819078819,
+   "se_of_a_config_mean_pooled": 0.001331035621309441,
+   "signal_to_noise_per_config_mean": 2.9603721763677417,
+   "axis_main_effects": {
+    "dropout": {
+     "levels": [
+      "0.0",
+      "0.1",
+      "0.2"
+     ],
+     "level_means": [
+      0.05177617903298295,
+      0.05245057007347923,
+      0.05289556265977522
+     ],
+     "n_obs_per_level": 24,
+     "level_spread_max_minus_min": 0.0011193836267922724,
+     "SS": 1.5246731050325394e-05,
+     "df": 2,
+     "F": 1.4343202588131172,
+     "p": 0.2487334570509806,
+     "share_of_SS_tot": 0.002453961447164911,
+     "share_of_SS_config": 0.01423166344016203
+    },
+    "family": {
+     "levels": [
+      "GRU",
+      "TCN"
+     ],
+     "level_means": [
+      0.05111718140027199,
+      0.0536310264438863
+     ],
+     "n_obs_per_level": 36,
+     "level_spread_max_minus_min": 0.002513845043614314,
+     "SS": 0.00011374950425947657,
+     "df": 1,
+     "F": 21.40173101378793,
+     "p": 3.0451118085123328e-05,
+     "share_of_SS_tot": 0.018307983341840285,
+     "share_of_SS_config": 0.10617650798474591
+    },
+    "hidden_dim": {
+     "levels": [
+      "64",
+      "128"
+     ],
+     "level_means": [
+      0.0544053725066095,
+      0.050342835337548776
+     ],
+     "n_obs_per_level": 36,
+     "level_spread_max_minus_min": 0.004062537169060722,
+     "SS": 0.00029707574849999825,
+     "df": 1,
+     "F": 55.8941799483666,
+     "p": 1.7677597507654858e-09,
+     "share_of_SS_tot": 0.04781434336976098,
+     "share_of_SS_config": 0.27729760923381436
+    },
+    "learning_rate": {
+     "levels": [
+      "0.0003",
+      "0.001"
+     ],
+     "level_means": [
+      0.054999752084058814,
+      0.04974845576009947
+     ],
+     "n_obs_per_level": 36,
+     "level_spread_max_minus_min": 0.005251296323959341,
+     "SS": 0.00049637003547652,
+     "df": 1,
+     "F": 93.39098268367027,
+     "p": 1.1935647220174641e-12,
+     "share_of_SS_tot": 0.07989075996465901,
+     "share_of_SS_config": 0.46332366350309284
+    },
+    "_axis_total": {
+     "SS": 0.0009224420192863203,
+     "df": 5,
+     "SS_config": 0.0010713245935326733,
+     "df_config": 23,
+     "SS_axis_interaction_remainder": 0.00014888257424635308,
+     "df_axis_interaction_remainder": 18
+    }
+   }
+  }
+ },
+ "h2_simulation_on_m1_noise": [
+  {
+   "true_sigma_c": 0.0,
+   "n_sim": 400,
+   "P_sigA2_le_zero": 0.525,
+   "P_p_lt_0.05": 0.0425,
+   "mean_estimated_sigma_c": 0.0004974309799464138,
+   "median_estimated_sigma_c": 0.0,
+   "q90_estimated_sigma_c": 0.001515061651546964
+  },
+  {
+   "true_sigma_c": 0.002756,
+   "n_sim": 400,
+   "P_sigA2_le_zero": 0.01,
+   "P_p_lt_0.05": 0.86,
+   "mean_estimated_sigma_c": 0.0026255136448490755,
+   "median_estimated_sigma_c": 0.002669925354023955,
+   "q90_estimated_sigma_c": 0.003575851783887677
+  },
+  {
+   "true_sigma_c": 0.002673,
+   "n_sim": 400,
+   "P_sigA2_le_zero": 0.0075,
+   "P_p_lt_0.05": 0.86,
+   "mean_estimated_sigma_c": 0.0025889833423541997,
+   "median_estimated_sigma_c": 0.0026315055252279567,
+   "q90_estimated_sigma_c": 0.003488711296110943
+  },
+  {
+   "true_sigma_c": 0.003709,
+   "n_sim": 400,
+   "P_sigA2_le_zero": 0.0,
+   "P_p_lt_0.05": 0.9775,
+   "mean_estimated_sigma_c": 0.003633086367374531,
+   "median_estimated_sigma_c": 0.0036315110813403438,
+   "q90_estimated_sigma_c": 0.004691080750137951
+  },
+  {
+   "true_sigma_c": 0.005,
+   "n_sim": 400,
+   "P_sigA2_le_zero": 0.0,
+   "P_p_lt_0.05": 0.995,
+   "mean_estimated_sigma_c": 0.004955923342022452,
+   "median_estimated_sigma_c": 0.004922208238101269,
+   "q90_estimated_sigma_c": 0.006104878889929541
+  },
+  {
+   "true_sigma_c": 0.008,
+   "n_sim": 400,
+   "P_sigA2_le_zero": 0.0,
+   "P_p_lt_0.05": 1.0,
+   "mean_estimated_sigma_c": 0.007871669056159446,
+   "median_estimated_sigma_c": 0.007840196407243469,
+   "q90_estimated_sigma_c": 0.009402195975494826
+  },
+  {
+   "true_sigma_c": 0.01067,
+   "n_sim": 400,
+   "P_sigA2_le_zero": 0.0,
+   "P_p_lt_0.05": 1.0,
+   "mean_estimated_sigma_c": 0.010517349698751084,
+   "median_estimated_sigma_c": 0.010581951887800447,
+   "q90_estimated_sigma_c": 0.012536915718434837
+  }
+ ],
+ "h2_simulation_based_inversion": {
+  "upper_bound_sigma_c_at_5pct_truncation": {
+   "key": "P_sigA2_le_zero",
+   "target": 0.05,
+   "sigma_c": 0.0020803729248046873,
+   "n_sim_per_eval": 250,
+   "bracket": [
+    0.002080288818359375,
+    0.00208045703125
+   ],
+   "P_at_bracket": [
+    0.072,
+    0.036
+   ]
+  },
+  "min_detectable_sigma_c_at_80pct_power": {
+   "key": "P_p_lt_0.05",
+   "target": 0.8,
+   "sigma_c": 0.002542724609375,
+   "n_sim_per_eval": 250,
+   "bracket": [
+    0.0025424804687499995,
+    0.0025429687499999997
+   ],
+   "P_at_bracket": [
+    0.78,
+    0.808
+   ]
+  }
+ },
+ "h3_noise_vs_signal_counterfactual": {
+  "m1_strongest_axis": "hidden_dim",
+  "m1_axis_F_observed": 2.809779855916338,
+  "m1_axis_p": 0.06244173731832003,
+  "m1_axis_level_spread": 0.003436799450269923,
+  "m1_resid_sd": 0.010669991871299713,
+  "substitutions": [
+   {
+    "other_carrier": "M0-base",
+    "other_strongest_axis": "max_depth",
+    "other_axis_F": 50.32282679011137,
+    "other_axis_level_spread": 0.00491311169150252,
+    "other_resid_sd": 0.005876792693252671,
+    "m1_axis_F_if_it_had_the_other_carriers_noise": 9.262318901484125,
+    "m1_axis_F_if_it_had_the_other_carriers_spread": 5.742185109025286,
+    "m1_axis_F_if_it_had_both": 18.928867170556444,
+    "noise_ratio_ms_res": 3.2964571519655426,
+    "spread_ratio": 1.4295601947668632,
+    "F_gap_total_ratio": 17.909882400270774,
+    "shape_df_term": 2.6585228971540227,
+    "log_share_noise": 0.4134150816845839,
+    "log_share_signal_spread": 0.24771103169782913,
+    "log_share_axis_shape_df": 0.3388738866175869
+   },
+   {
+    "other_carrier": "M0-refined",
+    "other_strongest_axis": "max_depth",
+    "other_axis_F": 53.277385835206964,
+    "other_axis_level_spread": 0.004493382869879103,
+    "other_resid_sd": 0.005223579634090687,
+    "m1_axis_F_if_it_had_the_other_carriers_noise": 11.723682052350702,
+    "m1_axis_F_if_it_had_the_other_carriers_spread": 4.802979851674887,
+    "m1_axis_F_if_it_had_both": 20.040220790364835,
+    "noise_ratio_ms_res": 4.172455727328617,
+    "spread_ratio": 1.3074323756442052,
+    "F_gap_total_ratio": 18.961409280170066,
+    "shape_df_term": 2.658522897154021,
+    "log_share_noise": 0.4854886959011505,
+    "log_share_signal_spread": 0.18220817343299256,
+    "log_share_axis_shape_df": 0.33230313066585687
+   },
+   {
+    "other_carrier": "M2",
+    "other_strongest_axis": "learning_rate",
+    "other_axis_F": 93.39098268367027,
+    "other_axis_level_spread": 0.005251296323959341,
+    "other_resid_sd": 0.0023054213227919596,
+    "m1_axis_F_if_it_had_the_other_carriers_noise": 60.18660695580343,
+    "m1_axis_F_if_it_had_the_other_carriers_spread": 6.559896171114935,
+    "m1_axis_F_if_it_had_both": 140.51559651210277,
+    "noise_ratio_ms_res": 21.42039947687471,
+    "spread_ratio": 1.5279612325202476,
+    "F_gap_total_ratio": 33.23782910857733,
+    "shape_df_term": 0.6646307242885057,
+    "log_share_noise": 0.8746050272899423,
+    "log_share_signal_spread": 0.2419931451600833,
+    "log_share_axis_shape_df": -0.11659817245002556
+   }
+  ]
+ },
+ "seed_scaling_for_m1": [
+  {
+   "n_seeds": 3,
+   "min_detectable_sigma_c_at_80pct_power": 0.00252197265625,
+   "se_of_config_mean": 0.003080161339573004,
+   "analytic_scaling_from_c3": 0.00252197265625
+  },
+  {
+   "n_seeds": 6,
+   "min_detectable_sigma_c_at_80pct_power": 0.0017163085937499998,
+   "se_of_config_mean": 0.002178002970360711,
+   "analytic_scaling_from_c3": 0.0017833039672014248
+  },
+  {
+   "n_seeds": 12,
+   "min_detectable_sigma_c_at_80pct_power": 0.0013305664062499998,
+   "se_of_config_mean": 0.001540080669786502,
+   "analytic_scaling_from_c3": 0.001260986328125
+  },
+  {
+   "n_seeds": 24,
+   "min_detectable_sigma_c_at_80pct_power": 0.0009399414062499999,
+   "se_of_config_mean": 0.0010890014851803556,
+   "analytic_scaling_from_c3": 0.0008916519836007124
+  }
+ ],
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "generated_at_local": "2026-09-16T02:10:17"
+}

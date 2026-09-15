@@ -1,0 +1,340 @@
+{
+ "question": "§BO.9 mechanism half: M1's within-(config,fold) variation is 95.8% unexplained by seed identity, so blocking cannot remove it. What is it? Read from checkpoint manifests (JSON only, no .pt opened).",
+ "metric_mismatch_warning": "manifest validation_rank_ic is NOT the search record's seed_validation_rank_ic; measured below, never substituted",
+ "per_carrier": {
+  "M1": {
+   "workspace": "m1_full_v1",
+   "n_runs_with_checkpoints": 336,
+   "n_manifests_read": 1623,
+   "n_search_seed_records": 324,
+   "expected_runs_full_grid": 324,
+   "partial_snapshot": false,
+   "key_integrity": {
+    "checkpoint_grid_keys": 324,
+    "search_grid_keys": 324,
+    "checkpoint_only": 0,
+    "search_only": 0,
+    "identical": true,
+    "search_keys_are_a_subset_of_checkpoint_keys": true,
+    "excluded_non_grid_runs": 12,
+    "excluded_examples": [
+     "m1-f1-final-20260801-seed-20260801",
+     "m1-f1-final-20260802-seed-20260802",
+     "m1-f1-final-20260803-seed-20260803",
+     "m1-f2-final-20260801-seed-20260801"
+    ],
+    "excluded_are_final_refits": true
+   },
+   "metric_mismatch": {
+    "n_runs_compared": 324,
+    "n_differing": 324,
+    "all_differ": true,
+    "mean_best_manifest_minus_reported": 0.008975558996216479,
+    "median_abs_diff": 0.006434521653263053,
+    "max_abs_diff": 0.05236161993354419,
+    "median_ratio_best_manifest_over_reported": 1.0836725810895596
+   },
+   "best_epoch": {
+    "n": 336,
+    "mean": 9.836309523809524,
+    "median": 7.0,
+    "min": 1.0,
+    "max": 62.0,
+    "sd": 8.45638450385526,
+    "p10": 2.0,
+    "p90": 20.0
+   },
+   "n_improvements_saved": {
+    "mean": 4.830357142857143,
+    "median": 4.0,
+    "min": 1,
+    "max": 20
+   },
+   "peak_epoch_spread_across_seeds_same_config_and_fold": {
+    "n_groups": 108,
+    "mean_range": 13.87962962962963,
+    "median_range": 13.0,
+    "max_range": 56,
+    "mean_sd": 7.402345140659764,
+    "share_of_groups_with_range_ge_5": 0.8703703703703703
+   },
+   "per_config_best_epoch_mean": {
+    "0": 8.833333333333334,
+    "1": 7.583333333333333,
+    "2": 9.583333333333334,
+    "3": 8.5,
+    "4": 8.166666666666666,
+    "5": 10.166666666666666,
+    "6": 8.416666666666666,
+    "7": 16.333333333333332,
+    "8": 12.333333333333334,
+    "9": 13.166666666666666,
+    "10": 9.833333333333334,
+    "11": 10.083333333333334,
+    "12": 12.0,
+    "13": 10.166666666666666,
+    "14": 7.0,
+    "15": 7.5,
+    "16": 12.916666666666666,
+    "17": 10.0,
+    "18": 9.166666666666666,
+    "19": 8.083333333333334,
+    "20": 9.75,
+    "21": 6.25,
+    "22": 11.083333333333334,
+    "23": 9.166666666666666,
+    "24": 9.416666666666666,
+    "25": 11.333333333333334,
+    "26": 9.416666666666666
+   },
+   "best_epoch_by_grid_axis": {
+    "dropout": {
+     "levels": {
+      "0.0": {
+       "n": 108,
+       "mean_best_epoch": 9.99074074074074,
+       "median_best_epoch": 7.0,
+       "sd": 9.369362848872846
+      },
+      "0.1": {
+       "n": 108,
+       "mean_best_epoch": 10.296296296296296,
+       "median_best_epoch": 7.5,
+       "sd": 8.423664107471295
+      },
+      "0.2": {
+       "n": 108,
+       "mean_best_epoch": 9.296296296296296,
+       "median_best_epoch": 7.0,
+       "sd": 7.695440158853216
+      }
+     },
+     "kruskal_p": 0.6725343897469716,
+     "spread_of_level_means": 1.0
+    },
+    "hidden_dim": {
+     "levels": {
+      "128": {
+       "n": 108,
+       "mean_best_epoch": 9.564814814814815,
+       "median_best_epoch": 7.0,
+       "sd": 8.024813327258682
+      },
+      "256": {
+       "n": 108,
+       "mean_best_epoch": 9.166666666666666,
+       "median_best_epoch": 7.0,
+       "sd": 7.174070651981773
+      },
+      "64": {
+       "n": 108,
+       "mean_best_epoch": 10.851851851851851,
+       "median_best_epoch": 8.0,
+       "sd": 10.052957731703495
+      }
+     },
+     "kruskal_p": 0.6367009278247805,
+     "spread_of_level_means": 1.6851851851851851
+    },
+    "num_blocks": {
+     "levels": {
+      "1": {
+       "n": 108,
+       "mean_best_epoch": 9.25,
+       "median_best_epoch": 6.5,
+       "sd": 7.922669473655016
+      },
+      "2": {
+       "n": 108,
+       "mean_best_epoch": 10.61111111111111,
+       "median_best_epoch": 8.5,
+       "sd": 9.529916822393814
+      },
+      "3": {
+       "n": 108,
+       "mean_best_epoch": 9.722222222222221,
+       "median_best_epoch": 7.0,
+       "sd": 7.996299767320342
+      }
+     },
+     "kruskal_p": 0.6384565159541802,
+     "spread_of_level_means": 1.3611111111111107
+    }
+   }
+  },
+  "M2": {
+   "workspace": "m2_v1",
+   "n_runs_with_checkpoints": 117,
+   "n_manifests_read": 771,
+   "n_search_seed_records": 72,
+   "expected_runs_full_grid": 288,
+   "partial_snapshot": true,
+   "key_integrity": {
+    "checkpoint_grid_keys": 114,
+    "search_grid_keys": 72,
+    "checkpoint_only": 42,
+    "search_only": 0,
+    "identical": false,
+    "search_keys_are_a_subset_of_checkpoint_keys": true,
+    "excluded_non_grid_runs": 3,
+    "excluded_examples": [
+     "m2-f1-final-20260801-seed-20260801",
+     "m2-f1-final-20260802-seed-20260802",
+     "m2-f1-final-20260803-seed-20260803"
+    ],
+    "excluded_are_final_refits": true
+   },
+   "metric_mismatch": {
+    "n_runs_compared": 72,
+    "n_differing": 72,
+    "all_differ": true,
+    "mean_best_manifest_minus_reported": 0.005320194945703782,
+    "median_abs_diff": 0.004738763897145268,
+    "max_abs_diff": 0.02320497834596961,
+    "median_ratio_best_manifest_over_reported": 1.0885649288213364
+   },
+   "best_epoch": {
+    "n": 117,
+    "mean": 7.854700854700854,
+    "median": 9.0,
+    "min": 1.0,
+    "max": 17.0,
+    "sd": 4.40271263808277,
+    "p10": 1.0,
+    "p90": 12.0
+   },
+   "n_improvements_saved": {
+    "mean": 6.589743589743589,
+    "median": 7.0,
+    "min": 1,
+    "max": 17
+   },
+   "peak_epoch_spread_across_seeds_same_config_and_fold": {
+    "n_groups": 42,
+    "mean_range": 6.714285714285714,
+    "median_range": 7.5,
+    "max_range": 12,
+    "mean_sd": 4.050063639446034,
+    "share_of_groups_with_range_ge_5": 0.6904761904761905
+   },
+   "per_config_best_epoch_mean": {
+    "0": 9.8,
+    "1": 9.4,
+    "2": 10.0,
+    "3": 7.2,
+    "4": 9.8,
+    "5": 8.2,
+    "6": 7.4,
+    "7": 5.0,
+    "8": 5.2,
+    "9": 5.0,
+    "10": 5.4,
+    "11": 4.4,
+    "12": 10.8,
+    "13": 5.4,
+    "14": 10.4,
+    "15": 6.0,
+    "16": 8.4,
+    "17": 5.8,
+    "18": 10.75,
+    "19": 8.75,
+    "20": 10.5,
+    "21": 7.0,
+    "22": 10.75,
+    "23": 8.75
+   },
+   "best_epoch_by_grid_axis": {
+    "dropout": {
+     "levels": {
+      "0.0": {
+       "n": 40,
+       "mean_best_epoch": 8.35,
+       "median_best_epoch": 9.0,
+       "sd": 5.274758470591514
+      },
+      "0.1": {
+       "n": 40,
+       "mean_best_epoch": 6.575,
+       "median_best_epoch": 7.5,
+       "sd": 4.187205787597776
+      },
+      "0.2": {
+       "n": 34,
+       "mean_best_epoch": 8.735294117647058,
+       "median_best_epoch": 10.0,
+       "sd": 3.0974948189299174
+      }
+     },
+     "kruskal_p": 0.07500953925329491,
+     "spread_of_level_means": 2.160294117647058
+    },
+    "family": {
+     "levels": {
+      "GRU": {
+       "n": 58,
+       "mean_best_epoch": 7.431034482758621,
+       "median_best_epoch": 9.0,
+       "sd": 4.664581246941293
+      },
+      "TCN": {
+       "n": 56,
+       "mean_best_epoch": 8.267857142857142,
+       "median_best_epoch": 9.0,
+       "sd": 4.105389236019013
+      }
+     },
+     "kruskal_p": 0.31345530735547833,
+     "spread_of_level_means": 0.8368226600985214
+    },
+    "hidden_dim": {
+     "levels": {
+      "128": {
+       "n": 58,
+       "mean_best_epoch": 7.913793103448276,
+       "median_best_epoch": 9.0,
+       "sd": 4.698952786502134
+      },
+      "64": {
+       "n": 56,
+       "mean_best_epoch": 7.767857142857143,
+       "median_best_epoch": 9.0,
+       "sd": 4.1076030233461704
+      }
+     },
+     "kruskal_p": 0.9886085140402758,
+     "spread_of_level_means": 0.14593596059113256
+    },
+    "learning_rate": {
+     "levels": {
+      "0.0003": {
+       "n": 57,
+       "mean_best_epoch": 9.017543859649123,
+       "median_best_epoch": 10.0,
+       "sd": 4.261502200223093
+      },
+      "0.001": {
+       "n": 57,
+       "mean_best_epoch": 6.666666666666667,
+       "median_best_epoch": 7.0,
+       "sd": 4.252450274057691
+      }
+     },
+     "kruskal_p": 0.002770442216158052,
+     "spread_of_level_means": 2.3508771929824563
+    }
+   }
+  }
+ },
+ "cross_carrier": {
+  "m1_peak_epoch_spread_mean": 13.87962962962963,
+  "m2_peak_epoch_spread_mean": 6.714285714285714,
+  "reading": "the peak epoch of a given config+fold differs across its 3 seeds by this many epochs; a large value means optimisation itself is run-idiosyncratic, which is exactly variation that blocking on seed cannot remove"
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "generated_at_local": "2026-09-16T02:16:32"
+}
