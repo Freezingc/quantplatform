@@ -31,13 +31,15 @@
     "the parquet panels themselves (read in place, never copied)",
     "per-security rows: only per-day coverage aggregates and per-factor summaries are recorded"
   ],
-  "generated_at_utc": "2026-09-15T11:47:48+00:00",
+  "generated_at_utc": "2026-09-15T12:33:38+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "31dc584f7f8e4478b5d3fec33c4dd029d0797a3837494016c3be2ebd5702dda3"
   },
   "measurements": {
     "alpha443_beta_scale.json": "6eee2baf595b95bbedeeb38d50159848f47b0b8e9800d6aad0a2ad61e0cad963",
+    "alpha443_match_daily_rows.csv": "bb7b807accfb8f35335f894d59ceca07e1f75c6ba81fb4748edfad21b71c88b1",
+    "alpha443_matches_frozen_v2.json": "ecccab29de48d39b1c97574ad5f9ea4b80882183a52638f1e854d7da148853c9",
     "an_drift_reconciliation.json": "35013eb6c120b0ab8fadda2df2f7854ad873278e6f9afea81439740025a59aed",
     "catalog_for_frozen_v2.json": "af87cb1aa32cc0fb22c5723ee47e02395113cbefa240c7610d998a1d259b0a94",
     "fidelity_full_window.json": "ccd79f5725eea1a28d854c6f8ef30ff53cbadaee60f8988cc199973ac1405f83",
@@ -64,6 +66,7 @@
   "probe_scripts": {
     "analyze_regime_shapes.py": "8d6e69abb27afc2d8b4e4b61419bc6647f433ec1b2f5453fef3e720837bfd88d",
     "probe_alpha443_beta_scale.py": "a831687f8ce089784a720883a9bff0ced8377ce5699069f93442f4a70b4596fe",
+    "probe_alpha443_matches_frozen.py": "afdd2ca785f97c9aa5dce63616b232d229ba2fb5844af2c52dfbe845abac26f7",
     "probe_an_drift_reconciliation.py": "97ab9da3036d861a5812ee1b947d2a69d64d60e6121a9ea16fb7778fbb74650b",
     "probe_fidelity_full_window.py": "a39d797ec23eaa038a177a1c9296fe7c14fb493128509674d6a90b06e5211ec9",
     "probe_fidelity_full_window_rest.py": "ad0745cf71b84eddb6a49e27ef95ca637661e3e4c71964ccc37433b2515c6d39",
@@ -102,6 +105,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "4add34fbd509aa78d7fed073c77a83b3e0d34c33"
+    "commit_at_generation": "bbdcbf2bf8906f52eddf61e877251b90218f1c3f"
   }
 }

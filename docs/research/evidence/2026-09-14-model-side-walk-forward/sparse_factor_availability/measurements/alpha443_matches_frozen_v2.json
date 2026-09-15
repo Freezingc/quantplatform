@@ -1,0 +1,174 @@
+{
+  "database_access": false,
+  "days_compared": 969,
+  "exact_equality": {
+    "days_where_every_compared_cell_is_bit_equal": 0,
+    "max_share": 0.0,
+    "median_share_of_cells_bit_equal": 0.0,
+    "min_share": 0.0
+  },
+  "frozen_column": {
+    "factor_id": "yeslab_443_reg30_max20_v1",
+    "panel_field": "f10"
+  },
+  "generated_at_local": "2026-09-15T20:15:08",
+  "nan_agreement": {
+    "days_where_frozen_has_nan_but_recompute_does_not": 0,
+    "max_recomputed_nan_share_prefilter": 0.02391041162227603,
+    "median_frozen_nan_share": 0.010435690060005217,
+    "median_frozen_nan_share_on_compared_codes": 0.010435690060005217,
+    "median_recomputed_nan_share_VACUOUS_zero_by_construction": 0.0,
+    "median_recomputed_nan_share_prefilter": 0.010432569974554707
+  },
+  "per_variant": {
+    "all_codes_including_bj": {
+      "days": 969,
+      "days_all_cells_bit_equal": 0,
+      "days_where_frozen_has_nan_but_recompute_does_not": 0,
+      "exact_equal_share_max": 0.0,
+      "exact_equal_share_median": 0.0,
+      "frozen_nan_share_median": 0.010435690060005217,
+      "frozen_nan_share_on_compared_codes_median": 0.010435690060005217,
+      "median_relative_difference_median": 0.022719606394967475,
+      "recomputed_nan_share_median_VACUOUS_zero_by_construction": 0.0,
+      "recomputed_nan_share_prefilter_max": 0.02391041162227603,
+      "recomputed_nan_share_prefilter_median": 0.010432569974554707,
+      "share_of_days_above_0.999": 0.4324045407636739,
+      "share_of_days_above_0.9999": 0.04231166150670795,
+      "spearman_max": 0.9999999993716099,
+      "spearman_median": 0.9984189751519513,
+      "spearman_min": 0.9686219259823107,
+      "within_1e_6_share_median": 0.0,
+      "within_1e_9_share_median": 0.0
+    },
+    "shsz_only_as_the_materializer_did": {
+      "days": 969,
+      "days_all_cells_bit_equal": 0,
+      "days_where_frozen_has_nan_but_recompute_does_not": 0,
+      "exact_equal_share_max": 0.0,
+      "exact_equal_share_median": 0.0,
+      "frozen_nan_share_median": 0.010435690060005217,
+      "frozen_nan_share_on_compared_codes_median": 0.010435690060005217,
+      "median_relative_difference_median": 6.05141053629162e-08,
+      "recomputed_nan_share_median_VACUOUS_zero_by_construction": 0.0,
+      "recomputed_nan_share_prefilter_max": 0.02391041162227603,
+      "recomputed_nan_share_prefilter_median": 0.010432569974554707,
+      "share_of_days_above_0.999": 1.0,
+      "share_of_days_above_0.9999": 1.0,
+      "spearman_max": 1.0,
+      "spearman_median": 0.9999999999999999,
+      "spearman_min": 0.9999999978336802,
+      "within_1e_6_share_median": 0.9786357786357787,
+      "within_1e_9_share_median": 0.01187961985216473
+    }
+  },
+  "per_year": {
+    "2022": {
+      "days": 242,
+      "exact_equal_median": 0.0,
+      "spearman_median": 1.0,
+      "spearman_min": 0.9999999999999999
+    },
+    "2023": {
+      "days": 242,
+      "exact_equal_median": 0.0,
+      "spearman_median": 0.9999999999999998,
+      "spearman_min": 0.9999999988658552
+    },
+    "2024": {
+      "days": 242,
+      "exact_equal_median": 0.0,
+      "spearman_median": 0.9999999997945594,
+      "spearman_min": 0.9999999978336802
+    },
+    "2025": {
+      "days": 243,
+      "exact_equal_median": 0.0,
+      "spearman_median": 0.9999999997939227,
+      "spearman_min": 0.9999999988873328
+    }
+  },
+  "question": "Does the re-implemented compute_gp074_variant reproduce the frozen yeslab_443_reg30_max20_v1 column, and if so to what precision?",
+  "read_only": true,
+  "reading": "a median Spearman at 1.0 with a bit-equality share at 1.0 means §BJ.1 measured the column the models actually consume. A median Spearman at 1.0 with a low bit-equality share means the two are the same ordering but not the same floats, which for a 1e14 amplification of rounding residue is itself the finding: the column is order-stable but not bit-stable across environments.",
+  "relative_closeness": {
+    "max_of_the_median_relative_difference": 1.4811791793508483e-06,
+    "median_of_the_median_relative_difference": 6.05141053629162e-08,
+    "median_share_within_1e_6": 0.9786357786357787,
+    "median_share_within_1e_9": 0.01187961985216473
+  },
+  "repository_module_executed": false,
+  "rows_compared_total": 3522133,
+  "spearman": {
+    "days_below_0.99": 0,
+    "max": 1.0,
+    "median": 0.9999999999999999,
+    "min": 0.9999999978336802,
+    "p05": 0.9999999993408102,
+    "share_of_days_above_0.999": 1.0,
+    "share_of_days_above_0.9999": 1.0
+  },
+  "warmup_caveat": "this probe warms up from 2021-10-01 while the materializer used its own market_start, so the comparison starts at 2022-01-04 where both sides have at least 50 trading days",
+  "worst_ten_days": [
+    {
+      "date": "2024-04-10",
+      "exact_equal_share": 0.0,
+      "n": 3812,
+      "spearman": 0.9999999978336802
+    },
+    {
+      "date": "2024-04-11",
+      "exact_equal_share": 0.0,
+      "n": 3812,
+      "spearman": 0.9999999980503121
+    },
+    {
+      "date": "2024-03-26",
+      "exact_equal_share": 0.0,
+      "n": 3806,
+      "spearman": 0.999999998258735
+    },
+    {
+      "date": "2024-03-28",
+      "exact_equal_share": 0.0,
+      "n": 3806,
+      "spearman": 0.9999999984763931
+    },
+    {
+      "date": "2024-04-01",
+      "exact_equal_share": 0.0,
+      "n": 3810,
+      "spearman": 0.9999999984811867
+    },
+    {
+      "date": "2024-04-02",
+      "exact_equal_share": 0.0,
+      "n": 3811,
+      "spearman": 0.999999998482382
+    },
+    {
+      "date": "2024-04-12",
+      "exact_equal_share": 0.0,
+      "n": 3816,
+      "spearman": 0.9999999984883398
+    },
+    {
+      "date": "2024-03-27",
+      "exact_equal_share": 0.0,
+      "n": 3806,
+      "spearman": 0.9999999986940512
+    },
+    {
+      "date": "2024-03-29",
+      "exact_equal_share": 0.0,
+      "n": 3807,
+      "spearman": 0.9999999986950798
+    },
+    {
+      "date": "2024-04-03",
+      "exact_equal_share": 0.0,
+      "n": 3811,
+      "spearman": 0.9999999986991847
+    }
+  ]
+}
