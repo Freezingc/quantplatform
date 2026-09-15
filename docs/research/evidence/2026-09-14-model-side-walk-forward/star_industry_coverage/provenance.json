@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T02:27:49+00:00",
+  "generated_at_utc": "2026-09-15T02:45:26+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -30,6 +30,10 @@
     "cache_halves_not_independent.json": {
       "bytes": 1563,
       "sha256": "5a49b82f5f45bb6de9cc795585c849f243a59f64d10877ceccc2ce656dbc87bc"
+    },
+    "days420_precutover.json": {
+      "bytes": 48565,
+      "sha256": "d890a0cee17ca5c579e81ed5a8db003c739dd41c8e5c43e3044424916328dc4a"
     },
     "group_incompleteness_postcutover.json": {
       "bytes": 157496,
@@ -427,6 +431,10 @@
       "bytes": 15830,
       "sha256": "1bfb2809bf31f762dfc750f8192e30393f0a8a0bd87dd30a054982a6cb128e90"
     },
+    "option1_price_all420.json": {
+      "bytes": 188967,
+      "sha256": "f77aedbb2f2da678e2bfcc8f2f0e36c695105def6b6e99ab9e95d1a4dc036c02"
+    },
     "option1_projected_post_backfill.json": {
       "bytes": 2585,
       "sha256": "8be45c74577d7d900fecfb5fb487b920d636aa29241ab5905ef23ec88dfd72aa"
@@ -478,6 +486,10 @@
     "star_quarantine_reason_probe.json": {
       "bytes": 528,
       "sha256": "4db032cc58e17af09b260cf029bc37fa2d39715cdf3b8c5053aea953b0523552"
+    },
+    "star_rows_in_denominator_420.json": {
+      "bytes": 438467,
+      "sha256": "f9433824b06e668b03965135bc8d5d087a5c5ee0f80541e07871b1dbd42441ad"
     },
     "star_upstream_coverage_probe.json": {
       "bytes": 12094,
@@ -569,6 +581,10 @@
       "bytes": 5555,
       "sha256": "92303a360990122390fe7d4d444263cb79a7cc961656df6e0b43a94a30be877d"
     },
+    "project_option1_all420.py": {
+      "bytes": 10299,
+      "sha256": "16cfe675a862b42fa42ef644ff8d9a03c9bd2046f80130cc18f40e8b8bfda874"
+    },
     "project_option1_implementations.py": {
       "bytes": 8267,
       "sha256": "1cacd2de6f8cbe13dc110883c91d9031bb6e450a4d95a466d9998e3bae0aa012"
@@ -616,7 +632,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "383e2351ffbe9362018d62662ce584fb8b9cd548"
+    "commit_at_generation": "9d4cc5e35c81a1b0564308e7d3b40afc96fd23a3"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
