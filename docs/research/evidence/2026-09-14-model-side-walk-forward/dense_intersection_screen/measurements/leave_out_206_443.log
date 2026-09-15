@@ -1,0 +1,24 @@
+window 2022-01-01 .. 2025-12-31; factor source explicit (7 factors); floor 0.9 (parsed from /data/zhangyudong/qrv2_worktrees/dense-intersection-screen/research_v2/src/research_v2/evaluation/gates.py)
+  intersection measured for 2022
+  intersection measured for 2023
+  intersection measured for 2024
+  intersection measured for 2025
+days measured: 969; predicted below the floor: 1
+coverage: min 0.8979873173421561, median 0.9934929724102031
+  2022:  242 days,   0 below floor, coverage min/median 0.9115/0.9402
+  2023:  242 days,   1 below floor, coverage min/median 0.8980/0.9188
+  2024:  242 days,   0 below floor, coverage min/median 0.9816/0.9972
+  2025:  243 days,   0 below floor, coverage min/median 0.9908/0.9948
+worst days:
+  2023-07-05 0.8980 BELOW floor (3257/3627)
+  2023-05-16 0.9034 above floor (3245/3592)
+  2023-05-17 0.9037 above floor (3248/3594)
+  2023-05-12 0.9038 above floor (3241/3586)
+  2023-05-10 0.9040 above floor (3238/3582)
+  2023-05-11 0.9040 above floor (3240/3584)
+  2023-05-15 0.9042 above floor (3245/3589)
+  2023-04-28 0.9045 above floor (3228/3569)
+  2023-05-19 0.9045 above floor (3250/3593)
+  2023-05-18 0.9046 above floor (3251/3594)
+
+json written: /data/zhangyudong/qrv2_research_artifacts/opt1_feasibility/leave_out_206_443_2022_2025.json
