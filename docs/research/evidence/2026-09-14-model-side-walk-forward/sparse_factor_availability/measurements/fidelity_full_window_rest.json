@@ -1,0 +1,1402 @@
+{
+  "factors": {
+    "yeslab_206": {
+      "by_year": {
+        "2022": {
+          "days": 242,
+          "spearman_median": 0.7656278530910638,
+          "spearman_min": 0.6483402133034205
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.7405340616131353,
+          "spearman_min": 0.6128624786996295
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.7881617582005922,
+          "spearman_min": 0.6060705786503455
+        },
+        "2025": {
+          "days": 243,
+          "spearman_median": 0.7674948053678937,
+          "spearman_min": 0.6023825341160288
+        }
+      },
+      "days_below": {
+        "0.7": 75,
+        "0.8": 790,
+        "0.9": 953,
+        "0.95": 969,
+        "0.99": 969
+      },
+      "days_scored": 969,
+      "frozen_distinct_keys": 3514882,
+      "frozen_rows": 3514882,
+      "keys_in_both": 3514848,
+      "median_relative_difference": {
+        "max": 1.2920532585404603,
+        "median": 0.43007686967040876
+      },
+      "role": "dense; NOT a replay -- the median_abs bounded repair (§BI.1)",
+      "share_of_days_below": {
+        "0.7": 0.07739938080495357,
+        "0.8": 0.8152734778121775,
+        "0.9": 0.9834881320949432,
+        "0.95": 1.0,
+        "0.99": 1.0
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 0.9997301672962763,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "60日成交量去均值相对偏离",
+      "spearman": {
+        "max": 0.9447464574571335,
+        "mean": 0.7635478274270471,
+        "median": 0.7642006509752572,
+        "min": 0.6023825341160288,
+        "p01": 0.6332201554003748,
+        "p05": 0.6852676787750266,
+        "p25": 0.735697598538263,
+        "std": 0.05019242011704122
+      },
+      "store_distinct_keys": 4879300,
+      "store_rows": 5752953,
+      "store_rows_on_an_ambiguous_key": 0,
+      "table": "factor_data5",
+      "ten_worst_days": [
+        {
+          "date": "2025-05-06",
+          "fold": "F4",
+          "n": 3803,
+          "sign_agreement": 1.0,
+          "spearman": 0.6023825341160288
+        },
+        {
+          "date": "2024-02-20",
+          "fold": "F3",
+          "n": 3777,
+          "sign_agreement": 1.0,
+          "spearman": 0.6060705786503455
+        },
+        {
+          "date": "2025-02-07",
+          "fold": "F4",
+          "n": 3874,
+          "sign_agreement": 1.0,
+          "spearman": 0.611089523173282
+        },
+        {
+          "date": "2023-09-07",
+          "fold": "F2",
+          "n": 3661,
+          "sign_agreement": 1.0,
+          "spearman": 0.6128624786996295
+        },
+        {
+          "date": "2024-10-24",
+          "fold": "F3",
+          "n": 3879,
+          "sign_agreement": 1.0,
+          "spearman": 0.6174852275463008
+        },
+        {
+          "date": "2024-02-22",
+          "fold": "F3",
+          "n": 3781,
+          "sign_agreement": 1.0,
+          "spearman": 0.6206274579628169
+        },
+        {
+          "date": "2024-11-15",
+          "fold": "F3",
+          "n": 3866,
+          "sign_agreement": 1.0,
+          "spearman": 0.6217825782320602
+        },
+        {
+          "date": "2023-08-25",
+          "fold": "F2",
+          "n": 3638,
+          "sign_agreement": 1.0,
+          "spearman": 0.6227812229647092
+        },
+        {
+          "date": "2023-09-11",
+          "fold": "F2",
+          "n": 3663,
+          "sign_agreement": 1.0,
+          "spearman": 0.6272013629397619
+        },
+        {
+          "date": "2024-11-04",
+          "fold": "F3",
+          "n": 3871,
+          "sign_agreement": 1.0,
+          "spearman": 0.6322780896017786
+        }
+      ]
+    },
+    "yeslab_372": {
+      "by_year": {
+        "2022": {
+          "days": 241,
+          "spearman_median": 0.9999899730335106,
+          "spearman_min": 0.9990400859303299
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.9999440623158589,
+          "spearman_min": 0.9870346487655541
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.9999774424276631,
+          "spearman_min": 0.9925750794988045
+        },
+        "2025": {
+          "days": 242,
+          "spearman_median": 0.9999842896297801,
+          "spearman_min": 0.9979037052763158
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 0,
+        "0.95": 0,
+        "0.99": 1
+      },
+      "days_scored": 967,
+      "frozen_distinct_keys": 1708799,
+      "frozen_rows": 1708799,
+      "keys_in_both": 1708084,
+      "median_relative_difference": {
+        "max": 0.44568949137724406,
+        "median": 0.0043800435703108135
+      },
+      "role": "sparse cluster A",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.0,
+        "0.95": 0.0,
+        "0.99": 0.001034126163391934
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 1.0,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "GP_003",
+      "spearman": {
+        "max": 0.9999995679999881,
+        "mean": 0.9998932651086018,
+        "median": 0.9999795557919917,
+        "min": 0.9870346487655541,
+        "p01": 0.9987973833131458,
+        "p05": 0.9996922341805525,
+        "p25": 0.9999406069602966,
+        "std": 0.0005572797521557496
+      },
+      "store_distinct_keys": 2428300,
+      "store_rows": 11534976,
+      "store_rows_on_an_ambiguous_key": 4856600,
+      "table": "factor_data8",
+      "ten_worst_days": [
+        {
+          "date": "2023-12-25",
+          "fold": "F2",
+          "n": 1546,
+          "sign_agreement": 1.0,
+          "spearman": 0.9870346487655541
+        },
+        {
+          "date": "2024-01-31",
+          "fold": "F3",
+          "n": 291,
+          "sign_agreement": 1.0,
+          "spearman": 0.9925750794988045
+        },
+        {
+          "date": "2024-01-19",
+          "fold": "F3",
+          "n": 685,
+          "sign_agreement": 1.0,
+          "spearman": 0.9951225449292829
+        },
+        {
+          "date": "2024-01-30",
+          "fold": "F3",
+          "n": 201,
+          "sign_agreement": 1.0,
+          "spearman": 0.9963041229496084
+        },
+        {
+          "date": "2024-06-21",
+          "fold": "F3",
+          "n": 1673,
+          "sign_agreement": 1.0,
+          "spearman": 0.9965253531666358
+        },
+        {
+          "date": "2024-01-16",
+          "fold": "F3",
+          "n": 1178,
+          "sign_agreement": 1.0,
+          "spearman": 0.9973061837695528
+        },
+        {
+          "date": "2025-04-08",
+          "fold": "F4",
+          "n": 2354,
+          "sign_agreement": 1.0,
+          "spearman": 0.9979037052763158
+        },
+        {
+          "date": "2024-02-06",
+          "fold": "F3",
+          "n": 2873,
+          "sign_agreement": 1.0,
+          "spearman": 0.9981667204261591
+        },
+        {
+          "date": "2024-12-19",
+          "fold": "F3",
+          "n": 1758,
+          "sign_agreement": 1.0,
+          "spearman": 0.9984586613844911
+        },
+        {
+          "date": "2025-04-03",
+          "fold": "F4",
+          "n": 1358,
+          "sign_agreement": 1.0,
+          "spearman": 0.9986890948209635
+        }
+      ]
+    },
+    "yeslab_375": {
+      "by_year": {
+        "2022": {
+          "days": 242,
+          "spearman_median": 0.848964775023935,
+          "spearman_min": 0.6790685254227985
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.8496976671154343,
+          "spearman_min": 0.7125299980000519
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.8585093254215698,
+          "spearman_min": 0.6680936351608114
+        },
+        "2025": {
+          "days": 243,
+          "spearman_median": 0.8493673592935246,
+          "spearman_min": 0.7029831917616247
+        }
+      },
+      "days_below": {
+        "0.7": 4,
+        "0.8": 165,
+        "0.9": 752,
+        "0.95": 921,
+        "0.99": 968
+      },
+      "days_scored": 969,
+      "frozen_distinct_keys": 1700433,
+      "frozen_rows": 1700433,
+      "keys_in_both": 1700402,
+      "median_relative_difference": {
+        "max": 0.4691680824363367,
+        "median": 0.10740786917198865
+      },
+      "role": "sparse cluster B; store is ambiguous (§BF.4)",
+      "share_of_days_below": {
+        "0.7": 0.0041279669762641896,
+        "0.8": 0.17027863777089783,
+        "0.9": 0.7760577915376677,
+        "0.95": 0.9504643962848297,
+        "0.99": 0.9989680082559339
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 1.0,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "GP_006",
+      "spearman": {
+        "max": 0.9903548120529154,
+        "mean": 0.8538029690122444,
+        "median": 0.8517664178738439,
+        "min": 0.6680936351608114,
+        "p01": 0.7243241374722542,
+        "p05": 0.7604795333230935,
+        "p25": 0.8153970552314247,
+        "std": 0.056856846239299125
+      },
+      "store_distinct_keys": 3479560,
+      "store_rows": 17353821,
+      "store_rows_on_an_ambiguous_key": 6100208,
+      "table": "factor_data8",
+      "ten_worst_days": [
+        {
+          "date": "2024-09-25",
+          "fold": "F3",
+          "n": 3377,
+          "sign_agreement": 1.0,
+          "spearman": 0.6680936351608114
+        },
+        {
+          "date": "2022-11-04",
+          "fold": "F1",
+          "n": 2852,
+          "sign_agreement": 1.0,
+          "spearman": 0.6790685254227985
+        },
+        {
+          "date": "2024-08-30",
+          "fold": "F3",
+          "n": 2557,
+          "sign_agreement": 1.0,
+          "spearman": 0.6910123109420412
+        },
+        {
+          "date": "2022-11-01",
+          "fold": "F1",
+          "n": 2448,
+          "sign_agreement": 1.0,
+          "spearman": 0.6923207617468032
+        },
+        {
+          "date": "2025-04-09",
+          "fold": "F4",
+          "n": 2787,
+          "sign_agreement": 1.0,
+          "spearman": 0.7029831917616247
+        },
+        {
+          "date": "2024-12-02",
+          "fold": "F3",
+          "n": 2177,
+          "sign_agreement": 1.0,
+          "spearman": 0.7071305486000836
+        },
+        {
+          "date": "2023-01-20",
+          "fold": "F2",
+          "n": 1903,
+          "sign_agreement": 1.0,
+          "spearman": 0.7125299980000519
+        },
+        {
+          "date": "2023-12-11",
+          "fold": "F2",
+          "n": 2183,
+          "sign_agreement": 1.0,
+          "spearman": 0.7223973731182171
+        },
+        {
+          "date": "2025-03-14",
+          "fold": "F4",
+          "n": 2330,
+          "sign_agreement": 1.0,
+          "spearman": 0.7226818235492224
+        },
+        {
+          "date": "2024-01-23",
+          "fold": "F3",
+          "n": 2725,
+          "sign_agreement": 1.0,
+          "spearman": 0.7234075157545192
+        }
+      ]
+    },
+    "yeslab_384": {
+      "by_year": {
+        "2022": {
+          "days": 242,
+          "spearman_median": 0.999994824162334,
+          "spearman_min": 0.9999379247981454
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.999989354562516,
+          "spearman_min": 0.9999335755892667
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.9999891265733446,
+          "spearman_min": 0.9995879725453628
+        },
+        "2025": {
+          "days": 243,
+          "spearman_median": 0.9999868103900477,
+          "spearman_min": 0.9997663574698163
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 0,
+        "0.95": 0,
+        "0.99": 0
+      },
+      "days_scored": 969,
+      "frozen_distinct_keys": 1775979,
+      "frozen_rows": 1775979,
+      "keys_in_both": 1775973,
+      "median_relative_difference": {
+        "max": 0.1271794026582534,
+        "median": 0.008201679626932587
+      },
+      "role": "sparse cluster B",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.0,
+        "0.95": 0.0,
+        "0.99": 0.0
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 1.0,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "GP_015",
+      "spearman": {
+        "max": 0.9999994745825692,
+        "mean": 0.9999859633023875,
+        "median": 0.9999909241904288,
+        "min": 0.9995879725453628,
+        "p01": 0.9999140692654326,
+        "p05": 0.9999645174688516,
+        "p25": 0.9999838252844242,
+        "std": 2.2327412717746167e-05
+      },
+      "store_distinct_keys": 2459810,
+      "store_rows": 11534976,
+      "store_rows_on_an_ambiguous_key": 4919620,
+      "table": "factor_data8",
+      "ten_worst_days": [
+        {
+          "date": "2024-11-05",
+          "fold": "F3",
+          "n": 626,
+          "sign_agreement": 1.0,
+          "spearman": 0.9995879725453628
+        },
+        {
+          "date": "2024-03-15",
+          "fold": "F3",
+          "n": 809,
+          "sign_agreement": 1.0,
+          "spearman": 0.9996928349612876
+        },
+        {
+          "date": "2025-01-15",
+          "fold": "F4",
+          "n": 1117,
+          "sign_agreement": 1.0,
+          "spearman": 0.9997663574698163
+        },
+        {
+          "date": "2024-02-07",
+          "fold": "F3",
+          "n": 3349,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998570103597668
+        },
+        {
+          "date": "2024-11-04",
+          "fold": "F3",
+          "n": 642,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998751061218157
+        },
+        {
+          "date": "2025-01-14",
+          "fold": "F4",
+          "n": 1515,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998876565137906
+        },
+        {
+          "date": "2025-01-09",
+          "fold": "F4",
+          "n": 929,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998970719761063
+        },
+        {
+          "date": "2024-12-03",
+          "fold": "F3",
+          "n": 1348,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998983594245022
+        },
+        {
+          "date": "2024-11-06",
+          "fold": "F3",
+          "n": 1288,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998984442773023
+        },
+        {
+          "date": "2024-02-08",
+          "fold": "F3",
+          "n": 3308,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999112552055003
+        }
+      ]
+    },
+    "yeslab_389": {
+      "by_year": {
+        "2022": {
+          "days": 241,
+          "spearman_median": 1.0,
+          "spearman_min": 0.9999985531908532
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 1.0,
+          "spearman_min": 0.9999999999999998
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 1.0,
+          "spearman_min": 0.9999999981498118
+        },
+        "2025": {
+          "days": 242,
+          "spearman_median": 1.0,
+          "spearman_min": 0.9999999999999998
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 0,
+        "0.95": 0,
+        "0.99": 0
+      },
+      "days_scored": 967,
+      "frozen_distinct_keys": 1764582,
+      "frozen_rows": 1764582,
+      "keys_in_both": 1763773,
+      "median_relative_difference": {
+        "max": 1.4438254479494646e-16,
+        "median": 0.0
+      },
+      "role": "sparse cluster A",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.0,
+        "0.95": 0.0,
+        "0.99": 0.0
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 1.0,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "GP_020",
+      "spearman": {
+        "max": 1.0,
+        "mean": 0.9999999938720119,
+        "median": 1.0,
+        "min": 0.9999985531908532,
+        "p01": 0.9999998637772916,
+        "p05": 0.9999999999999998,
+        "p25": 0.9999999999999999,
+        "std": 6.845864889746877e-08
+      },
+      "store_distinct_keys": 2517877,
+      "store_rows": 11534976,
+      "store_rows_on_an_ambiguous_key": 5035754,
+      "table": "factor_data9",
+      "ten_worst_days": [
+        {
+          "date": "2022-07-15",
+          "fold": "F1",
+          "n": 720,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999985531908532
+        },
+        {
+          "date": "2022-08-03",
+          "fold": "F1",
+          "n": 1166,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999989703333856
+        },
+        {
+          "date": "2022-07-18",
+          "fold": "F1",
+          "n": 2862,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999993980227789
+        },
+        {
+          "date": "2022-08-08",
+          "fold": "F1",
+          "n": 2500,
+          "sign_agreement": 1.0,
+          "spearman": 0.999999400904584
+        },
+        {
+          "date": "2022-07-29",
+          "fold": "F1",
+          "n": 1065,
+          "sign_agreement": 1.0,
+          "spearman": 0.999999453404416
+        },
+        {
+          "date": "2022-08-05",
+          "fold": "F1",
+          "n": 2414,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999996289202484
+        },
+        {
+          "date": "2022-07-27",
+          "fold": "F1",
+          "n": 1946,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999997214851993
+        },
+        {
+          "date": "2022-07-19",
+          "fold": "F1",
+          "n": 2298,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999997270587845
+        },
+        {
+          "date": "2022-07-14",
+          "fold": "F1",
+          "n": 1786,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999998083014094
+        },
+        {
+          "date": "2022-07-13",
+          "fold": "F1",
+          "n": 2378,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999998304371497
+        }
+      ]
+    },
+    "yeslab_390": {
+      "by_year": {
+        "2022": {
+          "days": 241,
+          "spearman_median": 0.9999575428036798,
+          "spearman_min": 0.9998100873194757
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.9999191602310812,
+          "spearman_min": 0.9996642807564667
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.9999181578754769,
+          "spearman_min": 0.9994264146620072
+        },
+        "2025": {
+          "days": 242,
+          "spearman_median": 0.9999495139194563,
+          "spearman_min": 0.9996897897844292
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 0,
+        "0.95": 0,
+        "0.99": 0
+      },
+      "days_scored": 967,
+      "frozen_distinct_keys": 1766763,
+      "frozen_rows": 1766763,
+      "keys_in_both": 1765959,
+      "median_relative_difference": {
+        "max": 0.022505369629356647,
+        "median": 0.005161919650731231
+      },
+      "role": "sparse cluster A",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.0,
+        "0.95": 0.0,
+        "0.99": 0.0
+      },
+      "sign_agreement": {
+        "median": 0.9985315712187959,
+        "min": 0.9892051030421982,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "GP_021",
+      "spearman": {
+        "max": 0.9999957220743804,
+        "mean": 0.999927829706221,
+        "median": 0.9999405517571607,
+        "min": 0.9994264146620072,
+        "p01": 0.9997169205904717,
+        "p05": 0.9998297332168079,
+        "p25": 0.99990702565533,
+        "std": 5.658239244572314e-05
+      },
+      "store_distinct_keys": 2496859,
+      "store_rows": 11538852,
+      "store_rows_on_an_ambiguous_key": 4993718,
+      "table": "factor_data9",
+      "ten_worst_days": [
+        {
+          "date": "2024-02-08",
+          "fold": "F3",
+          "n": 3432,
+          "sign_agreement": 1.0,
+          "spearman": 0.9994264146620072
+        },
+        {
+          "date": "2024-06-26",
+          "fold": "F3",
+          "n": 3480,
+          "sign_agreement": 0.9994252873563219,
+          "spearman": 0.9995869141485132
+        },
+        {
+          "date": "2024-04-17",
+          "fold": "F3",
+          "n": 3691,
+          "sign_agreement": 1.0,
+          "spearman": 0.9995900431251967
+        },
+        {
+          "date": "2023-09-22",
+          "fold": "F2",
+          "n": 3288,
+          "sign_agreement": 1.0,
+          "spearman": 0.9996642807564667
+        },
+        {
+          "date": "2023-08-29",
+          "fold": "F2",
+          "n": 3280,
+          "sign_agreement": 1.0,
+          "spearman": 0.9996884275502602
+        },
+        {
+          "date": "2024-02-19",
+          "fold": "F3",
+          "n": 2879,
+          "sign_agreement": 1.0,
+          "spearman": 0.9996886657296375
+        },
+        {
+          "date": "2025-11-24",
+          "fold": "F4",
+          "n": 2949,
+          "sign_agreement": 0.9986436080027128,
+          "spearman": 0.9996897897844292
+        },
+        {
+          "date": "2024-06-11",
+          "fold": "F3",
+          "n": 2287,
+          "sign_agreement": 0.9973764757324005,
+          "spearman": 0.9996918513856944
+        },
+        {
+          "date": "2024-07-31",
+          "fold": "F3",
+          "n": 3679,
+          "sign_agreement": 1.0,
+          "spearman": 0.9997088191989772
+        },
+        {
+          "date": "2024-04-29",
+          "fold": "F3",
+          "n": 3235,
+          "sign_agreement": 1.0,
+          "spearman": 0.9997138938383399
+        }
+      ]
+    },
+    "yeslab_406": {
+      "by_year": {
+        "2022": {
+          "days": 242,
+          "spearman_median": 0.9999929012465236,
+          "spearman_min": 0.9998875639521101
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.9999853836166157,
+          "spearman_min": 0.9948245902058561
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.9999612369714146,
+          "spearman_min": 0.9954468067393557
+        },
+        "2025": {
+          "days": 243,
+          "spearman_median": 0.9999192648053292,
+          "spearman_min": 0.9981776531226132
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 0,
+        "0.95": 0,
+        "0.99": 0
+      },
+      "days_scored": 969,
+      "frozen_distinct_keys": 1711443,
+      "frozen_rows": 1711443,
+      "keys_in_both": 1711402,
+      "median_relative_difference": {
+        "max": 0.13485300300272818,
+        "median": 0.013456115107913684
+      },
+      "role": "sparse cluster B",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.0,
+        "0.95": 0.0,
+        "0.99": 0.0
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 1.0,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "GP_037",
+      "spearman": {
+        "max": 0.9999998322702632,
+        "mean": 0.9998603327660512,
+        "median": 0.9999817644443355,
+        "min": 0.9948245902058561,
+        "p01": 0.9979539399863925,
+        "p05": 0.999364884909799,
+        "p25": 0.999928993884273,
+        "std": 0.00041830073213479537
+      },
+      "store_distinct_keys": 2361372,
+      "store_rows": 5768457,
+      "store_rows_on_an_ambiguous_key": 0,
+      "table": "factor_data9",
+      "ten_worst_days": [
+        {
+          "date": "2023-12-21",
+          "fold": "F2",
+          "n": 1842,
+          "sign_agreement": 1.0,
+          "spearman": 0.9948245902058561
+        },
+        {
+          "date": "2024-01-04",
+          "fold": "F3",
+          "n": 1492,
+          "sign_agreement": 1.0,
+          "spearman": 0.9954468067393557
+        },
+        {
+          "date": "2023-12-20",
+          "fold": "F2",
+          "n": 1322,
+          "sign_agreement": 1.0,
+          "spearman": 0.9954988266953005
+        },
+        {
+          "date": "2024-11-05",
+          "fold": "F3",
+          "n": 544,
+          "sign_agreement": 1.0,
+          "spearman": 0.9960243654459096
+        },
+        {
+          "date": "2024-01-05",
+          "fold": "F3",
+          "n": 1756,
+          "sign_agreement": 1.0,
+          "spearman": 0.9970257031234079
+        },
+        {
+          "date": "2024-11-04",
+          "fold": "F3",
+          "n": 535,
+          "sign_agreement": 1.0,
+          "spearman": 0.9971338048808776
+        },
+        {
+          "date": "2023-12-19",
+          "fold": "F2",
+          "n": 1035,
+          "sign_agreement": 1.0,
+          "spearman": 0.9973051766761296
+        },
+        {
+          "date": "2023-12-27",
+          "fold": "F2",
+          "n": 1458,
+          "sign_agreement": 1.0,
+          "spearman": 0.9977929822337585
+        },
+        {
+          "date": "2024-01-03",
+          "fold": "F3",
+          "n": 1687,
+          "sign_agreement": 1.0,
+          "spearman": 0.9978504228616772
+        },
+        {
+          "date": "2024-01-09",
+          "fold": "F3",
+          "n": 1116,
+          "sign_agreement": 1.0,
+          "spearman": 0.9978987339903375
+        }
+      ]
+    },
+    "yeslab_425": {
+      "by_year": {
+        "2022": {
+          "days": 242,
+          "spearman_median": 0.998203078388789,
+          "spearman_min": 0.9916776657913158
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.9975533066924172,
+          "spearman_min": 0.884447727043376
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.9959145424144282,
+          "spearman_min": 0.959662291548092
+        },
+        "2025": {
+          "days": 243,
+          "spearman_median": 0.9972864086770697,
+          "spearman_min": 0.9874511221139025
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 1,
+        "0.95": 14,
+        "0.99": 70
+      },
+      "days_scored": 969,
+      "frozen_distinct_keys": 3551104,
+      "frozen_rows": 3551104,
+      "keys_in_both": 3549447,
+      "median_relative_difference": {
+        "max": 0.04991520634972675,
+        "median": 0.0053514428628303225
+      },
+      "role": "dense; the absorber of 471",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.0010319917440660474,
+        "0.95": 0.014447884416924664,
+        "0.99": 0.07223942208462332
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 1.0,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "GP_056",
+      "spearman": {
+        "max": 0.9993576787561391,
+        "mean": 0.9949593438134733,
+        "median": 0.9973579091014448,
+        "min": 0.884447727043376,
+        "p01": 0.9414800558354759,
+        "p05": 0.9855391195660377,
+        "p25": 0.9960388751827531,
+        "std": 0.009762677502215492
+      },
+      "store_distinct_keys": 5012719,
+      "store_rows": 5769426,
+      "store_rows_on_an_ambiguous_key": 0,
+      "table": "factor_data9",
+      "ten_worst_days": [
+        {
+          "date": "2023-11-27",
+          "fold": "F2",
+          "n": 3754,
+          "sign_agreement": 1.0,
+          "spearman": 0.884447727043376
+        },
+        {
+          "date": "2023-11-28",
+          "fold": "F2",
+          "n": 3756,
+          "sign_agreement": 1.0,
+          "spearman": 0.9023839683182721
+        },
+        {
+          "date": "2023-11-24",
+          "fold": "F2",
+          "n": 3754,
+          "sign_agreement": 1.0,
+          "spearman": 0.9201910754955956
+        },
+        {
+          "date": "2023-11-29",
+          "fold": "F2",
+          "n": 3756,
+          "sign_agreement": 1.0,
+          "spearman": 0.9273694536398113
+        },
+        {
+          "date": "2023-12-05",
+          "fold": "F2",
+          "n": 3763,
+          "sign_agreement": 1.0,
+          "spearman": 0.9359027746255161
+        },
+        {
+          "date": "2023-12-20",
+          "fold": "F2",
+          "n": 3769,
+          "sign_agreement": 1.0,
+          "spearman": 0.938083967170427
+        },
+        {
+          "date": "2023-12-08",
+          "fold": "F2",
+          "n": 3765,
+          "sign_agreement": 1.0,
+          "spearman": 0.9388462740204002
+        },
+        {
+          "date": "2023-11-30",
+          "fold": "F2",
+          "n": 3758,
+          "sign_agreement": 1.0,
+          "spearman": 0.9395035183827697
+        },
+        {
+          "date": "2023-12-07",
+          "fold": "F2",
+          "n": 3765,
+          "sign_agreement": 1.0,
+          "spearman": 0.9401634789985972
+        },
+        {
+          "date": "2023-12-18",
+          "fold": "F2",
+          "n": 3766,
+          "sign_agreement": 1.0,
+          "spearman": 0.9403627952978177
+        }
+      ]
+    },
+    "yeslab_484": {
+      "by_year": {
+        "2022": {
+          "days": 242,
+          "spearman_median": 0.9982009877283352,
+          "spearman_min": 0.916016436300462
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.99710650608501,
+          "spearman_min": 0.9702455578515394
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.9997392914462093,
+          "spearman_min": 0.9968721459101042
+        },
+        "2025": {
+          "days": 243,
+          "spearman_median": 0.9958974215080091,
+          "spearman_min": 0.8918458830749035
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 2,
+        "0.95": 29,
+        "0.99": 76
+      },
+      "days_scored": 969,
+      "frozen_distinct_keys": 3557706,
+      "frozen_rows": 3557706,
+      "keys_in_both": 3557700,
+      "median_relative_difference": {
+        "max": 0.09804637882802134,
+        "median": 5.18898258121896e-07
+      },
+      "role": "dense; §Q's highest fidelity",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.0020639834881320948,
+        "0.95": 0.029927760577915376,
+        "0.99": 0.0784313725490196
+      },
+      "sign_agreement": {
+        "median": 1.0,
+        "min": 0.9905882352941177,
+        "share_of_days_below_0.95": 0.0
+      },
+      "source_name": "羊群效应_CSAD波动率21",
+      "spearman": {
+        "max": 0.9999792554688667,
+        "mean": 0.9943633584198673,
+        "median": 0.9981731148069826,
+        "min": 0.8918458830749035,
+        "p01": 0.9251914319690837,
+        "p05": 0.9661413845763807,
+        "p25": 0.9958561514241937,
+        "std": 0.01324694199389614
+      },
+      "store_distinct_keys": 5036627,
+      "store_rows": 5822721,
+      "store_rows_on_an_ambiguous_key": 0,
+      "table": "factor_data10",
+      "ten_worst_days": [
+        {
+          "date": "2025-11-06",
+          "fold": "F4",
+          "n": 3828,
+          "sign_agreement": 1.0,
+          "spearman": 0.8918458830749035
+        },
+        {
+          "date": "2025-11-07",
+          "fold": "F4",
+          "n": 3830,
+          "sign_agreement": 1.0,
+          "spearman": 0.8935438139390512
+        },
+        {
+          "date": "2025-11-10",
+          "fold": "F4",
+          "n": 3832,
+          "sign_agreement": 1.0,
+          "spearman": 0.9029971547508175
+        },
+        {
+          "date": "2025-11-11",
+          "fold": "F4",
+          "n": 3833,
+          "sign_agreement": 1.0,
+          "spearman": 0.9101614528230566
+        },
+        {
+          "date": "2022-01-05",
+          "fold": "F1",
+          "n": 3128,
+          "sign_agreement": 1.0,
+          "spearman": 0.916016436300462
+        },
+        {
+          "date": "2025-11-12",
+          "fold": "F4",
+          "n": 3833,
+          "sign_agreement": 1.0,
+          "spearman": 0.9178502429721201
+        },
+        {
+          "date": "2025-11-13",
+          "fold": "F4",
+          "n": 3832,
+          "sign_agreement": 1.0,
+          "spearman": 0.9180748050515478
+        },
+        {
+          "date": "2025-11-14",
+          "fold": "F4",
+          "n": 3832,
+          "sign_agreement": 1.0,
+          "spearman": 0.9203611795207893
+        },
+        {
+          "date": "2022-01-07",
+          "fold": "F1",
+          "n": 3136,
+          "sign_agreement": 1.0,
+          "spearman": 0.9237941233891522
+        },
+        {
+          "date": "2022-01-06",
+          "fold": "F1",
+          "n": 3131,
+          "sign_agreement": 1.0,
+          "spearman": 0.9240490232606725
+        }
+      ]
+    },
+    "yeslab_96": {
+      "by_year": {
+        "2022": {
+          "days": 242,
+          "spearman_median": 0.992772699913725,
+          "spearman_min": 0.9746349761663483
+        },
+        "2023": {
+          "days": 242,
+          "spearman_median": 0.9881867583009388,
+          "spearman_min": 0.8023110578821351
+        },
+        "2024": {
+          "days": 242,
+          "spearman_median": 0.97497596557983,
+          "spearman_min": 0.8115409655044732
+        },
+        "2025": {
+          "days": 243,
+          "spearman_median": 0.9806255850500493,
+          "spearman_min": 0.9328117319614527
+        }
+      },
+      "days_below": {
+        "0.7": 0,
+        "0.8": 0,
+        "0.9": 47,
+        "0.95": 95,
+        "0.99": 645
+      },
+      "days_scored": 969,
+      "frozen_distinct_keys": 3543356,
+      "frozen_rows": 3543356,
+      "keys_in_both": 3541704,
+      "median_relative_difference": {
+        "max": 0.22950819672133613,
+        "median": 6.141519903148459e-16
+      },
+      "role": "dense",
+      "share_of_days_below": {
+        "0.7": 0.0,
+        "0.8": 0.0,
+        "0.9": 0.048503611971104234,
+        "0.95": 0.09803921568627451,
+        "0.99": 0.6656346749226006
+      },
+      "sign_agreement": {
+        "median": 0.9819083746717245,
+        "min": 0.8758930934109552,
+        "share_of_days_below_0.95": 0.13725490196078433
+      },
+      "source_name": "修正日间反转",
+      "spearman": {
+        "max": 0.9972441778713588,
+        "mean": 0.975805853655863,
+        "median": 0.9866106114512954,
+        "min": 0.8023110578821351,
+        "p01": 0.8341196181167323,
+        "p05": 0.9231036022707515,
+        "p25": 0.9747922777722645,
+        "std": 0.0308764708358897
+      },
+      "store_distinct_keys": 4984316,
+      "store_rows": 11505906,
+      "store_rows_on_an_ambiguous_key": 9968632,
+      "table": "factor_data3",
+      "ten_worst_days": [
+        {
+          "date": "2023-12-18",
+          "fold": "F2",
+          "n": 3763,
+          "sign_agreement": 0.9205421206484188,
+          "spearman": 0.8023110578821351
+        },
+        {
+          "date": "2023-12-22",
+          "fold": "F2",
+          "n": 3767,
+          "sign_agreement": 0.9158481550305283,
+          "spearman": 0.8040211845402238
+        },
+        {
+          "date": "2024-01-22",
+          "fold": "F3",
+          "n": 3786,
+          "sign_agreement": 0.9064976228209192,
+          "spearman": 0.8115409655044732
+        },
+        {
+          "date": "2023-12-26",
+          "fold": "F2",
+          "n": 3766,
+          "sign_agreement": 0.9224641529474243,
+          "spearman": 0.8147843807590661
+        },
+        {
+          "date": "2023-12-21",
+          "fold": "F2",
+          "n": 3766,
+          "sign_agreement": 0.9168879447689856,
+          "spearman": 0.814966157081289
+        },
+        {
+          "date": "2023-12-27",
+          "fold": "F2",
+          "n": 3767,
+          "sign_agreement": 0.9219538093973985,
+          "spearman": 0.8211279022252244
+        },
+        {
+          "date": "2023-12-19",
+          "fold": "F2",
+          "n": 3762,
+          "sign_agreement": 0.9202551834130781,
+          "spearman": 0.8220727107749346
+        },
+        {
+          "date": "2023-12-20",
+          "fold": "F2",
+          "n": 3766,
+          "sign_agreement": 0.9235262878385555,
+          "spearman": 0.8225112432139209
+        },
+        {
+          "date": "2023-12-15",
+          "fold": "F2",
+          "n": 3764,
+          "sign_agreement": 0.9155154091392136,
+          "spearman": 0.8296024952770312
+        },
+        {
+          "date": "2024-01-23",
+          "fold": "F3",
+          "n": 3786,
+          "sign_agreement": 0.904648705758056,
+          "spearman": 0.8326720853007109
+        }
+      ]
+    }
+  },
+  "generated_at_local": "2026-09-15T19:26:19",
+  "minimum_rows_per_day_to_score": 100,
+  "question": "Over the whole 969-day OOS window, how often is each frozen column a faithful rank reproduction of its catalogued source, and do the bad days cluster?",
+  "safety": "SELECT-only; no calculator executed; nothing written",
+  "window": {
+    "end": "2025.12.31",
+    "start": "2022.01.01"
+  }
+}

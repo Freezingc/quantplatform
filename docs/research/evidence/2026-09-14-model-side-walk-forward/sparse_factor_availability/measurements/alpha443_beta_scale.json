@@ -1,0 +1,128 @@
+{
+  "beta": {
+    "distribution": {
+      "abs_median": 294597116272.5465,
+      "abs_p99": 24425875547273.42,
+      "max": 7228642651325246.0,
+      "mean": -103984056732.02898,
+      "median": 3157848278.678278,
+      "min": -1741471236139388.8,
+      "n": 4967354,
+      "name": "beta",
+      "p01": -15687868241444.139,
+      "p05": -3682685860591.4663,
+      "p95": 3301929529044.3945,
+      "p99": 13796971910138.555,
+      "std": 9218383009289.814
+    },
+    "share_abs_above_1e6": 0.9999865119337177,
+    "share_abs_above_1e9": 0.9914137385819493
+  },
+  "calculator_executed": false,
+  "database_access": false,
+  "generated_at_local": "2026-09-15T19:28:48",
+  "market_source": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/tushare_cache",
+  "panel_shape": [
+    1030,
+    5643
+  ],
+  "question": "In compute_gp074_variant, the regressor x is a cross-sectional pct-rank mean and is therefore near 0.5 every day. How ill-conditioned is beta = cov/varx, and how much of the frozen yeslab_443_reg30_max20_v1 column does the regression term actually contribute?",
+  "read_only": true,
+  "regression_term_vs_demeaned_target": {
+    "ratio_abs_regression_over_abs_demeaned": {
+      "abs_median": 0.38890529603895985,
+      "abs_p99": 29.999422554418764,
+      "max": 672001.9083765917,
+      "mean": 4.707228979721239,
+      "median": 0.38890529603895985,
+      "min": 9.168904374494419e-09,
+      "n": 4967354,
+      "name": "ratio",
+      "p01": 0.0021392259398698853,
+      "p05": 0.015369900407013878,
+      "p95": 6.034907427771928,
+      "p99": 29.999422554418764,
+      "std": 637.1748075582938
+    },
+    "reading": "if the median ratio is far below 1 the regression term is a small correction and the frozen column is effectively rolling_max(y - my); if it is near or above 1 the column is materially a product of the cov/varx division",
+    "share_of_cells_where_the_ratio_exceeds_0.01": 0.9647528644022552,
+    "share_of_cells_where_the_ratio_exceeds_0.10": 0.7882496395465272,
+    "share_of_cells_where_the_ratio_exceeds_1.00": 0.27568439857517707
+  },
+  "reimplemented_from": "research_v2/scripts/repair_alpha443_window_scan.py:40-52",
+  "the_frozen_column_itself": {
+    "distribution": {
+      "abs_median": 758482.9027157144,
+      "abs_p99": 30169783.88228104,
+      "max": 742061130.0998919,
+      "mean": 2686959.659196276,
+      "median": 758470.8232063039,
+      "min": -5553743.373869587,
+      "n": 4921211,
+      "name": "factor",
+      "p01": 15478.031789101919,
+      "p05": 58543.49352223842,
+      "p95": 10834438.298528137,
+      "p99": 30169783.88228104,
+      "std": 7715283.522588676
+    },
+    "non_nan_cells": 4921211,
+    "spearman_against_the_no_regression_counterfactual": {
+      "days": 969,
+      "max": 0.9987240460529017,
+      "median": 0.984737222733337,
+      "min": 0.9516010175038255,
+      "share_of_days_above_0.999": 0.0,
+      "what": "per-day Spearman between compute_gp074_variant as written and the same expression with the beta*(x-mx) term dropped, i.e. rolling_max(y - my)"
+    }
+  },
+  "varx": {
+    "distribution": {
+      "abs_median": 1.912941926793327e-14,
+      "abs_p99": 1.8921455080233413e-13,
+      "max": 2.3266951774523787e-13,
+      "mean": 4.4128533695210055e-14,
+      "median": 1.912941926793327e-14,
+      "min": 6.35646252649472e-16,
+      "n": 969,
+      "name": "varx",
+      "p01": 1.0203731863980243e-15,
+      "p05": 2.0439933162898847e-15,
+      "p95": 1.3245176782330608e-13,
+      "p99": 1.8921455080233413e-13,
+      "std": 4.761248739728597e-14
+    },
+    "share_of_days_where_varx_is_nan": 0.0629514963880289
+  },
+  "windows": {
+    "loaded": [
+      "2021-10-01",
+      "2025-12-31"
+    ],
+    "max_window": 20,
+    "reg_window": 30,
+    "reported_from": "2022-01-04"
+  },
+  "x_the_regressor": {
+    "deviation_from_one_half": {
+      "max_abs": 0.00010568590150072943,
+      "median_abs": 9.382623381493094e-05
+    },
+    "distribution": {
+      "abs_median": 0.5000938262338149,
+      "abs_p99": 0.500105225942155,
+      "max": 0.5001056859015007,
+      "mean": 0.5000961965208522,
+      "median": 0.5000938262338149,
+      "min": 0.5000916086478564,
+      "n": 969,
+      "name": "x",
+      "p01": 0.500091821968896,
+      "p05": 0.5000920640765973,
+      "p95": 0.5001041579879192,
+      "p99": 0.500105225942155,
+      "std": 4.149054196177969e-06
+    },
+    "reading": "the mean of a cross-sectional percentile rank; 0.5 by construction up to ties"
+  }
+}
