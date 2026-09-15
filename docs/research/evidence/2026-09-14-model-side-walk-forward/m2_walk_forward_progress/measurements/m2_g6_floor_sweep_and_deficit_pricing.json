@@ -1,0 +1,653 @@
+{
+  "at_the_current_floor": {
+    "M2_candidate": {
+      "G6": 0.932920536635707,
+      "days_below": 65,
+      "floor": 0.9,
+      "passes_0.95": false,
+      "valid_days": 904
+    },
+    "M2_if_its_own_deficit_were_fully_recovered": {
+      "G6": 0.9752321981424149,
+      "days_below": 24,
+      "floor": 0.9,
+      "passes_0.95": true,
+      "valid_days": 945
+    },
+    "baseline_own_rows": {
+      "G6": 0.9752321981424149,
+      "days_below": 24,
+      "floor": 0.9,
+      "passes_0.95": true,
+      "valid_days": 945
+    }
+  },
+  "baseline_coverage_percentiles": {
+    "median": 0.9845428346869269,
+    "min": 0.8902674386545354,
+    "n_below_0.90": 24,
+    "n_in_0.90_to_0.905": 42,
+    "p01": 0.8986884493052796
+  },
+  "candidate_coverage_percentiles": {
+    "median": 0.9792395299118742,
+    "min": 0.885471954504786,
+    "n_below_0.90": 65,
+    "n_in_0.895_to_0.90": 43,
+    "n_in_0.90_to_0.905": 75,
+    "p01": 0.8938476048274455,
+    "p05": 0.8974810583957384
+  },
+  "database_access": false,
+  "decision_sheet_options_priced_on_the_candidate_side": {
+    "method": "the stacking is multiplicative at the measured ratio, so each option's measured baseline worst day maps straight onto a candidate worst day",
+    "ratio_used": 0.9946134341867015,
+    "scenarios": {
+      "option_1_union_backfill": {
+        "M2_G6": 1.0,
+        "M2_days_below_floor": 0,
+        "M2_passes_G6": true,
+        "baseline_coverage_min": 0.971115,
+        "basis": "decision sheet: 0.976751 worst day over the 420 pre-cutover days after the union backfill; the 549 post-cutover days are unchanged at >= 0.971115",
+        "implied_M2_matched_coverage_min": 0.9658840251402185,
+        "margin_above_floor": 0.06588402514021852,
+        "note": "computed from the minimum alone: if the worst day stays above the floor then no day falls below it, so G6 is exactly 1.0 and no per-day series is required"
+      },
+      "option_2_drop_the_two_industry_factors": {
+        "M2_G6": 1.0,
+        "M2_days_below_floor": 0,
+        "M2_passes_G6": true,
+        "baseline_coverage_min": 0.97137,
+        "basis": "decision sheet: measured coverage min over all 969 days with 357 and 471 both removed",
+        "implied_M2_matched_coverage_min": 0.9661376515659361,
+        "margin_above_floor": 0.0661376515659361,
+        "note": "computed from the minimum alone: if the worst day stays above the floor then no day falls below it, so G6 is exactly 1.0 and no per-day series is required"
+      },
+      "status_quo": {
+        "M2_G6": null,
+        "M2_days_below_floor": null,
+        "M2_passes_G6": null,
+        "baseline_coverage_min": 0.8902674386545354,
+        "basis": "this probe, measured over all 969 OOS days",
+        "implied_M2_matched_coverage_min": 0.885471954504786,
+        "margin_above_floor": -0.014528045495214026,
+        "note": "the minimum is below the floor, so the day count needs the per-day series above"
+      }
+    }
+  },
+  "floor_sweep_baseline_side_for_contrast": [
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.86,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.87,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.875,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.88,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.885,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.89,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 0.9989680082559339,
+      "days_below": 1,
+      "floor": 0.895,
+      "passes_0.95": true,
+      "valid_days": 968
+    },
+    {
+      "G6": 0.9752321981424149,
+      "days_below": 24,
+      "floor": 0.9,
+      "passes_0.95": true,
+      "valid_days": 945
+    },
+    {
+      "G6": 0.9318885448916409,
+      "days_below": 66,
+      "floor": 0.905,
+      "passes_0.95": false,
+      "valid_days": 903
+    },
+    {
+      "G6": 0.8513931888544891,
+      "days_below": 144,
+      "floor": 0.91,
+      "passes_0.95": false,
+      "valid_days": 825
+    },
+    {
+      "G6": 0.7512899896800825,
+      "days_below": 241,
+      "floor": 0.92,
+      "passes_0.95": false,
+      "valid_days": 728
+    }
+  ],
+  "floor_sweep_candidate_side": [
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.86,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.87,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.875,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.88,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 1.0,
+      "days_below": 0,
+      "floor": 0.885,
+      "passes_0.95": true,
+      "valid_days": 969
+    },
+    {
+      "G6": 0.9989680082559339,
+      "days_below": 1,
+      "floor": 0.89,
+      "passes_0.95": true,
+      "valid_days": 968
+    },
+    {
+      "G6": 0.977296181630547,
+      "days_below": 22,
+      "floor": 0.895,
+      "passes_0.95": true,
+      "valid_days": 947
+    },
+    {
+      "G6": 0.932920536635707,
+      "days_below": 65,
+      "floor": 0.9,
+      "passes_0.95": false,
+      "valid_days": 904
+    },
+    {
+      "G6": 0.8555211558307534,
+      "days_below": 140,
+      "floor": 0.905,
+      "passes_0.95": false,
+      "valid_days": 829
+    },
+    {
+      "G6": 0.7915376676986584,
+      "days_below": 202,
+      "floor": 0.91,
+      "passes_0.95": false,
+      "valid_days": 767
+    },
+    {
+      "G6": 0.6976264189886481,
+      "days_below": 293,
+      "floor": 0.92,
+      "passes_0.95": false,
+      "valid_days": 676
+    }
+  ],
+  "generated_at_local": "2026-09-15T22:37:39",
+  "inputs": {
+    "G6_gate": 0.95,
+    "current_floor": 0.9,
+    "folds_projected": [
+      "F2",
+      "F3",
+      "F4"
+    ],
+    "folds_with_observed_m2_predictions": [
+      "F1"
+    ],
+    "projection_rule": "candidate_coverage = baseline_coverage x median(matched/baseline)",
+    "total_oos_days": 969
+  },
+  "max_floor_at_which_each_still_passes": {
+    "M2_candidate": 0.8973999999999893,
+    "baseline_own_rows": 0.9022999999999888,
+    "current_floor": 0.9,
+    "days_needed_to_pass": 921,
+    "max_days_below_floor_to_pass": 48
+  },
+  "pricing_AY_path_2_recover_the_row_deficit": {
+    "first_ratio_that_passes": {
+      "G6": 0.9514963880288958,
+      "days_below_0.90": 47,
+      "implied_row_deficit_share": 0.002400000000000846,
+      "passes": true,
+      "ratio_matched_over_baseline": 0.9975999999999992
+    },
+    "grid": [
+      {
+        "G6": 0.8771929824561403,
+        "days_below_0.90": 119,
+        "implied_row_deficit_share": 0.010000000000000009,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.99
+      },
+      {
+        "G6": 0.8771929824561403,
+        "days_below_0.90": 119,
+        "implied_row_deficit_share": 0.009800000000000031,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9902
+      },
+      {
+        "G6": 0.8823529411764706,
+        "days_below_0.90": 114,
+        "implied_row_deficit_share": 0.009600000000000053,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9904
+      },
+      {
+        "G6": 0.8833849329205367,
+        "days_below_0.90": 113,
+        "implied_row_deficit_share": 0.009400000000000075,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9905999999999999
+      },
+      {
+        "G6": 0.8895768833849329,
+        "days_below_0.90": 107,
+        "implied_row_deficit_share": 0.009200000000000097,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9907999999999999
+      },
+      {
+        "G6": 0.8957688338493293,
+        "days_below_0.90": 101,
+        "implied_row_deficit_share": 0.009000000000000119,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9909999999999999
+      },
+      {
+        "G6": 0.8978328173374613,
+        "days_below_0.90": 99,
+        "implied_row_deficit_share": 0.008800000000000141,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9911999999999999
+      },
+      {
+        "G6": 0.9009287925696594,
+        "days_below_0.90": 96,
+        "implied_row_deficit_share": 0.008600000000000163,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9913999999999998
+      },
+      {
+        "G6": 0.9050567595459237,
+        "days_below_0.90": 92,
+        "implied_row_deficit_share": 0.008400000000000185,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9915999999999998
+      },
+      {
+        "G6": 0.9112487100103199,
+        "days_below_0.90": 86,
+        "implied_row_deficit_share": 0.008200000000000207,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9917999999999998
+      },
+      {
+        "G6": 0.9122807017543859,
+        "days_below_0.90": 85,
+        "implied_row_deficit_share": 0.00800000000000023,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9919999999999998
+      },
+      {
+        "G6": 0.9122807017543859,
+        "days_below_0.90": 85,
+        "implied_row_deficit_share": 0.007800000000000251,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9921999999999997
+      },
+      {
+        "G6": 0.9153766769865841,
+        "days_below_0.90": 82,
+        "implied_row_deficit_share": 0.007600000000000273,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9923999999999997
+      },
+      {
+        "G6": 0.9164086687306502,
+        "days_below_0.90": 81,
+        "implied_row_deficit_share": 0.007400000000000295,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9925999999999997
+      },
+      {
+        "G6": 0.9226006191950464,
+        "days_below_0.90": 75,
+        "implied_row_deficit_share": 0.007200000000000317,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9927999999999997
+      },
+      {
+        "G6": 0.9226006191950464,
+        "days_below_0.90": 75,
+        "implied_row_deficit_share": 0.007000000000000339,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9929999999999997
+      },
+      {
+        "G6": 0.9236326109391125,
+        "days_below_0.90": 74,
+        "implied_row_deficit_share": 0.006800000000000361,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9931999999999996
+      },
+      {
+        "G6": 0.9256965944272446,
+        "days_below_0.90": 72,
+        "implied_row_deficit_share": 0.006600000000000383,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9933999999999996
+      },
+      {
+        "G6": 0.9287925696594427,
+        "days_below_0.90": 69,
+        "implied_row_deficit_share": 0.006400000000000405,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9935999999999996
+      },
+      {
+        "G6": 0.9298245614035088,
+        "days_below_0.90": 68,
+        "implied_row_deficit_share": 0.006200000000000427,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9937999999999996
+      },
+      {
+        "G6": 0.9298245614035088,
+        "days_below_0.90": 68,
+        "implied_row_deficit_share": 0.006000000000000449,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9939999999999996
+      },
+      {
+        "G6": 0.9298245614035088,
+        "days_below_0.90": 68,
+        "implied_row_deficit_share": 0.0058000000000004714,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9941999999999995
+      },
+      {
+        "G6": 0.9318885448916409,
+        "days_below_0.90": 66,
+        "implied_row_deficit_share": 0.0056000000000004935,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9943999999999995
+      },
+      {
+        "G6": 0.932920536635707,
+        "days_below_0.90": 65,
+        "implied_row_deficit_share": 0.0054000000000005155,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9945999999999995
+      },
+      {
+        "G6": 0.932920536635707,
+        "days_below_0.90": 65,
+        "implied_row_deficit_share": 0.0052000000000005375,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9947999999999995
+      },
+      {
+        "G6": 0.934984520123839,
+        "days_below_0.90": 63,
+        "implied_row_deficit_share": 0.0050000000000005596,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9949999999999994
+      },
+      {
+        "G6": 0.936016511867905,
+        "days_below_0.90": 62,
+        "implied_row_deficit_share": 0.004800000000000582,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9951999999999994
+      },
+      {
+        "G6": 0.936016511867905,
+        "days_below_0.90": 62,
+        "implied_row_deficit_share": 0.004600000000000604,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9953999999999994
+      },
+      {
+        "G6": 0.9370485036119711,
+        "days_below_0.90": 61,
+        "implied_row_deficit_share": 0.004400000000000626,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9955999999999994
+      },
+      {
+        "G6": 0.9380804953560371,
+        "days_below_0.90": 60,
+        "implied_row_deficit_share": 0.004200000000000648,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9957999999999994
+      },
+      {
+        "G6": 0.9391124871001032,
+        "days_below_0.90": 59,
+        "implied_row_deficit_share": 0.00400000000000067,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9959999999999993
+      },
+      {
+        "G6": 0.9401444788441693,
+        "days_below_0.90": 58,
+        "implied_row_deficit_share": 0.0038000000000006917,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9961999999999993
+      },
+      {
+        "G6": 0.9401444788441693,
+        "days_below_0.90": 58,
+        "implied_row_deficit_share": 0.0036000000000007137,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9963999999999993
+      },
+      {
+        "G6": 0.9422084623323014,
+        "days_below_0.90": 56,
+        "implied_row_deficit_share": 0.0034000000000007358,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9965999999999993
+      },
+      {
+        "G6": 0.9432404540763674,
+        "days_below_0.90": 55,
+        "implied_row_deficit_share": 0.003200000000000758,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9967999999999992
+      },
+      {
+        "G6": 0.9442724458204335,
+        "days_below_0.90": 54,
+        "implied_row_deficit_share": 0.00300000000000078,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9969999999999992
+      },
+      {
+        "G6": 0.9463364293085655,
+        "days_below_0.90": 52,
+        "implied_row_deficit_share": 0.002800000000000802,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9971999999999992
+      },
+      {
+        "G6": 0.9494324045407637,
+        "days_below_0.90": 49,
+        "implied_row_deficit_share": 0.002600000000000824,
+        "passes": false,
+        "ratio_matched_over_baseline": 0.9973999999999992
+      },
+      {
+        "G6": 0.9514963880288958,
+        "days_below_0.90": 47,
+        "implied_row_deficit_share": 0.002400000000000846,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9975999999999992
+      },
+      {
+        "G6": 0.9514963880288958,
+        "days_below_0.90": 47,
+        "implied_row_deficit_share": 0.002200000000000868,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9977999999999991
+      },
+      {
+        "G6": 0.9535603715170279,
+        "days_below_0.90": 45,
+        "implied_row_deficit_share": 0.00200000000000089,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9979999999999991
+      },
+      {
+        "G6": 0.9566563467492261,
+        "days_below_0.90": 42,
+        "implied_row_deficit_share": 0.001800000000000912,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9981999999999991
+      },
+      {
+        "G6": 0.957688338493292,
+        "days_below_0.90": 41,
+        "implied_row_deficit_share": 0.001600000000000934,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9983999999999991
+      },
+      {
+        "G6": 0.9607843137254902,
+        "days_below_0.90": 38,
+        "implied_row_deficit_share": 0.001400000000000956,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.998599999999999
+      },
+      {
+        "G6": 0.9628482972136223,
+        "days_below_0.90": 36,
+        "implied_row_deficit_share": 0.001200000000000978,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.998799999999999
+      },
+      {
+        "G6": 0.9669762641898865,
+        "days_below_0.90": 32,
+        "implied_row_deficit_share": 0.001000000000001,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.998999999999999
+      },
+      {
+        "G6": 0.9669762641898865,
+        "days_below_0.90": 32,
+        "implied_row_deficit_share": 0.0008000000000010221,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.999199999999999
+      },
+      {
+        "G6": 0.9700722394220846,
+        "days_below_0.90": 29,
+        "implied_row_deficit_share": 0.0006000000000010441,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.999399999999999
+      },
+      {
+        "G6": 0.9721362229102167,
+        "days_below_0.90": 27,
+        "implied_row_deficit_share": 0.00040000000000106617,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9995999999999989
+      },
+      {
+        "G6": 0.9731682146542827,
+        "days_below_0.90": 26,
+        "implied_row_deficit_share": 0.0002000000000010882,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9997999999999989
+      },
+      {
+        "G6": 0.9752321981424149,
+        "days_below_0.90": 24,
+        "implied_row_deficit_share": 1.1102230246251565e-15,
+        "passes": true,
+        "ratio_matched_over_baseline": 0.9999999999999989
+      }
+    ],
+    "measured_deficit_at_the_fitted_fold": 0.0053865658132985494,
+    "verdict": "a ratio of 0.99760 suffices, i.e. recovering 55.4% of the measured deficit",
+    "what_it_means": "§AY's path 2 changes minimum_valid_history_length, which is what creates M2's row deficit. This prices the benefit: the smallest deficit recovery that clears G6 at the UNCHANGED floor of 0.90."
+  },
+  "projection_validation": {
+    "all_observed_folds": {
+      "F1": {
+        "observed_days_below_floor": 1,
+        "ratio": 0.9946134341867015
+      }
+    },
+    "days_below_current_floor": {
+      "agree": true,
+      "observed": 1,
+      "projected": 1
+    },
+    "fitted_on_fold": "F1",
+    "median_ratio_matched_over_baseline": 0.9946134341867015,
+    "projected_vs_observed_coverage": {
+      "max_absolute_difference": 0.004489177959732915,
+      "mean_absolute_difference": 0.0011999952733175152,
+      "pearson_corr": 0.9927284042422391
+    }
+  },
+  "question": "On the candidate side, how far would the coverage floor have to move for M2 to clear G6, and how much of M2's own row deficit would have to be recovered to clear it at the current floor -- i.e. what is the BENEFIT side of §AY's three paths, which §AY priced only by cost?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "weights_loaded": false
+}
