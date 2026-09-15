@@ -1,0 +1,200 @@
+{
+  "cross_reference": {
+    "BS3_found_64_below_at_k15_and_45_at_k8": [
+      64,
+      45
+    ],
+    "BS4_found_43_near_floor_days_in_F2_at_k8": 43,
+    "BT5_found_6800_recovered_rows_entering_the_cross_section": 6800
+  },
+  "database_access": false,
+  "generated_at_local": "2026-09-16T00:26:21",
+  "per_day_csv": "/data/zhangyudong/qrv2_research_artifacts/masking_and_coverage_by_day/masking_and_coverage_by_day.csv",
+  "per_day_rows": 969,
+  "per_fold": {
+    "F1": {
+      "are_recovered_rows_concentrated_where_coverage_is_thin": {
+        "coverage_k15_on_flipped_days_min_max": null,
+        "coverage_k8_on_flipped_days_min_max": null,
+        "pearson_r_recovered_vs_coverage_gain": 0.9960156053959924,
+        "reading": "if the recovered rows were spread evenly, the flipped days would look like any other day; concentration means the rows that buy the flipped days are the same rows the model has least history for",
+        "recovered_mean_on_all_other_days": 8.491735537190083,
+        "recovered_mean_on_flipped_days": null,
+        "recovered_mean_on_near_floor_days": null,
+        "spearman_p": 0.0777638223332871,
+        "spearman_rho_recovered_vs_cov_k8": -0.11360292002960488
+      },
+      "coverage_gain_max": 0.006406345332519825,
+      "coverage_gain_mean": 0.002564835430292763,
+      "days": 242,
+      "days_below_floor_k15": 1,
+      "days_below_floor_k8": 1,
+      "days_flipped": 0,
+      "days_near_floor_at_k8": 0,
+      "days_stayed_below": 1,
+      "masking_concentration": {
+        "does_masking_concentrate_on_particular_days": true,
+        "mean_length_k15_min_over_days": 19.985089463220675,
+        "mean_length_k8_min_over_days": 19.93651832460733,
+        "share_over_half_masked_k15_mean": 0.0,
+        "share_over_half_masked_k8_max": 0.003713706954760297,
+        "share_over_half_masked_k8_mean": 0.0011982433315220174
+      },
+      "recovered_rows_per_day_max": 21,
+      "recovered_rows_per_day_mean": 8.491735537190083,
+      "recovered_rows_total": 2055
+    },
+    "F2": {
+      "are_recovered_rows_concentrated_where_coverage_is_thin": {
+        "coverage_k15_on_flipped_days_min_max": [
+          0.8961763885012559,
+          0.8999451754385965
+        ],
+        "coverage_k8_on_flipped_days_min_max": [
+          0.9000280033604032,
+          0.9024657534246575
+        ],
+        "pearson_r_recovered_vs_coverage_gain": 0.9983440464587889,
+        "reading": "if the recovered rows were spread evenly, the flipped days would look like any other day; concentration means the rows that buy the flipped days are the same rows the model has least history for",
+        "recovered_mean_on_all_other_days": 8.838565022421525,
+        "recovered_mean_on_flipped_days": 8.368421052631579,
+        "recovered_mean_on_near_floor_days": 7.534883720930233,
+        "spearman_p": 4.391995448938135e-07,
+        "spearman_rho_recovered_vs_cov_k8": 0.3178835217569668
+      },
+      "coverage_gain_max": 0.0053793884484710786,
+      "coverage_gain_mean": 0.0024138861198825154,
+      "days": 242,
+      "days_below_floor_k15": 63,
+      "days_below_floor_k8": 44,
+      "days_flipped": 19,
+      "days_near_floor_at_k8": 43,
+      "days_stayed_below": 44,
+      "masking_concentration": {
+        "does_masking_concentrate_on_particular_days": true,
+        "mean_length_k15_min_over_days": 19.981959564541214,
+        "mean_length_k8_min_over_days": 19.936236391912907,
+        "share_over_half_masked_k15_mean": 0.0,
+        "share_over_half_masked_k8_max": 0.0040460628695922814,
+        "share_over_half_masked_k8_mean": 0.0011082662734001084
+      },
+      "recovered_rows_per_day_max": 19,
+      "recovered_rows_per_day_mean": 8.801652892561984,
+      "recovered_rows_total": 2130
+    },
+    "F3": {
+      "are_recovered_rows_concentrated_where_coverage_is_thin": {
+        "coverage_k15_on_flipped_days_min_max": null,
+        "coverage_k8_on_flipped_days_min_max": null,
+        "pearson_r_recovered_vs_coverage_gain": 0.9997837241892067,
+        "reading": "if the recovered rows were spread evenly, the flipped days would look like any other day; concentration means the rows that buy the flipped days are the same rows the model has least history for",
+        "recovered_mean_on_all_other_days": 7.367768595041323,
+        "recovered_mean_on_flipped_days": null,
+        "recovered_mean_on_near_floor_days": null,
+        "spearman_p": 0.8429206578354924,
+        "spearman_rho_recovered_vs_cov_k8": -0.012803914984225118
+      },
+      "coverage_gain_max": 0.005533596837944632,
+      "coverage_gain_mean": 0.001917362626082043,
+      "days": 242,
+      "days_below_floor_k15": 0,
+      "days_below_floor_k8": 0,
+      "days_flipped": 0,
+      "days_near_floor_at_k8": 0,
+      "days_stayed_below": 0,
+      "masking_concentration": {
+        "does_masking_concentrate_on_particular_days": true,
+        "mean_length_k15_min_over_days": 19.986396372365963,
+        "mean_length_k8_min_over_days": 19.948949747407603,
+        "share_over_half_masked_k15_mean": 0.0,
+        "share_over_half_masked_k8_max": 0.002934898612593383,
+        "share_over_half_masked_k8_mean": 0.0008256780322403491
+      },
+      "recovered_rows_per_day_max": 21,
+      "recovered_rows_per_day_mean": 7.367768595041323,
+      "recovered_rows_total": 1783
+    },
+    "F4": {
+      "are_recovered_rows_concentrated_where_coverage_is_thin": {
+        "coverage_k15_on_flipped_days_min_max": null,
+        "coverage_k8_on_flipped_days_min_max": null,
+        "pearson_r_recovered_vs_coverage_gain": 0.9997469878125245,
+        "reading": "if the recovered rows were spread evenly, the flipped days would look like any other day; concentration means the rows that buy the flipped days are the same rows the model has least history for",
+        "recovered_mean_on_all_other_days": 3.4238683127572016,
+        "recovered_mean_on_flipped_days": null,
+        "recovered_mean_on_near_floor_days": null,
+        "spearman_p": 0.026961866797485332,
+        "spearman_rho_recovered_vs_cov_k8": 0.14191708568203187
+      },
+      "coverage_gain_max": 0.0020980854969839813,
+      "coverage_gain_mean": 0.0008868344982027811,
+      "days": 243,
+      "days_below_floor_k15": 0,
+      "days_below_floor_k8": 0,
+      "days_flipped": 0,
+      "days_near_floor_at_k8": 0,
+      "days_stayed_below": 0,
+      "masking_concentration": {
+        "does_masking_concentrate_on_particular_days": true,
+        "mean_length_k15_min_over_days": 19.99402286902287,
+        "mean_length_k8_min_over_days": 19.97808072707832,
+        "share_over_half_masked_k15_mean": 0.0,
+        "share_over_half_masked_k8_max": 0.0013248542660307366,
+        "share_over_half_masked_k8_mean": 0.0003863518401603509
+      },
+      "recovered_rows_per_day_max": 8,
+      "recovered_rows_per_day_mean": 3.4238683127572016,
+      "recovered_rows_total": 832
+    }
+  },
+  "pooled_across_folds": {
+    "are_recovered_rows_concentrated_where_coverage_is_thin": {
+      "coverage_k15_on_flipped_days_min_max": [
+        0.8961763885012559,
+        0.8999451754385965
+      ],
+      "coverage_k8_on_flipped_days_min_max": [
+        0.9000280033604032,
+        0.9024657534246575
+      ],
+      "pearson_r_recovered_vs_coverage_gain": 0.9910669272289958,
+      "reading": "if the recovered rows were spread evenly, the flipped days would look like any other day; concentration means the rows that buy the flipped days are the same rows the model has least history for",
+      "recovered_mean_on_all_other_days": 6.990526315789474,
+      "recovered_mean_on_flipped_days": 8.368421052631579,
+      "recovered_mean_on_near_floor_days": 7.534883720930233,
+      "spearman_p": 1.3355338537123925e-06,
+      "spearman_rho_recovered_vs_cov_k8": -0.15456831786257305
+    },
+    "coverage_gain_max": 0.006406345332519825,
+    "coverage_gain_mean": 0.0019446368975413286,
+    "days": 969,
+    "days_below_floor_k15": 64,
+    "days_below_floor_k8": 45,
+    "days_flipped": 19,
+    "days_near_floor_at_k8": 43,
+    "days_stayed_below": 45,
+    "masking_concentration": {
+      "does_masking_concentrate_on_particular_days": true,
+      "mean_length_k15_min_over_days": 19.981959564541214,
+      "mean_length_k8_min_over_days": 19.936236391912907,
+      "share_over_half_masked_k15_mean": 0.0,
+      "share_over_half_masked_k8_max": 0.0040460628695922814,
+      "share_over_half_masked_k8_mean": 0.0008791258053171148
+    },
+    "recovered_rows_per_day_max": 21,
+    "recovered_rows_per_day_mean": 7.017543859649122,
+    "recovered_rows_total": 6800
+  },
+  "question": "Does the window-masking cost of k=8 concentrate on the same days as its coverage benefit, i.e. are the rows that buy the 19 flipped days the same rows the model has least history for?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "thresholds": {
+    "coverage_floor": 0.9,
+    "history_length": 20,
+    "k_frozen": 15,
+    "k_lowered": 8,
+    "near_floor_band": 0.005
+  },
+  "training_performed": false,
+  "weights_loaded": false
+}
