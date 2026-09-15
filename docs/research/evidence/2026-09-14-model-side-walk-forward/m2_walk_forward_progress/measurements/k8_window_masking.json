@@ -1,0 +1,1567 @@
+{
+  "BT8_hypothesis_check": {
+    "hypothesis": "§BT.8 asked why F1's recovered rows are strongly predictive (+0.247711) while F2's are anti-predictive (-0.196191), and guessed a difference in listing age",
+    "test_side_mean_observed_count_by_fold": {
+      "F1": 10.989779623123603,
+      "F2": 11.003100241129866,
+      "F3": 11.012777777777778,
+      "F4": 10.995271867612294
+    },
+    "test_side_observed_count_distributions_by_fold": {
+      "F1": {
+        "10": 451,
+        "11": 446,
+        "12": 445,
+        "13": 444,
+        "14": 445,
+        "8": 449,
+        "9": 451
+      },
+      "F2": {
+        "10": 417,
+        "11": 417,
+        "12": 415,
+        "13": 414,
+        "14": 415,
+        "8": 412,
+        "9": 413
+      },
+      "F3": {
+        "10": 256,
+        "11": 257,
+        "12": 259,
+        "13": 259,
+        "14": 259,
+        "8": 255,
+        "9": 255
+      },
+      "F4": {
+        "10": 122,
+        "11": 121,
+        "12": 123,
+        "13": 120,
+        "14": 119,
+        "8": 120,
+        "9": 121
+      }
+    }
+  },
+  "database_access": false,
+  "generated_at_local": "2026-09-15T23:52:53",
+  "history_length": 20,
+  "per_fold": {
+    "F1": {
+      "by_k": {
+        "8": {
+          "max_masked_lanes_a_row_may_have": 12,
+          "max_masked_share": 0.6,
+          "test_rows_added_vs_k15": 3131,
+          "test_side": {
+            "length_histogram": {
+              "10": 451,
+              "11": 446,
+              "12": 445,
+              "13": 444,
+              "14": 445,
+              "15": 444,
+              "16": 445,
+              "17": 444,
+              "18": 443,
+              "19": 443,
+              "20": 795020,
+              "8": 449,
+              "9": 451
+            },
+            "mean_length": 19.956430151055137,
+            "mean_masked_lanes_of_20": 0.043569848944863,
+            "mean_masked_share": 0.0021784924472431503,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 800370,
+            "share_of_rows_over_half_masked": 0.001687969314192186,
+            "share_of_rows_with_any_masking": 0.006684408461086747
+          },
+          "threshold": 8,
+          "training_rows_added_pct": 0.9474051782545185,
+          "training_rows_added_vs_k15": 27701,
+          "training_side": {
+            "length_histogram": {
+              "10": 3961,
+              "11": 3957,
+              "12": 3954,
+              "13": 3951,
+              "14": 3949,
+              "15": 3948,
+              "16": 3952,
+              "17": 3952,
+              "18": 3945,
+              "19": 3943,
+              "20": 2904141,
+              "8": 3968,
+              "9": 3961
+            },
+            "mean_length": 19.89543573581896,
+            "mean_masked_lanes_of_20": 0.10456426418103919,
+            "mean_masked_share": 0.0052282132090519596,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 2951582,
+            "share_of_rows_over_half_masked": 0.004028348187514357,
+            "share_of_rows_with_any_masking": 0.01607307538804614
+          }
+        },
+        "10": {
+          "max_masked_lanes_a_row_may_have": 10,
+          "max_masked_share": 0.5,
+          "test_rows_added_vs_k15": 2231,
+          "test_side": {
+            "length_histogram": {
+              "10": 451,
+              "11": 446,
+              "12": 445,
+              "13": 444,
+              "14": 445,
+              "15": 444,
+              "16": 445,
+              "17": 444,
+              "18": 443,
+              "19": 443,
+              "20": 795020
+            },
+            "mean_length": 19.969325928427583,
+            "mean_masked_lanes_of_20": 0.030674071572416726,
+            "mean_masked_share": 0.0015337035786208363,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 799470,
+            "share_of_rows_over_half_masked": 0.0005641237319724317,
+            "share_of_rows_with_any_masking": 0.005566187599284526
+          },
+          "threshold": 10,
+          "training_rows_added_pct": 0.6762245111890669,
+          "training_rows_added_vs_k15": 19772,
+          "training_side": {
+            "length_histogram": {
+              "10": 3961,
+              "11": 3957,
+              "12": 3954,
+              "13": 3951,
+              "14": 3949,
+              "15": 3948,
+              "16": 3952,
+              "17": 3952,
+              "18": 3945,
+              "19": 3943,
+              "20": 2904141
+            },
+            "mean_length": 19.926131578688114,
+            "mean_masked_lanes_of_20": 0.07386842131188696,
+            "mean_masked_share": 0.0036934210655943486,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 2943653,
+            "share_of_rows_over_half_masked": 0.001345606972017422,
+            "share_of_rows_with_any_masking": 0.01342277775267669
+          }
+        },
+        "12": {
+          "max_masked_lanes_a_row_may_have": 8,
+          "max_masked_share": 0.4,
+          "test_rows_added_vs_k15": 1334,
+          "test_side": {
+            "length_histogram": {
+              "12": 445,
+              "13": 444,
+              "14": 445,
+              "15": 444,
+              "16": 445,
+              "17": 444,
+              "18": 443,
+              "19": 443,
+              "20": 795020
+            },
+            "mean_length": 19.97996551348468,
+            "mean_masked_lanes_of_20": 0.020034486515321706,
+            "mean_masked_share": 0.0010017243257660852,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 798573,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.004449186235948373
+          },
+          "threshold": 12,
+          "training_rows_added_pct": 0.405420056425005,
+          "training_rows_added_vs_k15": 11854,
+          "training_side": {
+            "length_histogram": {
+              "12": 3954,
+              "13": 3951,
+              "14": 3949,
+              "15": 3948,
+              "16": 3952,
+              "17": 3952,
+              "18": 3945,
+              "19": 3943,
+              "20": 2904141
+            },
+            "mean_length": 19.951555572965542,
+            "mean_masked_lanes_of_20": 0.04844442703445645,
+            "mean_masked_share": 0.002422221351722822,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 2935735,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.010761870536679912
+          }
+        },
+        "14": {
+          "max_masked_lanes_a_row_may_have": 6,
+          "max_masked_share": 0.3,
+          "test_rows_added_vs_k15": 445,
+          "test_side": {
+            "length_histogram": {
+              "14": 445,
+              "15": 444,
+              "16": 445,
+              "17": 444,
+              "18": 443,
+              "19": 443,
+              "20": 795020
+            },
+            "mean_length": 19.98830238540575,
+            "mean_masked_lanes_of_20": 0.011697614594250354,
+            "mean_masked_share": 0.0005848807297125177,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 797684,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.003339668339843848
+          },
+          "threshold": 14,
+          "training_rows_added_pct": 0.13506021619894928,
+          "training_rows_added_vs_k15": 3949,
+          "training_side": {
+            "length_histogram": {
+              "14": 3949,
+              "15": 3948,
+              "16": 3952,
+              "17": 3952,
+              "18": 3945,
+              "19": 3943,
+              "20": 2904141
+            },
+            "mean_length": 19.971674926481388,
+            "mean_masked_lanes_of_20": 0.02832507351861276,
+            "mean_masked_share": 0.0014162536759306378,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 2927830,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.008090975227386835
+          }
+        },
+        "15": {
+          "max_masked_lanes_a_row_may_have": 5,
+          "max_masked_share": 0.25,
+          "test_rows_added_vs_k15": 0,
+          "test_side": {
+            "length_histogram": {
+              "15": 444,
+              "16": 445,
+              "17": 444,
+              "18": 443,
+              "19": 443,
+              "20": 795020
+            },
+            "mean_length": 19.991644914511205,
+            "mean_masked_lanes_of_20": 0.008355085488793197,
+            "mean_masked_share": 0.0004177542744396599,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 797239,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0027833560575937703
+          },
+          "threshold": 15,
+          "training_rows_added_pct": 0.0,
+          "training_rows_added_vs_k15": 0,
+          "training_side": {
+            "length_histogram": {
+              "15": 3948,
+              "16": 3952,
+              "17": 3952,
+              "18": 3945,
+              "19": 3943,
+              "20": 2904141
+            },
+            "mean_length": 19.97974028354779,
+            "mean_masked_lanes_of_20": 0.020259716452208556,
+            "mean_masked_share": 0.0010129858226104278,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 2923881,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0067513007540320556
+          }
+        }
+      },
+      "newly_admitted_rows": {
+        "observed_count_distribution_test_side": {
+          "10": 451,
+          "11": 446,
+          "12": 445,
+          "13": 444,
+          "14": 445,
+          "8": 449,
+          "9": 451
+        },
+        "observed_count_distribution_training_side": {
+          "10": 3961,
+          "11": 3957,
+          "12": 3954,
+          "13": 3951,
+          "14": 3949,
+          "8": 3968,
+          "9": 3961
+        },
+        "test_side": {
+          "length_histogram": {
+            "10": 451,
+            "11": 446,
+            "12": 445,
+            "13": 444,
+            "14": 445,
+            "8": 449,
+            "9": 451
+          },
+          "mean_length": 10.989779623123603,
+          "mean_masked_lanes_of_20": 9.010220376876397,
+          "mean_masked_share": 0.45051101884381983,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 3131,
+          "share_of_rows_over_half_masked": 0.4314915362503992,
+          "share_of_rows_with_any_masking": 1.0
+        },
+        "test_side_mean_observed_count": 10.989779623123603,
+        "training_side": {
+          "length_histogram": {
+            "10": 3961,
+            "11": 3957,
+            "12": 3954,
+            "13": 3951,
+            "14": 3949,
+            "8": 3968,
+            "9": 3961
+          },
+          "mean_length": 10.996967618497527,
+          "mean_masked_lanes_of_20": 9.003032381502473,
+          "mean_masked_share": 0.4501516190751236,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 27701,
+          "share_of_rows_over_half_masked": 0.4292263817190715,
+          "share_of_rows_with_any_masking": 1.0
+        }
+      },
+      "panel_rows": 3798054,
+      "test_rows": 804575,
+      "train_plus_validation_rows": 2993479
+    },
+    "F2": {
+      "by_k": {
+        "8": {
+          "max_masked_lanes_a_row_may_have": 12,
+          "max_masked_share": 0.6,
+          "test_rows_added_vs_k15": 2903,
+          "test_side": {
+            "length_histogram": {
+              "10": 417,
+              "11": 417,
+              "12": 415,
+              "13": 414,
+              "14": 415,
+              "15": 414,
+              "16": 418,
+              "17": 417,
+              "18": 422,
+              "19": 425,
+              "20": 874058,
+              "8": 412,
+              "9": 413
+            },
+            "mean_length": 19.963165073482152,
+            "mean_masked_lanes_of_20": 0.0368349265178481,
+            "mean_masked_share": 0.001841746325892405,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 879057,
+            "share_of_rows_over_half_masked": 0.0014128776632232039,
+            "share_of_rows_with_any_masking": 0.005686775715340416
+          },
+          "threshold": 8,
+          "training_rows_added_pct": 0.9451318273265789,
+          "training_rows_added_vs_k15": 30752,
+          "training_side": {
+            "length_histogram": {
+              "10": 4392,
+              "11": 4393,
+              "12": 4385,
+              "13": 4390,
+              "14": 4386,
+              "15": 4390,
+              "16": 4388,
+              "17": 4379,
+              "18": 4345,
+              "19": 4314,
+              "20": 3231910,
+              "8": 4405,
+              "9": 4401
+            },
+            "mean_length": 19.895722547083587,
+            "mean_masked_lanes_of_20": 0.10427745291641473,
+            "mean_masked_share": 0.005213872645820736,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 3284478,
+            "share_of_rows_over_half_masked": 0.004018294535691821,
+            "share_of_rows_with_any_masking": 0.016004978568892835
+          }
+        },
+        "10": {
+          "max_masked_lanes_a_row_may_have": 10,
+          "max_masked_share": 0.5,
+          "test_rows_added_vs_k15": 2078,
+          "test_side": {
+            "length_histogram": {
+              "10": 417,
+              "11": 417,
+              "12": 415,
+              "13": 414,
+              "14": 415,
+              "15": 414,
+              "16": 418,
+              "17": 417,
+              "18": 422,
+              "19": 425,
+              "20": 874058
+            },
+            "mean_length": 19.973932856010713,
+            "mean_masked_lanes_of_20": 0.02606714398928757,
+            "mean_masked_share": 0.0013033571994643786,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 878232,
+            "share_of_rows_over_half_masked": 0.0004748175880632908,
+            "share_of_rows_with_any_masking": 0.004752730485794186
+          },
+          "threshold": 10,
+          "training_rows_added_pct": 0.6744882636091668,
+          "training_rows_added_vs_k15": 21946,
+          "training_side": {
+            "length_histogram": {
+              "10": 4392,
+              "11": 4393,
+              "12": 4385,
+              "13": 4390,
+              "14": 4386,
+              "15": 4390,
+              "16": 4388,
+              "17": 4379,
+              "18": 4345,
+              "19": 4314,
+              "20": 3231910
+            },
+            "mean_length": 19.926358316705702,
+            "mean_masked_lanes_of_20": 0.07364168329429809,
+            "mean_masked_share": 0.003682084164714904,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 3275672,
+            "share_of_rows_over_half_masked": 0.0013407935837287737,
+            "share_of_rows_with_any_masking": 0.01335970145973101
+          }
+        },
+        "12": {
+          "max_masked_lanes_a_row_may_have": 8,
+          "max_masked_share": 0.4,
+          "test_rows_added_vs_k15": 1244,
+          "test_side": {
+            "length_histogram": {
+              "12": 415,
+              "13": 414,
+              "14": 415,
+              "15": 414,
+              "16": 418,
+              "17": 417,
+              "18": 422,
+              "19": 425,
+              "20": 874058
+            },
+            "mean_length": 19.982938187686774,
+            "mean_masked_lanes_of_20": 0.017061812313226152,
+            "mean_masked_share": 0.0008530906156613077,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 877398,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0038067102956696962
+          },
+          "threshold": 12,
+          "training_rows_added_pct": 0.40449011379569144,
+          "training_rows_added_vs_k15": 13161,
+          "training_side": {
+            "length_histogram": {
+              "12": 4385,
+              "13": 4390,
+              "14": 4386,
+              "15": 4390,
+              "16": 4388,
+              "17": 4379,
+              "18": 4345,
+              "19": 4314,
+              "20": 3231910
+            },
+            "mean_length": 19.951706624685826,
+            "mean_masked_lanes_of_20": 0.04829337531417524,
+            "mean_masked_share": 0.0024146687657087616,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 3266887,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.010706522753924455
+          }
+        },
+        "14": {
+          "max_masked_lanes_a_row_may_have": 6,
+          "max_masked_share": 0.3,
+          "test_rows_added_vs_k15": 415,
+          "test_side": {
+            "length_histogram": {
+              "14": 415,
+              "15": 414,
+              "16": 418,
+              "17": 417,
+              "18": 422,
+              "19": 425,
+              "20": 874058
+            },
+            "mean_length": 19.990015617709503,
+            "mean_masked_lanes_of_20": 0.009984382290498523,
+            "mean_masked_share": 0.0004992191145249261,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 876569,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.002864577688693075
+          },
+          "threshold": 14,
+          "training_rows_added_pct": 0.1347993039364716,
+          "training_rows_added_vs_k15": 4386,
+          "training_side": {
+            "length_histogram": {
+              "14": 4386,
+              "15": 4390,
+              "16": 4388,
+              "17": 4379,
+              "18": 4345,
+              "19": 4314,
+              "20": 3231910
+            },
+            "mean_length": 19.971775371749036,
+            "mean_masked_lanes_of_20": 0.02822462825096252,
+            "mean_masked_share": 0.001411231412548126,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 3258112,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.00804208081244598
+          }
+        },
+        "15": {
+          "max_masked_lanes_a_row_may_have": 5,
+          "max_masked_share": 0.25,
+          "test_rows_added_vs_k15": 0,
+          "test_side": {
+            "length_histogram": {
+              "15": 414,
+              "16": 418,
+              "17": 417,
+              "18": 422,
+              "19": 425,
+              "20": 874058
+            },
+            "mean_length": 19.992852854635142,
+            "mean_masked_lanes_of_20": 0.00714714536485595,
+            "mean_masked_share": 0.0003573572682427975,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 876154,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0023922735044295865
+          },
+          "threshold": 15,
+          "training_rows_added_pct": 0.0,
+          "training_rows_added_vs_k15": 0,
+          "training_side": {
+            "length_histogram": {
+              "15": 4390,
+              "16": 4388,
+              "17": 4379,
+              "18": 4345,
+              "19": 4314,
+              "20": 3231910
+            },
+            "mean_length": 19.979825283382805,
+            "mean_masked_lanes_of_20": 0.02017471661719518,
+            "mean_masked_share": 0.001008735830859759,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 3253726,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.006704928442038451
+          }
+        }
+      },
+      "newly_admitted_rows": {
+        "observed_count_distribution_test_side": {
+          "10": 417,
+          "11": 417,
+          "12": 415,
+          "13": 414,
+          "14": 415,
+          "8": 412,
+          "9": 413
+        },
+        "observed_count_distribution_training_side": {
+          "10": 4392,
+          "11": 4393,
+          "12": 4385,
+          "13": 4390,
+          "14": 4386,
+          "8": 4405,
+          "9": 4401
+        },
+        "test_side": {
+          "length_histogram": {
+            "10": 417,
+            "11": 417,
+            "12": 415,
+            "13": 414,
+            "14": 415,
+            "8": 412,
+            "9": 413
+          },
+          "mean_length": 11.003100241129866,
+          "mean_masked_lanes_of_20": 8.996899758870134,
+          "mean_masked_share": 0.44984498794350675,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 2903,
+          "share_of_rows_over_half_masked": 0.42783327592146053,
+          "share_of_rows_with_any_masking": 1.0
+        },
+        "test_side_mean_observed_count": 11.003100241129866,
+        "training_side": {
+          "length_histogram": {
+            "10": 4392,
+            "11": 4393,
+            "12": 4385,
+            "13": 4390,
+            "14": 4386,
+            "8": 4405,
+            "9": 4401
+          },
+          "mean_length": 10.997203433922996,
+          "mean_masked_lanes_of_20": 9.002796566077004,
+          "mean_masked_share": 0.4501398283038502,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 30752,
+          "share_of_rows_over_half_masked": 0.4291753381893861,
+          "share_of_rows_with_any_masking": 1.0
+        }
+      },
+      "panel_rows": 4205787,
+      "test_rows": 882426,
+      "train_plus_validation_rows": 3323361
+    },
+    "F3": {
+      "by_k": {
+        "8": {
+          "max_masked_lanes_a_row_may_have": 12,
+          "max_masked_share": 0.6,
+          "test_rows_added_vs_k15": 1800,
+          "test_side": {
+            "length_histogram": {
+              "10": 256,
+              "11": 257,
+              "12": 259,
+              "13": 259,
+              "14": 259,
+              "15": 261,
+              "16": 261,
+              "17": 261,
+              "18": 262,
+              "19": 265,
+              "20": 926498,
+              "8": 255,
+              "9": 255
+            },
+            "mean_length": 19.978380134422252,
+            "mean_masked_lanes_of_20": 0.0216198655777489,
+            "mean_masked_share": 0.0010809932788874452,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 929608,
+            "share_of_rows_over_half_masked": 0.0008240032357724977,
+            "share_of_rows_with_any_masking": 0.003345496166125937
+          },
+          "threshold": 8,
+          "training_rows_added_pct": 0.945068735701898,
+          "training_rows_added_vs_k15": 33813,
+          "training_side": {
+            "length_histogram": {
+              "10": 4832,
+              "11": 4832,
+              "12": 4825,
+              "13": 4824,
+              "14": 4824,
+              "15": 4819,
+              "16": 4820,
+              "17": 4816,
+              "18": 4815,
+              "19": 4808,
+              "20": 3553757,
+              "8": 4838,
+              "9": 4838
+            },
+            "mean_length": 19.895711043822654,
+            "mean_masked_lanes_of_20": 0.10428895617734618,
+            "mean_masked_share": 0.00521444780886731,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 3611648,
+            "share_of_rows_over_half_masked": 0.0040170027643889996,
+            "share_of_rows_with_any_masking": 0.016028970708108874
+          }
+        },
+        "10": {
+          "max_masked_lanes_a_row_may_have": 10,
+          "max_masked_share": 0.5,
+          "test_rows_added_vs_k15": 1290,
+          "test_side": {
+            "length_histogram": {
+              "10": 256,
+              "11": 257,
+              "12": 259,
+              "13": 259,
+              "14": 259,
+              "15": 261,
+              "16": 261,
+              "17": 261,
+              "18": 262,
+              "19": 265,
+              "20": 926498
+            },
+            "mean_length": 19.98468084098771,
+            "mean_masked_lanes_of_20": 0.015319159012289339,
+            "mean_masked_share": 0.0007659579506144669,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 929098,
+            "share_of_rows_over_half_masked": 0.00027553605755259404,
+            "share_of_rows_with_any_masking": 0.002798413084518533
+          },
+          "threshold": 10,
+          "training_rows_added_pct": 0.6746258561392574,
+          "training_rows_added_vs_k15": 24137,
+          "training_side": {
+            "length_histogram": {
+              "10": 4832,
+              "11": 4832,
+              "12": 4825,
+              "13": 4824,
+              "14": 4824,
+              "15": 4819,
+              "16": 4820,
+              "17": 4816,
+              "18": 4815,
+              "19": 4808,
+              "20": 3553757
+            },
+            "mean_length": 19.926323413952137,
+            "mean_masked_lanes_of_20": 0.0736765860478649,
+            "mean_masked_share": 0.0036838293023932446,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 3601972,
+            "share_of_rows_over_half_masked": 0.0013414873852434167,
+            "share_of_rows_with_any_masking": 0.013385723153872379
+          }
+        },
+        "12": {
+          "max_masked_lanes_a_row_may_have": 8,
+          "max_masked_share": 0.4,
+          "test_rows_added_vs_k15": 777,
+          "test_side": {
+            "length_histogram": {
+              "12": 259,
+              "13": 259,
+              "14": 259,
+              "15": 261,
+              "16": 261,
+              "17": 261,
+              "18": 262,
+              "19": 265,
+              "20": 926498
+            },
+            "mean_length": 19.989920147320923,
+            "mean_masked_lanes_of_20": 0.01007985267907623,
+            "mean_masked_share": 0.0005039926339538114,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 928585,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.002247505613379497
+          },
+          "threshold": 12,
+          "training_rows_added_pct": 0.40451837493903436,
+          "training_rows_added_vs_k15": 14473,
+          "training_side": {
+            "length_histogram": {
+              "12": 4825,
+              "13": 4824,
+              "14": 4824,
+              "15": 4819,
+              "16": 4820,
+              "17": 4816,
+              "18": 4815,
+              "19": 4808,
+              "20": 3553757
+            },
+            "mean_length": 19.951682038399824,
+            "mean_masked_lanes_of_20": 0.0483179616001746,
+            "mean_masked_share": 0.0024158980800087298,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 3592308,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.010731540836698857
+          }
+        },
+        "14": {
+          "max_masked_lanes_a_row_may_have": 6,
+          "max_masked_share": 0.3,
+          "test_rows_added_vs_k15": 259,
+          "test_side": {
+            "length_histogram": {
+              "14": 259,
+              "15": 261,
+              "16": 261,
+              "17": 261,
+              "18": 262,
+              "19": 265,
+              "20": 926498
+            },
+            "mean_length": 19.99410064144076,
+            "mean_masked_lanes_of_20": 0.005899358559241951,
+            "mean_masked_share": 0.00029496792796209755,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 928067,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.001690610699443036
+          },
+          "threshold": 14,
+          "training_rows_added_pct": 0.1348301416918332,
+          "training_rows_added_vs_k15": 4824,
+          "training_side": {
+            "length_histogram": {
+              "14": 4824,
+              "15": 4819,
+              "16": 4820,
+              "17": 4816,
+              "18": 4815,
+              "19": 4808,
+              "20": 3553757
+            },
+            "mean_length": 19.971751428199,
+            "mean_masked_lanes_of_20": 0.028248571801000318,
+            "mean_masked_share": 0.0014124285900500159,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 3582659,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.008067192551677399
+          }
+        },
+        "15": {
+          "max_masked_lanes_a_row_may_have": 5,
+          "max_masked_share": 0.25,
+          "test_rows_added_vs_k15": 0,
+          "test_side": {
+            "length_histogram": {
+              "15": 261,
+              "16": 261,
+              "17": 261,
+              "18": 262,
+              "19": 265,
+              "20": 926498
+            },
+            "mean_length": 19.995773910119336,
+            "mean_masked_lanes_of_20": 0.004226089880664965,
+            "mean_masked_share": 0.00021130449403324828,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 927808,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0014119300544940332
+          },
+          "threshold": 15,
+          "training_rows_added_pct": 0.0,
+          "training_rows_added_vs_k15": 0,
+          "training_side": {
+            "length_histogram": {
+              "15": 4819,
+              "16": 4820,
+              "17": 4816,
+              "18": 4815,
+              "19": 4808,
+              "20": 3553757
+            },
+            "mean_length": 19.979803149111124,
+            "mean_masked_lanes_of_20": 0.020196850888875535,
+            "mean_masked_share": 0.001009842544443777,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 3577835,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.006729768141907047
+          }
+        }
+      },
+      "newly_admitted_rows": {
+        "observed_count_distribution_test_side": {
+          "10": 256,
+          "11": 257,
+          "12": 259,
+          "13": 259,
+          "14": 259,
+          "8": 255,
+          "9": 255
+        },
+        "observed_count_distribution_training_side": {
+          "10": 4832,
+          "11": 4832,
+          "12": 4825,
+          "13": 4824,
+          "14": 4824,
+          "8": 4838,
+          "9": 4838
+        },
+        "test_side": {
+          "length_histogram": {
+            "10": 256,
+            "11": 257,
+            "12": 259,
+            "13": 259,
+            "14": 259,
+            "8": 255,
+            "9": 255
+          },
+          "mean_length": 11.012777777777778,
+          "mean_masked_lanes_of_20": 8.987222222222222,
+          "mean_masked_share": 0.44936111111111104,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 1800,
+          "share_of_rows_over_half_masked": 0.4255555555555556,
+          "share_of_rows_with_any_masking": 1.0
+        },
+        "test_side_mean_observed_count": 11.012777777777778,
+        "training_side": {
+          "length_histogram": {
+            "10": 4832,
+            "11": 4832,
+            "12": 4825,
+            "13": 4824,
+            "14": 4824,
+            "8": 4838,
+            "9": 4838
+          },
+          "mean_length": 10.997722769349068,
+          "mean_masked_lanes_of_20": 9.002277230650932,
+          "mean_masked_share": 0.4501138615325466,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 33813,
+          "share_of_rows_over_half_masked": 0.4290657439446367,
+          "share_of_rows_with_any_masking": 1.0
+        }
+      },
+      "panel_rows": 4582910,
+      "test_rows": 932167,
+      "train_plus_validation_rows": 3650743
+    },
+    "F4": {
+      "by_k": {
+        "8": {
+          "max_masked_lanes_a_row_may_have": 12,
+          "max_masked_share": 0.6,
+          "test_rows_added_vs_k15": 846,
+          "test_side": {
+            "length_histogram": {
+              "10": 122,
+              "11": 121,
+              "12": 123,
+              "13": 120,
+              "14": 119,
+              "15": 120,
+              "16": 119,
+              "17": 119,
+              "18": 119,
+              "19": 121,
+              "20": 934058,
+              "8": 120,
+              "9": 121
+            },
+            "mean_length": 19.989941229414796,
+            "mean_masked_lanes_of_20": 0.010058770585204522,
+            "mean_masked_share": 0.0005029385292602261,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 935502,
+            "share_of_rows_over_half_masked": 0.0003880269630636813,
+            "share_of_rows_with_any_masking": 0.0015435562938400987
+          },
+          "threshold": 8,
+          "training_rows_added_pct": 0.9170724212671092,
+          "training_rows_added_vs_k15": 35575,
+          "training_side": {
+            "length_histogram": {
+              "10": 5081,
+              "11": 5084,
+              "12": 5082,
+              "13": 5080,
+              "14": 5079,
+              "15": 5074,
+              "16": 5071,
+              "17": 5068,
+              "18": 5066,
+              "19": 5062,
+              "20": 3853851,
+              "8": 5085,
+              "9": 5084
+            },
+            "mean_length": 19.898780182830805,
+            "mean_masked_lanes_of_20": 0.10121981716919551,
+            "mean_masked_share": 0.005060990858459775,
+            "median_length": 20.0,
+            "min_length": 8,
+            "rows": 3914767,
+            "share_of_rows_over_half_masked": 0.0038955064247757276,
+            "share_of_rows_with_any_masking": 0.015560568483386113
+          }
+        },
+        "10": {
+          "max_masked_lanes_a_row_may_have": 10,
+          "max_masked_share": 0.5,
+          "test_rows_added_vs_k15": 605,
+          "test_side": {
+            "length_histogram": {
+              "10": 122,
+              "11": 121,
+              "12": 123,
+              "13": 120,
+              "14": 119,
+              "15": 120,
+              "16": 119,
+              "17": 119,
+              "18": 119,
+              "19": 121,
+              "20": 934058
+            },
+            "mean_length": 19.99290144676192,
+            "mean_masked_lanes_of_20": 0.007098553238080066,
+            "mean_masked_share": 0.0003549276619040032,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 935261,
+            "share_of_rows_over_half_masked": 0.00013044487046931285,
+            "share_of_rows_with_any_masking": 0.0012862719604474046
+          },
+          "threshold": 10,
+          "training_rows_added_pct": 0.6549302019595833,
+          "training_rows_added_vs_k15": 25406,
+          "training_side": {
+            "length_histogram": {
+              "10": 5081,
+              "11": 5084,
+              "12": 5082,
+              "13": 5080,
+              "14": 5079,
+              "15": 5074,
+              "16": 5071,
+              "17": 5068,
+              "18": 5066,
+              "19": 5062,
+              "20": 3853851
+            },
+            "mean_length": 19.928466899793527,
+            "mean_masked_lanes_of_20": 0.07153310020647452,
+            "mean_masked_share": 0.003576655010323726,
+            "median_length": 20.0,
+            "min_length": 10,
+            "rows": 3904598,
+            "share_of_rows_over_half_masked": 0.0013012863296042257,
+            "share_of_rows_with_any_masking": 0.012996728472431733
+          }
+        },
+        "12": {
+          "max_masked_lanes_a_row_may_have": 8,
+          "max_masked_share": 0.4,
+          "test_rows_added_vs_k15": 362,
+          "test_side": {
+            "length_histogram": {
+              "12": 123,
+              "13": 120,
+              "14": 119,
+              "15": 120,
+              "16": 119,
+              "17": 119,
+              "18": 119,
+              "19": 121,
+              "20": 934058
+            },
+            "mean_length": 19.99536907310875,
+            "mean_masked_lanes_of_20": 0.004630926891247013,
+            "mean_masked_share": 0.00023154634456235067,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 935018,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0010267182022164279
+          },
+          "threshold": 12,
+          "training_rows_added_pct": 0.39289109690884083,
+          "training_rows_added_vs_k15": 15241,
+          "training_side": {
+            "length_histogram": {
+              "12": 5082,
+              "13": 5080,
+              "14": 5079,
+              "15": 5074,
+              "16": 5071,
+              "17": 5068,
+              "18": 5066,
+              "19": 5062,
+              "20": 3853851
+            },
+            "mean_length": 19.953076096058144,
+            "mean_masked_lanes_of_20": 0.04692390394185752,
+            "mean_masked_share": 0.002346195197092876,
+            "median_length": 20.0,
+            "min_length": 12,
+            "rows": 3894433,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.010420515643740693
+          }
+        },
+        "14": {
+          "max_masked_lanes_a_row_may_have": 6,
+          "max_masked_share": 0.3,
+          "test_rows_added_vs_k15": 119,
+          "test_side": {
+            "length_histogram": {
+              "14": 119,
+              "15": 120,
+              "16": 119,
+              "17": 119,
+              "18": 119,
+              "19": 121,
+              "20": 934058
+            },
+            "mean_length": 19.99731914096975,
+            "mean_masked_lanes_of_20": 0.0026808590302479208,
+            "mean_masked_share": 0.00013404295151239602,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 934775,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0007670294990773181
+          },
+          "threshold": 14,
+          "training_rows_added_pct": 0.13092932755068581,
+          "training_rows_added_vs_k15": 5079,
+          "training_side": {
+            "length_histogram": {
+              "14": 5079,
+              "15": 5074,
+              "16": 5071,
+              "17": 5068,
+              "18": 5066,
+              "19": 5062,
+              "20": 3853851
+            },
+            "mean_length": 19.972575034028264,
+            "mean_masked_lanes_of_20": 0.027424965971735753,
+            "mean_masked_share": 0.0013712482985867875,
+            "median_length": 20.0,
+            "min_length": 14,
+            "rows": 3884271,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.007831585386292562
+          }
+        },
+        "15": {
+          "max_masked_lanes_a_row_may_have": 5,
+          "max_masked_share": 0.25,
+          "test_rows_added_vs_k15": 0,
+          "test_side": {
+            "length_histogram": {
+              "15": 120,
+              "16": 119,
+              "17": 119,
+              "18": 119,
+              "19": 121,
+              "20": 934058
+            },
+            "mean_length": 19.998082717063816,
+            "mean_masked_lanes_of_20": 0.001917282936181868,
+            "mean_masked_share": 9.58641468090934e-05,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 934656,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.0006398075869624761
+          },
+          "threshold": 15,
+          "training_rows_added_pct": 0.0,
+          "training_rows_added_vs_k15": 0,
+          "training_side": {
+            "length_histogram": {
+              "15": 5074,
+              "16": 5071,
+              "17": 5068,
+              "18": 5066,
+              "19": 5062,
+              "20": 3853851
+            },
+            "mean_length": 19.98039488635778,
+            "mean_masked_lanes_of_20": 0.0196051136422224,
+            "mean_masked_share": 0.00098025568211112,
+            "median_length": 20.0,
+            "min_length": 15,
+            "rows": 3879192,
+            "share_of_rows_over_half_masked": 0.0,
+            "share_of_rows_with_any_masking": 0.006532545952868536
+          }
+        }
+      },
+      "newly_admitted_rows": {
+        "observed_count_distribution_test_side": {
+          "10": 122,
+          "11": 121,
+          "12": 123,
+          "13": 120,
+          "14": 119,
+          "8": 120,
+          "9": 121
+        },
+        "observed_count_distribution_training_side": {
+          "10": 5081,
+          "11": 5084,
+          "12": 5082,
+          "13": 5080,
+          "14": 5079,
+          "8": 5085,
+          "9": 5084
+        },
+        "test_side": {
+          "length_histogram": {
+            "10": 122,
+            "11": 121,
+            "12": 123,
+            "13": 120,
+            "14": 119,
+            "8": 120,
+            "9": 121
+          },
+          "mean_length": 10.995271867612294,
+          "mean_masked_lanes_of_20": 9.004728132387706,
+          "mean_masked_share": 0.4502364066193853,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 846,
+          "share_of_rows_over_half_masked": 0.42907801418439717,
+          "share_of_rows_with_any_masking": 1.0
+        },
+        "test_side_mean_observed_count": 10.995271867612294,
+        "training_side": {
+          "length_histogram": {
+            "10": 5081,
+            "11": 5084,
+            "12": 5082,
+            "13": 5080,
+            "14": 5079,
+            "8": 5085,
+            "9": 5084
+          },
+          "mean_length": 10.999297259311314,
+          "mean_masked_lanes_of_20": 9.000702740688686,
+          "mean_masked_share": 0.4500351370344343,
+          "median_length": 11.0,
+          "min_length": 8,
+          "rows": 35575,
+          "share_of_rows_over_half_masked": 0.42867182009838367,
+          "share_of_rows_with_any_masking": 1.0
+        }
+      },
+      "panel_rows": 4893642,
+      "test_rows": 938594,
+      "train_plus_validation_rows": 3955048
+    }
+  },
+  "pooled_across_folds": {
+    "10": {
+      "test_side": {
+        "length_histogram": {
+          "10": 1246,
+          "11": 1241,
+          "12": 1242,
+          "13": 1237,
+          "14": 1238,
+          "15": 1239,
+          "16": 1243,
+          "17": 1241,
+          "18": 1246,
+          "19": 1254,
+          "20": 3529634
+        },
+        "mean_length": 19.980720828918532,
+        "mean_masked_lanes_of_20": 0.019279171081469235,
+        "mean_masked_share": 0.0009639585540734618,
+        "median_length": 20.0,
+        "min_length": 10,
+        "rows": 3542061,
+        "share_of_rows_over_half_masked": 0.0003517725979309786,
+        "share_of_rows_with_any_masking": 0.0035084093695732514
+      },
+      "training_side": {
+        "length_histogram": {
+          "10": 18266,
+          "11": 18266,
+          "12": 18246,
+          "13": 18245,
+          "14": 18238,
+          "15": 18231,
+          "16": 18231,
+          "17": 18215,
+          "18": 18171,
+          "19": 18127,
+          "20": 13543659
+        },
+        "mean_length": 19.926900358774418,
+        "mean_masked_lanes_of_20": 0.07309964122558128,
+        "mean_masked_share": 0.0036549820612790636,
+        "median_length": 20.0,
+        "min_length": 10,
+        "rows": 13725895,
+        "share_of_rows_over_half_masked": 0.0013307693232390311,
+        "share_of_rows_with_any_masking": 0.013276802714868502
+      }
+    },
+    "12": {
+      "test_side": {
+        "length_histogram": {
+          "12": 1242,
+          "13": 1237,
+          "14": 1238,
+          "15": 1239,
+          "16": 1243,
+          "17": 1241,
+          "18": 1246,
+          "19": 1254,
+          "20": 3529634
+        },
+        "mean_length": 19.987382944953264,
+        "mean_masked_lanes_of_20": 0.012617055046737262,
+        "mean_masked_share": 0.000630852752336863,
+        "median_length": 20.0,
+        "min_length": 12,
+        "rows": 3539574,
+        "share_of_rows_over_half_masked": 0.0,
+        "share_of_rows_with_any_masking": 0.0028082475461736357
+      },
+      "training_side": {
+        "length_histogram": {
+          "12": 18246,
+          "13": 18245,
+          "14": 18238,
+          "15": 18231,
+          "16": 18231,
+          "17": 18215,
+          "18": 18171,
+          "19": 18127,
+          "20": 13543659
+        },
+        "mean_length": 19.95205737476609,
+        "mean_masked_lanes_of_20": 0.04794262523391337,
+        "mean_masked_share": 0.002397131261695668,
+        "median_length": 20.0,
+        "min_length": 12,
+        "rows": 13689363,
+        "share_of_rows_over_half_masked": 0.0,
+        "share_of_rows_with_any_masking": 0.010643592400902803
+      }
+    },
+    "14": {
+      "test_side": {
+        "length_histogram": {
+          "14": 1238,
+          "15": 1239,
+          "16": 1243,
+          "17": 1241,
+          "18": 1246,
+          "19": 1254,
+          "20": 3529634
+        },
+        "mean_length": 19.9926312411739,
+        "mean_masked_lanes_of_20": 0.007368758826098818,
+        "mean_masked_share": 0.0003684379413049409,
+        "median_length": 20.0,
+        "min_length": 14,
+        "rows": 3537095,
+        "share_of_rows_over_half_masked": 0.0,
+        "share_of_rows_with_any_masking": 0.002109358103189199
+      },
+      "training_side": {
+        "length_histogram": {
+          "14": 18238,
+          "15": 18231,
+          "16": 18231,
+          "17": 18215,
+          "18": 18171,
+          "19": 18127,
+          "20": 13543659
+        },
+        "mean_length": 19.971975054039913,
+        "mean_masked_lanes_of_20": 0.028024945960088105,
+        "mean_masked_share": 0.0014012472980044052,
+        "median_length": 20.0,
+        "min_length": 14,
+        "rows": 13652872,
+        "share_of_rows_over_half_masked": 0.0,
+        "share_of_rows_with_any_masking": 0.007999269311248213
+      }
+    },
+    "15": {
+      "test_side": {
+        "length_histogram": {
+          "15": 1239,
+          "16": 1243,
+          "17": 1241,
+          "18": 1246,
+          "19": 1254,
+          "20": 3529634
+        },
+        "mean_length": 19.99472942486079,
+        "mean_masked_lanes_of_20": 0.005270575139209532,
+        "mean_masked_share": 0.00026352875696047663,
+        "median_length": 20.0,
+        "min_length": 15,
+        "rows": 3535857,
+        "share_of_rows_over_half_masked": 0.0,
+        "share_of_rows_with_any_masking": 0.001759969365276933
+      },
+      "training_side": {
+        "length_histogram": {
+          "15": 18231,
+          "16": 18231,
+          "17": 18215,
+          "18": 18171,
+          "19": 18127,
+          "20": 13543659
+        },
+        "mean_length": 19.9799633052123,
+        "mean_masked_lanes_of_20": 0.020036694787700204,
+        "mean_masked_share": 0.0010018347393850103,
+        "median_length": 20.0,
+        "min_length": 15,
+        "rows": 13634634,
+        "share_of_rows_over_half_masked": 0.0,
+        "share_of_rows_with_any_masking": 0.006672346320407281
+      }
+    },
+    "8": {
+      "test_side": {
+        "length_histogram": {
+          "10": 1246,
+          "11": 1241,
+          "12": 1242,
+          "13": 1237,
+          "14": 1238,
+          "15": 1239,
+          "16": 1243,
+          "17": 1241,
+          "18": 1246,
+          "19": 1254,
+          "20": 3529634,
+          "8": 1236,
+          "9": 1240
+        },
+        "mean_length": 19.972701653276577,
+        "mean_masked_lanes_of_20": 0.027298346723422552,
+        "mean_masked_share": 0.0013649173361711276,
+        "median_length": 20.0,
+        "min_length": 8,
+        "rows": 3544537,
+        "share_of_rows_over_half_masked": 0.001050066623652116,
+        "share_of_rows_with_any_masking": 0.0042044983590240415
+      },
+      "training_side": {
+        "length_histogram": {
+          "10": 18266,
+          "11": 18266,
+          "12": 18246,
+          "13": 18245,
+          "14": 18238,
+          "15": 18231,
+          "16": 18231,
+          "17": 18215,
+          "18": 18171,
+          "19": 18127,
+          "20": 13543659,
+          "8": 18296,
+          "9": 18284
+        },
+        "mean_length": 19.896527768442812,
+        "mean_masked_lanes_of_20": 0.10347223155718721,
+        "mean_masked_share": 0.00517361157785936,
+        "median_length": 20.0,
+        "min_length": 8,
+        "rows": 13762475,
+        "share_of_rows_over_half_masked": 0.003985184350925252,
+        "share_of_rows_with_any_masking": 0.015899465757430984
+      }
+    }
+  },
+  "question": "Lowering minimum_valid_history_length admits rows whose 20-lane window is mostly masked, and it admits them on the TRAINING splits too, not only the test split. How much masking does each threshold let into training, and do the newly admitted rows differ in listing age between F1 and F2?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "the_two_effects_of_lowering_k": {
+    "test_side": "admits rows the model must SCORE from a mostly-empty window",
+    "training_side": "admits rows the model is TRAINED on that are mostly mask, which changes the fit for every row rather than only for the new ones -- this is the mechanism by which k=8 could make the model worse, and it is the half of §BT.1(b) that does not need a trained model to characterise"
+  },
+  "thresholds_scanned": [
+    15,
+    14,
+    12,
+    10,
+    8
+  ],
+  "training_performed": false,
+  "weights_loaded": false,
+  "why_no_training_was_needed": "a row's window has length = min(history_length, observed_count) live lanes and the rest are masked (temporal_batches.py:194-201), and observed_count comes from the frozen panel, so the masking distribution is a property of the data and the threshold, not of any fitted model"
+}

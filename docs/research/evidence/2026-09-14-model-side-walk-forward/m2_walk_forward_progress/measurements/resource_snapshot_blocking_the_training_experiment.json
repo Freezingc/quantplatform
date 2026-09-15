@@ -1,0 +1,111 @@
+{
+  "cheaper_route_taken_instead": "measure what the model would SEE at k=8 rather than training it: the distribution of the live window length among eligible rows, on the training splits as well as the test split. Lowering k does not only admit more scoreable rows, it admits more TRAINING rows whose 20-day window is mostly masked, which is the mechanism by which it could degrade the fit for every row, not just the new ones. That is computable from the frozen panel alone, at about 200 MB per fold rather than 12.77 GiB.",
+  "cpu": {
+    "cores_idle": 79,
+    "load_average": [
+      "24.19",
+      "24.32",
+      "24.43"
+    ],
+    "logical_cores": 104,
+    "m2_workers": 24
+  },
+  "headroom_GiB": 97.0,
+  "headroom_is_negative_or_thin": false,
+  "headroom_note": "positive but thin relative to a host whose swap is already exhausted; see verdict",
+  "m2_driver_pid": 3588838,
+  "m2_launch_budget": {
+    "flag": "--worker-memory-gb 17.1",
+    "implied_reservation_GiB": 410.4,
+    "parallel_workers": 24
+  },
+  "m2_process_tree": {
+    "largest_processes": [
+      {
+        "pid": 3588838,
+        "rss_GiB": 19.04
+      },
+      {
+        "pid": 1380490,
+        "rss_GiB": 17.31
+      },
+      {
+        "pid": 1380513,
+        "rss_GiB": 16.68
+      },
+      {
+        "pid": 1380508,
+        "rss_GiB": 16.46
+      },
+      {
+        "pid": 1380502,
+        "rss_GiB": 16.44
+      },
+      {
+        "pid": 1380510,
+        "rss_GiB": 16.28
+      }
+    ],
+    "largest_single_process_GiB": 19.0,
+    "method": "walked /proc/<pid>/stat from the driver pid to collect the whole tree",
+    "n_processes": 26,
+    "total_rss_GiB": 369.3
+  },
+  "m2_process_tree_rss_GiB": 369.3,
+  "memory_GiB": {
+    "MemAvailable": 173.6,
+    "MemFree": 11.0,
+    "MemTotal": 629.5,
+    "SwapFree": 0.0,
+    "SwapTotal": 8.0
+  },
+  "memory_kB": {
+    "Cached": 123728600,
+    "MemAvailable": 182074868,
+    "MemFree": 11579704,
+    "MemTotal": 660060148,
+    "SwapFree": 120,
+    "SwapTotal": 8388604
+  },
+  "per_process_peak_of_temporal_fold_batches_GiB": 12.77,
+  "question": "can the k=8 model-effect experiment (BT.1's (b) half) be run while M2 is in flight?",
+  "reduced_designs_considered_and_rejected": [
+    {
+      "design": "1 process at a time, 6 runs sequentially",
+      "peak_GiB": 12.77,
+      "rejected_because": "longer exposure to the F3 transition than the parallel design",
+      "wall_clock": "48-72h"
+    },
+    {
+      "design": "2 processes at a time, 3 rounds",
+      "peak_GiB": 25.5,
+      "rejected_because": "still spans the F3 transition",
+      "wall_clock": "~30h"
+    },
+    {
+      "design": "train on a reduced window (e.g. 1 of 4 training years)",
+      "peak_GiB": "~3",
+      "rejected_because": "it answers a weaker question. A paired comparison on a reduced window still shows the RELATIVE effect of k, but the absolute RankIC would not be M2's, so it could not be compared with the signed 0.059239 or with the G4 bar. Recorded here rather than run, because a cheap answer to a different question is not progress on this one.",
+      "wall_clock": "~3h"
+    }
+  ],
+  "source_of_that_figure": "the docstring of temporal_fold_batches in research_v2/src/research_v2/training/temporal_search.py:198-240, which records it as measured stage by stage on the real F1 fold",
+  "swap_exhausted": true,
+  "taken_at_local": "2026-09-15T23:48:25",
+  "verdict": "DEFERRED, not impossible. There is +97 GiB of headroom for the 6-process design, so the experiment could physically run. It is deferred because swap is already exhausted (SwapFree 0 of 8 GiB, which is the host telling us it is at its limit), because M2 is 2 days 5 hours into a 5-6 day run and is the critical path, and because the F3 transition re-allocates a fresh wave of 24 workers on a LARGER panel (4.58M rows against F2's 4.21M) so its peak is likely above the 17.1 GiB per-worker budget it was launched with. Losing M2 to an OOM costs days; this experiment costs nothing to run five days later when the memory is free.",
+  "what_remains_unmeasured": "the trained model's actual validation RankIC at k=8. No substitute measures that. This snapshot is the reason it stays open rather than an attempt to answer it indirectly.",
+  "what_the_experiment_would_need": {
+    "concurrent_processes": 6,
+    "design": "paired: one config x 3 seeds x k in {15, 8} = 6 training runs on fold F1",
+    "peak_resident_GiB": 76.6,
+    "wall_clock_hours_estimate": "8-12 (F2's first wave of 24 units took about 8h at 24-way parallelism)"
+  },
+  "when_to_run_it": "after M2's signed report lands and its process tree exits. At that point MemAvailable returns to roughly 540 GiB and the 6-process design has ample room. The design is specified in what_the_experiment_would_need and needs no further thought.",
+  "why_it_is_unsafe": [
+    "SwapFree is 0 of 8 GiB. The host has no cushion, so any allocation spike goes straight to the OOM killer rather than to swap.",
+    "M2's tree is 369.3 GiB RSS across 26 processes, with workers at 16.3-17.3 GiB each against a --worker-memory-gb 17.1 launch budget. They are at peak now because F2's batches are built.",
+    "The 6-process design peaks at 76.6 GiB (6 x 12.77 GiB), leaving 97.0 GiB. That is positive, so this is a risk judgement rather than a hard impossibility, and it is recorded as such.",
+    "The risk concentrates at the F3 transition: a fresh wave of workers rebuilds batches on a larger panel, so per-worker peak likely exceeds 17.1 GiB, and if the outgoing F2 workers have not released yet the two waves overlap.",
+    "Asymmetry of consequences: an OOM loses a 5-6 day walk-forward run that is the project's critical path; deferring this experiment loses nothing, because the memory frees up when M2 finishes."
+  ]
+}

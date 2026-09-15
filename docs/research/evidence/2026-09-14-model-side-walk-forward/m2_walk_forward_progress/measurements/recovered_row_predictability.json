@@ -1,0 +1,333 @@
+{
+  "database_access": false,
+  "fold_to_fold_comparisons_of_the_recovered_groups": {
+    "F1_vs_F2": {
+      "mannwhitney_U": 2235375.0,
+      "mannwhitney_p": 0.23104622373180217,
+      "mean_a": 0.24771051610970699,
+      "mean_b": -0.19619074704284675,
+      "mean_difference": 0.44390126315255374,
+      "median_a": 0.0035094633474367243,
+      "median_b": -0.0005239901342532674,
+      "n_a": 2055,
+      "n_b": 2130,
+      "welch_p": 0.0007390531810164559,
+      "welch_t": 3.378302739872097
+    },
+    "F1_vs_F3": {
+      "mannwhitney_U": 1868246.0,
+      "mannwhitney_p": 0.29019003327197834,
+      "mean_a": 0.24771051610970699,
+      "mean_b": 0.09387110710182141,
+      "mean_difference": 0.15383940900788556,
+      "median_a": 0.0035094633474367243,
+      "median_b": -0.009811079954514166,
+      "n_a": 2055,
+      "n_b": 1783,
+      "welch_p": 0.005094687969839927,
+      "welch_t": 2.8033897057628656
+    },
+    "F1_vs_F4": {
+      "mannwhitney_U": 864490.0,
+      "mannwhitney_p": 0.6356968487579602,
+      "mean_a": 0.24771051610970699,
+      "mean_b": -0.004088709721426885,
+      "mean_difference": 0.25179922583113384,
+      "median_a": 0.0035094633474367243,
+      "median_b": -0.0006435476378127464,
+      "n_a": 2055,
+      "n_b": 832,
+      "welch_p": 0.0012116942294916882,
+      "welch_t": 3.240488744881724
+    },
+    "F2_vs_F3": {
+      "mannwhitney_U": 1903684.0,
+      "mannwhitney_p": 0.8917778697582349,
+      "mean_a": -0.19619074704284675,
+      "mean_b": 0.09387110710182141,
+      "mean_difference": -0.2900618541446682,
+      "median_a": -0.0005239901342532674,
+      "median_b": -0.009811079954514166,
+      "n_a": 2130,
+      "n_b": 1783,
+      "welch_p": 0.017774896853209397,
+      "welch_t": -2.3720335647987465
+    },
+    "F2_vs_F4": {
+      "mannwhitney_U": 877091.0,
+      "mannwhitney_p": 0.6674173374901988,
+      "mean_a": -0.19619074704284675,
+      "mean_b": -0.004088709721426885,
+      "mean_difference": -0.19210203732141987,
+      "median_a": -0.0005239901342532674,
+      "median_b": -0.0006435476378127464,
+      "n_a": 2130,
+      "n_b": 832,
+      "welch_p": 0.1520698296685745,
+      "welch_t": -1.4326436095601551
+    },
+    "F3_vs_F4": {
+      "mannwhitney_U": 732186.0,
+      "mannwhitney_p": 0.5957096906482371,
+      "mean_a": 0.09387110710182141,
+      "mean_b": -0.004088709721426885,
+      "mean_difference": 0.0979598168232483,
+      "median_a": -0.009811079954514166,
+      "median_b": -0.0006435476378127464,
+      "n_a": 1783,
+      "n_b": 832,
+      "welch_p": 0.10884455413356489,
+      "welch_t": 1.6048309264903136
+    }
+  },
+  "generated_at_local": "2026-09-15T23:58:52",
+  "listing_age_hypothesis": {
+    "evidence": {
+      "note": "observed_count IS listing age in panel rows; F1 and F2 are identical to two decimals, and the companion probe shows near-uniform distributions over 8..14 in every fold, so the sign flip is not an age effect",
+      "test_side_mean_observed_count": {
+        "F1": 10.98345498783455,
+        "F2": 11.013145539906104,
+        "F3": 11.009534492428491,
+        "F4": 10.995192307692308
+      },
+      "test_side_sd_observed_count": {
+        "F1": 2.000418343489924,
+        "F2": 1.9964308129811292,
+        "F3": 1.9998369621577963,
+        "F4": 1.9939682719621645
+      }
+    },
+    "status": "REFUTED by probe_k8_window_masking.py"
+  },
+  "per_fold": {
+    "F1": {
+      "recovered": {
+        "max": 28.92931431330583,
+        "mean": 0.24771051610970699,
+        "mean_over_sem": 4.801379838314259,
+        "mean_to_median_gap": 0.24420105276227025,
+        "median": 0.0035094633474367243,
+        "min": -18.291761719751253,
+        "n": 2055,
+        "p01": -5.271573051608464,
+        "p25": -0.19725412701517936,
+        "p75": 0.28128792627320653,
+        "p99": 8.917009815894055,
+        "sd": 2.33875265115532,
+        "sem": 0.0515915266967666,
+        "share_of_abs_sum_from_the_top_1pct": 0.17579977178715286
+      },
+      "recovered_observed_count_mean": 10.98345498783455,
+      "recovered_observed_count_sd": 2.000418343489924,
+      "recovered_vs_retained": {
+        "mannwhitney_U": 776862492.0,
+        "mannwhitney_p": 0.14794310935582322,
+        "mean_difference": 0.18715335572791775,
+        "mean_difference_in_recovered_SEM": 3.6275987106938477,
+        "reading": "Mann-Whitney tests stochastic dominance and Welch tests the means; when the two disagree the group is heavy-tailed and the mean is being carried by a few rows",
+        "welch_p": 0.00029655439806833603,
+        "welch_t": 3.6244856852757263
+      },
+      "retained": {
+        "max": 84.87245076860924,
+        "mean": 0.06055716038178924,
+        "mean_over_sem": 28.314621026835148,
+        "mean_to_median_gap": 0.061714033400754216,
+        "median": -0.0011568730189649799,
+        "min": -144.76956493078583,
+        "n": 742372,
+        "p01": -3.400367041169933,
+        "p25": -0.16810111932203678,
+        "p75": 0.19459872502000303,
+        "p99": 4.428146894482717,
+        "sd": 1.84274626925417,
+        "sem": 0.0021387240296946324,
+        "share_of_abs_sum_from_the_top_1pct": 0.2503406425399794
+      }
+    },
+    "F2": {
+      "recovered": {
+        "max": 54.26707412517264,
+        "mean": -0.19619074704284675,
+        "mean_over_sem": -1.6234819142646502,
+        "mean_to_median_gap": -0.19566675690859348,
+        "median": -0.0005239901342532674,
+        "min": -129.57384886386225,
+        "n": 2130,
+        "p01": -14.777078967351772,
+        "p25": -0.19364760348204435,
+        "p75": 0.22430887228237356,
+        "p99": 10.546918622554584,
+        "sd": 5.577259702437917,
+        "sem": 0.12084566222698612,
+        "share_of_abs_sum_from_the_top_1pct": 0.3145394386348046
+      },
+      "recovered_observed_count_mean": 11.013145539906104,
+      "recovered_observed_count_sd": 1.9964308129811292,
+      "recovered_vs_retained": {
+        "mannwhitney_U": 866517296.0,
+        "mannwhitney_p": 0.8047126464339587,
+        "mean_difference": -0.24907836687990356,
+        "mean_difference_in_recovered_SEM": -2.061127907198325,
+        "reading": "Mann-Whitney tests stochastic dominance and Welch tests the means; when the two disagree the group is heavy-tailed and the mean is being carried by a few rows",
+        "welch_p": 0.03944513662520686,
+        "welch_t": -2.06078037106575
+      },
+      "retained": {
+        "max": 87.33806875429254,
+        "mean": 0.05288761983705681,
+        "mean_over_sem": 23.828983786081324,
+        "mean_to_median_gap": 0.053498713728863986,
+        "median": -0.0006110938918071787,
+        "min": -248.59021065714404,
+        "n": 816159,
+        "p01": -3.5233918306281686,
+        "p25": -0.14829353605894746,
+        "p75": 0.16743755558852308,
+        "p99": 4.594000083382781,
+        "sd": 2.005099310613284,
+        "sem": 0.002219466021373049,
+        "share_of_abs_sum_from_the_top_1pct": 0.2817139575101482
+      }
+    },
+    "F3": {
+      "recovered": {
+        "max": 12.728958349293537,
+        "mean": 0.09387110710182141,
+        "mean_over_sem": 5.0196797688294845,
+        "mean_to_median_gap": 0.10368218705633557,
+        "median": -0.009811079954514166,
+        "min": -3.6418697164860068,
+        "n": 1783,
+        "p01": -1.0077604675141014,
+        "p25": -0.13174761935808382,
+        "p75": 0.1447063712332508,
+        "p99": 3.380323603481144,
+        "sd": 0.7896444719052002,
+        "sem": 0.018700616657805397,
+        "share_of_abs_sum_from_the_top_1pct": 0.20089582629005118
+      },
+      "recovered_observed_count_mean": 11.009534492428491,
+      "recovered_observed_count_sd": 1.9998369621577963,
+      "recovered_vs_retained": {
+        "mannwhitney_U": 812191533.5,
+        "mannwhitney_p": 0.4681003495303091,
+        "mean_difference": 0.053140780149086735,
+        "mean_difference_in_recovered_SEM": 2.841659241590114,
+        "reading": "Mann-Whitney tests stochastic dominance and Welch tests the means; when the two disagree the group is heavy-tailed and the mean is being carried by a few rows",
+        "welch_p": 0.00471065258428622,
+        "welch_t": 2.8296895131310964
+      },
+      "retained": {
+        "max": 139.29959303923346,
+        "mean": 0.04073032695273467,
+        "mean_over_sem": 23.654590133915853,
+        "mean_to_median_gap": 0.043947815532013164,
+        "median": -0.0032174885792784877,
+        "min": -246.16414963257287,
+        "n": 920177,
+        "p01": -1.9869874851374862,
+        "p25": -0.11122415084543857,
+        "p75": 0.11874765781101268,
+        "p99": 2.985483473422694,
+        "sd": 1.6517265731380386,
+        "sem": 0.0017218783636557583,
+        "share_of_abs_sum_from_the_top_1pct": 0.33405851497743644
+      }
+    },
+    "F4": {
+      "recovered": {
+        "max": 8.744431627664204,
+        "mean": -0.004088709721426885,
+        "mean_over_sem": -0.07036709706958948,
+        "mean_to_median_gap": -0.003445162083614138,
+        "median": -0.0006435476378127464,
+        "min": -15.924683908270175,
+        "n": 832,
+        "p01": -5.658689335971835,
+        "p25": -0.20548966445536773,
+        "p75": 0.23360585520630367,
+        "p99": 5.088373374774454,
+        "sd": 1.676016566266882,
+        "sem": 0.058105419886560886,
+        "share_of_abs_sum_from_the_top_1pct": 0.16155101806330638
+      },
+      "recovered_observed_count_mean": 10.995192307692308,
+      "recovered_observed_count_sd": 1.9939682719621645,
+      "recovered_vs_retained": {
+        "mannwhitney_U": 381740866.5,
+        "mannwhitney_p": 0.8409857474946487,
+        "mean_difference": -0.03597545864583235,
+        "mean_difference_in_recovered_SEM": -0.6191411871055604,
+        "reading": "Mann-Whitney tests stochastic dominance and Welch tests the means; when the two disagree the group is heavy-tailed and the mean is being carried by a few rows",
+        "welch_p": 0.5360899040112361,
+        "welch_t": -0.6189938364945445
+      },
+      "retained": {
+        "max": 41.86514802114459,
+        "mean": 0.03188674892440546,
+        "mean_over_sem": 25.148955243486437,
+        "mean_to_median_gap": 0.026680287298431575,
+        "median": 0.005206461625973886,
+        "min": -61.6883161892956,
+        "n": 921348,
+        "p01": -3.6422445764297233,
+        "p25": -0.19995926324236793,
+        "p75": 0.25467702863860875,
+        "p99": 3.5114751745749246,
+        "sd": 1.2170324074765588,
+        "sem": 0.0012679154507885216,
+        "share_of_abs_sum_from_the_top_1pct": 0.14768651201742708
+      }
+    }
+  },
+  "pooled_recovered": {
+    "max": 54.26707412517264,
+    "mean": 0.03751899954095659,
+    "mean_over_sem": 0.8957096321675141,
+    "mean_to_median_gap": 0.03843509161219928,
+    "median": -0.0009160920712426916,
+    "min": -129.57384886386225,
+    "n": 6800,
+    "p01": -6.344970931635033,
+    "p25": -0.16948689902792322,
+    "p75": 0.21059769240217502,
+    "p99": 7.373180275372111,
+    "sd": 3.4541282692365596,
+    "sem": 0.0418874579367478,
+    "share_of_abs_sum_from_the_top_1pct": 0.2785011162932754
+  },
+  "question": "§BT.6 found the rows that k=8 admits to be strongly predictive in F1 and anti-predictive in F2 with no fold's rank test significant, and §BT.8 guessed listing age. The companion probe rules listing age out. Is the sign flip a real fold difference or a few extreme rows?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "training_performed": false,
+  "verdict": {
+    "F1_vs_F2": {
+      "mannwhitney_U": 2235375.0,
+      "mannwhitney_p": 0.23104622373180217,
+      "mean_a": 0.24771051610970699,
+      "mean_b": -0.19619074704284675,
+      "mean_difference": 0.44390126315255374,
+      "median_a": 0.0035094633474367243,
+      "median_b": -0.0005239901342532674,
+      "n_a": 2055,
+      "n_b": 2130,
+      "welch_p": 0.0007390531810164559,
+      "welch_t": 3.378302739872097
+    },
+    "is_the_F1_vs_F2_sign_flip_significant": true,
+    "is_the_distribution_shifted_within_fold": {
+      "F1": false,
+      "F2": false,
+      "F3": false,
+      "F4": false
+    },
+    "is_the_mean_difference_within_fold_significant": {
+      "F1": true,
+      "F2": true,
+      "F3": true,
+      "F4": false
+    }
+  },
+  "weights_loaded": false
+}
