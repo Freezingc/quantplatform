@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T03:08:52+00:00",
+  "generated_at_utc": "2026-09-15T03:22:04+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -467,6 +467,14 @@
       "bytes": 18496,
       "sha256": "d36c64b246c53c1caba4437c912fafde21e578e45375d350429264af88594be4"
     },
+    "option4_ceiling_all420.json": {
+      "bytes": 247276,
+      "sha256": "5ea5b6826d371bfc1142327913c657b7c03ff2e6269953072b5bd153d4b0c292"
+    },
+    "option4_contamination_exposure.json": {
+      "bytes": 3150,
+      "sha256": "a1d56cef28bbd399e56992eaadf9b01ce2c020e102c96c0b7d3144f7de35cc5c"
+    },
     "probe_206_absence_cause.json": {
       "bytes": 301791,
       "sha256": "b7eb1644cf74121287887d879dfd2b2f89e965c6e7bae498e926736c2ee09a3b"
@@ -668,7 +676,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "8b5a33678b59cb0adf53fed48904e014bf2c9de7"
+    "commit_at_generation": "71087ea455181e9058c6ed3354ae680e1d8d8268"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
