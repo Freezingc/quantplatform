@@ -1,0 +1,390 @@
+{
+  "carriers": {
+    "M0-base": {
+      "abs_diff_icir": 0.0,
+      "abs_diff_mean_rank_ic": 0.0,
+      "abs_diff_valid_day_count": 0,
+      "exact_mean_rank_ic": true,
+      "mean_rank_ic_hex_agreement": true,
+      "reproduced": {
+        "icir": 0.7430527360278602,
+        "mean_rank_ic": 0.08886655268930639,
+        "rank_ic_std": 0.11959656210185116,
+        "valid_day_count": 945
+      },
+      "row_matching": [
+        {
+          "baseline_rows_after_match": 747461,
+          "baseline_rows_raw": 747461,
+          "candidate_rows_after_match": 747461,
+          "candidate_rows_raw": 804575,
+          "common_keys": 747461,
+          "fold": "F1",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 57114
+        },
+        {
+          "baseline_rows_after_match": 820829,
+          "baseline_rows_raw": 820829,
+          "candidate_rows_after_match": 820829,
+          "candidate_rows_raw": 882426,
+          "common_keys": 820829,
+          "fold": "F2",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 61597
+        },
+        {
+          "baseline_rows_after_match": 924499,
+          "baseline_rows_raw": 924499,
+          "candidate_rows_after_match": 924499,
+          "candidate_rows_raw": 932167,
+          "common_keys": 924499,
+          "fold": "F3",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 7668
+        },
+        {
+          "baseline_rows_after_match": 925174,
+          "baseline_rows_raw": 925174,
+          "candidate_rows_after_match": 925174,
+          "candidate_rows_raw": 938594,
+          "common_keys": 925174,
+          "fold": "F4",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 13420
+        }
+      ],
+      "signed": {
+        "baseline_mean_rank_ic": 0.0852268662737014,
+        "delta_rank_ic": 0.003639686415604998,
+        "icir": 0.7430527360278602,
+        "mean_rank_ic": 0.08886655268930639,
+        "valid_day_count": 945
+      },
+      "workspace": "m0_v2"
+    },
+    "M0-refined": {
+      "abs_diff_icir": 0.0,
+      "abs_diff_mean_rank_ic": 0.0,
+      "abs_diff_valid_day_count": 0,
+      "exact_mean_rank_ic": true,
+      "mean_rank_ic_hex_agreement": true,
+      "reproduced": {
+        "icir": 0.7487197402496937,
+        "mean_rank_ic": 0.08942912316040101,
+        "rank_ic_std": 0.11944272115835616,
+        "valid_day_count": 945
+      },
+      "row_matching": [
+        {
+          "baseline_rows_after_match": 747461,
+          "baseline_rows_raw": 747461,
+          "candidate_rows_after_match": 747461,
+          "candidate_rows_raw": 804575,
+          "common_keys": 747461,
+          "fold": "F1",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 57114
+        },
+        {
+          "baseline_rows_after_match": 820829,
+          "baseline_rows_raw": 820829,
+          "candidate_rows_after_match": 820829,
+          "candidate_rows_raw": 882426,
+          "common_keys": 820829,
+          "fold": "F2",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 61597
+        },
+        {
+          "baseline_rows_after_match": 924499,
+          "baseline_rows_raw": 924499,
+          "candidate_rows_after_match": 924499,
+          "candidate_rows_raw": 932167,
+          "common_keys": 924499,
+          "fold": "F3",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 7668
+        },
+        {
+          "baseline_rows_after_match": 925174,
+          "baseline_rows_raw": 925174,
+          "candidate_rows_after_match": 925174,
+          "candidate_rows_raw": 938594,
+          "common_keys": 925174,
+          "fold": "F4",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 13420
+        }
+      ],
+      "signed": {
+        "baseline_mean_rank_ic": 0.0852268662737014,
+        "delta_rank_ic": 0.004202256886699618,
+        "icir": 0.7487197402496937,
+        "mean_rank_ic": 0.08942912316040101,
+        "valid_day_count": 945
+      },
+      "workspace": "m0_v3"
+    },
+    "M0R": {
+      "abs_diff_icir": 0.0,
+      "abs_diff_mean_rank_ic": 0.0,
+      "abs_diff_valid_day_count": 0,
+      "exact_mean_rank_ic": true,
+      "mean_rank_ic_hex_agreement": true,
+      "reproduced": {
+        "icir": 0.7681728838370345,
+        "mean_rank_ic": 0.09437596139252168,
+        "rank_ic_std": 0.12285771000027025,
+        "valid_day_count": 945
+      },
+      "row_matching": [
+        {
+          "baseline_rows_after_match": 747461,
+          "baseline_rows_raw": 747461,
+          "candidate_rows_after_match": 747461,
+          "candidate_rows_raw": 804575,
+          "common_keys": 747461,
+          "fold": "F1",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 57114
+        },
+        {
+          "baseline_rows_after_match": 820829,
+          "baseline_rows_raw": 820829,
+          "candidate_rows_after_match": 820829,
+          "candidate_rows_raw": 882426,
+          "common_keys": 820829,
+          "fold": "F2",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 61597
+        },
+        {
+          "baseline_rows_after_match": 924499,
+          "baseline_rows_raw": 924499,
+          "candidate_rows_after_match": 924499,
+          "candidate_rows_raw": 932167,
+          "common_keys": 924499,
+          "fold": "F3",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 7668
+        },
+        {
+          "baseline_rows_after_match": 925174,
+          "baseline_rows_raw": 925174,
+          "candidate_rows_after_match": 925174,
+          "candidate_rows_raw": 938594,
+          "common_keys": 925174,
+          "fold": "F4",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 13420
+        }
+      ],
+      "signed": {
+        "baseline_mean_rank_ic": 0.0852268662737014,
+        "delta_rank_ic": 0.009149095118820283,
+        "icir": 0.7681728838370345,
+        "mean_rank_ic": 0.09437596139252168,
+        "valid_day_count": 945
+      },
+      "workspace": "m0r_v2"
+    },
+    "M0R-replicate": {
+      "abs_diff_icir": 0.0,
+      "abs_diff_mean_rank_ic": 0.0,
+      "abs_diff_valid_day_count": 0,
+      "exact_mean_rank_ic": true,
+      "mean_rank_ic_hex_agreement": true,
+      "reproduced": {
+        "icir": 0.7681728838370345,
+        "mean_rank_ic": 0.09437596139252168,
+        "rank_ic_std": 0.12285771000027025,
+        "valid_day_count": 945
+      },
+      "row_matching": [
+        {
+          "baseline_rows_after_match": 747461,
+          "baseline_rows_raw": 747461,
+          "candidate_rows_after_match": 747461,
+          "candidate_rows_raw": 804575,
+          "common_keys": 747461,
+          "fold": "F1",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 57114
+        },
+        {
+          "baseline_rows_after_match": 820829,
+          "baseline_rows_raw": 820829,
+          "candidate_rows_after_match": 820829,
+          "candidate_rows_raw": 882426,
+          "common_keys": 820829,
+          "fold": "F2",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 61597
+        },
+        {
+          "baseline_rows_after_match": 924499,
+          "baseline_rows_raw": 924499,
+          "candidate_rows_after_match": 924499,
+          "candidate_rows_raw": 932167,
+          "common_keys": 924499,
+          "fold": "F3",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 7668
+        },
+        {
+          "baseline_rows_after_match": 925174,
+          "baseline_rows_raw": 925174,
+          "candidate_rows_after_match": 925174,
+          "candidate_rows_raw": 938594,
+          "common_keys": 925174,
+          "fold": "F4",
+          "rows_removed_from_baseline": 0,
+          "rows_removed_from_candidate": 13420
+        }
+      ],
+      "signed": {
+        "baseline_mean_rank_ic": 0.0852268662737014,
+        "delta_rank_ic": 0.009149095118820283,
+        "icir": 0.7681728838370345,
+        "mean_rank_ic": 0.09437596139252168,
+        "valid_day_count": 945
+      },
+      "workspace": "m0r_v3"
+    },
+    "M1-full": {
+      "abs_diff_icir": 0.0,
+      "abs_diff_mean_rank_ic": 0.0,
+      "abs_diff_valid_day_count": 0,
+      "exact_mean_rank_ic": true,
+      "mean_rank_ic_hex_agreement": true,
+      "reproduced": {
+        "icir": 0.7493713635407607,
+        "mean_rank_ic": 0.09305385234488889,
+        "rank_ic_std": 0.12417588511150439,
+        "valid_day_count": 945
+      },
+      "row_matching": [
+        {
+          "baseline_rows_after_match": 746521,
+          "baseline_rows_raw": 747461,
+          "candidate_rows_after_match": 746521,
+          "candidate_rows_raw": 803572,
+          "common_keys": 746521,
+          "fold": "F1",
+          "rows_removed_from_baseline": 940,
+          "rows_removed_from_candidate": 57051
+        },
+        {
+          "baseline_rows_after_match": 820309,
+          "baseline_rows_raw": 820829,
+          "candidate_rows_after_match": 820309,
+          "candidate_rows_raw": 881863,
+          "common_keys": 820309,
+          "fold": "F2",
+          "rows_removed_from_baseline": 520,
+          "rows_removed_from_candidate": 61554
+        },
+        {
+          "baseline_rows_after_match": 923745,
+          "baseline_rows_raw": 924499,
+          "candidate_rows_after_match": 923745,
+          "candidate_rows_raw": 931411,
+          "common_keys": 923745,
+          "fold": "F3",
+          "rows_removed_from_baseline": 754,
+          "rows_removed_from_candidate": 7666
+        },
+        {
+          "baseline_rows_after_match": 922985,
+          "baseline_rows_raw": 925174,
+          "candidate_rows_after_match": 922985,
+          "candidate_rows_raw": 936317,
+          "common_keys": 922985,
+          "fold": "F4",
+          "rows_removed_from_baseline": 2189,
+          "rows_removed_from_candidate": 13332
+        }
+      ],
+      "signed": {
+        "baseline_mean_rank_ic": 0.0852268662737014,
+        "delta_rank_ic": 0.007826986071187494,
+        "icir": 0.7493713635407607,
+        "mean_rank_ic": 0.09305385234488889,
+        "valid_day_count": 945
+      },
+      "workspace": "m1_full_v1"
+    }
+  },
+  "criteria": {
+    "coverage_window": [
+      0.9,
+      1.0
+    ],
+    "minimum_cross_section": 30,
+    "score_std_floor": 1e-06,
+    "source": "evaluation/gates.py:35 via evaluation/rank_ic.py:96-107",
+    "unique_score_count_floor": 10
+  },
+  "database_access": false,
+  "frozen_baseline_report_oos": {
+    "all_passed": true,
+    "baseline_mean_rank_ic": 0.08705554536301544,
+    "delta_rank_ic": 0.0,
+    "gate_note": "gates re-evaluated with derived fold-contract required_years (F1-F4 -> 2022-2025); the run-time report used the stale 2020-2025 default, which recorded G3/G5 as FAIL with observed=None",
+    "gates": {
+      "G1": {
+        "observed_value": 0.08705554536301544,
+        "status": "PASS",
+        "threshold": 0.03
+      },
+      "G2": {
+        "observed_value": 12.749827362339925,
+        "status": "PASS",
+        "threshold": 2.0
+      },
+      "G3": {
+        "observed_value": 1.0,
+        "status": "PASS",
+        "threshold": 0.7
+      },
+      "G4": {
+        "observed_value": null,
+        "status": "NOT_APPLICABLE",
+        "threshold": null
+      },
+      "G5": {
+        "observed_value": 0.2823906544640189,
+        "status": "PASS",
+        "threshold": 0.5
+      },
+      "G6": {
+        "observed_value": 1.0,
+        "status": "PASS",
+        "threshold": 0.95
+      }
+    },
+    "hac_t_statistic": 12.749827362339925,
+    "icir": 0.7507448094822075,
+    "mean_rank_ic": 0.08705554536301544,
+    "valid_day_count": 969,
+    "yearly_mean_rank_ic": {
+      "2022": 0.08118566121294693,
+      "2023": 0.07806425016339068,
+      "2024": 0.09060417297861999,
+      "2025": 0.09832154338626425
+    }
+  },
+  "generated_at_local": "2026-09-15T22:06:07",
+  "question": "Does an independent re-implementation that reads only the frozen parquet artifacts reproduce each carrier's signed OOS mean_rank_ic, valid_day_count and icir exactly, once _match_prediction_coverage's row-level inner join is implemented?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "row_matching_source": "evaluation/model_evaluator.py:59-64 -> _match_prediction_coverage at :140-168",
+  "summary": {
+    "all_valid_day_counts_equal_945": true,
+    "max_abs_diff_mean_rank_ic": 0.0,
+    "n_carriers_measured": 5,
+    "n_carriers_reproduced_hex_identical": 5
+  },
+  "weights_loaded": false
+}

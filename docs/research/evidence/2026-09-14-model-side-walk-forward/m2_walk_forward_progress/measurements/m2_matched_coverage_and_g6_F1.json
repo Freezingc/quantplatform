@@ -1,0 +1,136 @@
+{
+  "coverage_profiles": {
+    "M2_candidate_after_row_matching": {
+      "G6": 0.9958677685950413,
+      "coverage_max": 0.9451542536615768,
+      "coverage_median": 0.9210503902766505,
+      "coverage_min": 0.8900149031296573,
+      "days": 242,
+      "days_at_or_above_floor": 241,
+      "days_below_floor": 1
+    },
+    "M2_candidate_on_its_own_rows": {
+      "G6": 1.0,
+      "coverage_max": 0.9965646470955652,
+      "coverage_median": 0.9925244170850815,
+      "coverage_min": 0.9852289512555391,
+      "days": 242,
+      "days_at_or_above_floor": 242,
+      "days_below_floor": 0
+    },
+    "baseline_after_row_matching": {
+      "G6": 0.9958677685950413,
+      "coverage_max": 0.9451542536615768,
+      "coverage_median": 0.9210503902766505,
+      "coverage_min": 0.8900149031296573,
+      "days": 242,
+      "days_at_or_above_floor": 241,
+      "days_below_floor": 1
+    },
+    "baseline_on_its_own_rows": {
+      "G6": 0.9958677685950413,
+      "coverage_max": 0.9483451902257964,
+      "coverage_median": 0.9253990284831323,
+      "coverage_min": 0.8950819672131147,
+      "days": 242,
+      "days_at_or_above_floor": 241,
+      "days_below_floor": 1
+    }
+  },
+  "database_access": false,
+  "days_m2_loses_after_matching": {
+    "count": 1,
+    "dates": [
+      "2022-07-29"
+    ],
+    "same_days_the_baseline_also_fails": [
+      "2022-07-29"
+    ]
+  },
+  "fold_observed": "F1",
+  "generated_at_local": "2026-09-15T22:18:00",
+  "preregistration_check": {
+    "baseline_own_coverage_median": 0.9253990284831323,
+    "baseline_own_coverage_min": 0.8950819672131147,
+    "candidate_is_below_what_was_preregistered_by": 0.005067064083457473,
+    "observed_matched_coverage_median": 0.9210503902766505,
+    "observed_matched_coverage_min": 0.8900149031296573,
+    "preregistered_for_this_fold": {
+      "days": 242,
+      "days_below_floor": 1,
+      "expected_coverage_median": 0.9253990284831323,
+      "expected_coverage_min": 0.8950819672131147,
+      "expected_valid_days": 241,
+      "test_year": 2022
+    },
+    "preregistered_median_equals_the_baseline_not_the_candidate": true,
+    "preregistered_min_equals_the_baseline_not_the_candidate": true
+  },
+  "projection_to_all_four_folds": {
+    "G6_gate": 0.95,
+    "effective_threshold_after_the_measured_deficit": 0.9048741642384238,
+    "independent_comparison": {
+      "AX_rule_based_projection_G6": 0.9339525283797729,
+      "AX_rule_based_projection_days_below_floor": 64,
+      "difference_in_G6": -0.0010319917440659854,
+      "difference_in_days": 1,
+      "note": "§AX derived its number from the temporal eligibility rule in training/temporal_batches.py:186-192 applied to the frozen datasets; this probe derives its from M2's actual F1 predictions and the baseline's measured coverage. Neither used the other's input.",
+      "this_probe_deficit_based_G6": 0.932920536635707,
+      "this_probe_deficit_based_days_below_floor": 65
+    },
+    "per_fold": {
+      "F1": {
+        "baseline_days_below_0.90": null,
+        "basis": "observed",
+        "days": 242,
+        "days_below_floor": 1,
+        "valid_days": 241
+      },
+      "F2": {
+        "baseline_days_below_0.90": null,
+        "basis": "projected at threshold 0.904874",
+        "days": 242,
+        "days_below_floor": 64,
+        "valid_days": 178
+      },
+      "F3": {
+        "baseline_days_below_0.90": null,
+        "basis": "projected at threshold 0.904874",
+        "days": 242,
+        "days_below_floor": 0,
+        "valid_days": 242
+      },
+      "F4": {
+        "baseline_days_below_0.90": null,
+        "basis": "projected at threshold 0.904874",
+        "days": 243,
+        "days_below_floor": 0,
+        "valid_days": 243
+      }
+    },
+    "projected_G6": 0.932920536635707,
+    "projected_valid_days": 904,
+    "total_days": 969,
+    "total_days_below_floor": 65,
+    "would_pass": false
+  },
+  "question": "What is M2's OOS coverage as the evaluator actually computes it, which mechanism produces the days it loses, and what G6 does that imply for the remaining folds?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "row_matching": {
+    "baseline_rows_raw": 747461,
+    "baseline_rows_removed": 5089,
+    "common_keys": 742372,
+    "m2_candidate_rows_raw": 797239,
+    "m2_rows_after_match": 742372,
+    "m2_rows_removed": 54867,
+    "source": "evaluation/model_evaluator.py:59-64 -> _match_prediction_coverage at :140-168"
+  },
+  "the_stack_is_close_to_multiplicative": {
+    "m2_own_coverage_median": 0.9925244170850815,
+    "median_ratio_matched_over_baseline": 0.9946134341867015,
+    "pearson_corr_matched_m2_vs_baseline_coverage": 0.9927284042422394,
+    "reading": "M2 loses about 0.7% of rows on its own and the baseline is already at about 0.925 median coverage, so the matched product sits about 0.5% below the baseline -- enough to move days across a floor they were already near"
+  },
+  "weights_loaded": false
+}

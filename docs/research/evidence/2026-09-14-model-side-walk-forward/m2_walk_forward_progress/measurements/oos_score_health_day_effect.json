@@ -1,0 +1,1147 @@
+{
+  "carriers_measured": [
+    "M0-base",
+    "M0-refined",
+    "M0R",
+    "M0R-replicate",
+    "M1-full",
+    "M2",
+    "baseline_B2"
+  ],
+  "criteria_under_test": {
+    "coverage_window": [
+      0.9,
+      1.0
+    ],
+    "minimum_cross_section": 30,
+    "score_std_floor": 1e-06,
+    "source": "evaluation/gates.py:35",
+    "unique_score_count_floor": 10
+  },
+  "database_access": false,
+  "generated_at_local": "2026-09-15T21:57:00",
+  "method": "per-day arithmetic re-implemented line by line from evaluation/rank_ic.py:60-107 and evaluation/gates.py:25-35; rank correlation reproduced as pandas rank(method='average') on both sides followed by a Pearson correlation, which is what the repository does",
+  "per_carrier_fold": {
+    "M0-base|F1": {
+      "carrier": "M0-base",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F1",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.08918909502308234,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.08918909502308234,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v2/predictions/857ef3c68315fb00adb8fcf044a172c917a99bf7de874ac64dc969633747ec1c/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2622027544555615,
+        "min": 0.2423694812980139
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 1767.0,
+        "min": 1477
+      }
+    },
+    "M0-base|F2": {
+      "carrier": "M0-base",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F2",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.07558077437449545,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.07558077437449545,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v2/predictions/edfe418cc51938333ef4da9de083386957eb2fc0c28c362d3f77c13509deeaa6/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.26461175232199674,
+        "min": 0.25425030615141814
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 2654.5,
+        "min": 2383
+      }
+    },
+    "M0-base|F3": {
+      "carrier": "M0-base",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F3",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.09973244379414284,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.09973244379414284,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v2/predictions/7c699788ccdd7f2b6aed5ffe4a5882812af8c6309f5dbf34ad0338c74ef337bd/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.24506389723930777,
+        "min": 0.22536917468961282
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 2215.0,
+        "min": 1702
+      }
+    },
+    "M0-base|F4": {
+      "carrier": "M0-base",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 243,
+      "days_valid_in_the_validation_regime_floor_only": 243,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F4",
+      "label_dates": 243,
+      "mean_rank_ic_oos_regime": 0.10023713968382987,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10023713968382987,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v2/predictions/8d90c37ace7221b354edd335fa2616d6ef4ab388649952e3efe1f639f469fb4c/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2784256092755886,
+        "min": 0.27384432532933656
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3576.0,
+        "min": 3487
+      }
+    },
+    "M0-refined|F1": {
+      "carrier": "M0-refined",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F1",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.08918909502308234,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.08918909502308234,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/predictions/3bbae89e20c12f8742703ad3a5bd8fc3c3ab0e8963719605c2a9dd50c363cb85/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2622027544555615,
+        "min": 0.2423694812980139
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 1767.0,
+        "min": 1477
+      }
+    },
+    "M0-refined|F2": {
+      "carrier": "M0-refined",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F2",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.07859443709095688,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.07859443709095688,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/predictions/0f2564f5947f4339d5e500490f6f203e255b38830750fbe4a607e5e318fecd74/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2687021697658486,
+        "min": 0.26023291132028
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 1799.0,
+        "min": 1397
+      }
+    },
+    "M0-refined|F3": {
+      "carrier": "M0-refined",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F3",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.09973244379414284,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.09973244379414284,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/predictions/07d663b75ef2746ea26ed428393649c58ce2bd79f8a450b1af081cb5d486cd1e/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.24506389723930777,
+        "min": 0.22536917468961282
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 2215.0,
+        "min": 1702
+      }
+    },
+    "M0-refined|F4": {
+      "carrier": "M0-refined",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 243,
+      "days_valid_in_the_validation_regime_floor_only": 243,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F4",
+      "label_dates": 243,
+      "mean_rank_ic_oos_regime": 0.10028039568548719,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10028039568548719,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/predictions/2f8aaeb70752ba2f811d1ab4c78be6f779b2abe7b3ae48140922a5ff9f55167d/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2784327845281587,
+        "min": 0.2727682602800221
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3566.0,
+        "min": 3469
+      }
+    },
+    "M0R-replicate|F1": {
+      "carrier": "M0R-replicate",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F1",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.09366756368734988,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.09366756368734988,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v3/predictions/98dc1610117ab6e881d0f9d0917cf3615c6a21f78f66bc43a0ca7727bedf34c0/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2877115277789001,
+        "min": 0.2863376037911329
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3027.0,
+        "min": 2846
+      }
+    },
+    "M0R-replicate|F2": {
+      "carrier": "M0R-replicate",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F2",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.083208376853219,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.083208376853219,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v3/predictions/ed752887b6614ae1e901ce1490b1caa9125a69d27cf3f8425ee215ff69e0e0ea/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.287760299355568,
+        "min": 0.2869833407188892
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3221.0,
+        "min": 3092
+      }
+    },
+    "M0R-replicate|F3": {
+      "carrier": "M0R-replicate",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F3",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.10477877053961318,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10477877053961318,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v3/predictions/b69fa46adb984d347f16b3e09e5f6cd30b22f854a720fef4d85670f8f9eb566f/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2875802319201525,
+        "min": 0.2855721430787598
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3492.0,
+        "min": 3363
+      }
+    },
+    "M0R-replicate|F4": {
+      "carrier": "M0R-replicate",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 243,
+      "days_valid_in_the_validation_regime_floor_only": 243,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F4",
+      "label_dates": 243,
+      "mean_rank_ic_oos_regime": 0.10470301233033484,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10470301233033484,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v3/predictions/8a870cadd1ed54b3ae18c838d84fa957fa2c18055e3d6ea766c53f831915b85e/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2883575020945165,
+        "min": 0.28777039472443117
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3411.0,
+        "min": 3273
+      }
+    },
+    "M0R|F1": {
+      "carrier": "M0R",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F1",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.09366756368734988,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.09366756368734988,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/98dc1610117ab6e881d0f9d0917cf3615c6a21f78f66bc43a0ca7727bedf34c0/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2877115277789001,
+        "min": 0.2863376037911329
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3027.0,
+        "min": 2846
+      }
+    },
+    "M0R|F2": {
+      "carrier": "M0R",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F2",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.083208376853219,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.083208376853219,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/ed752887b6614ae1e901ce1490b1caa9125a69d27cf3f8425ee215ff69e0e0ea/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.287760299355568,
+        "min": 0.2869833407188892
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3221.0,
+        "min": 3092
+      }
+    },
+    "M0R|F3": {
+      "carrier": "M0R",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F3",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.10477877053961318,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10477877053961318,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/b69fa46adb984d347f16b3e09e5f6cd30b22f854a720fef4d85670f8f9eb566f/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2875802319201525,
+        "min": 0.2855721430787598
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3492.0,
+        "min": 3363
+      }
+    },
+    "M0R|F4": {
+      "carrier": "M0R",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 243,
+      "days_valid_in_the_validation_regime_floor_only": 243,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F4",
+      "label_dates": 243,
+      "mean_rank_ic_oos_regime": 0.10470301233033484,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10470301233033484,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/8a870cadd1ed54b3ae18c838d84fa957fa2c18055e3d6ea766c53f831915b85e/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2883575020945165,
+        "min": 0.28777039472443117
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3411.0,
+        "min": 3273
+      }
+    },
+    "M1-full|F1": {
+      "carrier": "M1-full",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F1",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.08997705116254806,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.08997705116254806,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1/predictions/1fa5694aae43b7a0a35ad5b1ace0b32db65f17cec98025e6e7364f5655243641/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.27410594286844514,
+        "min": 0.2634125043716349
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 2944.0,
+        "min": 2733
+      }
+    },
+    "M1-full|F2": {
+      "carrier": "M1-full",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F2",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.08459461825107817,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.08459461825107817,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1/predictions/03152f85200045efd006aae76c2aa4262c85fdbe92df790b6f68c2484cda5413/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.28271808082655747,
+        "min": 0.27583094312588247
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3215.0,
+        "min": 3098
+      }
+    },
+    "M1-full|F3": {
+      "carrier": "M1-full",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F3",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.10520574971007,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10520574971007,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1/predictions/2b6e02510033079774e79a84f1592651b2856259aed4153106d7dc5a5a35e1ee/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2833387305129107,
+        "min": 0.24829675232513218
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3410.0,
+        "min": 3312
+      }
+    },
+    "M1-full|F4": {
+      "carrier": "M1-full",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p01": 1.0
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 243,
+      "days_valid_in_the_validation_regime_floor_only": 243,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F4",
+      "label_dates": 243,
+      "mean_rank_ic_oos_regime": 0.10119733879524945,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.10119733879524945,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1/predictions/2a357f340366397aaf17c9aad7d324a56223b307df03a10d45f73b9e5e50b532/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.2840825696091762,
+        "min": 0.27392494423153974
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3407.0,
+        "min": 3322
+      }
+    },
+    "M2|F1": {
+      "carrier": "M2",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 0.9965646470955652,
+        "median": 0.9925244170850815,
+        "min": 0.9852289512555391,
+        "p01": 0.9859409158050221
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F1",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.08837041572767663,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.08837041572767663,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/m2_v1/predictions/19c44fdb8e556472764610cb0e4266fecda2ba360381deb7c403526f419ab29c/scores.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.27898001039794385,
+        "min": 0.2745435553671196
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 2920.5,
+        "min": 2713
+      }
+    },
+    "baseline_B2|F1": {
+      "carrier": "baseline_B2",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 0.9483451902257964,
+        "median": 0.9253990284831323,
+        "min": 0.8950819672131147,
+        "p01": 0.9070204363953476
+      },
+      "days_dropped_by_score_health": 1,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 1,
+        "coverage_outside_0.90_to_1.0": 1,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 241,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {
+        "FAIL_coverage|pass|pass": 1
+      },
+      "fold": "F1",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.08063676032509293,
+      "mean_rank_ic_shift_oos_minus_validation": -0.0005489008878540036,
+      "mean_rank_ic_validation_regime": 0.08118566121294693,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F1.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": 0.2134707751857622,
+        "mean": 0.2134707751857622,
+        "min": 0.2134707751857622,
+        "n": 1
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.0036388344817403486,
+        "min": 0.002569909900965742
+      },
+      "share_of_floor_valid_days_dropped": 0.004132231404958678,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3069.0,
+        "min": 2958
+      }
+    },
+    "baseline_B2|F2": {
+      "carrier": "baseline_B2",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 0.9954521134296416,
+        "median": 0.9092936592336784,
+        "min": 0.8902674386545354,
+        "p01": 0.8983797478460616
+      },
+      "days_dropped_by_score_health": 23,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 23,
+        "coverage_outside_0.90_to_1.0": 23,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 219,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {
+        "FAIL_coverage|pass|pass": 23
+      },
+      "fold": "F2",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.06980632185667657,
+      "mean_rank_ic_shift_oos_minus_validation": -0.00825792830671411,
+      "mean_rank_ic_validation_regime": 0.07806425016339068,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F2.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": 0.2522996212794487,
+        "mean": 0.15669408925775552,
+        "min": 0.06557945045488575,
+        "n": 23
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.003235053897819651,
+        "min": 0.002408423731243773
+      },
+      "share_of_floor_valid_days_dropped": 0.09504132231404959,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3262.5,
+        "min": 3212
+      }
+    },
+    "baseline_B2|F3": {
+      "carrier": "baseline_B2",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 0.9966057441253263,
+        "median": 0.9924234358393046,
+        "min": 0.9711145194274029,
+        "p01": 0.9767343861339004
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 242,
+      "days_valid_in_the_validation_regime_floor_only": 242,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F3",
+      "label_dates": 242,
+      "mean_rank_ic_oos_regime": 0.09060417297861999,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.09060417297861999,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F3.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.0016183257557895198,
+        "min": 0.001069510907125463
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 3810.0,
+        "min": 3749
+      }
+    },
+    "baseline_B2|F4": {
+      "carrier": "baseline_B2",
+      "coverage_distribution_on_floor_valid_days": {
+        "max": 0.9894952600563669,
+        "median": 0.9859442882698697,
+        "min": 0.980854969840021,
+        "p01": 0.9811242597287636
+      },
+      "days_dropped_by_score_health": 0,
+      "days_failing_each_criterion_among_floor_valid": {
+        "any_of_the_three": 0,
+        "coverage_outside_0.90_to_1.0": 0,
+        "score_std_at_or_below_1e-6": 0,
+        "unique_score_count_below_10": 0
+      },
+      "days_valid_in_the_oos_regime_floor_plus_health": 243,
+      "days_valid_in_the_validation_regime_floor_only": 243,
+      "failure_combinations_on_dropped_days": {},
+      "fold": "F4",
+      "label_dates": 243,
+      "mean_rank_ic_oos_regime": 0.09832154338626425,
+      "mean_rank_ic_shift_oos_minus_validation": 0.0,
+      "mean_rank_ic_validation_regime": 0.09832154338626425,
+      "predictions": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F4.parquet",
+      "rank_ic_on_dropped_days": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "n": 0
+      },
+      "score_std_on_floor_valid_days": {
+        "median": 0.13699049155282014,
+        "min": 0.1097297233345733
+      },
+      "share_of_floor_valid_days_dropped": 0.0,
+      "unique_score_count_on_floor_valid_days": {
+        "median": 2446.0,
+        "min": 2157
+      }
+    }
+  },
+  "per_carrier_rollup": {
+    "M0-base": {
+      "days_failing_coverage": 0,
+      "days_failing_std_at_or_below_1e-6": 0,
+      "days_failing_unique_below_10": 0,
+      "folds_measured": 4,
+      "largest_absolute_mean_shift": 0.0,
+      "mean_rank_ic_shift_per_fold": {
+        "F1": 0.0,
+        "F2": 0.0,
+        "F3": 0.0,
+        "F4": 0.0
+      },
+      "total_days_dropped_by_score_health": 0,
+      "total_floor_valid_days": 969,
+      "total_oos_valid_days": 969
+    },
+    "M0-refined": {
+      "days_failing_coverage": 0,
+      "days_failing_std_at_or_below_1e-6": 0,
+      "days_failing_unique_below_10": 0,
+      "folds_measured": 4,
+      "largest_absolute_mean_shift": 0.0,
+      "mean_rank_ic_shift_per_fold": {
+        "F1": 0.0,
+        "F2": 0.0,
+        "F3": 0.0,
+        "F4": 0.0
+      },
+      "total_days_dropped_by_score_health": 0,
+      "total_floor_valid_days": 969,
+      "total_oos_valid_days": 969
+    },
+    "M0R": {
+      "days_failing_coverage": 0,
+      "days_failing_std_at_or_below_1e-6": 0,
+      "days_failing_unique_below_10": 0,
+      "folds_measured": 4,
+      "largest_absolute_mean_shift": 0.0,
+      "mean_rank_ic_shift_per_fold": {
+        "F1": 0.0,
+        "F2": 0.0,
+        "F3": 0.0,
+        "F4": 0.0
+      },
+      "total_days_dropped_by_score_health": 0,
+      "total_floor_valid_days": 969,
+      "total_oos_valid_days": 969
+    },
+    "M0R-replicate": {
+      "days_failing_coverage": 0,
+      "days_failing_std_at_or_below_1e-6": 0,
+      "days_failing_unique_below_10": 0,
+      "folds_measured": 4,
+      "largest_absolute_mean_shift": 0.0,
+      "mean_rank_ic_shift_per_fold": {
+        "F1": 0.0,
+        "F2": 0.0,
+        "F3": 0.0,
+        "F4": 0.0
+      },
+      "total_days_dropped_by_score_health": 0,
+      "total_floor_valid_days": 969,
+      "total_oos_valid_days": 969
+    },
+    "M1-full": {
+      "days_failing_coverage": 0,
+      "days_failing_std_at_or_below_1e-6": 0,
+      "days_failing_unique_below_10": 0,
+      "folds_measured": 4,
+      "largest_absolute_mean_shift": 0.0,
+      "mean_rank_ic_shift_per_fold": {
+        "F1": 0.0,
+        "F2": 0.0,
+        "F3": 0.0,
+        "F4": 0.0
+      },
+      "total_days_dropped_by_score_health": 0,
+      "total_floor_valid_days": 969,
+      "total_oos_valid_days": 969
+    },
+    "M2": {
+      "days_failing_coverage": 0,
+      "days_failing_std_at_or_below_1e-6": 0,
+      "days_failing_unique_below_10": 0,
+      "folds_measured": 1,
+      "largest_absolute_mean_shift": 0.0,
+      "mean_rank_ic_shift_per_fold": {
+        "F1": 0.0
+      },
+      "total_days_dropped_by_score_health": 0,
+      "total_floor_valid_days": 242,
+      "total_oos_valid_days": 242
+    },
+    "baseline_B2": {
+      "days_failing_coverage": 24,
+      "days_failing_std_at_or_below_1e-6": 0,
+      "days_failing_unique_below_10": 0,
+      "folds_measured": 4,
+      "largest_absolute_mean_shift": 0.00825792830671411,
+      "mean_rank_ic_shift_per_fold": {
+        "F1": -0.0005489008878540036,
+        "F2": -0.00825792830671411,
+        "F3": 0.0,
+        "F4": 0.0
+      },
+      "total_days_dropped_by_score_health": 24,
+      "total_floor_valid_days": 969,
+      "total_oos_valid_days": 945
+    }
+  },
+  "per_day_csv": "/data/zhangyudong/qrv2_research_artifacts/oos_score_health_day_effect/oos_score_health_per_day.csv",
+  "per_day_rows": 6056,
+  "question": "Does require_score_health=True on the OOS path actually remove days that the validation paths keep, which of its three criteria does the removing, and does the mean_rank_ic move when it does?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "weights_loaded": false
+}
