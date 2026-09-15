@@ -1,0 +1,27 @@
+{
+ "day": "2024-11-18",
+ "panel_codes": 5352,
+ "labeled_A_provider": 5093,
+ "labeled_cache_raw": 5093,
+ "labeled_member_all": 5347,
+ "both_labeled": 5088,
+ "name_differs": 0,
+ "name_differs_sample": [],
+ "added_by_union": 259,
+ "added_sample": [
+  "920375.BJ",
+  "920932.BJ",
+  "920169.BJ",
+  "920855.BJ",
+  "920719.BJ",
+  "920075.BJ",
+  "920167.BJ",
+  "920021.BJ",
+  "920274.BJ",
+  "920950.BJ",
+  "920641.BJ",
+  "920526.BJ"
+ ],
+ "lost_under_member_all": 5,
+ "provider_matches_cache_raw_on": 5088
+}

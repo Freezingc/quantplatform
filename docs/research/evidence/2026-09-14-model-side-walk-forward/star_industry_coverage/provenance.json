@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-14T23:18:00+00:00",
+  "generated_at_utc": "2026-09-15T00:14:32+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "19ff9dcfafcf0206b8dd4c6f7ea5531a79b098f8455c9da3b8cfbf025d7ccbd7"
@@ -30,6 +30,11 @@
     "group_membership_propagation.json": "e8de0d5ea79cdbfbd67ead21d4486ea2a11a5ce2ede6ea4839c1506061fcd0a4",
     "industry_cache_star_coverage.json": "2b2640d0ae53a5a9e1ae0d2ee90b5b188b49ec341b2215bc382a62be7c33bb7f",
     "industry_group_incompleteness.json": "4785968e3d940c0d553f355877a5593261443b8850d2ded58ea11d34218ad2c9",
+    "label_source_decomposition_20241118.json": "b490cf06946949b80e46f78cfc2907dc115b6878faa1c72bf9ed866a78f59eee",
+    "label_source_sensitivity_all_20230705.json": "7dcffe86ba08898e5f7aeaa5edbd5d04966939ce355f31b55bff6ba429917929",
+    "label_source_sensitivity_all_20241118.json": "76b6497b0e07116f2fe6f1a4d5ff4575aa5b2f4f84e96fb2f3ee2491940ed053",
+    "label_source_sensitivity_shsz_20230705.json": "5da152cb3e61f2fc5d4b0918cf132563def6b6fc063d1e8be63c89b71993e39b",
+    "label_source_sensitivity_shsz_20241118.json": "989f37013db728a7cdf5880c374c5df67489a9c6579ae88f2301cfa3f3d38d98",
     "option1_bulk_expiry_days.json": "9a9641ec2948a8d22337d0dd7b53eec3e0a66e8190bbb0e95c1c0dbc3d65a567",
     "option1_gap_row_classification.json": "3dde5315414555d9d076d17e13d201102cbac64b328544f76666788fd55731f5",
     "option1_label_switch_winners_losers.json": "3ea0498234b010a3ad74e79e991cd7d06ee8019b04982683a4c7a74348973871",
@@ -59,7 +64,7 @@
     "union_precedence_surgical.json": "4b2e8df832522b951a742a10537f00eaf8e24b11c47f8dbace6c92e025ebbe82"
   },
   "narratives": {
-    "option1_feasibility.md": "356faee2129db012d5068c9c42a4cfac27a0b407f2dd713f1f6320344138f45f",
+    "option1_feasibility.md": "79b9c6b5c3491a2d2510c6e525cd7caf86c01379955462775df5eac67a3cb110",
     "root_cause.md": "7c719821cbcad9766baa3ee1a725ae8ef63d363306cefae8bc725f68e71a0390"
   },
   "probe_scripts": {
@@ -72,6 +77,7 @@
     "probe_gap_row_classification.py": "4bc850b79f348835930bf1fa3fddda36f61972d3a4afea5c978f3b35db34822d",
     "probe_group_membership_propagation.py": "c0d0a95efe9ea593c2574f5437b2c1affa6ceaf2a449f0e2028f1b04bf188079",
     "probe_industry_group_incompleteness.py": "8bd6e4166c717fba8be09cbb1cc5d9669e1e3259d754a7cf3e3fd7f5157ffcd3",
+    "probe_label_source_sensitivity.py": "800f974bf33693078cd6b89bd2dc9604fa7fa26ebe5e99ec7becac997b0af0f6",
     "probe_label_switch_winners_losers.py": "f1165057234a678ca4c2fae77e75190e93376ac989cefcb7ab22c11d799a1a4b",
     "probe_other_failure_shapes.py": "0b542869aed5befa8917b52471c4f9452fa19847600ff5e0c515d5142f9975ef",
     "probe_star_rows_all_precutover.py": "856dfeaba331c3892da2edc059c9d830ee90cb34dd7f6e5c1f374bfbc8ea0309",
@@ -96,7 +102,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "e06d3af3b1202771333ba30ed28637829893c940"
+    "commit_at_generation": "cec87388a14c5923159b6c6ea38bdf5315d4368b"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
