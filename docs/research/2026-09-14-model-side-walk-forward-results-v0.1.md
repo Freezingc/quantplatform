@@ -60,6 +60,29 @@ v2 的 15 个 = 9 个稠密（baseline-eligible）+ 6 个稀疏（candidate-only
 并在 watch-pair 复核中移除了 `yeslab_405` 与 `yeslab_398`。
 完整 id 列表见 `evidence/…/factor_sets.json`。
 
+> **【同日追加，18:58】这 15 列各自由什么产出，此前任何工件里都没有记；论文的数据段应当带上这张表**（§BG）
+> `materialize_frozen_factor_daily.py` 对不同的因子走**四条不同的产出路径**：
+> **(a) GP 翻译重放（9 个）**：`372`=`GP_Factor_003`、`375`=`GP_Factor_006`、`381`=`GP_Factor_012`、
+> `384`=`GP_Factor_015`、`389`=`GP_Factor_020`、`390`=`GP_Factor_021`、`406`=`GP_Factor_037`、
+> `425`=`GP_Factor_056`、`464`=`GP_Factor_095`；
+> **(b) 具名计算器 + PIT 行业提供方（2 个）**：`357`=`IndustryStandAbsCalculator`、`471`=`AttentionSpilloverCalculator`
+> （两者都在 `PIT_FACTORS` 里，即 §4 第 5 条那条行业缓存链）；
+> **(c) 具名计算器、无 PIT（2 个）**：`484`=`HerdingCSADStd21Calculator`、`96`=`ModifiedDayReversalCalculator`；
+> **(d) 两条专用分支（2 个）**：**`206` 走 `materialize_alpha206_median_repair(market,…)`（`:63`）——
+> 它不是重放，是一次刻意的"中位数修复"，所以它的冻结列被设计成不等于目录里那个
+> `60日成交量去均值相对偏离`**（这正好解释 §BF 量到的 0.9014：符号一致率 1.000、中位相对差 0.37–1.04，
+> 即"秩大致保留、量级被改过"）；**`443_reg30_max20_v1` 走 `compute_gp074_variant(wide, 30, 20)`（`:69`）——
+> 它是 `yeslab_443`(GP_074) 的 (30,20) 窗口变体，名字里的 `reg30_max20_v1` 就是这两个参数，
+> 所以它在目录里没有条目、也不能按"应当复现 GP_074"去普查**。
+> **另需注意**：`REPLAY_DEFINITIONS` 里 `yeslab_206` 仍挂着 `Bias_Vol_Demean_60_Calculator`，
+> **但物化器把它排除在 `definitions` 之外（`:118`）并走专用分支——那条 `ReplayDefinition` 对冻结列而言是死条目，读它会被误导。**
+> **还有一条把 §AM/§BC 从源码侧闭合了**：**`load_frozen_factors()` 读的是 `factor_set_frozen_v1.json`（`:56`），不是 v2**；
+> 实测 **v1 = 17 个、v2 = 15 个、`v2 ⊂ v1` 为真、差集恰是 `{yeslab_398, yeslab_405}`**。
+> **所以 v2 的 15 个之所以都有行，是因为它们全在 v1 的 17 个里；`yeslab_363` 之所以 0 行，是因为它两个集合都不在**
+> （尽管它在 `PIT_FACTORS`、在目录里、在上游有六年完整数据）；
+> **而 `398`/`405` 在 `factor_daily` 里应当是有行的，只是不在 v2 的训练输入里**（本节未查，推论直接来自 `:56`）。
+> 证据在 `evidence/…/sparse_factor_availability/measurements/gp_translation_provenance.json`，叙述在 `problems_found.md` §BG。
+
 **基线看不到那 6 个稀疏因子，这是设计而非疏漏**：它们按公式在约一半的交易日上就是 NaN
 （**稀疏性本身即候选信号**），若让基线也看到它们，G4 的那条杠就不再是
 "诚实的简单模型参照"。**写论文时必须点明的推论**：候选的信息集**严格包含**基线的信息集，
@@ -764,6 +787,33 @@ M2 之后是 M3（`SetAttention`，静态族，16 格，48 路 = 16×3 恰好一
     **普查只用 8 天、不是全窗口**（`471` 的 0.4792 与 `464` 的 0.6357 都是单日值，未量其逐日分布）。
     证据在 `evidence/…/sparse_factor_availability/measurements/replay_fidelity_census.json` 等 5 份，
     叙述在 `problems_found.md` §BF。
+    > **【18:58 追加：那 9 个 GP 翻译在仓库内不可验证，这是一条独立的可追溯性限制】**（§BG）
+    > **100 个 `GP_Factor_*_Calculator.py` 全部（100/100）在 docstring 里写 `来源: 20260215_163844.csv`，
+    > 而该文件在仓库内与 `/data/zhangyudong`（深度 6）都不存在。**
+    > 仓库里唯一的算子库 `数据库/build_factor/function_lib.py`（81 个顶层定义）
+    > **不定义 GP 表达式用到的 6 个算子：`cs_rank`、`cs_zscore`、`mul`、`relu`、`tanh`、`ts_delta_ratio`**
+    > （其余五个在整个仓库里没有任何 `def`），**而且 `build_factor` 生成的脚本形态与 `factor_calculators/` 完全不同**
+    > （前者是 `eval(parse_expression(expr))` 跑在按 `datetime`/`instrument` 分组的长表上）。
+    > **所以那 100 个 GP 计算器是对一套其参考实现不在本仓库的 DSL 的翻译**：
+    > **"我们的 GP_006 翻译是否有错"在仓库内既不能证实也不能证伪。**
+    > **这与 §4 第 5 条那个"数据商重述过行业历史、只有随包复制的缓存才是当时重放真正看到的输入"、
+    > 以及 `problems_found.md` §BB.4 那个"`dfs://YesLab` 无时间戳 ⇒ '上游有、我们丢了'不可证伪"
+    > 是同一族的第三个可追溯性缺口。**
+    > **计算器写法普查（100 个文件）**：**89 个用裸 `.rolling(`、0 个传 `min_periods`、29 个用 `**`、0 个用 `np.power`、
+    > 38 个在截面标准差上加 `1e-10`**；**而仓库里那个算子库的对应算子全部带 `min_periods=1`、`ZSCORE` 不加 epsilon、
+    > `POW = np.power`** ⇒ **若有人日后改用 `build_factor` 重新生成这些因子，会得到第三条数值谱系**
+    > （`temporal_batches.py` 的 docstring 已在担心这件事：*"the measured lineage gap is already a third of the G4 gate"*）。
+    > **但 `min_periods` 不是 GP_006 那个缺口的解释**：`factor_calculators/base.py:127` 是
+    > `pstart_time = start_time − timedelta(days=10 × lookback_days)`，**按日历日预取 10 倍 lookback**
+    > （`replay_lookback_days=180` ⇒ 约 1,800 个日历日热身），**所以窗口中段不可能因 `min_periods` 缺值。**
+    > **这条限制覆盖多大范围**：**冻结 v2 的 9/15 走 GP 翻译；`REPLAY_DEFINITIONS` 共 99 条，其中 55 条指向 GP 计算器。**
+    > **可以让它不至于变成"什么都不能信"的是 §BF 那张普查表**：**9 个 GP 因子里 8 个对生产者存量值的秩相关 ≥0.9529、
+    > 其中 5 个是 1.0000** ⇒ **翻译虽不可对源码验证，却被经验证据支持了 8/9；唯一的例外 `GP_006`
+    > 恰好坐在一个自身就有歧义的源上（同一个键两个互不一致的值、无版本列）。**
+    > **论文里应当这样写**：*因子值由生产者计算器类在 Tushare SH/SZ 行情上重放得到；其中 9 个来自一套
+    > 遗传规划表达式的人工翻译，其表达式来源文件与 DSL 参考实现均不在本仓库内，
+    > 因此这 9 列的正确性只能由"与生产者存量值的秩相关"这一经验证据支持（8/9 ≥ 0.95，5/9 = 1.0000），
+    > 不能由源码对照支持。*
 
 ---
 

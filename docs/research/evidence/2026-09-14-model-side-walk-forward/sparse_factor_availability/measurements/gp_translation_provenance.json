@@ -1,0 +1,217 @@
+{
+  "calculator_executed": false,
+  "calculator_style_census": {
+    "bare_rolling": 89,
+    "cited_sources": {
+      "20260215_163844.csv": 100
+    },
+    "double_star": 29,
+    "epsilon_1e_10": 38,
+    "files": 100,
+    "min_periods": 0,
+    "np_power": 0
+  },
+  "cited_expression_source": {
+    "cited_by_how_many_calculators": {
+      "20260215_163844.csv": 100
+    },
+    "names": [
+      "20260215_163844.csv"
+    ],
+    "present_anywhere_under_the_repo_or_/data/zhangyudong": {
+      "20260215_163844.csv": false
+    }
+  },
+  "database_access": false,
+  "expression_of_record_for_the_six_sparse_factors": {
+    "GP_Factor_003_Calculator": "mul(turnover, cs_rank(pow(pct_chg, ts_delta_ratio_20(turnover))))",
+    "GP_Factor_006_Calculator": "mul(turnover, cs_rank(pow(tanh(ts_delta_ratio_20(vol)),",
+    "GP_Factor_015_Calculator": "mul(turnover, cs_rank(pow(tanh(ts_delta_ratio_20(vol)), low)))",
+    "GP_Factor_020_Calculator": "add(pow(pct_chg, ts_sum_10(turnover)), pct_chg)",
+    "GP_Factor_021_Calculator": "add(pow(pct_chg, cs_rank(vol)), ts_delta_ratio_60(amount))",
+    "GP_Factor_037_Calculator": "mul(turnover, cs_rank(pow(tanh(ts_delta_ratio_20(turnover)), ts_sum_10(turnover))))"
+  },
+  "expressions_extracted": 100,
+  "generated_at_local": "2026-09-15T18:54:35",
+  "how_much_of_the_frozen_chain_rests_on_this_translation": {
+    "frozen_v2_calculator_module_or_none": {
+      "yeslab_206": "Bias_Vol_Demean_60_Calculator",
+      "yeslab_357": "IndustryStandAbsCalculator",
+      "yeslab_372": "GP_Factor_003_Calculator",
+      "yeslab_375": "GP_Factor_006_Calculator",
+      "yeslab_381": "GP_Factor_012_Calculator",
+      "yeslab_384": "GP_Factor_015_Calculator",
+      "yeslab_389": "GP_Factor_020_Calculator",
+      "yeslab_390": "GP_Factor_021_Calculator",
+      "yeslab_406": "GP_Factor_037_Calculator",
+      "yeslab_425": "GP_Factor_056_Calculator",
+      "yeslab_443_reg30_max20_v1": null,
+      "yeslab_464": "GP_Factor_095_Calculator",
+      "yeslab_471": "AttentionSpilloverCalculator",
+      "yeslab_484": "HerdingCSADStd21Calculator",
+      "yeslab_96": "ModifiedDayReversalCalculator"
+    },
+    "frozen_v2_count": 15,
+    "frozen_v2_factors_whose_replay_uses_a_gp_calculator": [
+      "yeslab_372",
+      "yeslab_375",
+      "yeslab_381",
+      "yeslab_384",
+      "yeslab_389",
+      "yeslab_390",
+      "yeslab_406",
+      "yeslab_425",
+      "yeslab_464"
+    ],
+    "replay_definitions_parsed_into_blocks": 99,
+    "replay_definitions_pointing_at_a_gp_calculator": 55,
+    "replay_definitions_total": 99
+  },
+  "operator_library_in_the_repository": {
+    "definitions": 81,
+    "missing_from_the_library": [
+      "cs_rank",
+      "cs_zscore",
+      "mul",
+      "relu",
+      "tanh",
+      "ts_delta_ratio"
+    ],
+    "operators_used_by_the_gp_expressions": {
+      "add": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "ADD"
+        ]
+      },
+      "cs_rank": {
+        "in_function_lib": false,
+        "matching_lib_names": []
+      },
+      "cs_zscore": {
+        "in_function_lib": false,
+        "matching_lib_names": []
+      },
+      "inv": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "INV"
+        ]
+      },
+      "max": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "MAX"
+        ]
+      },
+      "mul": {
+        "in_function_lib": false,
+        "matching_lib_names": [
+          "MULTIPLY"
+        ]
+      },
+      "pow": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "POW"
+        ]
+      },
+      "relu": {
+        "in_function_lib": false,
+        "matching_lib_names": []
+      },
+      "tanh": {
+        "in_function_lib": false,
+        "matching_lib_names": []
+      },
+      "ts_delta_ratio": {
+        "in_function_lib": false,
+        "matching_lib_names": []
+      },
+      "ts_max": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "TS_MAX"
+        ]
+      },
+      "ts_mean": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "TS_MEAN"
+        ]
+      },
+      "ts_min": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "TS_MIN"
+        ]
+      },
+      "ts_rank": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "TS_RANK"
+        ]
+      },
+      "ts_std": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "TS_STD"
+        ]
+      },
+      "ts_sum": {
+        "in_function_lib": true,
+        "matching_lib_names": [
+          "TS_SUM"
+        ]
+      }
+    },
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/数据库/build_factor/function_lib.py",
+    "sha256": "9484975bea149d0240ba6931467d1305d0aafe740f14105bc5837834fd1e3c69"
+  },
+  "operators_defined_nowhere_in_the_repository": {
+    "cs_rank": {
+      "files_defining_it": []
+    },
+    "cs_zscore": {
+      "files_defining_it": []
+    },
+    "mul": {
+      "files_defining_it": [
+        "数据库/build_factor/function_lib.py"
+      ]
+    },
+    "relu": {
+      "files_defining_it": []
+    },
+    "tanh": {
+      "files_defining_it": []
+    },
+    "ts_delta_ratio": {
+      "files_defining_it": []
+    }
+  },
+  "question": "Can the GP_* calculator translations that the frozen chain replays be checked against any reference inside this repository?",
+  "read_only": true,
+  "sha256_of_every_file_this_probe_read": {
+    "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
+    "research_v2/scripts/materialize_frozen_factor_daily.py": "27da63ee4a0c86ca32961c6bd854ebf5187e7d097fff27153d41d568efa34d83",
+    "数据库/build_factor/builder.py": "82505a4e06e5142707d822ef0f7e66108bbc4c22759fdbcb953af8b38454fe54",
+    "数据库/build_factor/expr_parser.py": "3374ef6105de552ace56868d41d53e1dfab2f1b7a2627b29edb1531b2f5ebe70",
+    "数据库/build_factor/function_lib.py": "9484975bea149d0240ba6931467d1305d0aafe740f14105bc5837834fd1e3c69",
+    "数据库/build_factor/template.py": "7f6ed936bb463905f505badf953b7459bc15532165e5155f4b3a3b3f5fa01a80",
+    "数据库/factor_calculators/GP_Factor_003_Calculator.py": "3f8054a0838334dde810f35dc1d8ab8a6f974818eea55befd04214d0770ad8c9",
+    "数据库/factor_calculators/GP_Factor_006_Calculator.py": "5b80690f6a4700824065a1ff34ae2df8887c92926349f66d5216564622986233",
+    "数据库/factor_calculators/GP_Factor_012_Calculator.py": "f5c226ae5ee40f15ed8de676c56c0c17551922b52228e308ca444be2703fc234",
+    "数据库/factor_calculators/GP_Factor_015_Calculator.py": "6b4037e63147f40f8e8c0df6e27013ac43762ba2cdd443c50e137f452c20f864",
+    "数据库/factor_calculators/GP_Factor_020_Calculator.py": "7ed79ac7bde6bc76c7d80f9d9e06691ca048cd6c5b97970088f7166ad6e47a95",
+    "数据库/factor_calculators/GP_Factor_021_Calculator.py": "e28c894419499ae4b8262f97988267a59a73f73b4d3a502ea624ac011eeb7d11",
+    "数据库/factor_calculators/GP_Factor_037_Calculator.py": "8613c27608854119447c93cb82de8686b44217e6e2e72026a548e59c24269de3",
+    "数据库/factor_calculators/GP_Factor_056_Calculator.py": "753b248e40ae6bb457bc04745ab26d62e0c74036b28569a7e778017a2e652c95",
+    "数据库/factor_calculators/base.py": "759d0a6b7e7690e6fdb342899067aa736b944c80cf4ee2d6265a2b15b4310237"
+  },
+  "verdict": "no. The GP expressions use an operator vocabulary (mul, cs_rank, cs_zscore, tanh, relu, ts_delta_ratio) that the repository's only operator library does not define, and the expression source all of them cite is not present. The 100 GP calculators are therefore an unverifiable translation: nothing in-repo can confirm or refute GP_Factor_006. What CAN be said is empirical -- §BF's census corroborates eight of the nine GP_* factors in frozen v2 at Spearman >= 0.9529 against the producer's stored values, five of them at 1.0000.",
+  "warm_up_rule_in_base_py": {
+    "line": "pstart_time = (datetime.strptime(start_time, \"%Y.%m.%d\").date() - timedelta(days=10 * self.lookback_days)).strftime(\"%Y.%m.%d\")",
+    "meaning": "the calculator pre-fetches ten times its lookback in CALENDAR days before the requested start, so with replay_lookback_days=180 that is about 1,800 calendar days of history; a min_periods difference therefore cannot explain a mid-window availability gap"
+  }
+}

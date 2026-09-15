@@ -1,6 +1,7 @@
 {
   "cited_source_missing": [],
   "cited_source_sha256": {
+    "research_v2/artifacts/diagnostics/factor_set_frozen_v1.json": "85f7240c8809f4319476d9334057c3f28032ed779a9f5691407d5e5864eb96d4",
     "research_v2/artifacts/diagnostics/factor_set_frozen_v2.json": "e472cfb93b3600c5a4c734fe611bf8d70dad0bb74dfaf96a42ed95462ab19e33",
     "research_v2/configs/factors/source_catalog.yaml": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad",
     "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
@@ -8,6 +9,10 @@
     "research_v2/scripts/materialize_frozen_factor_daily.py": "27da63ee4a0c86ca32961c6bd854ebf5187e7d097fff27153d41d568efa34d83",
     "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
     "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11",
+    "数据库/build_factor/builder.py": "82505a4e06e5142707d822ef0f7e66108bbc4c22759fdbcb953af8b38454fe54",
+    "数据库/build_factor/expr_parser.py": "3374ef6105de552ace56868d41d53e1dfab2f1b7a2627b29edb1531b2f5ebe70",
+    "数据库/build_factor/function_lib.py": "9484975bea149d0240ba6931467d1305d0aafe740f14105bc5837834fd1e3c69",
+    "数据库/build_factor/template.py": "7f6ed936bb463905f505badf953b7459bc15532165e5155f4b3a3b3f5fa01a80",
     "数据库/factor_calculators/GP_Factor_003_Calculator.py": "3f8054a0838334dde810f35dc1d8ab8a6f974818eea55befd04214d0770ad8c9",
     "数据库/factor_calculators/GP_Factor_006_Calculator.py": "5b80690f6a4700824065a1ff34ae2df8887c92926349f66d5216564622986233",
     "数据库/factor_calculators/GP_Factor_012_Calculator.py": "f5c226ae5ee40f15ed8de676c56c0c17551922b52228e308ca444be2703fc234",
@@ -15,17 +20,18 @@
     "数据库/factor_calculators/GP_Factor_020_Calculator.py": "7ed79ac7bde6bc76c7d80f9d9e06691ca048cd6c5b97970088f7166ad6e47a95",
     "数据库/factor_calculators/GP_Factor_021_Calculator.py": "e28c894419499ae4b8262f97988267a59a73f73b4d3a502ea624ac011eeb7d11",
     "数据库/factor_calculators/GP_Factor_037_Calculator.py": "8613c27608854119447c93cb82de8686b44217e6e2e72026a548e59c24269de3",
-    "数据库/factor_calculators/GP_Factor_056_Calculator.py": "753b248e40ae6bb457bc04745ab26d62e0c74036b28569a7e778017a2e652c95"
+    "数据库/factor_calculators/GP_Factor_056_Calculator.py": "753b248e40ae6bb457bc04745ab26d62e0c74036b28569a7e778017a2e652c95",
+    "数据库/factor_calculators/base.py": "759d0a6b7e7690e6fdb342899067aa736b944c80cf4ee2d6265a2b15b4310237"
   },
   "excluded_by_design": [
     "model weights / checkpoints (*.pt)",
     "the parquet panels themselves (read in place, never copied)",
     "per-security rows: only per-day coverage aggregates and per-factor summaries are recorded"
   ],
-  "generated_at_utc": "2026-09-15T10:42:18+00:00",
+  "generated_at_utc": "2026-09-15T10:59:17+00:00",
   "generator": {
     "path": "make_provenance.py",
-    "sha256": "af67821e5b612ba458572cdfd569e6400d1f90a336c92d4981cab70e6239db6d"
+    "sha256": "fd3efc7d5e8e9a807f5083cdfa2e069ae9a76481c3cb4422d0c321259a4e0739"
   },
   "measurements": {
     "an_drift_reconciliation.json": "35013eb6c120b0ab8fadda2df2f7854ad873278e6f9afea81439740025a59aed",
@@ -35,6 +41,7 @@
     "gp006_ambiguous_store.json": "596cbb495927eaf6400a316bb4d13dd4d2bada4d9aa4d35caf9c2ddbb5d2b5e8",
     "gp006_codeset.json": "ed938600fe04c76fde4a34abe5a3dc20f883a8b037aaba0317a6b871edbf3ae4",
     "gp006_values_vs_store.json": "3e5af101153ee40aa0470102af853ac76b5d9a186b76b71dbb6ac11d2155a74c",
+    "gp_translation_provenance.json": "04c35da46472853af636ef59aebb97792d7f9218be44cd032f94ae50d018f143",
     "regime_mechanism_daily.parquet": "5a2bda8c2ef450f47c48cc1b03955217373c9f175c5bbe567789e97305332d4c",
     "regime_mechanism_direct.json": "0c7779966492edc57f1f202146f70e4dd16f4e4d28c813ec2f5019b7589a389c",
     "regime_shapes.json": "9319cd954a4bada3a36088b704c79c2134be8ea5a81f8076cef1deb02b565b6e",
@@ -53,6 +60,7 @@
     "probe_gp006_ambiguous_store.py": "4cb556d562cb2ae9dea335c5c2ae5f15d3caef98a3c8a823acae2485ea66b645",
     "probe_gp006_codeset.py": "2b8eb0ab1d28498e7c62c38b992ce5f29750b0f3e90cd2e8f8383fb837b8f44b",
     "probe_gp006_values_vs_store.py": "8f1eac2558753e0c0a23946cab908d2abe29c3958feb7c2dfc6e18748090cee1",
+    "probe_gp_translation_provenance.py": "a60012846b957599c712a714d79e24a444ad6f147b669ce99960118d9307e8da",
     "probe_regime_mechanism_direct.py": "e482807d3ae85ea62c23997022fd2eb08216ad0929f99a5c0cbd1af6fb8190d7",
     "probe_replay_fidelity_census.py": "9988d09bb9898168693058ad98e2f879c95ecf48b09b108db949eb350f2e64f9",
     "probe_replay_vs_store_daily.py": "ec92dbd78dc6ca57836f149a4b431c339d235986bec99df19e3c5aca1265a98c",
@@ -82,6 +90,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "60085c75743ab1f6e566aeccfce24a9d008a2a8c"
+    "commit_at_generation": "3777ef5355d292d66ebbcaf5cbf27be4233afe81"
   }
 }

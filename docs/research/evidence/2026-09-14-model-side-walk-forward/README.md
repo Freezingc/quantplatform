@@ -2485,3 +2485,61 @@ G1–G6 度量的是"相对同一基线、在同一冻结输入上的改进"）�
 **没有**读 `MEDIAN_206` 与 `REPAIR_VARIANT_443` 两条专用分支（所以 `206` 的 0.9014 与 `443` 的无从普查都只有候选解释）；
 **普查只用了 8 天、不是全窗口**（`471` 的 0.4792 与 `464` 的 0.6357 都是单日值，**没有量它们的逐日分布**）；
 **没有**普查 `yeslab_363`；**没有**重算 §AO/§AQ/§AR/§AV 的任何保留率；**没有**改任何仓库代码、**没有**写库、**没有**产出权重。
+
+### 【18:58，**一次关掉四个未决项**】(1) **GP 表达式的参考实现不在这个仓库里**——100 个 GP 计算器全部引用的来源文件 `20260215_163844.csv` 在仓库与 `/data/zhangyudong`（深度 6）内都不存在，仓库唯一的算子库不定义 GP 表达式用到的 6 个算子，所以 §BF.4 那个"我们的 GP_006 翻译是否有错"**在仓库内不可回答**；(2) **`yeslab_206` 根本不是重放**，走 `materialize_alpha206_median_repair`，所以 0.9014 是**设计出来的修复**；(3) **`yeslab_443_reg30_max20_v1` = `compute_gp074_variant(wide, 30, 20)`**，是 GP_074 的窗口变体；(4) **物化器读的是 `factor_set_frozen_v1.json`**，而 **v2 的 15 个是 v1 的 17 个的真子集（差集恰是 `398`/`405`）**
+
+仪器 `sparse_factor_availability/probes/probe_gp_translation_provenance.py`，机读件
+`measurements/gp_translation_provenance.json`（**含所读每个文件的 sha256**）；对应 `problems_found.md` §BG。
+**只读**：不执行任何计算器、不查库、不写任何东西。
+
+**(1) GP 翻译在仓库内不可验证**：**100 个 `GP_Factor_*_Calculator.py`，100/100 在 docstring 里写 `来源: 20260215_163844.csv`，
+该文件不存在**。仓库唯一的算子库 `数据库/build_factor/function_lib.py`（**81 个顶层定义**）
+**不定义 `cs_rank`、`cs_zscore`、`mul`、`relu`、`tanh`、`ts_delta_ratio` 这 6 个 GP 表达式用到的算子**
+（其余五个在整个仓库里没有任何 `def`；`mul` 只有前缀相近的 `MULTIPLY`），
+**且 `build_factor` 生成的脚本形态完全不同**（`template.py` 产出 `eval(parse_expression(expr))` 跑在按
+`datetime`/`instrument` 分组的长表上，而 `factor_calculators/` 是显式 `_v1…_v14` 的宽表写法）——**不是同一条生成路径**。
+**所以那 100 个计算器是对一套参考实现不在本仓库的 DSL 的翻译**；
+**这与 §BB.4（上游无时间戳 ⇒ "上游有、我们丢了"不可证伪）和 §Y（数据商重述过历史 ⇒ 只有随包副本是证据）
+是同一族的第三个可追溯性缺口。**
+**写法普查（100 个文件）**：**89 个用裸 `.rolling(`、0 个传 `min_periods`、29 个用 `**`、0 个用 `np.power`、38 个加 `1e-10` epsilon**；
+**而那个算子库的对应算子全部带 `min_periods=1`、`ZSCORE` 不加 epsilon、`POW = np.power`** ⇒
+**若日后改用 `build_factor` 重新生成，会得到第三条数值谱系**（`temporal_batches.py` 的 docstring 已在担心：
+*"the measured lineage gap is already a third of the G4 gate"*）。
+**但 `min_periods` 不是 GP_006 那个缺口的解释**：`base.py:127` 是 `pstart_time = start − timedelta(days=10 × lookback_days)`，
+**按日历日预取 10 倍 lookback**（`replay_lookback_days=180` ⇒ 约 1,800 个日历日热身），**窗口中段不可能因它缺值。**
+
+**(2) `yeslab_206` 的 0.9014 是设计，不是缺陷——§BF.3 那个未决问题关闭**：
+`materialize_frozen_factor_daily.py:63` **`if fid == MEDIAN_206: return materialize_alpha206_median_repair(market, start, end)`**
+（`MEDIAN_206 = "yeslab_206"`，`:49`；函数从 `audit_canonical_candidate_pairs` 导入，`:32`）。
+**即 `206` 的冻结列是一次刻意的"中位数修复"，被设计成不等于目录里那个 `60日成交量去均值相对偏离`**——
+**而 §BF 量到的形状（符号一致率 1.000、中位相对差 0.37–1.04）正是"秩大致保留、量级被改过"。**
+**注意 `REPLAY_DEFINITIONS` 里 `yeslab_206` 仍挂着 `Bias_Vol_Demean_60_Calculator`，但物化器把它排除在 `definitions` 之外（`:118`）
+并走专用分支——那条 `ReplayDefinition` 对冻结列而言是死条目，读它会被误导。**
+
+**(3) `yeslab_443_reg30_max20_v1` 不是"无从普查"，而是"普查时应当预期不一致"**：
+`:69` **`factor_wide = compute_gp074_variant(wide, 30, 20)`**，输入是 `amount` 与 `pct_chg` 的透视宽表——
+**它是 `yeslab_443`(GP_074) 的 (30,20) 窗口变体，名字里的 `reg30_max20_v1` 就是这两个参数。**
+**所以 §BF.2 那句"目录里无条目、无从普查"要说准：它可以对 GP_074 普查，但低 Spearman 是预期结果、不构成保真度问题。本节没有跑。**
+
+**(4) 物化器物化的是 v1 的 17 个，而 v2 的 15 个是其真子集——§AM/§BC 的机制从源码侧闭合**：
+`:55-57` **`load_frozen_factors()` 读 `factor_set_frozen_v1.json`（不是 v2）**；实测 **v1=17、v2=15、`v2 ⊂ v1` 为真、
+差集恰是 `{yeslab_398, yeslab_405}`**（正是 §AN.1 记的因对 `381` 保留率 20.3%/7.6% 被剔那两个），**`yeslab_363` 两个集合都不在**。
+**于是三件事一次说清**：v2 的 15 个都有行，是因为它们全在 v1 的 17 个里；`363` 是 0 行，是因为它既不在 v1 也不在 v2
+（尽管它在 `PIT_FACTORS`、在目录里、在上游有六年完整数据）；**`398`/`405` 在 `factor_daily` 里应当是有行的，只是不在 v2 的训练输入里**（本节未查，推论直接来自 `:56`）。
+
+**顺带把 §AA/§AJ 那个 bug 的确切代码行钉住了**：`:81-93` 的 `load_official_universe()` 第 **92** 行
+**`latest = uni.groupby("signal_date")["data_version"].max()`**——**`data_version` 是 sha256 十六进制串，`.max()` 取字典序最大、与时间无关**，
+**这正是 §AA 定性、§AJ 在全部 20 个歧义日上实测（20/20 每天都选错）的那个 `max()`；§AJ 给出的单行修复
+（改调 `current_versions(holder, "universe_daily")`）对应的就是这一行。本节只钉位置，没有改它。**
+
+**覆盖范围**：**冻结 v2 的 9/15 走 GP 翻译；`REPLAY_DEFINITIONS` 共 99 条、其中 55 条指向 GP 计算器。**
+**让它不至于变成"什么都不能信"的是 §BF 那张普查表：9 个 GP 因子里 8 个对生产者存量值的秩相关 ≥0.9529、其中 5 个是 1.0000** ⇒
+**翻译虽不可对源码验证，却被经验证据支持了 8/9；唯一的例外 `GP_006` 恰好坐在一个自身就有歧义的源上。**
+
+**仍未做**：**没有**执行任何计算器、**没有**去别处找 `20260215_163844.csv` 的副本（只搜到 `/data/zhangyudong` 深度 6）；
+**没有**读 `materialize_alpha206_median_repair` 与 `compute_gp074_variant` 的函数体（**所以 (2)(3) 说的是"走哪条分支"，不是"那条分支具体怎么算"**）；
+**没有**对 `443` 跑 GP_074 普查；**没有**查 `398`/`405` 在 `factor_daily` 里的实际行数；
+**没有**验证 `1e-10` epsilon 与 `**` vs `np.power` 会造成多大数值差；
+**探针自身一处需注明**：`operators_defined_nowhere_in_the_repository` 里 `mul` 报了一个 `function_lib.py` 命中，
+**那是子串匹配撞上 `def MULTIPLY` 的假阳性**——精确判断在 `missing_from_the_library` 里，`mul` 确实不在其中；
+**没有**改任何仓库代码（`数据库/` 与 `research_v2/` 全部只读）、**没有**写库、**没有**产出权重。

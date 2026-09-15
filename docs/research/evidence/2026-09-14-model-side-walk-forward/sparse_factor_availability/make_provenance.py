@@ -39,6 +39,12 @@ CITED_SOURCES = (
     "数据库/factor_calculators/GP_Factor_021_Calculator.py",
     "数据库/factor_calculators/GP_Factor_037_Calculator.py",
     "数据库/factor_calculators/GP_Factor_056_Calculator.py",
+    "数据库/factor_calculators/base.py",
+    "数据库/build_factor/function_lib.py",
+    "数据库/build_factor/expr_parser.py",
+    "数据库/build_factor/template.py",
+    "数据库/build_factor/builder.py",
+    "research_v2/artifacts/diagnostics/factor_set_frozen_v1.json",
 )
 SPARSITY_COMMENT_FILE = "research_v2/scripts/walk_forward_factor_daily.py"
 
