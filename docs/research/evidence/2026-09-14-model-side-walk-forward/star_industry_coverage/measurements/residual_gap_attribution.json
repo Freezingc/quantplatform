@@ -1,0 +1,3926 @@
+{
+ "question": "Who are the non-STAR residual rows option 1 leaves out, and would the SH/SZ union lift them?",
+ "days": 8,
+ "day_list": [
+  "2022-07-29",
+  "2022-06-30",
+  "2022-06-21",
+  "2022-06-23",
+  "2022-06-24",
+  "2022-06-29",
+  "2022-07-06",
+  "2022-07-07"
+ ],
+ "bar": 0.95,
+ "reproduces_the_decomposition": {
+  "verdict": "EXACT",
+  "denominator_identical_on": 8,
+  "numerator_identical_on": 8,
+  "residual_identical_on": 8,
+  "days": 8
+ },
+ "classification_totals": {
+  "MISSING_NON_INDUSTRY_FACTOR": 668,
+  "FIXABLE_BY_UNION_LABEL": 93,
+  "NO_LABEL_IN_EITHER_SOURCE": 1
+ },
+ "missing_factor_histogram_totals": {
+  "yeslab_206": 668,
+  "yeslab_443_reg30_max20_v1": 568,
+  "yeslab_357": 112,
+  "yeslab_471": 320,
+  "yeslab_381": 40,
+  "yeslab_425": 88,
+  "yeslab_464": 127,
+  "yeslab_96": 207
+ },
+ "worst_day": {
+  "day": "2022-07-29",
+  "residual_not_star": 171,
+  "coverage_after_star_only": 0.9490312965722801,
+  "coverage_after_star_plus_union_labels": 0.9767511177347243,
+  "rows_short_of_bar_star_only": 4,
+  "rows_short_of_bar_star_plus_union": 0
+ },
+ "days_clearing_the_bar": {
+  "star_only": 7,
+  "star_plus_union_labels": 8,
+  "of": 8
+ },
+ "answer": "On the 8 days with the largest residual, the 762 non-STAR gap rows classify as {'MISSING_NON_INDUSTRY_FACTOR': 668, 'FIXABLE_BY_UNION_LABEL': 93, 'NO_LABEL_IN_EITHER_SOURCE': 1}. On the binding day 2022-07-29 the union's extra fixable rows move coverage from 0.949031 to 0.976751, so the shortfall against the 0.95 bar goes from 4 rows to 0.",
+ "per_day": [
+  {
+   "day": "2022-07-29",
+   "valid_label_rows": 3355,
+   "valid_label_rows_per_probe": 3355,
+   "denominator_matches": true,
+   "intersection_rows": 3003,
+   "intersection_rows_per_probe": 3003,
+   "numerator_matches": true,
+   "gap_rows": 352,
+   "star_gap_rows": 181,
+   "residual_not_star": 171,
+   "residual_not_star_per_probe": 171,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 77,
+    "FIXABLE_BY_UNION_LABEL": 93,
+    "NO_LABEL_IN_EITHER_SOURCE": 1
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 77,
+    "yeslab_443_reg30_max20_v1": 56,
+    "yeslab_357": 102,
+    "yeslab_471": 116,
+    "yeslab_381": 3,
+    "yeslab_425": 5,
+    "yeslab_464": 9,
+    "yeslab_96": 13
+   },
+   "coverage_after_star_only": 0.9490312965722801,
+   "coverage_after_star_plus_union_labels": 0.9767511177347243,
+   "clears_bar_star_only": false,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 4,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000007.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "商贸零售",
+     "member_all_label": "商贸零售",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000017.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "纺织服饰",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000159.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "建筑装饰",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000409.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "计算机",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000506.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "有色金属",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000509.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "电子",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000663.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "农林牧渔",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000720.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "电力设备",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000755.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000821.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "电力设备",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000881.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000886.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": null,
+     "class": "NO_LABEL_IN_EITHER_SOURCE"
+    },
+    {
+     "ts_code": "000890.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "环保",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000893.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000899.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000901.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "汽车",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000920.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "基础化工",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000953.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "医药生物",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "000957.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000958.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "非银金融",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002058.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002060.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "公用事业",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002082.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "医药生物",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002088.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002103.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "轻工制造",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002118.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002125.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "电力设备",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002137.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "电子",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002148.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "房地产",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002163.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "建筑装饰",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002166.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "基础化工",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    },
+    {
+     "ts_code": "002172.SZ",
+     "missing": [
+      "yeslab_357",
+      "yeslab_471"
+     ],
+     "cache_label": null,
+     "member_all_label": "医药生物",
+     "class": "FIXABLE_BY_UNION_LABEL"
+    }
+   ]
+  },
+  {
+   "day": "2022-06-30",
+   "valid_label_rows": 3316,
+   "valid_label_rows_per_probe": 3316,
+   "denominator_matches": true,
+   "intersection_rows": 3057,
+   "intersection_rows_per_probe": 3057,
+   "numerator_matches": true,
+   "gap_rows": 259,
+   "star_gap_rows": 173,
+   "residual_not_star": 86,
+   "residual_not_star_per_probe": 86,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 86
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 86,
+    "yeslab_443_reg30_max20_v1": 74,
+    "yeslab_471": 27,
+    "yeslab_96": 26,
+    "yeslab_425": 14,
+    "yeslab_464": 15,
+    "yeslab_381": 6,
+    "yeslab_357": 2
+   },
+   "coverage_after_star_only": 0.974065138721351,
+   "coverage_after_star_plus_union_labels": 0.974065138721351,
+   "clears_bar_star_only": true,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 0,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000065.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000411.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000425.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000516.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000523.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "美容护理",
+     "member_all_label": "美容护理",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000552.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "煤炭",
+     "member_all_label": "煤炭",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000601.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000609.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "房地产",
+     "member_all_label": "房地产",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000830.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000893.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002058.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002088.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002175.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "综合",
+     "member_all_label": "综合",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002188.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002312.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002323.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": null,
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002341.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002439.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002496.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002575.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "轻工制造",
+     "member_all_label": "轻工制造",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002627.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002638.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "社会服务",
+     "member_all_label": "社会服务",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002731.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "纺织服饰",
+     "member_all_label": "纺织服饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002766.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002813.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002940.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300044.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300051.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300071.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300140.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "环保",
+     "member_all_label": "环保",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300189.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300278.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    }
+   ]
+  },
+  {
+   "day": "2022-06-21",
+   "valid_label_rows": 3298,
+   "valid_label_rows_per_probe": 3298,
+   "denominator_matches": true,
+   "intersection_rows": 3045,
+   "intersection_rows_per_probe": 3045,
+   "numerator_matches": true,
+   "gap_rows": 253,
+   "star_gap_rows": 168,
+   "residual_not_star": 85,
+   "residual_not_star_per_probe": 85,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 85
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 85,
+    "yeslab_443_reg30_max20_v1": 78,
+    "yeslab_471": 33,
+    "yeslab_96": 32,
+    "yeslab_425": 12,
+    "yeslab_464": 18,
+    "yeslab_381": 5,
+    "yeslab_357": 3
+   },
+   "coverage_after_star_only": 0.9742268041237113,
+   "coverage_after_star_plus_union_labels": 0.9742268041237113,
+   "clears_bar_star_only": true,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 0,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000065.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000411.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000425.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000516.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000523.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "美容护理",
+     "member_all_label": "美容护理",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000552.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "煤炭",
+     "member_all_label": "煤炭",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000601.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000609.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "房地产",
+     "member_all_label": "房地产",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000707.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000830.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002088.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002175.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "综合",
+     "member_all_label": "综合",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002312.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002323.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002341.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002439.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002496.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002575.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "轻工制造",
+     "member_all_label": "轻工制造",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002627.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002638.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "社会服务",
+     "member_all_label": "社会服务",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002731.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "纺织服饰",
+     "member_all_label": "纺织服饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002766.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002813.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002940.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300044.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300051.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300071.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300140.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "环保",
+     "member_all_label": "环保",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300278.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300279.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "电子",
+     "member_all_label": "电子",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300280.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300446.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电子",
+     "member_all_label": "电子",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    }
+   ]
+  },
+  {
+   "day": "2022-06-23",
+   "valid_label_rows": 3305,
+   "valid_label_rows_per_probe": 3305,
+   "denominator_matches": true,
+   "intersection_rows": 3049,
+   "intersection_rows_per_probe": 3049,
+   "numerator_matches": true,
+   "gap_rows": 256,
+   "star_gap_rows": 172,
+   "residual_not_star": 84,
+   "residual_not_star_per_probe": 84,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 84
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 84,
+    "yeslab_443_reg30_max20_v1": 74,
+    "yeslab_471": 32,
+    "yeslab_96": 29,
+    "yeslab_425": 11,
+    "yeslab_464": 15,
+    "yeslab_381": 7,
+    "yeslab_357": 2
+   },
+   "coverage_after_star_only": 0.9745839636913767,
+   "coverage_after_star_plus_union_labels": 0.9745839636913767,
+   "clears_bar_star_only": true,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 0,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000065.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000411.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000425.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000516.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000523.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471"
+     ],
+     "cache_label": "美容护理",
+     "member_all_label": "美容护理",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000552.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "煤炭",
+     "member_all_label": "煤炭",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000601.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000609.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "房地产",
+     "member_all_label": "房地产",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000707.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000830.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000893.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002175.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "综合",
+     "member_all_label": "综合",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002312.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002323.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002341.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002439.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002496.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002575.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "轻工制造",
+     "member_all_label": "轻工制造",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002627.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002638.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "社会服务",
+     "member_all_label": "社会服务",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002731.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "纺织服饰",
+     "member_all_label": "纺织服饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002766.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002813.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002940.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300044.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300051.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300071.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300140.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "环保",
+     "member_all_label": "环保",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300278.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300279.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "电子",
+     "member_all_label": "电子",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300280.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300446.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电子",
+     "member_all_label": "电子",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    }
+   ]
+  },
+  {
+   "day": "2022-06-24",
+   "valid_label_rows": 3304,
+   "valid_label_rows_per_probe": 3304,
+   "denominator_matches": true,
+   "intersection_rows": 3046,
+   "intersection_rows_per_probe": 3046,
+   "numerator_matches": true,
+   "gap_rows": 258,
+   "star_gap_rows": 174,
+   "residual_not_star": 84,
+   "residual_not_star_per_probe": 84,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 84
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 84,
+    "yeslab_443_reg30_max20_v1": 72,
+    "yeslab_471": 29,
+    "yeslab_96": 27,
+    "yeslab_464": 14,
+    "yeslab_425": 8,
+    "yeslab_381": 5
+   },
+   "coverage_after_star_only": 0.9745762711864406,
+   "coverage_after_star_plus_union_labels": 0.9745762711864406,
+   "clears_bar_star_only": true,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 0,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000065.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000411.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000425.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000516.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000523.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "美容护理",
+     "member_all_label": "美容护理",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000552.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "煤炭",
+     "member_all_label": "煤炭",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000601.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000609.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "房地产",
+     "member_all_label": "房地产",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000707.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000830.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000893.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002175.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "综合",
+     "member_all_label": "综合",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002312.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002323.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002341.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002439.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002496.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002575.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "轻工制造",
+     "member_all_label": "轻工制造",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002627.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002638.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "社会服务",
+     "member_all_label": "社会服务",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002731.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "纺织服饰",
+     "member_all_label": "纺织服饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002766.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002813.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002940.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300044.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300051.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300071.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300140.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "环保",
+     "member_all_label": "环保",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300278.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300279.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "电子",
+     "member_all_label": "电子",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300280.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300446.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电子",
+     "member_all_label": "电子",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    }
+   ]
+  },
+  {
+   "day": "2022-06-29",
+   "valid_label_rows": 3310,
+   "valid_label_rows_per_probe": 3310,
+   "denominator_matches": true,
+   "intersection_rows": 3053,
+   "intersection_rows_per_probe": 3053,
+   "numerator_matches": true,
+   "gap_rows": 257,
+   "star_gap_rows": 173,
+   "residual_not_star": 84,
+   "residual_not_star_per_probe": 84,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 84
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 84,
+    "yeslab_443_reg30_max20_v1": 72,
+    "yeslab_464": 16,
+    "yeslab_471": 25,
+    "yeslab_96": 25,
+    "yeslab_425": 12,
+    "yeslab_381": 4,
+    "yeslab_357": 2
+   },
+   "coverage_after_star_only": 0.9746223564954682,
+   "coverage_after_star_plus_union_labels": 0.9746223564954682,
+   "clears_bar_star_only": true,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 0,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000065.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000411.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000425.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000516.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000523.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "美容护理",
+     "member_all_label": "美容护理",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000552.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "煤炭",
+     "member_all_label": "煤炭",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000601.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000609.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "房地产",
+     "member_all_label": "房地产",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000830.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000893.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002058.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002088.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002175.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "综合",
+     "member_all_label": "综合",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002188.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002312.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002323.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002341.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002439.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002496.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002575.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "轻工制造",
+     "member_all_label": "轻工制造",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002627.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002638.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "社会服务",
+     "member_all_label": "社会服务",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002731.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "纺织服饰",
+     "member_all_label": "纺织服饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002766.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002813.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002940.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300044.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300051.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300071.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300140.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "环保",
+     "member_all_label": "环保",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300189.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "300278.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    }
+   ]
+  },
+  {
+   "day": "2022-07-06",
+   "valid_label_rows": 3323,
+   "valid_label_rows_per_probe": 3323,
+   "denominator_matches": true,
+   "intersection_rows": 3072,
+   "intersection_rows_per_probe": 3072,
+   "numerator_matches": true,
+   "gap_rows": 251,
+   "star_gap_rows": 167,
+   "residual_not_star": 84,
+   "residual_not_star_per_probe": 84,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 84
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 84,
+    "yeslab_381": 7,
+    "yeslab_425": 13,
+    "yeslab_443_reg30_max20_v1": 70,
+    "yeslab_464": 20,
+    "yeslab_471": 28,
+    "yeslab_96": 28,
+    "yeslab_357": 1
+   },
+   "coverage_after_star_only": 0.9747216370749323,
+   "coverage_after_star_plus_union_labels": 0.9747216370749323,
+   "clears_bar_star_only": true,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 0,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000007.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "商贸零售",
+     "member_all_label": "商贸零售",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000065.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000425.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000509.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000516.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000523.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "美容护理",
+     "member_all_label": "美容护理",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000552.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "煤炭",
+     "member_all_label": "煤炭",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000601.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000609.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "房地产",
+     "member_all_label": "房地产",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000802.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000830.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000881.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000893.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002058.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002088.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002175.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "综合",
+     "member_all_label": "综合",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002188.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002219.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002312.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002323.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002341.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002356.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "商贸零售",
+     "member_all_label": "商贸零售",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002433.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002439.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002496.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002501.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002627.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002638.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "社会服务",
+     "member_all_label": "社会服务",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002703.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_357",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002731.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "纺织服饰",
+     "member_all_label": "纺织服饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002766.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002813.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    }
+   ]
+  },
+  {
+   "day": "2022-07-07",
+   "valid_label_rows": 3325,
+   "valid_label_rows_per_probe": 3325,
+   "denominator_matches": true,
+   "intersection_rows": 3073,
+   "intersection_rows_per_probe": 3073,
+   "numerator_matches": true,
+   "gap_rows": 252,
+   "star_gap_rows": 168,
+   "residual_not_star": 84,
+   "residual_not_star_per_probe": 84,
+   "residual_matches": true,
+   "residual_classification": {
+    "MISSING_NON_INDUSTRY_FACTOR": 84
+   },
+   "missing_factor_histogram_over_residual": {
+    "yeslab_206": 84,
+    "yeslab_425": 13,
+    "yeslab_443_reg30_max20_v1": 72,
+    "yeslab_464": 20,
+    "yeslab_471": 30,
+    "yeslab_96": 27,
+    "yeslab_381": 3
+   },
+   "coverage_after_star_only": 0.9747368421052631,
+   "coverage_after_star_plus_union_labels": 0.9747368421052631,
+   "clears_bar_star_only": true,
+   "clears_bar_star_plus_union": true,
+   "rows_short_of_bar_star_only": 0,
+   "rows_short_of_bar_star_plus_union": 0,
+   "examples": [
+    {
+     "ts_code": "000007.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "商贸零售",
+     "member_all_label": "商贸零售",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000065.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000155.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000420.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000425.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "机械设备",
+     "member_all_label": "机械设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000509.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000516.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000523.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "美容护理",
+     "member_all_label": "美容护理",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000546.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000552.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "煤炭",
+     "member_all_label": "煤炭",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000601.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "公用事业",
+     "member_all_label": "公用事业",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000609.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "房地产",
+     "member_all_label": "房地产",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000702.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "农林牧渔",
+     "member_all_label": "农林牧渔",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000802.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000830.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000881.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000893.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "000933.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002011.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "家用电器",
+     "member_all_label": "家用电器",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002013.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "国防军工",
+     "member_all_label": "国防军工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002058.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002088.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "建筑材料",
+     "member_all_label": "建筑材料",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002121.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "电力设备",
+     "member_all_label": "电力设备",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002188.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "传媒",
+     "member_all_label": "传媒",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002219.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002312.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002323.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "建筑装饰",
+     "member_all_label": "建筑装饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002341.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002356.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "商贸零售",
+     "member_all_label": "商贸零售",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002433.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002439.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "计算机",
+     "member_all_label": "计算机",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002496.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "基础化工",
+     "member_all_label": "基础化工",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002501.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "有色金属",
+     "member_all_label": "有色金属",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002627.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "交通运输",
+     "member_all_label": "交通运输",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002638.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "社会服务",
+     "member_all_label": "社会服务",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002703.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_381",
+      "yeslab_425",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002731.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1",
+      "yeslab_464",
+      "yeslab_471",
+      "yeslab_96"
+     ],
+     "cache_label": "纺织服饰",
+     "member_all_label": "纺织服饰",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002766.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002813.SZ",
+     "missing": [
+      "yeslab_206",
+      "yeslab_443_reg30_max20_v1"
+     ],
+     "cache_label": "汽车",
+     "member_all_label": "汽车",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    },
+    {
+     "ts_code": "002940.SZ",
+     "missing": [
+      "yeslab_206"
+     ],
+     "cache_label": "医药生物",
+     "member_all_label": "医药生物",
+     "class": "MISSING_NON_INDUSTRY_FACTOR"
+    }
+   ]
+  }
+ ],
+ "database_writes": false,
+ "weights_written": false,
+ "cache_writes": false
+}
