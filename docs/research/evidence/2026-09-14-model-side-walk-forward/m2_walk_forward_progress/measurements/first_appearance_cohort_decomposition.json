@@ -1,0 +1,558 @@
+{
+ "question": "§BX.9 items 1 and 2: decompose F1's 468 (and F2's 112) into listing-year cohorts and extend the admission lag kernel to 2019-2021, using the on-disk vendor dump instead of any new call; plus re-examine §BX.4's exact-335 identity, which summed across folds.",
+ "source": {
+  "file": "/data/zhangyudong/qrv2_research_artifacts/opt1_feasibility/stock_basic_full.json",
+  "n_securities": 5901,
+  "n_non_bj": 5553,
+  "n_bj": 348,
+  "n_delisted_included": 339,
+  "list_status_counts": {
+   "L": 5562,
+   "D": 339
+  },
+  "null_list_date": 0,
+  "fetched_by": "opt1_feasibility/fetch_stock_basic.py, 2026-09-15, all three listing states L/D/P, so not survivorship biased",
+  "field_used": "list_date (date trading began); §BX used new_share ipo_date"
+ },
+ "cohort_sizes_non_bj": {
+  "2015": 223,
+  "2016": 227,
+  "2017": 438,
+  "2018": 105,
+  "2019": 203,
+  "2020": 396,
+  "2021": 483,
+  "2022": 345,
+  "2023": 236,
+  "2024": 77,
+  "2025": 90,
+  "2026": 56
+ },
+ "per_fold": {
+  "F1": {
+   "test_year": 2022,
+   "n": 468,
+   "lag_distribution": {
+    "lag1": 399,
+    "lag12": 1,
+    "lag2": 62,
+    "lag22": 1,
+    "lag23": 1,
+    "lag28": 1,
+    "lag3": 2,
+    "lag5": 1
+   },
+   "n_unmatched": 0,
+   "n_same_year_admitted": 0,
+   "by_cohort_year": {
+    "1994": 1,
+    "1999": 1,
+    "2000": 1,
+    "2010": 1,
+    "2017": 1,
+    "2019": 2,
+    "2020": 62,
+    "2021": 399
+   }
+  },
+  "F2": {
+   "test_year": 2023,
+   "n": 395,
+   "lag_distribution": {
+    "lag1": 296,
+    "lag16": 1,
+    "lag2": 89,
+    "lag23": 1,
+    "lag3": 8
+   },
+   "n_unmatched": 0,
+   "n_same_year_admitted": 0,
+   "by_cohort_year": {
+    "2000": 1,
+    "2007": 1,
+    "2020": 8,
+    "2021": 89,
+    "2022": 296
+   }
+  },
+  "F3": {
+   "test_year": 2024,
+   "n": 257,
+   "lag_distribution": {
+    "lag1": 204,
+    "lag14": 1,
+    "lag2": 46,
+    "lag3": 4,
+    "lag34": 1,
+    "lag4": 1
+   },
+   "n_unmatched": 0,
+   "n_same_year_admitted": 0,
+   "by_cohort_year": {
+    "1990": 1,
+    "2010": 1,
+    "2020": 1,
+    "2021": 4,
+    "2022": 46,
+    "2023": 204
+   }
+  },
+  "F4": {
+   "test_year": 2025,
+   "n": 109,
+   "lag_distribution": {
+    "lag1": 65,
+    "lag2": 31,
+    "lag3": 5,
+    "lag4": 4,
+    "lag5": 4
+   },
+   "n_unmatched": 0,
+   "n_same_year_admitted": 0,
+   "by_cohort_year": {
+    "2020": 4,
+    "2021": 4,
+    "2022": 5,
+    "2023": 31,
+    "2024": 65
+   }
+  }
+ },
+ "cross_fold_double_counting": {
+  "n_securities_in_more_than_one_fold": 24,
+  "total_fold_entries": 1229,
+  "distinct_securities": 1205,
+  "excess_entries": 24,
+  "overlapping_pairs": {
+   "F1&F2": [
+    "301055.SZ",
+    "301066.SZ",
+    "301096.SZ",
+    "301100.SZ",
+    "301101.SZ",
+    "301149.SZ",
+    "301177.SZ",
+    "603071.SH",
+    "603213.SH",
+    "603216.SH",
+    "605599.SH",
+    "688032.SH",
+    "688235.SH",
+    "688246.SH"
+   ],
+   "F2&F3": [
+    "001255.SZ",
+    "301326.SZ",
+    "301368.SZ",
+    "301398.SZ",
+    "605566.SH",
+    "688143.SH",
+    "688172.SH"
+   ],
+   "F3&F4": [
+    "001239.SZ",
+    "301413.SZ",
+    "301459.SZ"
+   ]
+  },
+  "non_adjacent_pairs_all_zero": true,
+  "why": "each fold's test uses that fold's own train+val+test window, so a boundary security can qualify in two adjacent folds",
+  "consequence": "cohort cells must come from the earliest fold; naive sums can exceed 100%"
+ },
+ "cross_check_vs_bx_new_share": {
+  "F2": {
+   "lag1y_ipo2022": {
+    "bx_new_share_ipo_date": 283,
+    "this_stock_basic_list_date": 296,
+    "match": false,
+    "diff": 13
+   },
+   "ipo<=2021_or_unknown": {
+    "bx_new_share_ipo_date": 112,
+    "this_stock_basic_list_date": 99,
+    "match": false,
+    "diff": -13
+   }
+  },
+  "F3": {
+   "lag1y_ipo2023": {
+    "bx_new_share_ipo_date": 203,
+    "this_stock_basic_list_date": 204,
+    "match": false,
+    "diff": 1
+   },
+   "lag2y_ipo2022": {
+    "bx_new_share_ipo_date": 47,
+    "this_stock_basic_list_date": 46,
+    "match": false,
+    "diff": -1
+   },
+   "ipo<=2021_or_unknown": {
+    "bx_new_share_ipo_date": 7,
+    "this_stock_basic_list_date": 7,
+    "match": true,
+    "diff": 0
+   }
+  },
+  "F4": {
+   "lag1y_ipo2024": {
+    "bx_new_share_ipo_date": 63,
+    "this_stock_basic_list_date": 65,
+    "match": false,
+    "diff": 2
+   },
+   "lag2y_ipo2023": {
+    "bx_new_share_ipo_date": 33,
+    "this_stock_basic_list_date": 31,
+    "match": false,
+    "diff": -2
+   },
+   "lag3y_ipo2022": {
+    "bx_new_share_ipo_date": 5,
+    "this_stock_basic_list_date": 5,
+    "match": true,
+    "diff": 0
+   },
+   "ipo<=2021_or_unknown": {
+    "bx_new_share_ipo_date": 8,
+    "this_stock_basic_list_date": 8,
+    "match": true,
+    "diff": 0
+   }
+  }
+ },
+ "cross_check_all_match": false,
+ "cohort_admission_matrix_deduplicated": {
+  "2019": {
+   "cohort_nonbj_listed": 203,
+   "admitted_by_lag": {
+    "lag3": 2
+   },
+   "admission_rate_pct_by_lag": {
+    "lag3": 1.0
+   },
+   "cumulative_admitted_within_panel": 2,
+   "cumulative_pct": 1.0,
+   "same_year_admitted": 0
+  },
+  "2020": {
+   "cohort_nonbj_listed": 396,
+   "admitted_by_lag": {
+    "lag2": 62,
+    "lag3": 8,
+    "lag4": 1,
+    "lag5": 4
+   },
+   "admission_rate_pct_by_lag": {
+    "lag2": 15.7,
+    "lag3": 2.0,
+    "lag4": 0.3,
+    "lag5": 1.0
+   },
+   "cumulative_admitted_within_panel": 75,
+   "cumulative_pct": 18.9,
+   "same_year_admitted": 0
+  },
+  "2021": {
+   "cohort_nonbj_listed": 483,
+   "admitted_by_lag": {
+    "lag1": 399,
+    "lag2": 75,
+    "lag3": 3,
+    "lag4": 4
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 82.6,
+    "lag2": 15.5,
+    "lag3": 0.6,
+    "lag4": 0.8
+   },
+   "cumulative_admitted_within_panel": 481,
+   "cumulative_pct": 99.6,
+   "same_year_admitted": 0,
+   "double_counted_if_summed_across_folds": 15
+  },
+  "2022": {
+   "cohort_nonbj_listed": 345,
+   "admitted_by_lag": {
+    "lag1": 296,
+    "lag2": 40,
+    "lag3": 5
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 85.8,
+    "lag2": 11.6,
+    "lag3": 1.4
+   },
+   "cumulative_admitted_within_panel": 341,
+   "cumulative_pct": 98.8,
+   "same_year_admitted": 0,
+   "double_counted_if_summed_across_folds": 6
+  },
+  "2023": {
+   "cohort_nonbj_listed": 236,
+   "admitted_by_lag": {
+    "lag1": 204,
+    "lag2": 28
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 86.4,
+    "lag2": 11.9
+   },
+   "cumulative_admitted_within_panel": 232,
+   "cumulative_pct": 98.3,
+   "same_year_admitted": 0,
+   "double_counted_if_summed_across_folds": 3
+  },
+  "2024": {
+   "cohort_nonbj_listed": 77,
+   "admitted_by_lag": {
+    "lag1": 65
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 84.4
+   },
+   "cumulative_admitted_within_panel": 65,
+   "cumulative_pct": 84.4,
+   "same_year_admitted": 0
+  }
+ },
+ "cohort_admission_matrix_if_summed_across_folds_DO_NOT_USE": {
+  "2019": {
+   "cohort_nonbj_listed": 203,
+   "admitted_by_lag": {
+    "lag3": 2
+   },
+   "admission_rate_pct_by_lag": {
+    "lag3": 1.0
+   },
+   "cumulative_admitted_within_panel": 2,
+   "cumulative_pct": 1.0,
+   "same_year_admitted": 0
+  },
+  "2020": {
+   "cohort_nonbj_listed": 396,
+   "admitted_by_lag": {
+    "lag2": 62,
+    "lag3": 8,
+    "lag4": 1,
+    "lag5": 4
+   },
+   "admission_rate_pct_by_lag": {
+    "lag2": 15.7,
+    "lag3": 2.0,
+    "lag4": 0.3,
+    "lag5": 1.0
+   },
+   "cumulative_admitted_within_panel": 75,
+   "cumulative_pct": 18.9,
+   "same_year_admitted": 0
+  },
+  "2021": {
+   "cohort_nonbj_listed": 483,
+   "admitted_by_lag": {
+    "lag1": 399,
+    "lag2": 89,
+    "lag3": 4,
+    "lag4": 4
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 82.6,
+    "lag2": 18.4,
+    "lag3": 0.8,
+    "lag4": 0.8
+   },
+   "cumulative_admitted_within_panel": 496,
+   "cumulative_pct": 102.7,
+   "same_year_admitted": 0
+  },
+  "2022": {
+   "cohort_nonbj_listed": 345,
+   "admitted_by_lag": {
+    "lag1": 296,
+    "lag2": 46,
+    "lag3": 5
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 85.8,
+    "lag2": 13.3,
+    "lag3": 1.4
+   },
+   "cumulative_admitted_within_panel": 347,
+   "cumulative_pct": 100.6,
+   "same_year_admitted": 0
+  },
+  "2023": {
+   "cohort_nonbj_listed": 236,
+   "admitted_by_lag": {
+    "lag1": 204,
+    "lag2": 31
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 86.4,
+    "lag2": 13.1
+   },
+   "cumulative_admitted_within_panel": 235,
+   "cumulative_pct": 99.6,
+   "same_year_admitted": 0
+  },
+  "2024": {
+   "cohort_nonbj_listed": 77,
+   "admitted_by_lag": {
+    "lag1": 65
+   },
+   "admission_rate_pct_by_lag": {
+    "lag1": 84.4
+   },
+   "cumulative_admitted_within_panel": 65,
+   "cumulative_pct": 84.4,
+   "same_year_admitted": 0
+  }
+ },
+ "bx4_identity_reexamined": {
+  "2021": {
+   "cohort_size_stock_basic": 483,
+   "cohort_size_new_share": null,
+   "admitted_naive_sum_across_folds": 496,
+   "admitted_dedup_earliest_fold": 481,
+   "overcount": 15,
+   "dedup_pct_of_stock_basic_cohort": 99.6
+  },
+  "2022": {
+   "cohort_size_stock_basic": 345,
+   "cohort_size_new_share": 335,
+   "admitted_naive_sum_across_folds": 347,
+   "admitted_dedup_earliest_fold": 341,
+   "overcount": 6,
+   "dedup_pct_of_stock_basic_cohort": 98.8
+  },
+  "2023": {
+   "cohort_size_stock_basic": 236,
+   "cohort_size_new_share": 238,
+   "admitted_naive_sum_across_folds": 235,
+   "admitted_dedup_earliest_fold": 232,
+   "overcount": 3,
+   "dedup_pct_of_stock_basic_cohort": 98.3
+  },
+  "2024": {
+   "cohort_size_stock_basic": 77,
+   "cohort_size_new_share": 79,
+   "admitted_naive_sum_across_folds": 65,
+   "admitted_dedup_earliest_fold": 65,
+   "overcount": 0,
+   "dedup_pct_of_stock_basic_cohort": 84.4
+  },
+  "verdict_on_the_335_identity": {
+   "bx_claim": "283 (lag1) + 47 (lag2) + 5 (lag3) = 335 = the 2022 non-BSE IPO count, exactly",
+   "naive_sum_2022": 347,
+   "dedup_sum_2022": 341,
+   "overcount_2022": 6,
+   "cohort_size_this_source_2022": 345
+  }
+ },
+ "reentries": [
+  {
+   "fold": "F3",
+   "test_year": 2024,
+   "ts_code": "600654.SH",
+   "name": "中安科",
+   "list_date": "19901219",
+   "delist_date": null,
+   "list_status": "L",
+   "is_bj": false,
+   "lag_years": 34
+  },
+  {
+   "fold": "F1",
+   "test_year": 2022,
+   "ts_code": "600856.SH",
+   "name": "退中天(退)",
+   "list_date": "19940425",
+   "delist_date": "20220622",
+   "list_status": "D",
+   "is_bj": false,
+   "lag_years": 28
+  },
+  {
+   "fold": "F1",
+   "test_year": 2022,
+   "ts_code": "600145.SH",
+   "name": "退新亿(退)",
+   "list_date": "19990923",
+   "delist_date": "20220428",
+   "list_status": "D",
+   "is_bj": false,
+   "lag_years": 23
+  },
+  {
+   "fold": "F2",
+   "test_year": 2023,
+   "ts_code": "000972.SZ",
+   "name": "中基健康",
+   "list_date": "20000926",
+   "delist_date": null,
+   "list_status": "L",
+   "is_bj": false,
+   "lag_years": 23
+  },
+  {
+   "fold": "F1",
+   "test_year": 2022,
+   "ts_code": "600301.SH",
+   "name": "华锡有色",
+   "list_date": "20000712",
+   "delist_date": null,
+   "list_status": "L",
+   "is_bj": false,
+   "lag_years": 22
+  },
+  {
+   "fold": "F2",
+   "test_year": 2023,
+   "ts_code": "002122.SZ",
+   "name": "ST汇洲",
+   "list_date": "20070328",
+   "delist_date": null,
+   "list_status": "L",
+   "is_bj": false,
+   "lag_years": 16
+  },
+  {
+   "fold": "F3",
+   "test_year": 2024,
+   "ts_code": "302132.SZ",
+   "name": "中航成飞",
+   "list_date": "20100827",
+   "delist_date": null,
+   "list_status": "L",
+   "is_bj": false,
+   "lag_years": 14
+  },
+  {
+   "fold": "F1",
+   "test_year": 2022,
+   "ts_code": "002336.SZ",
+   "name": "人乐退(退)",
+   "list_date": "20100113",
+   "delist_date": "20250704",
+   "list_status": "D",
+   "is_bj": false,
+   "lag_years": 12
+  }
+ ],
+ "n_reentries": 8,
+ "unmatched_codes": {
+  "F1": [],
+  "F2": [],
+  "F3": [],
+  "F4": []
+ },
+ "read_only": true,
+ "database_access": false,
+ "network_or_vendor_call": false,
+ "mcp_used": false,
+ "weights_loaded": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "generated_at_local": "2026-09-16T02:38:51"
+}
