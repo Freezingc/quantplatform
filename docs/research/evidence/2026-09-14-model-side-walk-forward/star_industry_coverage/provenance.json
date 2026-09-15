@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T00:43:10+00:00",
+  "generated_at_utc": "2026-09-15T01:07:11+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -50,6 +50,10 @@
     "industry_group_incompleteness.json": {
       "bytes": 119480,
       "sha256": "4785968e3d940c0d553f355877a5593261443b8850d2ded58ea11d34218ad2c9"
+    },
+    "label_source_census_postcutover.json": {
+      "bytes": 851535,
+      "sha256": "b48e2cd594bfa979dbd72090b0caf86a42afb7c451d2dd3bf69970fb3234ed82"
     },
     "label_source_decomposition_20241118.json": {
       "bytes": 498,
@@ -489,7 +493,7 @@
     }
   },
   "narratives": {
-    "option1_feasibility.md": "c102d116cc9a14756c75db76ee1cc9911415ffa2599573561938e4805cbbb7d8",
+    "option1_feasibility.md": "8af312b778ca54574f072e3977325f398174402c87e9f9aac8ed9affbe556c0f",
     "root_cause.md": "7c719821cbcad9766baa3ee1a725ae8ef63d363306cefae8bc725f68e71a0390"
   },
   "probe_scripts": {
@@ -528,6 +532,10 @@
     "probe_industry_group_incompleteness.py": {
       "bytes": 7937,
       "sha256": "8bd6e4166c717fba8be09cbb1cc5d9669e1e3259d754a7cf3e3fd7f5157ffcd3"
+    },
+    "probe_label_source_census.py": {
+      "bytes": 17304,
+      "sha256": "f357508e175e34a6c80636deef347c72de3d23f70565fd8b4bf5d3d0ce63bcdc"
     },
     "probe_label_source_sensitivity.py": {
       "bytes": 16083,
@@ -600,7 +608,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "dcf3ae58659d2602b1404adc8c202f755f25c8da"
+    "commit_at_generation": "bb26a11f21b4b31bdf3ad6886c1c417dd25f67da"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
