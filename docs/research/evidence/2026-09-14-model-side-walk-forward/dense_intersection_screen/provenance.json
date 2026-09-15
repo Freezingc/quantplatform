@@ -13,7 +13,7 @@
     "parquet panels and fold caches",
     "per-security rows: only per-day aggregates leave the database"
   ],
-  "generated_at_utc": "2026-09-14T20:03:18+00:00",
+  "generated_at_utc": "2026-09-15T03:35:58+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "9b5cfa92bd5b412fbcd1808bc8dda105635e3feebcbcab37fa199d44aaf36a66"
@@ -45,6 +45,7 @@
     "frozen_v2_coverage_train_2014_2021.json": "3d44b60ca8dbe1d6b2b777800364009289df71e81c85b7357dd70ece269dfa8c",
     "industry_cache_both_sources.json": "03d1cfeb42e34055ea38844e71178ffb382c9b6638fa88274bd157bab9a65cad",
     "industry_label_census.json": "02269d66e0f70f225aa3a1efc23b996a10c1cd799888ad998e4345bed99c1235",
+    "leave_one_out_full_window.json": "ccf8ddb027fd5da4b9b0d80353b1fd8b11af4e18fd8a92f84fa708668af6cb2c",
     "leave_out_357_2022_2025.json": "ccf5036bfeb44ab056cb61ec7f2420b0726da8bfe13f4fb039028a12babc6a28",
     "leave_out_357_2022_2025.log": "c6180b30cee0bafe382a5b75bc2dd61833688af911500e3885336e6b8523179c",
     "leave_out_471_2022_2025.json": "e7e63cb0ddd19538e7e71e13abd41d2612d5f01bd45aa3ae981fd90c5173f882",
@@ -88,14 +89,15 @@
     "probe_industry_label_census.py": "88bdb68082bc846f8ebe4c571343f19f962caca882209d33bd1cddc52b329bbb",
     "profile_candidate_feature_nan.py": "3b1c830e2db58d0c67c79e8d743ac56890709cb4164e6e08b763f87d1f932565",
     "screen_dense_intersection_coverage.py": "1caea316c52f05604e1b5669ef9af2dd9e4296c59e36f8e440f1c21d164e1776",
+    "summarize_leave_one_out.py": "32c85b0a4a87e9d06294671b57878345107e02461f8d6879972feed5a43e1077",
     "test_screen_dense_intersection_coverage.py": "632ca4e08e302b33c50c6dd9a3cab647bd16ec968497f8c9b3d7816b6c7cc4e4"
   },
   "repository_main_tree": {
     "branch": "codex/publish-quant-platform",
-    "commit": "cc52de7e6b99bdcc94f21cd807a291fc58eb3621",
+    "commit": "2502014df94a07bc8e52d621e3a7f65e92640858",
     "dirty": false,
     "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
-    "subject": "docs(handoff): the complete leave-one-out matrix qualifies the advice given two sections earlier, and the promotion-evidence link into the chain watcher's stage 3 is verified against a real artifact rather than against the code's intentions"
+    "subject": "docs(handoff): a one-page price list for the 24 days, and the cliff that makes 'tighten the health check slightly' a gate-failing change -- 42 days sit within 0.005 above the floor, so 0.905 turns G6 from 0.9752 to 0.9319"
   },
   "safety": "read-only investigation and a read-only instrument: SELECT-only queries against dfs://QuantResearchV2Test. No database write, no weight loading, no artifact mutation, no threshold change, and nothing in the repository calls the instrument.",
   "score_health_floor": {
@@ -110,6 +112,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "d2f78fbc2e475b88dd902ee64d081970bd465b4f"
+    "commit_at_generation": "88a0cc2c31aa1abc0acfb7b8ff022e74e5b175f1"
   }
 }
