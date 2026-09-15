@@ -1,0 +1,1293 @@
+{
+  "days": [
+    "2022-03-15",
+    "2023-06-14",
+    "2024-02-28",
+    "2024-09-30",
+    "2024-10-09",
+    "2024-10-11",
+    "2024-11-05",
+    "2025-06-16"
+  ],
+  "factors": {
+    "yeslab_206": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3161,
+          "median_relative_difference": 0.6041271157999529,
+          "pearson": 0.8743199598068379,
+          "rows_in_both": 3161,
+          "sign_agreement": 1.0,
+          "spearman": 0.7208701346917351,
+          "store_valued_rows": 4589
+        },
+        "2023-06-14": {
+          "frozen_rows": 3570,
+          "median_relative_difference": 0.39589251977198303,
+          "pearson": 0.897408072133232,
+          "rows_in_both": 3570,
+          "sign_agreement": 1.0,
+          "spearman": 0.7641459900047497,
+          "store_valued_rows": 4954
+        },
+        "2024-02-28": {
+          "frozen_rows": 3782,
+          "median_relative_difference": 0.487219046668315,
+          "pearson": 0.8818838842562216,
+          "rows_in_both": 3782,
+          "sign_agreement": 1.0,
+          "spearman": 0.9384822325456302,
+          "store_valued_rows": 5261
+        },
+        "2024-09-30": {
+          "frozen_rows": 3875,
+          "median_relative_difference": 0.36612956574451,
+          "pearson": 0.8697346453506752,
+          "rows_in_both": 3875,
+          "sign_agreement": 1.0,
+          "spearman": 0.9129422196163057,
+          "store_valued_rows": 5277
+        },
+        "2024-10-09": {
+          "frozen_rows": 3878,
+          "median_relative_difference": 0.5657679987137947,
+          "pearson": 0.9089825045126648,
+          "rows_in_both": 3878,
+          "sign_agreement": 1.0,
+          "spearman": 0.9196846306330155,
+          "store_valued_rows": 5278
+        },
+        "2024-10-11": {
+          "frozen_rows": 3878,
+          "median_relative_difference": 1.039728459621509,
+          "pearson": 0.9185062548624032,
+          "rows_in_both": 3878,
+          "sign_agreement": 1.0,
+          "spearman": 0.9049414282613268,
+          "store_valued_rows": 5280
+        },
+        "2024-11-05": {
+          "frozen_rows": 3870,
+          "median_relative_difference": 0.9483982767447035,
+          "pearson": 0.8696284677347631,
+          "rows_in_both": 3870,
+          "sign_agreement": 1.0,
+          "spearman": 0.8979299109946933,
+          "store_valued_rows": 5266
+        },
+        "2025-06-16": {
+          "frozen_rows": 3789,
+          "median_relative_difference": 0.42897086740279533,
+          "pearson": 0.9288662493621804,
+          "rows_in_both": 3789,
+          "sign_agreement": 1.0,
+          "spearman": 0.7671728490988027,
+          "store_valued_rows": 5143
+        }
+      },
+      "role": "dense; materializer special branch MEDIAN_206",
+      "source_name": "60日成交量去均值相对偏离",
+      "spearman_max": 0.9384822325456302,
+      "spearman_median": 0.9014356696280101,
+      "spearman_min": 0.7208701346917351,
+      "table": "factor_data5"
+    },
+    "yeslab_357": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3062,
+          "median_relative_difference": 0.06142369606119644,
+          "pearson": 0.988333288078915,
+          "rows_in_both": 6124,
+          "sign_agreement": 1.0,
+          "spearman": 0.9797123139059353,
+          "store_valued_rows": 9574
+        },
+        "2023-06-14": {
+          "frozen_rows": 3302,
+          "median_relative_difference": 0.10864149964725447,
+          "pearson": 0.9828181962311322,
+          "rows_in_both": 6604,
+          "sign_agreement": 1.0,
+          "spearman": 0.9651349401942395,
+          "store_valued_rows": 10344
+        },
+        "2024-02-28": {
+          "frozen_rows": 3801,
+          "median_relative_difference": 0.04745406304803561,
+          "pearson": 0.9933098095662428,
+          "rows_in_both": 7602,
+          "sign_agreement": 1.0,
+          "spearman": 0.9903501036179455,
+          "store_valued_rows": 10690
+        },
+        "2024-09-30": {
+          "frozen_rows": 3899,
+          "median_relative_difference": 0.15041569135390984,
+          "pearson": 0.9145173033532168,
+          "rows_in_both": 7798,
+          "sign_agreement": 1.0,
+          "spearman": 0.8944116770106466,
+          "store_valued_rows": 10686
+        },
+        "2024-10-09": {
+          "frozen_rows": 3895,
+          "median_relative_difference": 0.12972938679540988,
+          "pearson": 0.9878782003029629,
+          "rows_in_both": 7790,
+          "sign_agreement": 1.0,
+          "spearman": 0.9699178732267993,
+          "store_valued_rows": 10678
+        },
+        "2024-10-11": {
+          "frozen_rows": 3896,
+          "median_relative_difference": 0.11352445262735487,
+          "pearson": 0.9865510397161674,
+          "rows_in_both": 7792,
+          "sign_agreement": 1.0,
+          "spearman": 0.9658683390681531,
+          "store_valued_rows": 10682
+        },
+        "2024-11-05": {
+          "frozen_rows": 3897,
+          "median_relative_difference": 0.15386594756077646,
+          "pearson": 0.9591707534163763,
+          "rows_in_both": 7794,
+          "sign_agreement": 1.0,
+          "spearman": 0.9370457260605419,
+          "store_valued_rows": 10690
+        },
+        "2025-06-16": {
+          "frozen_rows": 3844,
+          "median_relative_difference": 0.04569139317818436,
+          "pearson": 0.9966550045837453,
+          "rows_in_both": 7688,
+          "sign_agreement": 1.0,
+          "spearman": 0.9888418785800315,
+          "store_valued_rows": 10754
+        }
+      },
+      "role": "dense; PIT replay with the industry provider",
+      "source_name": "行业内收益标准化绝对值",
+      "spearman_max": 0.9903501036179455,
+      "spearman_median": 0.9678931061474763,
+      "spearman_min": 0.8944116770106466,
+      "table": "factor_data8"
+    },
+    "yeslab_372": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 183,
+          "median_relative_difference": 0.003965609170887862,
+          "pearson": 0.9999966095868656,
+          "rows_in_both": 366,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999490886875062,
+          "store_valued_rows": 486
+        },
+        "2023-06-14": {
+          "frozen_rows": 1611,
+          "median_relative_difference": 0.0029855544195118364,
+          "pearson": 0.9999982151366231,
+          "rows_in_both": 3220,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999637177418882,
+          "store_valued_rows": 4468
+        },
+        "2024-02-28": {
+          "frozen_rows": 227,
+          "median_relative_difference": 0.025292270531400974,
+          "pearson": 0.9999238549383755,
+          "rows_in_both": 452,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998721297415306,
+          "store_valued_rows": 566
+        },
+        "2024-09-30": {
+          "frozen_rows": 3897,
+          "median_relative_difference": 0.03498692966499464,
+          "pearson": 0.9999508547809146,
+          "rows_in_both": 7794,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999953104320781,
+          "store_valued_rows": 10642
+        },
+        "2024-10-09": {
+          "frozen_rows": 241,
+          "median_relative_difference": 0.02470604844402332,
+          "pearson": 0.9999796319719613,
+          "rows_in_both": 482,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999519906724736,
+          "store_valued_rows": 584
+        },
+        "2024-10-11": {
+          "frozen_rows": 359,
+          "median_relative_difference": 0.012958963282937335,
+          "pearson": 0.9999873481906242,
+          "rows_in_both": 718,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999911817950752,
+          "store_valued_rows": 938
+        },
+        "2024-11-05": {
+          "frozen_rows": 3679,
+          "median_relative_difference": 0.010967804853354838,
+          "pearson": 0.9999791010705527,
+          "rows_in_both": 7358,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999269749592932,
+          "store_valued_rows": 10108
+        },
+        "2025-06-16": {
+          "frozen_rows": 2498,
+          "median_relative_difference": 0.002392927672328095,
+          "pearson": 0.9999995431845168,
+          "rows_in_both": 4996,
+          "sign_agreement": 1.0,
+          "spearman": 0.999987998866397,
+          "store_valued_rows": 7206
+        }
+      },
+      "role": "sparse cluster A",
+      "source_name": "GP_003",
+      "spearman_max": 0.9999953104320781,
+      "spearman_median": 0.999957854207181,
+      "spearman_min": 0.9998721297415306,
+      "table": "factor_data8"
+    },
+    "yeslab_375": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 2435,
+          "median_relative_difference": 0.0009682045747693507,
+          "pearson": 0.9525023852619975,
+          "rows_in_both": 2743,
+          "sign_agreement": 1.0,
+          "spearman": 0.9637156506410386,
+          "store_valued_rows": 3916
+        },
+        "2023-06-14": {
+          "frozen_rows": 1980,
+          "median_relative_difference": 0.04833281336215264,
+          "pearson": 0.958352974845014,
+          "rows_in_both": 4094,
+          "sign_agreement": 1.0,
+          "spearman": 0.8773021548937494,
+          "store_valued_rows": 7092
+        },
+        "2024-02-28": {
+          "frozen_rows": 3416,
+          "median_relative_difference": 0.017476337564367093,
+          "pearson": 0.9727416868284134,
+          "rows_in_both": 3837,
+          "sign_agreement": 1.0,
+          "spearman": 0.9800172531343893,
+          "store_valued_rows": 5273
+        },
+        "2024-09-30": {
+          "frozen_rows": 3746,
+          "median_relative_difference": 0.11020093900178204,
+          "pearson": 0.8795897720411106,
+          "rows_in_both": 11238,
+          "sign_agreement": 1.0,
+          "spearman": 0.9135353059277568,
+          "store_valued_rows": 15706
+        },
+        "2024-10-09": {
+          "frozen_rows": 3667,
+          "median_relative_difference": 0.040669274030689255,
+          "pearson": 0.9297511890857634,
+          "rows_in_both": 4125,
+          "sign_agreement": 1.0,
+          "spearman": 0.9574805565978753,
+          "store_valued_rows": 5577
+        },
+        "2024-10-11": {
+          "frozen_rows": 3468,
+          "median_relative_difference": 0.04033254409129365,
+          "pearson": 0.9470982124319105,
+          "rows_in_both": 4128,
+          "sign_agreement": 1.0,
+          "spearman": 0.9405779271013056,
+          "store_valued_rows": 5674
+        },
+        "2024-11-05": {
+          "frozen_rows": 536,
+          "median_relative_difference": 0.22462264206222599,
+          "pearson": 0.868860058286369,
+          "rows_in_both": 1486,
+          "sign_agreement": 1.0,
+          "spearman": 0.797861562512461,
+          "store_valued_rows": 10811
+        },
+        "2025-06-16": {
+          "frozen_rows": 2018,
+          "median_relative_difference": 0.14024414601398383,
+          "pearson": 0.9591764213348687,
+          "rows_in_both": 4700,
+          "sign_agreement": 1.0,
+          "spearman": 0.8532757567979976,
+          "store_valued_rows": 9901
+        }
+      },
+      "role": "sparse cluster B",
+      "source_name": "GP_006",
+      "spearman_max": 0.9800172531343893,
+      "spearman_median": 0.9270566165145312,
+      "spearman_min": 0.797861562512461,
+      "table": "factor_data8"
+    },
+    "yeslab_381": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3197,
+          "median_relative_difference": 0.026436882413926985,
+          "pearson": 0.9999719159252266,
+          "rows_in_both": 6388,
+          "sign_agreement": 0.9956167814652473,
+          "spearman": 0.9998314627958459,
+          "store_valued_rows": 9518
+        },
+        "2023-06-14": {
+          "frozen_rows": 3609,
+          "median_relative_difference": 0.02107836277749492,
+          "pearson": 0.9999572472045235,
+          "rows_in_both": 7212,
+          "sign_agreement": 0.997504159733777,
+          "spearman": 0.9998751259163655,
+          "store_valued_rows": 10306
+        },
+        "2024-02-28": {
+          "frozen_rows": 3802,
+          "median_relative_difference": 0.030240157165114977,
+          "pearson": 0.9985475784956022,
+          "rows_in_both": 7598,
+          "sign_agreement": 0.996314819689392,
+          "spearman": 0.9984955662517083,
+          "store_valued_rows": 10680
+        },
+        "2024-09-30": {
+          "frozen_rows": 3898,
+          "median_relative_difference": 0.054255579961225625,
+          "pearson": 0.9994583398734838,
+          "rows_in_both": 7796,
+          "sign_agreement": 0.9889687018984095,
+          "spearman": 0.9972154376891808,
+          "store_valued_rows": 10674
+        },
+        "2024-10-09": {
+          "frozen_rows": 3896,
+          "median_relative_difference": 0.17360200871523312,
+          "pearson": 0.9991111284953231,
+          "rows_in_both": 7792,
+          "sign_agreement": 0.9751026694045175,
+          "spearman": 0.9914583277390879,
+          "store_valued_rows": 10672
+        },
+        "2024-10-11": {
+          "frozen_rows": 3896,
+          "median_relative_difference": 0.19555948110654692,
+          "pearson": 0.9577774659382428,
+          "rows_in_both": 7792,
+          "sign_agreement": 0.9781827515400411,
+          "spearman": 0.9456909351992718,
+          "store_valued_rows": 10676
+        },
+        "2024-11-05": {
+          "frozen_rows": 3894,
+          "median_relative_difference": 0.15400416218285137,
+          "pearson": 0.9979896396411454,
+          "rows_in_both": 7788,
+          "sign_agreement": 0.9892141756548536,
+          "spearman": 0.9951325242953697,
+          "store_valued_rows": 10670
+        },
+        "2025-06-16": {
+          "frozen_rows": 3843,
+          "median_relative_difference": 0.031301434970132415,
+          "pearson": 0.9844070565638977,
+          "rows_in_both": 7686,
+          "sign_agreement": 0.9940150923757481,
+          "spearman": 0.9941140754698073,
+          "store_valued_rows": 10774
+        }
+      },
+      "role": "dense",
+      "source_name": "GP_012",
+      "spearman_max": 0.9998751259163655,
+      "spearman_median": 0.9961739809922752,
+      "spearman_min": 0.9456909351992718,
+      "table": "factor_data8"
+    },
+    "yeslab_384": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 2513,
+          "median_relative_difference": 0.0019931910320555926,
+          "pearson": 0.9999996818128289,
+          "rows_in_both": 5026,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999969724040345,
+          "store_valued_rows": 7414
+        },
+        "2023-06-14": {
+          "frozen_rows": 2054,
+          "median_relative_difference": 0.009620609453035313,
+          "pearson": 0.9999944359313342,
+          "rows_in_both": 4108,
+          "sign_agreement": 1.0,
+          "spearman": 0.999990663829391,
+          "store_valued_rows": 5568
+        },
+        "2024-02-28": {
+          "frozen_rows": 3463,
+          "median_relative_difference": 0.004462147436797136,
+          "pearson": 0.9999976320713159,
+          "rows_in_both": 6926,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999951233783996,
+          "store_valued_rows": 9702
+        },
+        "2024-09-30": {
+          "frozen_rows": 3799,
+          "median_relative_difference": 0.031489974685153216,
+          "pearson": 0.9999511482317232,
+          "rows_in_both": 7598,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999915240721542,
+          "store_valued_rows": 10434
+        },
+        "2024-10-09": {
+          "frozen_rows": 3711,
+          "median_relative_difference": 0.03832273086931471,
+          "pearson": 0.9999269889812901,
+          "rows_in_both": 7422,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999919513343078,
+          "store_valued_rows": 10196
+        },
+        "2024-10-11": {
+          "frozen_rows": 3513,
+          "median_relative_difference": 0.03604736749670947,
+          "pearson": 0.9999034630770969,
+          "rows_in_both": 7026,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999910185149922,
+          "store_valued_rows": 9672
+        },
+        "2024-11-05": {
+          "frozen_rows": 626,
+          "median_relative_difference": 0.021474543663152643,
+          "pearson": 0.9998058554550313,
+          "rows_in_both": 1252,
+          "sign_agreement": 1.0,
+          "spearman": 0.9995879725453628,
+          "store_valued_rows": 1660
+        },
+        "2025-06-16": {
+          "frozen_rows": 2110,
+          "median_relative_difference": 0.010229855660464372,
+          "pearson": 0.9999966800118862,
+          "rows_in_both": 4220,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999778306816557,
+          "store_valued_rows": 5752
+        }
+      },
+      "role": "sparse cluster B",
+      "source_name": "GP_015",
+      "spearman_max": 0.9999969724040345,
+      "spearman_median": 0.9999912712935732,
+      "spearman_min": 0.9995879725453628,
+      "table": "factor_data8"
+    },
+    "yeslab_389": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 183,
+          "median_relative_difference": 0.0,
+          "pearson": 0.9999999999999993,
+          "rows_in_both": 366,
+          "sign_agreement": 1.0,
+          "spearman": 1.0,
+          "store_valued_rows": 488
+        },
+        "2023-06-14": {
+          "frozen_rows": 1683,
+          "median_relative_difference": 0.0,
+          "pearson": 1.0,
+          "rows_in_both": 3364,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999999999999999,
+          "store_valued_rows": 4740
+        },
+        "2024-02-28": {
+          "frozen_rows": 229,
+          "median_relative_difference": 0.0,
+          "pearson": 1.0,
+          "rows_in_both": 456,
+          "sign_agreement": 1.0,
+          "spearman": 1.0,
+          "store_valued_rows": 570
+        },
+        "2024-09-30": {
+          "frozen_rows": 3887,
+          "median_relative_difference": 0.0,
+          "pearson": 0.9999999999999958,
+          "rows_in_both": 7774,
+          "sign_agreement": 1.0,
+          "spearman": 1.0,
+          "store_valued_rows": 10616
+        },
+        "2024-10-09": {
+          "frozen_rows": 240,
+          "median_relative_difference": 0.0,
+          "pearson": 1.0,
+          "rows_in_both": 480,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999999999999998,
+          "store_valued_rows": 590
+        },
+        "2024-10-11": {
+          "frozen_rows": 359,
+          "median_relative_difference": 0.0,
+          "pearson": 0.999999999999999,
+          "rows_in_both": 718,
+          "sign_agreement": 1.0,
+          "spearman": 1.0,
+          "store_valued_rows": 940
+        },
+        "2024-11-05": {
+          "frozen_rows": 3703,
+          "median_relative_difference": 0.0,
+          "pearson": 0.999999999999999,
+          "rows_in_both": 7406,
+          "sign_agreement": 1.0,
+          "spearman": 0.999999999763669,
+          "store_valued_rows": 10154
+        },
+        "2025-06-16": {
+          "frozen_rows": 2583,
+          "median_relative_difference": 0.0,
+          "pearson": 0.9999999999999949,
+          "rows_in_both": 5166,
+          "sign_agreement": 1.0,
+          "spearman": 1.0,
+          "store_valued_rows": 7458
+        }
+      },
+      "role": "sparse cluster A",
+      "source_name": "GP_020",
+      "spearman_max": 1.0,
+      "spearman_median": 1.0,
+      "spearman_min": 0.999999999763669,
+      "table": "factor_data9"
+    },
+    "yeslab_390": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 186,
+          "median_relative_difference": 0.0024213344536831924,
+          "pearson": 0.9999989587317873,
+          "rows_in_both": 372,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999459179724834,
+          "store_valued_rows": 494
+        },
+        "2023-06-14": {
+          "frozen_rows": 1690,
+          "median_relative_difference": 0.005533657531561343,
+          "pearson": 0.9999891986718521,
+          "rows_in_both": 3378,
+          "sign_agreement": 0.9958555358200119,
+          "spearman": 0.9999288828057875,
+          "store_valued_rows": 4712
+        },
+        "2024-02-28": {
+          "frozen_rows": 228,
+          "median_relative_difference": 0.002084784948153665,
+          "pearson": 0.9999804165149127,
+          "rows_in_both": 454,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999281858304485,
+          "store_valued_rows": 562
+        },
+        "2024-09-30": {
+          "frozen_rows": 3899,
+          "median_relative_difference": 0.01555492266351444,
+          "pearson": 0.9999449879788715,
+          "rows_in_both": 7798,
+          "sign_agreement": 1.0,
+          "spearman": 0.9998761201694158,
+          "store_valued_rows": 10620
+        },
+        "2024-10-09": {
+          "frozen_rows": 241,
+          "median_relative_difference": 0.001780456244667174,
+          "pearson": 0.9999914520302053,
+          "rows_in_both": 482,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999639930043552,
+          "store_valued_rows": 580
+        },
+        "2024-10-11": {
+          "frozen_rows": 363,
+          "median_relative_difference": 0.0018034707562996225,
+          "pearson": 0.9999966399150213,
+          "rows_in_both": 726,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999686400992278,
+          "store_valued_rows": 952
+        },
+        "2024-11-05": {
+          "frozen_rows": 3711,
+          "median_relative_difference": 0.0027864487660477313,
+          "pearson": 0.9999930035239923,
+          "rows_in_both": 7422,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999733939448563,
+          "store_valued_rows": 10162
+        },
+        "2025-06-16": {
+          "frozen_rows": 2599,
+          "median_relative_difference": 0.008027614147142065,
+          "pearson": 0.9999840532943048,
+          "rows_in_both": 5198,
+          "sign_agreement": 0.9965371296652559,
+          "spearman": 0.9999564750535057,
+          "store_valued_rows": 7448
+        }
+      },
+      "role": "sparse cluster A",
+      "source_name": "GP_021",
+      "spearman_max": 0.9999733939448563,
+      "spearman_median": 0.9999511965129946,
+      "spearman_min": 0.9998761201694158,
+      "table": "factor_data9"
+    },
+    "yeslab_406": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 2464,
+          "median_relative_difference": 0.004242280328422951,
+          "pearson": 0.9999987427720494,
+          "rows_in_both": 2464,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999938430463625,
+          "store_valued_rows": 3620
+        },
+        "2023-06-14": {
+          "frozen_rows": 1962,
+          "median_relative_difference": 0.019295040003848792,
+          "pearson": 0.999977333454931,
+          "rows_in_both": 1962,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999888065143412,
+          "store_valued_rows": 2646
+        },
+        "2024-02-28": {
+          "frozen_rows": 3440,
+          "median_relative_difference": 0.014261923371141015,
+          "pearson": 0.9999717484173196,
+          "rows_in_both": 3440,
+          "sign_agreement": 1.0,
+          "spearman": 0.9997077456376345,
+          "store_valued_rows": 4809
+        },
+        "2024-09-30": {
+          "frozen_rows": 3784,
+          "median_relative_difference": 0.027341655672903264,
+          "pearson": 0.9999544513608188,
+          "rows_in_both": 3784,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999901998809029,
+          "store_valued_rows": 5191
+        },
+        "2024-10-09": {
+          "frozen_rows": 3700,
+          "median_relative_difference": 0.03584763748594372,
+          "pearson": 0.999935328747666,
+          "rows_in_both": 3700,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999869950437661,
+          "store_valued_rows": 5078
+        },
+        "2024-10-11": {
+          "frozen_rows": 3496,
+          "median_relative_difference": 0.03054443007462092,
+          "pearson": 0.9999275562156063,
+          "rows_in_both": 3496,
+          "sign_agreement": 1.0,
+          "spearman": 0.9999861363574175,
+          "store_valued_rows": 4807
+        },
+        "2024-11-05": {
+          "frozen_rows": 544,
+          "median_relative_difference": 0.08570949889108244,
+          "pearson": 0.9981338330989238,
+          "rows_in_both": 544,
+          "sign_agreement": 1.0,
+          "spearman": 0.9960243654459096,
+          "store_valued_rows": 710
+        },
+        "2025-06-16": {
+          "frozen_rows": 2034,
+          "median_relative_difference": 0.010872432544894268,
+          "pearson": 0.9999898004728237,
+          "rows_in_both": 2034,
+          "sign_agreement": 1.0,
+          "spearman": 0.9997543421786768,
+          "store_valued_rows": 2742
+        }
+      },
+      "role": "sparse cluster B",
+      "source_name": "GP_037",
+      "spearman_max": 0.9999938430463625,
+      "spearman_median": 0.9999865657005917,
+      "spearman_min": 0.9960243654459096,
+      "table": "factor_data9"
+    },
+    "yeslab_425": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3196,
+          "median_relative_difference": 0.001474926253687308,
+          "pearson": 0.9984293338663155,
+          "rows_in_both": 3193,
+          "sign_agreement": 1.0,
+          "spearman": 0.9983109097956177,
+          "store_valued_rows": 4739
+        },
+        "2023-06-14": {
+          "frozen_rows": 3606,
+          "median_relative_difference": 0.0105400157886875,
+          "pearson": 0.9966262368447198,
+          "rows_in_both": 3603,
+          "sign_agreement": 1.0,
+          "spearman": 0.9965630914323658,
+          "store_valued_rows": 5141
+        },
+        "2024-02-28": {
+          "frozen_rows": 3802,
+          "median_relative_difference": 0.001375253391119541,
+          "pearson": 0.9959740452011039,
+          "rows_in_both": 3799,
+          "sign_agreement": 1.0,
+          "spearman": 0.9949786144000166,
+          "store_valued_rows": 5338
+        },
+        "2024-09-30": {
+          "frozen_rows": 3894,
+          "median_relative_difference": 0.048466365674590464,
+          "pearson": 0.9943932246748037,
+          "rows_in_both": 3894,
+          "sign_agreement": 1.0,
+          "spearman": 0.9941435183816931,
+          "store_valued_rows": 5328
+        },
+        "2024-10-09": {
+          "frozen_rows": 3894,
+          "median_relative_difference": 0.0492222878519393,
+          "pearson": 0.9923257495385087,
+          "rows_in_both": 3894,
+          "sign_agreement": 1.0,
+          "spearman": 0.9924049480156211,
+          "store_valued_rows": 5329
+        },
+        "2024-10-11": {
+          "frozen_rows": 3895,
+          "median_relative_difference": 0.049212598425196756,
+          "pearson": 0.9947582788601745,
+          "rows_in_both": 3895,
+          "sign_agreement": 1.0,
+          "spearman": 0.9939414422924073,
+          "store_valued_rows": 5330
+        },
+        "2024-11-05": {
+          "frozen_rows": 3891,
+          "median_relative_difference": 0.04808608758900207,
+          "pearson": 0.9850999373895518,
+          "rows_in_both": 3891,
+          "sign_agreement": 1.0,
+          "spearman": 0.9856653725713597,
+          "store_valued_rows": 5325
+        },
+        "2025-06-16": {
+          "frozen_rows": 3828,
+          "median_relative_difference": 0.012380584537642604,
+          "pearson": 0.9980579057982539,
+          "rows_in_both": 3828,
+          "sign_agreement": 1.0,
+          "spearman": 0.9977080255788956,
+          "store_valued_rows": 5359
+        }
+      },
+      "role": "dense",
+      "source_name": "GP_056",
+      "spearman_max": 0.9983109097956177,
+      "spearman_median": 0.9945610663908548,
+      "spearman_min": 0.9856653725713597,
+      "table": "factor_data9"
+    },
+    "yeslab_464": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3194,
+          "median_relative_difference": 0.3952031236942176,
+          "pearson": 0.7038199894066443,
+          "rows_in_both": 3191,
+          "sign_agreement": 0.9398307740520213,
+          "spearman": 0.6356826547063269,
+          "store_valued_rows": 4731
+        },
+        "2023-06-14": {
+          "frozen_rows": 3603,
+          "median_relative_difference": 0.13660931610418478,
+          "pearson": 0.947593690686408,
+          "rows_in_both": 3600,
+          "sign_agreement": 0.9688888888888889,
+          "spearman": 0.9182159921462957,
+          "store_valued_rows": 5129
+        },
+        "2024-02-28": {
+          "frozen_rows": 3800,
+          "median_relative_difference": 0.06614845635933843,
+          "pearson": 0.9936413642663724,
+          "rows_in_both": 3797,
+          "sign_agreement": 0.9831445878324994,
+          "spearman": 0.9936404258258061,
+          "store_valued_rows": 5333
+        },
+        "2024-09-30": {
+          "frozen_rows": 3891,
+          "median_relative_difference": 0.06702522667092088,
+          "pearson": 0.995764176376425,
+          "rows_in_both": 3891,
+          "sign_agreement": 0.9832947828321769,
+          "spearman": 0.9921743624408003,
+          "store_valued_rows": 5323
+        },
+        "2024-10-09": {
+          "frozen_rows": 3894,
+          "median_relative_difference": 0.10072160864020183,
+          "pearson": 0.990827533307679,
+          "rows_in_both": 3894,
+          "sign_agreement": 0.9953775038520801,
+          "spearman": 0.980958417261444,
+          "store_valued_rows": 5323
+        },
+        "2024-10-11": {
+          "frozen_rows": 3894,
+          "median_relative_difference": 0.10012519254509551,
+          "pearson": 0.8488100236216002,
+          "rows_in_both": 3894,
+          "sign_agreement": 0.9845916795069337,
+          "spearman": 0.8843172361475489,
+          "store_valued_rows": 5322
+        },
+        "2024-11-05": {
+          "frozen_rows": 3891,
+          "median_relative_difference": 0.1877384863560084,
+          "pearson": 0.9476334996443748,
+          "rows_in_both": 3891,
+          "sign_agreement": 0.9740426625546132,
+          "spearman": 0.9316496117931725,
+          "store_valued_rows": 5321
+        },
+        "2025-06-16": {
+          "frozen_rows": 3826,
+          "median_relative_difference": 0.059574633564836776,
+          "pearson": 0.9907940901745655,
+          "rows_in_both": 3826,
+          "sign_agreement": 0.9843178254051228,
+          "spearman": 0.974135277978584,
+          "store_valued_rows": 5352
+        }
+      },
+      "role": "dense; one of §AR's two FAILs",
+      "source_name": "GP_095",
+      "spearman_max": 0.9936404258258061,
+      "spearman_median": 0.9528924448858782,
+      "spearman_min": 0.6356826547063269,
+      "table": "factor_data10"
+    },
+    "yeslab_471": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3052,
+          "median_relative_difference": 0.8273060198779836,
+          "pearson": 0.6440051040564235,
+          "rows_in_both": 2952,
+          "sign_agreement": 0.7022357723577236,
+          "spearman": 0.4792194323973327,
+          "store_valued_rows": 4425
+        },
+        "2023-06-14": {
+          "frozen_rows": 3289,
+          "median_relative_difference": 0.3166505418475862,
+          "pearson": 0.9381939992681628,
+          "rows_in_both": 3226,
+          "sign_agreement": 0.8812771233725977,
+          "spearman": 0.8407361609369658,
+          "store_valued_rows": 4813
+        },
+        "2024-02-28": {
+          "frozen_rows": 3798,
+          "median_relative_difference": 0.3096313247250572,
+          "pearson": 0.9532922774725007,
+          "rows_in_both": 3735,
+          "sign_agreement": 0.8875502008032129,
+          "spearman": 0.8922335073869361,
+          "store_valued_rows": 4992
+        },
+        "2024-09-30": {
+          "frozen_rows": 3887,
+          "median_relative_difference": 0.2959389222289825,
+          "pearson": 0.9677999270622235,
+          "rows_in_both": 3861,
+          "sign_agreement": 0.9013209013209014,
+          "spearman": 0.8682758342479876,
+          "store_valued_rows": 5018
+        },
+        "2024-10-09": {
+          "frozen_rows": 3888,
+          "median_relative_difference": 0.3476658177425122,
+          "pearson": 0.9600867710862098,
+          "rows_in_both": 3863,
+          "sign_agreement": 0.8972301320217447,
+          "spearman": 0.8730883068022539,
+          "store_valued_rows": 5014
+        },
+        "2024-10-11": {
+          "frozen_rows": 3887,
+          "median_relative_difference": 0.337218175106872,
+          "pearson": 0.9307461933820275,
+          "rows_in_both": 3861,
+          "sign_agreement": 0.904946904946905,
+          "spearman": 0.8713710493037697,
+          "store_valued_rows": 5017
+        },
+        "2024-11-05": {
+          "frozen_rows": 3883,
+          "median_relative_difference": 0.33019734849967947,
+          "pearson": 0.9587129943821553,
+          "rows_in_both": 3857,
+          "sign_agreement": 0.9014778325123153,
+          "spearman": 0.8863703032937394,
+          "store_valued_rows": 5013
+        },
+        "2025-06-16": {
+          "frozen_rows": 3819,
+          "median_relative_difference": 0.4017680418515824,
+          "pearson": 0.9507162162603837,
+          "rows_in_both": 3805,
+          "sign_agreement": 0.8862023653088043,
+          "spearman": 0.8027894800605472,
+          "store_valued_rows": 5064
+        }
+      },
+      "role": "dense; PIT replay; one of §AR's two FAILs",
+      "source_name": "AttentionSpillover",
+      "spearman_max": 0.8922335073869361,
+      "spearman_median": 0.8698234417758787,
+      "spearman_min": 0.4792194323973327,
+      "table": "factor_data10"
+    },
+    "yeslab_484": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3201,
+          "median_relative_difference": 1.5864693923443128e-15,
+          "pearson": 0.999088187670072,
+          "rows_in_both": 3201,
+          "sign_agreement": 1.0,
+          "spearman": 0.9990166755987209,
+          "store_valued_rows": 4784
+        },
+        "2023-06-14": {
+          "frozen_rows": 3614,
+          "median_relative_difference": 6.226055339557852e-07,
+          "pearson": 0.5329504739675153,
+          "rows_in_both": 3614,
+          "sign_agreement": 1.0,
+          "spearman": 0.9983472370765842,
+          "store_valued_rows": 5160
+        },
+        "2024-02-28": {
+          "frozen_rows": 3802,
+          "median_relative_difference": 1.674326103530665e-15,
+          "pearson": 0.9994780903349497,
+          "rows_in_both": 3802,
+          "sign_agreement": 1.0,
+          "spearman": 0.999611932395408,
+          "store_valued_rows": 5340
+        },
+        "2024-09-30": {
+          "frozen_rows": 3900,
+          "median_relative_difference": 4.625876405777093e-07,
+          "pearson": 0.9994128258703724,
+          "rows_in_both": 3900,
+          "sign_agreement": 1.0,
+          "spearman": 0.9992209072466076,
+          "store_valued_rows": 5340
+        },
+        "2024-10-09": {
+          "frozen_rows": 3896,
+          "median_relative_difference": 3.9645406763217877e-07,
+          "pearson": 0.9984103436119097,
+          "rows_in_both": 3896,
+          "sign_agreement": 1.0,
+          "spearman": 0.9992416142280807,
+          "store_valued_rows": 5339
+        },
+        "2024-10-11": {
+          "frozen_rows": 3897,
+          "median_relative_difference": 3.821097850884739e-07,
+          "pearson": 0.9986529722744666,
+          "rows_in_both": 3897,
+          "sign_agreement": 1.0,
+          "spearman": 0.9994485875528939,
+          "store_valued_rows": 5342
+        },
+        "2024-11-05": {
+          "frozen_rows": 3900,
+          "median_relative_difference": 2.842478561123562e-07,
+          "pearson": 0.9983533083420626,
+          "rows_in_both": 3900,
+          "sign_agreement": 1.0,
+          "spearman": 0.9990769756132131,
+          "store_valued_rows": 5347
+        },
+        "2025-06-16": {
+          "frozen_rows": 3847,
+          "median_relative_difference": 1.130179549947721e-06,
+          "pearson": 0.9981501593905748,
+          "rows_in_both": 3847,
+          "sign_agreement": 1.0,
+          "spearman": 0.9981447940288574,
+          "store_valued_rows": 5392
+        }
+      },
+      "role": "dense; §Q's highest-fidelity factor",
+      "source_name": "羊群效应_CSAD波动率21",
+      "spearman_max": 0.999611932395408,
+      "spearman_median": 0.9991489414299104,
+      "spearman_min": 0.9981447940288574,
+      "table": "factor_data10"
+    },
+    "yeslab_96": {
+      "days_measured": 8,
+      "per_day": {
+        "2022-03-15": {
+          "frozen_rows": 3191,
+          "median_relative_difference": 2.33436297107355e-16,
+          "pearson": 0.9961923060233892,
+          "rows_in_both": 6376,
+          "sign_agreement": 0.9949811794228356,
+          "spearman": 0.9928639951105678,
+          "store_valued_rows": 9436
+        },
+        "2023-06-14": {
+          "frozen_rows": 3600,
+          "median_relative_difference": 4.1692253731839605e-16,
+          "pearson": 0.9965826648432163,
+          "rows_in_both": 7194,
+          "sign_agreement": 0.9905476786210731,
+          "spearman": 0.9893556506327569,
+          "store_valued_rows": 10226
+        },
+        "2024-02-28": {
+          "frozen_rows": 3799,
+          "median_relative_difference": 3.572401483241989e-15,
+          "pearson": 0.9731172923524063,
+          "rows_in_both": 7592,
+          "sign_agreement": 0.9417808219178082,
+          "spearman": 0.9597241940190882,
+          "store_valued_rows": 10654
+        },
+        "2024-09-30": {
+          "frozen_rows": 3888,
+          "median_relative_difference": 2.835768965847009e-16,
+          "pearson": 0.9739102809843025,
+          "rows_in_both": 7776,
+          "sign_agreement": 0.9683641975308642,
+          "spearman": 0.9669167708641567,
+          "store_valued_rows": 10626
+        },
+        "2024-10-09": {
+          "frozen_rows": 3889,
+          "median_relative_difference": 3.061396308105297e-16,
+          "pearson": 0.9705702484177794,
+          "rows_in_both": 7778,
+          "sign_agreement": 0.9609154024170738,
+          "spearman": 0.9677385549795222,
+          "store_valued_rows": 10624
+        },
+        "2024-10-11": {
+          "frozen_rows": 3889,
+          "median_relative_difference": 3.3476079702047063e-16,
+          "pearson": 0.9726926897416484,
+          "rows_in_both": 7778,
+          "sign_agreement": 0.9624582154795577,
+          "spearman": 0.9691514113757174,
+          "store_valued_rows": 10626
+        },
+        "2024-11-05": {
+          "frozen_rows": 3885,
+          "median_relative_difference": 0.023625740398274163,
+          "pearson": 0.9617190054944225,
+          "rows_in_both": 7770,
+          "sign_agreement": 0.938996138996139,
+          "spearman": 0.9431561157340771,
+          "store_valued_rows": 10620
+        },
+        "2025-06-16": {
+          "frozen_rows": 3822,
+          "median_relative_difference": 8.993634796890283e-16,
+          "pearson": 0.9932392738901908,
+          "rows_in_both": 7644,
+          "sign_agreement": 0.9751439037153323,
+          "spearman": 0.9825343334214424,
+          "store_valued_rows": 10668
+        }
+      },
+      "role": "dense",
+      "source_name": "修正日间反转",
+      "spearman_max": 0.9928639951105678,
+      "spearman_median": 0.9684449831776198,
+      "spearman_min": 0.9431561157340771,
+      "table": "factor_data3"
+    }
+  },
+  "generated_at_local": "2026-09-15T18:27:55",
+  "not_censused": {
+    "yeslab_363": "zero rows in factor_daily (§AM/§BC), so there is nothing to compare",
+    "yeslab_443_reg30_max20_v1": "no source_catalog entry; an approved repair variant"
+  },
+  "question": "For each frozen-v2 factor, does the frozen factor_daily column reproduce the catalogued YesLab source, on the rows both sides have?",
+  "ranking_by_median_spearman": [
+    {
+      "factor_id": "yeslab_471",
+      "source_name": "AttentionSpillover",
+      "spearman_median": 0.8698234417758787,
+      "spearman_min": 0.4792194323973327
+    },
+    {
+      "factor_id": "yeslab_206",
+      "source_name": "60日成交量去均值相对偏离",
+      "spearman_median": 0.9014356696280101,
+      "spearman_min": 0.7208701346917351
+    },
+    {
+      "factor_id": "yeslab_375",
+      "source_name": "GP_006",
+      "spearman_median": 0.9270566165145312,
+      "spearman_min": 0.797861562512461
+    },
+    {
+      "factor_id": "yeslab_464",
+      "source_name": "GP_095",
+      "spearman_median": 0.9528924448858782,
+      "spearman_min": 0.6356826547063269
+    },
+    {
+      "factor_id": "yeslab_357",
+      "source_name": "行业内收益标准化绝对值",
+      "spearman_median": 0.9678931061474763,
+      "spearman_min": 0.8944116770106466
+    },
+    {
+      "factor_id": "yeslab_96",
+      "source_name": "修正日间反转",
+      "spearman_median": 0.9684449831776198,
+      "spearman_min": 0.9431561157340771
+    },
+    {
+      "factor_id": "yeslab_425",
+      "source_name": "GP_056",
+      "spearman_median": 0.9945610663908548,
+      "spearman_min": 0.9856653725713597
+    },
+    {
+      "factor_id": "yeslab_381",
+      "source_name": "GP_012",
+      "spearman_median": 0.9961739809922752,
+      "spearman_min": 0.9456909351992718
+    },
+    {
+      "factor_id": "yeslab_484",
+      "source_name": "羊群效应_CSAD波动率21",
+      "spearman_median": 0.9991489414299104,
+      "spearman_min": 0.9981447940288574
+    },
+    {
+      "factor_id": "yeslab_390",
+      "source_name": "GP_021",
+      "spearman_median": 0.9999511965129946,
+      "spearman_min": 0.9998761201694158
+    },
+    {
+      "factor_id": "yeslab_372",
+      "source_name": "GP_003",
+      "spearman_median": 0.999957854207181,
+      "spearman_min": 0.9998721297415306
+    },
+    {
+      "factor_id": "yeslab_406",
+      "source_name": "GP_037",
+      "spearman_median": 0.9999865657005917,
+      "spearman_min": 0.9960243654459096
+    },
+    {
+      "factor_id": "yeslab_384",
+      "source_name": "GP_015",
+      "spearman_median": 0.9999912712935732,
+      "spearman_min": 0.9995879725453628
+    },
+    {
+      "factor_id": "yeslab_389",
+      "source_name": "GP_020",
+      "spearman_median": 1.0,
+      "spearman_min": 0.999999999763669
+    }
+  ],
+  "safety": "SELECT-only; no calculator executed; nothing written to any database or artifact",
+  "summary": {
+    "below_0.95": [
+      "yeslab_471",
+      "yeslab_206",
+      "yeslab_375"
+    ],
+    "between_0.95_and_0.999": [
+      "yeslab_464",
+      "yeslab_357",
+      "yeslab_96",
+      "yeslab_425",
+      "yeslab_381"
+    ],
+    "factors_censused": 14,
+    "reading": "a frozen column is a reproduction, not a copy: it is the producer's calculator class run against a Tushare market session and then restricted to the official universe. Rank correlation against the catalogued source is therefore the right fidelity measure, and a factor sitting well below the others is a factor whose frozen column is a proxy rather than the catalogued quantity.",
+    "reproducing_at_or_above_0.999": [
+      "yeslab_484",
+      "yeslab_390",
+      "yeslab_372",
+      "yeslab_406",
+      "yeslab_384",
+      "yeslab_389"
+    ]
+  }
+}

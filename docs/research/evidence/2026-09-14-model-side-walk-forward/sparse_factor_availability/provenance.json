@@ -22,7 +22,7 @@
     "the parquet panels themselves (read in place, never copied)",
     "per-security rows: only per-day coverage aggregates and per-factor summaries are recorded"
   ],
-  "generated_at_utc": "2026-09-15T10:02:59+00:00",
+  "generated_at_utc": "2026-09-15T10:42:18+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "af67821e5b612ba458572cdfd569e6400d1f90a336c92d4981cab70e6239db6d"
@@ -31,25 +31,35 @@
     "an_drift_reconciliation.json": "35013eb6c120b0ab8fadda2df2f7854ad873278e6f9afea81439740025a59aed",
     "catalog_for_frozen_v2.json": "af87cb1aa32cc0fb22c5723ee47e02395113cbefa240c7610d998a1d259b0a94",
     "frozen_lineage_375.json": "2f3e8793bb788368700bddf4530aa39919974329d92d3f63b295f032f2d413c7",
+    "gp006_alignment_scan.json": "6f4acc5117af2c63574f6214225cfdd6f6ab802a76da0aae8abe186cc672ebed",
+    "gp006_ambiguous_store.json": "596cbb495927eaf6400a316bb4d13dd4d2bada4d9aa4d35caf9c2ddbb5d2b5e8",
     "gp006_codeset.json": "ed938600fe04c76fde4a34abe5a3dc20f883a8b037aaba0317a6b871edbf3ae4",
+    "gp006_values_vs_store.json": "3e5af101153ee40aa0470102af853ac76b5d9a186b76b71dbb6ac11d2155a74c",
     "regime_mechanism_daily.parquet": "5a2bda8c2ef450f47c48cc1b03955217373c9f175c5bbe567789e97305332d4c",
     "regime_mechanism_direct.json": "0c7779966492edc57f1f202146f70e4dd16f4e4d28c813ec2f5019b7589a389c",
     "regime_shapes.json": "9319cd954a4bada3a36088b704c79c2134be8ea5a81f8076cef1deb02b565b6e",
+    "replay_fidelity_census.json": "62b73c302c4f329fd37878af331fee89f90b5894018bf0397d47e98afb0e71e0",
     "replay_vs_store_daily.json": "6c776ecff9ba74bc3c65854908ce21622e86aa60a54895ee461acae429b0a09c",
     "sparse_availability_regime.json": "ffa55469e43335595cd506631ccc9d8e9071c878688f1a4b94ad539832f43292",
     "sparse_factor_coverage_in_panels.json": "fde20cac36e34dc9303712239b5e60c188ab8acc9bb0213030c49026db461b53",
     "sparse_regime_upstream.json": "16076a9c08e818ef547d408a1695831dc1ac2e3b0e399ce003d7453a67053535",
+    "store_valued_share_vs_base.json": "51b7a9b68725a017f81adb5ad0c25e6788cd4c294a15425a43caee91c14e9022",
     "yeslab_363_upstream.json": "41ce0a6c3b40d446f32d7246a8222eeff1615f47b6338dc5aa782969219502e2"
   },
   "probe_scripts": {
     "analyze_regime_shapes.py": "8d6e69abb27afc2d8b4e4b61419bc6647f433ec1b2f5453fef3e720837bfd88d",
     "probe_an_drift_reconciliation.py": "97ab9da3036d861a5812ee1b947d2a69d64d60e6121a9ea16fb7778fbb74650b",
+    "probe_gp006_alignment.py": "1c2a24a1fc387521cb9708eb722bde65b3278e6d6e8c820e8d68193da64bea7c",
+    "probe_gp006_ambiguous_store.py": "4cb556d562cb2ae9dea335c5c2ae5f15d3caef98a3c8a823acae2485ea66b645",
     "probe_gp006_codeset.py": "2b8eb0ab1d28498e7c62c38b992ce5f29750b0f3e90cd2e8f8383fb837b8f44b",
+    "probe_gp006_values_vs_store.py": "8f1eac2558753e0c0a23946cab908d2abe29c3958feb7c2dfc6e18748090cee1",
     "probe_regime_mechanism_direct.py": "e482807d3ae85ea62c23997022fd2eb08216ad0929f99a5c0cbd1af6fb8190d7",
+    "probe_replay_fidelity_census.py": "9988d09bb9898168693058ad98e2f879c95ecf48b09b108db949eb350f2e64f9",
     "probe_replay_vs_store_daily.py": "ec92dbd78dc6ca57836f149a4b431c339d235986bec99df19e3c5aca1265a98c",
     "probe_sparse_availability_regime.py": "27233787255b3fb4c3e91eb414a15c3f0def671b9a8b83fe3f7136c22f1054ab",
     "probe_sparse_factor_coverage_in_panels.py": "3f04debb1c75b8c23c0158e23f3183c79da952c307999331d1e325d415b348a1",
     "probe_sparse_regime_upstream.py": "8ef87fd30b30b08fcc0d34bbae34c08a68cf255b90d3d4059488d77f213877ed",
+    "probe_store_valued_share_vs_base.py": "ded2d1d5ee66feb3fd372f1be323e6ce242751488a749d12ff018a6d5658c3ee",
     "probe_yeslab_363_upstream.py": "7f06fe2817c77dc451b4502aaf5eef0c23a20465865c4099542569588372f7d0"
   },
   "repository_main_tree": {
@@ -72,6 +82,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "e7b2d52e5f57e63b1035a6895604a5782bddec03"
+    "commit_at_generation": "60085c75743ab1f6e566aeccfce24a9d008a2a8c"
   }
 }

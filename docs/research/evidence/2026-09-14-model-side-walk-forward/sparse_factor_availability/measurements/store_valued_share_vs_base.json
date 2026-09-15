@@ -1,0 +1,673 @@
+{
+  "factors": {
+    "yeslab_372": {
+      "base": "pct_chg_up",
+      "base_share": {
+        "max": 1.0,
+        "mean": 0.4716793540886136,
+        "median": 0.45395550061804696,
+        "min": 0.018964633521271142,
+        "std": 0.2267094518316312
+      },
+      "days_with_store_rows": 969,
+      "eight_days_where_store_and_frozen_disagree_most": {
+        "2022-02-09": {
+          "base_share": 0.771718452758402,
+          "frozen_share": 0.7793278376664553,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7092,
+          "store_share": 0.5957661290322581
+        },
+        "2022-03-16": {
+          "base_share": 0.9262730396751016,
+          "frozen_share": 0.9284598562949078,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8632,
+          "store_share": 0.7251344086021505
+        },
+        "2022-03-30": {
+          "base_share": 0.8091674462114126,
+          "frozen_share": 0.8194574368568756,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7756,
+          "store_share": 0.6515456989247311
+        },
+        "2022-04-27": {
+          "base_share": 0.8633828996282528,
+          "frozen_share": 0.8667905824039653,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7986,
+          "store_share": 0.670866935483871
+        },
+        "2022-04-29": {
+          "base_share": 0.9460891243377999,
+          "frozen_share": 0.9482704892489873,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8934,
+          "store_share": 0.7505040322580645
+        },
+        "2022-05-25": {
+          "base_share": 0.8579754601226994,
+          "frozen_share": 0.8595092024539878,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8082,
+          "store_share": 0.6789314516129032
+        },
+        "2022-06-10": {
+          "base_share": 0.8356707317073171,
+          "frozen_share": 0.8490853658536586,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8066,
+          "store_share": 0.6775873655913979
+        },
+        "2022-09-06": {
+          "base_share": 0.782608695652174,
+          "frozen_share": 0.7949471210340776,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7388,
+          "store_share": 0.6206317204301075
+        }
+      },
+      "frozen_share": {
+        "max": 0.9992301770592764,
+        "mean": 0.4798939756588419,
+        "median": 0.4635352286773795,
+        "min": 0.01922091235263967,
+        "std": 0.22725249478316095
+      },
+      "frozen_share_vs_base_share": {
+        "mean_frozen_minus_base": 0.008214621570228257,
+        "pearson": 0.9997444971124634,
+        "share_of_days_within_0.05": 1.0
+      },
+      "source_name": "GP_003",
+      "store_rows_all_median_per_day": 11904.0,
+      "store_share": {
+        "max": 0.8939852150537635,
+        "mean": 0.42103251883662346,
+        "median": 0.4070900537634409,
+        "min": 0.017641129032258066,
+        "std": 0.204100141670286
+      },
+      "store_share_vs_base_share": {
+        "mean_store_minus_base": -0.05064683525199013,
+        "median_absolute_gap": 0.04693405699065656,
+        "pearson": 0.9885524957114705,
+        "share_of_days_within_0.05": 0.5283797729618163,
+        "spearman": NaN
+      },
+      "store_share_vs_frozen_share": {
+        "mean_store_minus_frozen": -0.05886145682221839,
+        "pearson": 0.9889595397174404,
+        "share_of_days_within_0.05": 0.43962848297213625
+      },
+      "table": "factor_data8"
+    },
+    "yeslab_375": {
+      "base": "vol_up_20",
+      "base_share": {
+        "max": 0.9738058551617874,
+        "mean": 0.4870367823349564,
+        "median": 0.4697330161247687,
+        "min": 0.14105858170606372,
+        "std": 0.14749711735756343
+      },
+      "days_with_store_rows": 969,
+      "eight_days_where_store_and_frozen_disagree_most": {
+        "2022-03-15": {
+          "base_share": 0.7763199000312402,
+          "frozen_share": 0.760699781318338,
+          "store_rows_all": 17909,
+          "store_rows_valued": 3916,
+          "store_share": 0.21866100843151487
+        },
+        "2023-02-16": {
+          "base_share": 0.8106209609440854,
+          "frozen_share": 0.7915144703568419,
+          "store_rows_all": 17909,
+          "store_rows_valued": 4992,
+          "store_share": 0.27874253168797813
+        },
+        "2024-02-02": {
+          "base_share": 0.7768115942028986,
+          "frozen_share": 0.7702239789196311,
+          "store_rows_all": 17909,
+          "store_rows_valued": 4815,
+          "store_share": 0.2688592327879837
+        },
+        "2024-02-05": {
+          "base_share": 0.8685458377239199,
+          "frozen_share": 0.8603793466807166,
+          "store_rows_all": 17909,
+          "store_rows_valued": 5270,
+          "store_share": 0.29426545312412755
+        },
+        "2024-02-28": {
+          "base_share": 0.9073684210526316,
+          "frozen_share": 0.8984210526315789,
+          "store_rows_all": 17909,
+          "store_rows_valued": 5273,
+          "store_share": 0.2944329666648054
+        },
+        "2024-10-09": {
+          "base_share": 0.9522464698331193,
+          "frozen_share": 0.941206675224647,
+          "store_rows_all": 17909,
+          "store_rows_valued": 5577,
+          "store_share": 0.31140767212016307
+        },
+        "2024-10-11": {
+          "base_share": 0.9003595274781715,
+          "frozen_share": 0.8900873138161274,
+          "store_rows_all": 17909,
+          "store_rows_valued": 5674,
+          "store_share": 0.3168239432687476
+        },
+        "2024-10-15": {
+          "base_share": 0.8955874807593638,
+          "frozen_share": 0.883786557208825,
+          "store_rows_all": 17909,
+          "store_rows_valued": 6373,
+          "store_share": 0.35585459824669163
+        }
+      },
+      "frozen_share": {
+        "max": 0.9614791987673343,
+        "mean": 0.4773495500937504,
+        "median": 0.46075172590130403,
+        "min": 0.13643371017471737,
+        "std": 0.14546725778238948
+      },
+      "frozen_share_vs_base_share": {
+        "mean_frozen_minus_base": -0.009687232241205948,
+        "pearson": 0.9997021539681975,
+        "share_of_days_within_0.05": 1.0
+      },
+      "source_name": "GP_006",
+      "store_rows_all_median_per_day": 17909.0,
+      "store_share": {
+        "max": 0.8769892232955497,
+        "mean": 0.4120976008684197,
+        "median": 0.39745379418169635,
+        "min": 0.10625942263666313,
+        "std": 0.1475978078749935
+      },
+      "store_share_vs_base_share": {
+        "mean_store_minus_base": -0.07493918146653668,
+        "median_absolute_gap": 0.11974070991534275,
+        "pearson": 0.38949532778521107,
+        "share_of_days_within_0.05": 0.22084623323013416,
+        "spearman": NaN
+      },
+      "store_share_vs_frozen_share": {
+        "mean_store_minus_frozen": -0.06525194922533074,
+        "pearson": 0.3906361203992463,
+        "share_of_days_within_0.05": 0.22291021671826625
+      },
+      "table": "factor_data8"
+    },
+    "yeslab_381": {
+      "base": null,
+      "days_with_store_rows": 969,
+      "frozen_share": {
+        "max": 1.0,
+        "mean": 0.9991310553496731,
+        "median": 0.999231950844854,
+        "min": 0.9833844580777096,
+        "std": 0.0009762494275603784
+      },
+      "source_name": "GP_012",
+      "store_rows_all_median_per_day": 11904.0,
+      "store_share": {
+        "max": 0.9138104838709677,
+        "mean": 0.8717589009287926,
+        "median": 0.8918010752688172,
+        "min": 0.7876344086021505,
+        "std": 0.037891981450698775
+      },
+      "table": "factor_data8"
+    },
+    "yeslab_384": {
+      "base": "vol_up_20",
+      "base_share": {
+        "max": 0.9738058551617874,
+        "mean": 0.4870367823349564,
+        "median": 0.4697330161247687,
+        "min": 0.14105858170606372,
+        "std": 0.14749711735756343
+      },
+      "days_with_store_rows": 969,
+      "eight_days_where_store_and_frozen_disagree_most": {
+        "2022-02-24": {
+          "base_share": 0.6275558351682919,
+          "frozen_share": 0.6388801509908776,
+          "store_rows_all": 11904,
+          "store_rows_valued": 5612,
+          "store_share": 0.47143817204301075
+        },
+        "2022-03-15": {
+          "base_share": 0.7763199000312402,
+          "frozen_share": 0.7850671665104655,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7414,
+          "store_share": 0.6228158602150538
+        },
+        "2022-03-16": {
+          "base_share": 0.7725710715401437,
+          "frozen_share": 0.7769447047797563,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7192,
+          "store_share": 0.6041666666666666
+        },
+        "2022-03-17": {
+          "base_share": 0.7134375,
+          "frozen_share": 0.7209375,
+          "store_rows_all": 11904,
+          "store_rows_valued": 6568,
+          "store_share": 0.551747311827957
+        },
+        "2022-06-13": {
+          "base_share": 0.6939458472771525,
+          "frozen_share": 0.6985092789777912,
+          "store_rows_all": 11904,
+          "store_rows_valued": 6248,
+          "store_share": 0.5248655913978495
+        },
+        "2022-06-15": {
+          "base_share": 0.7358032189492864,
+          "frozen_share": 0.7421803826298208,
+          "store_rows_all": 11904,
+          "store_rows_valued": 6918,
+          "store_share": 0.5811491935483871
+        },
+        "2022-06-16": {
+          "base_share": 0.6617021276595745,
+          "frozen_share": 0.6662613981762918,
+          "store_rows_all": 11904,
+          "store_rows_valued": 5982,
+          "store_share": 0.5025201612903226
+        },
+        "2022-11-04": {
+          "base_share": 0.8456861609727852,
+          "frozen_share": 0.8480023161551824,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8148,
+          "store_share": 0.6844758064516129
+        }
+      },
+      "frozen_share": {
+        "max": 0.9743392353092122,
+        "mean": 0.4987341164488554,
+        "median": 0.4826254826254826,
+        "min": 0.16063638696433152,
+        "std": 0.14404767809524527
+      },
+      "frozen_share_vs_base_share": {
+        "mean_frozen_minus_base": 0.011697334113899073,
+        "pearson": 0.9997857790193281,
+        "share_of_days_within_0.05": 1.0
+      },
+      "source_name": "GP_015",
+      "store_rows_all_median_per_day": 11904.0,
+      "store_share": {
+        "max": 0.8765120967741935,
+        "mean": 0.4264959025489086,
+        "median": 0.40860215053763443,
+        "min": 0.13944892473118278,
+        "std": 0.13183104897292802
+      },
+      "store_share_vs_base_share": {
+        "mean_store_minus_base": -0.06054087978604774,
+        "median_absolute_gap": 0.05800894334160461,
+        "pearson": 0.9811690373766213,
+        "share_of_days_within_0.05": 0.37874097007223945,
+        "spearman": NaN
+      },
+      "store_share_vs_frozen_share": {
+        "mean_store_minus_frozen": -0.07223821389994682,
+        "pearson": 0.9805966289576331,
+        "share_of_days_within_0.05": 0.22497420020639836
+      },
+      "table": "factor_data8"
+    },
+    "yeslab_389": {
+      "base": "pct_chg_up",
+      "base_share": {
+        "max": 1.0,
+        "mean": 0.4716793540886136,
+        "median": 0.45395550061804696,
+        "min": 0.018964633521271142,
+        "std": 0.2267094518316312
+      },
+      "days_with_store_rows": 969,
+      "eight_days_where_store_and_frozen_disagree_most": {
+        "2022-02-09": {
+          "base_share": 0.771718452758402,
+          "frozen_share": 0.8021559923906151,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7368,
+          "store_share": 0.6189516129032258
+        },
+        "2022-03-16": {
+          "base_share": 0.9262730396751016,
+          "frozen_share": 0.9284598562949078,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8652,
+          "store_share": 0.7268145161290323
+        },
+        "2022-04-27": {
+          "base_share": 0.8633828996282528,
+          "frozen_share": 0.8698884758364313,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8034,
+          "store_share": 0.6748991935483871
+        },
+        "2022-04-29": {
+          "base_share": 0.9460891243377999,
+          "frozen_share": 0.946712371455282,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8922,
+          "store_share": 0.7494959677419355
+        },
+        "2022-05-10": {
+          "base_share": 0.7901272896615957,
+          "frozen_share": 0.8180689226948152,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7746,
+          "store_share": 0.6507056451612904
+        },
+        "2022-05-25": {
+          "base_share": 0.8579754601226994,
+          "frozen_share": 0.8671779141104294,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8164,
+          "store_share": 0.6858198924731183
+        },
+        "2022-06-10": {
+          "base_share": 0.8356707317073171,
+          "frozen_share": 0.8646341463414634,
+          "store_rows_all": 11904,
+          "store_rows_valued": 8252,
+          "store_share": 0.6932123655913979
+        },
+        "2022-09-06": {
+          "base_share": 0.782608695652174,
+          "frozen_share": 0.8031727379553466,
+          "store_rows_all": 11904,
+          "store_rows_valued": 7570,
+          "store_share": 0.6359206989247311
+        }
+      },
+      "frozen_share": {
+        "max": 0.9966641005901976,
+        "mean": 0.49558320271650463,
+        "median": 0.4854423292273236,
+        "min": 0.018964633521271142,
+        "std": 0.2288653300902799
+      },
+      "frozen_share_vs_base_share": {
+        "mean_frozen_minus_base": 0.02390384862789102,
+        "pearson": 0.9988155866013045,
+        "share_of_days_within_0.05": 0.9917440660474717
+      },
+      "source_name": "GP_020",
+      "store_rows_all_median_per_day": 11904.0,
+      "store_share": {
+        "max": 0.8931451612903226,
+        "mean": 0.4365638905533917,
+        "median": 0.4312836021505376,
+        "min": 0.017137096774193547,
+        "std": 0.2056577285642455
+      },
+      "store_share_vs_base_share": {
+        "mean_store_minus_base": -0.03511546353522193,
+        "median_absolute_gap": 0.032780407697526714,
+        "pearson": 0.9871761574622656,
+        "share_of_days_within_0.05": 0.6769865841073271,
+        "spearman": NaN
+      },
+      "store_share_vs_frozen_share": {
+        "mean_store_minus_frozen": -0.05901931216311295,
+        "pearson": 0.9890339582965142,
+        "share_of_days_within_0.05": 0.43343653250773995
+      },
+      "table": "factor_data9"
+    },
+    "yeslab_390": {
+      "base": "pct_chg_up",
+      "base_share": {
+        "max": 1.0,
+        "mean": 0.4716793540886136,
+        "median": 0.45395550061804696,
+        "min": 0.018964633521271142,
+        "std": 0.2267094518316312
+      },
+      "days_with_store_rows": 969,
+      "eight_days_where_store_and_frozen_disagree_most": {
+        "2022-02-09": {
+          "base_share": 0.771718452758402,
+          "frozen_share": 0.8021559923906151,
+          "store_rows_all": 11908,
+          "store_rows_valued": 7264,
+          "store_share": 0.6100100772589856
+        },
+        "2022-03-16": {
+          "base_share": 0.9262730396751016,
+          "frozen_share": 0.929397063417682,
+          "store_rows_all": 11908,
+          "store_rows_valued": 8602,
+          "store_share": 0.7223715149479342
+        },
+        "2022-04-27": {
+          "base_share": 0.8633828996282528,
+          "frozen_share": 0.8701982651796778,
+          "store_rows_all": 11908,
+          "store_rows_valued": 7950,
+          "store_share": 0.6676184077930802
+        },
+        "2022-04-29": {
+          "base_share": 0.9460891243377999,
+          "frozen_share": 0.947023995014023,
+          "store_rows_all": 11908,
+          "store_rows_valued": 8860,
+          "store_share": 0.7440376217668794
+        },
+        "2022-05-10": {
+          "base_share": 0.7901272896615957,
+          "frozen_share": 0.8186898478733312,
+          "store_rows_all": 11908,
+          "store_rows_valued": 7688,
+          "store_share": 0.6456163923412832
+        },
+        "2022-05-25": {
+          "base_share": 0.8579754601226994,
+          "frozen_share": 0.8684049079754601,
+          "store_rows_all": 11908,
+          "store_rows_valued": 8106,
+          "store_share": 0.680718844474303
+        },
+        "2022-06-10": {
+          "base_share": 0.8356707317073171,
+          "frozen_share": 0.8661585365853659,
+          "store_rows_all": 11908,
+          "store_rows_valued": 8174,
+          "store_share": 0.6864292912327847
+        },
+        "2022-09-06": {
+          "base_share": 0.782608695652174,
+          "frozen_share": 0.8028789659224442,
+          "store_rows_all": 11908,
+          "store_rows_valued": 7442,
+          "store_share": 0.6249580114208935
+        }
+      },
+      "frozen_share": {
+        "max": 0.9997433923530922,
+        "mean": 0.4961871099671102,
+        "median": 0.4862821948488242,
+        "min": 0.019477191184008202,
+        "std": 0.22893372387451702
+      },
+      "frozen_share_vs_base_share": {
+        "mean_frozen_minus_base": 0.024507755878496552,
+        "pearson": 0.9988227289012677,
+        "share_of_days_within_0.05": 0.9917440660474717
+      },
+      "source_name": "GP_021",
+      "store_rows_all_median_per_day": 11908.0,
+      "store_share": {
+        "max": 0.8918374202216997,
+        "mean": 0.43277424825277244,
+        "median": 0.42761168962042323,
+        "min": 0.017467248908296942,
+        "std": 0.20413520114127673
+      },
+      "store_share_vs_base_share": {
+        "mean_store_minus_base": -0.03890510583584116,
+        "median_absolute_gap": 0.03572497371624006,
+        "pearson": 0.9868763748592495,
+        "share_of_days_within_0.05": 0.6460268317853457,
+        "spearman": NaN
+      },
+      "store_share_vs_frozen_share": {
+        "mean_store_minus_frozen": -0.06341286171433771,
+        "pearson": 0.9887242340395715,
+        "share_of_days_within_0.05": 0.4066047471620227
+      },
+      "table": "factor_data9"
+    },
+    "yeslab_406": {
+      "base": "turnover_up_20",
+      "base_share": {
+        "max": 0.9722863741339491,
+        "mean": 0.4823633534202638,
+        "median": 0.46497488765530004,
+        "min": 0.1397738951695786,
+        "std": 0.14736062133448263
+      },
+      "days_with_store_rows": 969,
+      "eight_days_where_store_and_frozen_disagree_most": {
+        "2022-02-24": {
+          "base_share": 0.6250393205410506,
+          "frozen_share": 0.6215791129285939,
+          "store_rows_all": 5953,
+          "store_rows_valued": 2706,
+          "store_share": 0.4545607256845288
+        },
+        "2022-03-15": {
+          "base_share": 0.7722586691658857,
+          "frozen_share": 0.7697594501718213,
+          "store_rows_all": 5953,
+          "store_rows_valued": 3620,
+          "store_share": 0.6080967579371745
+        },
+        "2022-03-16": {
+          "base_share": 0.7697594501718213,
+          "frozen_share": 0.767260231177757,
+          "store_rows_all": 5953,
+          "store_rows_valued": 3522,
+          "store_share": 0.5916344700151184
+        },
+        "2022-03-17": {
+          "base_share": 0.7090625,
+          "frozen_share": 0.7075,
+          "store_rows_all": 5953,
+          "store_rows_valued": 3213,
+          "store_share": 0.5397278683016966
+        },
+        "2022-06-13": {
+          "base_share": 0.6832978399756617,
+          "frozen_share": 0.6775174931548524,
+          "store_rows_all": 5953,
+          "store_rows_valued": 3004,
+          "store_share": 0.5046195195699648
+        },
+        "2022-06-16": {
+          "base_share": 0.6516717325227963,
+          "frozen_share": 0.6483282674772036,
+          "store_rows_all": 5953,
+          "store_rows_valued": 2876,
+          "store_share": 0.48311775575340166
+        },
+        "2022-11-01": {
+          "base_share": 0.718514219384794,
+          "frozen_share": 0.7167730702263494,
+          "store_rows_all": 5953,
+          "store_rows_valued": 3303,
+          "store_share": 0.5548462959852175
+        },
+        "2022-11-04": {
+          "base_share": 0.842501447596989,
+          "frozen_share": 0.8390272148233932,
+          "store_rows_all": 5953,
+          "store_rows_valued": 3968,
+          "store_share": 0.6665546783134554
+        }
+      },
+      "frozen_share": {
+        "max": 0.970490120605594,
+        "mean": 0.4804527920777242,
+        "median": 0.4628466771323914,
+        "min": 0.13746145940390544,
+        "std": 0.14726307900791616
+      },
+      "frozen_share_vs_base_share": {
+        "mean_frozen_minus_base": -0.0019105613425396686,
+        "pearson": 0.9999644991197135,
+        "share_of_days_within_0.05": 1.0
+      },
+      "source_name": "GP_037",
+      "store_rows_all_median_per_day": 5953.0,
+      "store_share": {
+        "max": 0.8719973122795229,
+        "mean": 0.40935938328048554,
+        "median": 0.3917352595330086,
+        "min": 0.11456408533512515,
+        "std": 0.13452357464592793
+      },
+      "store_share_vs_base_share": {
+        "mean_store_minus_base": -0.07300397013977825,
+        "median_absolute_gap": 0.07065975803775115,
+        "pearson": 0.9814637281100619,
+        "share_of_days_within_0.05": 0.22291021671826625,
+        "spearman": NaN
+      },
+      "store_share_vs_frozen_share": {
+        "mean_store_minus_frozen": -0.07109340879723856,
+        "pearson": 0.9817061317757183,
+        "share_of_days_within_0.05": 0.23426212590299278
+      },
+      "table": "factor_data9"
+    },
+    "yeslab_425": {
+      "base": null,
+      "days_with_store_rows": 969,
+      "frozen_share": {
+        "max": 1.0,
+        "mean": 0.998070043878871,
+        "median": 0.9983351831298557,
+        "min": 0.9833844580777096,
+        "std": 0.0013302953935465066
+      },
+      "source_name": "GP_056",
+      "store_rows_all_median_per_day": 5954.0,
+      "store_share": {
+        "max": 0.910984212294256,
+        "mean": 0.8688418917237173,
+        "median": 0.8883103795767551,
+        "min": 0.7819952972791401,
+        "std": 0.03863673526505046
+      },
+      "table": "factor_data9"
+    }
+  },
+  "generated_at_local": "2026-09-15T18:08:51",
+  "note_on_comparability": "store_share is measured on the store's own code set, which is wider than the frozen panel's universe, so levels can differ; the test is whether the two series move together and sit at a similar level, and whether frozen_share equals base_share as §BE established",
+  "question": "Does the YesLab store's own daily valued share track the power base's positive share, for each of the six sparse factors -- and if not, for which one?",
+  "safety": "SELECT-only on dfs://YesLab; cache and §BE's parquet read in place; no calculator run",
+  "window": {
+    "days_in_be_series": 969,
+    "end": "2025.12.31",
+    "start": "2022.01.01"
+  }
+}

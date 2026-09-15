@@ -1,0 +1,239 @@
+{
+  "cases": {
+    "yeslab_372": {
+      "per_day": {
+        "2024-02-28": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 226,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 1,
+          "frozen_equals_some_store_value_share": 0.004424778761061947,
+          "frozen_equals_the_highest_variant": 1,
+          "frozen_equals_the_lowest_variant": 1,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 227,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 283,
+          "store_rows": 566,
+          "store_rows_per_code": 2.0
+        },
+        "2024-11-05": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 3679,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 1,
+          "frozen_equals_some_store_value_share": 0.0002718129926610492,
+          "frozen_equals_the_highest_variant": 1,
+          "frozen_equals_the_lowest_variant": 1,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 3679,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 5054,
+          "store_rows": 10108,
+          "store_rows_per_code": 2.0
+        },
+        "2025-06-16": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 2498,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 1,
+          "frozen_equals_some_store_value_share": 0.00040032025620496394,
+          "frozen_equals_the_highest_variant": 1,
+          "frozen_equals_the_lowest_variant": 1,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 2498,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 3603,
+          "store_rows": 7206,
+          "store_rows_per_code": 2.0
+        }
+      },
+      "role": "CONTROL one row per code",
+      "source_name": "GP_003",
+      "table": "factor_data8"
+    },
+    "yeslab_375": {
+      "per_day": {
+        "2024-02-28": {
+          "ambiguous_codes": 211,
+          "codes_in_both": 3415,
+          "codes_with_more_than_one_distinct_value": 254,
+          "frozen_equals_some_store_value": 1,
+          "frozen_equals_some_store_value_share": 0.00029282576866764275,
+          "frozen_equals_the_highest_variant": 1,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 1,
+          "frozen_rows": 3416,
+          "max_distinct_values_on_one_code": 2,
+          "on_ambiguous_codes_median_relative_spread_of_the_two_variants": 0.3648427047240042,
+          "on_ambiguous_codes_spearman": {
+            "lowest_vs_highest": 0.9278062365069429,
+            "vs_highest_variant": 0.9727596734839873,
+            "vs_lowest_variant": 0.9332877709789094
+          },
+          "store_distinct_codes": 4736,
+          "store_rows": 5273,
+          "store_rows_per_code": 1.1133868243243243
+        },
+        "2024-11-05": {
+          "ambiguous_codes": 475,
+          "codes_in_both": 536,
+          "codes_with_more_than_one_distinct_value": 631,
+          "frozen_equals_some_store_value": 1,
+          "frozen_equals_some_store_value_share": 0.0018656716417910447,
+          "frozen_equals_the_highest_variant": 1,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 1,
+          "frozen_rows": 536,
+          "max_distinct_values_on_one_code": 2,
+          "on_ambiguous_codes_median_relative_spread_of_the_two_variants": 0.45531948133104194,
+          "on_ambiguous_codes_spearman": {
+            "lowest_vs_highest": 0.8193099278352247,
+            "vs_highest_variant": 0.8257759812785875,
+            "vs_lowest_variant": 0.9478419429064097
+          },
+          "store_distinct_codes": 5126,
+          "store_rows": 10811,
+          "store_rows_per_code": 2.109051892313695
+        },
+        "2025-06-16": {
+          "ambiguous_codes": 1341,
+          "codes_in_both": 2018,
+          "codes_with_more_than_one_distinct_value": 1848,
+          "frozen_equals_some_store_value": 1,
+          "frozen_equals_some_store_value_share": 0.0004955401387512388,
+          "frozen_equals_the_highest_variant": 1,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 1,
+          "frozen_rows": 2018,
+          "max_distinct_values_on_one_code": 2,
+          "on_ambiguous_codes_median_relative_spread_of_the_two_variants": 0.3816118071334765,
+          "on_ambiguous_codes_spearman": {
+            "lowest_vs_highest": 0.8748028926870662,
+            "vs_highest_variant": 0.9494232395768288,
+            "vs_lowest_variant": 0.8612978476723894
+          },
+          "store_distinct_codes": 4450,
+          "store_rows": 9901,
+          "store_rows_per_code": 2.224943820224719
+        }
+      },
+      "role": "TARGET ambiguous store, census Spearman 0.9271",
+      "source_name": "GP_006",
+      "table": "factor_data8"
+    },
+    "yeslab_384": {
+      "per_day": {
+        "2024-02-28": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 3463,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 0,
+          "frozen_equals_some_store_value_share": 0.0,
+          "frozen_equals_the_highest_variant": 0,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 3463,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 4851,
+          "store_rows": 9702,
+          "store_rows_per_code": 2.0
+        },
+        "2024-11-05": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 626,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 0,
+          "frozen_equals_some_store_value_share": 0.0,
+          "frozen_equals_the_highest_variant": 0,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 626,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 830,
+          "store_rows": 1660,
+          "store_rows_per_code": 2.0
+        },
+        "2025-06-16": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 2110,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 0,
+          "frozen_equals_some_store_value_share": 0.0,
+          "frozen_equals_the_highest_variant": 0,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 2110,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 2876,
+          "store_rows": 5752,
+          "store_rows_per_code": 2.0
+        }
+      },
+      "role": "CONTROL two identical rows per code",
+      "source_name": "GP_015",
+      "table": "factor_data8"
+    },
+    "yeslab_471": {
+      "per_day": {
+        "2024-02-28": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 3735,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 0,
+          "frozen_equals_some_store_value_share": 0.0,
+          "frozen_equals_the_highest_variant": 0,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 3798,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 4992,
+          "store_rows": 4992,
+          "store_rows_per_code": 1.0
+        },
+        "2024-11-05": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 3857,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 0,
+          "frozen_equals_some_store_value_share": 0.0,
+          "frozen_equals_the_highest_variant": 0,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 3883,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 5013,
+          "store_rows": 5013,
+          "store_rows_per_code": 1.0
+        },
+        "2025-06-16": {
+          "ambiguous_codes": 0,
+          "codes_in_both": 3805,
+          "codes_with_more_than_one_distinct_value": 0,
+          "frozen_equals_some_store_value": 0,
+          "frozen_equals_some_store_value_share": 0.0,
+          "frozen_equals_the_highest_variant": 0,
+          "frozen_equals_the_lowest_variant": 0,
+          "frozen_matches_on_ambiguous_codes": 0,
+          "frozen_rows": 3819,
+          "max_distinct_values_on_one_code": 1,
+          "store_distinct_codes": 5064,
+          "store_rows": 5064,
+          "store_rows_per_code": 1.0
+        }
+      },
+      "role": "CONTROL one row per code, census 0.8698",
+      "source_name": "AttentionSpillover",
+      "table": "factor_data10"
+    }
+  },
+  "days": [
+    "2024-02-28",
+    "2024-11-05",
+    "2025-06-16"
+  ],
+  "generated_at_local": "2026-09-15T18:36:34",
+  "question": "The store holds several different values for GP_006 on one key. Does our frozen value equal one of them, and if so which -- or does it equal neither?",
+  "safety": "SELECT-only; no calculator executed; nothing written",
+  "tolerance_for_exact_match": 1e-09
+}
