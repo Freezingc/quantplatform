@@ -40,6 +40,7 @@ CITED_SOURCES = (
     "research_v2/src/research_v2/training/ensemble.py",
     "research_v2/src/research_v2/baselines/orchestration.py",
     "research_v2/src/research_v2/inference/torch_scoring.py",
+    "research_v2/src/research_v2/inference/builder.py",
     "research_v2/configs/models/temporal.yaml",
 )
 G4_FILE = "research_v2/src/research_v2/evaluation/gates.py"

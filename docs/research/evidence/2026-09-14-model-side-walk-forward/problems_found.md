@@ -4703,3 +4703,99 @@ which no torch family could reach a verdict"*。
 **没有**核对 `require_score_health=True` 除覆盖率外还启用的其它判据是否会独立改变天数
 （AX.2 的覆盖率口径已由 §AW 步骤 1 对四折逐位校验过）；
 **没有**写库、**没有**产出权重、**没有**改预注册或冻结集。
+
+## AY. 【已闭合，2026-09-15 16:29】**那个 15 步下限不是走查路径的实现细节，是时序族的设计契约——生产侧的推理构建器带着同一个默认值与同一条"排除 + fail closed"策略**；于是 §AX.7 的三条路里，**只有一条既不碰冻结契约也不碰生产路径**
+
+本节只读源码与工件，**没有跑任何东西**；引用的每个文件都在
+`m2_walk_forward_progress/provenance.json` 里记了 sha256（15 个被引源文件），
+其中包含 `run_real_candidate_training.py` ——**它的哈希 `33742880f314ca21…` 与本节开始前相同，
+这是"本包读了它而没有改它"的证据**（M2 正在跑并按折重新导入它）。
+
+### AY.1 15 步下限在**两个**构建器里，措辞都是"不能被打分，因此排除"
+
+| 位置 | 常量/默认值 | 原文 |
+|---|---|---|
+| `training/temporal_search.py:52-56` | `HISTORY_LENGTH = 20`、`MINIMUM_VALID_HISTORY_LENGTH = 15` | *"How much of that window may be missing before the observation is **dropped rather than padded**."* |
+| `training/temporal_batches.py:41-58` | `minimum_valid_history_length: int = 15` | *"Securities with fewer than `minimum_valid_history_length` observed steps **cannot take part in the loss and are excluded**, matching the frozen `minimum_valid_history_length` contract in `configs/models/temporal.yaml`."* |
+| **`inference/builder.py:160-181`**（**生产侧、label-free**） | **`minimum_valid_history_length: int = 15`** | *"Securities with fewer than `minimum_valid_history_length` observed steps **cannot be scored and are excluded; if none remain the call fails closed**."* |
+| `configs/models/temporal.yaml:4-5` | `history_length: 20`、`minimum_valid_history_length: 15` | 冻结契约本体 |
+
+**关键的是第三行**：`build_label_free_temporal_inference_batch` 是**为推理（而不是训练）写的、
+不依赖标签的**构建器，它**带着同一个 15 的默认值与同一条排除策略，而且"一个都不剩就 fail closed"**。
+**所以"新股上市前 14 个交易日无法被时序模型打分"不是走查路径的缺陷，是这个族在设计上的行为——
+研究侧与生产侧一致。**
+
+**这直接收窄了 §AX.7 的三条路**：
+
+- **路 2（改 `minimum_valid_history_length`）不是"研究侧的杠杆"**：同一个常量/默认值也在生产推理构建器里，
+  改它会改变**一个已部署时序模型能打分的证券集合**，而 `temporal_batches.py` 的 docstring 明确称其为
+  **"the frozen … contract"**。**代价比 §AX.7 当时写的更大。**
+- **路 3（把新股排除出 `scoreable`）改的是 `_scoreable_label_keys` 的口径**，
+  **会同时改变基线一侧的分母**，于是 945/969 与 G6 = 0.975232 这些已签名数字全部失效。
+- **路 1（放宽守卫、并把缺口行数披露进 report）是唯一既不碰冻结契约、也不碰生产路径、
+  也不改任何已签名数字的做法。** 本节不代为裁决，但**三条路的代价排序在读了源码之后变了**。
+
+### AY.2 守卫**只在一个方向上容忍族差异**，而时序族恰好在另一个方向
+
+`walk_forward.py:269-308` 的 docstring 自己写着：
+
+> *"So the rule is coverage in both directions rather than identity: nothing invented (no candidate key
+> outside the verified TEST frame) and nothing silently dropped (every scoreable row present) …
+> **A candidate that also covers the unlabelled rows still passes, which is what keeps the LightGBM
+> carriers working.**"*
+
+**即"多覆盖"是被明确允许的（LightGBM carrier 就靠这一句通过），"少覆盖"是致命的。**
+**而时序族结构上就是少覆盖**——AX.3 精确算出四折各少 6,333 / 5,709 / 3,603 / 1,661 行，
+且**四折"凭空发明"的键都是 0**，所以**通过的恰好是允许的那一半，失败的恰好是致命的那一半**。
+
+### AY.3 **这个不兼容从未被任何测试触及**
+
+- `rg` 整个 `research_v2/tests`：**没有任何文件按名字引用 `_require_candidate_covers_the_scoreable_labels`**；
+- **没有任何文件包含它那句报错文本**（`rows with a usable label`）。
+- 与时序族相关的测试是 `test_temporal_batches.py`、`test_temporal_batches_footprint.py`、
+  `test_temporal_search.py`、`test_label_free_temporal_builder.py`、`test_family_batch_dispatch.py`
+  ——**它们测的是构建器本身，没有一个把构建器的输出送进走查守卫。**
+
+**所以这不是"守卫坏了"，也不是"构建器坏了"：两者各自都有测试、各自都按自己的契约行事，
+坏的是它们之间那条从未被写下来的假设——"任何 carrier 都能给每一个可打分行打分"。**
+**这条假设对 LightGBM 与静态 MLP 成立，对时序族不成立，而在 M2 之前没有任何时序族走到过装配那一步。**
+
+### AY.4 **AX.6 那条"算力不会白费"的缓解，逐条核过了；但有一处必须说清**
+
+`_adopt_completed_fold`（`run_real_candidate_training.py:1493-1560`）的 docstring 列了它依赖的全部检查：
+**bundle 重新哈希、签名的 model-selection 证据经其验证器加载且其 `model_bundle_digest` 与重哈希比对、
+三个 dataset id 与 baseline 证据 id 与本次运行比对、bundle 自己的 card 与 feature order 与该折的
+dataset 与 factor order 比对、两个签名的预测工件都必须已为该折建立索引、
+每个 config 的搜索记录都必须能在搜索自己用的同一组 bindings 下被 adopt**；
+报告条目再由这些记录**重建**（`best_config` 用与新搜索同一个"按网格顺序取 max"），
+*"so a resumed run's report is the report a fresh run would have written, not an approximation of it."*
+
+**F1 在盘上已经逐条满足**（实测清点）：
+
+| 检查项 | F1 盘上状态 |
+|---|---|
+| bundle | `models/m2-f1/`：`model_card.json`、`feature_order.json`、`config.json`、`preprocessing.json`、`checksums.sha256`、`signature.json`、`seed-2026080{1,2,3}.pt` **全在** |
+| 搜索记录 | `search/F1/` **24 个**（= 网格全量） |
+| 签名选择证据 | `selections/model/f8de9d1d…` **1 个**；`selections/baseline/` **2 个**（`6fe33eda…` 是 F1、`3ea7d0c5…` 是 F2） |
+| 两个签名预测工件 | `predictions/19c44fdb…` 与 `predictions/2f0d131c…`，各含 `scores.parquet` + `manifest.json` |
+
+**但有一处必须说清，否则 AX.6 会被读错**：同一份 docstring 写着
+*"**Adopting skips recomputation only; the walk-forward evaluation still loads and verifies the bundle,
+the selections and the predictions itself, so no check is bypassed.**"*
+**即 adoption 不会绕过那个守卫**——`--resume` 重跑仍然会走到 `:3357` 的
+`evaluate_model_walk_forward`，仍然会在 `_assemble_oos_frames` 里撞上
+`_require_candidate_covers_the_scoreable_labels`。
+**所以"放宽守卫"不是可选项，是 `--resume` 拿到判决的前提条件。**
+**准确表述是：adoption 保住的是那四折的训练成果（约 4 天算力），不是那道检查。**
+
+### AY.5 本节没有做的事
+
+**没有**改任何源码——特别是**没有**碰 `walk_forward.py`、`temporal_batches.py`、
+`temporal_search.py`、`inference/builder.py`、`configs/models/temporal.yaml`、
+`run_real_candidate_training.py`（**M2 正在跑并按折重新导入其中数个**）；
+**没有**起草守卫修改的具体实现（那是所有者的治理决定，本节只排了三条路的代价）；
+**没有**运行任何测试，也**没有**写一个新测试去复现这个不兼容（那需要在主工作树里加文件）；
+**没有**核实 SHADOW/生产链路当前是否真的调用 `build_inference_batch_for_family`
+——按名字搜索时它只出现在自身定义与测试里，**这与结果文档 §4 第 7 条"注册与 SHADOW 启动都是人工治理动作、
+本次未执行"一致，但本节没有把它查到底**；
+**没有**停 M2、**没有**给任何进程发信号、**没有**写库、**没有**产出权重。
