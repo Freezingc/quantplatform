@@ -211,6 +211,28 @@ def main() -> None:
     if search_rel not in trees:
         trees[search_rel] = parse(search_rel)
 
+    # ---- what does require_score_health=True actually add? §AW.8 and §AX.8 both list "which criteria
+    # besides coverage" as an open item; read passes() straight out of gates.py.
+    gates_tree = parse("src/research_v2/evaluation/gates.py")
+    shev = None
+    for node in ast.walk(gates_tree):
+        if isinstance(node, ast.ClassDef) and node.name == "ScoreHealthEvidence":
+            shev = node
+    assert shev is not None, "ScoreHealthEvidence not found in gates.py"
+    passes_fn = next(n for n in shev.body if isinstance(n, ast.FunctionDef) and n.name == "passes")
+    passes_src = ast.unparse(passes_fn)
+    # ast.walk is NOT source-ordered, so "last" would pick an early `return False` guard; take the
+    # return with the greatest lineno, which is the actual boolean criterion.
+    returns = sorted((n for n in ast.walk(passes_fn) if isinstance(n, ast.Return)),
+                     key=lambda n: n.lineno)
+    assert len(returns) >= 2, "passes() has no guard returns; the shape changed"
+    final_return = returns[-1]
+    criteria_src = ast.unparse(final_return.value)
+    guard_returns = [ast.unparse(r.value) for r in returns[:-1]]
+    # the fields the evidence carries, i.e. what rank_ic.py feeds it
+    fields = [n.target.id for n in shev.body
+              if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)]
+
     result = {
         "question": ("Is the search's ensemble_validation_rank_ic the same estimator as the baseline's "
                      "mean_rank_ic, over the same day set, and which function actually selects the winner?"),
@@ -262,6 +284,34 @@ def main() -> None:
                         "rather than by construction" if identical else
                         "THE TWO DEFINITIONS DIFFER; every number that mixes them is suspect"),
         },
+        "what_require_score_health_true_adds": {
+            "closes_the_open_item_recorded_at": ["§AW.8", "§AX.8"],
+            "open_item_wording": ("没有核对 require_score_health=True 在 OOS 路径上除覆盖率之外还启用了哪些判据"),
+            "class": "evaluation/gates.py:ScoreHealthEvidence",
+            "evidence_fields_rank_ic_feeds_it": fields,
+            "passes_definition_line": passes_fn.lineno,
+            "passes_source": passes_src,
+            "final_boolean_expression": criteria_src,
+            "final_boolean_expression_at_line": final_return.lineno,
+            "earlier_guard_returns": guard_returns,
+            "criteria_enumerated": [
+                "coverage and score_std must both be finite reals (a non-finite value fails the day)",
+                "unique_score_count must be an Integral and not a bool (a type guard, not a threshold)",
+                "0.90 <= coverage <= 1.0  -- the floor §K and §AG already identified; the upper bound "
+                "is defensive, since coverage = len(scored)/valid_label_count over a left merge from "
+                "the labels and therefore cannot exceed 1.0",
+                "unique_score_count >= 10  -- a day on which the model emits fewer than ten distinct "
+                "scores is rejected even if it covers the cross-section",
+                "score_std > 1e-6  -- a day on which the scores are numerically constant is rejected",
+            ],
+            "n_numeric_thresholds_beyond_coverage": 2,
+            "reading": ("the OOS acceptance path therefore filters days on three numeric criteria, not "
+                        "one. Any day the candidate scores thinly (fewer than ten distinct values) or "
+                        "flatly (std at or below 1e-6) is excluded from the OOS mean_rank_ic while the "
+                        "same day would still count in a validation mean_rank_ic. That is a second, "
+                        "independent reason the two sides are not the same estimator, on top of the "
+                        "coverage floor."),
+        },
         "who_selects_the_winner": {
             "argmax_on_ensemble_rank_ic_in_the_driver": selectors,
             "n_such_sites": len(selectors),
@@ -294,6 +344,12 @@ def main() -> None:
     dup = result["the_duplicate_definition"]
     print(f"\nduplicate definition AST-identical: {dup['ast_identical_after_removing_name_and_docstring']}")
     print(f"  driver call sites of its own copy: {dup['driver_call_sites_of_its_own_copy']}")
+    sh = result["what_require_score_health_true_adds"]
+    print(f"\nwhat require_score_health=True adds (closes the open item at {sh['closes_the_open_item_recorded_at']}):")
+    print(f"  evidence fields rank_ic.py feeds it: {sh['evidence_fields_rank_ic_feeds_it']}")
+    print(f"  gates.py:{sh['passes_definition_line']} final expression: {sh['final_boolean_expression']}")
+    for c in sh["criteria_enumerated"]:
+        print(f"    - {c}")
     w = result["who_selects_the_winner"]
     print(f"\nwinner selection: {w['n_such_sites']} argmax-on-ensemble sites in the driver:")
     for s in w["argmax_on_ensemble_rank_ic_in_the_driver"]:

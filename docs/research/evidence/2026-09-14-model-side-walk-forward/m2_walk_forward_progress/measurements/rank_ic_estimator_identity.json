@@ -99,7 +99,7 @@
     "verdict_oos_path_differs": true,
     "verdict_validation_paths_comparable": true
   },
-  "generated_at_local": "2026-09-15T21:38:30",
+  "generated_at_local": "2026-09-15T21:47:02",
   "method": "every repository file is opened and parsed with ast; nothing is imported or run",
   "question": "Is the search's ensemble_validation_rank_ic the same estimator as the baseline's mean_rank_ic, over the same day set, and which function actually selects the winner?",
   "read_only": true,
@@ -130,6 +130,36 @@
     "verdict": "the two agree today, so the numbers are consistent -- but the shared module's docstring says it exists so the metric is 'defined once', and the largest consumer does not use it, so that guarantee currently holds by coincidence rather than by construction"
   },
   "weights_loaded": false,
+  "what_require_score_health_true_adds": {
+    "class": "evaluation/gates.py:ScoreHealthEvidence",
+    "closes_the_open_item_recorded_at": [
+      "§AW.8",
+      "§AX.8"
+    ],
+    "criteria_enumerated": [
+      "coverage and score_std must both be finite reals (a non-finite value fails the day)",
+      "unique_score_count must be an Integral and not a bool (a type guard, not a threshold)",
+      "0.90 <= coverage <= 1.0  -- the floor §K and §AG already identified; the upper bound is defensive, since coverage = len(scored)/valid_label_count over a left merge from the labels and therefore cannot exceed 1.0",
+      "unique_score_count >= 10  -- a day on which the model emits fewer than ten distinct scores is rejected even if it covers the cross-section",
+      "score_std > 1e-6  -- a day on which the scores are numerically constant is rejected"
+    ],
+    "earlier_guard_returns": [
+      "False",
+      "False"
+    ],
+    "evidence_fields_rank_ic_feeds_it": [
+      "coverage",
+      "unique_score_count",
+      "score_std"
+    ],
+    "final_boolean_expression": "0.9 <= coverage <= 1.0 and self.unique_score_count >= 10 and (score_std > 1e-06)",
+    "final_boolean_expression_at_line": 35,
+    "n_numeric_thresholds_beyond_coverage": 2,
+    "open_item_wording": "没有核对 require_score_health=True 在 OOS 路径上除覆盖率之外还启用了哪些判据",
+    "passes_definition_line": 25,
+    "passes_source": "def passes(self) -> bool:\n    \"\"\"Return whether this day satisfies every score-health requirement.\"\"\"\n    if not _is_finite_real(self.coverage) or not _is_finite_real(self.score_std):\n        return False\n    if not isinstance(self.unique_score_count, Integral) or isinstance(self.unique_score_count, bool):\n        return False\n    coverage = float(self.coverage)\n    score_std = float(self.score_std)\n    return 0.9 <= coverage <= 1.0 and self.unique_score_count >= 10 and (score_std > 1e-06)",
+    "reading": "the OOS acceptance path therefore filters days on three numeric criteria, not one. Any day the candidate scores thinly (fewer than ten distinct values) or flatly (std at or below 1e-6) is excluded from the OOS mean_rank_ic while the same day would still count in a validation mean_rank_ic. That is a second, independent reason the two sides are not the same estimator, on top of the coverage floor."
+  },
   "who_selects_the_winner": {
     "argmax_on_ensemble_rank_ic_in_the_driver": [
       {

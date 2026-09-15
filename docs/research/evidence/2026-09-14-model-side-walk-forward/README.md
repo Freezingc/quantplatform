@@ -3056,7 +3056,20 @@ yaml 并非全无用——被测试钉住的是 `raw_factor_count_min/max`（`te
 **没有**做多重比较校正——BO.5 共 12 个轴检验 × 2 个统计量，**`p=0.0296`（M1 `hidden_dim` 逐种子）与 `0.0561`（M0-base 集成口径）这类边缘值在 Bonferroni 下都不成立，本节只把 `p<1e-4` 与"四折全稳定"这类远超校正阈值的结论当作可靠**；
 **没有**写库、**没有**产出权重、**没有**给任何进程发信号（M2 pid 3588838 全程在跑）。
 
-### 【21:45，**关掉【14:57】自认的"本节最大的未闭合假设"，并更正 §BN/§BO 三处函数引用**】**`ensemble_validation_rank_ic` 与基线的 `mean_rank_ic` 是同一个估计量**——不是"看起来像"，是**字面上同一个字段**：`training/search_metrics.py:17-38` 的返回语句就是 `return float(summarize_rank_ic(daily).mean_rank_ic)`。**两条验证路径的日集判据也一致**：搜索侧下限 **30**（硬编码）、`include_invalid` 默认 `False` ⇒ `require_score_health` 跟着为 `False`；基线侧 `baselines/orchestration.py:227` 是 `include_invalid=True` 但**显式传 `require_score_health=False`**、下限也是 30（默认值与 `configs/baselines/*.yaml` 都是 30）——**`rank_ic_valid` 的成立条件因此完全相同，【14:57】那张名次表可比**。**真正不一致的是 OOS 侧**：`evaluation/model_evaluator.py:65`（候选）与 `:86`（基线）**都传 `require_score_health=True`**，**所以 OOS 的 `mean_rank_ic` 与验证的不是同一个估计量**
+### 【21:55，**开头两小节与 §AU.1 重复、已就地降级为独立复核**；真新内容是**关掉 §AW.8 与 §AX.8 都记着的那个未决项**、**整套选择层是生产死代码**、**选择度量有两份定义**，并更正 §BN/§BO 三处函数引用】**`require_score_health=True` 在 OOS 路径上除覆盖率外还启用两条数值判据**：`evaluation/gates.py:35` 的完整条件是 **`0.9 <= coverage <= 1.0 and unique_score_count >= 10 and score_std > 1e-06`**——**所以 OOS 的 `mean_rank_ic` 与验证的不是同一个估计量，而且差的不止覆盖率那一项**。**候选若在某个 OOS 日打分打得"薄"（不足 10 个互异值）或"平"（std ≤ 1e-6），那一天会从 OOS 均值里被剔掉，而同一天在验证侧仍然计数**；**这与 §AX 那条"行缺口导致评估装配抛 `ValueError`"是两个独立机制**（§AX 是"打不出分的行"，本条是"打出了分但分布不合格的天"，**两者都只在 OOS 侧生效**）。**另外两条治理事实**：**① `training/search.py` 的整套选择层在生产路径上是死代码**——`select_model_config`（`:509`）与 `build_pre_registered_trials`（`:479`）在全部非测试 `.py` 里**零 import、零引用**，真正的选择语句是驱动里的 `max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])`，共 **4 处**（`:1640 / :1892 / :2514 / :3199`）；**② 选择度量有两份定义**——驱动自己的 `_validation_rank_ic`（`:468-479`）与 `search_metrics.validation_rank_ic` **去掉名字与 docstring 后 AST 逐节点相同**，**但驱动用的是自己那份、13 个调用点**，共享模块只被两个 spawn worker import
+
+> **【自我更正】本条 21:45 的原版开头写"关掉【14:57】自认的最大未闭合假设"，这是错的——§AU.1（同日 15:35）早就闭合了它，而且做得更强**：
+> §AU.1 列了同样的四处代码、同样指出"两侧终结于同一个统计量、下限同为 30、分数健康在验证路径两侧都不启用"、
+> 同样记下"基线 `invalid_day_count=0`、`valid_day_count=237`，候选也是 237 天"，
+> **并用仓库自己的 `validation_rank_ic` 逐位复现了 M2 的 `0.059238829903105104`（`float.hex()` 相同）**。
+> **§AU 标题里"§AS.8 那个'最大的未闭合假设'闭合了"指的就是【14:57】（= §AS 的 README 条目）留下的那条。**
+> **所以本条下面那两张表（七个调用点、日集等价论证）只作为独立复核保留，其增量仅三条：把调用点从 4 处扩到 7 处**
+> （新增 `run_real_candidate_training.py:474` 驱动副本、`training/validation.py:57` 的 `raw_score`、`datasets/selection.py:158`）；
+> **改用 `ast` 解析而非人工阅读，实参表因此是机读件、可重跑**；
+> **把"日集相同"补上源码侧的充要论证**（`rank_ic_valid=True` 蕴含 `rank_ic` 有限，所以"先丢行再汇总"与"汇总时按标记丢"筛出同一批天），
+> **与 §AU.1 的实测 237 = 237 互相印证**。**引用时以 §AU.1 为准。**
+> **"OOS 侧不是同一个估计量"也不是全新事实**：§AW.8 与 §AX.8 都已写明 OOS 传 `require_score_health=True` 并把"除覆盖率外还有哪些判据"列为未决——
+> **本节的新增是把那个未决项关掉**（三条判据，见下），**而 §AX.8 那半句"是否会独立改变天数"仍未测**
 
 仪器 `m2_walk_forward_progress/probes/probe_rank_ic_estimator_identity.py`，机读件 `measurements/rank_ic_estimator_identity.json`；
 对应 `problems_found.md` **§BP**。**只读，而且比"只读"更强**：**探针用 `ast` 把仓库文件当数据解析，没有 import、没有执行任何仓库代码**；
