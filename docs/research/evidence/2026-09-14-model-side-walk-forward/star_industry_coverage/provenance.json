@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T02:54:44+00:00",
+  "generated_at_utc": "2026-09-15T03:08:52+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -467,6 +467,18 @@
       "bytes": 18496,
       "sha256": "d36c64b246c53c1caba4437c912fafde21e578e45375d350429264af88594be4"
     },
+    "probe_206_absence_cause.json": {
+      "bytes": 301791,
+      "sha256": "b7eb1644cf74121287887d879dfd2b2f89e965c6e7bae498e926736c2ee09a3b"
+    },
+    "probe_206_history_hole.json": {
+      "bytes": 2702,
+      "sha256": "c3e5b080291343831e75eb6062047996d614de9fc4c49f86f7098ee2fdf3129a"
+    },
+    "probe_206_hole_control.json": {
+      "bytes": 3551,
+      "sha256": "1982340d92e810f04e6274148891cd4426224f1591e96d395801fb8646c8c148"
+    },
     "rankic_sample_count_timing_probe.json": {
       "bytes": 11072,
       "sha256": "8773ec2a4eafaa8560b2a92b7125ff1805aae0447e96ed0cec0e865ca9ff305e"
@@ -474,6 +486,10 @@
     "repair_audit_357_471_probe.json": {
       "bytes": 1204,
       "sha256": "09b98274f6764a6f1c40cbde90b59159188a0961db1fc65de60cbd6a0cc795d5"
+    },
+    "residual_206_identities.json": {
+      "bytes": 4130,
+      "sha256": "e489db488756f96a6cbb3cafd83eaf9fd759647876e1978608fa260d48f864ff"
     },
     "residual_gap_attribution.json": {
       "bytes": 92807,
@@ -528,6 +544,18 @@
     "industry_cache_star_coverage.py": {
       "bytes": 6945,
       "sha256": "841b3c50a131dd9cba08a56aeb51eaafc43f8e4c6a38c7822629f2e9fa113d43"
+    },
+    "probe_206_absence_cause.py": {
+      "bytes": 10427,
+      "sha256": "c04c3ad114d180ce3ff03885b28ff290aad2a68fa5ba6805dcb9330effbeb89d"
+    },
+    "probe_206_history_hole.py": {
+      "bytes": 5932,
+      "sha256": "e27925717dd8799c84a1ddb8eb5f1d7e4a704e3939c40a0ae7599b9fb397195a"
+    },
+    "probe_206_hole_control.py": {
+      "bytes": 9053,
+      "sha256": "0d9ccdb315e9cdcfa7fbdcd9f4936c10ff468cd60fd3234205baf6af2ae0791c"
     },
     "probe_bulk_expiry_days.py": {
       "bytes": 4507,
@@ -640,7 +668,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "c5863ccf21da0804d2e65a8f5651913e6218bb6c"
+    "commit_at_generation": "8b5a33678b59cb0adf53fed48904e014bf2c9de7"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",

@@ -1,0 +1,103 @@
+{
+ "question": "Do the residual securities lack yeslab_206 because their trailing 60-trading-day history has a hole?",
+ "window_trading_days": 60,
+ "records": 736,
+ "distinct_securities": 174,
+ "days": 10,
+ "records_with_an_absent_row_in_the_window": 736,
+ "records_with_a_zero_volume_day_in_the_window": 0,
+ "share_with_an_absent_row": 1.0,
+ "absent_rows_in_window": {
+  "min": 1,
+  "median": 2.0,
+  "p90": 10.0,
+  "max": 38
+ },
+ "by_missing_signature": [
+  {
+   "sig": "206+443_reg30_max20_v1",
+   "n": 380,
+   "share_with_a_hole": 1.0,
+   "median_absent": 2.0,
+   "max_absent": 38,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206",
+   "n": 115,
+   "share_with_a_hole": 1.0,
+   "median_absent": 2.0,
+   "max_absent": 10,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+443_reg30_max20_v1+471+96",
+   "n": 84,
+   "share_with_a_hole": 1.0,
+   "median_absent": 4.5,
+   "max_absent": 29,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+425+443_reg30_max20_v1+464+471+96",
+   "n": 49,
+   "share_with_a_hole": 1.0,
+   "median_absent": 4.0,
+   "max_absent": 13,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+443_reg30_max20_v1+464+471+96",
+   "n": 47,
+   "share_with_a_hole": 1.0,
+   "median_absent": 2.0,
+   "max_absent": 10,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+381+425+443_reg30_max20_v1+464+471+96",
+   "n": 32,
+   "share_with_a_hole": 1.0,
+   "median_absent": 5.0,
+   "max_absent": 13,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+443_reg30_max20_v1+471",
+   "n": 11,
+   "share_with_a_hole": 1.0,
+   "median_absent": 1.0,
+   "max_absent": 10,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+357+381+425+443_reg30_max20_v1+464+471+96",
+   "n": 10,
+   "share_with_a_hole": 1.0,
+   "median_absent": 3.5,
+   "max_absent": 13,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+357+443_reg30_max20_v1+471",
+   "n": 4,
+   "share_with_a_hole": 1.0,
+   "median_absent": 1.0,
+   "max_absent": 10,
+   "share_with_zero_volume": 0.0
+  },
+  {
+   "sig": "206+357+471",
+   "n": 4,
+   "share_with_a_hole": 1.0,
+   "median_absent": 1.0,
+   "max_absent": 9,
+   "share_with_zero_volume": 0.0
+  }
+ ],
+ "verdict": "736 of 736 residual records (100.0%) have at least one absent row in the trailing 60-trading-day window (median 2, max 38), while 0 have a zero-volume day -- so the gaps are absent trading days, not days that traded nothing.",
+ "note": "This measures the residual side only. Without probe_206_hole_control.py's control group the percentage below is uninformative -- a 100% hit rate means nothing if complete-window securities also have holes.",
+ "database_writes": false,
+ "weights_written": false,
+ "cache_writes": false
+}
