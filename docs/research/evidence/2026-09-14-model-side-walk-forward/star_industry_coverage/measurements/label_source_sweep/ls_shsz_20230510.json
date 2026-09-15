@@ -1,0 +1,139 @@
+{
+ "question": "What does swapping the industry-label source do to yeslab_357 and yeslab_471, on a day where the replay already had labels?",
+ "day": "2023-05-10",
+ "window": [
+  "2023-03-03",
+  "2023-05-10"
+ ],
+ "trading_days": 45,
+ "panel_codes": 5172,
+ "label_sources": {
+  "A": "VersionedPITIndustryProvider.from_cache(tushare_cache, cutover=2021-12-10) -- the object materialize_frozen_factor_daily.py passes to replay._replay_factor for PIT_FACTORS",
+  "B": "union rule (index_member_all preferred, cache fallback), L1 code mapped to SW2021 name"
+ },
+ "labels_differing_on_the_target_day": 526,
+ "union_scope": "shsz",
+ "label_difference_decomposition_on_the_target_day": [
+  {
+   "both_labeled": 4446,
+   "name_differs_genuine_disagreement": 0,
+   "added_by_union_all": 718,
+   "added_by_union_bj": 192,
+   "added_by_union_shsz": 526,
+   "lost_under_member_all": 7,
+   "provider_matches_cache_raw_on": 4446,
+   "applied_fill_after_scope_filter": 737
+  }
+ ],
+ "label_coverage": {
+  "A_provider": 4453,
+  "B_union": 4979,
+  "gain": 526
+ },
+ "methodology_note": "A-versus-published is a TRANSCRIPTION CHECK, not a claim of exactness; section W measured this kind of transcription at about Spearman 0.97 against the published factor. The decisive comparison is A-versus-B, where the transcription is identical on both sides and cancels.",
+ "yeslab_357": {
+  "A_vs_B_label_source_effect": {
+   "pairs": 4417,
+   "identical": 1200,
+   "identical_rate": 0.2716776092370387,
+   "within_1e_12": 1200,
+   "changed": 3217,
+   "changed_rate": 0.7283223907629612,
+   "changed_materially_gt_1e_6": 3217,
+   "spearman": 0.9908986481044211,
+   "pearson": 0.9948978228659573,
+   "max_abs_difference": 0.9892357248782648,
+   "median_abs_difference": 0.01240874427432137,
+   "median_relative_difference": 0.038114156464707435,
+   "p95_relative_difference": 0.6012038201463287,
+   "std_ratio_a_over_b": 1.0318500800714683
+  },
+  "A_vs_published_transcription_check": {
+   "pairs": 3251,
+   "identical": 1158,
+   "identical_rate": 0.356198092894494,
+   "within_1e_12": 3251,
+   "changed": 2093,
+   "changed_rate": 0.643801907105506,
+   "changed_materially_gt_1e_6": 0,
+   "spearman": 0.9999999998253772,
+   "pearson": 1.0,
+   "max_abs_difference": 2.0317081350640365e-14,
+   "median_abs_difference": 5.551115123125783e-17,
+   "median_relative_difference": 1.7203161857374664e-16,
+   "p95_relative_difference": 3.643848484572046e-15,
+   "std_ratio_a_over_b": 1.0
+  },
+  "B_vs_published": {
+   "pairs": 3251,
+   "identical": 238,
+   "identical_rate": 0.07320824361734851,
+   "within_1e_12": 862,
+   "changed": 3013,
+   "changed_rate": 0.9267917563826515,
+   "changed_materially_gt_1e_6": 2389,
+   "spearman": 0.9911746660932971,
+   "pearson": 0.9946885955306919,
+   "max_abs_difference": 0.9892357248782648,
+   "median_abs_difference": 0.012811877830200769,
+   "median_relative_difference": 0.04022554343198963,
+   "p95_relative_difference": 0.5053025310542816,
+   "std_ratio_a_over_b": 0.9566806520102714
+  }
+ },
+ "yeslab_471": {
+  "A_vs_B_label_source_effect": {
+   "pairs": 4313,
+   "identical": 1477,
+   "identical_rate": 0.3424530489218641,
+   "within_1e_12": 1477,
+   "changed": 2836,
+   "changed_rate": 0.6575469510781359,
+   "changed_materially_gt_1e_6": 2836,
+   "spearman": 0.9806376249774152,
+   "pearson": 0.9941674253033068,
+   "max_abs_difference": 8.173228486898884,
+   "median_abs_difference": 0.1423124335592636,
+   "median_relative_difference": 0.05191206542659516,
+   "p95_relative_difference": 1.01790138502022,
+   "std_ratio_a_over_b": 0.9962100315856708
+  },
+  "A_vs_published_transcription_check": {
+   "pairs": 3238,
+   "identical": 0,
+   "identical_rate": 0.0,
+   "within_1e_12": 0,
+   "changed": 3238,
+   "changed_rate": 1.0,
+   "changed_materially_gt_1e_6": 3238,
+   "spearman": 0.9999487626157115,
+   "pearson": 0.9999787731181562,
+   "max_abs_difference": 0.40670912623710365,
+   "median_abs_difference": 0.027401545248671777,
+   "median_relative_difference": 0.00783555353046449,
+   "p95_relative_difference": 0.09697714350013484,
+   "std_ratio_a_over_b": 0.9988362101090248
+  },
+  "B_vs_published": {
+   "pairs": 3238,
+   "identical": 0,
+   "identical_rate": 0.0,
+   "within_1e_12": 0,
+   "changed": 3238,
+   "changed_rate": 1.0,
+   "changed_materially_gt_1e_6": 3238,
+   "spearman": 0.9815975283779468,
+   "pearson": 0.9939103563605515,
+   "max_abs_difference": 8.151139319706559,
+   "median_abs_difference": 0.22765273027504884,
+   "median_relative_difference": 0.07138813368027261,
+   "p95_relative_difference": 1.3937268154346336,
+   "std_ratio_a_over_b": 1.0047749884090356
+  },
+  "grouped_securities_A": 4313,
+  "grouped_securities_B": 4820
+ },
+ "database_writes": false,
+ "weights_written": false,
+ "cache_writes": false
+}

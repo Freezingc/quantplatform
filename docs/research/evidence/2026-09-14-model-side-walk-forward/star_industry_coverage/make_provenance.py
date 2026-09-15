@@ -74,6 +74,22 @@ def git(repo: Path, *args: str) -> str:
     ).stdout.strip()
 
 
+def tree(root: Path, pattern: str) -> dict:
+    """Hash every matching file under root, recursing, keyed by path relative to root.
+
+    Measurements now include per-run subdirectories (a sweep writes one file per day per variant), and a
+    flat iterdir() plus sha256() raises IsADirectoryError on the first one. Keys are relative paths so a
+    sweep's files stay grouped and a later re-run of this generator produces the same keys.
+    """
+    if not root.is_dir():
+        return {}
+    return {
+        str(path.relative_to(root)): {"sha256": sha256(path), "bytes": path.stat().st_size}
+        for path in sorted(root.rglob(pattern))
+        if path.is_file()
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=REPO_DEFAULT)
@@ -134,12 +150,8 @@ def main() -> None:
         "cited_source_missing": [
             relative for relative in CITED_SOURCES if not (args.repo / relative).is_file()
         ],
-        "probe_scripts": {
-            path.name: sha256(path) for path in sorted((HERE / "probes").glob("*.py"))
-        },
-        "measurements": {
-            path.name: sha256(path) for path in sorted((HERE / "measurements").iterdir())
-        },
+        "probe_scripts": tree(HERE / "probes", "*.py"),
+        "measurements": tree(HERE / "measurements", "*.json"),
         "vendored_industry_cache": {
             "file_count": manifest["file_count"],
             "combined_sha256": manifest["combined_sha256"],
