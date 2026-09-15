@@ -1,0 +1,99 @@
+{
+ "cache_read": {
+  "daily_files": 3177,
+  "note": "read in place, never copied except the 46 rows vendored above",
+  "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/artifacts/tushare_cache",
+  "span": [
+   "20121204",
+   "20251231"
+  ]
+ },
+ "cited_source_missing": [],
+ "cited_source_sha256": {
+  "research_v2/configs/factors/source_catalog.yaml": "a2ba50c4ee9db97e09240d18133b5e4dfc5b89751dda4d37cab2387bd20eb9ad",
+  "research_v2/scripts/audit_formula_replay_consistency.py": "36cec1b49c76cde34faffc120b8986500033a57044275fa58f520ac845e9a4c1",
+  "research_v2/scripts/materialize_frozen_factor_daily.py": "27da63ee4a0c86ca32961c6bd854ebf5187e7d097fff27153d41d568efa34d83",
+  "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+  "research_v2/src/research_v2/factors/materializer.py": "2bd81fa24b6b25d03591ebbd45e5fc0c1ba760ac799d0838621ca27dc1b16418",
+  "research_v2/src/research_v2/factors/source_evaluation.py": "cd2810e8fbf5eec44c0180b2fbcff2592bccd2446593e7a7186466f5aa55c3b3"
+ },
+ "databases_read": [
+  "dfs://YesLab (SELECT only)",
+  "dfs://QuantResearchV2Test (SELECT only)"
+ ],
+ "excluded_by_design": [
+  "model weights / checkpoints (*.pt)",
+  "parquet panels and fold caches (read in place, never copied)",
+  "full cache daily_*.json files (only the 46 offending/neighbour rows are vendored)",
+  "database exports beyond the aggregate statistics quoted in root_cause.md"
+ ],
+ "generated_at_utc": "2026-09-15T02:14:26+00:00",
+ "generator": {
+  "path": "make_provenance.py",
+  "sha256": "b1086489645c15c29260d6a5b3dadd4edb91ac2337066e1e03a227056096b33b"
+ },
+ "measurements": {
+  "measurements/diagnosis_471_march2022.json": {
+   "bytes": 18705,
+   "sha256": "0a57b6e46cff187830c2dbe9c8b7359d9e56fcf1e961f60d2a40f143ea169abc"
+  },
+  "measurements/label_source_census_precutover.json": {
+   "bytes": 668681,
+   "sha256": "3002e9e45599c9adc9c6adc1d386ef0a0597525c23518efcbd5e59ea1d90e546"
+  },
+  "measurements/probe_471_cache_defect.json": {
+   "bytes": 496681,
+   "sha256": "f9204657b4275659f894d092aaff6570d25b21c216afbab015c38e1404cb5631"
+  },
+  "measurements/probe_471_cache_defect_oct2024.json": {
+   "bytes": 47389,
+   "sha256": "49f61d77a34006d863c9689e80760b4425e5ecf43b9bf1c2696b947499e0470e"
+  },
+  "measurements/probe_471_missing_day.json": {
+   "bytes": 12089,
+   "sha256": "b6965bdf7013a09c87521788a71c5673c9583bb83ecf9193de4066d7daa77ba1"
+  }
+ },
+ "narratives": {
+  "root_cause.md": {
+   "bytes": 23779,
+   "sha256": "df09ea09898b570f82d2bebf3fb36c59558f9090010c6ed6524d0cab026f2dbe"
+  }
+ },
+ "probe_scripts": {
+  "probes/probe_471_cache_defect.py": {
+   "bytes": 13600,
+   "sha256": "08c2b9327a4984a5225f412802fd32fa32f079779e0b436b9819bf1d2a56a731"
+  },
+  "probes/probe_471_march2022_diagnosis.py": {
+   "bytes": 11586,
+   "sha256": "aaeae9a58b25589741e5c133a43dbd225eeeede9040463cba59aa53144368823"
+  },
+  "probes/probe_471_missing_day.py": {
+   "bytes": 13342,
+   "sha256": "63c59c667bd9e2b5546f27015fe5225f5f8fc0bbafb3b9e11a6b2dc68f32e62c"
+  },
+  "probes/probe_label_source_census.py": {
+   "bytes": 17304,
+   "sha256": "f357508e175e34a6c80636deef347c72de3d23f70565fd8b4bf5d3d0ce63bcdc"
+  }
+ },
+ "repository_main_tree": {
+  "branch": "codex/publish-quant-platform",
+  "head": "2502014df94a07bc8e52d621e3a7f65e92640858",
+  "note": "read-only; this evidence branch is a separate worktree",
+  "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX"
+ },
+ "safety": {
+  "cache_writes": false,
+  "database_writes": false,
+  "repository_files_modified": false,
+  "weights_or_checkpoints_written": false
+ },
+ "vendored_cache_rows": {
+  "vendored_cache_rows/daily_20220225_offending_rows.json": {
+   "bytes": 17358,
+   "sha256": "80a1729c7267e0484f432065e0b9bfbfad3ba5cb629d13837431160420a884d1"
+  }
+ }
+}

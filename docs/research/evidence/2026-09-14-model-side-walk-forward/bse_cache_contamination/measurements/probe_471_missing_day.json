@@ -1,0 +1,500 @@
+{
+ "question": "What mechanism produces yeslab_471's 21-day divergence window in Feb-Mar 2022, and who owns it?",
+ "window": [
+  "2022-02-14",
+  "2022-04-08"
+ ],
+ "attention_window_days": 21,
+ "affected_days": 21,
+ "published_vs_upstream": {
+  "days": 38,
+  "min_spearman": 0.44869456747934583,
+  "median_rel_diff_range": [
+   0.31093976194902995,
+   0.8491848580609875
+  ],
+  "bitwise_equal_fraction_range": [
+   0.0,
+   0.0
+  ],
+  "verdict": "published is NOT a bitwise copy of upstream -- the materializer transformed it",
+  "per_day": [
+   {
+    "day": "2022-02-14",
+    "pairs": 2910,
+    "spearman": 0.853696250961658,
+    "median_rel_diff": 0.31093976194902995,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-15",
+    "pairs": 2911,
+    "spearman": 0.8458095125948044,
+    "median_rel_diff": 0.3381497177927812,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-16",
+    "pairs": 2913,
+    "spearman": 0.8496412348281711,
+    "median_rel_diff": 0.32816860532254166,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-17",
+    "pairs": 2914,
+    "spearman": 0.8494034840680245,
+    "median_rel_diff": 0.3220400204689336,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-18",
+    "pairs": 2917,
+    "spearman": 0.8464638849247266,
+    "median_rel_diff": 0.3263335507833518,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-21",
+    "pairs": 2920,
+    "spearman": 0.8448804876719329,
+    "median_rel_diff": 0.3368459402942624,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-22",
+    "pairs": 2918,
+    "spearman": 0.8259339413872204,
+    "median_rel_diff": 0.3354369173769056,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-23",
+    "pairs": 2921,
+    "spearman": 0.8477617883960332,
+    "median_rel_diff": 0.34412444996137614,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-24",
+    "pairs": 2924,
+    "spearman": 0.8381407886666852,
+    "median_rel_diff": 0.3770193667855618,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-25",
+    "pairs": 2926,
+    "spearman": 0.48798641178048874,
+    "median_rel_diff": 0.8338345910600632,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-02-28",
+    "pairs": 2931,
+    "spearman": 0.48288916715845126,
+    "median_rel_diff": 0.8260410459408931,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-01",
+    "pairs": 2932,
+    "spearman": 0.46707414000583714,
+    "median_rel_diff": 0.8490049727194072,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-02",
+    "pairs": 2930,
+    "spearman": 0.4616353407004588,
+    "median_rel_diff": 0.8328588098119647,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-03",
+    "pairs": 2932,
+    "spearman": 0.4549869872051613,
+    "median_rel_diff": 0.8445897337994224,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-04",
+    "pairs": 2936,
+    "spearman": 0.4595695295802648,
+    "median_rel_diff": 0.8428919120246798,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-07",
+    "pairs": 2939,
+    "spearman": 0.452145421498629,
+    "median_rel_diff": 0.8445328155570911,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-08",
+    "pairs": 2941,
+    "spearman": 0.44869456747934583,
+    "median_rel_diff": 0.8491848580609875,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-09",
+    "pairs": 2944,
+    "spearman": 0.46141413361583977,
+    "median_rel_diff": 0.8298726491104085,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-10",
+    "pairs": 2946,
+    "spearman": 0.4548066300341754,
+    "median_rel_diff": 0.8366001091405386,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-11",
+    "pairs": 2949,
+    "spearman": 0.4670059848929162,
+    "median_rel_diff": 0.8193798696577874,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-14",
+    "pairs": 2951,
+    "spearman": 0.4751379742631089,
+    "median_rel_diff": 0.8175011428801291,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-15",
+    "pairs": 2952,
+    "spearman": 0.4792194323973327,
+    "median_rel_diff": 0.8273060198779836,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-16",
+    "pairs": 2953,
+    "spearman": 0.4763888225374858,
+    "median_rel_diff": 0.8323852611256509,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-17",
+    "pairs": 2954,
+    "spearman": 0.48527804749587977,
+    "median_rel_diff": 0.8219695420007687,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-18",
+    "pairs": 2959,
+    "spearman": 0.47669221859427485,
+    "median_rel_diff": 0.8262724074649971,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-21",
+    "pairs": 2960,
+    "spearman": 0.48044619558105267,
+    "median_rel_diff": 0.813560927298518,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-22",
+    "pairs": 2963,
+    "spearman": 0.4877743630084852,
+    "median_rel_diff": 0.8164434232090434,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-23",
+    "pairs": 2963,
+    "spearman": 0.4699627430700768,
+    "median_rel_diff": 0.8447946439959539,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-24",
+    "pairs": 2962,
+    "spearman": 0.470727461460032,
+    "median_rel_diff": 0.8410406318004299,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-25",
+    "pairs": 2962,
+    "spearman": 0.46286204974071593,
+    "median_rel_diff": 0.8445059427065386,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-28",
+    "pairs": 2961,
+    "spearman": 0.860199493057539,
+    "median_rel_diff": 0.34773187663045413,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-29",
+    "pairs": 2965,
+    "spearman": 0.8553540812391258,
+    "median_rel_diff": 0.3569675831730556,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-30",
+    "pairs": 2965,
+    "spearman": 0.8549272646621728,
+    "median_rel_diff": 0.35548078169927083,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-03-31",
+    "pairs": 2966,
+    "spearman": 0.8518433733211931,
+    "median_rel_diff": 0.3658763937200823,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-04-01",
+    "pairs": 2968,
+    "spearman": 0.8562375855876025,
+    "median_rel_diff": 0.36831471359835843,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-04-06",
+    "pairs": 2966,
+    "spearman": 0.857655186815471,
+    "median_rel_diff": 0.3488517570204242,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-04-07",
+    "pairs": 2967,
+    "spearman": 0.8286015130600085,
+    "median_rel_diff": 0.37656396186874413,
+    "bitwise_equal_fraction": 0.0
+   },
+   {
+    "day": "2022-04-08",
+    "pairs": 2965,
+    "spearman": 0.869392373441919,
+    "median_rel_diff": 0.33428240963677963,
+    "bitwise_equal_fraction": 0.0
+   }
+  ]
+ },
+ "mechanism_scan": {
+  "baseline": {
+   "mechanism": "baseline",
+   "anchor": null,
+   "spearman_by_scan_day": {
+    "2022-02-24": 0.9999523011431931,
+    "2022-02-25": 0.5777661041898856,
+    "2022-03-04": 0.5483473731991816,
+    "2022-03-15": 0.5629571920727434,
+    "2022-03-25": 0.5221591825963501,
+    "2022-03-28": 0.999975562438181
+   },
+   "min_over_affected_scan_days": 0.5221591825963501,
+   "mean_over_affected_scan_days": 0.5528074630145401
+  },
+  "best_non_baseline": {
+   "mechanism": "missing_day",
+   "anchor": "2022-02-25",
+   "spearman_by_scan_day": {
+    "2022-02-24": 0.9999523011431931,
+    "2022-02-25": null,
+    "2022-03-04": 0.9801126511878036,
+    "2022-03-15": 0.9861790018306203,
+    "2022-03-25": 0.9860672405397732,
+    "2022-03-28": 0.999975562438181
+   },
+   "min_over_affected_scan_days": 0.9801126511878036,
+   "mean_over_affected_scan_days": 0.9841196311860657
+  },
+  "all_rows": [
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-03-28",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": 0.3983877919685217
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-03-29",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-03-30",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-03-31",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-01",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-06",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-07",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-08",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-11",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-12",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-13",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   },
+   {
+    "mechanism": "warm_start",
+    "anchor": "2022-04-14",
+    "spearman_by_scan_day": {
+     "2022-02-24": null,
+     "2022-02-25": null,
+     "2022-03-04": null,
+     "2022-03-15": null,
+     "2022-03-25": null,
+     "2022-03-28": null
+    },
+    "min_over_affected_scan_days": NaN,
+    "mean_over_affected_scan_days": NaN
+   }
+  ],
+  "scan_days": [
+   "2022-02-24",
+   "2022-02-25",
+   "2022-03-04",
+   "2022-03-15",
+   "2022-03-25",
+   "2022-03-28"
+  ]
+ },
+ "database_writes": false,
+ "weights_written": false
+}

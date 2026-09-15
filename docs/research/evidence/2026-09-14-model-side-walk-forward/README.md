@@ -12,6 +12,14 @@
 它下面的每一个数字都由 `dense_intersection_screen/probes/analyze_floor_sensitivity.py`
 从仪器输出生成，机读件在 `dense_intersection_screen/measurements/floor_sensitivity.json`。
 
+**如果关心的是"已发布的因子值可不可信"，读
+[`bse_cache_contamination/root_cause.md`](bse_cache_contamination/root_cause.md)（对应 `problems_found.md` §Y）**：
+`yeslab_471` 的已发布值**可以从本地缓存逐位复现**（81 个交易日上 Spearman = 1.000000、中位相对差 = 0.000000），
+前提是复现方使用与物化相同的证券宇宙。此前记录的四处"`471` 转录残差未定位"（含最低 0.5222 与 0.9947245）
+**全部是探针把北交所 `920xxx` 回填行放进了截面**造成的，不是已发布数据的问题；
+被同一行垃圾数据（`920227.BJ`，`pre_close = 0.01` → `pct_chg = 200400`）污染的**是上游 YesLab 存量列**，
+污染区间 2022-02-25…2022-03-25 共 21 天，**全部落在 969 天 OOS 窗口内**。
+
 ## 文件
 
 | 文件 | 生成方式 | 内容 |
@@ -32,6 +40,7 @@
 | `reproduction_audits/` | `research_v2/scripts/verify_prediction_reproduction.py`（主分支既有工具，本轮首次对这两个运行使用） | **预测复现审计**的 JSON 摘要：`m0r_v2` 四折 3,557,762 行与 `m1_full_v1` 四折 3,553,163 行，**全部 `identical=true`、`max_absolute_difference=0.0`**；含机器读出的 registry 状态（`WALK_FORWARD_PASSED` / `UNREGISTERED`）与实际打分线程数（52 / 1）。这是"分数确由该 bundle 算出"的唯一证据——签名链只证明归属 |
 | `dense_intersection_screen/` | 新只读仪器 `screen_dense_intersection_coverage.py`（分支 `codex/dense-intersection-screen` 提交 `c162073`，**未合并**；副本在 `probes/`）+ `make_provenance.py` | `coverage_gates…` 缺的那台仪器：**只读已发布的表就能预测将被丢掉的日集**，不需要任何训练运行。分子=当日 9 个稠密因子全有行**且当日有有效标签**的证券数（都取已发布 `data_version`），分母=当日 `label_valid=1` 行数（2023-07-05 = 3,627，与面板逐行相同），地板**运行时从 `gates.py` 解析**并有漂移测试盯着。**验证：2022–2025 预测 24 天，与 `m0r_v2` 实测逐日完全相同（`identical=True`，零误报零漏报），且逐年覆盖率到浮点末位相同**（2023 min 0.8902674386545354 两边 16 位全同）。含一处差点让仪器失效的设计错误：第一版分子未限制在有效标签证券上，**只预测出 21/24、漏 3 天且全在不安全方向**（2023-04-28 未限制 0.9070 对限制后 0.89997），修法是 `ej()` 脚本模式连接（DDB 不给子查询/`loadTable` 起别名）。**这是测量工具不是策略**：无人调用、不改门值，`--fail-on-prediction` 默认关闭 |
 | `replay_fidelity_vs_upstream/` | 3 个**只读**探针（`probes/`，select-only 查 `dfs://YesLab` 与 `dfs://QuantResearchV2Test`；上游表名与因子名从 `configs/factors/source_catalog.yaml` **解析**而非手抄）+ `make_provenance.py` | **给决策单漏掉的那个选项定价，并量出一件此前没人测过的事**：`root_cause.md` §6 第 3 条"治理例外：注入 YesLab 权威存量值"**从未进入 v0.1 的四选项表**（v0.1 把"选项 3"给了"下调地板"）。实测其算术上限是四个选项里最高的——24 天 8,782 个缺口行中，正好只缺那两个因子的 8,123 行里 **8,109（99.83%）上游两者都有值**，跌破 **0** 天、**G6 = 1.000000**、最差日 **0.984501**。但同一支探针量到**注入值与面板其余部分不是同一个量**：`yeslab_471` 精确匹配率 **6 天全为 0.000%**、Spearman **0.816–0.883**、相对差中位 3.3e-01。对照实验**否掉了"这是行业标签造成的"**：三个不吃行业提供方的对照因子同样不等（`yeslab_381` 精确率 0.0%；`yeslab_464` Spearman 低至 **0.700**，比 471 更差）。完整普查（9 天 × 8 因子）：**`factors_reproducing_upstream_exactly = []`**，稠密九因子里**没有一个**精确复现上游存量值，偏差分四档跨两个数量级（A 浮点相同 `96`/`484`，相对差 1e-16 级；B 秩全同值不同 `381`，Spearman 恒 1.000 而绝对值差到 1.4e7；C 接近 `425`/`357`；D 实质不同 `464`/`471`/**`206`**，其中 **`206` 的重放标准差是上游的 1.78–2.37 倍、秩相关中位仅 0.753**）。`yeslab_443_reg30_max20_v1` **不在 catalog 里**，故九因子中有一个根本没有上游对应物。**这不是 bug**：重放本来就是设计（预注册"不混历史 YesLab 值"，`audit_formula_replay_consistency.py` 自己就把不一致当证据），本文是第一次量化它 |
+| `bse_cache_contamination/` | 4 个**只读**探针（`probes/`，只读本地缓存 + select-only 查 `dfs://YesLab` 与 `dfs://QuantResearchV2Test`）+ `make_provenance.py` | **`yeslab_471` 那个 21 天窗口的根因，并更正了本包此前四处"残差未定位"**：缓存 `daily_20220225.json` 里一行北交所回填记录 `920227.BJ`（`pre_close = 0.01`、`vol = 10` 手 → `pct_chg = 200400`）把当日截面均值推移 **41.85 个百分点**，经"截面去均值 → 平方 → `rolling(21)`"摊到**随后恰好 21 个交易日**（2022-02-25…2022-03-25），第 22 天突然复原。四面板 × 两窗口对照证明：**剔除 `920xxx` 或只留 SH/SZ 后，转录对已发布值在 81 天上是 Spearman 1.000000 / 中位相对差 0.000000**，而"按 `\|pct_chg\| > 44` 剔除超限行"这个看似对症的过滤器**不够**（0.93–0.97），因为它同时抹掉了合法的新股首日行——**判据只能是宇宙归属，不能是数值大小**。三角形第三条边给出归因方向：**被污染的是上游存量列**（脏面板转录在受影响日与上游 0.826 ≈ 基线 0.828，干净面板掉到 0.435），已发布值是干净的一侧。全缓存 **2919 天**普查：1700 天有超限行（多为正常新股首日，当日最大值中位仅 90.4%），但**15 天**的单行均值推移 > 1pp，**元凶全部是 `920xxx.BJ`**；落在 OOS 窗口内的是 2022-02-25 与 2022-05-11，**爆炸半径 = 15 天 × 窗口长度**（`464` 的窗口是 60）。含一条反面观察：**`pre_close` 自洽性检查在此无效**（4778 / 4777 只共有证券零失配，整条序列都是垃圾），有效守卫是代码段时效性 + 成交量下限 |
 | `extract_from_reports.py` | — | 只读提取器，stdlib only |
 | `vendor_sources.py` | — | 原件复制器，同时重算 `vendored/MANIFEST.json` |
 | `vendored/` | `vendor_sources.py` | 14 份仓库文档 + 7 份签名 `report.json` 的**逐字节副本**，`MANIFEST.json` 记源路径、sha256、取值时的 git HEAD。新增的一份是 `docs/reports/2026-09-14-yearly-deltas-and-the-24-unevaluable-days.md`——逐年增量与那 24 天归属分析的完整方法、§4.1 逐侧覆盖率表、§4.2 的设计观察与三种处置、§6 敏感性、§8 边界 |
