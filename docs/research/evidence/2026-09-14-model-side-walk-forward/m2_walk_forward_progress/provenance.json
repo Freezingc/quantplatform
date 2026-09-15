@@ -42,7 +42,7 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-15T08:29:09+00:00",
+  "generated_at_utc": "2026-09-15T08:36:42+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "6077be7f44efd6ac20bee540c68cbbf251d5c81fab5b2f1385b6783012e25355"
@@ -56,6 +56,7 @@
     "m2_f1_grid_and_standing.md": "351a2e6e7f9828b19e26488186d490e7414b2ee2ef16171b3b64f23e330a2bc8",
     "m2_f1_unscoreable_rows.json": "fc19d59034af25734108860b598c716b283c247408a768f5009a0305344aeee9",
     "m2_progress_stall_v2_startup_snapshot.log": "b04326a358ff018549969c0356b4551bcca477639462bbdfe5b855f7a20c5b18",
+    "residual_securities_closed.json": "50c8625c033751d60e068e27e7a00c88601a3320b84bd30b9c78ad90100a7496",
     "temporal_eligibility_exact.json": "a0b5045e50a620e56764730679001128ab4a616f9b35ea56746fb700377fc3cd",
     "validation_rowset_asymmetry.json": "78841e7bc7ec4b50b60b9e34d709611b496a254c567ed066e7530fbcf6442c7c",
     "validation_rowset_asymmetry.md": "4bc6c6cc6135e78554e4687df36e37ab7936abca44ae4ca3d2b2a4e257a9921d",
@@ -81,6 +82,6 @@
   "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "d64c5ddd0356e9d6ceed965a5d72ba2a000ed113"
+    "commit_at_generation": "dce96c21f7e126ada63f1b4493e090af47a09189"
   }
 }

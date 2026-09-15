@@ -1,0 +1,24 @@
+{
+ "affected_securities": 367,
+ "present_in_train": 20,
+ "absent_from_train": 347,
+ "train_row_counts_for_those_present": {
+  "min": 1,
+  "median": 8.0,
+  "max": 13,
+  "with_fewer_than_15_train_rows": 20,
+  "count": 20
+ },
+ "their_dropped_rows": {
+  "count": 131,
+  "observed_count_min": 2,
+  "observed_count_max": 14,
+  "all_below_15": true
+ },
+ "absent_from_train_dropped_rows": {
+  "count": 4591,
+  "observed_count_min": 1,
+  "observed_count_max": 14,
+  "all_below_15": true
+ }
+}
