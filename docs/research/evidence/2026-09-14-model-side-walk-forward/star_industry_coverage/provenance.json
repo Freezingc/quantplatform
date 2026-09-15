@@ -17,12 +17,24 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T03:22:04+00:00",
+  "generated_at_utc": "2026-09-15T04:12:00+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
   },
   "measurements": {
+    "allnine_absent_origin.json": {
+      "bytes": 3683,
+      "sha256": "f167e20d60675cc915dd743c6d506dadca744e2de6ba1116dc0d7d766044c8a1"
+    },
+    "allnine_absent_sets.json": {
+      "bytes": 2917,
+      "sha256": "06c30a44144b9dcced2c7bd7d726775bbb6ba916dbbf91e0ea0da3488c8316ec"
+    },
+    "allnine_data_version.json": {
+      "bytes": 1786,
+      "sha256": "bbdf3261e8bff5501c9974f78f7bc37e9618b98ee5a310fe32f360ed6fb01850"
+    },
     "cache_ambiguity_tiebreak.json": {
       "bytes": 517277,
       "sha256": "2072ebc4ebb7ccd1ad6d781302d70d59ca639b1fe9909de79312b3a56d00c3b8"
@@ -534,6 +546,22 @@
     "union_precedence_surgical.json": {
       "bytes": 2308698,
       "sha256": "4b2e8df832522b951a742a10537f00eaf8e24b11c47f8dbace6c92e025ebbe82"
+    },
+    "universe_denominator_mismatch.json": {
+      "bytes": 4147,
+      "sha256": "f42dd5adab97235ae6a32bcc0ce365d267ced48f587d9354b4d133804f026fb7"
+    },
+    "universe_mismatch_pricing.json": {
+      "bytes": 2333,
+      "sha256": "45a7ab5eb989200963ccca057cd125cb6f8e2fad8d074738cb10e669dd832c23"
+    },
+    "worst_postcutover_days.json": {
+      "bytes": 218158,
+      "sha256": "eb6ed20b191bdc9e542e4ddcfbbb04a97c96570cb2ebb31386390bfb089f1a2e"
+    },
+    "zero_factor_rows_scan.json": {
+      "bytes": 342157,
+      "sha256": "be6d1e706ff3d5c3218252dad5963dedcce1f1d52414835a3cebcbe4cfa54e86"
     }
   },
   "narratives": {
@@ -564,6 +592,14 @@
     "probe_206_hole_control.py": {
       "bytes": 9053,
       "sha256": "0d9ccdb315e9cdcfa7fbdcd9f4936c10ff468cd60fd3234205baf6af2ae0791c"
+    },
+    "probe_allnine_absent_origin.py": {
+      "bytes": 6923,
+      "sha256": "715b1f6159772985c019d2f4ad14fc5ebc5e920ce0f7cbd4937e7048504280b7"
+    },
+    "probe_allnine_data_version.py": {
+      "bytes": 4786,
+      "sha256": "0873a635202f33b9af98594edf7c0316d08c1019b80bbe7820c8b8057a948b54"
     },
     "probe_bulk_expiry_days.py": {
       "bytes": 4507,
@@ -621,6 +657,18 @@
       "bytes": 15228,
       "sha256": "6089a3083aab5876f724038f2e318dca495cd75dd7036485f51e9ffc00bbc7cc"
     },
+    "probe_universe_denominator_mismatch.py": {
+      "bytes": 6180,
+      "sha256": "f5eaf701c32260cbf1018a141c811e1afdced97edadce98f15e64f34d8ef6586"
+    },
+    "probe_worst_postcutover_days.py": {
+      "bytes": 10236,
+      "sha256": "eca9b44f42b1f628a3ae83a10e1a6f4078b4302125a7be1330bfb460f6375386"
+    },
+    "probe_zero_factor_rows_scan.py": {
+      "bytes": 6914,
+      "sha256": "6175bda0211600acf2af0c2767b7a32802c775f92c7608617861eff48f0e65f7"
+    },
     "project_option1.py": {
       "bytes": 5555,
       "sha256": "92303a360990122390fe7d4d444263cb79a7cc961656df6e0b43a94a30be877d"
@@ -676,7 +724,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "71087ea455181e9058c6ed3354ae680e1d8d8268"
+    "commit_at_generation": "ebcdf669dd090c5e3e9b5872f0008958c68d4c65"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",

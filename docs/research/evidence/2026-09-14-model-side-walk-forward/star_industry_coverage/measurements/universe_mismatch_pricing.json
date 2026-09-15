@@ -1,0 +1,94 @@
+{
+ "binding_day": "2024-12-20",
+ "as_the_evaluator_sees_it": 0.9715866230827257,
+ "with_denominator_aligned_to_cn_liquid_a": 0.9877300613496932,
+ "incident_days": [
+  {
+   "day": "2022-03-30",
+   "zero_of_nine": 1,
+   "coverage": 0.9455168119551681,
+   "coverage_with_aligned_denominator": 0.9458112737464964
+  },
+  {
+   "day": "2022-03-31",
+   "zero_of_nine": 1,
+   "coverage": 0.9455168119551681,
+   "coverage_with_aligned_denominator": 0.9458112737464964
+  },
+  {
+   "day": "2022-05-31",
+   "zero_of_nine": 1,
+   "coverage": 0.9345310596833131,
+   "coverage_with_aligned_denominator": 0.9348157173317088
+  },
+  {
+   "day": "2024-12-20",
+   "zero_of_nine": 65,
+   "coverage": 0.9715866230827257,
+   "coverage_with_aligned_denominator": 0.9877300613496932
+  },
+  {
+   "day": "2024-12-23",
+   "zero_of_nine": 50,
+   "coverage": 0.9750126198889449,
+   "coverage_with_aligned_denominator": 0.9874744376278118
+  },
+  {
+   "day": "2024-12-24",
+   "zero_of_nine": 40,
+   "coverage": 0.9777271576815996,
+   "coverage_with_aligned_denominator": 0.9877269240603426
+  },
+  {
+   "day": "2024-12-25",
+   "zero_of_nine": 34,
+   "coverage": 0.9789660415610745,
+   "coverage_with_aligned_denominator": 0.9874744376278118
+  },
+  {
+   "day": "2024-12-26",
+   "zero_of_nine": 23,
+   "coverage": 0.9817073170731707,
+   "coverage_with_aligned_denominator": 0.9874776386404294
+  },
+  {
+   "day": "2024-12-27",
+   "zero_of_nine": 7,
+   "coverage": 0.9849566547679756,
+   "coverage_with_aligned_denominator": 0.9867177522349936
+  },
+  {
+   "day": "2024-12-30",
+   "zero_of_nine": 7,
+   "coverage": 0.9849451390660883,
+   "coverage_with_aligned_denominator": 0.9867075664621677
+  },
+  {
+   "day": "2024-12-31",
+   "zero_of_nine": 8,
+   "coverage": 0.9847016828148903,
+   "coverage_with_aligned_denominator": 0.9867143587123147
+  },
+  {
+   "day": "2025-01-02",
+   "zero_of_nine": 1,
+   "coverage": 0.9872220802453361,
+   "coverage_with_aligned_denominator": 0.9874744376278118
+  },
+  {
+   "day": "2025-01-06",
+   "zero_of_nine": 1,
+   "coverage": 0.9852078551389951,
+   "coverage_with_aligned_denominator": 0.9854591836734694
+  },
+  {
+   "day": "2025-01-07",
+   "zero_of_nine": 2,
+   "coverage": 0.9841997961264016,
+   "coverage_with_aligned_denominator": 0.9847016828148903
+  }
+ ],
+ "total_rows": 241,
+ "database_writes": false,
+ "weights_written": false
+}

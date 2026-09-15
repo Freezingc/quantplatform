@@ -1,0 +1,135 @@
+{
+ "question": "Is the floor's denominator (label_daily valid rows) wider than the materializer's universe (cn_liquid_a)?",
+ "universe_id": "cn_liquid_a",
+ "materializer_gate": "materialize_frozen_factor_daily.py: load_official_universe(...) then `(ts in universe.get(dt, set())) and np.isfinite(v)` -- a factor row is written only for a security that is a cn_liquid_a member on that date",
+ "days": [
+  "2024-12-19",
+  "2024-12-20",
+  "2024-12-23",
+  "2024-12-26",
+  "2024-12-31",
+  "2025-01-07",
+  "2025-06-16",
+  "2022-05-31"
+ ],
+ "per_day": [
+  {
+   "day": "2024-12-19",
+   "cn_liquid_a_members": 3919,
+   "label_daily_valid_rows": 3915,
+   "valid_label_rows_outside_the_universe": 0,
+   "universe_members_without_a_valid_label": 4,
+   "all_nine_absent_that_day": 0,
+   "all_nine_absent_outside_the_universe": 0,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": []
+  },
+  {
+   "day": "2024-12-20",
+   "cn_liquid_a_members": 3912,
+   "label_daily_valid_rows": 3912,
+   "valid_label_rows_outside_the_universe": 65,
+   "universe_members_without_a_valid_label": 65,
+   "all_nine_absent_that_day": 65,
+   "all_nine_absent_outside_the_universe": 65,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": [
+    "000859.SZ",
+    "000968.SZ",
+    "002109.SZ",
+    "002224.SZ",
+    "002277.SZ",
+    "002290.SZ",
+    "002441.SZ",
+    "002442.SZ",
+    "002694.SZ",
+    "002743.SZ"
+   ]
+  },
+  {
+   "day": "2024-12-23",
+   "cn_liquid_a_members": 3912,
+   "label_daily_valid_rows": 3914,
+   "valid_label_rows_outside_the_universe": 50,
+   "universe_members_without_a_valid_label": 48,
+   "all_nine_absent_that_day": 50,
+   "all_nine_absent_outside_the_universe": 50,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": [
+    "000859.SZ",
+    "002224.SZ",
+    "002277.SZ",
+    "002442.SZ",
+    "002743.SZ",
+    "002911.SZ",
+    "300318.SZ",
+    "300334.SZ",
+    "300402.SZ",
+    "300420.SZ"
+   ]
+  },
+  {
+   "day": "2024-12-26",
+   "cn_liquid_a_members": 3913,
+   "label_daily_valid_rows": 3913,
+   "valid_label_rows_outside_the_universe": 23,
+   "universe_members_without_a_valid_label": 23,
+   "all_nine_absent_that_day": 0,
+   "all_nine_absent_outside_the_universe": 0,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": []
+  },
+  {
+   "day": "2024-12-31",
+   "cn_liquid_a_members": 3914,
+   "label_daily_valid_rows": 3914,
+   "valid_label_rows_outside_the_universe": 8,
+   "universe_members_without_a_valid_label": 8,
+   "all_nine_absent_that_day": 0,
+   "all_nine_absent_outside_the_universe": 0,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": []
+  },
+  {
+   "day": "2025-01-07",
+   "cn_liquid_a_members": 3922,
+   "label_daily_valid_rows": 3910,
+   "valid_label_rows_outside_the_universe": 2,
+   "universe_members_without_a_valid_label": 14,
+   "all_nine_absent_that_day": 0,
+   "all_nine_absent_outside_the_universe": 0,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": []
+  },
+  {
+   "day": "2025-06-16",
+   "cn_liquid_a_members": 3847,
+   "label_daily_valid_rows": 3841,
+   "valid_label_rows_outside_the_universe": 0,
+   "universe_members_without_a_valid_label": 6,
+   "all_nine_absent_that_day": 0,
+   "all_nine_absent_outside_the_universe": 0,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": []
+  },
+  {
+   "day": "2022-05-31",
+   "cn_liquid_a_members": 3284,
+   "label_daily_valid_rows": 3278,
+   "valid_label_rows_outside_the_universe": 0,
+   "universe_members_without_a_valid_label": 6,
+   "all_nine_absent_that_day": 0,
+   "all_nine_absent_outside_the_universe": 0,
+   "all_nine_absent_inside_the_universe": 0,
+   "examples_outside": []
+  }
+ ],
+ "totals": {
+  "valid_label_rows_outside_the_universe": 148,
+  "all_nine_absent_explained_by_the_universe": 115,
+  "all_nine_absent_not_explained": 0
+ },
+ "answer": "115 of 115 all-nine-absent securities on these days are outside cn_liquid_a, and label_daily carries 148 valid-label rows outside the universe in total -- so the floor's denominator is drawn from a wider set than the materializer writes factors for.",
+ "database_writes": false,
+ "weights_written": false
+}
