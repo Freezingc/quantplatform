@@ -1,0 +1,254 @@
+{
+ "question": "For the eight factors whose STAR coverage rises at the cutover, is the rise specific to STAR or a general time trend?",
+ "control": "non-STAR coverage of the same factor over the same days, pre vs post cutover (medians)",
+ "per_factor": [
+  {
+   "factor_id": "yeslab_206",
+   "role": "baseline_eligible",
+   "star_cov_post": 0.9936507937,
+   "star_cov_pre": 1.0,
+   "nonstar_cov_post": 0.9852981969,
+   "nonstar_cov_pre": 0.9864048338,
+   "all_cov_post": 0.9859693878,
+   "all_cov_pre": 0.987045204,
+   "d_star": -0.0063492063,
+   "d_nonstar": -0.0011066369,
+   "d_all": -0.0010758162,
+   "star_jump_specific": -0.0052425695
+  },
+  {
+   "factor_id": "yeslab_357",
+   "role": "baseline_eligible",
+   "star_cov_post": 0.9972972973,
+   "star_cov_pre": 0.0,
+   "nonstar_cov_post": 0.9994247915,
+   "nonstar_cov_pre": 0.99936407,
+   "all_cov_post": 0.9992201716,
+   "all_cov_pre": 0.9156734207,
+   "d_star": 0.9972972973,
+   "d_nonstar": 6.07215e-05,
+   "d_all": 0.0835467508,
+   "star_jump_specific": 0.9972365758
+  },
+  {
+   "factor_id": "yeslab_372",
+   "role": "candidate_only",
+   "star_cov_post": 0.5552238806,
+   "star_cov_pre": 0.2992125984,
+   "nonstar_cov_post": 0.4379562044,
+   "nonstar_cov_pre": 0.6076311606,
+   "all_cov_post": 0.4386928105,
+   "all_cov_pre": 0.614225437,
+   "d_star": 0.2560112822,
+   "d_nonstar": -0.1696749562,
+   "d_all": -0.1755326266,
+   "star_jump_specific": 0.4256862384
+  },
+  {
+   "factor_id": "yeslab_375",
+   "role": "candidate_only",
+   "star_cov_post": 0.6189189189,
+   "star_cov_pre": 0.524691358,
+   "nonstar_cov_post": 0.3450762829,
+   "nonstar_cov_pre": 0.4563779528,
+   "all_cov_post": 0.363565081,
+   "all_cov_pre": 0.460965435,
+   "d_star": 0.0942275609,
+   "d_nonstar": -0.1113016698,
+   "d_all": -0.097400354,
+   "star_jump_specific": 0.2055292307
+  },
+  {
+   "factor_id": "yeslab_381",
+   "role": "baseline_eligible",
+   "star_cov_post": 1.0,
+   "star_cov_pre": 1.0,
+   "nonstar_cov_post": 0.9982812948,
+   "nonstar_cov_pre": 0.9990551181,
+   "all_cov_post": 0.9984317825,
+   "all_cov_pre": 0.9991060787,
+   "d_star": 0.0,
+   "d_nonstar": -0.0007738234,
+   "d_all": -0.0006742961,
+   "star_jump_specific": 0.0007738234
+  },
+  {
+   "factor_id": "yeslab_384",
+   "role": "candidate_only",
+   "star_cov_post": 0.6537313433,
+   "star_cov_pre": 0.549132948,
+   "nonstar_cov_post": 0.3600554785,
+   "nonstar_cov_pre": 0.4840944882,
+   "all_cov_post": 0.3797699948,
+   "all_cov_pre": 0.4895709178,
+   "d_star": 0.1045983953,
+   "d_nonstar": -0.1240390097,
+   "d_all": -0.109800923,
+   "star_jump_specific": 0.228637405
+  },
+  {
+   "factor_id": "yeslab_389",
+   "role": "candidate_only",
+   "star_cov_post": 0.5582089552,
+   "star_cov_pre": 0.3070866142,
+   "nonstar_cov_post": 0.4601459854,
+   "nonstar_cov_pre": 0.6375198728,
+   "all_cov_post": 0.4588235294,
+   "all_cov_pre": 0.6428571429,
+   "d_star": 0.2511223411,
+   "d_nonstar": -0.1773738874,
+   "d_all": -0.1840336134,
+   "star_jump_specific": 0.4284962285
+  },
+  {
+   "factor_id": "yeslab_390",
+   "role": "candidate_only",
+   "star_cov_post": 0.5582089552,
+   "star_cov_pre": 0.3070866142,
+   "nonstar_cov_post": 0.4616058394,
+   "nonstar_cov_pre": 0.6384737679,
+   "all_cov_post": 0.459869281,
+   "all_cov_pre": 0.643761302,
+   "d_star": 0.2511223411,
+   "d_nonstar": -0.1768679285,
+   "d_all": -0.1838920209,
+   "star_jump_specific": 0.4279902695
+  },
+  {
+   "factor_id": "yeslab_406",
+   "role": "candidate_only",
+   "star_cov_post": 0.6179104478,
+   "star_cov_pre": 0.4968553459,
+   "nonstar_cov_post": 0.3464632455,
+   "nonstar_cov_pre": 0.4645669291,
+   "all_cov_post": 0.3583376895,
+   "all_cov_pre": 0.4669249106,
+   "d_star": 0.1210551018,
+   "d_nonstar": -0.1181036836,
+   "d_all": -0.1085872211,
+   "star_jump_specific": 0.2391587855
+  },
+  {
+   "factor_id": "yeslab_425",
+   "role": "baseline_eligible",
+   "star_cov_post": 1.0,
+   "star_cov_pre": 1.0,
+   "nonstar_cov_post": 0.9966712899,
+   "nonstar_cov_pre": 0.9976658886,
+   "all_cov_post": 0.9973863042,
+   "all_cov_pre": 0.9977607166,
+   "d_star": 0.0,
+   "d_nonstar": -0.0009945988,
+   "d_all": -0.0003744123,
+   "star_jump_specific": 0.0009945988
+  },
+  {
+   "factor_id": "yeslab_443_reg30_max20_v1",
+   "role": "baseline_eligible",
+   "star_cov_post": 0.9936507937,
+   "star_cov_pre": 1.0,
+   "nonstar_cov_post": 0.987633017,
+   "nonstar_cov_pre": 0.9885196375,
+   "all_cov_post": 0.9877826878,
+   "all_cov_pre": 0.9889746417,
+   "d_star": -0.0063492063,
+   "d_nonstar": -0.0008866205,
+   "d_all": -0.0011919539,
+   "star_jump_specific": -0.0054625859
+  },
+  {
+   "factor_id": "yeslab_464",
+   "role": "baseline_eligible",
+   "star_cov_post": 1.0,
+   "star_cov_pre": 1.0,
+   "nonstar_cov_post": 0.9959896878,
+   "nonstar_cov_pre": 0.9963746224,
+   "all_cov_post": 0.9963408259,
+   "all_cov_pre": 0.996481126,
+   "d_star": 0.0,
+   "d_nonstar": -0.0003849346,
+   "d_all": -0.0001403001,
+   "star_jump_specific": 0.0003849346
+  },
+  {
+   "factor_id": "yeslab_471",
+   "role": "baseline_eligible",
+   "star_cov_post": 0.9969325153,
+   "star_cov_pre": 0.0,
+   "nonstar_cov_post": 0.9952843273,
+   "nonstar_cov_pre": 0.9914149444,
+   "all_cov_post": 0.9955567172,
+   "all_cov_pre": 0.9115017878,
+   "d_star": 0.9969325153,
+   "d_nonstar": 0.003869383,
+   "d_all": 0.0840549294,
+   "star_jump_specific": 0.9930631324
+  },
+  {
+   "factor_id": "yeslab_484",
+   "role": "baseline_eligible",
+   "star_cov_post": 1.0,
+   "star_cov_pre": 1.0,
+   "nonstar_cov_post": 1.0,
+   "nonstar_cov_pre": 1.0,
+   "all_cov_post": 1.0,
+   "all_cov_pre": 1.0,
+   "d_star": 0.0,
+   "d_nonstar": 0.0,
+   "d_all": 0.0,
+   "star_jump_specific": 0.0
+  },
+  {
+   "factor_id": "yeslab_96",
+   "role": "baseline_eligible",
+   "star_cov_post": 1.0,
+   "star_cov_pre": 1.0,
+   "nonstar_cov_post": 0.995416786,
+   "nonstar_cov_pre": 0.9949983328,
+   "all_cov_post": 0.9958180868,
+   "all_cov_pre": 0.9952015355,
+   "d_star": 0.0,
+   "d_nonstar": 0.0004184532,
+   "d_all": 0.0006165513,
+   "star_jump_specific": -0.0004184532
+  }
+ ],
+ "database_writes": false,
+ "weights_written": false,
+ "star_specific": [
+  [
+   "yeslab_357",
+   "baseline_eligible"
+  ],
+  [
+   "yeslab_372",
+   "candidate_only"
+  ],
+  [
+   "yeslab_375",
+   "candidate_only"
+  ],
+  [
+   "yeslab_384",
+   "candidate_only"
+  ],
+  [
+   "yeslab_389",
+   "candidate_only"
+  ],
+  [
+   "yeslab_390",
+   "candidate_only"
+  ],
+  [
+   "yeslab_406",
+   "candidate_only"
+  ],
+  [
+   "yeslab_471",
+   "baseline_eligible"
+  ]
+ ],
+ "general_trend_not_star_specific": [],
+ "answer": "STAR-specific (d_star exceeds d_nonstar by more than 0.05): [['yeslab_357', 'baseline_eligible'], ['yeslab_372', 'candidate_only'], ['yeslab_375', 'candidate_only'], ['yeslab_384', 'candidate_only'], ['yeslab_389', 'candidate_only'], ['yeslab_390', 'candidate_only'], ['yeslab_406', 'candidate_only'], ['yeslab_471', 'baseline_eligible']]. General time trend rather than STAR-specific: []."
+}

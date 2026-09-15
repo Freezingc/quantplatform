@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T05:12:16+00:00",
+  "generated_at_utc": "2026-09-15T05:23:55+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -43,9 +43,21 @@
       "bytes": 1563,
       "sha256": "5a49b82f5f45bb6de9cc795585c849f243a59f64d10877ceccc2ce656dbc87bc"
     },
+    "candidate_only_rowset_identity.json": {
+      "bytes": 3601,
+      "sha256": "7f3ad5123059e1add6c1e00876234a71cb8520b0675d2da291663ededeeac10a"
+    },
     "days420_precutover.json": {
       "bytes": 48565,
       "sha256": "d890a0cee17ca5c579e81ed5a8db003c739dd41c8e5c43e3044424916328dc4a"
+    },
+    "frozen_v2_preflight.json": {
+      "bytes": 53115,
+      "sha256": "0f99f5ede0c526d678bb834a4241722220cc25bb935a728992370c3746bbce31"
+    },
+    "frozen_v2_star_jump_control.json": {
+      "bytes": 6879,
+      "sha256": "1cace696a248b3ecf01f7d5ef76518ff70a559fdeefe58dfce6a50f32426d350"
     },
     "group_incompleteness_postcutover.json": {
       "bytes": 157496,
@@ -657,6 +669,10 @@
       "bytes": 4829,
       "sha256": "d6a36d3523cbc1bf0b7f38269ab2384f9f3e8f3373692c23f7a1970c14ad33b7"
     },
+    "probe_frozen_v2_preflight.py": {
+      "bytes": 10338,
+      "sha256": "af3d52622ade77c6d7cdb89dd45e698cb91b55dc405253bf8616bf84549e0aab"
+    },
     "probe_gap_row_classification.py": {
       "bytes": 10219,
       "sha256": "4bc850b79f348835930bf1fa3fddda36f61972d3a4afea5c978f3b35db34822d"
@@ -796,7 +812,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "2d31b477a2f8349639642e5ea4a7e8f25cebb927"
+    "commit_at_generation": "432d86cc72e72d1039614a3221849a96e6be14d1"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
