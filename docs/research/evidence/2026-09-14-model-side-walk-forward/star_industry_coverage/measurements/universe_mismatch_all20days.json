@@ -1,0 +1,237 @@
+{
+ "question": "Does the max(data_version) rule mis-resolve on every ambiguous day, and on how many does it actually cause a numerator/denominator mismatch?",
+ "days": 20,
+ "rule_picks_a_stale_version_on": 20,
+ "label_rows_entirely_inside_the_newest_version_on": 20,
+ "jaccard_with_newest": {
+  "min": 0.997959,
+  "max": 0.99949
+ },
+ "days_where_the_stale_pick_causes_a_mismatch": 11,
+ "total_mismatched_rows": 238,
+ "mismatch_equals_the_independent_scan_on": 20,
+ "per_day": [
+  {
+   "day": "2024-12-20",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3912,
+   "outside_newest": 0,
+   "outside_lexmax": 65,
+   "jac_newest": 0.997959,
+   "zero_of_nine_scan": 65,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2024-12-23",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3914,
+   "outside_newest": 0,
+   "outside_lexmax": 50,
+   "jac_newest": 0.998469,
+   "zero_of_nine_scan": 50,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2024-12-24",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3911,
+   "outside_newest": 0,
+   "outside_lexmax": 40,
+   "jac_newest": 0.997959,
+   "zero_of_nine_scan": 40,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2024-12-25",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3913,
+   "outside_newest": 0,
+   "outside_lexmax": 34,
+   "jac_newest": 0.998214,
+   "zero_of_nine_scan": 34,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2024-12-26",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3913,
+   "outside_newest": 0,
+   "outside_lexmax": 23,
+   "jac_newest": 0.99796,
+   "zero_of_nine_scan": 23,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2024-12-27",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3913,
+   "outside_newest": 0,
+   "outside_lexmax": 7,
+   "jac_newest": 0.998214,
+   "zero_of_nine_scan": 7,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2024-12-30",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3914,
+   "outside_newest": 0,
+   "outside_lexmax": 7,
+   "jac_newest": 0.998979,
+   "zero_of_nine_scan": 7,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2024-12-31",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3914,
+   "outside_newest": 0,
+   "outside_lexmax": 8,
+   "jac_newest": 0.998469,
+   "zero_of_nine_scan": 8,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-02",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3908,
+   "outside_newest": 0,
+   "outside_lexmax": 1,
+   "jac_newest": 0.998978,
+   "zero_of_nine_scan": 1,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-03",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3908,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.998978,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-06",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3910,
+   "outside_newest": 0,
+   "outside_lexmax": 1,
+   "jac_newest": 0.998723,
+   "zero_of_nine_scan": 1,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-07",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3910,
+   "outside_newest": 0,
+   "outside_lexmax": 2,
+   "jac_newest": 0.998723,
+   "zero_of_nine_scan": 2,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-08",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3917,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.998725,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-09",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3918,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.998725,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-10",
+   "nver": 4,
+   "picks_newest": false,
+   "label_rows": 3917,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.998471,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-13",
+   "nver": 2,
+   "picks_newest": false,
+   "label_rows": 3919,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.998726,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-14",
+   "nver": 2,
+   "picks_newest": false,
+   "label_rows": 3923,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.99949,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-15",
+   "nver": 2,
+   "picks_newest": false,
+   "label_rows": 3922,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.999236,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-16",
+   "nver": 2,
+   "picks_newest": false,
+   "label_rows": 3921,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.998726,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  },
+  {
+   "day": "2025-01-17",
+   "nver": 2,
+   "picks_newest": false,
+   "label_rows": 3920,
+   "outside_newest": 0,
+   "outside_lexmax": 0,
+   "jac_newest": 0.998472,
+   "zero_of_nine_scan": 0,
+   "mismatch_equals_scan": true
+  }
+ ],
+ "database_writes": false,
+ "weights_written": false
+}

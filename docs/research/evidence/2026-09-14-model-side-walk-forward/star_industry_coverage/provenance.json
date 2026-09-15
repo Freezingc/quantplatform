@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T04:44:56+00:00",
+  "generated_at_utc": "2026-09-15T04:55:09+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -559,6 +559,10 @@
       "bytes": 4147,
       "sha256": "f42dd5adab97235ae6a32bcc0ce365d267ced48f587d9354b4d133804f026fb7"
     },
+    "universe_mismatch_all20days.json": {
+      "bytes": 5143,
+      "sha256": "123fffb2da108138e6427eeb561b3614fddc133816826e093c7246340aab6182"
+    },
     "universe_mismatch_pricing.json": {
       "bytes": 2333,
       "sha256": "45a7ab5eb989200963ccca057cd125cb6f8e2fad8d074738cb10e669dd832c23"
@@ -570,6 +574,10 @@
     "universe_versions_origin.json": {
       "bytes": 13793,
       "sha256": "c172864c17e99999cf16bcb3ddd01e31d74bca7ae991265f1fd3878708703de2"
+    },
+    "universe_versions_origin_20days.json": {
+      "bytes": 98258,
+      "sha256": "9c13e2bc57db1206df502c3772a683f0b9e100030bff3c0a0f0c2d9859dae4af"
     },
     "universe_vintage_skew.json": {
       "bytes": 6657,
@@ -764,7 +772,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "f0b8a4e233db8ed9673fbb3a98e6a00ef3eb923e"
+    "commit_at_generation": "a35f8847c79f50bc036550249eefc888d051d81e"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
