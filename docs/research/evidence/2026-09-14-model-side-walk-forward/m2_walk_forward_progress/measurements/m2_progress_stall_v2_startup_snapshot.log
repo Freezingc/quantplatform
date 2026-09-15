@@ -1,0 +1,3 @@
+[2026-09-15 14:47:15] stall watcher v2 start: driver=3588838 workspace=/data/zhangyudong/qrv2_research_artifacts/m2_v1 dead_hours=1.0 spin_hours=6.0 poll_min=10.0 sample_s=30.0
+[2026-09-15 14:47:15] thresholds are set from a measurement, not a guess: M2's F1 final-ensemble stage wrote nothing from 11:31 to 14:20 (2.82 h) while a worker burned a full core, so spin_hours=6.0 is 2.1x that and file silence alone is never an alarm
+[2026-09-15 14:47:45] ok [tree=26 proc, 24.00 cores, io_delta=0, newest file 0.31 h old (busiest pid 1380497 python 1.00 cores state R)]

@@ -1,0 +1,60 @@
+{
+  "database_access": false,
+  "driver": {
+    "alive": true,
+    "pid": 3588838
+  },
+  "generated_at_local": "2026-09-15T14:50:52",
+  "measured_silent_tail": {
+    "final_checkpoint_dirs_matched": 19,
+    "fold": "F1",
+    "fraction_of_v1_threshold_consumed": 0.9400790722944118,
+    "hours": 2.8202372168832355,
+    "last_final_checkpoint_mtime": "2026-09-15T11:31:15",
+    "model_bundle_mtime": "2026-09-15T14:20:28",
+    "v1_threshold_hours": 3.0,
+    "v2_spin_threshold_hours": 6.0,
+    "v2_spin_threshold_over_measured_tail": 2.1274806119432945,
+    "what": "elapsed time between the last per-epoch checkpoint of the final-ensemble stage and the model bundle that closes the fold -- the stretch in which the run writes no file at all"
+  },
+  "processes_signalled_by_this_probe": [],
+  "question": "What was measured that justifies replacing M2's stall watcher, and did the replacement actually come up?",
+  "read_only": true,
+  "spin_discriminator_is_weak": {
+    "consequence": "in practice SPIN degenerates into a 6 h file-silence rule. That is still safe (6 h is 2.1x the measured tail) but it means v2's real improvement over v1 is the DEAD rule -- no CPU advance anywhere in the process tree and nothing in uninterruptible sleep -- not the SPIN rule",
+    "examples": [
+      "[2026-09-15 14:47:45] ok [tree=26 proc, 24.00 cores, io_delta=0, newest file 0.31 h old (busiest pid 1380497 python 1.00 cores state R)]"
+    ],
+    "observation": "v2's SPIN rule requires a zero I/O delta, but a zero I/O delta also occurs during legitimate heavy compute: tensor training with the panel already in memory issues no read/write syscalls for tens of seconds at a time",
+    "verdict_lines_with_zero_io_delta": 1
+  },
+  "watchers": {
+    "v1": {
+      "alarm_file_present": false,
+      "log_last_lines": [
+        "[2026-09-15 14:24:54] ok: newest file 0.04 h old, driver alive, 1 worker(s)",
+        "[2026-09-15 14:34:54] ok: newest file 0.10 h old, driver alive, 25 worker(s)",
+        "[2026-09-15 14:44:54] ok: newest file 0.27 h old, driver alive, 25 worker(s)"
+      ],
+      "note": "pid is None because v1 was stopped deliberately after v2 came up; two watchers on one run would have left v1's 3 h rule free to fire during the next fold's silent tail",
+      "pid": null,
+      "script": "/data/zhangyudong/qrv2_research_artifacts/m2_progress_stall_watcher.py",
+      "sha256": "f158846da8003ab32140125754607da00b5c7a39caef9901578dca922131645f"
+    },
+    "v2": {
+      "alarm_file_present": false,
+      "alive": true,
+      "log": "/data/zhangyudong/qrv2_research_artifacts/m2_progress_stall_v2.log",
+      "pid": 1399688,
+      "script": "/data/zhangyudong/qrv2_research_artifacts/m2_progress/m2_progress_stall_watcher_v2.py",
+      "sha256": "14d4d52737e6b28a5c646dc68d898adfbf79384e309f3e022cd8a24dc2c4c0a7",
+      "startup_lines": [
+        "[2026-09-15 14:47:15] stall watcher v2 start: driver=3588838 workspace=/data/zhangyudong/qrv2_research_artifacts/m2_v1 dead_hours=1.0 spin_hours=6.0 poll_min=10.0 sample_s=30.0",
+        "[2026-09-15 14:47:15] thresholds are set from a measurement, not a guess: M2's F1 final-ensemble stage wrote nothing from 11:31 to 14:20 (2.82 h) while a worker burned a full core, so spin_hours=6.0 is 2.1x that and file silence alone is never an alarm"
+      ],
+      "verdict_lines": [
+        "[2026-09-15 14:47:45] ok [tree=26 proc, 24.00 cores, io_delta=0, newest file 0.31 h old (busiest pid 1380497 python 1.00 cores state R)]"
+      ]
+    }
+  }
+}

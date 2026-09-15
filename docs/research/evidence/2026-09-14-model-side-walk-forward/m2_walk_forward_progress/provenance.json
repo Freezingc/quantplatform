@@ -1,0 +1,61 @@
+{
+  "cited_source_missing": [],
+  "cited_source_sha256": {
+    "research_v2/scripts/run_real_candidate_training.py": "33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113",
+    "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+    "research_v2/src/research_v2/evaluation/gates.py": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9",
+    "research_v2/src/research_v2/evaluation/walk_forward.py": "6772f2821303d31041a39d3d61491fa67823cbed1e0f02ad5224e1a4f8093887"
+  },
+  "driver_script_never_edited": {
+    "file": "research_v2/scripts/run_real_candidate_training.py",
+    "sha256": "33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113",
+    "why": "the live M2 driver re-imports this per fold; if this hash differs from the one a later reader computes, the file changed while a run was in flight and every number in §AS is suspect"
+  },
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "parquet panels and fold caches (read in place for cross-checks, never copied)",
+    "per-security rows: only counts and per-fold/per-config aggregates are recorded"
+  ],
+  "g4_threshold": {
+    "file": "research_v2/src/research_v2/evaluation/gates.py",
+    "matches": [
+      {
+        "line_number": 123,
+        "text": "_finite_at_least(delta, 0.005)"
+      },
+      {
+        "line_number": 125,
+        "text": "else GateResult(GateStatus.FAIL, None, 0.005)"
+      }
+    ],
+    "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
+  },
+  "generated_at_utc": "2026-09-15T06:58:00+00:00",
+  "generator": {
+    "path": "make_provenance.py",
+    "sha256": "2b14c1d5e7de5facc843d6ddbc84bcb3570e0d6f0efd3c21c490d3d9805193d1"
+  },
+  "measurements": {
+    "m2_f1_grid_and_standing.json": "df4b5586aeaf6379e2d8cb9153e0dbccd4939e2b5b068590b220cd261054029b",
+    "m2_f1_grid_and_standing.md": "351a2e6e7f9828b19e26488186d490e7414b2ee2ef16171b3b64f23e330a2bc8",
+    "m2_progress_stall_v2_startup_snapshot.log": "b04326a358ff018549969c0356b4551bcca477639462bbdfe5b855f7a20c5b18",
+    "watcher_v2_deployment.json": "350f81911e998286ae34b29092460120cc53479d8020f0392b95b97789341008"
+  },
+  "probe_scripts": {
+    "m2_progress_stall_watcher_v2.py": "14d4d52737e6b28a5c646dc68d898adfbf79384e309f3e022cd8a24dc2c4c0a7",
+    "probe_m2_f1_grid_and_standing.py": "332555c61c25066a68ff68723daf7a2992cd85efabef06c357a565db2548a5c3",
+    "probe_watch_handover.py": "e8c17a2c6dd85616ae3313479fbfc8135375f94cf0506ea263f09e4fae09e11f"
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "2502014df94a07bc8e52d621e3a7f65e92640858",
+    "dirty": false,
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+    "subject": "docs(handoff): a one-page price list for the 24 days, and the cliff that makes 'tighten the health check slightly' a gate-failing change -- 42 days sit within 0.005 above the floor, so 0.905 turns G6 from 0.9752 to 0.9319"
+  },
+  "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
+  "this_evidence_branch": {
+    "branch": "codex/research-conditional-factor-review",
+    "commit_at_generation": "11087f0c01b45ebc6e9c94a8f66056d00bfca09d"
+  }
+}
