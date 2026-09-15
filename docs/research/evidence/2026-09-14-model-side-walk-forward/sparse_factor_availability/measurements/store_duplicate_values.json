@@ -1,0 +1,38 @@
+{
+ "yeslab_357|2024.02.28": {
+  "rows": 10690,
+  "codes": 5345,
+  "rows_per_code": 2.0,
+  "codes_with_more_than_one_distinct_value": 0,
+  "max_distinct_per_code": 1,
+  "median_within_code_range": 0.0,
+  "max_within_code_range": 0.0
+ },
+ "yeslab_357|2024.11.05": {
+  "rows": 10690,
+  "codes": 5345,
+  "rows_per_code": 2.0,
+  "codes_with_more_than_one_distinct_value": 0,
+  "max_distinct_per_code": 1,
+  "median_within_code_range": 0.0,
+  "max_within_code_range": 0.0
+ },
+ "yeslab_381|2024.02.28": {
+  "rows": 10680,
+  "codes": 5340,
+  "rows_per_code": 2.0,
+  "codes_with_more_than_one_distinct_value": 0,
+  "max_distinct_per_code": 1,
+  "median_within_code_range": 0.0,
+  "max_within_code_range": 0.0
+ },
+ "yeslab_381|2024.11.05": {
+  "rows": 10670,
+  "codes": 5335,
+  "rows_per_code": 2.0,
+  "codes_with_more_than_one_distinct_value": 0,
+  "max_distinct_per_code": 1,
+  "median_within_code_range": 0.0,
+  "max_within_code_range": 0.0
+ }
+}

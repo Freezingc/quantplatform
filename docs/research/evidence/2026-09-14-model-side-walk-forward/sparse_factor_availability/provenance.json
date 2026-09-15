@@ -28,7 +28,7 @@
     "the parquet panels themselves (read in place, never copied)",
     "per-security rows: only per-day coverage aggregates and per-factor summaries are recorded"
   ],
-  "generated_at_utc": "2026-09-15T10:59:17+00:00",
+  "generated_at_utc": "2026-09-15T11:13:21+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "fd3efc7d5e8e9a807f5083cdfa2e069ae9a76481c3cb4422d0c321259a4e0739"
@@ -36,6 +36,7 @@
   "measurements": {
     "an_drift_reconciliation.json": "35013eb6c120b0ab8fadda2df2f7854ad873278e6f9afea81439740025a59aed",
     "catalog_for_frozen_v2.json": "af87cb1aa32cc0fb22c5723ee47e02395113cbefa240c7610d998a1d259b0a94",
+    "fidelity_full_window.json": "ccd79f5725eea1a28d854c6f8ef30ff53cbadaee60f8988cc199973ac1405f83",
     "frozen_lineage_375.json": "2f3e8793bb788368700bddf4530aa39919974329d92d3f63b295f032f2d413c7",
     "gp006_alignment_scan.json": "6f4acc5117af2c63574f6214225cfdd6f6ab802a76da0aae8abe186cc672ebed",
     "gp006_ambiguous_store.json": "596cbb495927eaf6400a316bb4d13dd4d2bada4d9aa4d35caf9c2ddbb5d2b5e8",
@@ -50,12 +51,14 @@
     "sparse_availability_regime.json": "ffa55469e43335595cd506631ccc9d8e9071c878688f1a4b94ad539832f43292",
     "sparse_factor_coverage_in_panels.json": "fde20cac36e34dc9303712239b5e60c188ab8acc9bb0213030c49026db461b53",
     "sparse_regime_upstream.json": "16076a9c08e818ef547d408a1695831dc1ac2e3b0e399ce003d7453a67053535",
+    "store_duplicate_values.json": "b8a907927c5148ea2da335cba7636c52c1b6032438914009b3869804c5e577e0",
     "store_valued_share_vs_base.json": "51b7a9b68725a017f81adb5ad0c25e6788cd4c294a15425a43caee91c14e9022",
     "yeslab_363_upstream.json": "41ce0a6c3b40d446f32d7246a8222eeff1615f47b6338dc5aa782969219502e2"
   },
   "probe_scripts": {
     "analyze_regime_shapes.py": "8d6e69abb27afc2d8b4e4b61419bc6647f433ec1b2f5453fef3e720837bfd88d",
     "probe_an_drift_reconciliation.py": "97ab9da3036d861a5812ee1b947d2a69d64d60e6121a9ea16fb7778fbb74650b",
+    "probe_fidelity_full_window.py": "a39d797ec23eaa038a177a1c9296fe7c14fb493128509674d6a90b06e5211ec9",
     "probe_gp006_alignment.py": "1c2a24a1fc387521cb9708eb722bde65b3278e6d6e8c820e8d68193da64bea7c",
     "probe_gp006_ambiguous_store.py": "4cb556d562cb2ae9dea335c5c2ae5f15d3caef98a3c8a823acae2485ea66b645",
     "probe_gp006_codeset.py": "2b8eb0ab1d28498e7c62c38b992ce5f29750b0f3e90cd2e8f8383fb837b8f44b",
@@ -90,6 +93,6 @@
   },
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "3777ef5355d292d66ebbcaf5cbf27be4233afe81"
+    "commit_at_generation": "96ccc9ea7cbde05b32bd3ac80213d9406e7f02cf"
   }
 }
