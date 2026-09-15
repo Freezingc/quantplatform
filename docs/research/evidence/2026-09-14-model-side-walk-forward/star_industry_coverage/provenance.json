@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T04:55:09+00:00",
+  "generated_at_utc": "2026-09-15T05:02:34+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -559,6 +559,10 @@
       "bytes": 4147,
       "sha256": "f42dd5adab97235ae6a32bcc0ce365d267ced48f587d9354b4d133804f026fb7"
     },
+    "universe_harmless_days_analysis.json": {
+      "bytes": 4591,
+      "sha256": "889867ef1fb2eb121cabd40bde23a33e46b97a1244ccca92c9154d2ce080fa0b"
+    },
     "universe_mismatch_all20days.json": {
       "bytes": 5143,
       "sha256": "123fffb2da108138e6427eeb561b3614fddc133816826e093c7246340aab6182"
@@ -566,6 +570,10 @@
     "universe_mismatch_pricing.json": {
       "bytes": 2333,
       "sha256": "45a7ab5eb989200963ccca057cd125cb6f8e2fad8d074738cb10e669dd832c23"
+    },
+    "universe_stale_extra_members.json": {
+      "bytes": 2868,
+      "sha256": "c7a4da9d9ca932881301f0c465fc0a998c60ec88ed5db7e315948f862326ab1c"
     },
     "universe_version_ambiguity.json": {
       "bytes": 10300,
@@ -697,6 +705,10 @@
       "bytes": 6180,
       "sha256": "f5eaf701c32260cbf1018a141c811e1afdced97edadce98f15e64f34d8ef6586"
     },
+    "probe_universe_stale_extra_members.py": {
+      "bytes": 7858,
+      "sha256": "dd52bf166a51e3fd5be9b235a03d2de6d079d79b5f5f0dab52cee935a4b7dc75"
+    },
     "probe_universe_version_ambiguity.py": {
       "bytes": 6977,
       "sha256": "bc1b89c37d2fbeaedf9b7a9194596f89a87d883d3fe5e40c0bf696af06582d60"
@@ -760,6 +772,10 @@
     "summarize_precutover_census_split.py": {
       "bytes": 6270,
       "sha256": "eec67a5442e2e16b2cb26eefe5eb37c0b6fbdf5a90835d0b54a8d636f2dd66e3"
+    },
+    "summarize_universe_harmless_days.py": {
+      "bytes": 5737,
+      "sha256": "d0f05f7a806b3296dce1357018f1bd8df00c2a2b4525dbfbd134c7f202ec0060"
     }
   },
   "repository_main_tree": {
@@ -772,7 +788,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "a35f8847c79f50bc036550249eefc888d051d81e"
+    "commit_at_generation": "862eed59eb3fa53045903f12b4b54a9f75d0b25c"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",

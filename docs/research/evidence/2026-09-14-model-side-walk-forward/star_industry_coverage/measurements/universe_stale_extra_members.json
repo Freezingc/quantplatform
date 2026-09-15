@@ -1,0 +1,87 @@
+{
+ "question": "On days where the stale universe version is larger, does factor_daily hold rows for securities the resolved universe excludes, and do they carry labels?",
+ "universe_id": "cn_liquid_a",
+ "days": [
+  "2024-12-20",
+  "2025-01-06",
+  "2025-01-07"
+ ],
+ "per_day": [
+  {
+   "day": "2024-12-20",
+   "stale_version": "f8faafb8b358be19",
+   "newest_version": "6b95095b1b637d35",
+   "stale_members": 3912,
+   "newest_members": 3920,
+   "stale_only_members": 58,
+   "of_those_with_dense_nine_rows_in_factor_daily": 58,
+   "of_those_with_a_valid_label": 0,
+   "have_factors_but_no_valid_label": 58,
+   "examples": [
+    "000007.SZ",
+    "000820.SZ",
+    "000993.SZ",
+    "001234.SZ",
+    "002420.SZ",
+    "002478.SZ",
+    "002623.SZ",
+    "002686.SZ"
+   ]
+  },
+  {
+   "day": "2025-01-06",
+   "stale_version": "f8faafb8b358be19",
+   "newest_version": "06c7c864dd821e41",
+   "stale_members": 3920,
+   "newest_members": 3915,
+   "stale_only_members": 6,
+   "of_those_with_dense_nine_rows_in_factor_daily": 6,
+   "of_those_with_a_valid_label": 0,
+   "have_factors_but_no_valid_label": 6,
+   "examples": [
+    "002743.SZ",
+    "600322.SH",
+    "600575.SH",
+    "600718.SH",
+    "600725.SH",
+    "603958.SH"
+   ]
+  },
+  {
+   "day": "2025-01-07",
+   "stale_version": "f8faafb8b358be19",
+   "newest_version": "06c7c864dd821e41",
+   "stale_members": 3922,
+   "newest_members": 3915,
+   "stale_only_members": 9,
+   "of_those_with_dense_nine_rows_in_factor_daily": 9,
+   "of_those_with_a_valid_label": 0,
+   "have_factors_but_no_valid_label": 9,
+   "examples": [
+    "002252.SZ",
+    "002379.SZ",
+    "002743.SZ",
+    "600322.SH",
+    "600575.SH",
+    "600718.SH",
+    "600725.SH",
+    "603958.SH"
+   ]
+  }
+ ],
+ "totals": {
+  "stale_only_members": 73,
+  "with_factor_rows": 73,
+  "with_a_valid_label": 0,
+  "have_factors_but_no_valid_label": 73
+ },
+ "can_they_reach_a_dataset": {
+  "answer": "no",
+  "evidence": "research_v2/scripts/walk_forward_factor_daily.py resolves the universe with filter_current(universe_rows, 'signal_date', versions['universe_daily']) -- the published_version registry, i.e. the same newest version label_daily uses -- and passes universe_rows as the first argument to build_point_in_time_dataset, so the registry-resolved universe is the spine and a security outside it cannot enter",
+  "verified_from_source": true,
+  "not_verified": "whether build_point_in_time_dataset has any other path that could admit a row outside the spine; only the call site was read"
+ },
+ "answer": "Across 3 days the stale version holds 73 members the newest does not; 73 of them have dense-nine rows in factor_daily and 0 have a valid label, so 73 published factor rows sit outside the resolved universe. They cannot reach a dataset, because the fold assembly uses the registry-resolved universe as its spine.",
+ "database_writes": false,
+ "weights_written": false
+}
