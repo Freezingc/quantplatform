@@ -1,0 +1,315 @@
+{
+  "combined_across_folds": {
+    "15": {
+      "G6": 0.9339525283797729,
+      "day_weighted_mean_rank_ic": 0.0851235472459345,
+      "days_below_floor": 64,
+      "per_fold_mean_rank_ic": {
+        "F1": 0.08037778342961352,
+        "F2": 0.06620480909775656,
+        "F3": 0.09056054049013591,
+        "F4": 0.09835165771161539
+      },
+      "valid_days": 905
+    },
+    "8": {
+      "G6": 0.9535603715170279,
+      "day_weighted_mean_rank_ic": 0.08434490649090007,
+      "days_below_floor": 45,
+      "per_fold_mean_rank_ic": {
+        "F1": 0.08051690502052933,
+        "F2": 0.06408247335305582,
+        "F3": 0.09069662289731545,
+        "F4": 0.09832595482546795
+      },
+      "valid_days": 924
+    }
+  },
+  "database_access": false,
+  "g4_threshold_is_carrier_and_k_specific": {
+    "bar_moves_by_when_k_goes_15_to_8": -0.0007786407550344349,
+    "caveat": "this prices only the baseline side of G4. M2's own mean on the augmented cross-section is not measurable without training a k=8 model.",
+    "correct_bar_at_k15": 0.09012354724593451,
+    "correct_bar_at_k8": 0.08934490649090007,
+    "decision_sheets_current_figure_for_m2": 0.0902268662737014,
+    "rule": "evaluation/gates.py:123 -> _finite_at_least(delta, 0.005), delta = candidate - baseline",
+    "why_that_figure_is_wrong_for_m2": "it uses the baseline value from the non-temporal carriers' reports. M2's baseline is row-matched against M2's own eligible set, which is 17,306 rows smaller, so M2's baseline mean is lower and therefore M2's G4 bar is lower."
+  },
+  "generated_at_local": "2026-09-15T23:31:49",
+  "per_fold": {
+    "F1": {
+      "baseline_rows": 747461,
+      "by_k": {
+        "8": {
+          "G6": 0.9958677685950413,
+          "days_below_floor": 1,
+          "eligible_rows": 800370,
+          "icir": 0.954215626050985,
+          "matched_rows": 744427,
+          "mean_rank_ic": 0.08051690502052933,
+          "mean_rank_ic_hex": "0x1.49cc181d69b98p-4",
+          "rank_ic_std": 0.08438019963448723,
+          "rows_removed_by_matching": 55943,
+          "valid_days": 241
+        },
+        "15": {
+          "G6": 0.9958677685950413,
+          "days_below_floor": 1,
+          "eligible_rows": 797239,
+          "icir": 0.9521142960696448,
+          "matched_rows": 742372,
+          "mean_rank_ic": 0.08037778342961352,
+          "mean_rank_ic_hex": "0x1.493a36f27b89ep-4",
+          "rank_ic_std": 0.08442030936980499,
+          "rows_removed_by_matching": 54867,
+          "valid_days": 241
+        }
+      },
+      "predictability_of_the_recovered_rows": {
+        "mannwhitney_p_two_sided": 0.14794310935582322,
+        "method": "mean within-day standardized score x standardized label, i.e. each row's contribution to that day's covariance; comparable across groups of very different size, unlike a rank correlation computed on ~7 rows",
+        "ratio_recovered_over_retained": 4.090523970212423,
+        "recovered_label_mean": -0.00608768108913508,
+        "recovered_label_std": 0.0690601485532613,
+        "recovered_mean_product": 0.24771051610970699,
+        "recovered_n": 2055,
+        "recovered_observed_count_distribution": {
+          "10": 297,
+          "11": 292,
+          "12": 292,
+          "13": 290,
+          "14": 291,
+          "8": 296,
+          "9": 297
+        },
+        "retained_label_mean": -0.0015907536411993598,
+        "retained_label_std": 0.07104312801329213,
+        "retained_mean_product": 0.06055716038178924,
+        "retained_n": 742372
+      },
+      "recovered_rows": {
+        "count": 2055,
+        "count_entering_the_cross_section": 2055
+      },
+      "test_rows": 804575,
+      "test_valid_label_rows": 803572
+    },
+    "F2": {
+      "baseline_rows": 820829,
+      "by_k": {
+        "8": {
+          "G6": 0.8181818181818182,
+          "days_below_floor": 44,
+          "eligible_rows": 879057,
+          "icir": 0.7251133496260888,
+          "matched_rows": 818289,
+          "mean_rank_ic": 0.06408247335305582,
+          "mean_rank_ic_hex": "0x1.067b57f4c549fp-4",
+          "rank_ic_std": 0.08837580136415986,
+          "rows_removed_by_matching": 60768,
+          "valid_days": 198
+        },
+        "15": {
+          "G6": 0.7396694214876033,
+          "days_below_floor": 63,
+          "eligible_rows": 876154,
+          "icir": 0.7355282619757827,
+          "matched_rows": 816159,
+          "mean_rank_ic": 0.06620480909775656,
+          "mean_rank_ic_hex": "0x1.0f2cc61e9ac74p-4",
+          "rank_ic_std": 0.0900098779616117,
+          "rows_removed_by_matching": 59995,
+          "valid_days": 179
+        }
+      },
+      "predictability_of_the_recovered_rows": {
+        "mannwhitney_p_two_sided": 0.8047126464339587,
+        "method": "mean within-day standardized score x standardized label, i.e. each row's contribution to that day's covariance; comparable across groups of very different size, unlike a rank correlation computed on ~7 rows",
+        "ratio_recovered_over_retained": -3.7095779248016307,
+        "recovered_label_mean": 0.0067428489137041255,
+        "recovered_label_std": 0.07500194146762362,
+        "recovered_mean_product": -0.19619074704284675,
+        "recovered_n": 2130,
+        "recovered_observed_count_distribution": {
+          "10": 306,
+          "11": 307,
+          "12": 306,
+          "13": 305,
+          "14": 306,
+          "8": 300,
+          "9": 300
+        },
+        "retained_label_mean": -5.9787598994376915e-05,
+        "retained_label_std": 0.05595119626758675,
+        "retained_mean_product": 0.05288761983705681,
+        "retained_n": 816159
+      },
+      "recovered_rows": {
+        "count": 2130,
+        "count_entering_the_cross_section": 2130
+      },
+      "test_rows": 882426,
+      "test_valid_label_rows": 881863
+    },
+    "F3": {
+      "baseline_rows": 924499,
+      "by_k": {
+        "8": {
+          "G6": 1.0,
+          "days_below_floor": 0,
+          "eligible_rows": 929608,
+          "icir": 0.6213351991140634,
+          "matched_rows": 921960,
+          "mean_rank_ic": 0.09069662289731545,
+          "mean_rank_ic_hex": "0x1.737e4d5339d04p-4",
+          "rank_ic_std": 0.14597052126877097,
+          "rows_removed_by_matching": 7648,
+          "valid_days": 242
+        },
+        "15": {
+          "G6": 1.0,
+          "days_below_floor": 0,
+          "eligible_rows": 927808,
+          "icir": 0.620169611337497,
+          "matched_rows": 920177,
+          "mean_rank_ic": 0.09056054049013591,
+          "mean_rank_ic_hex": "0x1.72ef9bfb6956dp-4",
+          "rank_ic_std": 0.1460254401934131,
+          "rows_removed_by_matching": 7631,
+          "valid_days": 242
+        }
+      },
+      "predictability_of_the_recovered_rows": {
+        "mannwhitney_p_two_sided": 0.4681003495303091,
+        "method": "mean within-day standardized score x standardized label, i.e. each row's contribution to that day's covariance; comparable across groups of very different size, unlike a rank correlation computed on ~7 rows",
+        "ratio_recovered_over_retained": 2.304698099054145,
+        "recovered_label_mean": -0.007536880427895201,
+        "recovered_label_std": 0.09389652568346617,
+        "recovered_mean_product": 0.09387110710182141,
+        "recovered_n": 1783,
+        "recovered_observed_count_distribution": {
+          "10": 254,
+          "11": 255,
+          "12": 256,
+          "13": 256,
+          "14": 256,
+          "8": 253,
+          "9": 253
+        },
+        "retained_label_mean": 0.002114675490160051,
+        "retained_label_std": 0.09081697714362184,
+        "retained_mean_product": 0.04073032695273467,
+        "retained_n": 920177
+      },
+      "recovered_rows": {
+        "count": 1783,
+        "count_entering_the_cross_section": 1783
+      },
+      "test_rows": 932167,
+      "test_valid_label_rows": 931411
+    },
+    "F4": {
+      "baseline_rows": 925174,
+      "by_k": {
+        "8": {
+          "G6": 1.0,
+          "days_below_floor": 0,
+          "eligible_rows": 935502,
+          "icir": 0.7466946919911539,
+          "matched_rows": 922180,
+          "mean_rank_ic": 0.09832595482546795,
+          "mean_rank_ic_hex": "0x1.92be3c852c79bp-4",
+          "rank_ic_std": 0.1316816041148888,
+          "rows_removed_by_matching": 13322,
+          "valid_days": 243
+        },
+        "15": {
+          "G6": 1.0,
+          "days_below_floor": 0,
+          "eligible_rows": 934656,
+          "icir": 0.7465876983865556,
+          "matched_rows": 921348,
+          "mean_rank_ic": 0.09835165771161539,
+          "mean_rank_ic_hex": "0x1.92d930160f75ap-4",
+          "rank_ic_std": 0.1317349025762979,
+          "rows_removed_by_matching": 13308,
+          "valid_days": 243
+        }
+      },
+      "predictability_of_the_recovered_rows": {
+        "mannwhitney_p_two_sided": 0.8409857474946487,
+        "method": "mean within-day standardized score x standardized label, i.e. each row's contribution to that day's covariance; comparable across groups of very different size, unlike a rank correlation computed on ~7 rows",
+        "ratio_recovered_over_retained": -0.1282259828720723,
+        "recovered_label_mean": 0.01038840109844555,
+        "recovered_label_std": 0.07767555324862561,
+        "recovered_mean_product": -0.004088709721426885,
+        "recovered_n": 832,
+        "recovered_observed_count_distribution": {
+          "10": 120,
+          "11": 119,
+          "12": 121,
+          "13": 118,
+          "14": 117,
+          "8": 118,
+          "9": 119
+        },
+        "retained_label_mean": 0.007953306589430303,
+        "retained_label_std": 0.0687662266797681,
+        "retained_mean_product": 0.03188674892440546,
+        "retained_n": 921348
+      },
+      "recovered_rows": {
+        "count": 832,
+        "count_entering_the_cross_section": 832
+      },
+      "test_rows": 938594,
+      "test_valid_label_rows": 936317
+    }
+  },
+  "question": "Lowering minimum_valid_history_length to 8 changes which rows are in the cross-section for BOTH sides, because the evaluator inner-joins candidate with baseline first. That compositional effect on the measured rank IC is independent of whether a k=8-trained model is better, and is measurable without training. Does it help or hurt?",
+  "read_only": true,
+  "recovered_rows_pooled_across_folds": {
+    "mean_product": 0.03751899954095659,
+    "median_product": -0.0009160920712426916,
+    "n": 6800
+  },
+  "repository_module_imported_or_executed": false,
+  "the_compositional_effect": {
+    "G6_k15": 0.9339525283797729,
+    "G6_k8": 0.9535603715170279,
+    "change_in_the_baseline_side_mean_rank_ic": -0.0007786407550344349,
+    "days_below_floor_k15": 64,
+    "days_below_floor_k8": 45,
+    "rows_entering_the_cross_section": 6800,
+    "share_of_the_matched_cross_section": 0.001999967059366081
+  },
+  "training_performed": false,
+  "validation": {
+    "AX_reference_for_m2": {
+      "G6": 0.9339525283797729,
+      "G6_match": true,
+      "days_below_floor": 64,
+      "days_match": true,
+      "reproduced_G6": 0.9339525283797729,
+      "reproduced_days_below_floor": 64,
+      "reproduced_valid_days": 905,
+      "valid_days": 905,
+      "valid_days_match": true
+    },
+    "signed_baseline_for_non_temporal_carriers": {
+      "abs_diff": 0.0001033190277668905,
+      "agrees": false,
+      "mean_rank_ic": 0.0852268662737014,
+      "reproduced_here": 0.0851235472459345,
+      "valid_days": 945,
+      "valid_days_here": 905,
+      "why_it_cannot_agree": "baseline_mean_rank_ic is carrier-specific: model_evaluator.py:86 scores baseline_predictions_matched, i.e. the baseline AFTER the inner join with that carrier's candidate. Different candidates give different matched sets and therefore different baseline means. The single number recorded in every carrier report is the non-temporal one."
+    },
+    "what_the_k15_column_must_reproduce": "NOT the signed baseline_mean_rank_ic of 0.0852268662737014 over 945 days. That value is the baseline row-matched against a NON-temporal carrier, whose candidate scores almost every row, so the intersection is essentially the baseline's own row set. Here the baseline is matched against M2's eligible set, which is 17,306 rows smaller, so coverage is lower and 40 more days fall through the floor. The right reference is §AX, which derived M2's numbers from the eligibility rule."
+  },
+  "weights_loaded": false,
+  "what_this_does_and_does_not_settle": {
+    "does_not_settle": "the model half. A model TRAINED with 12 of 20 lanes masked instead of 5 may fit differently, and this probe trains nothing. §BS.8's caveat stands for that half.",
+    "settles": "the compositional half of the k=8 question: which rows enter the cross-section, how that moves the measured rank IC on both sides, and whether the newly admitted rows are more or less predictable than the ones already there"
+  }
+}
