@@ -1,0 +1,345 @@
+{
+  "database_access": false,
+  "f4_hypothesis_test": {
+    "hypothesis": "§BV.8's guess: F4's test year 2025 is further from securities' listing dates, so fewer securities have under 15 of their own panel rows",
+    "recovered_distinct_securities": {
+      "F1": 308,
+      "F2": 318,
+      "F3": 264,
+      "F4": 126
+    },
+    "recovered_rows_per_test_day": {
+      "F1": 8.491735537190083,
+      "F2": 8.801652892561984,
+      "F3": 7.367768595041323,
+      "F4": 3.4238683127572016
+    },
+    "securities_first_appearing_inside_the_test_window": {
+      "F1": 468,
+      "F2": 395,
+      "F3": 257,
+      "F4": 109
+    },
+    "share_of_panel_securities": {
+      "F1": 0.10418521816562779,
+      "F2": 0.0811088295687885,
+      "F3": 0.05021492770613521,
+      "F4": 0.02088522705499138
+    }
+  },
+  "generated_at_local": "2026-09-16T00:44:29",
+  "per_fold": {
+    "F1": {
+      "distinct_securities_in_panel": 4492,
+      "label_comparison": {
+        "levene_p_on_label_dispersion": 0.14561281176319235,
+        "mannwhitney_p_on_labels": 0.00023021302999630993,
+        "recovered_mean": -0.00608768108913508,
+        "recovered_mean_abs": 0.05193386623459714,
+        "recovered_sd": 0.0690601485532613,
+        "retained_mean": -0.0015907536411993598,
+        "retained_mean_abs": 0.049763562193642405,
+        "retained_sd": 0.07104312801329213
+      },
+      "recovered": {
+        "days_since_first_seen_max": 1934,
+        "days_since_first_seen_mean": 28.36009732360097,
+        "days_since_first_seen_median": 15.0,
+        "days_since_first_seen_min": 9,
+        "distinct_securities": 308,
+        "labels": {
+          "max": 0.36363636363636376,
+          "mean": -0.00608768108913508,
+          "mean_abs": 0.05193386623459714,
+          "median": -0.010512483574244391,
+          "min": -0.39049045301385243,
+          "n": 2055,
+          "p01": -0.17371209840044533,
+          "p99": 0.19985361454565775,
+          "sd": 0.0690601485532613
+        },
+        "n_distinct_test_dates_covered": 242,
+        "observed_count_mean": 10.98345498783455,
+        "rows": 2055,
+        "rows_by_month": {
+          "2022-01": 210,
+          "2022-02": 115,
+          "2022-03": 170,
+          "2022-04": 85,
+          "2022-05": 226,
+          "2022-06": 235,
+          "2022-07": 186,
+          "2022-08": 228,
+          "2022-09": 171,
+          "2022-10": 113,
+          "2022-11": 162,
+          "2022-12": 154
+        },
+        "rows_per_security_max": 7,
+        "rows_per_security_mean": 6.672077922077922,
+        "rows_per_security_median": 7.0,
+        "rows_per_test_day": 8.491735537190083
+      },
+      "retained": {
+        "days_since_first_seen_mean": 1699.8267485842678,
+        "distinct_securities": 3962,
+        "labels": {
+          "max": 1.1322115384615383,
+          "mean": -0.0015907536411993598,
+          "mean_abs": 0.049763562193642405,
+          "median": -0.004807692307692402,
+          "min": -0.5413580246913581,
+          "n": 742372,
+          "p01": -0.17379514414373207,
+          "p99": 0.21293918172064624,
+          "sd": 0.07104312801329213
+        },
+        "rows": 742372
+      },
+      "securities_first_appearing_inside_the_test_window": 468,
+      "securities_first_appearing_within_60d_before_or_inside": 532,
+      "share_of_panel_securities_new_in_window": 0.10418521816562779,
+      "test_window": [
+        "2022-01-04",
+        "2022-12-30"
+      ]
+    },
+    "F2": {
+      "distinct_securities_in_panel": 4870,
+      "label_comparison": {
+        "levene_p_on_label_dispersion": 7.27697891766907e-24,
+        "mannwhitney_p_on_labels": 0.011424767012369925,
+        "recovered_mean": 0.0067428489137041255,
+        "recovered_mean_abs": 0.046620132709187335,
+        "recovered_sd": 0.07500194146762362,
+        "retained_mean": -5.9787598994376915e-05,
+        "retained_mean_abs": 0.03761172574063867,
+        "retained_sd": 0.05595119626758675
+      },
+      "recovered": {
+        "days_since_first_seen_max": 700,
+        "days_since_first_seen_mean": 32.41267605633803,
+        "days_since_first_seen_median": 16.0,
+        "days_since_first_seen_min": 9,
+        "distinct_securities": 318,
+        "labels": {
+          "max": 0.7656842719579804,
+          "mean": 0.0067428489137041255,
+          "mean_abs": 0.046620132709187335,
+          "median": -0.0015711049920056896,
+          "min": -0.20402173913043486,
+          "n": 2130,
+          "p01": -0.13788736125203702,
+          "p99": 0.2787651404051929,
+          "sd": 0.07500194146762362
+        },
+        "n_distinct_test_dates_covered": 242,
+        "observed_count_mean": 11.013145539906104,
+        "rows": 2130,
+        "rows_by_month": {
+          "2023-01": 197,
+          "2023-02": 166,
+          "2023-03": 148,
+          "2023-04": 171,
+          "2023-05": 113,
+          "2023-06": 158,
+          "2023-07": 137,
+          "2023-08": 262,
+          "2023-09": 214,
+          "2023-10": 176,
+          "2023-11": 265,
+          "2023-12": 123
+        },
+        "rows_per_security_max": 7,
+        "rows_per_security_mean": 6.69811320754717,
+        "rows_per_security_median": 7.0,
+        "rows_per_test_day": 8.801652892561984
+      },
+      "retained": {
+        "days_since_first_seen_mean": 1683.2211211295837,
+        "distinct_securities": 4625,
+        "labels": {
+          "max": 1.119514472455649,
+          "mean": -5.9787598994376915e-05,
+          "mean_abs": 0.03761172574063867,
+          "median": -0.003900536323744652,
+          "min": -0.4610778443113772,
+          "n": 816159,
+          "p01": -0.1278338704030685,
+          "p99": 0.17945863127291053,
+          "sd": 0.05595119626758675
+        },
+        "rows": 816159
+      },
+      "securities_first_appearing_inside_the_test_window": 395,
+      "securities_first_appearing_within_60d_before_or_inside": 456,
+      "share_of_panel_securities_new_in_window": 0.0811088295687885,
+      "test_window": [
+        "2023-01-03",
+        "2023-12-29"
+      ]
+    },
+    "F3": {
+      "distinct_securities_in_panel": 5118,
+      "label_comparison": {
+        "levene_p_on_label_dispersion": 0.009185085984632345,
+        "mannwhitney_p_on_labels": 1.1860706610689468e-09,
+        "recovered_mean": -0.007536880427895201,
+        "recovered_mean_abs": 0.06506003757508445,
+        "recovered_sd": 0.09389652568346617,
+        "retained_mean": 0.002114675490160051,
+        "retained_mean_abs": 0.05956022910543476,
+        "retained_sd": 0.09081697714362184
+      },
+      "recovered": {
+        "days_since_first_seen_max": 494,
+        "days_since_first_seen_mean": 28.324733595064497,
+        "days_since_first_seen_median": 15.0,
+        "days_since_first_seen_min": 9,
+        "distinct_securities": 264,
+        "labels": {
+          "max": 0.5841150719199502,
+          "mean": -0.007536880427895201,
+          "mean_abs": 0.06506003757508445,
+          "median": -0.016219404305514606,
+          "min": -0.3291536050156739,
+          "n": 1783,
+          "p01": -0.20678615642494824,
+          "p99": 0.3294944853692637,
+          "sd": 0.09389652568346617
+        },
+        "n_distinct_test_dates_covered": 238,
+        "observed_count_mean": 11.009534492428491,
+        "rows": 1783,
+        "rows_by_month": {
+          "2024-01": 231,
+          "2024-02": 27,
+          "2024-03": 119,
+          "2024-04": 143,
+          "2024-05": 184,
+          "2024-06": 200,
+          "2024-07": 260,
+          "2024-08": 222,
+          "2024-09": 135,
+          "2024-10": 84,
+          "2024-11": 98,
+          "2024-12": 80
+        },
+        "rows_per_security_max": 7,
+        "rows_per_security_mean": 6.753787878787879,
+        "rows_per_security_median": 7.0,
+        "rows_per_test_day": 7.367768595041323
+      },
+      "retained": {
+        "days_since_first_seen_mean": 1659.8733384990062,
+        "distinct_securities": 4852,
+        "labels": {
+          "max": 2.009938837920489,
+          "mean": 0.002114675490160051,
+          "mean_abs": 0.05956022910543476,
+          "median": -0.006535947712418277,
+          "min": -0.5277777777777777,
+          "n": 920177,
+          "p01": -0.2017189605122435,
+          "p99": 0.3282518557515133,
+          "sd": 0.09081697714362184
+        },
+        "rows": 920177
+      },
+      "securities_first_appearing_inside_the_test_window": 257,
+      "securities_first_appearing_within_60d_before_or_inside": 292,
+      "share_of_panel_securities_new_in_window": 0.05021492770613521,
+      "test_window": [
+        "2024-01-02",
+        "2024-12-31"
+      ]
+    },
+    "F4": {
+      "distinct_securities_in_panel": 5219,
+      "label_comparison": {
+        "levene_p_on_label_dispersion": 0.0024828104551004888,
+        "mannwhitney_p_on_labels": 0.7782825378784521,
+        "recovered_mean": 0.01038840109844555,
+        "recovered_mean_abs": 0.05070456362377595,
+        "recovered_sd": 0.07767555324862561,
+        "retained_mean": 0.007953306589430303,
+        "retained_mean_abs": 0.04522356713541437,
+        "retained_sd": 0.0687662266797681
+      },
+      "recovered": {
+        "days_since_first_seen_max": 1510,
+        "days_since_first_seen_mean": 73.71634615384616,
+        "days_since_first_seen_median": 16.0,
+        "days_since_first_seen_min": 9,
+        "distinct_securities": 126,
+        "labels": {
+          "max": 0.606711915535445,
+          "mean": 0.01038840109844555,
+          "mean_abs": 0.05070456362377595,
+          "median": 0.00236060790932191,
+          "min": -0.23732251521298176,
+          "n": 832,
+          "p01": -0.1600296631729641,
+          "p99": 0.2905357227528704,
+          "sd": 0.07767555324862561
+        },
+        "n_distinct_test_dates_covered": 226,
+        "observed_count_mean": 10.995192307692308,
+        "rows": 832,
+        "rows_by_month": {
+          "2025-01": 86,
+          "2025-02": 76,
+          "2025-03": 97,
+          "2025-04": 91,
+          "2025-05": 47,
+          "2025-06": 47,
+          "2025-07": 57,
+          "2025-08": 62,
+          "2025-09": 91,
+          "2025-10": 56,
+          "2025-11": 53,
+          "2025-12": 69
+        },
+        "rows_per_security_max": 7,
+        "rows_per_security_mean": 6.603174603174603,
+        "rows_per_security_median": 7.0,
+        "rows_per_test_day": 3.4238683127572016
+      },
+      "retained": {
+        "days_since_first_seen_mean": 1703.6535804061007,
+        "distinct_securities": 4892,
+        "labels": {
+          "max": 1.8070175438596494,
+          "mean": 0.007953306589430303,
+          "mean_abs": 0.04522356713541437,
+          "median": 0.002136752136752351,
+          "min": -0.6061392931749203,
+          "n": 921348,
+          "p01": -0.15256151939618123,
+          "p99": 0.24157652283004083,
+          "sd": 0.0687662266797681
+        },
+        "rows": 921348
+      },
+      "securities_first_appearing_inside_the_test_window": 109,
+      "securities_first_appearing_within_60d_before_or_inside": 132,
+      "share_of_panel_securities_new_in_window": 0.02088522705499138,
+      "test_window": [
+        "2025-01-02",
+        "2025-12-31"
+      ]
+    }
+  },
+  "per_row_count": 3406856,
+  "per_row_csv": "/data/zhangyudong/qrv2_research_artifacts/recovered_row_identity/recovered_and_retained_rows.csv",
+  "question": "Who are the rows that lowering minimum_valid_history_length from 15 to 8 admits: how many securities, when did they first appear in the panel, how do their labels compare with the retained rows, and does the count of newly appearing securities explain why F4 contributes only 3.42 recovered rows a day against about 8.5 in F1 and F2?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "thresholds": {
+    "history_length": 20,
+    "k_frozen": 15,
+    "k_lowered": 8
+  },
+  "training_performed": false,
+  "weights_loaded": false
+}
