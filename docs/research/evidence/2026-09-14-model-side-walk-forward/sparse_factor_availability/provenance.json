@@ -1,0 +1,50 @@
+{
+  "cited_source_missing": [],
+  "cited_source_sha256": {
+    "research_v2/artifacts/diagnostics/factor_set_frozen_v2.json": "e472cfb93b3600c5a4c734fe611bf8d70dad0bb74dfaf96a42ed95462ab19e33",
+    "research_v2/scripts/walk_forward_common.py": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a",
+    "research_v2/scripts/walk_forward_factor_daily.py": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11"
+  },
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "the parquet panels themselves (read in place, never copied)",
+    "per-security rows: only per-day coverage aggregates and per-factor summaries are recorded"
+  ],
+  "generated_at_utc": "2026-09-15T08:52:34+00:00",
+  "generator": {
+    "path": "make_provenance.py",
+    "sha256": "ec8dc114325175240492b1e785b0e7fff141c8f8cfa0afbe280a62231654440a"
+  },
+  "measurements": {
+    "an_drift_reconciliation.json": "35013eb6c120b0ab8fadda2df2f7854ad873278e6f9afea81439740025a59aed",
+    "sparse_availability_regime.json": "ffa55469e43335595cd506631ccc9d8e9071c878688f1a4b94ad539832f43292",
+    "sparse_factor_coverage_in_panels.json": "fde20cac36e34dc9303712239b5e60c188ab8acc9bb0213030c49026db461b53"
+  },
+  "probe_scripts": {
+    "probe_an_drift_reconciliation.py": "97ab9da3036d861a5812ee1b947d2a69d64d60e6121a9ea16fb7778fbb74650b",
+    "probe_sparse_availability_regime.py": "27233787255b3fb4c3e91eb414a15c3f0def671b9a8b83fe3f7136c22f1054ab",
+    "probe_sparse_factor_coverage_in_panels.py": "3f04debb1c75b8c23c0158e23f3183c79da952c307999331d1e325d415b348a1"
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "2502014df94a07bc8e52d621e3a7f65e92640858",
+    "dirty": false,
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+    "subject": "docs(handoff): a one-page price list for the 24 days, and the cliff that makes 'tighten the health check slightly' a gate-failing change -- 42 days sit within 0.005 above the floor, so 0.905 turns G6 from 0.9752 to 0.9319"
+  },
+  "safety": "read-only. No database access at all: every input is a parquet panel the frozen pipeline already published, read in place. No weight or model was loaded, nothing was written into any artifact directory, no process was signalled, and no repository file was edited.",
+  "sparsity_comment_quoted": {
+    "file": "research_v2/scripts/walk_forward_factor_daily.py",
+    "matches": [
+      {
+        "line_number": 95,
+        "text": "# on roughly half of all days by formula (their sparsity IS the candidate signal),"
+      }
+    ],
+    "sha256": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11"
+  },
+  "this_evidence_branch": {
+    "branch": "codex/research-conditional-factor-review",
+    "commit_at_generation": "7cd4cda8fc7b5e004a5ac08e8680506299600545"
+  }
+}

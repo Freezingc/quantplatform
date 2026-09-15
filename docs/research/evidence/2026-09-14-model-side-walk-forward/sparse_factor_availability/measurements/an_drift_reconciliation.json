@@ -1,0 +1,395 @@
+{
+  "AN_recorded_values_quoted_from_its_measurement_file": "the file's layout did not match the keys looked for; §AN's table in problems_found.md is the reference and is quoted in the narrative instead",
+  "database_access": false,
+  "denominator_caveat": "coverage here is the non-NaN share among the panel rows the metric can score (label_valid with a finite 5-day return). §AN divided by registry-resolved universe members. The two denominators are not the same set, so LEVELS are not directly comparable; TRENDS and the estimator comparison below are the point.",
+  "denominator_per_day": {
+    "all_panel_rows": {
+      "max": 3932,
+      "median": 3781.0,
+      "min": 3126
+    },
+    "scoreable_rows": {
+      "max": 3926,
+      "median": 3780.0,
+      "min": 3124
+    }
+  },
+  "factors": {
+    "yeslab_372": {
+      "AN_estimator_reproduced_on_panel_coverage": {
+        "days_available": 10,
+        "days_requested": 10,
+        "drift": -0.17512285700008157,
+        "post_median": 0.43917147351861563,
+        "post_values": {
+          "2023-09-25": 0.3344120819848975,
+          "2024-06-17": 0.34718954248366013,
+          "2024-12-20": 0.6219325153374233,
+          "2025-06-16": 0.6493100755011716,
+          "2025-12-31": 0.43917147351861563
+        },
+        "pre_median": 0.6142943305186972,
+        "pre_values": {
+          "2022-01-04": 0.6872599231754162,
+          "2022-06-30": 0.6142943305186972,
+          "2022-07-29": 0.3046199701937407,
+          "2023-07-05": 0.256961676316515,
+          "2023-09-22": 0.8791801510248112
+        }
+      },
+      "across_years_2022_to_2025": 0.02026490421732574,
+      "by_test_year_mean": {
+        "2022": 0.47497815721099024,
+        "2023": 0.4671157185379582,
+        "2024": 0.482175539483849,
+        "2025": 0.495243061428316
+      },
+      "column": "f02",
+      "cutover_split_whole_window": {
+        "drift_post_minus_pre": 0.012643027571609011,
+        "post_days": 549,
+        "post_median": 0.47143605870020966,
+        "pre_days": 420,
+        "pre_median": 0.45879303112860065
+      },
+      "days_measured": 969,
+      "volatility": {
+        "days_where_the_one_day_change_exceeds_0.10": 761,
+        "largest_one_day_drop": -0.8807894736842105,
+        "largest_one_day_rise": 0.9236929316979983,
+        "note": "§AN recorded yeslab_372's row count as 1,022 -> 3,262 -> 1,241 on three of its sampled days; a 5-day median taken on either side of a series like this is not a window trend"
+      },
+      "whole_window": {
+        "max": 0.9992301770592764,
+        "mean": 0.4798939756588419,
+        "median": 0.4635352286773795,
+        "min": 0.01922091235263967,
+        "ols_slope_per_trading_day": 2.8038699348429094e-05,
+        "ols_slope_times_window": 0.027169499668627792,
+        "std": 0.22725249478316095
+      }
+    },
+    "yeslab_375": {
+      "AN_estimator_reproduced_on_panel_coverage": {
+        "days_available": 10,
+        "days_requested": 10,
+        "drift": -0.09744270087568063,
+        "post_median": 0.36366013071895426,
+        "post_values": {
+          "2023-09-25": 0.21143473570658036,
+          "2024-06-17": 0.36366013071895426,
+          "2024-12-20": 0.34662576687116564,
+          "2025-06-16": 0.5246029679770893,
+          "2025-12-31": 0.51442055584688
+        },
+        "pre_median": 0.4611028315946349,
+        "pre_values": {
+          "2022-01-04": 0.5387323943661971,
+          "2022-06-30": 0.5618214716525934,
+          "2022-07-29": 0.4611028315946349,
+          "2023-07-05": 0.4571271022883926,
+          "2023-09-22": 0.42017259978425026
+        }
+      },
+      "across_years_2022_to_2025": 0.009416100643013736,
+      "by_test_year_mean": {
+        "2022": 0.4610975736368407,
+        "2023": 0.4776411881159,
+        "2024": 0.5001740117631254,
+        "2025": 0.4705136742798544
+      },
+      "column": "f03",
+      "cutover_split_whole_window": {
+        "drift_post_minus_pre": 0.007709504602994688,
+        "post_days": 549,
+        "post_median": 0.4640957446808511,
+        "pre_days": 420,
+        "pre_median": 0.4563862400778564
+      },
+      "days_measured": 969,
+      "volatility": {
+        "days_where_the_one_day_change_exceeds_0.10": 260,
+        "largest_one_day_drop": -0.4691675231243576,
+        "largest_one_day_rise": 0.38779799518683233,
+        "note": "§AN recorded yeslab_372's row count as 1,022 -> 3,262 -> 1,241 on three of its sampled days; a 5-day median taken on either side of a series like this is not a window trend"
+      },
+      "whole_window": {
+        "max": 0.9614791987673343,
+        "mean": 0.4773495500937504,
+        "median": 0.46075172590130403,
+        "min": 0.13643371017471737,
+        "ols_slope_per_trading_day": 1.367715829133683e-05,
+        "ols_slope_times_window": 0.013253166384305388,
+        "std": 0.14546725778238948
+      }
+    },
+    "yeslab_384": {
+      "AN_estimator_reproduced_on_panel_coverage": {
+        "days_available": 10,
+        "days_requested": 10,
+        "drift": -0.10984755949076103,
+        "post_median": 0.37986928104575163,
+        "post_values": {
+          "2023-09-25": 0.2313915857605178,
+          "2024-06-17": 0.37986928104575163,
+          "2024-12-20": 0.3617075664621677,
+          "2025-06-16": 0.5485550637854726,
+          "2025-12-31": 0.5367068694284216
+        },
+        "pre_median": 0.48971684053651265,
+        "pre_values": {
+          "2022-01-04": 0.5643405889884763,
+          "2022-06-30": 0.5850422195416164,
+          "2022-07-29": 0.48971684053651265,
+          "2023-07-05": 0.47808105872622003,
+          "2023-09-22": 0.4366235167206041
+        }
+      },
+      "across_years_2022_to_2025": 0.005901008833219423,
+      "by_test_year_mean": {
+        "2022": 0.48747395275361416,
+        "2023": 0.4979395654275953,
+        "2024": 0.5161701312954037,
+        "2025": 0.4933749615868336
+      },
+      "column": "f05",
+      "cutover_split_whole_window": {
+        "drift_post_minus_pre": 0.0024007273409090146,
+        "post_days": 549,
+        "post_median": 0.48429454170957775,
+        "pre_days": 420,
+        "pre_median": 0.48189381436866874
+      },
+      "days_measured": 969,
+      "volatility": {
+        "days_where_the_one_day_change_exceeds_0.10": 254,
+        "largest_one_day_drop": -0.45940390544707094,
+        "largest_one_day_rise": 0.3862427258331236,
+        "note": "§AN recorded yeslab_372's row count as 1,022 -> 3,262 -> 1,241 on three of its sampled days; a 5-day median taken on either side of a series like this is not a window trend"
+      },
+      "whole_window": {
+        "max": 0.9743392353092122,
+        "mean": 0.4987341164488554,
+        "median": 0.4826254826254826,
+        "min": 0.16063638696433152,
+        "ols_slope_per_trading_day": 8.194343623442954e-06,
+        "ols_slope_times_window": 0.007940318971116222,
+        "std": 0.14404767809524527
+      }
+    },
+    "yeslab_389": {
+      "AN_estimator_reproduced_on_panel_coverage": {
+        "days_available": 10,
+        "days_requested": 10,
+        "drift": -0.1835830534827248,
+        "post_median": 0.4593602517042475,
+        "post_values": {
+          "2023-09-25": 0.35436893203883496,
+          "2024-06-17": 0.3686274509803922,
+          "2024-12-20": 0.6482617586912065,
+          "2025-06-16": 0.6714397292371779,
+          "2025-12-31": 0.4593602517042475
+        },
+        "pre_median": 0.6429433051869723,
+        "pre_values": {
+          "2022-01-04": 0.6927016645326505,
+          "2022-06-30": 0.6429433051869723,
+          "2022-07-29": 0.3174366616989568,
+          "2023-07-05": 0.2790184725668597,
+          "2023-09-22": 0.8870010787486515
+        }
+      },
+      "across_years_2022_to_2025": 0.02088646557027196,
+      "by_test_year_mean": {
+        "2022": 0.49005459162432075,
+        "2023": 0.4851993563373961,
+        "2024": 0.49607434350112195,
+        "2025": 0.5109410571945927
+      },
+      "column": "f06",
+      "cutover_split_whole_window": {
+        "drift_post_minus_pre": 0.013200682431806832,
+        "post_days": 549,
+        "post_median": 0.492038632210911,
+        "pre_days": 420,
+        "pre_median": 0.47883794977910416
+      },
+      "days_measured": 969,
+      "volatility": {
+        "days_where_the_one_day_change_exceeds_0.10": 763,
+        "largest_one_day_drop": -0.8842105263157896,
+        "largest_one_day_rise": 0.9244817132257261,
+        "note": "§AN recorded yeslab_372's row count as 1,022 -> 3,262 -> 1,241 on three of its sampled days; a 5-day median taken on either side of a series like this is not a window trend"
+      },
+      "whole_window": {
+        "max": 0.9966641005901976,
+        "mean": 0.49558320271650463,
+        "median": 0.4854423292273236,
+        "min": 0.018964633521271142,
+        "ols_slope_per_trading_day": 2.7228599084275566e-05,
+        "ols_slope_times_window": 0.026384512512663022,
+        "std": 0.2288653300902799
+      }
+    },
+    "yeslab_390": {
+      "AN_estimator_reproduced_on_panel_coverage": {
+        "days_available": 10,
+        "days_requested": 10,
+        "drift": -0.18343899024797855,
+        "post_median": 0.4604090194022024,
+        "post_values": {
+          "2023-09-25": 0.35490830636461707,
+          "2024-06-17": 0.36993464052287583,
+          "2024-12-20": 0.6480061349693251,
+          "2025-06-16": 0.6756053111168966,
+          "2025-12-31": 0.4604090194022024
+        },
+        "pre_median": 0.643848009650181,
+        "pre_values": {
+          "2022-01-04": 0.6936619718309859,
+          "2022-06-30": 0.643848009650181,
+          "2022-07-29": 0.31773472429210137,
+          "2023-07-05": 0.2801213123793769,
+          "2023-09-22": 0.8867313915857605
+        }
+      },
+      "across_years_2022_to_2025": 0.020914962948788307,
+      "by_test_year_mean": {
+        "2022": 0.490693725364622,
+        "2023": 0.4857081717162135,
+        "2024": 0.4966741289438383,
+        "2025": 0.5116086883134103
+      },
+      "column": "f07",
+      "cutover_split_whole_window": {
+        "drift_post_minus_pre": 0.013327135926234746,
+        "post_days": 549,
+        "post_median": 0.49216710182767626,
+        "pre_days": 420,
+        "pre_median": 0.4788399659014415
+      },
+      "days_measured": 969,
+      "volatility": {
+        "days_where_the_one_day_change_exceeds_0.10": 765,
+        "largest_one_day_drop": -0.8844736842105263,
+        "largest_one_day_rise": 0.9244818516570226,
+        "note": "§AN recorded yeslab_372's row count as 1,022 -> 3,262 -> 1,241 on three of its sampled days; a 5-day median taken on either side of a series like this is not a window trend"
+      },
+      "whole_window": {
+        "max": 0.9997433923530922,
+        "mean": 0.4961871099671102,
+        "median": 0.4862821948488242,
+        "min": 0.019477191184008202,
+        "ols_slope_per_trading_day": 2.7411732964476052e-05,
+        "ols_slope_times_window": 0.026561969242577296,
+        "std": 0.22893372387451702
+      }
+    },
+    "yeslab_406": {
+      "AN_estimator_reproduced_on_panel_coverage": {
+        "days_available": 10,
+        "days_requested": 10,
+        "drift": -0.10863271090850646,
+        "post_median": 0.35843137254901963,
+        "post_values": {
+          "2023-09-25": 0.21197411003236247,
+          "2024-06-17": 0.35843137254901963,
+          "2024-12-20": 0.3476482617586912,
+          "2025-06-16": 0.5287685498568081,
+          "2025-12-31": 0.5214997378080755
+        },
+        "pre_median": 0.4670640834575261,
+        "pre_values": {
+          "2022-01-04": 0.545134443021767,
+          "2022-06-30": 0.5630277442702051,
+          "2022-07-29": 0.4670640834575261,
+          "2023-07-05": 0.4507857733664185,
+          "2023-09-22": 0.42206040992448757
+        }
+      },
+      "across_years_2022_to_2025": 0.010332863784801416,
+      "by_test_year_mean": {
+        "2022": 0.4656769242810372,
+        "2023": 0.4795664545592649,
+        "2024": 0.5005763609254662,
+        "2025": 0.4760097880658386
+      },
+      "column": "f08",
+      "cutover_split_whole_window": {
+        "drift_post_minus_pre": 0.00884175384816105,
+        "post_days": 549,
+        "post_median": 0.46811860404093414,
+        "pre_days": 420,
+        "pre_median": 0.4592768501927731
+      },
+      "days_measured": 969,
+      "volatility": {
+        "days_where_the_one_day_change_exceeds_0.10": 268,
+        "largest_one_day_drop": -0.47250770811921894,
+        "largest_one_day_rise": 0.3911598412342301,
+        "note": "§AN recorded yeslab_372's row count as 1,022 -> 3,262 -> 1,241 on three of its sampled days; a 5-day median taken on either side of a series like this is not a window trend"
+      },
+      "whole_window": {
+        "max": 0.970490120605594,
+        "mean": 0.4804527920777242,
+        "median": 0.4628466771323914,
+        "min": 0.13746145940390544,
+        "ols_slope_per_trading_day": 1.4351292295478876e-05,
+        "ols_slope_times_window": 0.013906402234319031,
+        "std": 0.14726307900791616
+      }
+    }
+  },
+  "generated_at_local": "2026-09-15T16:42:10",
+  "question": "Does §AN's 'the six candidate_only factors drift DOWN 0.097-0.184 across the OOS window' survive measurement over every day of that window, and if not, is the difference the estimator (a 5-day median on a volatile series) or the denominator (universe vs scoreable panel rows)?",
+  "read_only": true,
+  "verdict": {
+    "AN_style_5_day_sampled_drift_on_panel_coverage": {
+      "all_negative": true,
+      "max": -0.09744270087568063,
+      "min": -0.1835830534827248,
+      "values": [
+        -0.17512285700008157,
+        -0.09744270087568063,
+        -0.10984755949076103,
+        -0.1835830534827248,
+        -0.18343899024797855,
+        -0.10863271090850646
+      ]
+    },
+    "across_test_years_2022_to_2025": {
+      "all_negative": false,
+      "all_positive": true,
+      "max": 0.020914962948788307,
+      "min": 0.005901008833219423,
+      "values": [
+        0.02026490421732574,
+        0.009416100643013736,
+        0.005901008833219423,
+        0.02088646557027196,
+        0.020914962948788307,
+        0.010332863784801416
+      ]
+    },
+    "reading": "compare the three blocks: if the sampled 5-day estimator is negative while the whole-window cutover split and the across-year means are not, the drift §AN reported is a property of the 10 sampled days rather than of the window",
+    "whole_window_cutover_split_drift": {
+      "all_negative": false,
+      "max": 0.013327135926234746,
+      "min": 0.0024007273409090146,
+      "values": [
+        0.012643027571609011,
+        0.007709504602994688,
+        0.0024007273409090146,
+        0.013200682431806832,
+        0.013327135926234746,
+        0.00884175384816105
+      ]
+    }
+  },
+  "weights_loaded": false,
+  "window": {
+    "days": 969,
+    "first": "2022-01-04",
+    "last": "2025-12-31"
+  }
+}

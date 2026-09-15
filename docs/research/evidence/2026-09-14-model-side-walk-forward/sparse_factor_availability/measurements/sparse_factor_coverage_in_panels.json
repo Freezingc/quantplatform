@@ -1,0 +1,2049 @@
+{
+  "database_access": false,
+  "factor_column_mapping": {
+    "f00": "yeslab_206",
+    "f01": "yeslab_357",
+    "f02": "yeslab_372",
+    "f03": "yeslab_375",
+    "f04": "yeslab_381",
+    "f05": "yeslab_384",
+    "f06": "yeslab_389",
+    "f07": "yeslab_390",
+    "f08": "yeslab_406",
+    "f09": "yeslab_425",
+    "f10": "yeslab_443_reg30_max20_v1",
+    "f11": "yeslab_464",
+    "f12": "yeslab_471",
+    "f13": "yeslab_484",
+    "f14": "yeslab_96"
+  },
+  "folds": {
+    "F1": {
+      "H1_denominator": {
+        "days": 242,
+        "denominator_growth_second_over_first": 1.065573180543453,
+        "distinct_securities_first_half": 4010,
+        "distinct_securities_second_half": 4208,
+        "rows_per_day_first_half_mean": 3215.1322314049585,
+        "rows_per_day_second_half_mean": 3425.9586776859505,
+        "scoreable_rows": 803572
+      },
+      "H2_new_entrants": {
+        "entrant_scoreable_rows": 39401,
+        "entrant_share_of_scoreable_rows": 0.04903232068812751,
+        "missing_rate": {
+          "yeslab_206": {
+            "enrichment": 0.6552267160183203,
+            "entrants": 0.011040328925661785,
+            "non_entrants": 0.01684963182324375
+          },
+          "yeslab_357": {
+            "enrichment": 8.787568541187051,
+            "entrants": 0.3485952133194589,
+            "non_entrants": 0.039669131647236025
+          },
+          "yeslab_372": {
+            "enrichment": 1.0145001534471438,
+            "entrants": 0.5324230349483515,
+            "non_entrants": 0.5248131635458556
+          },
+          "yeslab_375": {
+            "enrichment": 0.9594264489713972,
+            "entrants": 0.5184639983756757,
+            "non_entrants": 0.5403895201466687
+          },
+          "yeslab_381": {
+            "enrichment": 0.9471835504115997,
+            "entrants": 0.0010659627928225172,
+            "non_entrants": 0.0011254025604216858
+          },
+          "yeslab_384": {
+            "enrichment": 0.9393545251795119,
+            "entrants": 0.4832364660795411,
+            "non_entrants": 0.5144345964450365
+          },
+          "yeslab_389": {
+            "enrichment": 1.033856258841244,
+            "entrants": 0.5264587193218446,
+            "non_entrants": 0.5092184864382449
+          },
+          "yeslab_390": {
+            "enrichment": 1.032808358199981,
+            "entrants": 0.525291236263039,
+            "non_entrants": 0.5086047494605265
+          },
+          "yeslab_406": {
+            "enrichment": 1.0129598130638326,
+            "entrants": 0.5412806781553767,
+            "non_entrants": 0.5343555303721288
+          },
+          "yeslab_425": {
+            "enrichment": 0.9082115326562095,
+            "entrants": 0.0023603461841070024,
+            "non_entrants": 0.002598894749997056
+          },
+          "yeslab_443_reg30_max20_v1": {
+            "enrichment": 0.7062803316112164,
+            "entrants": 0.009923605999847719,
+            "non_entrants": 0.014050520106101907
+          },
+          "yeslab_464": {
+            "enrichment": 0.8661327390032623,
+            "entrants": 0.0032994086444506484,
+            "non_entrants": 0.0038093568062645662
+          },
+          "yeslab_471": {
+            "enrichment": 7.7500672469467355,
+            "entrants": 0.35227532296134617,
+            "non_entrants": 0.045454485972380526
+          },
+          "yeslab_484": {
+            "enrichment": 5.5413459411835095,
+            "entrants": 5.076013299154844e-05,
+            "non_entrants": 9.160253398781163e-06
+          },
+          "yeslab_96": {
+            "enrichment": 0.8355596854554118,
+            "entrants": 0.004796832567701328,
+            "non_entrants": 0.005740861665778994
+          }
+        },
+        "non_entrant_scoreable_rows": 764171
+      },
+      "H3_board_mix": {
+        "board_share_of_scoreable_rows": {
+          "ChiNext": 0.21954597721174954,
+          "SH_main": 0.3674928942272752,
+          "STAR": 0.05439836131672084,
+          "SZ_main": 0.3585627672442544
+        },
+        "missing_rate_by_board": {
+          "ChiNext": {
+            "missing_rate": {
+              "yeslab_206": 0.010021482703306295,
+              "yeslab_357": 0.00028908123182614314,
+              "yeslab_372": 0.5279530214656986,
+              "yeslab_375": 0.5407859608550003,
+              "yeslab_381": 0.0007652150254221436,
+              "yeslab_384": 0.5180335674324485,
+              "yeslab_389": 0.5180335674324485,
+              "yeslab_390": 0.517591443195538,
+              "yeslab_406": 0.5429172264072871,
+              "yeslab_425": 0.0017401556504044304,
+              "yeslab_443_reg30_max20_v1": 0.00853639872804258,
+              "yeslab_464": 0.0025620532703022883,
+              "yeslab_471": 0.004143497656174718,
+              "yeslab_484": 5.668259447571434e-06,
+              "yeslab_96": 0.003826075127110718
+            },
+            "scoreable_rows": 176421
+          },
+          "SH_main": {
+            "missing_rate": {
+              "yeslab_206": 0.019051360109987234,
+              "yeslab_357": 0.0004842418229164903,
+              "yeslab_372": 0.5239462660891886,
+              "yeslab_375": 0.5412570646818395,
+              "yeslab_381": 0.0013545225815845881,
+              "yeslab_384": 0.5144916984697281,
+              "yeslab_389": 0.505277558608499,
+              "yeslab_390": 0.5044208230756467,
+              "yeslab_406": 0.5339358701283748,
+              "yeslab_425": 0.0030612210343811696,
+              "yeslab_443_reg30_max20_v1": 0.01586823204326345,
+              "yeslab_464": 0.004436061454689526,
+              "yeslab_471": 0.007077380488779474,
+              "yeslab_484": 6.772612907922941e-06,
+              "yeslab_96": 0.0065999112787709065
+            },
+            "scoreable_rows": 295307
+          },
+          "STAR": {
+            "missing_rate": {
+              "yeslab_206": 0.0017157367373550202,
+              "yeslab_357": 1.0,
+              "yeslab_372": 0.548212202319676,
+              "yeslab_375": 0.511403930180953,
+              "yeslab_381": 0.00018301191865120216,
+              "yeslab_384": 0.4670006634182051,
+              "yeslab_389": 0.543293757005925,
+              "yeslab_390": 0.5433395099855878,
+              "yeslab_406": 0.5308489465376433,
+              "yeslab_425": 0.00041177681696520483,
+              "yeslab_443_reg30_max20_v1": 0.0016242307780294193,
+              "yeslab_464": 0.000594788735616407,
+              "yeslab_471": 1.0,
+              "yeslab_484": 0.0,
+              "yeslab_96": 0.0008693066135932102
+            },
+            "scoreable_rows": 43713
+          },
+          "SZ_main": {
+            "missing_rate": {
+              "yeslab_206": 0.020275499685906757,
+              "yeslab_357": 0.0004928313857238548,
+              "yeslab_372": 0.521269839066258,
+              "yeslab_375": 0.5406568540004373,
+              "yeslab_381": 0.0012459610385553792,
+              "yeslab_384": 0.515102505457587,
+              "yeslab_389": 0.5050480510601081,
+              "yeslab_390": 0.5044025113576811,
+              "yeslab_406": 0.5310223474738921,
+              "yeslab_425": 0.0029500470272202576,
+              "yeslab_443_reg30_max20_v1": 0.01688468092638418,
+              "yeslab_464": 0.004348716382478803,
+              "yeslab_471": 0.0072224092513474775,
+              "yeslab_484": 2.0823861368613582e-05,
+              "yeslab_96": 0.006642811776587733
+            },
+            "scoreable_rows": 288131
+          }
+        }
+      },
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "per_factor_daily_coverage": {
+        "yeslab_206": {
+          "column": "f00",
+          "coverage_first_half_mean": 0.9840338696147617,
+          "coverage_max": 0.9897164225615457,
+          "coverage_mean": 0.983471105745981,
+          "coverage_median": 0.9849239005830854,
+          "coverage_min": 0.9739235900545785,
+          "coverage_second_half_mean": 0.9829083418772004,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.01656478822059504,
+          "within_year_drift": -0.0011255277375612494
+        },
+        "yeslab_357": {
+          "column": "f01",
+          "coverage_first_half_mean": 0.9552129502915386,
+          "coverage_max": 0.9613362202288895,
+          "coverage_mean": 0.945549104096388,
+          "coverage_median": 0.9477702356942898,
+          "coverage_min": 0.9156482861400894,
+          "coverage_second_half_mean": 0.9358852579012373,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.05481649435271507,
+          "within_year_drift": -0.0193276923903013
+        },
+        "yeslab_372": {
+          "column": "f02",
+          "coverage_first_half_mean": 0.48177176075110156,
+          "coverage_max": 0.9482704892489873,
+          "coverage_mean": 0.47497815721099024,
+          "coverage_median": 0.45879303112860065,
+          "coverage_min": 0.029393564356435642,
+          "coverage_second_half_mean": 0.46818455367087897,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5251862932008582,
+          "within_year_drift": -0.013587207080222596
+        },
+        "yeslab_375": {
+          "column": "f03",
+          "coverage_first_half_mean": 0.4828902119773821,
+          "coverage_max": 0.8242617255356108,
+          "coverage_mean": 0.4610975736368407,
+          "coverage_median": 0.4492405059148132,
+          "coverage_min": 0.18468981217985203,
+          "coverage_second_half_mean": 0.4393049352962992,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5393144609319389,
+          "within_year_drift": -0.04358527668108286
+        },
+        "yeslab_381": {
+          "column": "f04",
+          "coverage_first_half_mean": 0.9987830129504197,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9988797040976408,
+          "coverage_median": 0.9990501751695311,
+          "coverage_min": 0.9957291031116534,
+          "coverage_second_half_mean": 0.998976395244862,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0011224880906751666,
+          "within_year_drift": 0.00019338229444232358
+        },
+        "yeslab_384": {
+          "column": "f05",
+          "coverage_first_half_mean": 0.5081541964479104,
+          "coverage_max": 0.8480023161551824,
+          "coverage_mean": 0.48747395275361416,
+          "coverage_median": 0.47166206143792466,
+          "coverage_min": 0.21200910643141718,
+          "coverage_second_half_mean": 0.46679370905931794,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5129048797120855,
+          "within_year_drift": -0.04136048738859244
+        },
+        "yeslab_389": {
+          "column": "f06",
+          "coverage_first_half_mean": 0.4954712139653535,
+          "coverage_max": 0.946712371455282,
+          "coverage_mean": 0.49005459162432075,
+          "coverage_median": 0.4768585007282108,
+          "coverage_min": 0.029393564356435642,
+          "coverage_second_half_mean": 0.484637969283288,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5100638150657315,
+          "within_year_drift": -0.01083324468206548
+        },
+        "yeslab_390": {
+          "column": "f07",
+          "coverage_first_half_mean": 0.4962795929169748,
+          "coverage_max": 0.947023995014023,
+          "coverage_mean": 0.490693725364622,
+          "coverage_median": 0.4773210566636087,
+          "coverage_min": 0.029393564356435642,
+          "coverage_second_half_mean": 0.4851078578122692,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5094229266325855,
+          "within_year_drift": -0.011171735104705593
+        },
+        "yeslab_406": {
+          "column": "f08",
+          "coverage_first_half_mean": 0.48614175662876524,
+          "coverage_max": 0.8390272148233932,
+          "coverage_mean": 0.4656769242810372,
+          "coverage_median": 0.4525691946140195,
+          "coverage_min": 0.18639726807057486,
+          "coverage_second_half_mean": 0.44521209193330913,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5346950864390496,
+          "within_year_drift": -0.040929664695456114
+        },
+        "yeslab_425": {
+          "column": "f09",
+          "coverage_first_half_mean": 0.997227864745955,
+          "coverage_max": 0.9993753903810119,
+          "coverage_mean": 0.9974166285428292,
+          "coverage_median": 0.9977660598345003,
+          "coverage_min": 0.9926784624771202,
+          "coverage_second_half_mean": 0.9976053923397035,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0025871981602146876,
+          "within_year_drift": 0.0003775275937484279
+        },
+        "yeslab_443_reg30_max20_v1": {
+          "column": "f10",
+          "coverage_first_half_mean": 0.9862540500328046,
+          "coverage_max": 0.9915861639139919,
+          "coverage_mean": 0.9861788326726794,
+          "coverage_median": 0.9876115734188583,
+          "coverage_min": 0.976349302607641,
+          "coverage_second_half_mean": 0.9861036153125539,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.013848167930191724,
+          "within_year_drift": -0.00015043472025078053
+        },
+        "yeslab_464": {
+          "column": "f11",
+          "coverage_first_half_mean": 0.9959458642989953,
+          "coverage_max": 0.9987535057650359,
+          "coverage_mean": 0.9962198062807421,
+          "coverage_median": 0.9967139620537467,
+          "coverage_min": 0.9908480780964003,
+          "coverage_second_half_mean": 0.9964937482624887,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0037843528644602165,
+          "within_year_drift": 0.0005478839634933674
+        },
+        "yeslab_471": {
+          "column": "f12",
+          "coverage_first_half_mean": 0.9491292983434481,
+          "coverage_max": 0.9551361386138614,
+          "coverage_mean": 0.9398694868534866,
+          "coverage_median": 0.9401696137849516,
+          "coverage_min": 0.9114754098360656,
+          "coverage_second_half_mean": 0.9306096753635251,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.06049862364542313,
+          "within_year_drift": -0.018519622979922934
+        },
+        "yeslab_484": {
+          "column": "f13",
+          "coverage_first_half_mean": 0.9999923264006567,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9999888938317303,
+          "coverage_median": 1.0,
+          "coverage_min": 0.9996881821016527,
+          "coverage_second_half_mean": 0.9999854612628035,
+          "is_candidate_only": false,
+          "overall_missing_share": 1.1199992035582085e-05,
+          "within_year_drift": -6.8651378531958684e-06
+        },
+        "yeslab_96": {
+          "column": "f14",
+          "coverage_first_half_mean": 0.9939240969685984,
+          "coverage_max": 0.9975070115300717,
+          "coverage_mean": 0.9943100397832925,
+          "coverage_median": 0.9948656292906178,
+          "coverage_min": 0.9865771812080537,
+          "coverage_second_half_mean": 0.9946959825979865,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.005694573728303176,
+          "within_year_drift": 0.0007718856293881249
+        }
+      },
+      "prior_split_securities": 4024,
+      "test_securities": 4342,
+      "test_year": 2022
+    },
+    "F2": {
+      "H1_denominator": {
+        "days": 242,
+        "denominator_growth_second_over_first": 1.0366868442385373,
+        "distinct_securities_first_half": 4414,
+        "distinct_securities_second_half": 4548,
+        "rows_per_day_first_half_mean": 3578.4214876033056,
+        "rows_per_day_second_half_mean": 3709.7024793388427,
+        "scoreable_rows": 881863
+      },
+      "H2_new_entrants": {
+        "entrant_scoreable_rows": 38006,
+        "entrant_share_of_scoreable_rows": 0.043097397214760115,
+        "missing_rate": {
+          "yeslab_206": {
+            "enrichment": 0.2725380481284874,
+            "entrants": 0.0029205914855549124,
+            "non_entrants": 0.01071627064775193
+          },
+          "yeslab_357": {
+            "enrichment": 3.9644951595937137,
+            "entrants": 0.2101773404199337,
+            "non_entrants": 0.05301490655407255
+          },
+          "yeslab_372": {
+            "enrichment": 1.0113261423784337,
+            "entrants": 0.5389412198073988,
+            "non_entrants": 0.532905456730228
+          },
+          "yeslab_375": {
+            "enrichment": 0.9580989193130703,
+            "entrants": 0.5013682050202599,
+            "non_entrants": 0.5232948236490306
+          },
+          "yeslab_381": {
+            "enrichment": 0.3277233561684667,
+            "entrants": 0.0002104930800399937,
+            "non_entrants": 0.0006422889186200979
+          },
+          "yeslab_384": {
+            "enrichment": 0.951410548777418,
+            "entrants": 0.47871388728095565,
+            "non_entrants": 0.5031622656445346
+          },
+          "yeslab_389": {
+            "enrichment": 1.0346953374028878,
+            "entrants": 0.532152817976109,
+            "non_entrants": 0.5143087039628752
+          },
+          "yeslab_390": {
+            "enrichment": 1.0339445966399703,
+            "entrants": 0.5312582223859391,
+            "non_entrants": 0.5138169144772159
+          },
+          "yeslab_406": {
+            "enrichment": 1.0238898271633863,
+            "entrants": 0.532336999421144,
+            "non_entrants": 0.5199162891342964
+          },
+          "yeslab_425": {
+            "enrichment": 0.316435972167415,
+            "entrants": 0.0004736094300899858,
+            "non_entrants": 0.0014966990852715567
+          },
+          "yeslab_443_reg30_max20_v1": {
+            "enrichment": 0.2717395361464263,
+            "entrants": 0.00234173551544493,
+            "non_entrants": 0.008617573830637182
+          },
+          "yeslab_464": {
+            "enrichment": 0.32369759679868665,
+            "entrants": 0.0007104141451349787,
+            "non_entrants": 0.002194684644436202
+          },
+          "yeslab_471": {
+            "enrichment": 3.75172186070056,
+            "entrants": 0.21120349418512865,
+            "non_entrants": 0.05629508317167482
+          },
+          "yeslab_484": {
+            "enrichment": null,
+            "entrants": 0.0,
+            "non_entrants": 0.0
+          },
+          "yeslab_96": {
+            "enrichment": 0.3103681139197602,
+            "entrants": 0.0010261537651949692,
+            "non_entrants": 0.0033062473855167405
+          }
+        },
+        "non_entrant_scoreable_rows": 843857
+      },
+      "H3_board_mix": {
+        "board_share_of_scoreable_rows": {
+          "ChiNext": 0.24529206917627794,
+          "SH_main": 0.3412582226490963,
+          "STAR": 0.0836320380830129,
+          "SZ_main": 0.3298176700916129
+        },
+        "missing_rate_by_board": {
+          "ChiNext": {
+            "missing_rate": {
+              "yeslab_206": 0.00744288395573102,
+              "yeslab_357": 0.00015255600654603954,
+              "yeslab_372": 0.5278021764656934,
+              "yeslab_375": 0.5143911166175097,
+              "yeslab_381": 0.00042068474532392725,
+              "yeslab_384": 0.49564521944950396,
+              "yeslab_389": 0.5176040385735551,
+              "yeslab_390": 0.5169891916380817,
+              "yeslab_406": 0.5153942879332821,
+              "yeslab_425": 0.0009476964043011548,
+              "yeslab_443_reg30_max20_v1": 0.00589883225311353,
+              "yeslab_464": 0.0014192331518070953,
+              "yeslab_471": 0.0023253233725047846,
+              "yeslab_484": 0.0,
+              "yeslab_96": 0.0021496528195123757
+            },
+            "scoreable_rows": 216314
+          },
+          "SH_main": {
+            "missing_rate": {
+              "yeslab_206": 0.010759512598731322,
+              "yeslab_357": 0.00019605041486261518,
+              "yeslab_372": 0.5346926162097141,
+              "yeslab_375": 0.5208394945222184,
+              "yeslab_381": 0.0006413174587878768,
+              "yeslab_384": 0.5018226042805448,
+              "yeslab_389": 0.5114224288320379,
+              "yeslab_390": 0.5109206726855252,
+              "yeslab_406": 0.5170879535327287,
+              "yeslab_425": 0.0015152371047008901,
+              "yeslab_443_reg30_max20_v1": 0.00859631225846755,
+              "yeslab_464": 0.0021964292241387906,
+              "yeslab_471": 0.0035887194585021084,
+              "yeslab_484": 0.0,
+              "yeslab_96": 0.003342825717826964
+            },
+            "scoreable_rows": 300943
+          },
+          "STAR": {
+            "missing_rate": {
+              "yeslab_206": 0.0030236468163575224,
+              "yeslab_357": 0.712590844994034,
+              "yeslab_372": 0.5439988068120186,
+              "yeslab_375": 0.5020067252413494,
+              "yeslab_381": 0.00016270745200130165,
+              "yeslab_384": 0.47133637053910404,
+              "yeslab_389": 0.5380328669053043,
+              "yeslab_390": 0.5381142206313049,
+              "yeslab_406": 0.5192808330621542,
+              "yeslab_425": 0.00036609176700292876,
+              "yeslab_443_reg30_max20_v1": 0.002277904328018223,
+              "yeslab_464": 0.0005287992190042304,
+              "yeslab_471": 0.712590844994034,
+              "yeslab_484": 0.0,
+              "yeslab_96": 0.0007593014426727411
+            },
+            "scoreable_rows": 73752
+          },
+          "SZ_main": {
+            "missing_rate": {
+              "yeslab_206": 0.014037970940746904,
+              "yeslab_357": 0.0002681757857894339,
+              "yeslab_372": 0.5328274667015066,
+              "yeslab_375": 0.5349900637433214,
+              "yeslab_381": 0.0008732903793655923,
+              "yeslab_384": 0.5150144058531084,
+              "yeslab_389": 0.5111602384701602,
+              "yeslab_390": 0.5105723146320834,
+              "yeslab_406": 0.5279899881039972,
+              "yeslab_425": 0.0020388236022196703,
+              "yeslab_443_reg30_max20_v1": 0.011449043162548907,
+              "yeslab_464": 0.002998067759081876,
+              "yeslab_471": 0.004792782633211165,
+              "yeslab_484": 0.0,
+              "yeslab_96": 0.004476472732023627
+            },
+            "scoreable_rows": 290854
+          }
+        }
+      },
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "per_factor_daily_coverage": {
+        "yeslab_206": {
+          "column": "f00",
+          "coverage_first_half_mean": 0.987542295956584,
+          "coverage_max": 0.9957196361690743,
+          "coverage_mean": 0.9895576632304278,
+          "coverage_median": 0.9897222150848716,
+          "coverage_min": 0.9799037645060855,
+          "coverage_second_half_mean": 0.9915730305042715,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.010380297166339925,
+          "within_year_drift": 0.004030734547687431
+        },
+        "yeslab_357": {
+          "column": "f01",
+          "coverage_first_half_mean": 0.9179017501632356,
+          "coverage_max": 0.999735519703782,
+          "coverage_mean": 0.9396088323213098,
+          "coverage_median": 0.9216783155501641,
+          "coverage_min": 0.902398676592225,
+          "coverage_second_half_mean": 0.9613159144793838,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.059788198393628034,
+          "within_year_drift": 0.043414164316148196
+        },
+        "yeslab_372": {
+          "column": "f02",
+          "coverage_first_half_mean": 0.48086052749700064,
+          "coverage_max": 0.8948635634028892,
+          "coverage_mean": 0.4671157185379582,
+          "coverage_median": 0.449638377016057,
+          "coverage_min": 0.09346787041954328,
+          "coverage_second_half_mean": 0.4533709095789157,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.533165582409059,
+          "within_year_drift": -0.027489617918084963
+        },
+        "yeslab_375": {
+          "column": "f03",
+          "coverage_first_half_mean": 0.48331524980103935,
+          "coverage_max": 0.7915144703568419,
+          "coverage_mean": 0.4776411881159,
+          "coverage_median": 0.4726811284958182,
+          "coverage_min": 0.18274932614555256,
+          "coverage_second_half_mean": 0.47196712643076055,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5223498434564099,
+          "within_year_drift": -0.011348123370278795
+        },
+        "yeslab_381": {
+          "column": "f04",
+          "coverage_first_half_mean": 0.9992154997026835,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.99937403219056,
+          "coverage_median": 0.9994498693335634,
+          "coverage_min": 0.9972375690607734,
+          "coverage_second_half_mean": 0.9995325646784365,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.000623679641849173,
+          "within_year_drift": 0.00031706497575301196
+        },
+        "yeslab_384": {
+          "column": "f05",
+          "coverage_first_half_mean": 0.5061084019788432,
+          "coverage_max": 0.8168024726046642,
+          "coverage_mean": 0.4979395654275953,
+          "coverage_median": 0.49347256713347476,
+          "coverage_min": 0.20080862533692723,
+          "coverage_second_half_mean": 0.4897707288763474,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5021086041709426,
+          "within_year_drift": -0.016337673102495787
+        },
+        "yeslab_389": {
+          "column": "f06",
+          "coverage_first_half_mean": 0.4984499985037469,
+          "coverage_max": 0.8986088817549491,
+          "coverage_mean": 0.4851993563373961,
+          "coverage_median": 0.47682005657199344,
+          "coverage_min": 0.09506107275624004,
+          "coverage_second_half_mean": 0.47194871417104534,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.515077738832449,
+          "within_year_drift": -0.026501284332701547
+        },
+        "yeslab_390": {
+          "column": "f07",
+          "coverage_first_half_mean": 0.49900517023693947,
+          "coverage_max": 0.8994114499732477,
+          "coverage_mean": 0.4857081717162135,
+          "coverage_median": 0.4770944263787261,
+          "coverage_min": 0.09532660647902283,
+          "coverage_second_half_mean": 0.47241117319548753,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.514568589452103,
+          "within_year_drift": -0.026593997041451933
+        },
+        "yeslab_406": {
+          "column": "f08",
+          "coverage_first_half_mean": 0.4861992874526576,
+          "coverage_max": 0.8044394492835066,
+          "coverage_mean": 0.4795664545592649,
+          "coverage_median": 0.4750560149239581,
+          "coverage_min": 0.18328840970350405,
+          "coverage_second_half_mean": 0.47293362166587216,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5204515894192181,
+          "within_year_drift": -0.013265665786785452
+        },
+        "yeslab_425": {
+          "column": "f09",
+          "coverage_first_half_mean": 0.998152860026132,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9985407042880664,
+          "coverage_median": 0.9986639944413601,
+          "coverage_min": 0.9958563535911602,
+          "coverage_second_half_mean": 0.9989285485500008,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0014526065840159141,
+          "within_year_drift": 0.0007756885238687783
+        },
+        "yeslab_443_reg30_max20_v1": {
+          "column": "f10",
+          "coverage_first_half_mean": 0.9899957184712043,
+          "coverage_max": 0.9967802522135766,
+          "coverage_mean": 0.9916061146124779,
+          "coverage_median": 0.9918356225338744,
+          "coverage_min": 0.983866402490801,
+          "coverage_second_half_mean": 0.9932165107537515,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.008347101533911716,
+          "within_year_drift": 0.0032207922825472357
+        },
+        "yeslab_464": {
+          "column": "f11",
+          "coverage_first_half_mean": 0.9973319388274051,
+          "coverage_max": 0.9994633753689295,
+          "coverage_mean": 0.9978586181044327,
+          "coverage_median": 0.9980848153214774,
+          "coverage_min": 0.9943390885932635,
+          "coverage_second_half_mean": 0.9983852973814602,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0021307164491536357,
+          "within_year_drift": 0.0010533585540550838
+        },
+        "yeslab_471": {
+          "column": "f12",
+          "coverage_first_half_mean": 0.913981586836389,
+          "coverage_max": 0.998923863330643,
+          "coverage_mean": 0.9364089199172352,
+          "coverage_median": 0.9187594430875851,
+          "coverage_min": 0.8979873173421561,
+          "coverage_second_half_mean": 0.9588362529980814,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.06297123249302894,
+          "within_year_drift": 0.044854666161692425
+        },
+        "yeslab_484": {
+          "column": "f13",
+          "coverage_first_half_mean": 1.0,
+          "coverage_max": 1.0,
+          "coverage_mean": 1.0,
+          "coverage_median": 1.0,
+          "coverage_min": 1.0,
+          "coverage_second_half_mean": 1.0,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0,
+          "within_year_drift": 0.0
+        },
+        "yeslab_96": {
+          "column": "f14",
+          "coverage_first_half_mean": 0.9960600821647081,
+          "coverage_max": 0.9991928974979822,
+          "coverage_mean": 0.9967754530366092,
+          "coverage_median": 0.9971957366389355,
+          "coverage_min": 0.9932049830124575,
+          "coverage_second_half_mean": 0.9974908239085102,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0032079812850749345,
+          "within_year_drift": 0.0014307417438020886
+        }
+      },
+      "prior_split_securities": 4475,
+      "test_securities": 4716,
+      "test_year": 2023
+    },
+    "F3": {
+      "H1_denominator": {
+        "days": 242,
+        "denominator_growth_second_over_first": 1.022173300419671,
+        "distinct_securities_first_half": 4669,
+        "distinct_securities_second_half": 4696,
+        "rows_per_day_first_half_mean": 3806.603305785124,
+        "rows_per_day_second_half_mean": 3891.00826446281,
+        "scoreable_rows": 931411
+      },
+      "H2_new_entrants": {
+        "entrant_scoreable_rows": 23980,
+        "entrant_share_of_scoreable_rows": 0.025745884469906413,
+        "missing_rate": {
+          "yeslab_206": {
+            "enrichment": 1.1556980564965993,
+            "entrants": 0.00909090909090909,
+            "non_entrants": 0.007866162826705282
+          },
+          "yeslab_357": {
+            "enrichment": 1.6452677956267905,
+            "entrants": 0.0011259382819015847,
+            "non_entrants": 0.0006843495538503754
+          },
+          "yeslab_372": {
+            "enrichment": 0.9829301368231655,
+            "entrants": 0.5089658048373644,
+            "non_entrants": 0.5178046595278318
+          },
+          "yeslab_375": {
+            "enrichment": 1.0048290053878999,
+            "entrants": 0.5020850708924104,
+            "non_entrants": 0.49967215138120696
+          },
+          "yeslab_381": {
+            "enrichment": 2.2739679702268583,
+            "entrants": 0.0016263552960800666,
+            "non_entrants": 0.0007152058944426628
+          },
+          "yeslab_384": {
+            "enrichment": 0.9924199160730743,
+            "entrants": 0.48015012510425353,
+            "non_entrants": 0.48381750237759125
+          },
+          "yeslab_389": {
+            "enrichment": 1.0014958393099513,
+            "entrants": 0.5044203502919099,
+            "non_entrants": 0.5036669454757442
+          },
+          "yeslab_390": {
+            "enrichment": 0.9988127115050228,
+            "entrants": 0.5025020850708924,
+            "non_entrants": 0.5030994092112788
+          },
+          "yeslab_406": {
+            "enrichment": 1.0636729696872247,
+            "entrants": 0.5302335279399499,
+            "non_entrants": 0.498492998365716
+          },
+          "yeslab_425": {
+            "enrichment": 1.8319926327495135,
+            "entrants": 0.002543786488740617,
+            "non_entrants": 0.0013885353266529356
+          },
+          "yeslab_443_reg30_max20_v1": {
+            "enrichment": 1.3212165542228504,
+            "entrants": 0.00871559633027523,
+            "non_entrants": 0.006596644813765454
+          },
+          "yeslab_464": {
+            "enrichment": 1.7082580483736447,
+            "entrants": 0.00329441201000834,
+            "non_entrants": 0.0019285212870179661
+          },
+          "yeslab_471": {
+            "enrichment": 1.5010326522101753,
+            "entrants": 0.004962468723936614,
+            "non_entrants": 0.003306036492030799
+          },
+          "yeslab_484": {
+            "enrichment": 4.124865705623565,
+            "entrants": 0.0009591326105087573,
+            "non_entrants": 0.00023252456660616619
+          },
+          "yeslab_96": {
+            "enrichment": 1.6568451296069635,
+            "entrants": 0.004670558798999166,
+            "non_entrants": 0.0028189471155382613
+          }
+        },
+        "non_entrant_scoreable_rows": 907431
+      },
+      "H3_board_mix": {
+        "board_share_of_scoreable_rows": {
+          "ChiNext": 0.26159665282029093,
+          "SH_main": 0.3394763428819286,
+          "STAR": 0.08475635353243627,
+          "SZ_main": 0.3141706507653442
+        },
+        "missing_rate_by_board": {
+          "ChiNext": {
+            "missing_rate": {
+              "yeslab_206": 0.004440723320774541,
+              "yeslab_357": 0.000488397481674834,
+              "yeslab_372": 0.5146929662554278,
+              "yeslab_375": 0.5003693762466448,
+              "yeslab_381": 0.000632043799814491,
+              "yeslab_384": 0.4859226608223136,
+              "yeslab_389": 0.5072685036978667,
+              "yeslab_390": 0.5063245421786632,
+              "yeslab_406": 0.5038866589508073,
+              "yeslab_425": 0.0009726907828313921,
+              "yeslab_443_reg30_max20_v1": 0.003866138048215913,
+              "yeslab_464": 0.0012517750580741543,
+              "yeslab_471": 0.0018632979552972659,
+              "yeslab_484": 0.000340646983016901,
+              "yeslab_96": 0.001711443276121057
+            },
+            "scoreable_rows": 243654
+          },
+          "SH_main": {
+            "missing_rate": {
+              "yeslab_206": 0.01048413622103026,
+              "yeslab_357": 0.0004743953041190163,
+              "yeslab_372": 0.5170371166885943,
+              "yeslab_375": 0.5018058647910131,
+              "yeslab_381": 0.0009045137131869244,
+              "yeslab_384": 0.48530955874911447,
+              "yeslab_389": 0.4989341918834126,
+              "yeslab_390": 0.49837124278919137,
+              "yeslab_406": 0.49799805181661777,
+              "yeslab_425": 0.0018564669567857504,
+              "yeslab_443_reg30_max20_v1": 0.008817427385892116,
+              "yeslab_464": 0.00261866207873697,
+              "yeslab_471": 0.004133564416557029,
+              "yeslab_484": 0.0002624987349458557,
+              "yeslab_96": 0.003871065681611173
+            },
+            "scoreable_rows": 316192
+          },
+          "STAR": {
+            "missing_rate": {
+              "yeslab_206": 0.0066123658842455945,
+              "yeslab_357": 0.00345819135325488,
+              "yeslab_372": 0.5395538553133273,
+              "yeslab_375": 0.49495205401365544,
+              "yeslab_381": 0.0008233788936321143,
+              "yeslab_384": 0.47137808292058825,
+              "yeslab_389": 0.5342462282912988,
+              "yeslab_390": 0.5337395335875251,
+              "yeslab_406": 0.50830345945809,
+              "yeslab_425": 0.0015454188465095068,
+              "yeslab_443_reg30_max20_v1": 0.006042334342500285,
+              "yeslab_464": 0.0021534524910378373,
+              "yeslab_471": 0.0063716858999531304,
+              "yeslab_484": 0.00025334735188680443,
+              "yeslab_96": 0.003116172428207694
+            },
+            "scoreable_rows": 78943
+          },
+          "SZ_main": {
+            "missing_rate": {
+              "yeslab_206": 0.008328150309956189,
+              "yeslab_357": 0.000362242073391611,
+              "yeslab_372": 0.5146332128138007,
+              "yeslab_375": 0.49825713719405923,
+              "yeslab_381": 0.0006253801833081586,
+              "yeslab_384": 0.4835077335265291,
+              "yeslab_389": 0.4975941658521916,
+              "yeslab_390": 0.4972080021324439,
+              "yeslab_406": 0.4944911865820068,
+              "yeslab_425": 0.0012815167690740955,
+              "yeslab_443_reg30_max20_v1": 0.006793747565118139,
+              "yeslab_464": 0.001797540854754598,
+              "yeslab_471": 0.002921858233488938,
+              "yeslab_484": 0.00016403414644148423,
+              "yeslab_96": 0.0026758070138267116
+            },
+            "scoreable_rows": 292622
+          }
+        }
+      },
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "per_factor_daily_coverage": {
+        "yeslab_206": {
+          "column": "f00",
+          "coverage_first_half_mean": 0.9941705972719753,
+          "coverage_max": 0.9968668407310705,
+          "coverage_mean": 0.9921292675153948,
+          "coverage_median": 0.992680274672096,
+          "coverage_min": 0.9713701431492843,
+          "coverage_second_half_mean": 0.990087937758814,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.00789769500252846,
+          "within_year_drift": -0.004082659513161335
+        },
+        "yeslab_357": {
+          "column": "f01",
+          "coverage_first_half_mean": 0.9996200288969677,
+          "coverage_max": 0.9997445721583652,
+          "coverage_mean": 0.9993087731809207,
+          "coverage_median": 0.9997365300968636,
+          "coverage_min": 0.9831288343558282,
+          "coverage_second_half_mean": 0.9989975174648739,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0006957186462259735,
+          "within_year_drift": -0.0006225114320937974
+        },
+        "yeslab_372": {
+          "column": "f02",
+          "coverage_first_half_mean": 0.46165898893977364,
+          "coverage_max": 0.9992301770592764,
+          "coverage_mean": 0.482175539483849,
+          "coverage_median": 0.44977458541501614,
+          "coverage_min": 0.028729573010015816,
+          "coverage_second_half_mean": 0.5026920900279244,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5175770953961247,
+          "within_year_drift": 0.041033101088150725
+        },
+        "yeslab_375": {
+          "column": "f03",
+          "coverage_first_half_mean": 0.4863389916662722,
+          "coverage_max": 0.9614791987673343,
+          "coverage_mean": 0.5001740117631254,
+          "coverage_median": 0.4528472533526789,
+          "coverage_min": 0.13643371017471737,
+          "coverage_second_half_mean": 0.5140090318599784,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.4997342741281776,
+          "within_year_drift": 0.02767004019370617
+        },
+        "yeslab_381": {
+          "column": "f04",
+          "coverage_first_half_mean": 0.9996072335028723,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9992669124673343,
+          "coverage_median": 0.9994863232832036,
+          "coverage_min": 0.9833844580777096,
+          "coverage_second_half_mean": 0.9989265914317965,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0007386642416720157,
+          "within_year_drift": -0.0006806420710757655
+        },
+        "yeslab_384": {
+          "column": "f05",
+          "coverage_first_half_mean": 0.5015044228585578,
+          "coverage_max": 0.9743392353092122,
+          "coverage_mean": 0.5161701312954037,
+          "coverage_median": 0.46838151251855303,
+          "coverage_min": 0.16063638696433152,
+          "coverage_second_half_mean": 0.5308358397322496,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.4837230825060044,
+          "within_year_drift": 0.029331416873691785
+        },
+        "yeslab_389": {
+          "column": "f06",
+          "coverage_first_half_mean": 0.4758586501747531,
+          "coverage_max": 0.9966641005901976,
+          "coverage_mean": 0.49607434350112195,
+          "coverage_median": 0.4767516737860326,
+          "coverage_min": 0.029256721138639957,
+          "coverage_second_half_mean": 0.5162900368274908,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5036863425491003,
+          "within_year_drift": 0.040431386652737655
+        },
+        "yeslab_390": {
+          "column": "f07",
+          "coverage_first_half_mean": 0.4763012401162509,
+          "coverage_max": 0.9997433923530922,
+          "coverage_mean": 0.4966741289438383,
+          "coverage_median": 0.4776483870645951,
+          "coverage_min": 0.028729573010015816,
+          "coverage_second_half_mean": 0.5170470177714256,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5030840305729694,
+          "within_year_drift": 0.040745777655174675
+        },
+        "yeslab_406": {
+          "column": "f08",
+          "coverage_first_half_mean": 0.4850522107871031,
+          "coverage_max": 0.970490120605594,
+          "coverage_mean": 0.5005763609254662,
+          "coverage_median": 0.45087619083040376,
+          "coverage_min": 0.13746145940390544,
+          "coverage_second_half_mean": 0.5161005110638293,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.49931018637314784,
+          "within_year_drift": 0.03104830027672617
+        },
+        "yeslab_425": {
+          "column": "f09",
+          "coverage_first_half_mean": 0.9990625906277952,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9985893060196057,
+          "coverage_median": 0.9989501312335958,
+          "coverage_min": 0.9833844580777096,
+          "coverage_second_half_mean": 0.9981160214114162,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0014182782896057233,
+          "within_year_drift": -0.000946569216379034
+        },
+        "yeslab_443_reg30_max20_v1": {
+          "column": "f10",
+          "coverage_first_half_mean": 0.995252370812625,
+          "coverage_max": 0.9976482884766136,
+          "coverage_mean": 0.9933737882434387,
+          "coverage_median": 0.9946015249353839,
+          "coverage_min": 0.973159509202454,
+          "coverage_second_half_mean": 0.9914952056742523,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0066511990947067945,
+          "within_year_drift": -0.0037571651383726534
+        },
+        "yeslab_464": {
+          "column": "f11",
+          "coverage_first_half_mean": 0.9986222961695383,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9980455399150598,
+          "coverage_median": 0.9984266421651649,
+          "coverage_min": 0.9833844580777096,
+          "coverage_second_half_mean": 0.9974687836605812,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.001963687351770549,
+          "within_year_drift": -0.0011535125089571219
+        },
+        "yeslab_471": {
+          "column": "f12",
+          "coverage_first_half_mean": 0.9975960587475772,
+          "coverage_max": 0.9994750656167979,
+          "coverage_mean": 0.9966649421337924,
+          "coverage_median": 0.9971506269620452,
+          "coverage_min": 0.9815950920245399,
+          "coverage_second_half_mean": 0.9957338255200077,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.003348682804905634,
+          "within_year_drift": -0.0018622332275695097
+        },
+        "yeslab_484": {
+          "column": "f13",
+          "coverage_first_half_mean": 1.0,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9997528682061946,
+          "coverage_median": 1.0,
+          "coverage_min": 0.9833844580777096,
+          "coverage_second_half_mean": 0.9995057364123892,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.00025123173335939164,
+          "within_year_drift": -0.0004942635876108437
+        },
+        "yeslab_96": {
+          "column": "f14",
+          "coverage_first_half_mean": 0.9979781583401341,
+          "coverage_max": 0.999738219895288,
+          "coverage_mean": 0.9971462624868551,
+          "coverage_median": 0.9976259560468922,
+          "coverage_min": 0.9821063394683026,
+          "coverage_second_half_mean": 0.996314366633576,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.002866618496023765,
+          "within_year_drift": -0.0016637917065581709
+        }
+      },
+      "prior_split_securities": 4861,
+      "test_securities": 4883,
+      "test_year": 2024
+    },
+    "F4": {
+      "H1_denominator": {
+        "days": 243,
+        "denominator_growth_second_over_first": 0.9849398000280841,
+        "distinct_securities_first_half": 4759,
+        "distinct_securities_second_half": 4673,
+        "rows_per_day_first_half_mean": 3882.5123966942147,
+        "rows_per_day_second_half_mean": 3824.0409836065573,
+        "scoreable_rows": 936317
+      },
+      "H2_new_entrants": {
+        "entrant_scoreable_rows": 9148,
+        "entrant_share_of_scoreable_rows": 0.009770195350506293,
+        "missing_rate": {
+          "yeslab_206": {
+            "enrichment": 1.3434004261778008,
+            "entrants": 0.01869261040664626,
+            "non_entrants": 0.013914399640195045
+          },
+          "yeslab_357": {
+            "enrichment": 0.83246077059067,
+            "entrants": 0.00043725404459991256,
+            "non_entrants": 0.0005252548348790782
+          },
+          "yeslab_372": {
+            "enrichment": 1.007586365149195,
+            "entrants": 0.5085264538696983,
+            "non_entrants": 0.5046976333332974
+          },
+          "yeslab_375": {
+            "enrichment": 0.9622864081895881,
+            "entrants": 0.509728902492348,
+            "non_entrants": 0.529706019075271
+          },
+          "yeslab_381": {
+            "enrichment": 1.7703423374570144,
+            "entrants": 0.0017490161783996502,
+            "non_entrants": 0.000987953652462496
+          },
+          "yeslab_384": {
+            "enrichment": 0.940354067279387,
+            "entrants": 0.47671622212505466,
+            "non_entrants": 0.5069539641640305
+          },
+          "yeslab_389": {
+            "enrichment": 1.0337168139867612,
+            "entrants": 0.5053563620463489,
+            "non_entrants": 0.48887311806154005
+          },
+          "yeslab_390": {
+            "enrichment": 1.0290348756028707,
+            "entrants": 0.5024048972452995,
+            "non_entrants": 0.48822922250420364
+          },
+          "yeslab_406": {
+            "enrichment": 1.0074417064945649,
+            "entrants": 0.5278749453432444,
+            "non_entrants": 0.5239756721805842
+          },
+          "yeslab_425": {
+            "enrichment": 1.849846184023888,
+            "entrants": 0.004153913423699169,
+            "non_entrants": 0.0022455453105097345
+          },
+          "yeslab_443_reg30_max20_v1": {
+            "enrichment": 1.5232327457360746,
+            "entrants": 0.0174901617839965,
+            "non_entrants": 0.01148226482982067
+          },
+          "yeslab_464": {
+            "enrichment": 1.95501510413083,
+            "entrants": 0.006230870135548754,
+            "non_entrants": 0.003187121226011655
+          },
+          "yeslab_471": {
+            "enrichment": 1.8143276949154374,
+            "entrants": 0.009510275470048098,
+            "non_entrants": 0.005241762828567391
+          },
+          "yeslab_484": {
+            "enrichment": 0.0,
+            "entrants": 0.0,
+            "non_entrants": 7.549864156372786e-06
+          },
+          "yeslab_96": {
+            "enrichment": 1.9298518472152717,
+            "entrants": 0.009073021425448186,
+            "non_entrants": 0.004701408265375568
+          }
+        },
+        "non_entrant_scoreable_rows": 927169
+      },
+      "H3_board_mix": {
+        "board_share_of_scoreable_rows": {
+          "ChiNext": 0.2674414754831964,
+          "SH_main": 0.32966399200270846,
+          "STAR": 0.10167923897568878,
+          "SZ_main": 0.3012152935384063
+        },
+        "missing_rate_by_board": {
+          "ChiNext": {
+            "missing_rate": {
+              "yeslab_206": 0.015953835709436523,
+              "yeslab_357": 0.00027954155185495785,
+              "yeslab_372": 0.503158819535961,
+              "yeslab_375": 0.5335529731240766,
+              "yeslab_381": 0.0011141727566790463,
+              "yeslab_384": 0.5073798969689709,
+              "yeslab_389": 0.49512000319476057,
+              "yeslab_390": 0.4941296274110459,
+              "yeslab_406": 0.5285931073040214,
+              "yeslab_425": 0.0024919132622499103,
+              "yeslab_443_reg30_max20_v1": 0.01311449223273831,
+              "yeslab_464": 0.00355417115929875,
+              "yeslab_471": 0.005610798290803083,
+              "yeslab_484": 7.986901481570225e-06,
+              "yeslab_96": 0.005311289485244199
+            },
+            "scoreable_rows": 250410
+          },
+          "SH_main": {
+            "missing_rate": {
+              "yeslab_206": 0.012236368937700456,
+              "yeslab_357": 0.00020734117342145332,
+              "yeslab_372": 0.5086824116370233,
+              "yeslab_375": 0.5279748598827226,
+              "yeslab_381": 0.0007904882236692909,
+              "yeslab_384": 0.5090970939838663,
+              "yeslab_389": 0.4868014384293906,
+              "yeslab_390": 0.48640619431755594,
+              "yeslab_406": 0.5216185570350212,
+              "yeslab_425": 0.0019049470308096024,
+              "yeslab_443_reg30_max20_v1": 0.010046327793436356,
+              "yeslab_464": 0.002740791136164836,
+              "yeslab_471": 0.0043120484659992875,
+              "yeslab_484": 1.2958823338840833e-05,
+              "yeslab_96": 0.004059351410891891
+            },
+            "scoreable_rows": 308670
+          },
+          "STAR": {
+            "missing_rate": {
+              "yeslab_206": 0.020062182261249527,
+              "yeslab_357": 0.0029515566572833074,
+              "yeslab_372": 0.5074996848871897,
+              "yeslab_375": 0.5225410697029537,
+              "yeslab_381": 0.0015020377295071636,
+              "yeslab_384": 0.4821541111717995,
+              "yeslab_389": 0.5019221881433553,
+              "yeslab_390": 0.5016806016553926,
+              "yeslab_406": 0.5193479265577077,
+              "yeslab_425": 0.003403218352170077,
+              "yeslab_443_reg30_max20_v1": 0.016700978950464265,
+              "yeslab_464": 0.004905256081677241,
+              "yeslab_471": 0.010146632494433008,
+              "yeslab_484": 0.0,
+              "yeslab_96": 0.0071950758371497
+            },
+            "scoreable_rows": 95204
+          },
+          "SZ_main": {
+            "missing_rate": {
+              "yeslab_206": 0.012019870015210985,
+              "yeslab_357": 0.0002694720121404233,
+              "yeslab_372": 0.5008811025660118,
+              "yeslab_375": 0.5299557144022153,
+              "yeslab_381": 0.0009431520424914815,
+              "yeslab_384": 0.5116209805235558,
+              "yeslab_389": 0.48172376991344984,
+              "yeslab_390": 0.4809047168239178,
+              "yeslab_406": 0.5241443377193449,
+              "yeslab_425": 0.002070679672236937,
+              "yeslab_443_reg30_max20_v1": 0.010037832452230767,
+              "yeslab_464": 0.0028684586555474006,
+              "yeslab_471": 0.004414377040984565,
+              "yeslab_484": 3.5456843702687276e-06,
+              "yeslab_96": 0.004162633450695486
+            },
+            "scoreable_rows": 282033
+          }
+        }
+      },
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "per_factor_daily_coverage": {
+        "yeslab_206": {
+          "column": "f00",
+          "coverage_first_half_mean": 0.9868687593278759,
+          "coverage_max": 0.9897514732257238,
+          "coverage_mean": 0.9860317616900582,
+          "coverage_median": 0.986235024216161,
+          "coverage_min": 0.981117230527144,
+          "coverage_second_half_mean": 0.985201624688616,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.013961083692809129,
+          "within_year_drift": -0.0016671346392598263
+        },
+        "yeslab_357": {
+          "column": "f01",
+          "coverage_first_half_mean": 0.9994955945168722,
+          "coverage_max": 0.999745287824758,
+          "coverage_mean": 0.9994754819069267,
+          "coverage_median": 0.9994794377928162,
+          "coverage_min": 0.9971279373368146,
+          "coverage_second_half_mean": 0.9994555341544398,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0005243950499670413,
+          "within_year_drift": -4.0060362432425833e-05
+        },
+        "yeslab_372": {
+          "column": "f02",
+          "coverage_first_half_mean": 0.4982517423820881,
+          "coverage_max": 0.9938822329849605,
+          "coverage_mean": 0.495243061428316,
+          "coverage_median": 0.495690780882737,
+          "coverage_min": 0.01922091235263967,
+          "coverage_second_half_mean": 0.49225904179383706,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5047350416579001,
+          "within_year_drift": -0.005992700588251021
+        },
+        "yeslab_375": {
+          "column": "f03",
+          "coverage_first_half_mean": 0.46349353153771333,
+          "coverage_max": 0.791677304059229,
+          "coverage_mean": 0.4705136742798544,
+          "coverage_median": 0.46863844977052527,
+          "coverage_min": 0.15667262056647105,
+          "coverage_second_half_mean": 0.47747627486837135,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5295108387437161,
+          "within_year_drift": 0.01398274333065802
+        },
+        "yeslab_381": {
+          "column": "f04",
+          "coverage_first_half_mean": 0.9990785630410858,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9990040972633483,
+          "coverage_median": 0.9989759344598055,
+          "coverage_min": 0.9971376528753578,
+          "coverage_second_half_mean": 0.9989302418608382,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0009953893820148219,
+          "within_year_drift": -0.00014832118024754593
+        },
+        "yeslab_384": {
+          "column": "f05",
+          "coverage_first_half_mean": 0.48477380673926856,
+          "coverage_max": 0.8161858565228491,
+          "coverage_mean": 0.4933749615868336,
+          "coverage_median": 0.4896839905980674,
+          "coverage_min": 0.18397550395509057,
+          "coverage_second_half_mean": 0.5019056151651563,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5066585355173515,
+          "within_year_drift": 0.01713180842588774
+        },
+        "yeslab_389": {
+          "column": "f06",
+          "coverage_first_half_mean": 0.5153789025996184,
+          "coverage_max": 0.9915880703543207,
+          "coverage_mean": 0.5109410571945927,
+          "coverage_median": 0.5104384133611691,
+          "coverage_min": 0.018964633521271142,
+          "coverage_second_half_mean": 0.5065395875715755,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.48903416257528165,
+          "within_year_drift": -0.008839315028042916
+        },
+        "yeslab_390": {
+          "column": "f07",
+          "coverage_first_half_mean": 0.5160171877328178,
+          "coverage_max": 0.9938822329849605,
+          "coverage_mean": 0.5116086883134103,
+          "coverage_median": 0.510974987238387,
+          "coverage_min": 0.019477191184008202,
+          "coverage_second_half_mean": 0.5072363241351455,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.48836772161564945,
+          "within_year_drift": -0.008780863597672273
+        },
+        "yeslab_406": {
+          "column": "f08",
+          "coverage_first_half_mean": 0.46818897459201536,
+          "coverage_max": 0.8046974725555271,
+          "coverage_mean": 0.4760097880658386,
+          "coverage_median": 0.47424783273839877,
+          "coverage_min": 0.15794845623883644,
+          "coverage_second_half_mean": 0.4837664965111879,
+          "is_candidate_only": true,
+          "overall_missing_share": 0.5240137688411083,
+          "within_year_drift": 0.015577521919172554
+        },
+        "yeslab_425": {
+          "column": "f09",
+          "coverage_first_half_mean": 0.9978720461794429,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.997734921468332,
+          "coverage_median": 0.9977029096477795,
+          "coverage_min": 0.9950533715178339,
+          "coverage_second_half_mean": 0.9975989207302628,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.0022641904397763257,
+          "within_year_drift": -0.0002731254491801227
+        },
+        "yeslab_443_reg30_max20_v1": {
+          "column": "f10",
+          "coverage_first_half_mean": 0.9891955722813566,
+          "coverage_max": 0.9925698180886497,
+          "coverage_mean": 0.9884515366004968,
+          "coverage_median": 0.9885803270179081,
+          "coverage_min": 0.983744100681699,
+          "coverage_second_half_mean": 0.987713599572759,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.011540963156708717,
+          "within_year_drift": -0.001481972708597623
+        },
+        "yeslab_464": {
+          "column": "f11",
+          "coverage_first_half_mean": 0.9969756525408361,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9967816988497019,
+          "coverage_median": 0.9966606730028256,
+          "coverage_min": 0.9939695857367593,
+          "coverage_second_half_mean": 0.9965893349429212,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.003216859247455739,
+          "within_year_drift": -0.00038631759791485365
+        },
+        "yeslab_471": {
+          "column": "f12",
+          "coverage_first_half_mean": 0.9949306982506212,
+          "coverage_max": 0.9987205731832139,
+          "coverage_mean": 0.9947140998003053,
+          "coverage_median": 0.9947685064085796,
+          "coverage_min": 0.990820875950695,
+          "coverage_second_half_mean": 0.9944992767471231,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.005283467030930744,
+          "within_year_drift": -0.00043142150349806396
+        },
+        "yeslab_484": {
+          "column": "f13",
+          "coverage_first_half_mean": 0.9999915442248721,
+          "coverage_max": 1.0,
+          "coverage_mean": 0.9999925542703191,
+          "coverage_median": 1.0,
+          "coverage_min": 0.9992138364779874,
+          "coverage_second_half_mean": 0.9999935560367048,
+          "is_candidate_only": false,
+          "overall_missing_share": 7.476100508663208e-06,
+          "within_year_drift": 2.011811832680621e-06
+        },
+        "yeslab_96": {
+          "column": "f14",
+          "coverage_first_half_mean": 0.9954544211436032,
+          "coverage_max": 0.9989764585465711,
+          "coverage_mean": 0.9952536057852411,
+          "coverage_median": 0.9952916557677217,
+          "coverage_min": 0.991347666491872,
+          "coverage_second_half_mean": 0.9950544364544068,
+          "is_candidate_only": false,
+          "overall_missing_share": 0.004744119779946376,
+          "within_year_drift": -0.000399984689196331
+        }
+      },
+      "prior_split_securities": 5110,
+      "test_securities": 4912,
+      "test_year": 2025
+    }
+  },
+  "generated_at_local": "2026-09-15T16:34:51",
+  "question": "Why do the six candidate_only factors lose coverage across the OOS window? Tested against three explanations -- a growing denominator, new-entrant securities, and board mix -- with the nine dense factors run through the same cuts as a control.",
+  "read_only": true,
+  "source_of_truth": "the frozen dataset panels each fold published, not factor_daily: this measures the values the models actually consume, which is the side the factor-set decision is about",
+  "summary": {
+    "explanations": {
+      "H1_denominator_grows_within_year": {
+        "second_half_over_first_half_by_fold": [
+          1.065573180543453,
+          1.0366868442385373,
+          1.022173300419671,
+          0.9849398000280841
+        ],
+        "verdict": "measured per fold above; a value near 1.0 means the denominator is flat within the year"
+      },
+      "H2_entrant_share_of_scoreable_rows_by_fold": [
+        0.04903232068812751,
+        0.043097397214760115,
+        0.025745884469906413,
+        0.009770195350506293
+      ],
+      "H3_note": "see each fold's board_share_of_scoreable_rows and missing_rate_by_board"
+    },
+    "per_factor": {
+      "yeslab_206": {
+        "across_year_change_2022_to_2025": 0.0025606559440772836,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.983471105745981,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.0011255277375612494
+          },
+          {
+            "coverage_mean": 0.9895576632304278,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.004030734547687431
+          },
+          {
+            "coverage_mean": 0.9921292675153948,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.004082659513161335
+          },
+          {
+            "coverage_mean": 0.9860317616900582,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.0016671346392598263
+          }
+        ],
+        "coverage_2022": 0.983471105745981,
+        "coverage_2025": 0.9860317616900582,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -0.0013963311884105378
+      },
+      "yeslab_357": {
+        "across_year_change_2022_to_2025": 0.05392637781053866,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.945549104096388,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.0193276923903013
+          },
+          {
+            "coverage_mean": 0.9396088323213098,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.043414164316148196
+          },
+          {
+            "coverage_mean": 0.9993087731809207,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.0006225114320937974
+          },
+          {
+            "coverage_mean": 0.9994754819069267,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -4.0060362432425833e-05
+          }
+        ],
+        "coverage_2022": 0.945549104096388,
+        "coverage_2025": 0.9994754819069267,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -0.00033128589726311164
+      },
+      "yeslab_372": {
+        "across_year_change_2022_to_2025": 0.02026490421732574,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.47497815721099024,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.013587207080222596
+          },
+          {
+            "coverage_mean": 0.4671157185379582,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": -0.027489617918084963
+          },
+          {
+            "coverage_mean": 0.482175539483849,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": 0.041033101088150725
+          },
+          {
+            "coverage_mean": 0.495243061428316,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.005992700588251021
+          }
+        ],
+        "coverage_2022": 0.47497815721099024,
+        "coverage_2025": 0.495243061428316,
+        "is_candidate_only": true,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -0.009789953834236809
+      },
+      "yeslab_375": {
+        "across_year_change_2022_to_2025": 0.009416100643013736,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.4610975736368407,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.04358527668108286
+          },
+          {
+            "coverage_mean": 0.4776411881159,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": -0.011348123370278795
+          },
+          {
+            "coverage_mean": 0.5001740117631254,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": 0.02767004019370617
+          },
+          {
+            "coverage_mean": 0.4705136742798544,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": 0.01398274333065802
+          }
+        ],
+        "coverage_2022": 0.4610975736368407,
+        "coverage_2025": 0.4705136742798544,
+        "is_candidate_only": true,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": 0.0013173099801896127
+      },
+      "yeslab_381": {
+        "across_year_change_2022_to_2025": 0.00012439316570744818,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.9988797040976408,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": 0.00019338229444232358
+          },
+          {
+            "coverage_mean": 0.99937403219056,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.00031706497575301196
+          },
+          {
+            "coverage_mean": 0.9992669124673343,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.0006806420710757655
+          },
+          {
+            "coverage_mean": 0.9990040972633483,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.00014832118024754593
+          }
+        ],
+        "coverage_2022": 0.9988797040976408,
+        "coverage_2025": 0.9990040972633483,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": 2.2530557097388826e-05
+      },
+      "yeslab_384": {
+        "across_year_change_2022_to_2025": 0.005901008833219423,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.48747395275361416,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.04136048738859244
+          },
+          {
+            "coverage_mean": 0.4979395654275953,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": -0.016337673102495787
+          },
+          {
+            "coverage_mean": 0.5161701312954037,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": 0.029331416873691785
+          },
+          {
+            "coverage_mean": 0.4933749615868336,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": 0.01713180842588774
+          }
+        ],
+        "coverage_2022": 0.48747395275361416,
+        "coverage_2025": 0.4933749615868336,
+        "is_candidate_only": true,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": 0.00039706766169597674
+      },
+      "yeslab_389": {
+        "across_year_change_2022_to_2025": 0.02088646557027196,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.49005459162432075,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.01083324468206548
+          },
+          {
+            "coverage_mean": 0.4851993563373961,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": -0.026501284332701547
+          },
+          {
+            "coverage_mean": 0.49607434350112195,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": 0.040431386652737655
+          },
+          {
+            "coverage_mean": 0.5109410571945927,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.008839315028042916
+          }
+        ],
+        "coverage_2022": 0.49005459162432075,
+        "coverage_2025": 0.5109410571945927,
+        "is_candidate_only": true,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -0.009836279855054197
+      },
+      "yeslab_390": {
+        "across_year_change_2022_to_2025": 0.020914962948788307,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.490693725364622,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.011171735104705593
+          },
+          {
+            "coverage_mean": 0.4857081717162135,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": -0.026593997041451933
+          },
+          {
+            "coverage_mean": 0.4966741289438383,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": 0.040745777655174675
+          },
+          {
+            "coverage_mean": 0.5116086883134103,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.008780863597672273
+          }
+        ],
+        "coverage_2022": 0.490693725364622,
+        "coverage_2025": 0.5116086883134103,
+        "is_candidate_only": true,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -0.009976299351188933
+      },
+      "yeslab_406": {
+        "across_year_change_2022_to_2025": 0.010332863784801416,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.4656769242810372,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.040929664695456114
+          },
+          {
+            "coverage_mean": 0.4795664545592649,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": -0.013265665786785452
+          },
+          {
+            "coverage_mean": 0.5005763609254662,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": 0.03104830027672617
+          },
+          {
+            "coverage_mean": 0.4760097880658386,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": 0.015577521919172554
+          }
+        ],
+        "coverage_2022": 0.4656769242810372,
+        "coverage_2025": 0.4760097880658386,
+        "is_candidate_only": true,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": 0.0011559280661935512
+      },
+      "yeslab_425": {
+        "across_year_change_2022_to_2025": 0.0003182929255027833,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.9974166285428292,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": 0.0003775275937484279
+          },
+          {
+            "coverage_mean": 0.9985407042880664,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.0007756885238687783
+          },
+          {
+            "coverage_mean": 0.9985893060196057,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.000946569216379034
+          },
+          {
+            "coverage_mean": 0.997734921468332,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.0002731254491801227
+          }
+        ],
+        "coverage_2022": 0.9974166285428292,
+        "coverage_2025": 0.997734921468332,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": 5.2201072284152605e-05
+      },
+      "yeslab_443_reg30_max20_v1": {
+        "across_year_change_2022_to_2025": 0.002272703927817421,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.9861788326726794,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.00015043472025078053
+          },
+          {
+            "coverage_mean": 0.9916061146124779,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.0032207922825472357
+          },
+          {
+            "coverage_mean": 0.9933737882434387,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.0037571651383726534
+          },
+          {
+            "coverage_mean": 0.9884515366004968,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.001481972708597623
+          }
+        ],
+        "coverage_2022": 0.9861788326726794,
+        "coverage_2025": 0.9884515366004968,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -0.0008162037144242018
+      },
+      "yeslab_464": {
+        "across_year_change_2022_to_2025": 0.0005618925689597765,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.9962198062807421,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": 0.0005478839634933674
+          },
+          {
+            "coverage_mean": 0.9978586181044327,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.0010533585540550838
+          },
+          {
+            "coverage_mean": 0.9980455399150598,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.0011535125089571219
+          },
+          {
+            "coverage_mean": 0.9967816988497019,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.00038631759791485365
+          }
+        ],
+        "coverage_2022": 0.9962198062807421,
+        "coverage_2025": 0.9967816988497019,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": 8.078318278925689e-05
+      },
+      "yeslab_471": {
+        "across_year_change_2022_to_2025": 0.05484461294681875,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.9398694868534866,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -0.018519622979922934
+          },
+          {
+            "coverage_mean": 0.9364089199172352,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.044854666161692425
+          },
+          {
+            "coverage_mean": 0.9966649421337924,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.0018622332275695097
+          },
+          {
+            "coverage_mean": 0.9947140998003053,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.00043142150349806396
+          }
+        ],
+        "coverage_2022": 0.9398694868534866,
+        "coverage_2025": 0.9947140998003053,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -0.0011468273655337868
+      },
+      "yeslab_484": {
+        "across_year_change_2022_to_2025": 3.660438588792836e-06,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.9999888938317303,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": -6.8651378531958684e-06
+          },
+          {
+            "coverage_mean": 1.0,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.0
+          },
+          {
+            "coverage_mean": 0.9997528682061946,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.0004942635876108437
+          },
+          {
+            "coverage_mean": 0.9999925542703191,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": 2.011811832680621e-06
+          }
+        ],
+        "coverage_2022": 0.9999888938317303,
+        "coverage_2025": 0.9999925542703191,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": -3.4325689265979342e-06
+      },
+      "yeslab_96": {
+        "across_year_change_2022_to_2025": 0.0009435660019486702,
+        "by_test_year": [
+          {
+            "coverage_mean": 0.9943100397832925,
+            "fold": "F1",
+            "test_year": 2022,
+            "within_year_drift": 0.0007718856293881249
+          },
+          {
+            "coverage_mean": 0.9967754530366092,
+            "fold": "F2",
+            "test_year": 2023,
+            "within_year_drift": 0.0014307417438020886
+          },
+          {
+            "coverage_mean": 0.9971462624868551,
+            "fold": "F3",
+            "test_year": 2024,
+            "within_year_drift": -0.0016637917065581709
+          },
+          {
+            "coverage_mean": 0.9952536057852411,
+            "fold": "F4",
+            "test_year": 2025,
+            "within_year_drift": -0.000399984689196331
+          }
+        ],
+        "coverage_2022": 0.9943100397832925,
+        "coverage_2025": 0.9952536057852411,
+        "is_candidate_only": false,
+        "monotone_declining_across_years": false,
+        "within_year_drift_median": 0.00018595047009589694
+      }
+    },
+    "sparse_vs_dense": {
+      "all_six_decline": false,
+      "any_dense_declines_by_more_than_0.01": false,
+      "dense_across_year_change": {
+        "max": 0.05484461294681875,
+        "median": 0.0009435660019486702,
+        "min": 3.660438588792836e-06
+      },
+      "sparse_across_year_change": {
+        "max": 0.020914962948788307,
+        "median": 0.015298884001063578,
+        "min": 0.005901008833219423
+      }
+    }
+  },
+  "weights_loaded": false
+}

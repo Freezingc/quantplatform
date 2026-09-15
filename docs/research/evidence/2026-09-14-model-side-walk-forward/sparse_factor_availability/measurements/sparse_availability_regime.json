@@ -1,0 +1,572 @@
+{
+  "cluster_structure_on_daily_coverage": {
+    "across": {
+      "max": 0.11207945872914438,
+      "median": 0.08851982829242869,
+      "min": 0.08436330881105791
+    },
+    "an4_reported_on_row_counts": {
+      "across": "0.266-0.297",
+      "within_A": "0.9992-1.0000",
+      "within_B": "0.9991-0.9995"
+    },
+    "cluster_A": [
+      "yeslab_372",
+      "yeslab_389",
+      "yeslab_390"
+    ],
+    "cluster_B": [
+      "yeslab_375",
+      "yeslab_384",
+      "yeslab_406"
+    ],
+    "within_A": {
+      "max": 0.9999930928437342,
+      "median": 0.9991194134126413,
+      "min": 0.9991122156556572
+    },
+    "within_B": {
+      "max": 0.9996413747482736,
+      "median": 0.9995595595287841,
+      "min": 0.9993611430675899
+    }
+  },
+  "daily_coverage_correlation_between_the_six": {
+    "yeslab_372": {
+      "yeslab_372": 1.0,
+      "yeslab_375": 0.11128465513741598,
+      "yeslab_384": 0.10803990154776612,
+      "yeslab_389": 0.9991122156556572,
+      "yeslab_390": 0.9991194134126413,
+      "yeslab_406": 0.11207945872914438
+    },
+    "yeslab_375": {
+      "yeslab_372": 0.11128465513741598,
+      "yeslab_375": 1.0,
+      "yeslab_384": 0.9993611430675899,
+      "yeslab_389": 0.08776684292313752,
+      "yeslab_390": 0.08794705928170836,
+      "yeslab_406": 0.9996413747482736
+    },
+    "yeslab_384": {
+      "yeslab_372": 0.10803990154776612,
+      "yeslab_375": 0.9993611430675899,
+      "yeslab_384": 1.0,
+      "yeslab_389": 0.08436330881105791,
+      "yeslab_390": 0.08455447600069951,
+      "yeslab_406": 0.9995595595287841
+    },
+    "yeslab_389": {
+      "yeslab_372": 0.9991122156556572,
+      "yeslab_375": 0.08776684292313752,
+      "yeslab_384": 0.08436330881105791,
+      "yeslab_389": 1.0,
+      "yeslab_390": 0.9999930928437342,
+      "yeslab_406": 0.08851982829242869
+    },
+    "yeslab_390": {
+      "yeslab_372": 0.9991194134126413,
+      "yeslab_375": 0.08794705928170836,
+      "yeslab_384": 0.08455447600069951,
+      "yeslab_389": 0.9999930928437342,
+      "yeslab_390": 1.0,
+      "yeslab_406": 0.08868640465061123
+    },
+    "yeslab_406": {
+      "yeslab_372": 0.11207945872914438,
+      "yeslab_375": 0.9996413747482736,
+      "yeslab_384": 0.9995595595287841,
+      "yeslab_389": 0.08851982829242869,
+      "yeslab_390": 0.08868640465061123,
+      "yeslab_406": 1.0
+    }
+  },
+  "database_access": false,
+  "days": 969,
+  "factors": {
+    "yeslab_206": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.0510517218482875,
+        "their_coverage_range": [
+          0.9713701431492843,
+          0.9755065013607499
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9968668407310705,
+        "mean": 0.9877956273701761,
+        "median": 0.9872631251941597,
+        "min": 0.9713701431492843,
+        "p05": 0.9789455083324006,
+        "p25": 0.9851594568992738,
+        "p75": 0.991885312415472,
+        "p95": 0.995120698510529,
+        "std": 0.004867667176759955
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.004867667176759955,
+        "ratio": 2.725683948384995,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.0017858516500580026
+      }
+    },
+    "yeslab_357": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.07778737312434746,
+        "their_coverage_range": [
+          0.902398676592225,
+          0.910808557932759
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.999745287824758,
+        "mean": 0.9710149492530948,
+        "median": 0.999216505615043,
+        "min": 0.902398676592225,
+        "p05": 0.9132747552483408,
+        "p25": 0.9360093077370564,
+        "p75": 0.9997354497354497,
+        "p95": 0.9997434318514472,
+        "std": 0.034283715581292604
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.034283715581292604,
+        "ratio": 12.564169677044394,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.0027286893175226153
+      }
+    },
+    "yeslab_372": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.044472870108898055,
+        "their_coverage_range": [
+          0.01922091235263967,
+          0.09193631227529532
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9992301770592764,
+        "mean": 0.4798939756588419,
+        "median": 0.4635352286773795,
+        "min": 0.01922091235263967,
+        "p05": 0.11515674204591987,
+        "p25": 0.3,
+        "p75": 0.6560509554140127,
+        "p95": 0.8550072712668508,
+        "std": 0.22725249478316095
+      },
+      "days_above_90pct_coverage": 23,
+      "days_below_a_quarter_coverage": 182,
+      "days_below_half_coverage": 522,
+      "is_candidate_only": true,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.22725249478316095,
+        "ratio": 27.96636158094792,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.008125922784963801
+      }
+    },
+    "yeslab_375": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.03803582744699887,
+        "their_coverage_range": [
+          0.13643371017471737,
+          0.23175715119673088
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9614791987673343,
+        "mean": 0.4773495500937504,
+        "median": 0.46075172590130403,
+        "min": 0.13643371017471737,
+        "p05": 0.2706659937869218,
+        "p25": 0.3711039906787067,
+        "p75": 0.5663764961915125,
+        "p95": 0.735793357933579,
+        "std": 0.14546725778238948
+      },
+      "days_above_90pct_coverage": 10,
+      "days_below_a_quarter_coverage": 32,
+      "days_below_half_coverage": 593,
+      "is_candidate_only": true,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.14546725778238948,
+        "ratio": 17.905531989719414,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.008124151679263733
+      }
+    },
+    "yeslab_381": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.12588291150607897,
+        "their_coverage_range": [
+          0.9833844580777096,
+          0.9976951887064247
+        ]
+      },
+      "daily_coverage": {
+        "max": 1.0,
+        "mean": 0.9991310553496731,
+        "median": 0.999231950844854,
+        "min": 0.9833844580777096,
+        "p05": 0.9979534407776925,
+        "p25": 0.9988489208633093,
+        "p75": 0.9997066588442358,
+        "p95": 1.0,
+        "std": 0.0009762494275603784
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.0009762494275603784,
+        "ratio": 2.037039292505189,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.0004792491883451931
+      }
+    },
+    "yeslab_384": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.038502667402604364,
+        "their_coverage_range": [
+          0.16063638696433152,
+          0.255177703912043
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9743392353092122,
+        "mean": 0.4987341164488554,
+        "median": 0.4826254826254826,
+        "min": 0.16063638696433152,
+        "p05": 0.29567508313253366,
+        "p25": 0.3949898048354209,
+        "p75": 0.587906976744186,
+        "p95": 0.7516701275931461,
+        "std": 0.14404767809524527
+      },
+      "days_above_90pct_coverage": 13,
+      "days_below_a_quarter_coverage": 21,
+      "days_below_half_coverage": 543,
+      "is_candidate_only": true,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.14404767809524527,
+        "ratio": 17.712650352472913,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.008132474543829878
+      }
+    },
+    "yeslab_389": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.045822984421294746,
+        "their_coverage_range": [
+          0.018964633521271142,
+          0.09273447820343461
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9966641005901976,
+        "mean": 0.49558320271650463,
+        "median": 0.4854423292273236,
+        "min": 0.018964633521271142,
+        "p05": 0.11955585689917873,
+        "p25": 0.3178254051228437,
+        "p75": 0.6752029981261711,
+        "p95": 0.862575477727135,
+        "std": 0.2288653300902799
+      },
+      "days_above_90pct_coverage": 26,
+      "days_below_a_quarter_coverage": 169,
+      "days_below_half_coverage": 498,
+      "is_candidate_only": true,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.2288653300902799,
+        "ratio": 28.14315929409655,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.008132183302472649
+      }
+    },
+    "yeslab_390": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.04585241171930284,
+        "their_coverage_range": [
+          0.019477191184008202,
+          0.09296353364149974
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9997433923530922,
+        "mean": 0.4961871099671102,
+        "median": 0.4862821948488242,
+        "min": 0.019477191184008202,
+        "p05": 0.11907964047529217,
+        "p25": 0.31877615062761505,
+        "p75": 0.6764009471191792,
+        "p95": 0.86496481856984,
+        "std": 0.22893372387451702
+      },
+      "days_above_90pct_coverage": 26,
+      "days_below_a_quarter_coverage": 166,
+      "days_below_half_coverage": 497,
+      "is_candidate_only": true,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.22893372387451702,
+        "ratio": 28.151289712661598,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.008132264141757937
+      }
+    },
+    "yeslab_406": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.038209397130299465,
+        "their_coverage_range": [
+          0.13746145940390544,
+          0.2346456692913386
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.970490120605594,
+        "mean": 0.4804527920777242,
+        "median": 0.4628466771323914,
+        "min": 0.13746145940390544,
+        "p05": 0.27341717146485145,
+        "p25": 0.37287692709694276,
+        "p75": 0.57079523413688,
+        "p95": 0.7408219433417691,
+        "std": 0.14726307900791616
+      },
+      "days_above_90pct_coverage": 11,
+      "days_below_a_quarter_coverage": 30,
+      "days_below_half_coverage": 591,
+      "is_candidate_only": true,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.14726307900791616,
+        "ratio": 18.121823994728764,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.008126283482874114
+      }
+    },
+    "yeslab_425": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.08321004660289266,
+        "their_coverage_range": [
+          0.9833844580777096,
+          0.9953837276399308
+        ]
+      },
+      "daily_coverage": {
+        "max": 1.0,
+        "mean": 0.998070043878871,
+        "median": 0.9983351831298557,
+        "min": 0.9833844580777096,
+        "p05": 0.9959668810124207,
+        "p25": 0.9974506054811982,
+        "p75": 0.9989445910290238,
+        "p95": 0.9997202484141489,
+        "std": 0.0013302953935465066
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.0013302953935465066,
+        "ratio": 1.8635444628196247,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.0007138522423734989
+      }
+    },
+    "yeslab_443_reg30_max20_v1": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.05512170250577924,
+        "their_coverage_range": [
+          0.973159509202454,
+          0.9788263762855415
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9976482884766136,
+        "mean": 0.9899010705798151,
+        "median": 0.9895887558563248,
+        "min": 0.973159509202454,
+        "p05": 0.9821975767967046,
+        "p25": 0.9877175025588536,
+        "p75": 0.9933669408331123,
+        "p95": 0.9962542807575625,
+        "std": 0.004294485575128834
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.004294485575128834,
+        "ratio": 2.6407268593645243,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.0016262513329993837
+      }
+    },
+    "yeslab_464": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.07408453725717945,
+        "their_coverage_range": [
+          0.9833844580777096,
+          0.9934964385258594
+        ]
+      },
+      "daily_coverage": {
+        "max": 1.0,
+        "mean": 0.9972259568432759,
+        "median": 0.9974834853727588,
+        "min": 0.9833844580777096,
+        "p05": 0.9942492324348448,
+        "p25": 0.996309963099631,
+        "p75": 0.9984239558707644,
+        "p95": 0.9994587681403733,
+        "std": 0.0016781912826768209
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.0016781912826768209,
+        "ratio": 1.9617062104612035,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.0008554753376053556
+      }
+    },
+    "yeslab_471": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.07125968781049427,
+        "their_coverage_range": [
+          0.8979873173421561,
+          0.9065677383896675
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.9994750656167979,
+        "mean": 0.9669430512759202,
+        "median": 0.9934929724102031,
+        "min": 0.8979873173421561,
+        "p05": 0.9092772256144934,
+        "p25": 0.9319448518627164,
+        "p75": 0.9964084145715751,
+        "p95": 0.9984195549470728,
+        "std": 0.03473179201485325
+      },
+      "days_above_90pct_coverage": 968,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.03473179201485325,
+        "ratio": 11.943765310704546,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.002907943275118194
+      }
+    },
+    "yeslab_484": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 1.0,
+        "their_coverage_range": [
+          0.9833844580777096,
+          1.0
+        ]
+      },
+      "daily_coverage": {
+        "max": 1.0,
+        "mean": 0.9999336399389736,
+        "median": 1.0,
+        "min": 0.9833844580777096,
+        "p05": 1.0,
+        "p25": 1.0,
+        "p75": 1.0,
+        "p95": 1.0,
+        "std": 0.0008269990181117079
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.0008269990181117079,
+        "ratio": 6.241829707247449,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.00013249304401103274
+      }
+    },
+    "yeslab_96": {
+      "concentration_of_missingness_in_the_worst_days": {
+        "share_of_all_days": 0.02476780185758514,
+        "share_of_all_missing_row_days_they_carry": 0.06656491891812889,
+        "their_coverage_range": [
+          0.9821063394683026,
+          0.9902971497877502
+        ]
+      },
+      "daily_coverage": {
+        "max": 0.999738219895288,
+        "mean": 0.9958707027761081,
+        "median": 0.9960825280752155,
+        "min": 0.9821063394683026,
+        "p05": 0.9918964288968237,
+        "p25": 0.9947134112409571,
+        "p75": 0.997481813094572,
+        "p95": 0.9989193118757261,
+        "std": 0.0021939393894855174
+      },
+      "days_above_90pct_coverage": 969,
+      "days_below_a_quarter_coverage": 0,
+      "days_below_half_coverage": 0,
+      "is_candidate_only": false,
+      "variance_vs_independent_per_security_missingness": {
+        "observed_daily_std": 0.0021939393894855174,
+        "ratio": 2.103444101126578,
+        "reading": "a ratio near 1 means each security is missing on its own schedule; a large ratio means whole days are missing together",
+        "std_if_missingness_were_independent_across_securities": 0.001043022435590502
+      }
+    }
+  },
+  "generated_at_local": "2026-09-15T16:46:51",
+  "question": "Is the six sparse factors' missingness a security-level property or a day-level regime, and what is §AN.4's two-cluster structure when measured as daily coverage over all 969 days?",
+  "read_only": true,
+  "regime_switching": {
+    "days_A_on": 153,
+    "days_B_on": 47,
+    "days_both_on": 18,
+    "days_exactly_one_on": 164,
+    "days_neither_on": 787,
+    "days_total": 969,
+    "definition": "a cluster is 'on' for a day when its three factors' mean daily coverage > 0.75"
+  },
+  "scoreable_rows": 3553163,
+  "scoreable_rows_per_day": {
+    "max": 3926,
+    "median": 3780.0,
+    "min": 3124
+  },
+  "weights_loaded": false
+}
