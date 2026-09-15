@@ -1,0 +1,619 @@
+{
+  "blocked_axis_tests": {
+    "dropout": {
+      "F": 0.4044485808969095,
+      "best_level": "0.2",
+      "blocked_test": "two-way F with seed as block (equivalently t^2 on seed-demeaned values)",
+      "df": [
+        2,
+        67
+      ],
+      "levels": [
+        "0.0",
+        "0.1",
+        "0.2"
+      ],
+      "mean_over_all_seed_values": {
+        "0.0": 0.051776179032982955,
+        "0.1": 0.05245057007347923,
+        "0.2": 0.052895562659775235
+      },
+      "p": 0.6689163644431779,
+      "p_unblocked_on_raw_seed_values": 0.9187275001205015,
+      "spread_best_minus_worst": 0.0011193836267922794,
+      "t": null
+    },
+    "family": {
+      "F": 6.6239967199217915,
+      "best_level": "TCN",
+      "blocked_test": "two-way F with seed as block (equivalently t^2 on seed-demeaned values)",
+      "df": [
+        1,
+        68
+      ],
+      "levels": [
+        "GRU",
+        "TCN"
+      ],
+      "mean_over_all_seed_values": {
+        "GRU": 0.05111718140027198,
+        "TCN": 0.053631026443886294
+      },
+      "p": 0.012180876387338396,
+      "p_unblocked_on_raw_seed_values": 0.2571114198792795,
+      "spread_best_minus_worst": 0.002513845043614314,
+      "t": -2.5737126335163745
+    },
+    "hidden_dim": {
+      "F": 20.41282025956887,
+      "best_level": "64",
+      "blocked_test": "two-way F with seed as block (equivalently t^2 on seed-demeaned values)",
+      "df": [
+        1,
+        68
+      ],
+      "levels": [
+        "128",
+        "64"
+      ],
+      "mean_over_all_seed_values": {
+        "128": 0.05034283533754877,
+        "64": 0.054405372506609505
+      },
+      "p": 2.4698780752133216e-05,
+      "p_unblocked_on_raw_seed_values": 0.06498502364503479,
+      "spread_best_minus_worst": 0.004062537169060736,
+      "t": -4.518054919937215
+    },
+    "learning_rate": {
+      "F": 42.401850839267816,
+      "best_level": "0.0003",
+      "blocked_test": "two-way F with seed as block (equivalently t^2 on seed-demeaned values)",
+      "df": [
+        1,
+        68
+      ],
+      "levels": [
+        "0.0003",
+        "0.001"
+      ],
+      "mean_over_all_seed_values": {
+        "0.0003": 0.05499975208405881,
+        "0.001": 0.049748455760099466
+      },
+      "p": 9.58159200852328e-09,
+      "p_unblocked_on_raw_seed_values": 0.01614320365082864,
+      "spread_best_minus_worst": 0.005251296323959341,
+      "t": 6.511670357079496
+    }
+  },
+  "database_access": false,
+  "design": "randomized complete block design: every one of the 24 configs was run on the same three seeds, so seed is a block, not a source of independent noise",
+  "effect_sizes": {
+    "SE_of_a_config_mean_with_seed_blocked_out": 0.0013310356213094405,
+    "config_swing_best_minus_worst": 0.014758384593227723,
+    "config_swing_on_the_ensemble_values": 0.01129650380915407,
+    "estimated_true_between_config_sd": 0.0037087447417336354,
+    "estimated_true_between_config_variance": 1.3754787559336889e-05,
+    "observed_sd_of_the_24_config_means": 0.003940360819078819,
+    "residual_sd": 0.0023054213227919587,
+    "seed_mean_by_seed": {
+      "20260801": 0.04342579254539037,
+      "20260802": 0.050369617783956065,
+      "20260803": 0.06332690143689099
+    },
+    "seed_swing_as_share_of_grand_mean": 0.3799799404894637,
+    "seed_swing_best_minus_worst": 0.019901108891500617
+  },
+  "generated_at_local": "2026-09-15T20:26:07",
+  "grand_mean": 0.052374103922079134,
+  "input": {
+    "n_configs": 24,
+    "n_observations": 72,
+    "n_seeds": 3,
+    "search_dir": "/data/zhangyudong/qrv2_research_artifacts/m2_v1/search/F1",
+    "seeds": [
+      "20260801",
+      "20260802",
+      "20260803"
+    ]
+  },
+  "question": "How much of M2's F1 24-config grid result is attributable to the hyperparameters and how much to the seed, and is the naive one-way test on seed values misleading?",
+  "read_only": true,
+  "reading": "The seed explains 78.8% of the variance in per-seed validation RankIC and the hyperparameters 17.2%, but those two numbers are not competing for the same question. The seed swing is a level shift common to every config, so it inflates the apparent noise of any single measurement without making configs harder to compare. Blocked on seed, the config effect is decisive (p~2e-9) and the learning-rate and hidden-dim margins are real. What is NOT resolvable is the top of the ranking: the SE of a config mean is 0.00133 while the rank1-to-rank2 gap is 0.00123, so the winner is picked from a tie at the top and only separates from roughly rank 5 downwards.",
+  "repository_module_executed": false,
+  "resolvability_ladder_by_ensemble_rank_ic": [
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "TCN",
+        "hidden_dim": 64,
+        "learning_rate": 0.0003
+      },
+      "config_index": 16,
+      "ensemble_rank_ic": 0.059238829903105104,
+      "gap_in_SE_of_a_config_mean": 0.0,
+      "gap_to_rank1": 0.0,
+      "per_seed": {
+        "20260801": 0.04956588408875686,
+        "20260802": 0.05657593310578804,
+        "20260803": 0.06712964019232637
+      },
+      "rank": 1
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "TCN",
+        "hidden_dim": 64,
+        "learning_rate": 0.0003
+      },
+      "config_index": 14,
+      "ensemble_rank_ic": 0.05801166178064738,
+      "gap_in_SE_of_a_config_mean": 0.9219648992192012,
+      "gap_to_rank1": 0.0012271681224577252,
+      "per_seed": {
+        "20260801": 0.04901361068478671,
+        "20260802": 0.05335959538368713,
+        "20260803": 0.06743006382214589
+      },
+      "rank": 2
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "GRU",
+        "hidden_dim": 64,
+        "learning_rate": 0.0003
+      },
+      "config_index": 0,
+      "ensemble_rank_ic": 0.05796521957207684,
+      "gap_in_SE_of_a_config_mean": 0.9568566841023495,
+      "gap_to_rank1": 0.0012736103310282618,
+      "per_seed": {
+        "20260801": 0.04721104335310143,
+        "20260802": 0.05548105464086526,
+        "20260803": 0.06740581136109206
+      },
+      "rank": 3
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "TCN",
+        "hidden_dim": 64,
+        "learning_rate": 0.0003
+      },
+      "config_index": 12,
+      "ensemble_rank_ic": 0.057061614252392694,
+      "gap_in_SE_of_a_config_mean": 1.6357305663769681,
+      "gap_to_rank1": 0.0021772156507124107,
+      "per_seed": {
+        "20260801": 0.0465895932185245,
+        "20260802": 0.052471385792159465,
+        "20260803": 0.06741067138343577
+      },
+      "rank": 4
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "GRU",
+        "hidden_dim": 64,
+        "learning_rate": 0.0003
+      },
+      "config_index": 2,
+      "ensemble_rank_ic": 0.05642587074560577,
+      "gap_in_SE_of_a_config_mean": 2.1133612898594074,
+      "gap_to_rank1": 0.0028129591574993368,
+      "per_seed": {
+        "20260801": 0.0453495421920238,
+        "20260802": 0.054429196674009146,
+        "20260803": 0.06657768970450123
+      },
+      "rank": 5
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "TCN",
+        "hidden_dim": 128,
+        "learning_rate": 0.0003
+      },
+      "config_index": 20,
+      "ensemble_rank_ic": 0.05626495394919068,
+      "gap_in_SE_of_a_config_mean": 2.234257225203936,
+      "gap_to_rank1": 0.0029738759539144274,
+      "per_seed": {
+        "20260801": 0.0468667167459332,
+        "20260802": 0.0503908474531405,
+        "20260803": 0.06681619038587046
+      },
+      "rank": 6
+    },
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "TCN",
+        "hidden_dim": 64,
+        "learning_rate": 0.001
+      },
+      "config_index": 17,
+      "ensemble_rank_ic": 0.0561180045310027,
+      "gap_in_SE_of_a_config_mean": 2.3446595433954,
+      "gap_to_rank1": 0.003120825372102405,
+      "per_seed": {
+        "20260801": 0.0485744110795429,
+        "20260802": 0.052462052304587115,
+        "20260803": 0.0633296005030804
+      },
+      "rank": 7
+    },
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "TCN",
+        "hidden_dim": 128,
+        "learning_rate": 0.0003
+      },
+      "config_index": 22,
+      "ensemble_rank_ic": 0.05610847291763483,
+      "gap_in_SE_of_a_config_mean": 2.3518205939452668,
+      "gap_to_rank1": 0.0031303569854702756,
+      "per_seed": {
+        "20260801": 0.046468332990456766,
+        "20260802": 0.05059163312352436,
+        "20260803": 0.06676148890762401
+      },
+      "rank": 8
+    },
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "GRU",
+        "hidden_dim": 64,
+        "learning_rate": 0.0003
+      },
+      "config_index": 4,
+      "ensemble_rank_ic": 0.05601450165389518,
+      "gap_in_SE_of_a_config_mean": 2.4224207057944147,
+      "gap_to_rank1": 0.003224328249209922,
+      "per_seed": {
+        "20260801": 0.04441425900385198,
+        "20260802": 0.054401721678179124,
+        "20260803": 0.06611284109688803
+      },
+      "rank": 9
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "GRU",
+        "hidden_dim": 128,
+        "learning_rate": 0.0003
+      },
+      "config_index": 8,
+      "ensemble_rank_ic": 0.055869363481830324,
+      "gap_in_SE_of_a_config_mean": 2.531462244383799,
+      "gap_to_rank1": 0.0033694664212747805,
+      "per_seed": {
+        "20260801": 0.04516514755810088,
+        "20260802": 0.05384837382095162,
+        "20260803": 0.06356338203348805
+      },
+      "rank": 10
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "TCN",
+        "hidden_dim": 64,
+        "learning_rate": 0.001
+      },
+      "config_index": 13,
+      "ensemble_rank_ic": 0.055745930821303566,
+      "gap_in_SE_of_a_config_mean": 2.624196547321032,
+      "gap_to_rank1": 0.0034928990818015385,
+      "per_seed": {
+        "20260801": 0.04786444805298342,
+        "20260802": 0.04958700753452358,
+        "20260803": 0.06432931142261492
+      },
+      "rank": 11
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "TCN",
+        "hidden_dim": 128,
+        "learning_rate": 0.0003
+      },
+      "config_index": 18,
+      "ensemble_rank_ic": 0.05549052722828259,
+      "gap_in_SE_of_a_config_mean": 2.8160799116217667,
+      "gap_to_rank1": 0.0037483026748225123,
+      "per_seed": {
+        "20260801": 0.04480729910470829,
+        "20260802": 0.05047843186027273,
+        "20260803": 0.0658255436990805
+      },
+      "rank": 12
+    },
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "GRU",
+        "hidden_dim": 128,
+        "learning_rate": 0.0003
+      },
+      "config_index": 10,
+      "ensemble_rank_ic": 0.05541897335037394,
+      "gap_in_SE_of_a_config_mean": 2.8698379604396167,
+      "gap_to_rank1": 0.003819856552731163,
+      "per_seed": {
+        "20260801": 0.0440321397892978,
+        "20260802": 0.05410963824201613,
+        "20260803": 0.06298541765386222
+      },
+      "rank": 13
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "TCN",
+        "hidden_dim": 64,
+        "learning_rate": 0.001
+      },
+      "config_index": 15,
+      "ensemble_rank_ic": 0.055234462868017836,
+      "gap_in_SE_of_a_config_mean": 3.0084597068468155,
+      "gap_to_rank1": 0.004004367035087268,
+      "per_seed": {
+        "20260801": 0.04701283220657515,
+        "20260802": 0.05122132088645691,
+        "20260803": 0.06253259223197764
+      },
+      "rank": 14
+    },
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "GRU",
+        "hidden_dim": 64,
+        "learning_rate": 0.001
+      },
+      "config_index": 5,
+      "ensemble_rank_ic": 0.05469235723630096,
+      "gap_in_SE_of_a_config_mean": 3.4157407916186595,
+      "gap_to_rank1": 0.0045464726668041425,
+      "per_seed": {
+        "20260801": 0.04244148202081816,
+        "20260802": 0.05314951641359472,
+        "20260803": 0.060696319948053384
+      },
+      "rank": 15
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "GRU",
+        "hidden_dim": 64,
+        "learning_rate": 0.001
+      },
+      "config_index": 3,
+      "ensemble_rank_ic": 0.05450420890380633,
+      "gap_in_SE_of_a_config_mean": 3.557095635533009,
+      "gap_to_rank1": 0.0047346209992987776,
+      "per_seed": {
+        "20260801": 0.04300382659456544,
+        "20260802": 0.049370592507273436,
+        "20260803": 0.0630169842299361
+      },
+      "rank": 16
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "GRU",
+        "hidden_dim": 128,
+        "learning_rate": 0.0003
+      },
+      "config_index": 6,
+      "ensemble_rank_ic": 0.05391970248498779,
+      "gap_in_SE_of_a_config_mean": 3.996232206681654,
+      "gap_to_rank1": 0.0053191274181173115,
+      "per_seed": {
+        "20260801": 0.045222671985343174,
+        "20260802": 0.04705628883376256,
+        "20260803": 0.06407199346256105
+      },
+      "rank": 17
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "GRU",
+        "hidden_dim": 64,
+        "learning_rate": 0.001
+      },
+      "config_index": 1,
+      "ensemble_rank_ic": 0.05321237157110328,
+      "gap_in_SE_of_a_config_mean": 4.527646169283692,
+      "gap_to_rank1": 0.006026458332001827,
+      "per_seed": {
+        "20260801": 0.040254795911732436,
+        "20260802": 0.04614206905941047,
+        "20260803": 0.0626747099540931
+      },
+      "rank": 18
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "TCN",
+        "hidden_dim": 128,
+        "learning_rate": 0.001
+      },
+      "config_index": 21,
+      "ensemble_rank_ic": 0.05316542459558365,
+      "gap_in_SE_of_a_config_mean": 4.562917182897471,
+      "gap_to_rank1": 0.006073405307521457,
+      "per_seed": {
+        "20260801": 0.04075753907325521,
+        "20260802": 0.0506598965570555,
+        "20260803": 0.059431437410579546
+      },
+      "rank": 19
+    },
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "TCN",
+        "hidden_dim": 128,
+        "learning_rate": 0.001
+      },
+      "config_index": 23,
+      "ensemble_rank_ic": 0.05260797552630389,
+      "gap_in_SE_of_a_config_mean": 4.981725710900164,
+      "gap_to_rank1": 0.006630854376801214,
+      "per_seed": {
+        "20260801": 0.04242899106823239,
+        "20260802": 0.048937666694432676,
+        "20260803": 0.05967974838113486
+      },
+      "rank": 20
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "TCN",
+        "hidden_dim": 128,
+        "learning_rate": 0.001
+      },
+      "config_index": 19,
+      "ensemble_rank_ic": 0.051169479252394255,
+      "gap_in_SE_of_a_config_mean": 6.062460329027422,
+      "gap_to_rank1": 0.00806935065071085,
+      "per_seed": {
+        "20260801": 0.04186322533828013,
+        "20260802": 0.044765803240465425,
+        "20260803": 0.0567262060519073
+      },
+      "rank": 21
+    },
+    {
+      "config": {
+        "dropout": 0.0,
+        "family": "GRU",
+        "hidden_dim": 128,
+        "learning_rate": 0.001
+      },
+      "config_index": 7,
+      "ensemble_rank_ic": 0.05046379903293585,
+      "gap_in_SE_of_a_config_mean": 6.592634133665476,
+      "gap_to_rank1": 0.008775030870169252,
+      "per_seed": {
+        "20260801": 0.032024683829688254,
+        "20260802": 0.04307582488750646,
+        "20260803": 0.05928842281347856
+      },
+      "rank": 22
+    },
+    {
+      "config": {
+        "dropout": 0.2,
+        "family": "GRU",
+        "hidden_dim": 128,
+        "learning_rate": 0.001
+      },
+      "config_index": 11,
+      "ensemble_rank_ic": 0.049370760590447656,
+      "gap_in_SE_of_a_config_mean": 7.413828115996988,
+      "gap_to_rank1": 0.009868069312657449,
+      "per_seed": {
+        "20260801": 0.0328664043090819,
+        "20260802": 0.04411643739216829,
+        "20260803": 0.05766194384730704
+      },
+      "rank": 23
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "family": "GRU",
+        "hidden_dim": 128,
+        "learning_rate": 0.001
+      },
+      "config_index": 9,
+      "ensemble_rank_ic": 0.047942326093951035,
+      "gap_in_SE_of_a_config_mean": 8.487003374140238,
+      "gap_to_rank1": 0.01129650380915407,
+      "per_seed": {
+        "20260801": 0.028420140889727944,
+        "20260802": 0.04218853872911491,
+        "20260803": 0.058387623988345246
+      },
+      "rank": 24
+    }
+  ],
+  "the_trap": {
+    "conclusion_it_would_support": "the 24 configs are statistically indistinguishable, so the grid ranking is noise",
+    "correct_blocked_result": {
+      "F": 8.763803422612282,
+      "p": 3.242826958234832e-10
+    },
+    "naive_one_way_anova_on_the_72_raw_seed_values": {
+      "F": 0.43483107734448323,
+      "p": 0.9835017916353112
+    },
+    "reconciliation_of_the_two_independent_routes": {
+      "F_ind_divided_by_ratio_equals_F_cfg": "True",
+      "note": "the two agree exactly once the df the seed means consume is charged back; the two-way form is the correct one",
+      "one_way_on_seed_demeaned_rows": {
+        "F": 9.14483835403023,
+        "p": 8.62455836993917e-11,
+        "residual_df": 48
+      },
+      "ratio_of_residual_df": 1.0434782608695652,
+      "two_way_with_seed_as_block": {
+        "F": 8.763803422612282,
+        "p": 3.242826958234832e-10,
+        "residual_df": 46
+      }
+    },
+    "why_it_is_wrong": "the seed main effect is common to all 24 configs and cancels in any config-to-config comparison, but a one-way ANOVA leaves it in the residual, where it consumes almost all of the test's power"
+  },
+  "variance_decomposition": {
+    "SS_total": 0.006213109447151304,
+    "additivity_error": 4.336808689942018e-18,
+    "assertions_passed": [
+      "SS additive to 1e-12 relative",
+      "all effect vectors centred",
+      "independent route reproduces SS_cfg and SS_res exactly",
+      "df reconciliation exact"
+    ],
+    "config_main_effect": {
+      "F": 8.763803422612282,
+      "MS": 4.6579330153594495e-05,
+      "SS": 0.0010713245935326733,
+      "df": 23,
+      "p": 3.242826958234832e-10,
+      "share_of_total_variance": 0.1724296992746318
+    },
+    "residual_config_x_seed": {
+      "MS": 5.314967475583826e-06,
+      "SS": 0.000244488503876856,
+      "df": 46,
+      "share_of_total_variance": 0.03935042605582192
+    },
+    "seed_main_effect": {
+      "F": 460.70802617694517,
+      "MS": 0.0024486481748708855,
+      "SS": 0.004897296349741771,
+      "df": 2,
+      "p": 3.7525325942396812e-31,
+      "share_of_total_variance": 0.7882198746695456
+    }
+  },
+  "weights_loaded": false
+}
