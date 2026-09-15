@@ -1,0 +1,320 @@
+{
+ "question": "Under the SH/SZ union, is the pre-cutover perturbation confined to the 24 days that broke the floor?",
+ "census_window": [
+  "2022-01-01",
+  "2023-09-24"
+ ],
+ "census_days": 420,
+ "census_day_span": [
+  "2022-01-04",
+  "2023-09-22"
+ ],
+ "problem_days_total": 24,
+ "problem_days_present_in_census": 24,
+ "problem_days_missing_from_census": [],
+ "answer": "NO -- the perturbation is a property of the whole pre-cutover half, not of the 24 days. Under the SH/SZ union, 357 changes on a median 69.4% of securities on the 396 days that never broke the floor versus 73.9% on the 24 that did, and 471 on 64.8% versus 65.2%. The worst-perturbed pre-cutover days by 357 rank correlation are not problem days at all (min 0.8825 on a non-problem day vs 0.9704 worst among problem days). Coverage gain does differ (634 labels/day on problem days vs 545 elsewhere), but the 396 non-problem days still gain 400-657 labels each, so the union rewrites the pre-cutover segment everywhere.",
+ "problem_days": {
+  "n_days": 24,
+  "shsz": {
+   "coverage_gain": {
+    "min": 572.0,
+    "median": 633.5,
+    "max": 685.0
+   },
+   "grouped_471_gain": {
+    "min": 505.0,
+    "median": 525.0,
+    "max": 574.0
+   },
+   "f357__changed_rate": {
+    "min": 0.672636590342326,
+    "median": 0.7391611953814806,
+    "max": 0.9604151580979966
+   },
+   "f357__spearman": {
+    "min": 0.9703787392590832,
+    "median": 0.9896426326410594,
+    "max": 0.9960520558250577
+   },
+   "f357__median_rel": {
+    "min": 0.01589276248201794,
+    "median": 0.036782334905260075,
+    "max": 0.09078446685549409
+   },
+   "f357__p95_rel": {
+    "min": 0.4749733673842757,
+    "median": 0.7070328911243328,
+    "max": 1.2606916497374723
+   },
+   "f471__changed_rate": {
+    "min": 0.6470988213961922,
+    "median": 0.6518527016412419,
+    "max": 0.9178015564202334
+   },
+   "f471__spearman": {
+    "min": 0.9794860675431609,
+    "median": 0.9918705001983144,
+    "max": 0.9944540432384155
+   },
+   "f471__median_rel": {
+    "min": 0.018467239098085224,
+    "median": 0.029170571309192102,
+    "max": 0.06095439263168417
+   },
+   "f471__p95_rel": {
+    "min": 0.5331364592873389,
+    "median": 0.6405865638688037,
+    "max": 1.0179013850202154
+   }
+  },
+  "all": {
+   "coverage_gain": {
+    "min": 760.0,
+    "median": 834.5,
+    "max": 888.0
+   },
+   "grouped_471_gain": {
+    "min": 670.0,
+    "median": 720.5,
+    "max": 773.0
+   },
+   "f357__changed_rate": {
+    "min": 0.8975289050102018,
+    "median": 0.9049661351123387,
+    "max": 0.971344098248806
+   },
+   "f357__spearman": {
+    "min": 0.9637936906688052,
+    "median": 0.9842973658519142,
+    "max": 0.9938103273930188
+   },
+   "f357__median_rel": {
+    "min": 0.039319450784042864,
+    "median": 0.06790040446873073,
+    "max": 0.11170990951712871
+   },
+   "f357__p95_rel": {
+    "min": 0.6415808925394391,
+    "median": 0.8810270956148969,
+    "max": 1.5334011645769814
+   },
+   "f471__changed_rate": {
+    "min": 0.8534662647808949,
+    "median": 0.8744328488977711,
+    "max": 0.9402985074626866
+   },
+   "f471__spearman": {
+    "min": 0.9727851910151305,
+    "median": 0.9860696928583043,
+    "max": 0.989212249770722
+   },
+   "f471__median_rel": {
+    "min": 0.055553640462584986,
+    "median": 0.0708643248394605,
+    "max": 0.09813391788404041
+   },
+   "f471__p95_rel": {
+    "min": 0.7617261744206014,
+    "median": 0.8670345901724095,
+    "max": 1.2390864722660748
+   }
+  }
+ },
+ "non_problem_days": {
+  "n_days": 396,
+  "shsz": {
+   "coverage_gain": {
+    "min": 400.0,
+    "median": 545.0,
+    "max": 657.0
+   },
+   "grouped_471_gain": {
+    "min": 365.0,
+    "median": 469.0,
+    "max": 558.0
+   },
+   "f357__changed_rate": {
+    "min": 0.6377635631366975,
+    "median": 0.6935951796474001,
+    "max": 0.954975236380009
+   },
+   "f357__spearman": {
+    "min": 0.8824513490681444,
+    "median": 0.9916185348505844,
+    "max": 0.9982182253515662
+   },
+   "f357__median_rel": {
+    "min": 0.007375324402373536,
+    "median": 0.03163854886819378,
+    "max": 0.14952553864595433
+   },
+   "f357__p95_rel": {
+    "min": 0.2725110213487672,
+    "median": 0.6284824877908315,
+    "max": 3.119728452084996
+   },
+   "f471__changed_rate": {
+    "min": 0.6260085429520645,
+    "median": 0.6484765802637562,
+    "max": 0.8652885052248978
+   },
+   "f471__spearman": {
+    "min": 0.9221758326533589,
+    "median": 0.9897029904875718,
+    "max": 0.996250248554774
+   },
+   "f471__median_rel": {
+    "min": 0.01066105948116856,
+    "median": 0.026623365502534725,
+    "max": 0.06900694270329587
+   },
+   "f471__p95_rel": {
+    "min": 0.3662886527933835,
+    "median": 0.634593022947686,
+    "max": 1.0537378241682367
+   }
+  },
+  "all": {
+   "coverage_gain": {
+    "min": 483.0,
+    "median": 669.0,
+    "max": 875.0
+   },
+   "grouped_471_gain": {
+    "min": 442.0,
+    "median": 582.5,
+    "max": 773.0
+   },
+   "f357__changed_rate": {
+    "min": 0.8135512911632314,
+    "median": 0.8699612844454566,
+    "max": 0.9819900945520036
+   },
+   "f357__spearman": {
+    "min": 0.8899976856209649,
+    "median": 0.990354544578346,
+    "max": 0.9982094812617895
+   },
+   "f357__median_rel": {
+    "min": 0.019325955296211093,
+    "median": 0.049066258426560774,
+    "max": 0.1773545379889012
+   },
+   "f357__p95_rel": {
+    "min": 0.3010518545866169,
+    "median": 0.6988325325319489,
+    "max": 3.1235356725022863
+   },
+   "f471__changed_rate": {
+    "min": 0.7731251478590017,
+    "median": 0.8187448936268311,
+    "max": 0.9557019536574285
+   },
+   "f471__spearman": {
+    "min": 0.9533540366094325,
+    "median": 0.9850489942302182,
+    "max": 0.9954900797599978
+   },
+   "f471__median_rel": {
+    "min": 0.024435964289067368,
+    "median": 0.05717864056955943,
+    "max": 0.11090990902792042
+   },
+   "f471__p95_rel": {
+    "min": 0.4665168488015104,
+    "median": 0.8366130942962539,
+    "max": 1.298671417646343
+   }
+  }
+ },
+ "group_tests_shsz": {
+  "coverage_gain": {
+   "problem_median": 633.5,
+   "non_problem_median": 545.0,
+   "mannwhitney_p": 1.1266503082614665e-09
+  },
+  "grouped_471_gain": {
+   "problem_median": 525.0,
+   "non_problem_median": 469.0,
+   "mannwhitney_p": 1.5063270814607601e-09
+  },
+  "f357__changed_rate": {
+   "problem_median": 0.7391611953814806,
+   "non_problem_median": 0.6935951796474001,
+   "mannwhitney_p": 5.589017167282289e-07
+  },
+  "f357__spearman": {
+   "problem_median": 0.9896426326410594,
+   "non_problem_median": 0.9916185348505844,
+   "mannwhitney_p": 0.05849291089002202
+  },
+  "f471__changed_rate": {
+   "problem_median": 0.6518527016412419,
+   "non_problem_median": 0.6484765802637562,
+   "mannwhitney_p": 0.004121253365518024
+  },
+  "f471__spearman": {
+   "problem_median": 0.9918705001983144,
+   "non_problem_median": 0.9897029904875718,
+   "mannwhitney_p": 0.28724366291001824
+  }
+ },
+ "worst_5_days_by_f357_spearman": [
+  {
+   "day": "2022-06-02",
+   "f357__spearman": 0.8824513490681444,
+   "is_problem": false
+  },
+  {
+   "day": "2022-05-31",
+   "f357__spearman": 0.9315200307032891,
+   "is_problem": false
+  },
+  {
+   "day": "2023-08-18",
+   "f357__spearman": 0.9426019384282889,
+   "is_problem": false
+  },
+  {
+   "day": "2022-06-01",
+   "f357__spearman": 0.9468671785506647,
+   "is_problem": false
+  },
+  {
+   "day": "2023-08-10",
+   "f357__spearman": 0.9554159771473758,
+   "is_problem": false
+  }
+ ],
+ "worst_5_days_by_f471_spearman": [
+  {
+   "day": "2023-09-07",
+   "f471__spearman": 0.9221758326533589,
+   "is_problem": false
+  },
+  {
+   "day": "2023-03-10",
+   "f471__spearman": 0.9566018175136011,
+   "is_problem": false
+  },
+  {
+   "day": "2022-11-25",
+   "f471__spearman": 0.9588259701028248,
+   "is_problem": false
+  },
+  {
+   "day": "2023-04-07",
+   "f471__spearman": 0.9598851821046673,
+   "is_problem": false
+  },
+  {
+   "day": "2023-04-10",
+   "f471__spearman": 0.9638859000521919,
+   "is_problem": false
+  }
+ ],
+ "scipy_available": true,
+ "database_writes": false,
+ "weights_written": false,
+ "cache_writes": false
+}

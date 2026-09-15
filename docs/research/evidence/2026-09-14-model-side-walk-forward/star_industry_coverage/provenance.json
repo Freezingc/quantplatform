@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T01:07:11+00:00",
+  "generated_at_utc": "2026-09-15T02:27:49+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -54,6 +54,10 @@
     "label_source_census_postcutover.json": {
       "bytes": 851535,
       "sha256": "b48e2cd594bfa979dbd72090b0caf86a42afb7c451d2dd3bf69970fb3234ed82"
+    },
+    "label_source_census_precutover_split.json": {
+      "bytes": 7910,
+      "sha256": "931a1cb772d97e104b13c48903158663882024daeef1c09641e7e3f5a29e3225"
     },
     "label_source_decomposition_20241118.json": {
       "bytes": 498,
@@ -596,6 +600,10 @@
     "summarize_label_source_sweep.py": {
       "bytes": 7375,
       "sha256": "edec5d5f10ca28ac59b2574abf614a2c361c617f4fb1cd884f771f377f3fe0d7"
+    },
+    "summarize_precutover_census_split.py": {
+      "bytes": 6270,
+      "sha256": "eec67a5442e2e16b2cb26eefe5eb37c0b6fbdf5a90835d0b54a8d636f2dd66e3"
     }
   },
   "repository_main_tree": {
@@ -608,7 +616,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "bb26a11f21b4b31bdf3ad6886c1c417dd25f67da"
+    "commit_at_generation": "383e2351ffbe9362018d62662ce584fb8b9cd548"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",
