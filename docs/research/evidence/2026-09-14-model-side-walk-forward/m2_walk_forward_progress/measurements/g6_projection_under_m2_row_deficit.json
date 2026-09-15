@@ -1,0 +1,378 @@
+{
+  "database_access": false,
+  "folds": {
+    "F1": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "error_band_on_days_below_floor": {
+        "draws": 20,
+        "optimistic": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        },
+        "pessimistic": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        },
+        "what_they_are": "optimistic keeps each projected-unscoreable row with probability = the rule's measured precision 0.9369; pessimistic adds rows until the count equals projected / recall 0.9723. Both are row-level perturbations of one rule, not alternative mechanisms."
+      },
+      "step1_reconstruction_of_the_baseline_key_set": {
+        "baseline_key_rows": 746521,
+        "coverage_median": {
+          "absdiff": 0.0,
+          "preregistered": 0.9253990284831323,
+          "reconstructed": 0.9253990284831323
+        },
+        "coverage_min": {
+          "absdiff": 0.0,
+          "preregistered": 0.8950819672131147,
+          "reconstructed": 0.8950819672131147
+        },
+        "days": {
+          "match": true,
+          "preregistered": 242,
+          "reconstructed": 242
+        },
+        "days_below_floor": {
+          "match": true,
+          "preregistered": 1,
+          "reconstructed": 1
+        },
+        "valid_days_at_or_above_floor": {
+          "match": true,
+          "preregistered": 241,
+          "reconstructed": 241
+        },
+        "valid_label_rows": 803572
+      },
+      "step1_reproduces_the_preregistration": true,
+      "step2_projection": {
+        "coverage_after": {
+          "median": 0.92002442002442,
+          "min": 0.8897168405365127
+        },
+        "coverage_before": {
+          "median": 0.9253990284831323,
+          "min": 0.8950819672131147
+        },
+        "days_below_floor_after": 1,
+        "days_below_floor_before": 1,
+        "days_near_the_floor_before": {
+          "in_[0.900,0.905)": 0,
+          "in_[0.905,0.910)": 9
+        },
+        "days_pushed_below_the_floor_by_the_candidate": 0,
+        "of_which_the_baseline_would_have_scored": 4912,
+        "per_day_coverage_delta": {
+          "days_changed": 242,
+          "days_total": 242,
+          "max": -0.002560819462227859,
+          "median": -0.005930087968426645,
+          "min": -0.010484119642306555
+        },
+        "preceding_split": "validation",
+        "preceding_split_distinct_securities": 3884,
+        "projected_unscoreable_valid_label_rows": 7627,
+        "rule": "a security absent from the fold's validation split cannot be scored until it has 15 rows inside the test split (validated on F1 validation at precision 0.9369 / recall 0.9723)",
+        "securities_absent_from_the_preceding_split": 542,
+        "securities_total": 4342,
+        "window_start": "2022-01-04"
+      }
+    },
+    "F2": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "error_band_on_days_below_floor": {
+        "draws": 20,
+        "optimistic": {
+          "max": 63,
+          "median": 62,
+          "min": 61
+        },
+        "pessimistic": {
+          "max": 67,
+          "median": 65,
+          "min": 63
+        },
+        "what_they_are": "optimistic keeps each projected-unscoreable row with probability = the rule's measured precision 0.9369; pessimistic adds rows until the count equals projected / recall 0.9723. Both are row-level perturbations of one rule, not alternative mechanisms."
+      },
+      "step1_reconstruction_of_the_baseline_key_set": {
+        "baseline_key_rows": 820309,
+        "coverage_median": {
+          "absdiff": 0.0,
+          "preregistered": 0.9092936592336784,
+          "reconstructed": 0.9092936592336784
+        },
+        "coverage_min": {
+          "absdiff": 0.0,
+          "preregistered": 0.8902674386545354,
+          "reconstructed": 0.8902674386545354
+        },
+        "days": {
+          "match": true,
+          "preregistered": 242,
+          "reconstructed": 242
+        },
+        "days_below_floor": {
+          "match": true,
+          "preregistered": 23,
+          "reconstructed": 23
+        },
+        "valid_days_at_or_above_floor": {
+          "match": true,
+          "preregistered": 219,
+          "reconstructed": 219
+        },
+        "valid_label_rows": 881863
+      },
+      "step1_reproduces_the_preregistration": true,
+      "step2_projection": {
+        "coverage_after": {
+          "median": 0.9038515285720428,
+          "min": 0.8864074993107252
+        },
+        "coverage_before": {
+          "median": 0.9092936592336784,
+          "min": 0.8902674386545354
+        },
+        "days_below_floor_after": 63,
+        "days_below_floor_before": 23,
+        "days_near_the_floor_before": {
+          "in_[0.900,0.905)": 42,
+          "in_[0.905,0.910)": 69
+        },
+        "days_pushed_below_the_floor_by_the_candidate": 40,
+        "of_which_the_baseline_would_have_scored": 4550,
+        "per_day_coverage_delta": {
+          "days_changed": 242,
+          "days_total": 242,
+          "max": -0.0023815824292141574,
+          "median": -0.005039915895565628,
+          "min": -0.008960086885691054
+        },
+        "preceding_split": "validation",
+        "preceding_split_distinct_securities": 4327,
+        "projected_unscoreable_valid_label_rows": 6495,
+        "rule": "a security absent from the fold's validation split cannot be scored until it has 15 rows inside the test split (validated on F1 validation at precision 0.9369 / recall 0.9723)",
+        "securities_absent_from_the_preceding_split": 452,
+        "securities_total": 4716,
+        "window_start": "2023-01-03"
+      }
+    },
+    "F3": {
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "error_band_on_days_below_floor": {
+        "draws": 20,
+        "optimistic": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        },
+        "pessimistic": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        },
+        "what_they_are": "optimistic keeps each projected-unscoreable row with probability = the rule's measured precision 0.9369; pessimistic adds rows until the count equals projected / recall 0.9723. Both are row-level perturbations of one rule, not alternative mechanisms."
+      },
+      "step1_reconstruction_of_the_baseline_key_set": {
+        "baseline_key_rows": 923745,
+        "coverage_median": {
+          "absdiff": 0.0,
+          "preregistered": 0.9924234358393046,
+          "reconstructed": 0.9924234358393046
+        },
+        "coverage_min": {
+          "absdiff": 0.0,
+          "preregistered": 0.9711145194274029,
+          "reconstructed": 0.9711145194274029
+        },
+        "days": {
+          "match": true,
+          "preregistered": 242,
+          "reconstructed": 242
+        },
+        "days_below_floor": {
+          "match": true,
+          "preregistered": 0,
+          "reconstructed": 0
+        },
+        "valid_days_at_or_above_floor": {
+          "match": true,
+          "preregistered": 242,
+          "reconstructed": 242
+        },
+        "valid_label_rows": 931411
+      },
+      "step1_reproduces_the_preregistration": true,
+      "step2_projection": {
+        "coverage_after": {
+          "median": 0.9885272626595267,
+          "min": 0.9693251533742331
+        },
+        "coverage_before": {
+          "median": 0.9924234358393046,
+          "min": 0.9711145194274029
+        },
+        "days_below_floor_after": 0,
+        "days_below_floor_before": 0,
+        "days_near_the_floor_before": {
+          "in_[0.900,0.905)": 0,
+          "in_[0.905,0.910)": 0
+        },
+        "days_pushed_below_the_floor_by_the_candidate": 0,
+        "of_which_the_baseline_would_have_scored": 4039,
+        "per_day_coverage_delta": {
+          "days_changed": 242,
+          "days_total": 242,
+          "max": -0.0013161358252171684,
+          "median": -0.004439820895689339,
+          "min": -0.008961518186610506
+        },
+        "preceding_split": "validation",
+        "preceding_split_distinct_securities": 4704,
+        "projected_unscoreable_valid_label_rows": 4282,
+        "rule": "a security absent from the fold's validation split cannot be scored until it has 15 rows inside the test split (validated on F1 validation at precision 0.9369 / recall 0.9723)",
+        "securities_absent_from_the_preceding_split": 297,
+        "securities_total": 4883,
+        "window_start": "2024-01-02"
+      }
+    },
+    "F4": {
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "error_band_on_days_below_floor": {
+        "draws": 20,
+        "optimistic": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        },
+        "pessimistic": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        },
+        "what_they_are": "optimistic keeps each projected-unscoreable row with probability = the rule's measured precision 0.9369; pessimistic adds rows until the count equals projected / recall 0.9723. Both are row-level perturbations of one rule, not alternative mechanisms."
+      },
+      "step1_reconstruction_of_the_baseline_key_set": {
+        "baseline_key_rows": 922985,
+        "coverage_median": {
+          "absdiff": 0.0,
+          "preregistered": 0.9859442882698697,
+          "reconstructed": 0.9859442882698697
+        },
+        "coverage_min": {
+          "absdiff": 0.0,
+          "preregistered": 0.980854969840021,
+          "reconstructed": 0.980854969840021
+        },
+        "days": {
+          "match": true,
+          "preregistered": 243,
+          "reconstructed": 243
+        },
+        "days_below_floor": {
+          "match": true,
+          "preregistered": 0,
+          "reconstructed": 0
+        },
+        "valid_days_at_or_above_floor": {
+          "match": true,
+          "preregistered": 243,
+          "reconstructed": 243
+        },
+        "valid_label_rows": 936317
+      },
+      "step1_reproduces_the_preregistration": true,
+      "step2_projection": {
+        "coverage_after": {
+          "median": 0.9831158864159631,
+          "min": 0.978232362968791
+        },
+        "coverage_before": {
+          "median": 0.9859442882698697,
+          "min": 0.980854969840021
+        },
+        "days_below_floor_after": 0,
+        "days_below_floor_before": 0,
+        "days_near_the_floor_before": {
+          "in_[0.900,0.905)": 0,
+          "in_[0.905,0.910)": 0
+        },
+        "days_pushed_below_the_floor_by_the_candidate": 0,
+        "of_which_the_baseline_would_have_scored": 2519,
+        "per_day_coverage_delta": {
+          "days_changed": 243,
+          "days_total": 243,
+          "max": -0.0002621231979029748,
+          "median": -0.0028140189306727903,
+          "min": -0.005102040816326481
+        },
+        "preceding_split": "validation",
+        "preceding_split_distinct_securities": 4877,
+        "projected_unscoreable_valid_label_rows": 2546,
+        "rule": "a security absent from the fold's validation split cannot be scored until it has 15 rows inside the test split (validated on F1 validation at precision 0.9369 / recall 0.9723)",
+        "securities_absent_from_the_preceding_split": 176,
+        "securities_total": 4912,
+        "window_start": "2025-01-02"
+      }
+    }
+  },
+  "generated_at_local": "2026-09-15T15:49:47",
+  "pooled_projection": {
+    "comparison_with_the_decision_sheets_floor_cliff": {
+      "that_measurement": "the decision sheet §3 measured that raising the 0.90 floor by 0.005 takes the days below it from 24 to 66 and G6 from 0.9752 to 0.9319",
+      "this_projection": "24 to 64 and G6 to 0.9340",
+      "why_they_are_so_close": "M2's projected per-day coverage loss has a median of 0.0028-0.0059 across the four test splits, i.e. the same order as a 0.005 floor raise. Losing rows from the numerator and raising the floor are the same operation on the same ratio."
+    },
+    "days_below_floor_after": 64,
+    "days_below_floor_before": 24,
+    "error_band_on_the_pooled_day_count": {
+      "g6_optimistic": 0.934984520123839,
+      "g6_pessimistic": 0.9318885448916409,
+      "note": "summing per-fold medians is not the median of the sum; it is quoted because the four folds' day counts are what G6 pools, and the spread inside each fold is small",
+      "optimistic_median_sum_over_folds": 63,
+      "pessimistic_median_sum_over_folds": 66
+    },
+    "g6_after": 0.9339525283797729,
+    "g6_after_clears_the_gate": false,
+    "g6_before": 0.9752321981424149,
+    "g6_gate_threshold": 0.95,
+    "g6_preregistered": 0.9752321981424149,
+    "oos_days": 969
+  },
+  "question": "M2 cannot score some valid-label rows. G6 reads the intersection of the candidate's and the baseline's key sets. Does that deficit push OOS days below the 0.90 floor, and by how much does G6 move?",
+  "read_only": true,
+  "step1_verdict": {
+    "every_fold_reproduces_the_preregistration": true,
+    "why_it_matters": "the baseline artifact's key set is reconstructed here as 'all nine dense columns non-null'. If that reconstruction reproduces the day counts, coverage min/median and below-floor counts the pre-registration recorded from the real artifact, then the same reconstruction is trustworthy in step 2"
+  },
+  "the_rule_and_how_it_was_chosen": {
+    "candidates_compared": {
+      "absent from preceding & first appearance inside & seq<15": {
+        "precision": 0.937,
+        "recall": 0.9485
+      },
+      "absent from the preceding split & seq<15": {
+        "precision": 0.9369,
+        "recall": 0.9723
+      },
+      "first appearance inside this split & seq<15": {
+        "precision": 0.2926,
+        "recall": 0.9547
+      },
+      "seq<15 alone": {
+        "precision": 0.0823,
+        "recall": 1.0
+      }
+    },
+    "chosen": "absent from the preceding split & seq<15",
+    "corroborating_census": "of the 367 securities with at least one unscoreable valid-label row on F1 validation, 347 are absent from the train split and only 20 are present",
+    "residual_error": "precision 0.9369 and recall 0.9723 on the one split where ground truth exists, so the projected row counts below carry roughly a +6% / -3% error band and the day counts that follow from them carry more",
+    "rule": "a security that does not appear anywhere in the PRECEDING split cannot be scored until it has accumulated 15 rows inside the current split",
+    "validated_on": "the F1 validation split, where M2's real predictions exist",
+    "why": "highest precision at recall above 0.97; the weaker variants over-project by 3-12x"
+  },
+  "this_is_a_projection": "M2's test predictions do not exist yet. Step 2 applies a rule, so every post-step-1 number is a projection with a stated rule, not an observation.",
+  "weights_loaded": false
+}

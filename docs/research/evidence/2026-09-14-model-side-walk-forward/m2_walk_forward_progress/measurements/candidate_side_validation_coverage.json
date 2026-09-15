@@ -1,0 +1,93 @@
+{
+ "F1": {
+  "valid_label_rows": 695819,
+  "days": 237,
+  "M0R": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M1-full": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M2": {
+   "min": 0.9863651479880279,
+   "median": 0.9934909215484755,
+   "max": 0.9986033519553073,
+   "days_below_1": 237,
+   "days_below_0.99": 31,
+   "overall": 0.993213752426996
+  }
+ },
+ "F2": {
+  "valid_label_rows": 782500,
+  "days": 236,
+  "M0R": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M1-full": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M2": "absent"
+ },
+ "F3": {
+  "valid_label_rows": 859188,
+  "days": 236,
+  "M0R": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M1-full": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M2": "absent"
+ },
+ "F4": {
+  "valid_label_rows": 907933,
+  "days": 236,
+  "M0R": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M1-full": {
+   "min": 1.0,
+   "median": 1.0,
+   "max": 1.0,
+   "days_below_1": 0,
+   "days_below_0.99": 0,
+   "overall": 1.0
+  },
+  "M2": "absent"
+ }
+}

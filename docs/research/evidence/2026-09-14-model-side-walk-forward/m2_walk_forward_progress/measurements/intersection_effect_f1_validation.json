@@ -1,0 +1,26 @@
+{
+ "valid_label_rows": 695819,
+ "baseline_eligible_rows": 656865,
+ "intersection_rows": 653974,
+ "rows_baseline_scores_m2_does_not": 2891,
+ "m2_dropped_valid_rows_baseline_would_score": 2891,
+ "m2_dropped_valid_rows_baseline_also_drops": 1831,
+ "baseline_only_coverage": {
+  "min": 0.8495803744351195,
+  "median": 0.9426149331594392,
+  "days_below_0.90": 1
+ },
+ "intersection_coverage": {
+  "min": 0.8457069076823758,
+  "median": 0.9363725811741554,
+  "days_below_0.90": 1
+ },
+ "coverage_delta": {
+  "min": -0.009324009324009341,
+  "median": -0.003873466752743693,
+  "max": -0.0010474860335195624,
+  "days_changed": 237,
+  "days_total": 237
+ },
+ "days_crossing_the_floor_because_of_m2": 0
+}
