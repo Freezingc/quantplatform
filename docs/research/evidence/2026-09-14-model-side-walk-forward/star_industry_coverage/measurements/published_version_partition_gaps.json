@@ -1,0 +1,45 @@
+{
+ "question": "Does factor_daily have a published version for every partition that universe_daily and label_daily have?",
+ "partition_counts": {
+  "universe_daily": 151,
+  "label_daily": 151,
+  "factor_daily": 144
+ },
+ "in_universe_not_in_factor": [
+  "2026-01",
+  "2026-02",
+  "2026-03",
+  "2026-04",
+  "2026-05",
+  "2026-06",
+  "2026-07"
+ ],
+ "in_label_not_in_factor": [
+  "2026-01",
+  "2026-02",
+  "2026-03",
+  "2026-04",
+  "2026-05",
+  "2026-06",
+  "2026-07"
+ ],
+ "in_factor_not_in_universe": [],
+ "spans": {
+  "universe_daily": [
+   "2014-01",
+   "2026-07"
+  ],
+  "label_daily": [
+   "2014-01",
+   "2026-07"
+  ],
+  "factor_daily": [
+   "2014-01",
+   "2025-12"
+  ]
+ },
+ "oos_window": "2022-01..2025-12",
+ "oos_partitions_missing_factor_daily": [],
+ "database_writes": false,
+ "weights_written": false
+}

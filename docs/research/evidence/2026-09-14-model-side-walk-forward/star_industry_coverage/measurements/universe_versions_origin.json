@@ -1,0 +1,477 @@
+{
+ "question": "Why do four cn_liquid_a versions coexist, and which one did label_daily use?",
+ "universe_id": "cn_liquid_a",
+ "days": [
+  "2024-12-19",
+  "2024-12-20",
+  "2025-01-07"
+ ],
+ "per_day": [
+  {
+   "day": "2024-12-19",
+   "n_versions": 1,
+   "versions_in_created_order": [
+    {
+     "run_id": [
+      "a9b5228f-9ddc-485b-8bd5-b7a976f9850a"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 09:51:15.582000",
+     "created_max": "2026-08-02 09:51:15.582000",
+     "members": 3919,
+     "source_watermark_ids": [
+      "976257cac887735694c4f41a5f092e33da49a825c4570c7bc4ddc9eaf29f61b6"
+     ],
+     "adv20_rank_max": 3919,
+     "membership_rank_max": 3919,
+     "data_version": "6b95095b1b637d35"
+    }
+   ],
+   "lexicographic_max": "6b95095b1b637d35",
+   "newest_by_created_at": "6b95095b1b637d35",
+   "rule_picks_the_newest": true,
+   "pairwise_set_differences": [],
+   "label_daily": {
+    "run_ids": [
+     "d8a73fce-8fee-4cc7-b7fb-5e8a17004354"
+    ],
+    "data_versions": [
+     "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e"
+    ],
+    "created_min": "2026-08-02 09:52:08.749000",
+    "created_max": "2026-08-02 09:52:08.749000",
+    "source_watermark_ids": [
+     "1eb8063e19068d5c4fc38faf849face4667649e13e153f37bf21459dd3965074"
+    ],
+    "valid_rows": 3915
+   },
+   "best_matching_version_for_label_rows": {
+    "data_version": "6b95095b1b637d35",
+    "created_max": "2026-08-02 09:51:15.582000",
+    "members": 3919,
+    "is_the_lexicographic_max": true,
+    "is_the_newest": true,
+    "label_rows_inside_this_version": 3915,
+    "label_rows_outside_this_version": 0,
+    "version_members_without_a_valid_label": 4,
+    "jaccard_with_label_rows": 0.9989793314621077
+   },
+   "version_match_table": [
+    {
+     "data_version": "6b95095b1b637d35",
+     "created_max": "2026-08-02 09:51:15.582000",
+     "members": 3919,
+     "is_the_lexicographic_max": true,
+     "is_the_newest": true,
+     "label_rows_inside_this_version": 3915,
+     "label_rows_outside_this_version": 0,
+     "version_members_without_a_valid_label": 4,
+     "jaccard_with_label_rows": 0.9989793314621077
+    }
+   ]
+  },
+  {
+   "day": "2024-12-20",
+   "n_versions": 4,
+   "versions_in_created_order": [
+    {
+     "run_id": [
+      "02ad5093-f94f-40f9-9c6b-38ded43b1fe6",
+      "8e1bbf70-c7fa-4d7a-ac12-79e5afc6782e"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 04:49:38.898000",
+     "created_max": "2026-08-02 04:50:32.463000",
+     "members": 3912,
+     "source_watermark_ids": [
+      "57f6f952f543296784041d4157977440a25bcc83c7263481042128603e60b18b"
+     ],
+     "adv20_rank_max": 3912,
+     "membership_rank_max": 3912,
+     "data_version": "f0a6c677e06abf43"
+    },
+    {
+     "run_id": [
+      "6bff65c7-9861-4071-884c-724303f349ee"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 04:55:24.859000",
+     "created_max": "2026-08-02 04:55:24.859000",
+     "members": 3912,
+     "source_watermark_ids": [
+      "57f6f952f543296784041d4157977440a25bcc83c7263481042128603e60b18b"
+     ],
+     "adv20_rank_max": 3912,
+     "membership_rank_max": 3912,
+     "data_version": "f8faafb8b358be19"
+    },
+    {
+     "run_id": [
+      "37bc2225-4582-4f5c-86cb-0176a0a312bc"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 05:58:43.918000",
+     "created_max": "2026-08-02 05:58:43.918000",
+     "members": 3912,
+     "source_watermark_ids": [
+      "5c9efc148cdd47095d00d70ddcb2c59e924cba43884b940db2a13068bd4d57a2"
+     ],
+     "adv20_rank_max": 3912,
+     "membership_rank_max": 3912,
+     "data_version": "5dd280533541ca4f"
+    },
+    {
+     "run_id": [
+      "a9b5228f-9ddc-485b-8bd5-b7a976f9850a"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 09:51:15.582000",
+     "created_max": "2026-08-02 09:51:15.582000",
+     "members": 3920,
+     "source_watermark_ids": [
+      "976257cac887735694c4f41a5f092e33da49a825c4570c7bc4ddc9eaf29f61b6"
+     ],
+     "adv20_rank_max": 3920,
+     "membership_rank_max": 3920,
+     "data_version": "6b95095b1b637d35"
+    }
+   ],
+   "lexicographic_max": "f8faafb8b358be19",
+   "newest_by_created_at": "6b95095b1b637d35",
+   "rule_picks_the_newest": false,
+   "pairwise_set_differences": [
+    {
+     "a": "f0a6c677e06abf43",
+     "b": "f8faafb8b358be19",
+     "a_only": 0,
+     "b_only": 0,
+     "shared": 3912,
+     "identical": true
+    },
+    {
+     "a": "f0a6c677e06abf43",
+     "b": "5dd280533541ca4f",
+     "a_only": 0,
+     "b_only": 0,
+     "shared": 3912,
+     "identical": true
+    },
+    {
+     "a": "f0a6c677e06abf43",
+     "b": "6b95095b1b637d35",
+     "a_only": 58,
+     "b_only": 66,
+     "shared": 3854,
+     "identical": false
+    },
+    {
+     "a": "f8faafb8b358be19",
+     "b": "5dd280533541ca4f",
+     "a_only": 0,
+     "b_only": 0,
+     "shared": 3912,
+     "identical": true
+    },
+    {
+     "a": "f8faafb8b358be19",
+     "b": "6b95095b1b637d35",
+     "a_only": 58,
+     "b_only": 66,
+     "shared": 3854,
+     "identical": false
+    },
+    {
+     "a": "5dd280533541ca4f",
+     "b": "6b95095b1b637d35",
+     "a_only": 58,
+     "b_only": 66,
+     "shared": 3854,
+     "identical": false
+    }
+   ],
+   "label_daily": {
+    "run_ids": [
+     "d8a73fce-8fee-4cc7-b7fb-5e8a17004354"
+    ],
+    "data_versions": [
+     "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e"
+    ],
+    "created_min": "2026-08-02 09:52:08.749000",
+    "created_max": "2026-08-02 09:52:08.749000",
+    "source_watermark_ids": [
+     "1eb8063e19068d5c4fc38faf849face4667649e13e153f37bf21459dd3965074"
+    ],
+    "valid_rows": 3912
+   },
+   "best_matching_version_for_label_rows": {
+    "data_version": "6b95095b1b637d35",
+    "created_max": "2026-08-02 09:51:15.582000",
+    "members": 3920,
+    "is_the_lexicographic_max": false,
+    "is_the_newest": true,
+    "label_rows_inside_this_version": 3912,
+    "label_rows_outside_this_version": 0,
+    "version_members_without_a_valid_label": 8,
+    "jaccard_with_label_rows": 0.9979591836734694
+   },
+   "version_match_table": [
+    {
+     "data_version": "6b95095b1b637d35",
+     "created_max": "2026-08-02 09:51:15.582000",
+     "members": 3920,
+     "is_the_lexicographic_max": false,
+     "is_the_newest": true,
+     "label_rows_inside_this_version": 3912,
+     "label_rows_outside_this_version": 0,
+     "version_members_without_a_valid_label": 8,
+     "jaccard_with_label_rows": 0.9979591836734694
+    },
+    {
+     "data_version": "5dd280533541ca4f",
+     "created_max": "2026-08-02 05:58:43.918000",
+     "members": 3912,
+     "is_the_lexicographic_max": false,
+     "is_the_newest": false,
+     "label_rows_inside_this_version": 3847,
+     "label_rows_outside_this_version": 65,
+     "version_members_without_a_valid_label": 65,
+     "jaccard_with_label_rows": 0.9673120442544632
+    },
+    {
+     "data_version": "f0a6c677e06abf43",
+     "created_max": "2026-08-02 04:50:32.463000",
+     "members": 3912,
+     "is_the_lexicographic_max": false,
+     "is_the_newest": false,
+     "label_rows_inside_this_version": 3847,
+     "label_rows_outside_this_version": 65,
+     "version_members_without_a_valid_label": 65,
+     "jaccard_with_label_rows": 0.9673120442544632
+    },
+    {
+     "data_version": "f8faafb8b358be19",
+     "created_max": "2026-08-02 04:55:24.859000",
+     "members": 3912,
+     "is_the_lexicographic_max": true,
+     "is_the_newest": false,
+     "label_rows_inside_this_version": 3847,
+     "label_rows_outside_this_version": 65,
+     "version_members_without_a_valid_label": 65,
+     "jaccard_with_label_rows": 0.9673120442544632
+    }
+   ]
+  },
+  {
+   "day": "2025-01-07",
+   "n_versions": 4,
+   "versions_in_created_order": [
+    {
+     "run_id": [
+      "02ad5093-f94f-40f9-9c6b-38ded43b1fe6",
+      "8e1bbf70-c7fa-4d7a-ac12-79e5afc6782e"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 04:49:38.898000",
+     "created_max": "2026-08-02 04:50:32.463000",
+     "members": 3922,
+     "source_watermark_ids": [
+      "57f6f952f543296784041d4157977440a25bcc83c7263481042128603e60b18b"
+     ],
+     "adv20_rank_max": 3922,
+     "membership_rank_max": 3922,
+     "data_version": "f0a6c677e06abf43"
+    },
+    {
+     "run_id": [
+      "6bff65c7-9861-4071-884c-724303f349ee"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 04:55:24.859000",
+     "created_max": "2026-08-02 04:55:24.859000",
+     "members": 3922,
+     "source_watermark_ids": [
+      "57f6f952f543296784041d4157977440a25bcc83c7263481042128603e60b18b"
+     ],
+     "adv20_rank_max": 3922,
+     "membership_rank_max": 3922,
+     "data_version": "f8faafb8b358be19"
+    },
+    {
+     "run_id": [
+      "37bc2225-4582-4f5c-86cb-0176a0a312bc"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 05:58:43.918000",
+     "created_max": "2026-08-02 05:58:43.918000",
+     "members": 3922,
+     "source_watermark_ids": [
+      "5c9efc148cdd47095d00d70ddcb2c59e924cba43884b940db2a13068bd4d57a2"
+     ],
+     "adv20_rank_max": 3922,
+     "membership_rank_max": 3922,
+     "data_version": "5dd280533541ca4f"
+    },
+    {
+     "run_id": [
+      "36f09377-5fb6-4a2b-8282-02fbac7b6326"
+     ],
+     "universe_version": [
+      "1"
+     ],
+     "created_min": "2026-08-02 09:51:36.791000",
+     "created_max": "2026-08-02 09:51:36.791000",
+     "members": 3915,
+     "source_watermark_ids": [
+      "afb9512ae776ba8a0eb333164be013b195c0893e01314d15876f86390a9fdcc3"
+     ],
+     "adv20_rank_max": 3915,
+     "membership_rank_max": 3915,
+     "data_version": "06c7c864dd821e41"
+    }
+   ],
+   "lexicographic_max": "f8faafb8b358be19",
+   "newest_by_created_at": "06c7c864dd821e41",
+   "rule_picks_the_newest": false,
+   "pairwise_set_differences": [
+    {
+     "a": "f0a6c677e06abf43",
+     "b": "f8faafb8b358be19",
+     "a_only": 0,
+     "b_only": 0,
+     "shared": 3922,
+     "identical": true
+    },
+    {
+     "a": "f0a6c677e06abf43",
+     "b": "5dd280533541ca4f",
+     "a_only": 0,
+     "b_only": 0,
+     "shared": 3922,
+     "identical": true
+    },
+    {
+     "a": "f0a6c677e06abf43",
+     "b": "06c7c864dd821e41",
+     "a_only": 9,
+     "b_only": 2,
+     "shared": 3913,
+     "identical": false
+    },
+    {
+     "a": "f8faafb8b358be19",
+     "b": "5dd280533541ca4f",
+     "a_only": 0,
+     "b_only": 0,
+     "shared": 3922,
+     "identical": true
+    },
+    {
+     "a": "f8faafb8b358be19",
+     "b": "06c7c864dd821e41",
+     "a_only": 9,
+     "b_only": 2,
+     "shared": 3913,
+     "identical": false
+    },
+    {
+     "a": "5dd280533541ca4f",
+     "b": "06c7c864dd821e41",
+     "a_only": 9,
+     "b_only": 2,
+     "shared": 3913,
+     "identical": false
+    }
+   ],
+   "label_daily": {
+    "run_ids": [
+     "80460827-2882-4f9c-9163-762e615d85d6"
+    ],
+    "data_versions": [
+     "b41a8a0f40e60718353f869808e5a1bb130cada88efe13ffa73c664010eceef8"
+    ],
+    "created_min": "2026-08-02 09:53:02.200000",
+    "created_max": "2026-08-02 09:53:02.200000",
+    "source_watermark_ids": [
+     "d4e3fb422955ab6379e47f68134172c238478b948c732935cee059b77adb4240"
+    ],
+    "valid_rows": 3910
+   },
+   "best_matching_version_for_label_rows": {
+    "data_version": "06c7c864dd821e41",
+    "created_max": "2026-08-02 09:51:36.791000",
+    "members": 3915,
+    "is_the_lexicographic_max": false,
+    "is_the_newest": true,
+    "label_rows_inside_this_version": 3910,
+    "label_rows_outside_this_version": 0,
+    "version_members_without_a_valid_label": 5,
+    "jaccard_with_label_rows": 0.9987228607918263
+   },
+   "version_match_table": [
+    {
+     "data_version": "06c7c864dd821e41",
+     "created_max": "2026-08-02 09:51:36.791000",
+     "members": 3915,
+     "is_the_lexicographic_max": false,
+     "is_the_newest": true,
+     "label_rows_inside_this_version": 3910,
+     "label_rows_outside_this_version": 0,
+     "version_members_without_a_valid_label": 5,
+     "jaccard_with_label_rows": 0.9987228607918263
+    },
+    {
+     "data_version": "5dd280533541ca4f",
+     "created_max": "2026-08-02 05:58:43.918000",
+     "members": 3922,
+     "is_the_lexicographic_max": false,
+     "is_the_newest": false,
+     "label_rows_inside_this_version": 3908,
+     "label_rows_outside_this_version": 2,
+     "version_members_without_a_valid_label": 14,
+     "jaccard_with_label_rows": 0.9959225280326198
+    },
+    {
+     "data_version": "f0a6c677e06abf43",
+     "created_max": "2026-08-02 04:50:32.463000",
+     "members": 3922,
+     "is_the_lexicographic_max": false,
+     "is_the_newest": false,
+     "label_rows_inside_this_version": 3908,
+     "label_rows_outside_this_version": 2,
+     "version_members_without_a_valid_label": 14,
+     "jaccard_with_label_rows": 0.9959225280326198
+    },
+    {
+     "data_version": "f8faafb8b358be19",
+     "created_max": "2026-08-02 04:55:24.859000",
+     "members": 3922,
+     "is_the_lexicographic_max": true,
+     "is_the_newest": false,
+     "label_rows_inside_this_version": 3908,
+     "label_rows_outside_this_version": 2,
+     "version_members_without_a_valid_label": 14,
+     "jaccard_with_label_rows": 0.9959225280326198
+    }
+   ]
+  }
+ ],
+ "answer": "On 2024-12-20 the 4 coexisting versions were produced by runs [['02ad5093-f94f-40f9-9c6b-38ded43b1fe6', '8e1bbf70-c7fa-4d7a-ac12-79e5afc6782e'], ['6bff65c7-9861-4071-884c-724303f349ee'], ['37bc2225-4582-4f5c-86cb-0176a0a312bc'], ['a9b5228f-9ddc-485b-8bd5-b7a976f9850a']] at ['2026-08-02 04:50:32.463000', '2026-08-02 04:55:24.859000', '2026-08-02 05:58:43.918000', '2026-08-02 09:51:15.582000']. label_daily's valid rows match 6b95095b1b637d35… best (Jaccard 0.9980, 0 label rows outside it), which IS the newest by created_at and is NOT the one max(data_version) selects.",
+ "database_writes": false,
+ "weights_written": false
+}
