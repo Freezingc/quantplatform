@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T04:12:00+00:00",
+  "generated_at_utc": "2026-09-15T04:21:44+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -555,6 +555,14 @@
       "bytes": 2333,
       "sha256": "45a7ab5eb989200963ccca057cd125cb6f8e2fad8d074738cb10e669dd832c23"
     },
+    "universe_version_ambiguity.json": {
+      "bytes": 10300,
+      "sha256": "fa600cc587e36eabafdc6741b9b5b14d8193df27cc2ae74aa1c99fb39c88bf72"
+    },
+    "universe_vintage_skew.json": {
+      "bytes": 6657,
+      "sha256": "44924e91efaccefc7e87a52707c03ca31c89356f20dd49440a0a6935d64f6bdb"
+    },
     "worst_postcutover_days.json": {
       "bytes": 218158,
       "sha256": "eb6ed20b191bdc9e542e4ddcfbbb04a97c96570cb2ebb31386390bfb089f1a2e"
@@ -661,6 +669,14 @@
       "bytes": 6180,
       "sha256": "f5eaf701c32260cbf1018a141c811e1afdced97edadce98f15e64f34d8ef6586"
     },
+    "probe_universe_version_ambiguity.py": {
+      "bytes": 6977,
+      "sha256": "bc1b89c37d2fbeaedf9b7a9194596f89a87d883d3fe5e40c0bf696af06582d60"
+    },
+    "probe_universe_vintage_skew.py": {
+      "bytes": 7659,
+      "sha256": "4473d8ce2866288bcdc65fe24f1494810db52f409c5c1ab954d9c7224eaeca01"
+    },
     "probe_worst_postcutover_days.py": {
       "bytes": 10236,
       "sha256": "eca9b44f42b1f628a3ae83a10e1a6f4078b4302125a7be1330bfb460f6375386"
@@ -724,7 +740,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "ebcdf669dd090c5e3e9b5872f0008958c68d4c65"
+    "commit_at_generation": "db07437e53ea3a57cc30de11dc55837339ab86cf"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",

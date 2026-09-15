@@ -1,0 +1,432 @@
+{
+ "question": "Does max(data_version) pick the newest universe, and how many days are ambiguous at all?",
+ "universe_id": "cn_liquid_a",
+ "rule": "latest = uni.groupby(\"signal_date\")[\"data_version\"].max() -- lexicographic maximum of a sha256 hex digest",
+ "sampled_days": [
+  {
+   "day": "2024-12-19",
+   "n_versions": 1,
+   "lexicographic_max_version": "6b95095b1b637d35",
+   "lexicographic_max_created": "2026-08-02 09:51:15.582000",
+   "lexicographic_max_rows": 3919,
+   "newest_version": "6b95095b1b637d35",
+   "newest_created": "2026-08-02 09:51:15.582000",
+   "newest_rows": 3919,
+   "rule_picks_the_newest": true,
+   "versions": [
+    {
+     "v": "6b95095b1b637d35",
+     "created": "2026-08-02 09:51:15.582000",
+     "rows": 3919
+    }
+   ]
+  },
+  {
+   "day": "2024-12-20",
+   "n_versions": 4,
+   "lexicographic_max_version": "f8faafb8b358be19",
+   "lexicographic_max_created": "2026-08-02 04:55:24.859000",
+   "lexicographic_max_rows": 3912,
+   "newest_version": "6b95095b1b637d35",
+   "newest_created": "2026-08-02 09:51:15.582000",
+   "newest_rows": 3920,
+   "rule_picks_the_newest": false,
+   "versions": [
+    {
+     "v": "5dd280533541ca4f",
+     "created": "2026-08-02 05:58:43.918000",
+     "rows": 3912
+    },
+    {
+     "v": "6b95095b1b637d35",
+     "created": "2026-08-02 09:51:15.582000",
+     "rows": 3920
+    },
+    {
+     "v": "f0a6c677e06abf43",
+     "created": "2026-08-02 04:50:32.463000",
+     "rows": 7824
+    },
+    {
+     "v": "f8faafb8b358be19",
+     "created": "2026-08-02 04:55:24.859000",
+     "rows": 3912
+    }
+   ]
+  },
+  {
+   "day": "2024-12-23",
+   "n_versions": 4,
+   "lexicographic_max_version": "f8faafb8b358be19",
+   "lexicographic_max_created": "2026-08-02 04:55:24.859000",
+   "lexicographic_max_rows": 3912,
+   "newest_version": "6b95095b1b637d35",
+   "newest_created": "2026-08-02 09:51:15.582000",
+   "newest_rows": 3920,
+   "rule_picks_the_newest": false,
+   "versions": [
+    {
+     "v": "5dd280533541ca4f",
+     "created": "2026-08-02 05:58:43.918000",
+     "rows": 3912
+    },
+    {
+     "v": "6b95095b1b637d35",
+     "created": "2026-08-02 09:51:15.582000",
+     "rows": 3920
+    },
+    {
+     "v": "f0a6c677e06abf43",
+     "created": "2026-08-02 04:50:32.463000",
+     "rows": 7824
+    },
+    {
+     "v": "f8faafb8b358be19",
+     "created": "2026-08-02 04:55:24.859000",
+     "rows": 3912
+    }
+   ]
+  },
+  {
+   "day": "2024-12-24",
+   "n_versions": 4,
+   "lexicographic_max_version": "f8faafb8b358be19",
+   "lexicographic_max_created": "2026-08-02 04:55:24.859000",
+   "lexicographic_max_rows": 3911,
+   "newest_version": "6b95095b1b637d35",
+   "newest_created": "2026-08-02 09:51:15.582000",
+   "newest_rows": 3919,
+   "rule_picks_the_newest": false,
+   "versions": [
+    {
+     "v": "5dd280533541ca4f",
+     "created": "2026-08-02 05:58:43.918000",
+     "rows": 3911
+    },
+    {
+     "v": "6b95095b1b637d35",
+     "created": "2026-08-02 09:51:15.582000",
+     "rows": 3919
+    },
+    {
+     "v": "f0a6c677e06abf43",
+     "created": "2026-08-02 04:50:32.463000",
+     "rows": 7822
+    },
+    {
+     "v": "f8faafb8b358be19",
+     "created": "2026-08-02 04:55:24.859000",
+     "rows": 3911
+    }
+   ]
+  },
+  {
+   "day": "2024-12-25",
+   "n_versions": 4,
+   "lexicographic_max_version": "f8faafb8b358be19",
+   "lexicographic_max_created": "2026-08-02 04:55:24.859000",
+   "lexicographic_max_rows": 3912,
+   "newest_version": "6b95095b1b637d35",
+   "newest_created": "2026-08-02 09:51:15.582000",
+   "newest_rows": 3920,
+   "rule_picks_the_newest": false,
+   "versions": [
+    {
+     "v": "5dd280533541ca4f",
+     "created": "2026-08-02 05:58:43.918000",
+     "rows": 3912
+    },
+    {
+     "v": "6b95095b1b637d35",
+     "created": "2026-08-02 09:51:15.582000",
+     "rows": 3920
+    },
+    {
+     "v": "f0a6c677e06abf43",
+     "created": "2026-08-02 04:50:32.463000",
+     "rows": 7824
+    },
+    {
+     "v": "f8faafb8b358be19",
+     "created": "2026-08-02 04:55:24.859000",
+     "rows": 3912
+    }
+   ]
+  },
+  {
+   "day": "2024-12-26",
+   "n_versions": 4,
+   "lexicographic_max_version": "f8faafb8b358be19",
+   "lexicographic_max_created": "2026-08-02 04:55:24.859000",
+   "lexicographic_max_rows": 3913,
+   "newest_version": "6b95095b1b637d35",
+   "newest_created": "2026-08-02 09:51:15.582000",
+   "newest_rows": 3921,
+   "rule_picks_the_newest": false,
+   "versions": [
+    {
+     "v": "5dd280533541ca4f",
+     "created": "2026-08-02 05:58:43.918000",
+     "rows": 3913
+    },
+    {
+     "v": "6b95095b1b637d35",
+     "created": "2026-08-02 09:51:15.582000",
+     "rows": 3921
+    },
+    {
+     "v": "f0a6c677e06abf43",
+     "created": "2026-08-02 04:50:32.463000",
+     "rows": 7826
+    },
+    {
+     "v": "f8faafb8b358be19",
+     "created": "2026-08-02 04:55:24.859000",
+     "rows": 3913
+    }
+   ]
+  },
+  {
+   "day": "2024-12-31",
+   "n_versions": 4,
+   "lexicographic_max_version": "f8faafb8b358be19",
+   "lexicographic_max_created": "2026-08-02 04:55:24.859000",
+   "lexicographic_max_rows": 3914,
+   "newest_version": "6b95095b1b637d35",
+   "newest_created": "2026-08-02 09:51:15.582000",
+   "newest_rows": 3920,
+   "rule_picks_the_newest": false,
+   "versions": [
+    {
+     "v": "5dd280533541ca4f",
+     "created": "2026-08-02 05:58:43.918000",
+     "rows": 3914
+    },
+    {
+     "v": "6b95095b1b637d35",
+     "created": "2026-08-02 09:51:15.582000",
+     "rows": 3920
+    },
+    {
+     "v": "f0a6c677e06abf43",
+     "created": "2026-08-02 04:50:32.463000",
+     "rows": 7828
+    },
+    {
+     "v": "f8faafb8b358be19",
+     "created": "2026-08-02 04:55:24.859000",
+     "rows": 3914
+    }
+   ]
+  },
+  {
+   "day": "2025-01-07",
+   "n_versions": 4,
+   "lexicographic_max_version": "f8faafb8b358be19",
+   "lexicographic_max_created": "2026-08-02 04:55:24.859000",
+   "lexicographic_max_rows": 3922,
+   "newest_version": "06c7c864dd821e41",
+   "newest_created": "2026-08-02 09:51:36.791000",
+   "newest_rows": 3915,
+   "rule_picks_the_newest": false,
+   "versions": [
+    {
+     "v": "06c7c864dd821e41",
+     "created": "2026-08-02 09:51:36.791000",
+     "rows": 3915
+    },
+    {
+     "v": "5dd280533541ca4f",
+     "created": "2026-08-02 05:58:43.918000",
+     "rows": 3922
+    },
+    {
+     "v": "f0a6c677e06abf43",
+     "created": "2026-08-02 04:50:32.463000",
+     "rows": 7844
+    },
+    {
+     "v": "f8faafb8b358be19",
+     "created": "2026-08-02 04:55:24.859000",
+     "rows": 3922
+    }
+   ]
+  },
+  {
+   "day": "2025-06-16",
+   "n_versions": 1,
+   "lexicographic_max_version": "ce18e9b910dfe2ba",
+   "lexicographic_max_created": "2026-08-02 09:58:13.610000",
+   "lexicographic_max_rows": 3847,
+   "newest_version": "ce18e9b910dfe2ba",
+   "newest_created": "2026-08-02 09:58:13.610000",
+   "newest_rows": 3847,
+   "rule_picks_the_newest": true,
+   "versions": [
+    {
+     "v": "ce18e9b910dfe2ba",
+     "created": "2026-08-02 09:58:13.610000",
+     "rows": 3847
+    }
+   ]
+  },
+  {
+   "day": "2022-05-31",
+   "n_versions": 1,
+   "lexicographic_max_version": "2727f02bd245c376",
+   "lexicographic_max_created": "2026-08-02 08:18:27.762000",
+   "lexicographic_max_rows": 3284,
+   "newest_version": "2727f02bd245c376",
+   "newest_created": "2026-08-02 08:18:27.762000",
+   "newest_rows": 3284,
+   "rule_picks_the_newest": true,
+   "versions": [
+    {
+     "v": "2727f02bd245c376",
+     "created": "2026-08-02 08:18:27.762000",
+     "rows": 3284
+    }
+   ]
+  },
+  {
+   "day": "2023-07-05",
+   "n_versions": 1,
+   "lexicographic_max_version": "0f7c73a964200db1",
+   "lexicographic_max_created": "2026-08-02 08:33:24.649000",
+   "lexicographic_max_rows": 3628,
+   "newest_version": "0f7c73a964200db1",
+   "newest_created": "2026-08-02 08:33:24.649000",
+   "newest_rows": 3628,
+   "rule_picks_the_newest": true,
+   "versions": [
+    {
+     "v": "0f7c73a964200db1",
+     "created": "2026-08-02 08:33:24.649000",
+     "rows": 3628
+    }
+   ]
+  },
+  {
+   "day": "2022-07-29",
+   "n_versions": 1,
+   "lexicographic_max_version": "296817c647222a70",
+   "lexicographic_max_created": "2026-08-02 08:19:45.629000",
+   "lexicographic_max_rows": 3356,
+   "newest_version": "296817c647222a70",
+   "newest_created": "2026-08-02 08:19:45.629000",
+   "newest_rows": 3356,
+   "rule_picks_the_newest": true,
+   "versions": [
+    {
+     "v": "296817c647222a70",
+     "created": "2026-08-02 08:19:45.629000",
+     "rows": 3356
+    }
+   ]
+  }
+ ],
+ "sampled_days_with_multiple_versions": 7,
+ "sampled_days_where_the_rule_picks_the_newest": 5,
+ "window": [
+  "2022-01-01",
+  "2025-12-31"
+ ],
+ "window_days": 969,
+ "version_count_histogram": {
+  "1": 949,
+  "2": 5,
+  "4": 15
+ },
+ "window_days_with_more_than_one_version": 20,
+ "window_days_ambiguous_share": 0.02063983488132095,
+ "ambiguous_day_span": [
+  "2024-12-20",
+  "2025-01-17"
+ ],
+ "ambiguous_days": [
+  {
+   "day": "2024-12-20",
+   "n_versions": 4
+  },
+  {
+   "day": "2024-12-23",
+   "n_versions": 4
+  },
+  {
+   "day": "2024-12-24",
+   "n_versions": 4
+  },
+  {
+   "day": "2024-12-25",
+   "n_versions": 4
+  },
+  {
+   "day": "2024-12-26",
+   "n_versions": 4
+  },
+  {
+   "day": "2024-12-27",
+   "n_versions": 4
+  },
+  {
+   "day": "2024-12-30",
+   "n_versions": 4
+  },
+  {
+   "day": "2024-12-31",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-02",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-03",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-06",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-07",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-08",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-09",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-10",
+   "n_versions": 4
+  },
+  {
+   "day": "2025-01-13",
+   "n_versions": 2
+  },
+  {
+   "day": "2025-01-14",
+   "n_versions": 2
+  },
+  {
+   "day": "2025-01-15",
+   "n_versions": 2
+  },
+  {
+   "day": "2025-01-16",
+   "n_versions": 2
+  },
+  {
+   "day": "2025-01-17",
+   "n_versions": 2
+  }
+ ],
+ "answer": "Of the 12 sampled days, 7 carry more than one universe version, and on 7 of those 7 the lexicographic maximum is NOT the newest by created_at -- the rule picks a stale version every time it has a choice. Across the whole window 20 of 969 days (2.06%) carry more than one version, all inside 2024-12-20..2025-01-17; on the other 949 days there is nothing to choose between, which is why this has been invisible.",
+ "database_writes": false,
+ "weights_written": false,
+ "sampled_multi_version_days_where_the_rule_picks_a_stale_version": 7
+}

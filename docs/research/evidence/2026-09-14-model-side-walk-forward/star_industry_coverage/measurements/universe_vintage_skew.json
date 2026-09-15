@@ -1,0 +1,199 @@
+{
+ "question": "Is the 2024-12-20 divergence a universe vintage skew or two different universe definitions?",
+ "universe_id": "cn_liquid_a",
+ "days": [
+  "2024-12-19",
+  "2024-12-20",
+  "2024-12-23",
+  "2025-06-16"
+ ],
+ "per_day": [
+  {
+   "day": "2024-12-19",
+   "target_n": 0,
+   "universe_versions": [
+    {
+     "data_version": "6b95095b1b637d35d634224e6a1e9f96ffa2d09941a0135a67f10a5a0f89f684",
+     "members": 3919,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": true
+    }
+   ],
+   "label_daily_pinned_version": "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e",
+   "factor_daily_pinned_version": "e6bfa67f1a16d814f2cd69c8a9e84446aea14aaf394f27baac1701c27a6f716a",
+   "label_daily_versions_on_that_day": [
+    {
+     "data_version": "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e",
+     "created_min": "2026-08-02 09:52:08",
+     "created_max": "2026-08-02 09:52:08",
+     "n": 3919
+    }
+   ],
+   "factor_daily_versions_on_that_day": [
+    {
+     "data_version": "e6bfa67f1a16d814f2cd69c8a9e84446aea14aaf394f27baac1701c27a6f716a",
+     "created_min": "2026-09-03 17:25:11",
+     "created_max": "2026-09-03 18:43:51",
+     "n": 53448
+    }
+   ],
+   "target_held_by_the_picked_version": 0,
+   "target_held_by_any_version": 0,
+   "versions_holding_all_of_them": []
+  },
+  {
+   "day": "2024-12-20",
+   "target_n": 65,
+   "universe_versions": [
+    {
+     "data_version": "5dd280533541ca4f9e83fce04425cffd555fcb1e851b5d0b0b13a95f9e5dc809",
+     "members": 3912,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": null
+    },
+    {
+     "data_version": "6b95095b1b637d35d634224e6a1e9f96ffa2d09941a0135a67f10a5a0f89f684",
+     "members": 3920,
+     "target_held": 65,
+     "is_the_one_the_materializer_picks": null
+    },
+    {
+     "data_version": "f0a6c677e06abf4361a6987339b5ec1609af2109e79762cd6603145713851893",
+     "members": 3912,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": null
+    },
+    {
+     "data_version": "f8faafb8b358be19f0d4b129d8df87c965b2c42fcc76c5bbe3c8184e09a89de3",
+     "members": 3912,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": true
+    }
+   ],
+   "label_daily_pinned_version": "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e",
+   "factor_daily_pinned_version": "e6bfa67f1a16d814f2cd69c8a9e84446aea14aaf394f27baac1701c27a6f716a",
+   "label_daily_versions_on_that_day": [
+    {
+     "data_version": "e9ade5f9dccea4caa26386e19386c55f4bd7ad20fe01aa0cf4341ddcaaa38119",
+     "created_min": "2026-08-02 05:59:48",
+     "created_max": "2026-08-02 05:59:48",
+     "n": 3912
+    },
+    {
+     "data_version": "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e",
+     "created_min": "2026-08-02 09:52:08",
+     "created_max": "2026-08-02 09:52:08",
+     "n": 3920
+    }
+   ],
+   "factor_daily_versions_on_that_day": [
+    {
+     "data_version": "e6bfa67f1a16d814f2cd69c8a9e84446aea14aaf394f27baac1701c27a6f716a",
+     "created_min": "2026-09-03 17:25:11",
+     "created_max": "2026-09-03 18:43:51",
+     "n": 54812
+    }
+   ],
+   "target_held_by_the_picked_version": 0,
+   "target_held_by_any_version": 65,
+   "versions_holding_all_of_them": [
+    "6b95095b1b637d35"
+   ]
+  },
+  {
+   "day": "2024-12-23",
+   "target_n": 50,
+   "universe_versions": [
+    {
+     "data_version": "5dd280533541ca4f9e83fce04425cffd555fcb1e851b5d0b0b13a95f9e5dc809",
+     "members": 3912,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": null
+    },
+    {
+     "data_version": "6b95095b1b637d35d634224e6a1e9f96ffa2d09941a0135a67f10a5a0f89f684",
+     "members": 3920,
+     "target_held": 50,
+     "is_the_one_the_materializer_picks": null
+    },
+    {
+     "data_version": "f0a6c677e06abf4361a6987339b5ec1609af2109e79762cd6603145713851893",
+     "members": 3912,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": null
+    },
+    {
+     "data_version": "f8faafb8b358be19f0d4b129d8df87c965b2c42fcc76c5bbe3c8184e09a89de3",
+     "members": 3912,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": true
+    }
+   ],
+   "label_daily_pinned_version": "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e",
+   "factor_daily_pinned_version": "e6bfa67f1a16d814f2cd69c8a9e84446aea14aaf394f27baac1701c27a6f716a",
+   "label_daily_versions_on_that_day": [
+    {
+     "data_version": "e9ade5f9dccea4caa26386e19386c55f4bd7ad20fe01aa0cf4341ddcaaa38119",
+     "created_min": "2026-08-02 05:59:48",
+     "created_max": "2026-08-02 05:59:48",
+     "n": 3912
+    },
+    {
+     "data_version": "79ad489156605178a110189269d33bdcd4472a8b6acaaa1ab5c5c447510acf0e",
+     "created_min": "2026-08-02 09:52:08",
+     "created_max": "2026-08-02 09:52:08",
+     "n": 3920
+    }
+   ],
+   "factor_daily_versions_on_that_day": [
+    {
+     "data_version": "e6bfa67f1a16d814f2cd69c8a9e84446aea14aaf394f27baac1701c27a6f716a",
+     "created_min": "2026-09-03 17:25:11",
+     "created_max": "2026-09-03 18:43:51",
+     "n": 50862
+    }
+   ],
+   "target_held_by_the_picked_version": 0,
+   "target_held_by_any_version": 50,
+   "versions_holding_all_of_them": [
+    "6b95095b1b637d35"
+   ]
+  },
+  {
+   "day": "2025-06-16",
+   "target_n": 0,
+   "universe_versions": [
+    {
+     "data_version": "ce18e9b910dfe2baf9f0a0e9c173592503dba86163c945c410aa694b7ed57bf4",
+     "members": 3847,
+     "target_held": 0,
+     "is_the_one_the_materializer_picks": true
+    }
+   ],
+   "label_daily_pinned_version": "2cb55463cd73a7f57ff701ff180ba9085acb4f970a4e378da1d5a71eefc51d2c",
+   "factor_daily_pinned_version": "7f0636bc639a3f2e555b066abffb13b18580d66a63e20c27a0f78d3da65b6271",
+   "label_daily_versions_on_that_day": [
+    {
+     "data_version": "2cb55463cd73a7f57ff701ff180ba9085acb4f970a4e378da1d5a71eefc51d2c",
+     "created_min": "2026-08-02 09:59:48",
+     "created_max": "2026-08-02 09:59:48",
+     "n": 3847
+    }
+   ],
+   "factor_daily_versions_on_that_day": [
+    {
+     "data_version": "7f0636bc639a3f2e555b066abffb13b18580d66a63e20c27a0f78d3da65b6271",
+     "created_min": "2026-09-03 18:45:48",
+     "created_max": "2026-09-03 20:27:26",
+     "n": 55929
+    }
+   ],
+   "target_held_by_the_picked_version": 0,
+   "target_held_by_any_version": 0,
+   "versions_holding_all_of_them": []
+  }
+ ],
+ "answer": "On 2024-12-20 the version the materializer picks holds 0 of 65 target securities while all versions together hold 65. An older universe version DOES contain them, so this is a vintage skew: label_daily was built against an earlier universe snapshot than factor_daily, and the remedy is to pin one vintage, not to redefine the denominator.",
+ "database_writes": false,
+ "weights_written": false
+}
