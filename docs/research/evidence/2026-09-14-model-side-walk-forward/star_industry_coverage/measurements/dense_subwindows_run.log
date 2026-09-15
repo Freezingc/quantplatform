@@ -1,0 +1,39 @@
++ P=/data/zhangyudong/.conda/envs/quantyd/bin/python
++ /data/zhangyudong/.conda/envs/quantyd/bin/python review_watch_pairs_dense_subwindows.py full_control 2020,2021,2022,2023,2024,2025
+   universe_id  factor_version         n
+0  cn_liquid_a               1  38147651
+factors: 4,939,842 rows; labels: 4,991,519 rows
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_full_control.json
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_full_control.md
+yeslab_381<->yeslab_464 -> FAIL | max median|rho| = 0.687 | pooled retention = {'resic__yeslab_381__given__yeslab_464': 0.581, 'resic__yeslab_464__given__yeslab_381': 0.283}
+yeslab_471<->yeslab_484 -> FAIL | max median|rho| = 0.727 | pooled retention = {'resic__yeslab_471__given__yeslab_484': 0.292, 'resic__yeslab_484__given__yeslab_471': 0.532}
+yeslab_381<->yeslab_443_reg30_max20_v1 -> REVIEW | max median|rho| = 0.65 | pooled retention = {'resic__yeslab_381__given__yeslab_443_reg30_max20_v1': 0.548, 'resic__yeslab_443_reg30_max20_v1__given__yeslab_381': 0.441}
++ /data/zhangyudong/.conda/envs/quantyd/bin/python review_watch_pairs_dense_subwindows.py oos_2022_2025 2022,2023,2024,2025
+   universe_id  factor_version         n
+0  cn_liquid_a               1  38147651
+factors: 3,557,712 rows; labels: 3,611,803 rows
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_oos_2022_2025.json
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_oos_2022_2025.md
+yeslab_381<->yeslab_464 -> FAIL | max median|rho| = 0.687 | pooled retention = {'resic__yeslab_381__given__yeslab_464': 0.599, 'resic__yeslab_464__given__yeslab_381': 0.262}
+yeslab_471<->yeslab_484 -> FAIL | max median|rho| = 0.725 | pooled retention = {'resic__yeslab_471__given__yeslab_484': 0.265, 'resic__yeslab_484__given__yeslab_471': 0.554}
+yeslab_381<->yeslab_443_reg30_max20_v1 -> REVIEW | max median|rho| = 0.618 | pooled retention = {'resic__yeslab_381__given__yeslab_443_reg30_max20_v1': 0.574, 'resic__yeslab_443_reg30_max20_v1__given__yeslab_381': 0.423}
++ /data/zhangyudong/.conda/envs/quantyd/bin/python review_watch_pairs_dense_subwindows.py early_2020_2021 2020,2021
+   universe_id  factor_version         n
+0  cn_liquid_a               1  38147651
+factors: 1,382,130 rows; labels: 1,379,716 rows
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_early_2020_2021.json
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_early_2020_2021.md
+yeslab_381<->yeslab_464 -> REVIEW | max median|rho| = 0.673 | pooled retention = {'resic__yeslab_381__given__yeslab_464': 0.526, 'resic__yeslab_464__given__yeslab_381': 0.344}
+yeslab_471<->yeslab_484 -> REVIEW | max median|rho| = 0.727 | pooled retention = {'resic__yeslab_471__given__yeslab_484': 0.354, 'resic__yeslab_484__given__yeslab_471': 0.476}
+yeslab_381<->yeslab_443_reg30_max20_v1 -> REVIEW | max median|rho| = 0.65 | pooled retention = {'resic__yeslab_381__given__yeslab_443_reg30_max20_v1': 0.464, 'resic__yeslab_443_reg30_max20_v1__given__yeslab_381': 0.493}
++ /data/zhangyudong/.conda/envs/quantyd/bin/python review_watch_pairs_dense_subwindows.py train_like_2020_2023 2020,2021,2022,2023
+   universe_id  factor_version         n
+0  cn_liquid_a               1  38147651
+factors: 3,069,128 rows; labels: 3,065,151 rows
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_train_like_2020_2023.json
+wrote /data/zhangyudong/qrv2_research_artifacts/watch_pair_review_dense_subwindows/watch_pair_review_train_like_2020_2023.md
+yeslab_381<->yeslab_464 -> FAIL | max median|rho| = 0.686 | pooled retention = {'resic__yeslab_381__given__yeslab_464': 0.591, 'resic__yeslab_464__given__yeslab_381': 0.276}
+yeslab_471<->yeslab_484 -> FAIL | max median|rho| = 0.727 | pooled retention = {'resic__yeslab_471__given__yeslab_484': 0.293, 'resic__yeslab_484__given__yeslab_471': 0.533}
+yeslab_381<->yeslab_443_reg30_max20_v1 -> REVIEW | max median|rho| = 0.65 | pooled retention = {'resic__yeslab_381__given__yeslab_443_reg30_max20_v1': 0.503, 'resic__yeslab_443_reg30_max20_v1__given__yeslab_381': 0.471}
++ echo ALL_DONE
+ALL_DONE

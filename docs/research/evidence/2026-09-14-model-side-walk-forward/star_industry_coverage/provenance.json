@@ -17,7 +17,7 @@
     "parquet panels and fold caches (read in place, never copied)",
     "database exports beyond the aggregate counts quoted in root_cause.md"
   ],
-  "generated_at_utc": "2026-09-15T06:27:17+00:00",
+  "generated_at_utc": "2026-09-15T07:36:20+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "7cc3a3a92a318d5109b460270be0e69f6a0d40d970ab45d6e73031d3e5fcd7a5"
@@ -615,6 +615,18 @@
       "bytes": 261895,
       "sha256": "395ee4e524631517eba148718882c9c5362d896bdc768659a136d0f215aa46e5"
     },
+    "watch_pair_review_early_2020_2021.json": {
+      "bytes": 19100,
+      "sha256": "b92749bcd2720ac107eebbaebd8e0b6e4c033cb5677893b8d8aa342888b30da0"
+    },
+    "watch_pair_review_full_control.json": {
+      "bytes": 28172,
+      "sha256": "7b440b727dd5484947eede3005193c5032a174d9401de399608815d3eb23702d"
+    },
+    "watch_pair_review_oos_2022_2025.json": {
+      "bytes": 23509,
+      "sha256": "814d27ffbaf438b2c177520f23171d1348c62ad1e2ce5c09446423478310f0c4"
+    },
     "watch_pair_review_sparse_clusters.json": {
       "bytes": 57572,
       "sha256": "e05f406370ce4edf02d13f03923893926ee8a7f79d4a036ed2782f635fa3de84"
@@ -622,6 +634,10 @@
     "watch_pair_review_sparse_x_dense.json": {
       "bytes": 390118,
       "sha256": "4c6cb0e7d787277dde28c32a990926e3b546067242253b7c77a7533b2032d1e7"
+    },
+    "watch_pair_review_train_like_2020_2023.json": {
+      "bytes": 23407,
+      "sha256": "3681b317715064f9ec3d62e0e423f811030e69348f01a6a418fb5cf921f475c9"
     },
     "worst_postcutover_days.json": {
       "bytes": 218158,
@@ -797,6 +813,10 @@
       "bytes": 17927,
       "sha256": "1afb309ab3c3a05b7f32e39edd47f8a37571ef0daf20804a94b9636e3ef770d1"
     },
+    "review_watch_pairs_dense_subwindows.py": {
+      "bytes": 18035,
+      "sha256": "f329e2d3aa518fb0c1169901ecb7bacbbb56ea359635e2eeeb32687dbfb0fc5f"
+    },
     "review_watch_pairs_sparse_clusters.py": {
       "bytes": 16594,
       "sha256": "af339e1251005bcd0b9f8767bf6371181531903c4247b4834bb7a746d327e5db"
@@ -844,7 +864,7 @@
   "safety": "read-only investigation: SELECT-only queries against dfs://YesLab and dfs://QuantResearchV2Test, plus local file reads. No database write, no weight loading, no artifact mutation, no code or threshold change in the repository.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "cff45751494c418ecca06fd559e3ef18b06a1690"
+    "commit_at_generation": "599145ab02f6d28126539a76f825baff065df877"
   },
   "vendored_industry_cache": {
     "combined_sha256": "2202f560a020bac382ff9d058b4c00037fdd6ea2baeb4af7e213bcc41a4df45e",

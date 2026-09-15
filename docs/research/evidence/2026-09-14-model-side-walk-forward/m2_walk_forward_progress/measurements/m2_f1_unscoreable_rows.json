@@ -1,0 +1,264 @@
+{
+  "coverage_of_the_scoreable_cross_section": {
+    "deficit_share": 0.006786247573003899,
+    "m2": 0.993213752426996,
+    "note": "the 1,087 invalid-label rows cannot matter: compute_daily_rank_ic filters on label_valid and a finite raw_return_5d before it counts a cross-section, so whether a prediction exists for them changes nothing. Only the valid-label deficit is a real asymmetry against a baseline that scores every row"
+  },
+  "database_access": false,
+  "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+  "decomposition": {
+    "not_scored_and_label_bad": 1087,
+    "not_scored_and_label_ok": 4722,
+    "scored_and_label_bad": 0,
+    "scored_and_label_ok": 691097
+  },
+  "dropped_valid_label_rows": {
+    "count": 4722,
+    "distinct_days": 237,
+    "distinct_securities": 367,
+    "nan_feature_count": {
+      "dropped": {
+        "mean": 3.7683185091063107,
+        "median": 3.0,
+        "share_with_any_nan": 0.8589580686149937
+      },
+      "kept": {
+        "mean": 3.1632404713086584,
+        "median": 3.0,
+        "share_with_any_nan": 0.7540157170411679
+      }
+    },
+    "rolling_20day_count_of_own_rows_with_any_nan": {
+      "dropped": {
+        "mean": 6.2530707327403645,
+        "median": 6.0
+      },
+      "history_length_the_temporal_model_declares": 20,
+      "kept": {
+        "mean": 14.347156766705687,
+        "median": 15.0
+      },
+      "minimum_valid_history_length_from_the_search_record": 15
+    }
+  },
+  "factor_index_mapping": {
+    "mapping": {
+      "f00": "yeslab_206",
+      "f01": "yeslab_357",
+      "f02": "yeslab_372",
+      "f03": "yeslab_375",
+      "f04": "yeslab_381",
+      "f05": "yeslab_384",
+      "f06": "yeslab_389",
+      "f07": "yeslab_390",
+      "f08": "yeslab_406",
+      "f09": "yeslab_425",
+      "f10": "yeslab_443_reg30_max20_v1",
+      "f11": "yeslab_464",
+      "f12": "yeslab_471",
+      "f13": "yeslab_484",
+      "f14": "yeslab_96"
+    },
+    "nested_missingness_of_yeslab_357_inside_yeslab_471": {
+      "documented_in": "problems_found.md §M and the results document §4 item 5",
+      "rows_with_both_nan": 23512,
+      "rows_with_f01_nan_and_f12_present": 0,
+      "rows_with_f12_nan_and_f01_present": 5308,
+      "verdict": "the zero cell reproduces the documented nesting ('rows missing only f01 are always zero') on a panel this probe read independently, which is the corroboration the code trace needed"
+    },
+    "nine_dense_columns_max_nan_rate": 0.041354214198184545,
+    "six_sparse_columns_are_the_six_candidate_only_factors": {
+      "all_between_0.45_and_0.55": true,
+      "columns": [
+        "f02",
+        "f03",
+        "f05",
+        "f06",
+        "f07",
+        "f08"
+      ],
+      "their_nan_rates": {
+        "f02": 0.5141984715298763,
+        "f03": 0.5217848605120347,
+        "f05": 0.48841020166277804,
+        "f06": 0.49878606296975486,
+        "f07": 0.497817496190304,
+        "f08": 0.5110789690431708
+      }
+    },
+    "traced_from": [
+      {
+        "file": "research_v2/scripts/walk_forward_factor_daily.py",
+        "sha256": "f1d6db109aae9106218a9d7e56b94478ab4206c3afeb0379224846a71dfead11"
+      },
+      {
+        "file": "research_v2/scripts/walk_forward_common.py",
+        "sha256": "a5b311fb4711c3d02e60798582e0cffe297b41564aa97dd398a401ca0b5f8a7a"
+      }
+    ]
+  },
+  "fold": "F1",
+  "generated_at_local": "2026-09-15T15:26:36",
+  "not_done": [
+    "the mechanism behind the unscoreable valid-label rows is characterised, not proved: this probe shows which factors' NaNs those rows are enriched in and tests a history-length explanation, but it does not re-run the temporal batch builder",
+    "no retraining, no imputation experiment, no attempt to make M2 score the dropped rows",
+    "only fold F1 was examined; F2-F4 have not produced models yet"
+  ],
+  "panel_rows": 696906,
+  "per_factor_nan_enrichment_ranked": [
+    {
+      "enrichment": 11.365110112144414,
+      "excess_rows_attributable": 1544,
+      "factor_column": "f01",
+      "factor_id": "yeslab_357",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.35853451927149516,
+      "nan_rate_kept": 0.03154694637655785
+    },
+    {
+      "enrichment": 9.844679188071865,
+      "excess_rows_attributable": 1630,
+      "factor_column": "f12",
+      "factor_id": "yeslab_471",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.3841592545531554,
+      "nan_rate_kept": 0.03902201861677883
+    },
+    {
+      "enrichment": 5.107167907543781,
+      "excess_rows_attributable": 28,
+      "factor_column": "f04",
+      "factor_id": "yeslab_381",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.0074121135112240576,
+      "nan_rate_kept": 0.001451315806608913
+    },
+    {
+      "enrichment": 4.893199119206174,
+      "excess_rows_attributable": 62,
+      "factor_column": "f09",
+      "factor_id": "yeslab_425",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.016518424396442185,
+      "nan_rate_kept": 0.003375792399619735
+    },
+    {
+      "enrichment": 4.784578551095307,
+      "excess_rows_attributable": 89,
+      "factor_column": "f11",
+      "factor_id": "yeslab_464",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.023718763235916984,
+      "nan_rate_kept": 0.00495733594560532
+    },
+    {
+      "enrichment": 3.6081809632517103,
+      "excess_rows_attributable": 93,
+      "factor_column": "f14",
+      "factor_id": "yeslab_96",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.027107157983905124,
+      "nan_rate_kept": 0.0075126935871520206
+    },
+    {
+      "enrichment": 1.65349366919423,
+      "excess_rows_attributable": 58,
+      "factor_column": "f10",
+      "factor_id": "yeslab_443_reg30_max20_v1",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.030919102075391783,
+      "nan_rate_kept": 0.01869925639960816
+    },
+    {
+      "enrichment": 1.3535249690883027,
+      "excess_rows_attributable": 38,
+      "factor_column": "f00",
+      "factor_id": "yeslab_206",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.030919102075391783,
+      "nan_rate_kept": 0.02284339246155026
+    },
+    {
+      "enrichment": 1.1957027783704384,
+      "excess_rows_attributable": 472,
+      "factor_column": "f08",
+      "factor_id": "yeslab_406",
+      "is_candidate_only": true,
+      "nan_rate_dropped": 0.6105463786531131,
+      "nan_rate_kept": 0.5106171781964037
+    },
+    {
+      "enrichment": 1.0348356226030038,
+      "excess_rows_attributable": 82,
+      "factor_column": "f06",
+      "factor_id": "yeslab_389",
+      "is_candidate_only": true,
+      "nan_rate_dropped": 0.5160948750529437,
+      "nan_rate_kept": 0.49872159769178565
+    },
+    {
+      "enrichment": 1.0188544072775232,
+      "excess_rows_attributable": 44,
+      "factor_column": "f07",
+      "factor_id": "yeslab_390",
+      "is_candidate_only": true,
+      "nan_rate_dropped": 0.5072003388394748,
+      "nan_rate_kept": 0.49781434444079486
+    },
+    {
+      "enrichment": 1.0002807114833359,
+      "excess_rows_attributable": 1,
+      "factor_column": "f02",
+      "factor_id": "yeslab_372",
+      "is_candidate_only": true,
+      "nan_rate_dropped": 0.5144006776789496,
+      "nan_rate_kept": 0.5142563200245407
+    },
+    {
+      "enrichment": 0.7517963230204937,
+      "excess_rows_attributable": -613,
+      "factor_column": "f03",
+      "factor_id": "yeslab_375",
+      "is_candidate_only": true,
+      "nan_rate_dropped": 0.39305379076662433,
+      "nan_rate_kept": 0.5228195173759979
+    },
+    {
+      "enrichment": 0.7102622182542853,
+      "excess_rows_attributable": -670,
+      "factor_column": "f05",
+      "factor_id": "yeslab_384",
+      "is_candidate_only": true,
+      "nan_rate_dropped": 0.3477340110122829,
+      "nan_rate_kept": 0.48958539828707115
+    },
+    {
+      "enrichment": 0.0,
+      "excess_rows_attributable": 0,
+      "factor_column": "f13",
+      "factor_id": "yeslab_484",
+      "is_candidate_only": false,
+      "nan_rate_dropped": 0.0,
+      "nan_rate_kept": 1.7363698583556287e-05
+    }
+  ],
+  "question": "Split M2's validation row deficit into the part that cannot matter and the part that can, and characterise the part that can",
+  "read_only": true,
+  "scoreable_rows_valid_label": 695819,
+  "sequence_position_test": {
+    "dropped": {
+      "mean": 6.293096145700974,
+      "median": 6.0,
+      "share_below_15": 1.0,
+      "share_below_20": 1.0
+    },
+    "kept": {
+      "mean": 105.59562405856197,
+      "median": 100.0,
+      "share_below_15": 0.07616586383676965,
+      "share_below_20": 0.10331979447168776
+    },
+    "what": "the row's position within its own security's sequence inside the validation panel; a temporal model declaring history_length 20 and minimum_valid_history_length 15 cannot score the first rows of a security's sequence unless history is carried in from the train split"
+  },
+  "weights_loaded": false
+}

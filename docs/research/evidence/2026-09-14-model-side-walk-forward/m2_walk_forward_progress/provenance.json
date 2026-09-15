@@ -30,7 +30,7 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-15T06:58:00+00:00",
+  "generated_at_utc": "2026-09-15T07:36:20+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "2b14c1d5e7de5facc843d6ddbc84bcb3570e0d6f0efd3c21c490d3d9805193d1"
@@ -38,12 +38,17 @@
   "measurements": {
     "m2_f1_grid_and_standing.json": "df4b5586aeaf6379e2d8cb9153e0dbccd4939e2b5b068590b220cd261054029b",
     "m2_f1_grid_and_standing.md": "351a2e6e7f9828b19e26488186d490e7414b2ee2ef16171b3b64f23e330a2bc8",
+    "m2_f1_unscoreable_rows.json": "fc19d59034af25734108860b598c716b283c247408a768f5009a0305344aeee9",
     "m2_progress_stall_v2_startup_snapshot.log": "b04326a358ff018549969c0356b4551bcca477639462bbdfe5b855f7a20c5b18",
+    "validation_rowset_asymmetry.json": "78841e7bc7ec4b50b60b9e34d709611b496a254c567ed066e7530fbcf6442c7c",
+    "validation_rowset_asymmetry.md": "4bc6c6cc6135e78554e4687df36e37ab7936abca44ae4ca3d2b2a4e257a9921d",
     "watcher_v2_deployment.json": "350f81911e998286ae34b29092460120cc53479d8020f0392b95b97789341008"
   },
   "probe_scripts": {
     "m2_progress_stall_watcher_v2.py": "14d4d52737e6b28a5c646dc68d898adfbf79384e309f3e022cd8a24dc2c4c0a7",
     "probe_m2_f1_grid_and_standing.py": "332555c61c25066a68ff68723daf7a2992cd85efabef06c357a565db2548a5c3",
+    "probe_m2_unscoreable_rows.py": "7e32539e501e31906d1351a177cb2211e2348d22e8772deaf22568e7956b31b6",
+    "probe_validation_rowset_asymmetry.py": "bba10b18e67e2af4b425db0bc9a52ae1ee8c94ae1896ec7f30bab039ce0f529b",
     "probe_watch_handover.py": "e8c17a2c6dd85616ae3313479fbfc8135375f94cf0506ea263f09e4fae09e11f"
   },
   "repository_main_tree": {
@@ -56,6 +61,6 @@
   "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "11087f0c01b45ebc6e9c94a8f66056d00bfca09d"
+    "commit_at_generation": "599145ab02f6d28126539a76f825baff065df877"
   }
 }

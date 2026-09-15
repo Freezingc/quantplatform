@@ -1,0 +1,665 @@
+{
+  "census": [
+    {
+      "carrier": "M0R",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold": "F1",
+      "panel_days": 237,
+      "panel_rows": 696906,
+      "prediction_days": 237,
+      "prediction_rows": 696906,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v2"
+    },
+    {
+      "carrier": "M0R",
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold": "F2",
+      "panel_days": 236,
+      "panel_rows": 783477,
+      "prediction_days": 236,
+      "prediction_rows": 783477,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v2"
+    },
+    {
+      "carrier": "M0R",
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold": "F3",
+      "panel_days": 236,
+      "panel_rows": 859748,
+      "prediction_days": 236,
+      "prediction_rows": 859748,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v2"
+    },
+    {
+      "carrier": "M0R",
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold": "F4",
+      "panel_days": 236,
+      "panel_rows": 908649,
+      "prediction_days": 236,
+      "prediction_rows": 908649,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v2"
+    },
+    {
+      "carrier": "M0R-replicate",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold": "F1",
+      "panel_days": 237,
+      "panel_rows": 696906,
+      "prediction_days": 237,
+      "prediction_rows": 696906,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v3"
+    },
+    {
+      "carrier": "M0R-replicate",
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold": "F2",
+      "panel_days": 236,
+      "panel_rows": 783477,
+      "prediction_days": 236,
+      "prediction_rows": 783477,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v3"
+    },
+    {
+      "carrier": "M0R-replicate",
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold": "F3",
+      "panel_days": 236,
+      "panel_rows": 859748,
+      "prediction_days": 236,
+      "prediction_rows": 859748,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v3"
+    },
+    {
+      "carrier": "M0R-replicate",
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold": "F4",
+      "panel_days": 236,
+      "panel_rows": 908649,
+      "prediction_days": 236,
+      "prediction_rows": 908649,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0r_v3"
+    },
+    {
+      "carrier": "M1-full",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold": "F1",
+      "panel_days": 237,
+      "panel_rows": 696906,
+      "prediction_days": 237,
+      "prediction_rows": 695819,
+      "row_deficit": 1087,
+      "row_deficit_share": 0.001559751243352762,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_full_v1"
+    },
+    {
+      "carrier": "M1-full",
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold": "F2",
+      "panel_days": 236,
+      "panel_rows": 783477,
+      "prediction_days": 236,
+      "prediction_rows": 782500,
+      "row_deficit": 977,
+      "row_deficit_share": 0.0012470053364680776,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_full_v1"
+    },
+    {
+      "carrier": "M1-full",
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold": "F3",
+      "panel_days": 236,
+      "panel_rows": 859748,
+      "prediction_days": 236,
+      "prediction_rows": 859188,
+      "row_deficit": 560,
+      "row_deficit_share": 0.0006513536524656062,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_full_v1"
+    },
+    {
+      "carrier": "M1-full",
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold": "F4",
+      "panel_days": 236,
+      "panel_rows": 908649,
+      "prediction_days": 236,
+      "prediction_rows": 907933,
+      "row_deficit": 716,
+      "row_deficit_share": 0.0007879830385550416,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_full_v1"
+    },
+    {
+      "carrier": "M1-carrier",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold": "F1",
+      "panel_days": 237,
+      "panel_rows": 696906,
+      "prediction_days": 237,
+      "prediction_rows": 695819,
+      "row_deficit": 1087,
+      "row_deficit_share": 0.001559751243352762,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_parallel_v1"
+    },
+    {
+      "carrier": "M1-carrier",
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold": "F2",
+      "panel_days": 236,
+      "panel_rows": 783477,
+      "prediction_days": 236,
+      "prediction_rows": 782500,
+      "row_deficit": 977,
+      "row_deficit_share": 0.0012470053364680776,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_parallel_v1"
+    },
+    {
+      "carrier": "M1-carrier",
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold": "F3",
+      "panel_days": 236,
+      "panel_rows": 859748,
+      "prediction_days": 236,
+      "prediction_rows": 859188,
+      "row_deficit": 560,
+      "row_deficit_share": 0.0006513536524656062,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_parallel_v1"
+    },
+    {
+      "carrier": "M1-carrier",
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold": "F4",
+      "panel_days": 236,
+      "panel_rows": 908649,
+      "prediction_days": 236,
+      "prediction_rows": 907933,
+      "row_deficit": 716,
+      "row_deficit_share": 0.0007879830385550416,
+      "scores_the_whole_panel": false,
+      "workspace": "m1_parallel_v1"
+    },
+    {
+      "carrier": "M0-refined",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold": "F1",
+      "panel_days": 237,
+      "panel_rows": 696906,
+      "prediction_days": 237,
+      "prediction_rows": 696906,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v3"
+    },
+    {
+      "carrier": "M0-refined",
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold": "F2",
+      "panel_days": 236,
+      "panel_rows": 783477,
+      "prediction_days": 236,
+      "prediction_rows": 783477,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v3"
+    },
+    {
+      "carrier": "M0-refined",
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold": "F3",
+      "panel_days": 236,
+      "panel_rows": 859748,
+      "prediction_days": 236,
+      "prediction_rows": 859748,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v3"
+    },
+    {
+      "carrier": "M0-refined",
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold": "F4",
+      "panel_days": 236,
+      "panel_rows": 908649,
+      "prediction_days": 236,
+      "prediction_rows": 908649,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v3"
+    },
+    {
+      "carrier": "M0-base",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold": "F1",
+      "panel_days": 237,
+      "panel_rows": 696906,
+      "prediction_days": 237,
+      "prediction_rows": 696906,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v2"
+    },
+    {
+      "carrier": "M0-base",
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold": "F2",
+      "panel_days": 236,
+      "panel_rows": 783477,
+      "prediction_days": 236,
+      "prediction_rows": 783477,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v2"
+    },
+    {
+      "carrier": "M0-base",
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold": "F3",
+      "panel_days": 236,
+      "panel_rows": 859748,
+      "prediction_days": 236,
+      "prediction_rows": 859748,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v2"
+    },
+    {
+      "carrier": "M0-base",
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold": "F4",
+      "panel_days": 236,
+      "panel_rows": 908649,
+      "prediction_days": 236,
+      "prediction_rows": 908649,
+      "row_deficit": 0,
+      "row_deficit_share": 0.0,
+      "scores_the_whole_panel": true,
+      "workspace": "m0_v2"
+    },
+    {
+      "carrier": "M2",
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold": "F1",
+      "panel_days": 237,
+      "panel_rows": 696906,
+      "prediction_days": 237,
+      "prediction_rows": 691097,
+      "row_deficit": 5809,
+      "row_deficit_share": 0.008335413958266969,
+      "scores_the_whole_panel": false,
+      "workspace": "m2_v1"
+    }
+  ],
+  "census_by_fold": {
+    "F1": [
+      {
+        "carrier": "M0R",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0R-replicate",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M1-full",
+        "row_deficit_share": 0.001559751243352762,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M1-carrier",
+        "row_deficit_share": 0.001559751243352762,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M0-refined",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0-base",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M2",
+        "row_deficit_share": 0.008335413958266969,
+        "scores_the_whole_panel": false
+      }
+    ],
+    "F2": [
+      {
+        "carrier": "M0R",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0R-replicate",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M1-full",
+        "row_deficit_share": 0.0012470053364680776,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M1-carrier",
+        "row_deficit_share": 0.0012470053364680776,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M0-refined",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0-base",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      }
+    ],
+    "F3": [
+      {
+        "carrier": "M0R",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0R-replicate",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M1-full",
+        "row_deficit_share": 0.0006513536524656062,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M1-carrier",
+        "row_deficit_share": 0.0006513536524656062,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M0-refined",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0-base",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      }
+    ],
+    "F4": [
+      {
+        "carrier": "M0R",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0R-replicate",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M1-full",
+        "row_deficit_share": 0.0007879830385550416,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M1-carrier",
+        "row_deficit_share": 0.0007879830385550416,
+        "scores_the_whole_panel": false
+      },
+      {
+        "carrier": "M0-refined",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      },
+      {
+        "carrier": "M0-base",
+        "row_deficit_share": 0.0,
+        "scores_the_whole_panel": true
+      }
+    ]
+  },
+  "database_access": false,
+  "dropped_rows": {
+    "concentration_in_the_first_20_days_of_the_window": {
+      "rows_dropped_there": 440,
+      "share_of_all_dropped": 0.07574453434326046,
+      "share_of_panel_rows_there": 0.08087891336851742
+    },
+    "days_in_panel": 237,
+    "distinct_ts_codes_affected": 615,
+    "distinct_ts_codes_in_panel": 3884,
+    "dropped_days_touched": 237,
+    "dropped_rows": 5809,
+    "dropped_share": 0.008335413958266969,
+    "feature_nan_rate": {
+      "dropped_rows": {
+        "f00": 0.03632294715097263,
+        "f01": 0.2943708039249441,
+        "f02": 0.5073162334308832,
+        "f03": 0.3986916853158891,
+        "f04": 0.006885866758478224,
+        "f05": 0.34859700464796006,
+        "f06": 0.5064555000860733,
+        "f07": 0.49819245997589945,
+        "f08": 0.56601824754691,
+        "f09": 0.01480461353072818,
+        "f10": 0.03615080048201067,
+        "f11": 0.021518333620244447,
+        "f12": 0.3188156309175417,
+        "f13": 0.0,
+        "f14": 0.02530556033740747
+      },
+      "kept_rows": {
+        "f00": 0.02284339246155026,
+        "f01": 0.03154694637655785,
+        "f02": 0.5142563200245407,
+        "f03": 0.5228195173759979,
+        "f04": 0.001451315806608913,
+        "f05": 0.48958539828707115,
+        "f06": 0.49872159769178565,
+        "f07": 0.49781434444079486,
+        "f08": 0.5106171781964037,
+        "f09": 0.003375792399619735,
+        "f10": 0.01869925639960816,
+        "f11": 0.00495733594560532,
+        "f12": 0.03902201861677883,
+        "f13": 1.7363698583556287e-05,
+        "f14": 0.0075126935871520206
+      }
+    },
+    "fold": "F1",
+    "label_valid_among_dropped": {
+      "false_or_nan": 1087,
+      "true": 4722
+    },
+    "panel_rows": 696906,
+    "per_day_dropped": {
+      "max": 52,
+      "median": 24.0,
+      "min": 7
+    },
+    "per_day_dropped_share": {
+      "days_with_zero_dropped": 0,
+      "max": 0.017195767195767195,
+      "median": 0.00823045267489712,
+      "min": 0.002450122506125306
+    },
+    "top_ts_codes_by_dropped_rows": {
+      "002990.SZ": 14,
+      "300827.SZ": 22,
+      "300835.SZ": 14,
+      "600193.SH": 14,
+      "600918.SH": 14,
+      "601399.SH": 14,
+      "601827.SH": 14,
+      "688080.SH": 14,
+      "688312.SH": 14,
+      "688577.SH": 14
+    },
+    "ts_codes_affected_only_entirely": 38
+  },
+  "estimator_identity": {
+    "cited_sites": [
+      {
+        "definition_lines": [
+          {
+            "line_number": 17,
+            "text": "def validation_rank_ic(predictions: pd.DataFrame, labels: pd.DataFrame) -> float:"
+          }
+        ],
+        "file": "research_v2/src/research_v2/training/search_metrics.py",
+        "sha256": "73db157ec170bf4457df2cb4f5908cce44d96a54be778ebddad910208b2be2d5",
+        "symbol": "validation_rank_ic",
+        "why_it_matters": "the candidate's validation metric: inner-joins predictions to labels, then compute_daily_rank_ic(minimum_cross_section=30) with every other argument at its default, then summarize_rank_ic(...).mean_rank_ic"
+      },
+      {
+        "definition_lines": [
+          {
+            "line_number": 221,
+            "text": "def _evaluate_predictions("
+          }
+        ],
+        "file": "research_v2/src/research_v2/baselines/orchestration.py",
+        "sha256": "db3d4c0ec6c04bb024bf403bf8bc3ab92c4dae7e00012418afd8e99fabcd72c5",
+        "symbol": "_evaluate_predictions",
+        "why_it_matters": "the baseline's validation metric: compute_daily_rank_ic(minimum_cross_section=30, include_invalid=True, require_score_health=False), then summarize_rank_ic(...).mean_rank_ic"
+      },
+      {
+        "definition_lines": [
+          {
+            "line_number": 258,
+            "text": "def _validate_prediction_contract("
+          }
+        ],
+        "file": "research_v2/src/research_v2/baselines/orchestration.py",
+        "sha256": "db3d4c0ec6c04bb024bf403bf8bc3ab92c4dae7e00012418afd8e99fabcd72c5",
+        "symbol": "_validate_prediction_contract",
+        "why_it_matters": "the baseline's coverage contract: an outer merge of dataset keys against prediction keys must come back all-'both' and the same length, i.e. a baseline must score EVERY row of the panel"
+      },
+      {
+        "definition_lines": [
+          {
+            "line_number": 140,
+            "text": "def _match_prediction_coverage("
+          }
+        ],
+        "file": "research_v2/src/research_v2/evaluation/model_evaluator.py",
+        "sha256": "4e4c80a336c01d1c36a764d8189c588f0176360dbb15dcb35bf38cff7078e0b1",
+        "symbol": "_match_prediction_coverage",
+        "why_it_matters": "the OOS acceptance path: restricts candidate AND baseline to the inner intersection of their business keys before either is scored"
+      },
+      {
+        "definition_lines": [
+          {
+            "line_number": 28,
+            "text": "def compute_daily_rank_ic("
+          }
+        ],
+        "file": "research_v2/src/research_v2/evaluation/rank_ic.py",
+        "sha256": "5089732da9f5349a53835ad70ea08c36b167469c8b4a950aa5053396ae260d31",
+        "symbol": "compute_daily_rank_ic",
+        "why_it_matters": "the shared daily Spearman implementation both sides call"
+      }
+    ],
+    "day_set_consequence": "the baseline keeps every label date and reports invalid_day_count; the candidate keeps only dates that survive the 30-row floor. With invalid_day_count=0 and both sides at 237 days on F1, the two day sets are the same 237 dates",
+    "row_set_consequence": "the baseline is contractually required to score every panel row; the candidate's validation path inner-joins and silently scores only the rows it produced. Nothing in the validation path enforces or even reports that difference",
+    "same_minimum_cross_section": "30 on both sides",
+    "same_summary_statistic": "both sides end in summarize_rank_ic(daily).mean_rank_ic, i.e. the unweighted mean of per-day Spearman correlations, never a pooled cross-section",
+    "score_health": "the baseline passes require_score_health=False explicitly; the candidate leaves it at its default, which is include_invalid, and include_invalid is False on the candidate side -- so score health is enforced on neither validation path"
+  },
+  "generated_at_local": "2026-09-15T15:09:30",
+  "oos_path": {
+    "consequence_for_comparability_rule": "comparison_interim.md's comparability basis checks valid_day_count, baseline mean RankIC, per-fold baseline selections and per-fold dataset ids. It does not check the prediction row set. On the OOS side _match_prediction_coverage makes that unnecessary; on the validation side nothing does",
+    "consequence_for_the_gates": "G1-G6 read the OOS evaluation, so they are not exposed to this asymmetry. What the asymmetry does affect is which config each fold's search selects, and any comparison drawn from validation_rank_ic -- including the standing table in §AS.2",
+    "finding": "no. model_evaluator._match_prediction_coverage inner-joins the candidate's and the baseline's business keys and scores both on that intersection, so the row-set asymmetry measured here exists on the validation/selection path only"
+  },
+  "question": "Are the candidate and the frozen baseline scored on the same rows, is the validation estimator the same function on both sides, and does the OOS acceptance path share any asymmetry the validation path has?",
+  "read_only": true,
+  "reproduction": {
+    "F1": {
+      "absolute_difference": 0.0,
+      "bit_identical": true,
+      "panel_rows": 696906,
+      "prediction_rows": 691097,
+      "recomputed_with_the_repository_estimator": 0.059238829903105104,
+      "recorded": 0.059238829903105104
+    }
+  },
+  "sensitivity": {
+    "baseline_metric_on_m2_rows": 0.059238829903105104,
+    "by_scale": {
+      "m1_scale": {
+        "gap_in_units_of_this_scale_std": -60.11371047192982,
+        "gap_m2_minus_baseline_f1": -0.00347198118213405,
+        "max": 0.05936676046626588,
+        "mean": 0.059239570568149796,
+        "min": 0.059120612528403234,
+        "rows_dropped_per_draw": 1087,
+        "share_of_draws_that_move_the_metric_by_more_than_the_gap": null,
+        "share_of_scored_rows": 0.001572861696693807,
+        "shift_from_base_mean": 7.406650446920016e-07,
+        "shift_from_base_std_in_units_of_the_gap_to_the_baseline": null,
+        "std": 5.77568936416809e-05
+      },
+      "m2_scale": {
+        "gap_in_units_of_this_scale_std": -30.37816979752528,
+        "gap_m2_minus_baseline_f1": -0.00347198118213405,
+        "max": 0.059456236121585106,
+        "mean": 0.05926372952763434,
+        "min": 0.05898913258259269,
+        "rows_dropped_per_draw": 5809,
+        "share_of_draws_that_move_the_metric_by_more_than_the_gap": null,
+        "share_of_scored_rows": 0.008405477089323207,
+        "shift_from_base_mean": 2.489962452923572e-05,
+        "shift_from_base_std_in_units_of_the_gap_to_the_baseline": null,
+        "std": 0.00011429198023696906
+      }
+    },
+    "draws": 50,
+    "interpretation": "a random row loss of M2's size is the null hypothesis 'the dropped rows carry no particular information'; the real dropped rows are not random (see dropped_rows), so this bounds the scale of the effect, not its sign or its size"
+  },
+  "weights_loaded": false
+}
