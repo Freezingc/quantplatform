@@ -1,0 +1,844 @@
+{
+  "argmax_selection_bias_check": {
+    "by_axis": {
+      "dropout": {
+        "0.0": {
+          "mean_ensemble_value": 0.081093002155805,
+          "mean_per_seed_value": 0.07714833955035172,
+          "mean_within_config_seed_range": 0.016893488254788532,
+          "mean_within_config_seed_sd": 0.008986708781968701
+        },
+        "0.1": {
+          "mean_ensemble_value": 0.08031224253129292,
+          "mean_per_seed_value": 0.07580356458060614,
+          "mean_within_config_seed_range": 0.01597557424513522,
+          "mean_within_config_seed_sd": 0.008353990388250774
+        },
+        "0.2": {
+          "mean_ensemble_value": 0.0801510644809846,
+          "mean_per_seed_value": 0.07600189215687078,
+          "mean_within_config_seed_range": 0.01835128792119186,
+          "mean_within_config_seed_sd": 0.009648662074764287
+        }
+      },
+      "hidden_dim": {
+        "128": {
+          "mean_ensemble_value": 0.08055538479007188,
+          "mean_per_seed_value": 0.07642775327375055,
+          "mean_within_config_seed_range": 0.018767652829763625,
+          "mean_within_config_seed_sd": 0.009935222906582717
+        },
+        "256": {
+          "mean_ensemble_value": 0.08003866177428903,
+          "mean_per_seed_value": 0.07454462178190407,
+          "mean_within_config_seed_range": 0.017269210261557727,
+          "mean_within_config_seed_sd": 0.009172103774158741
+        },
+        "64": {
+          "mean_ensemble_value": 0.08096226260372164,
+          "mean_per_seed_value": 0.077981421232174,
+          "mean_within_config_seed_range": 0.015183487329794262,
+          "mean_within_config_seed_sd": 0.007882034564242303
+        }
+      },
+      "num_blocks": {
+        "1": {
+          "mean_ensemble_value": 0.08079468222246333,
+          "mean_per_seed_value": 0.07628965234012135,
+          "mean_within_config_seed_range": 0.01681066321702333,
+          "mean_within_config_seed_sd": 0.008940663746596359
+        },
+        "2": {
+          "mean_ensemble_value": 0.08102717912492223,
+          "mean_per_seed_value": 0.0770870999620646,
+          "mean_within_config_seed_range": 0.01609249458939511,
+          "mean_within_config_seed_sd": 0.00846092285910715
+        },
+        "3": {
+          "mean_ensemble_value": 0.07973444782069698,
+          "mean_per_seed_value": 0.07557704398564268,
+          "mean_within_config_seed_range": 0.018317192614697178,
+          "mean_within_config_seed_sd": 0.009587774639280252
+        }
+      }
+    },
+    "mannwhitney_U": 159.0,
+    "mean_within_config_seed_sd_of_non_winners": 0.009110588104759176,
+    "mean_within_config_seed_sd_of_winners": 0.006028960481115267,
+    "non_winners_n": 104,
+    "p_two_sided": 0.44490683594898023,
+    "point_biserial_corr_sd_vs_is_winner": -0.09600796838341123,
+    "question": "the four per-fold winners all had hidden_dim=128, while both the per-seed and the ensemble axis tests put the better mean at hidden_dim=64; is argmax selection picking the noisier configs rather than the better ones?",
+    "ratio": 0.661753161463404,
+    "reading": "if the winners' within-config seed dispersion exceeds the non-winners', the per-fold argmax is partly a selection for variance. That does not make the selected model worse in expectation, but it does mean the identity of the winner carries less information about the axis levels than the axis tests do.",
+    "winners_n": 4
+  },
+  "axis_tests_blocked_on_seed_and_fold": {
+    "dropout": {
+      "F": 0.621745221512596,
+      "best_level": "0.0",
+      "levels": [
+        "0.0",
+        "0.1",
+        "0.2"
+      ],
+      "mean_over_all_values": {
+        "0.0": 0.07714833955035172,
+        "0.1": 0.07580356458060614,
+        "0.2": 0.07600189215687078
+      },
+      "p": 0.53765184120853,
+      "spread_best_minus_worst": 0.0013447749697455824
+    },
+    "hidden_dim": {
+      "F": 3.5580234252149094,
+      "best_level": "64",
+      "levels": [
+        "128",
+        "256",
+        "64"
+      ],
+      "mean_over_all_values": {
+        "128": 0.07642775327375055,
+        "256": 0.07454462178190407,
+        "64": 0.077981421232174
+      },
+      "p": 0.02962433992647404,
+      "spread_best_minus_worst": 0.003436799450269923
+    },
+    "num_blocks": {
+      "F": 0.6734586745862813,
+      "best_level": "2",
+      "levels": [
+        "1",
+        "2",
+        "3"
+      ],
+      "mean_over_all_values": {
+        "1": 0.07628965234012135,
+        "2": 0.0770870999620646,
+        "3": 0.07557704398564268
+      },
+      "p": 0.5106608044864105,
+      "spread_best_minus_worst": 0.0015100559764219257
+    }
+  },
+  "axis_tests_per_fold_blocked_on_seed_only": {
+    "dropout": {
+      "F1": {
+        "F": 1.3244294479730971,
+        "best_level": "0.0",
+        "p": 0.2718683523220006,
+        "spread": 0.003961875152027783
+      },
+      "F2": {
+        "F": 1.342892251409065,
+        "best_level": "0.2",
+        "p": 0.267057938274216,
+        "spread": 0.0027734496324744867
+      },
+      "F3": {
+        "F": 1.990120281378354,
+        "best_level": "0.0",
+        "p": 0.14355924256315075,
+        "spread": 0.0032109884666466637
+      },
+      "F4": {
+        "F": 0.41993197341053695,
+        "best_level": "0.1",
+        "p": 0.6585681526500166,
+        "spread": 0.003314343777087128
+      }
+    },
+    "hidden_dim": {
+      "F1": {
+        "F": 0.3184962307895677,
+        "best_level": "128",
+        "p": 0.7281830957226041,
+        "spread": 0.001963816375679918
+      },
+      "F2": {
+        "F": 2.230223261361007,
+        "best_level": "64",
+        "p": 0.11431623174260738,
+        "spread": 0.003771669749901632
+      },
+      "F3": {
+        "F": 0.42870702633210267,
+        "best_level": "128",
+        "p": 0.6528761215285133,
+        "spread": 0.0015241014622155158
+      },
+      "F4": {
+        "F": 1.880707217760569,
+        "best_level": "64",
+        "p": 0.1593316533444251,
+        "spread": 0.006861822660373426
+      }
+    },
+    "num_blocks": {
+      "F1": {
+        "F": 0.08762716524223474,
+        "best_level": "3",
+        "p": 0.9161924208982273,
+        "spread": 0.0010710271289260664
+      },
+      "F2": {
+        "F": 1.3877258529161538,
+        "best_level": "1",
+        "p": 0.2557367180026391,
+        "spread": 0.0030050560592741887
+      },
+      "F3": {
+        "F": 0.004863317643152371,
+        "best_level": "2",
+        "p": 0.9951487908710991,
+        "spread": 0.00016924697192897964
+      },
+      "F4": {
+        "F": 1.1935618045913587,
+        "best_level": "2",
+        "p": 0.3086145722576291,
+        "spread": 0.0052792090372571765
+      }
+    }
+  },
+  "blocking_on_seed_x_fold_instead_of_seed_and_fold": {
+    "block_effect": {
+      "F": 187.66564353292594,
+      "SS": 0.10388269870420258,
+      "df": 11,
+      "p": 9.010381248517035e-124,
+      "share": 0.8660295328730742
+    },
+    "config_effect": {
+      "F": 1.2823220006626277,
+      "SS": 0.0016777846133684544,
+      "df": 26,
+      "p": 0.16688969093900374,
+      "share": 0.013987035792306889
+    },
+    "config_p_with_seed_as_a_main_effect": 0.956632229756913,
+    "config_p_with_seed_x_fold_as_blocks": 0.16688969093900374,
+    "n_blocks": 12,
+    "residual": {
+      "SS": 0.014392352886027245,
+      "df": 286,
+      "share": 0.11998343133461911
+    },
+    "seed_ranking_best_to_worst_by_fold": {
+      "F1": [
+        "20260803",
+        "20260802",
+        "20260801"
+      ],
+      "F2": [
+        "20260803",
+        "20260802",
+        "20260801"
+      ],
+      "F3": [
+        "20260801",
+        "20260803",
+        "20260802"
+      ],
+      "F4": [
+        "20260801",
+        "20260802",
+        "20260803"
+      ]
+    },
+    "seed_swing_of_the_pooled_main_effect": 0.0042599866935749825,
+    "seed_swing_within_each_fold": {
+      "F1": 0.022595728796990698,
+      "F2": 0.013462520231714167,
+      "F3": 0.0071006252261990865,
+      "F4": 0.01603372802898205
+    },
+    "why": "the seed ranking is not the same in every fold, so a seed main effect averages away a swing that is large within each fold; this is the model §BL.6 must use before pooling M2's four folds"
+  },
+  "carrier": {
+    "factor_order": [
+      "f00",
+      "f01",
+      "f02",
+      "f03",
+      "f04",
+      "f05",
+      "f06",
+      "f07",
+      "f08",
+      "f09",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14"
+    ],
+    "family": "RESIDUAL_MLP",
+    "folds": [
+      "F1",
+      "F2",
+      "F3",
+      "F4"
+    ],
+    "grid": "hidden_dim{64,128,256} x num_blocks{1,2,3} x dropout{0.0,0.1,0.2}, a full 3^3 factorial",
+    "n_configs": 27,
+    "n_observations": 324,
+    "seeds": [
+      "20260801",
+      "20260802",
+      "20260803"
+    ],
+    "workspace": "/data/zhangyudong/qrv2_research_artifacts/m1_full_v1"
+  },
+  "database_access": false,
+  "design": "randomized complete block design with TWO blocking factors (fold, seed) and one observation per config x fold x seed cell; the config x fold interaction is tested explicitly rather than assumed away",
+  "effect_sizes": {
+    "SE_of_a_config_mean_pooled_over_4_folds": 0.0030801613395730044,
+    "SE_of_a_config_mean_within_one_fold": 0.006160322679146009,
+    "estimated_true_between_config_sd": 0.0,
+    "fold_means": {
+      "F1": 0.048794808910893266,
+      "F2": 0.08539281185884706,
+      "F3": 0.07869990323353472,
+      "F4": 0.09238420438049648
+    },
+    "fold_swing": 0.043589395469603213,
+    "power_gain_from_pooling": 2.0,
+    "residual_sd": 0.010669991871299713,
+    "seed_means": {
+      "20260801": 0.07384677798083909,
+      "20260802": 0.07700025363257545,
+      "20260803": 0.07810676467441408
+    },
+    "seed_swing": 0.0042599866935749825,
+    "seed_swing_as_share_of_grand_mean": 0.055818948136848776
+  },
+  "generated_at_local": "2026-09-15T21:08:19",
+  "grand_mean": 0.07631793209594288,
+  "is_the_winner_stable_across_folds": {
+    "config_rank_agreement_between_folds_spearman": {
+      "F1_vs_F2": -0.11477411477411475,
+      "F1_vs_F3": 0.11904761904761904,
+      "F1_vs_F4": 0.2222222222222222,
+      "F2_vs_F3": -0.2564102564102564,
+      "F2_vs_F4": -0.09218559218559218,
+      "F3_vs_F4": -0.2863247863247863
+    },
+    "distinct_winner_configs": [
+      {
+        "dropout": 0.0,
+        "hidden_dim": 128,
+        "num_blocks": 2
+      },
+      {
+        "dropout": 0.0,
+        "hidden_dim": 128,
+        "num_blocks": 3
+      },
+      {
+        "dropout": 0.1,
+        "hidden_dim": 128,
+        "num_blocks": 3
+      },
+      {
+        "dropout": 0.2,
+        "hidden_dim": 128,
+        "num_blocks": 2
+      }
+    ],
+    "n_distinct_winners": 4,
+    "per_fold_winner": {
+      "F1": {
+        "config": {
+          "dropout": 0.0,
+          "hidden_dim": 128,
+          "num_blocks": 3
+        },
+        "config_index": 0,
+        "ensemble_rank_ic": 0.06002328665131539,
+        "n_configs": 27,
+        "runner_up_gap": 0.003965620328517189
+      },
+      "F2": {
+        "config": {
+          "dropout": 0.2,
+          "hidden_dim": 128,
+          "num_blocks": 2
+        },
+        "config_index": 0,
+        "ensemble_rank_ic": 0.09437554331853597,
+        "n_configs": 27,
+        "runner_up_gap": 0.00026272267609937783
+      },
+      "F3": {
+        "config": {
+          "dropout": 0.0,
+          "hidden_dim": 128,
+          "num_blocks": 2
+        },
+        "config_index": 0,
+        "ensemble_rank_ic": 0.08511112017685535,
+        "n_configs": 27,
+        "runner_up_gap": 0.0004780314614081932
+      },
+      "F4": {
+        "config": {
+          "dropout": 0.1,
+          "hidden_dim": 128,
+          "num_blocks": 3
+        },
+        "config_index": 0,
+        "ensemble_rank_ic": 0.10173055089765992,
+        "n_configs": 27,
+        "runner_up_gap": 0.0007895669045031306
+      }
+    },
+    "rank_agreement_max": 0.2222222222222222,
+    "rank_agreement_median": -0.10347985347985347,
+    "rank_agreement_min": -0.2863247863247863
+  },
+  "m2_f1_reference_from_BL": {
+    "F_config": 8.763803422612282,
+    "config_share": 0.1724296992746318,
+    "naive_one_way_p": 0.9835017916353112,
+    "note": "for comparison only; M2 F1 is a different carrier and a single fold",
+    "p_config": 3.242826958234832e-10,
+    "residual_share": 0.03935042605582192,
+    "seed_share": 0.7882198746695456
+  },
+  "question": "Is M1's winning config stable across the four folds, and does the blocked variance decomposition §BL ran on M2's F1 replicate on a carrier that has already finished all four folds?",
+  "read_only": true,
+  "repository_module_executed": false,
+  "seed_mean_by_fold": {
+    "F1": {
+      "20260801": 0.03766056768940412,
+      "20260802": 0.04846756255688085,
+      "20260803": 0.06025629648639482
+    },
+    "F2": {
+      "20260801": 0.07735248292662869,
+      "20260802": 0.08801094949156961,
+      "20260803": 0.09081500315834286
+    },
+    "F3": {
+      "20260801": 0.08206163638407535,
+      "20260802": 0.07496101115787626,
+      "20260803": 0.07907706215865258
+    },
+    "F4": {
+      "20260801": 0.09831242492324818,
+      "20260802": 0.09656149132397512,
+      "20260803": 0.08227869689426613
+    }
+  },
+  "the_statistic_the_framework_selects_on": {
+    "SE_of_a_config_ensemble_mean_over_4_folds": 0.0015693332914496446,
+    "axis_level_means_per_fold_on_ensemble_values": {
+      "dropout": {
+        "best_level_by_fold": {
+          "F1": "0.0",
+          "F2": "0.2",
+          "F3": "0.0",
+          "F4": "0.1"
+        },
+        "n_distinct_best_levels_across_folds": 3,
+        "ordering_flips_across_folds": true,
+        "per_fold": {
+          "F1": {
+            "best_level": "0.0",
+            "level_means_on_ensemble_values": {
+              "0.0": 0.05377988873826369,
+              "0.1": 0.050005390817025125,
+              "0.2": 0.050233988912221784
+            },
+            "spread": 0.0037744979212385663,
+            "top5_census_of_this_axis": [
+              "0.0",
+              "0.0",
+              "0.0",
+              "0.0",
+              "0.2"
+            ]
+          },
+          "F2": {
+            "best_level": "0.2",
+            "level_means_on_ensemble_values": {
+              "0.0": 0.08993058750945149,
+              "0.1": 0.09110000213592738,
+              "0.2": 0.09163703965468467
+            },
+            "spread": 0.0017064521452331838,
+            "top5_census_of_this_axis": [
+              "0.2",
+              "0.0",
+              "0.0",
+              "0.2",
+              "0.2"
+            ]
+          },
+          "F3": {
+            "best_level": "0.0",
+            "level_means_on_ensemble_values": {
+              "0.0": 0.08311112089784184,
+              "0.1": 0.08043622341829242,
+              "0.2": 0.08119586215645345
+            },
+            "spread": 0.0026748974795494235,
+            "top5_census_of_this_axis": [
+              "0.0",
+              "0.2",
+              "0.0",
+              "0.0",
+              "0.1"
+            ]
+          },
+          "F4": {
+            "best_level": "0.1",
+            "level_means_on_ensemble_values": {
+              "0.0": 0.0975504114776631,
+              "0.1": 0.0997073537539267,
+              "0.2": 0.09753736720057853
+            },
+            "spread": 0.0021699865533481716,
+            "top5_census_of_this_axis": [
+              "0.1",
+              "0.1",
+              "0.2",
+              "0.1",
+              "0.1"
+            ]
+          }
+        },
+        "pooled_best_level_for_contrast": "0.0"
+      },
+      "hidden_dim": {
+        "best_level_by_fold": {
+          "F1": "128",
+          "F2": "64",
+          "F3": "128",
+          "F4": "64"
+        },
+        "n_distinct_best_levels_across_folds": 2,
+        "ordering_flips_across_folds": true,
+        "per_fold": {
+          "F1": {
+            "best_level": "128",
+            "level_means_on_ensemble_values": {
+              "128": 0.05214041873020034,
+              "256": 0.04986976387915168,
+              "64": 0.05200908585815858
+            },
+            "spread": 0.002270654851048659,
+            "top5_census_of_this_axis": [
+              "128",
+              "64",
+              "256",
+              "256",
+              "128"
+            ]
+          },
+          "F2": {
+            "best_level": "64",
+            "level_means_on_ensemble_values": {
+              "128": 0.09016564846071713,
+              "256": 0.09071737969357244,
+              "64": 0.09178460114577396
+            },
+            "spread": 0.0016189526850568237,
+            "top5_census_of_this_axis": [
+              "128",
+              "64",
+              "128",
+              "256",
+              "256"
+            ]
+          },
+          "F3": {
+            "best_level": "128",
+            "level_means_on_ensemble_values": {
+              "128": 0.08187792499704319,
+              "256": 0.08147459142987591,
+              "64": 0.08139069004566862
+            },
+            "spread": 0.0004872349513745655,
+            "top5_census_of_this_axis": [
+              "128",
+              "128",
+              "128",
+              "256",
+              "256"
+            ]
+          },
+          "F4": {
+            "best_level": "64",
+            "level_means_on_ensemble_values": {
+              "128": 0.0980375469723268,
+              "256": 0.09809291209455606,
+              "64": 0.09866467336528545
+            },
+            "spread": 0.0006271263929586435,
+            "top5_census_of_this_axis": [
+              "128",
+              "256",
+              "128",
+              "256",
+              "64"
+            ]
+          }
+        },
+        "pooled_best_level_for_contrast": "64"
+      },
+      "num_blocks": {
+        "best_level_by_fold": {
+          "F1": "3",
+          "F2": "1",
+          "F3": "1",
+          "F4": "2"
+        },
+        "n_distinct_best_levels_across_folds": 3,
+        "ordering_flips_across_folds": true,
+        "per_fold": {
+          "F1": {
+            "best_level": "3",
+            "level_means_on_ensemble_values": {
+              "1": 0.05113457147728076,
+              "2": 0.05109938195231702,
+              "3": 0.051785315037912824
+            },
+            "spread": 0.000685933085595801,
+            "top5_census_of_this_axis": [
+              "3",
+              "1",
+              "2",
+              "1",
+              "2"
+            ]
+          },
+          "F2": {
+            "best_level": "1",
+            "level_means_on_ensemble_values": {
+              "1": 0.09197872917207518,
+              "2": 0.09188602194807044,
+              "3": 0.0888028781799179
+            },
+            "spread": 0.003175850992157281,
+            "top5_census_of_this_axis": [
+              "2",
+              "2",
+              "1",
+              "1",
+              "3"
+            ]
+          },
+          "F3": {
+            "best_level": "1",
+            "level_means_on_ensemble_values": {
+              "1": 0.08191717085143663,
+              "2": 0.08162482237758222,
+              "3": 0.08120121324356887
+            },
+            "spread": 0.0007159576078677593,
+            "top5_census_of_this_axis": [
+              "2",
+              "1",
+              "1",
+              "3",
+              "2"
+            ]
+          },
+          "F4": {
+            "best_level": "2",
+            "level_means_on_ensemble_values": {
+              "1": 0.09814825738906076,
+              "2": 0.0994984902217192,
+              "3": 0.09714838482138835
+            },
+            "spread": 0.002350105400330843,
+            "top5_census_of_this_axis": [
+              "3",
+              "3",
+              "2",
+              "2",
+              "2"
+            ]
+          }
+        },
+        "pooled_best_level_for_contrast": "2"
+      }
+    },
+    "axis_tests_on_ensemble_values_blocked_on_fold": {
+      "dropout": {
+        "F": 1.0201117452224993,
+        "best_level": "0.0",
+        "levels": [
+          "0.0",
+          "0.1",
+          "0.2"
+        ],
+        "mean_of_ensemble_values": {
+          "0.0": 0.081093002155805,
+          "0.1": 0.08031224253129292,
+          "0.2": 0.0801510644809846
+        },
+        "p": 0.364099702053625,
+        "per_seed_best_level_for_contrast": "0.0",
+        "spread_best_minus_worst": 0.0009419376748204117,
+        "the_two_statistics_agree": true
+      },
+      "hidden_dim": {
+        "F": 0.8586022795377237,
+        "best_level": "64",
+        "levels": [
+          "128",
+          "256",
+          "64"
+        ],
+        "mean_of_ensemble_values": {
+          "128": 0.08055538479007188,
+          "256": 0.08003866177428903,
+          "64": 0.08096226260372164
+        },
+        "p": 0.42670730506789634,
+        "per_seed_best_level_for_contrast": "64",
+        "spread_best_minus_worst": 0.0009236008294326026,
+        "the_two_statistics_agree": true
+      },
+      "num_blocks": {
+        "F": 1.941577170480519,
+        "best_level": "2",
+        "levels": [
+          "1",
+          "2",
+          "3"
+        ],
+        "mean_of_ensemble_values": {
+          "1": 0.08079468222246333,
+          "2": 0.08102717912492223,
+          "3": 0.07973444782069698
+        },
+        "p": 0.14859417081233747,
+        "per_seed_best_level_for_contrast": "2",
+        "spread_best_minus_worst": 0.0012927313042252475,
+        "the_two_statistics_agree": true
+      }
+    },
+    "census_of_the_four_per_fold_winners_by_axis": {
+      "dropout": {
+        "0.0": 2,
+        "0.1": 1,
+        "0.2": 1
+      },
+      "hidden_dim": {
+        "128": 4
+      },
+      "num_blocks": {
+        "2": 2,
+        "3": 2
+      }
+    },
+    "config_effect": {
+      "F": 0.7431106741443751,
+      "SS": 0.00019033436811342723,
+      "df": 26,
+      "p": 0.8009713409361605,
+      "share": 0.005379068896964958
+    },
+    "fold_effect": {
+      "F": 1164.8473110916377,
+      "SS": 0.034425529055826645,
+      "df": 3,
+      "p": 1.1831203872261688e-64,
+      "share": 0.9729051796646973
+    },
+    "grand_mean": 0.08051876972269417,
+    "independent_check_one_way_on_fold_demeaned_rows": {
+      "F": 0.7716918539191586,
+      "p": 0.769001344519799
+    },
+    "n_ensemble_values": 108,
+    "note": "select_model_config ranks configs by ensemble rank IC, one value per config per fold, not by per-seed IC; the ensemble is scored on averaged predictions and is not the mean of the seed ICs, so the two analyses have different estimands",
+    "residual": {
+      "SS": 0.0007683957776514786,
+      "df": 78,
+      "share": 0.021715751438337785
+    }
+  },
+  "the_three_routes": {
+    "both_blocked_correct": {
+      "F": 0.5668063174883423,
+      "p": 0.956632229756913
+    },
+    "naive_one_way_over_configs_nothing_blocked": {
+      "F": 0.16204146555997678,
+      "p": 0.9999994732260391
+    },
+    "reading": "the same 324 numbers give three different p values for the same question; the fold main effect is a second common level shift that, like the seed effect, cancels in config-to-config comparison but destroys a one-way test's power",
+    "seed_blocked_but_fold_not_what_BL_did_on_one_fold": {
+      "F": 0.16350040336234514,
+      "p": 0.9999994190754046
+    }
+  },
+  "variance_decomposition": {
+    "SS_total": 0.11995283620359826,
+    "additivity_error": 1.3877787807814457e-17,
+    "config": {
+      "F": 0.5668063174883423,
+      "SS": 0.0016777846133684544,
+      "df": 26,
+      "p": 0.956632229756913,
+      "share": 0.013987035792306889
+    },
+    "config_x_fold": {
+      "F": 0.38944981415201013,
+      "SS": 0.003458392500416436,
+      "df": 78,
+      "p": 0.9999979522841581,
+      "share": 0.02883126910435398
+    },
+    "fold": {
+      "F": 261.74395006866865,
+      "SS": 0.08939764617957786,
+      "df": 3,
+      "p": 2.551878786242208e-71,
+      "share": 0.7452733008150096
+    },
+    "least_squares_RSS_reproduces_SS_res": true,
+    "residual": {
+      "SS": 0.02436362747819082,
+      "df": 214,
+      "share": 0.2031100576633133
+    },
+    "seed": {
+      "F": 4.635033979643047,
+      "SS": 0.0010553854320446679,
+      "df": 2,
+      "p": 0.010700640147891176,
+      "share": 0.008798336625016034
+    }
+  },
+  "weights_loaded": false,
+  "worst_seed_census_by_fold": {
+    "F1": {
+      "20260801": 22,
+      "20260802": 5,
+      "20260803": 0
+    },
+    "F2": {
+      "20260801": 23,
+      "20260802": 3,
+      "20260803": 1
+    },
+    "F3": {
+      "20260801": 3,
+      "20260802": 17,
+      "20260803": 7
+    },
+    "F4": {
+      "20260801": 1,
+      "20260802": 5,
+      "20260803": 21
+    }
+  }
+}

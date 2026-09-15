@@ -1,0 +1,62 @@
+{
+  "cited_source_missing": [],
+  "cited_source_sha256": {
+    "research_v2/configs/models/residual_mlp.yaml": "4abc9f91a4d7fc3ab294a3b51f89a0bbb135bdd11d8f0379eb5647a6a5f779f9",
+    "research_v2/configs/models/set_attention.yaml": "2f488a31c18eb05e961c1222dfad0514e1ad2dfa7dec75af7fe2610a567df04d",
+    "research_v2/configs/models/temporal.yaml": "49deee3da68c7a7f9ae89174e80daf662aa64b6168715fa9a4e5a5dd0087c86d",
+    "research_v2/scripts/run_real_candidate_training.py": "33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113",
+    "research_v2/src/research_v2/evaluation/gates.py": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9",
+    "research_v2/src/research_v2/models/families.py": "51d7affc1907faec8ac6e8fee3429e87b5e60a13705cf2a7adccf504a741f97c",
+    "research_v2/src/research_v2/training/cross_section_search.py": "e876ca2cc6dc222d5e82f1adaaabe75324d20f5849947a3431bfa87d6299fe0f",
+    "research_v2/src/research_v2/training/ensemble.py": "aa72f44197386926ecff1523aa4eefa022ff17e26fa6727f5f8ebe4412fdd5c1",
+    "research_v2/src/research_v2/training/search.py": "c5fd4fc13b28692035ab56f49d7489255e2b16913fd821edafe48da6e0475219",
+    "research_v2/src/research_v2/training/search_metrics.py": "73db157ec170bf4457df2cb4f5908cce44d96a54be778ebddad910208b2be2d5"
+  },
+  "driver_script_never_edited": {
+    "file": "research_v2/scripts/run_real_candidate_training.py",
+    "sha256": "33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113",
+    "why": "the live M2 driver re-imports this per fold; if this hash differs from the one a later reader computes, the file changed while a run was in flight and every number in §BL, §BM and §BN is suspect"
+  },
+  "excluded_by_design": [
+    "model weights / checkpoints (*.pt)",
+    "parquet panels and fold caches (read in place for cross-checks, never copied)",
+    "per-security rows: only counts and per-fold/per-config aggregates are recorded"
+  ],
+  "g4_threshold": {
+    "file": "research_v2/src/research_v2/evaluation/gates.py",
+    "matches": [
+      {
+        "line_number": 123,
+        "text": "_finite_at_least(delta, 0.005)"
+      },
+      {
+        "line_number": 125,
+        "text": "else GateResult(GateStatus.FAIL, None, 0.005)"
+      }
+    ],
+    "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
+  },
+  "generated_at_utc": "2026-09-15T13:13:12+00:00",
+  "generator": {
+    "path": "make_provenance.py",
+    "sha256": "e2de1977fe23e0482ad523262e7a28424dceb6c17a45ce62a0358fd3ee749998"
+  },
+  "measurements": {
+    "m1_fourfold_variance_decomposition.json": "5a7293ce5ba11388eaea325565f383c8de4133901af1db01b13505d9cb212fbe"
+  },
+  "probe_scripts": {
+    "probe_m1_fourfold_variance_decomposition.py": "99f63ade5a4bbdb05f48d9f1b4d3fa6c73d685ae51c765647dd3b7a074734307"
+  },
+  "repository_main_tree": {
+    "branch": "codex/publish-quant-platform",
+    "commit": "2502014df94a07bc8e52d621e3a7f65e92640858",
+    "dirty": false,
+    "path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX",
+    "subject": "docs(handoff): a one-page price list for the 24 days, and the cliff that makes 'tighten the health check slightly' a gate-failing change -- 42 days sit within 0.005 above the floor, so 0.905 turns G6 from 0.9752 to 0.9319"
+  },
+  "safety": "read-only analysis of search records that finished training runs already wrote. No database access at all. No weight or checkpoint was loaded -- every number here comes from the per-seed and ensemble validation RankIC fields inside JSON. Nothing was written into any artifact directory. No repository file was edited; run_real_candidate_training.py is hashed below to prove it, and the live M2 driver re-imports that file per fold. No process was signalled.",
+  "this_evidence_branch": {
+    "branch": "codex/research-conditional-factor-review",
+    "commit_at_generation": "f8bbf58985467b964fe367b81fef8c02798b9153"
+  }
+}
