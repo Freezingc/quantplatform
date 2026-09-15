@@ -25,6 +25,8 @@ CITED_SOURCES = (
     "research_v2/scripts/walk_forward_factor_daily.py",
     "research_v2/scripts/walk_forward_common.py",
     "research_v2/artifacts/diagnostics/factor_set_frozen_v2.json",
+    "research_v2/configs/factors/source_catalog.yaml",
+    "research_v2/scripts/materialize_frozen_factor_daily.py",
 )
 SPARSITY_COMMENT_FILE = "research_v2/scripts/walk_forward_factor_daily.py"
 

@@ -1,0 +1,122 @@
+{
+ "yeslab_206": {
+  "display_name": "60日成交量去均值相对偏离",
+  "table": "factor_data5",
+  "src_name": "60日成交量去均值相对偏离",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_357": {
+  "display_name": "行业内收益标准化绝对值",
+  "table": "factor_data8",
+  "src_name": "行业内收益标准化绝对值",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_363": {
+  "display_name": "行业标准化绝对值除行业偏度绝对值",
+  "table": "factor_data8",
+  "src_name": "行业标准化绝对值除行业偏度绝对值",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_372": {
+  "display_name": "GP_003",
+  "table": "factor_data8",
+  "src_name": "GP_003",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_375": {
+  "display_name": "GP_006",
+  "table": "factor_data8",
+  "src_name": "GP_006",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_381": {
+  "display_name": "GP_012",
+  "table": "factor_data8",
+  "src_name": "GP_012",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_384": {
+  "display_name": "GP_015",
+  "table": "factor_data8",
+  "src_name": "GP_015",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_389": {
+  "display_name": "GP_020",
+  "table": "factor_data9",
+  "src_name": "GP_020",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_390": {
+  "display_name": "GP_021",
+  "table": "factor_data9",
+  "src_name": "GP_021",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_406": {
+  "display_name": "GP_037",
+  "table": "factor_data9",
+  "src_name": "GP_037",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_425": {
+  "display_name": "GP_056",
+  "table": "factor_data9",
+  "src_name": "GP_056",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_464": {
+  "display_name": "GP_095",
+  "table": "factor_data10",
+  "src_name": "GP_095",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_471": {
+  "display_name": "AttentionSpillover",
+  "table": "factor_data10",
+  "src_name": "AttentionSpillover",
+  "owner": "zhangyudong",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_484": {
+  "display_name": "羊群效应_CSAD波动率21",
+  "table": "factor_data10",
+  "src_name": "羊群效应_CSAD波动率21",
+  "owner": "zhangyudong",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ },
+ "yeslab_96": {
+  "display_name": "修正日间反转",
+  "table": "factor_data3",
+  "src_name": "修正日间反转",
+  "owner": "suyanning",
+  "policy": "SAME_DAY_CLOSE",
+  "stale": "0"
+ }
+}

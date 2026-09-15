@@ -1,0 +1,255 @@
+{
+  "days": [
+    {
+      "factors": {
+        "yeslab_375": {
+          "panel_codes_with_a_value_for_this_factor": 536,
+          "panel_coverage": 0.13743589743589743,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7296137339055794,
+          "source_name": "GP_006",
+          "upstream_rows": 17909,
+          "upstream_valued_codes": 5126,
+          "upstream_valued_rows": 10811,
+          "valued_codes_inside_that_days_panel": 3740,
+          "valued_codes_outside_that_days_panel": 1386,
+          "valued_inside_panel_but_absent_from_the_panel": 3204,
+          "verdict": "MATERIALIZATION_LOSS_SUSPECTED"
+        },
+        "yeslab_381": {
+          "panel_codes_with_a_value_for_this_factor": 3894,
+          "panel_coverage": 0.9984615384615385,
+          "role": "CONTROL dense, factor_data8",
+          "share_of_valued_codes_inside_the_panel": 0.7298969072164948,
+          "source_name": "GP_012",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 5335,
+          "upstream_valued_rows": 10670,
+          "valued_codes_inside_that_days_panel": 3894,
+          "valued_codes_outside_that_days_panel": 1441,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_384": {
+          "panel_codes_with_a_value_for_this_factor": 626,
+          "panel_coverage": 0.1605128205128205,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7542168674698795,
+          "source_name": "GP_015",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 830,
+          "upstream_valued_rows": 1660,
+          "valued_codes_inside_that_days_panel": 626,
+          "valued_codes_outside_that_days_panel": 204,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_406": {
+          "panel_codes_with_a_value_for_this_factor": 544,
+          "panel_coverage": 0.13948717948717948,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7661971830985915,
+          "source_name": "GP_037",
+          "upstream_rows": 5953,
+          "upstream_valued_codes": 710,
+          "upstream_valued_rows": 710,
+          "valued_codes_inside_that_days_panel": 544,
+          "valued_codes_outside_that_days_panel": 166,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        }
+      },
+      "panel_codes_that_day": 3900,
+      "signal_date": "2024-11-05"
+    },
+    {
+      "factors": {
+        "yeslab_375": {
+          "panel_codes_with_a_value_for_this_factor": 531,
+          "panel_coverage": 0.13625866050808313,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.71912265758092,
+          "source_name": "GP_006",
+          "upstream_rows": 17909,
+          "upstream_valued_codes": 4696,
+          "upstream_valued_rows": 9670,
+          "valued_codes_inside_that_days_panel": 3377,
+          "valued_codes_outside_that_days_panel": 1319,
+          "valued_inside_panel_but_absent_from_the_panel": 2846,
+          "verdict": "MATERIALIZATION_LOSS_SUSPECTED"
+        },
+        "yeslab_381": {
+          "panel_codes_with_a_value_for_this_factor": 3895,
+          "panel_coverage": 0.9994867847061842,
+          "role": "CONTROL dense, factor_data8",
+          "share_of_valued_codes_inside_the_panel": 0.7300843486410497,
+          "source_name": "GP_012",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 5335,
+          "upstream_valued_rows": 10670,
+          "valued_codes_inside_that_days_panel": 3895,
+          "valued_codes_outside_that_days_panel": 1440,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_384": {
+          "panel_codes_with_a_value_for_this_factor": 642,
+          "panel_coverage": 0.16474210931485758,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7606635071090048,
+          "source_name": "GP_015",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 844,
+          "upstream_valued_rows": 1688,
+          "valued_codes_inside_that_days_panel": 642,
+          "valued_codes_outside_that_days_panel": 202,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_406": {
+          "panel_codes_with_a_value_for_this_factor": 535,
+          "panel_coverage": 0.13728509109571466,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7844574780058651,
+          "source_name": "GP_037",
+          "upstream_rows": 5953,
+          "upstream_valued_codes": 682,
+          "upstream_valued_rows": 682,
+          "valued_codes_inside_that_days_panel": 535,
+          "valued_codes_outside_that_days_panel": 147,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        }
+      },
+      "panel_codes_that_day": 3897,
+      "signal_date": "2024-11-04"
+    },
+    {
+      "factors": {
+        "yeslab_375": {
+          "panel_codes_with_a_value_for_this_factor": 619,
+          "panel_coverage": 0.15774719673802243,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7348261638185032,
+          "source_name": "GP_006",
+          "upstream_rows": 17909,
+          "upstream_valued_codes": 3394,
+          "upstream_valued_rows": 6760,
+          "valued_codes_inside_that_days_panel": 2494,
+          "valued_codes_outside_that_days_panel": 900,
+          "valued_inside_panel_but_absent_from_the_panel": 1875,
+          "verdict": "MATERIALIZATION_LOSS_SUSPECTED"
+        },
+        "yeslab_381": {
+          "panel_codes_with_a_value_for_this_factor": 3921,
+          "panel_coverage": 0.9992354740061162,
+          "role": "CONTROL dense, factor_data8",
+          "share_of_valued_codes_inside_the_panel": 0.7304396423248882,
+          "source_name": "GP_012",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 5368,
+          "upstream_valued_rows": 10736,
+          "valued_codes_inside_that_days_panel": 3921,
+          "valued_codes_outside_that_days_panel": 1447,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_384": {
+          "panel_codes_with_a_value_for_this_factor": 726,
+          "panel_coverage": 0.18501529051987767,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.8022099447513812,
+          "source_name": "GP_015",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 905,
+          "upstream_valued_rows": 1810,
+          "valued_codes_inside_that_days_panel": 726,
+          "valued_codes_outside_that_days_panel": 179,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_406": {
+          "panel_codes_with_a_value_for_this_factor": 624,
+          "panel_coverage": 0.15902140672782875,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.8125,
+          "source_name": "GP_037",
+          "upstream_rows": 5953,
+          "upstream_valued_codes": 768,
+          "upstream_valued_rows": 768,
+          "valued_codes_inside_that_days_panel": 624,
+          "valued_codes_outside_that_days_panel": 144,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        }
+      },
+      "panel_codes_that_day": 3924,
+      "signal_date": "2025-01-13"
+    },
+    {
+      "factors": {
+        "yeslab_375": {
+          "panel_codes_with_a_value_for_this_factor": 3745,
+          "panel_coverage": 0.9612422997946611,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7343159486016629,
+          "source_name": "GP_006",
+          "upstream_rows": 17909,
+          "upstream_valued_codes": 5292,
+          "upstream_valued_rows": 15139,
+          "valued_codes_inside_that_days_panel": 3886,
+          "valued_codes_outside_that_days_panel": 1406,
+          "valued_inside_panel_but_absent_from_the_panel": 141,
+          "verdict": "MATERIALIZATION_LOSS_SUSPECTED"
+        },
+        "yeslab_381": {
+          "panel_codes_with_a_value_for_this_factor": 3896,
+          "panel_coverage": 1.0,
+          "role": "CONTROL dense, factor_data8",
+          "share_of_valued_codes_inside_the_panel": 0.7302717900656045,
+          "source_name": "GP_012",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 5335,
+          "upstream_valued_rows": 10670,
+          "valued_codes_inside_that_days_panel": 3896,
+          "valued_codes_outside_that_days_panel": 1439,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_384": {
+          "panel_codes_with_a_value_for_this_factor": 3794,
+          "panel_coverage": 0.9738193018480493,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7279355333844973,
+          "source_name": "GP_015",
+          "upstream_rows": 11904,
+          "upstream_valued_codes": 5212,
+          "upstream_valued_rows": 10424,
+          "valued_codes_inside_that_days_panel": 3794,
+          "valued_codes_outside_that_days_panel": 1418,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        },
+        "yeslab_406": {
+          "panel_codes_with_a_value_for_this_factor": 3780,
+          "panel_coverage": 0.9702258726899384,
+          "role": "target cluster-B",
+          "share_of_valued_codes_inside_the_panel": 0.7294480895407178,
+          "source_name": "GP_037",
+          "upstream_rows": 5953,
+          "upstream_valued_codes": 5182,
+          "upstream_valued_rows": 5182,
+          "valued_codes_inside_that_days_panel": 3780,
+          "valued_codes_outside_that_days_panel": 1402,
+          "valued_inside_panel_but_absent_from_the_panel": 0,
+          "verdict": "FROZEN_TABLE_MATCHES_THE_UPSTREAM_VALUES_INSIDE_THE_UNIVERSE"
+        }
+      },
+      "panel_codes_that_day": 3896,
+      "signal_date": "2024-10-08"
+    }
+  ],
+  "generated_at_local": "2026-09-15T17:16:14",
+  "question": "On a cluster-B 'off' day, are GP_006's upstream valued rows inside the frozen panel's universe for that day, or outside it?",
+  "safety": "SELECT-only on dfs://YesLab; panels read in place"
+}

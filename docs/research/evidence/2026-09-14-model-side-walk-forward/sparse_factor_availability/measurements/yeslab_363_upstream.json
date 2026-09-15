@@ -1,0 +1,187 @@
+{
+  "frozen_factor_daily_per_year": {
+    "yeslab_357": {
+      "2020": {
+        "rows_all": 662595,
+        "rows_with_value": 662595
+      },
+      "2021": {
+        "rows_all": 691359,
+        "rows_with_value": 691359
+      },
+      "2022": {
+        "rows_all": 760514,
+        "rows_with_value": 760514
+      },
+      "2023": {
+        "rows_all": 829679,
+        "rows_with_value": 829679
+      },
+      "2024": {
+        "rows_all": 931696,
+        "rows_with_value": 931696
+      },
+      "2025": {
+        "rows_all": 938113,
+        "rows_with_value": 938113
+      }
+    },
+    "yeslab_363": {
+      "2020": {
+        "rows_all": 0,
+        "rows_with_value": 0
+      },
+      "2021": {
+        "rows_all": 0,
+        "rows_with_value": 0
+      },
+      "2022": {
+        "rows_all": 0,
+        "rows_with_value": 0
+      },
+      "2023": {
+        "rows_all": 0,
+        "rows_with_value": 0
+      },
+      "2024": {
+        "rows_all": 0,
+        "rows_with_value": 0
+      },
+      "2025": {
+        "rows_all": 0,
+        "rows_with_value": 0
+      }
+    },
+    "yeslab_381": {
+      "2020": {
+        "rows_all": 665416,
+        "rows_with_value": 665416
+      },
+      "2021": {
+        "rows_all": 714588,
+        "rows_with_value": 714588
+      },
+      "2022": {
+        "rows_all": 803668,
+        "rows_with_value": 803668
+      },
+      "2023": {
+        "rows_all": 881874,
+        "rows_with_value": 881874
+      },
+      "2024": {
+        "rows_all": 931656,
+        "rows_with_value": 931656
+      },
+      "2025": {
+        "rows_all": 937657,
+        "rows_with_value": 937657
+      }
+    }
+  },
+  "generated_at_local": "2026-09-15T17:09:48",
+  "not_measured": "distinct trade_date and distinct ts_code counts: this DolphinDB dialect rejects both count(distinct x) and nunique(x) on string columns alongside other aggregates, so only row counts are reported",
+  "question": "Does yeslab_363 exist upstream at all, and how does it compare with two dense controls on the same source table?",
+  "safety": "SELECT-only on dfs://YesLab and dfs://QuantResearchV2Test",
+  "upstream_per_year": {
+    "yeslab_357": {
+      "per_year": {
+        "2020": {
+          "rows_all": 2721600,
+          "rows_with_value": 1919408
+        },
+        "2021": {
+          "rows_all": 2721600,
+          "rows_with_value": 2162802
+        },
+        "2022": {
+          "rows_all": 2710400,
+          "rows_with_value": 2352920
+        },
+        "2023": {
+          "rows_all": 2710400,
+          "rows_with_value": 2515758
+        },
+        "2024": {
+          "rows_all": 2710400,
+          "rows_with_value": 2586308
+        },
+        "2025": {
+          "rows_all": 2721600,
+          "rows_with_value": 2584438
+        }
+      },
+      "role": "CONTROL same table, dense in the panel",
+      "source_factor_name": "行业内收益标准化绝对值",
+      "table": "factor_data8"
+    },
+    "yeslab_363": {
+      "per_year": {
+        "2020": {
+          "rows_all": 2722572,
+          "rows_with_value": 1919408
+        },
+        "2021": {
+          "rows_all": 2722572,
+          "rows_with_value": 2162802
+        },
+        "2022": {
+          "rows_all": 2711368,
+          "rows_with_value": 2352920
+        },
+        "2023": {
+          "rows_all": 2711368,
+          "rows_with_value": 2515758
+        },
+        "2024": {
+          "rows_all": 2711368,
+          "rows_with_value": 2586308
+        },
+        "2025": {
+          "rows_all": 2722572,
+          "rows_with_value": 2584438
+        }
+      },
+      "role": "TARGET zero rows in factor_daily",
+      "source_factor_name": "行业标准化绝对值除行业偏度绝对值",
+      "table": "factor_data8"
+    },
+    "yeslab_381": {
+      "per_year": {
+        "2020": {
+          "rows_all": 2892672,
+          "rows_with_value": 1904746
+        },
+        "2021": {
+          "rows_all": 2892672,
+          "rows_with_value": 2149172
+        },
+        "2022": {
+          "rows_all": 2880768,
+          "rows_with_value": 2342462
+        },
+        "2023": {
+          "rows_all": 2880768,
+          "rows_with_value": 2510056
+        },
+        "2024": {
+          "rows_all": 2880768,
+          "rows_with_value": 2582932
+        },
+        "2025": {
+          "rows_all": 2892672,
+          "rows_with_value": 2620268
+        }
+      },
+      "role": "CONTROL same table, dense in the panel",
+      "source_factor_name": "GP_012",
+      "table": "factor_data8"
+    }
+  },
+  "verdict": {
+    "conclusion": "yeslab_363 DOES have upstream rows, so its absence from factor_daily is a materialization question and needs its own section",
+    "yeslab_357_upstream_valued_rows_2020_2025": 14121634,
+    "yeslab_363_frozen_valued_rows_2020_2025": 0,
+    "yeslab_363_upstream_valued_rows_2020_2025": 14121634
+  }
+}
