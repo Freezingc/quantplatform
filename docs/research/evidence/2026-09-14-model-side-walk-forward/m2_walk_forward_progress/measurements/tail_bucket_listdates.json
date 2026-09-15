@@ -1,0 +1,225 @@
+{
+ "question": "Who are the securities in the 'ipo<=2021_or_unknown' tail bucket of the first-appearance cross-reference (F3 n=7, F4 n=8)? Are they genuine old IPOs admitted at a multi-year lag, or universe re-entries (long suspension / restructuring / code change)?",
+ "method": "tushare stock_basic MCP, fields ts_code+name+list_date+delist_date, one call per code, 2026-09-16; all 15 tail-bucket codes of F3 and F4 resolved (F1 n=468 and F2 n=112 tails NOT resolved, see not_done).",
+ "per_fold": {
+  "F3": [
+   {
+    "ts_code": "302132.SZ",
+    "name": "中航成飞",
+    "list_date": "20100827",
+    "ipo_year": 2010,
+    "lag_years_to_test_year": 14,
+    "classification": "reentry_restructuring"
+   },
+   {
+    "ts_code": "600654.SH",
+    "name": "中安科",
+    "list_date": "19901219",
+    "ipo_year": 1990,
+    "lag_years_to_test_year": 34,
+    "classification": "reentry_restructuring"
+   },
+   {
+    "ts_code": "600935.SH",
+    "name": "华塑股份",
+    "list_date": "20211126",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 3,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "605033.SH",
+    "name": "美邦股份",
+    "list_date": "20210916",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 3,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "605500.SH",
+    "name": "森林包装",
+    "list_date": "20201222",
+    "ipo_year": 2020,
+    "lag_years_to_test_year": 4,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "605566.SH",
+    "name": "福莱蒽特",
+    "list_date": "20211025",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 3,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688701.SH",
+    "name": "卓锦股份",
+    "list_date": "20210916",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 3,
+    "classification": "genuine_ipo"
+   }
+  ],
+  "F4": [
+   {
+    "ts_code": "688096.SH",
+    "name": "京源环保",
+    "list_date": "20200409",
+    "ipo_year": 2020,
+    "lag_years_to_test_year": 5,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688178.SH",
+    "name": "万德斯",
+    "list_date": "20200114",
+    "ipo_year": 2020,
+    "lag_years_to_test_year": 5,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688215.SH",
+    "name": "瑞晟智能",
+    "list_date": "20200828",
+    "ipo_year": 2020,
+    "lag_years_to_test_year": 5,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688265.SH",
+    "name": "南模生物",
+    "list_date": "20211228",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 4,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688272.SH",
+    "name": "富吉瑞",
+    "list_date": "20211018",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 4,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688367.SH",
+    "name": "工大高科",
+    "list_date": "20210628",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 4,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688585.SH",
+    "name": "上纬新材",
+    "list_date": "20200928",
+    "ipo_year": 2020,
+    "lag_years_to_test_year": 5,
+    "classification": "genuine_ipo"
+   },
+   {
+    "ts_code": "688683.SH",
+    "name": "莱尔科技",
+    "list_date": "20210412",
+    "ipo_year": 2021,
+    "lag_years_to_test_year": 4,
+    "classification": "genuine_ipo"
+   }
+  ]
+ },
+ "summary": {
+  "F3": {
+   "n_tail_bucket": 7,
+   "genuine_ipo": 5,
+   "reentry_restructuring": 2,
+   "genuine_ipo_lag_years": [
+    3,
+    3,
+    3,
+    3,
+    4
+   ],
+   "reentry_lag_years": [
+    14,
+    34
+   ],
+   "all_star_688": false
+  },
+  "F4": {
+   "n_tail_bucket": 8,
+   "genuine_ipo": 8,
+   "reentry_restructuring": 0,
+   "genuine_ipo_lag_years": [
+    4,
+    4,
+    4,
+    4,
+    5,
+    5,
+    5,
+    5
+   ],
+   "reentry_lag_years": [],
+   "all_star_688": true
+  }
+ },
+ "cohort_identity_check": {
+  "note": "Securities first appearing in the panel, grouped by IPO cohort, summed across folds.",
+  "cohort_2022": {
+   "nonbse_ipo_count": 335,
+   "admitted_lag1_in_F2_test2023": 283,
+   "admitted_lag2_in_F3_test2024": 47,
+   "admitted_lag3_in_F4_test2025": 5,
+   "sum_within_panel": 335,
+   "sum_equals_cohort_count": true,
+   "rates_pct": {
+    "lag1": 84.5,
+    "lag2": 14.0,
+    "lag3": 1.5,
+    "total": 100.0
+   },
+   "caveat": "lag-4/lag-5 admissions are demonstrably non-zero (the F4 tail bucket is 8 such securities from the 2020-2021 cohorts), so a handful of 2022-cohort securities could still first appear in 2026+, which the frozen panel cannot observe. The exact 335=335 match is therefore consistent with complete absorption by lag 3 but does not prove it."
+  },
+  "cohort_2023": {
+   "nonbse_ipo_count": 238,
+   "admitted_lag1_in_F3_test2024": 203,
+   "admitted_lag2_in_F4_test2025": 33,
+   "sum_within_panel": 236,
+   "pct_of_cohort": 99.2,
+   "rates_pct": {
+    "lag1": 85.3,
+    "lag2": 13.9
+   },
+   "caveat": "lag3 lands in 2026+, outside the panel."
+  },
+  "cohort_2024": {
+   "nonbse_ipo_count": 79,
+   "admitted_lag1_in_F4_test2025": 63,
+   "sum_within_panel": 63,
+   "pct_of_cohort": 79.7,
+   "caveat": "lag2+ lands in 2026+, outside the panel. This is why F4's largest tranche is only 63."
+  },
+  "cohort_2025": {
+   "nonbse_ipo_count": 87,
+   "raw_incl_bse": 112,
+   "admitted_same_year_in_F4_test2025": 0,
+   "caveat": "zero same-year admission in every fold; the entire 2025 cohort is outside the panel. This refutes reading F4's 109 as 'the 2025 IPO class'."
+  },
+  "lag2_rate_stability": {
+   "cohort_2022_lag2_pct": 14.0,
+   "cohort_2023_lag2_pct": 13.9,
+   "reading": "the lag-2 admission rate is 14.0% and 13.9% on the two cohorts where it is observable, i.e. the lag kernel is stable and not a per-fold artifact."
+  }
+ },
+ "not_done": [
+  "F1's tail bucket (n=468, the whole fold) and F2's (n=112) were NOT resolved code by code; only F3 (7) and F4 (8) were, because those two are fully enumerated and small.",
+  "No exact 2021 non-BSE IPO cohort count was derived: a new_share query for 2021 H1 succeeded on retry but the response was truncated in transit, so F1's 468 is not decomposed into cohort tranches.",
+  "The exact upstream rule producing the hard zero on same-year admission was not introspected (universe_daily construction is read-only and was not queried)."
+ ],
+ "read_only": true,
+ "database_access": false,
+ "training_performed": false,
+ "weights_loaded": false,
+ "repository_module_imported_or_executed": false,
+ "generated_at_local": "2026-09-16T01:45:00"
+}
