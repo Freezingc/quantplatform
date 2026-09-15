@@ -1,0 +1,177 @@
+{
+  "claim_1_the_search_metric_is_a_mean_rank_ic": {
+    "function_docstring_says_floor_is_shared": false,
+    "module_docstring_first_line": "The validation metric the config search selects on, defined once.",
+    "return_statement": "return float(summarize_rank_ic(daily).mean_rank_ic)",
+    "returns_summarize_rank_ic": true,
+    "returns_the_mean_rank_ic_field": true,
+    "verdict": "SAME ESTIMATOR FAMILY: the search metric is literally summarize_rank_ic(compute_daily_rank_ic(...)).mean_rank_ic"
+  },
+  "claim_2_and_3_every_production_call_site": [
+    {
+      "EFFECTIVE_score_health_enforced": "False",
+      "enclosing_function": "_validation_rank_ic",
+      "file": "research_v2/scripts/run_real_candidate_training.py",
+      "include_invalid": "<default False>",
+      "line": 474,
+      "minimum_cross_section": "30",
+      "require_score_health": "<default None -> follows include_invalid>",
+      "role": "the driver's private copy of the same metric",
+      "score_column": "<default 'score'>"
+    },
+    {
+      "EFFECTIVE_score_health_enforced": "False",
+      "enclosing_function": "_evaluate_predictions",
+      "file": "research_v2/src/research_v2/baselines/orchestration.py",
+      "include_invalid": "True",
+      "line": 227,
+      "minimum_cross_section": "minimum_cross_section",
+      "require_score_health": "False",
+      "role": "BASELINE VALIDATION (the other side of the standings table)",
+      "score_column": "<default 'score'>"
+    },
+    {
+      "EFFECTIVE_score_health_enforced": "False",
+      "enclosing_function": "select_training_factors",
+      "file": "research_v2/src/research_v2/datasets/selection.py",
+      "include_invalid": "<default False>",
+      "line": 158,
+      "minimum_cross_section": "rules.minimum_cross_section",
+      "require_score_health": "<default None -> follows include_invalid>",
+      "role": "training-factor selection",
+      "score_column": "<default 'score'>"
+    },
+    {
+      "EFFECTIVE_score_health_enforced": "True",
+      "enclosing_function": "evaluate_frozen_oos",
+      "file": "research_v2/src/research_v2/evaluation/model_evaluator.py",
+      "include_invalid": "True",
+      "line": 65,
+      "minimum_cross_section": "minimum_cross_section",
+      "require_score_health": "True",
+      "role": "OOS ACCEPTANCE PATH (candidate at :65, baseline at :86)",
+      "score_column": "<default 'score'>"
+    },
+    {
+      "EFFECTIVE_score_health_enforced": "True",
+      "enclosing_function": "evaluate_frozen_oos",
+      "file": "research_v2/src/research_v2/evaluation/model_evaluator.py",
+      "include_invalid": "True",
+      "line": 86,
+      "minimum_cross_section": "minimum_cross_section",
+      "require_score_health": "True",
+      "role": "OOS ACCEPTANCE PATH (candidate at :65, baseline at :86)",
+      "score_column": "<default 'score'>"
+    },
+    {
+      "EFFECTIVE_score_health_enforced": "False",
+      "enclosing_function": "validation_rank_ic",
+      "file": "research_v2/src/research_v2/training/search_metrics.py",
+      "include_invalid": "<default False>",
+      "line": 29,
+      "minimum_cross_section": "30",
+      "require_score_health": "<default None -> follows include_invalid>",
+      "role": "THE SEARCH SELECTION METRIC (what the driver's argmax ranks on)",
+      "score_column": "<default 'score'>"
+    },
+    {
+      "EFFECTIVE_score_health_enforced": "False",
+      "enclosing_function": "evaluate_validation_batches",
+      "file": "research_v2/src/research_v2/training/validation.py",
+      "include_invalid": "<default False>",
+      "line": 57,
+      "minimum_cross_section": "minimum_cross_section",
+      "require_score_health": "<default None -> follows include_invalid>",
+      "role": "inner validation during training",
+      "score_column": "'raw_score'"
+    }
+  ],
+  "database_access": false,
+  "day_set_equivalence": {
+    "baseline_floor": "minimum_cross_section",
+    "baseline_score_health_enforced": "False",
+    "oos_score_health_enforced": [
+      "True"
+    ],
+    "rule_in_compute_daily_rank_ic": "rank_ic_valid is set only when len(scored) >= minimum_cross_section AND (not enforce_score_health OR score_health_valid); with include_invalid=False the invalid rows are dropped before summarize_rank_ic, with include_invalid=True they are kept but summarize_rank_ic filters on rank_ic_valid & finite -- so both average over exactly the same set of days",
+    "search_floor": "30",
+    "search_score_health_enforced": "False",
+    "verdict_oos_path_differs": true,
+    "verdict_validation_paths_comparable": true
+  },
+  "generated_at_local": "2026-09-15T21:38:30",
+  "method": "every repository file is opened and parsed with ast; nothing is imported or run",
+  "question": "Is the search's ensemble_validation_rank_ic the same estimator as the baseline's mean_rank_ic, over the same day set, and which function actually selects the winner?",
+  "read_only": true,
+  "repository_module_imported_or_executed": false,
+  "the_duplicate_definition": {
+    "ast_identical_after_removing_name_and_docstring": true,
+    "driver_call_sites_of_its_own_copy": [
+      569,
+      891,
+      1385,
+      1871,
+      1878,
+      1910,
+      2175,
+      2493,
+      2500,
+      2581,
+      3178,
+      3185,
+      3266
+    ],
+    "driver_private_copy": "research_v2/scripts/run_real_candidate_training.py:_validation_rank_ic",
+    "importers_of_the_shared_module": [
+      "research_v2/src/research_v2/training/temporal_search.py:47",
+      "research_v2/src/research_v2/training/cross_section_search.py:21"
+    ],
+    "shared_module": "research_v2/src/research_v2/training/search_metrics.py:validation_rank_ic",
+    "verdict": "the two agree today, so the numbers are consistent -- but the shared module's docstring says it exists so the metric is 'defined once', and the largest consumer does not use it, so that guarantee currently holds by coincidence rather than by construction"
+  },
+  "weights_loaded": false,
+  "who_selects_the_winner": {
+    "argmax_on_ensemble_rank_ic_in_the_driver": [
+      {
+        "line": 1640,
+        "source": "max(search_results, key=lambda item: item['ensemble_validation_rank_ic'])"
+      },
+      {
+        "line": 1892,
+        "source": "max(search_results, key=lambda item: item['ensemble_validation_rank_ic'])"
+      },
+      {
+        "line": 2514,
+        "source": "max(search_results, key=lambda item: item['ensemble_validation_rank_ic'])"
+      },
+      {
+        "line": 3199,
+        "source": "max(search_results, key=lambda item: item['ensemble_validation_rank_ic'])"
+      }
+    ],
+    "build_pre_registered_trials_is_production_dead": true,
+    "build_pre_registered_trials_scan": {
+      "definition_sites": [
+        "research_v2/src/research_v2/training/search.py:479"
+      ],
+      "import_sites": [],
+      "name_or_attribute_references_outside_the_definition": [],
+      "string_literal_occurrences_eg___all__": [
+        "research_v2/src/research_v2/training/search.py:1024"
+      ]
+    },
+    "dead_code_test": "a function is production-dead here if no non-test file imports it and no non-test file names it outside its own definition; tests are excluded from the scan by path, so a test-only function still counts as dead",
+    "n_such_sites": 4,
+    "select_model_config_is_production_dead": true,
+    "select_model_config_scan": {
+      "definition_sites": [
+        "research_v2/src/research_v2/training/search.py:509"
+      ],
+      "import_sites": [],
+      "name_or_attribute_references_outside_the_definition": [],
+      "string_literal_occurrences_eg___all__": [
+        "research_v2/src/research_v2/training/search.py:1026"
+      ]
+    }
+  }
+}

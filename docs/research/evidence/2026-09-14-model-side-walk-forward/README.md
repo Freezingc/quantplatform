@@ -3055,3 +3055,60 @@ yaml 并非全无用——被测试钉住的是 `raw_factor_count_min/max`（`te
 **没有**验证 `ensemble_validation_rank_ic` 与 `mean_rank_ic` 是否同一估计量（【14:57】的最大未闭合假设，**BO.6 让它更要紧了**，本节仍沿用其数值）；
 **没有**做多重比较校正——BO.5 共 12 个轴检验 × 2 个统计量，**`p=0.0296`（M1 `hidden_dim` 逐种子）与 `0.0561`（M0-base 集成口径）这类边缘值在 Bonferroni 下都不成立，本节只把 `p<1e-4` 与"四折全稳定"这类远超校正阈值的结论当作可靠**；
 **没有**写库、**没有**产出权重、**没有**给任何进程发信号（M2 pid 3588838 全程在跑）。
+
+### 【21:45，**关掉【14:57】自认的"本节最大的未闭合假设"，并更正 §BN/§BO 三处函数引用**】**`ensemble_validation_rank_ic` 与基线的 `mean_rank_ic` 是同一个估计量**——不是"看起来像"，是**字面上同一个字段**：`training/search_metrics.py:17-38` 的返回语句就是 `return float(summarize_rank_ic(daily).mean_rank_ic)`。**两条验证路径的日集判据也一致**：搜索侧下限 **30**（硬编码）、`include_invalid` 默认 `False` ⇒ `require_score_health` 跟着为 `False`；基线侧 `baselines/orchestration.py:227` 是 `include_invalid=True` 但**显式传 `require_score_health=False`**、下限也是 30（默认值与 `configs/baselines/*.yaml` 都是 30）——**`rank_ic_valid` 的成立条件因此完全相同，【14:57】那张名次表可比**。**真正不一致的是 OOS 侧**：`evaluation/model_evaluator.py:65`（候选）与 `:86`（基线）**都传 `require_score_health=True`**，**所以 OOS 的 `mean_rank_ic` 与验证的不是同一个估计量**
+
+仪器 `m2_walk_forward_progress/probes/probe_rank_ic_estimator_identity.py`，机读件 `measurements/rank_ic_estimator_identity.json`；
+对应 `problems_found.md` **§BP**。**只读，而且比"只读"更强**：**探针用 `ast` 把仓库文件当数据解析，没有 import、没有执行任何仓库代码**；
+没有触库、没有加载权重、没有写 artifact 目录、没有发信号。驱动 sha256 仍为 `33742880f314ca21…f458f1f580b113`。
+
+**决定"哪些天进平均"的只有两个量**（`evaluation/rank_ic.py:96-107`）：`len(scored) >= minimum_cross_section`，
+以及 `(not enforce_score_health or score_health_valid)`，其中 `enforce_score_health = include_invalid if require_score_health is None else require_score_health`。
+七个生产调用点逐个从 AST 读出实参：
+
+| 文件:行 | `min_cross_section` | `include_invalid` | `require_score_health` | **实际强制分数健康** | `score_column` | 角色 |
+|---|---|---|---|---|---|---|
+| `training/search_metrics.py:29` | **30** | 默认 False | 默认 None | **False** | `score` | **搜索的选择度量** |
+| `run_real_candidate_training.py:474` | **30** | 默认 False | 默认 None | **False** | `score` | **驱动自己的副本** |
+| `baselines/orchestration.py:227` | 参数（默认/yaml 均 30） | True | **False（显式）** | **False** | `score` | **基线验证** |
+| `training/validation.py:57` | 参数 | 默认 False | 默认 None | False | **`raw_score`** | 内层验证 |
+| `evaluation/model_evaluator.py:65` | 参数 | True | **True** | **True** | `score` | **OOS：候选** |
+| `evaluation/model_evaluator.py:86` | 参数 | True | **True** | **True** | `score` | **OOS：基线** |
+| `datasets/selection.py:158` | `rules.…` | 默认 False | 默认 None | False | `score` | 训练因子筛选 |
+
+**日集等价的论证**：搜索侧 `include_invalid=False` ⇒ `compute_daily_rank_ic` 返回前就丢掉 `rank_ic_valid` 为假的行并删除该列，于是 `summarize_rank_ic` 走 `valid = finite`；
+基线侧 `include_invalid=True` ⇒ 全部标签日保留并带 `rank_ic_valid`，于是走 `valid = rank_ic_valid & finite`。**而 `rank_ic_valid=True` 本身蕴含 `rank_ic` 有限**（它只在 `math.isfinite` 通过时才置真），**所以两条分支筛出同一批天**——差别只是"先丢行再汇总"还是"汇总时按标记丢"。
+**一个已有的实测旁证**：`m2_f1_grid_and_standing.json` 记基线 F1 的 `valid_day_count = 237`，而 F1 验证切片本身就有 **237** 个不同 `signal_date`（`matches_baseline_valid_day_count = true`）——**这一折上没有任何天被任一路径丢掉，日集重合是被数据确认过的，不只是被源码论证过的。**
+**所以【14:57】那句"若两者口径不同，上面整张名次表就不可比"的前件为假**：M2 的 0.059239 与基线 B2 的 0.062711、M0R 的 0.067948、M1-full 的 0.060023 是同一估计量在同一批天上的值。
+
+**OOS 侧不可比是一条新的、源码级的理由**：`require_score_health=True` 让 `rank_ic_valid` 多一个条件 `ScoreHealthEvidence(coverage, unique_score_count, score_std).passes()`。
+**【14:57】当时把"基线 F1 验证 0.062711 vs OOS 0.085227"归给"验证年 2021 是四折里最难的"——年份不同确实是主因，但现在多了一条独立理由：两个数的日集判据本身就不同。**
+**操作性表述：验证侧与验证侧比、OOS 侧与 OOS 侧比；跨侧连"同一批天"都不成立。**（与 §BO.6 是同一类问题的两个层面：**BO.6 是"同一批天换了统计量"，BP.3 是"同一统计量换了批天"**。）
+
+**更正 §BN.1 / §BO.6 / §BO.7 的函数引用**：三处把"框架选模型"归给了 `training/search.py:509` 的 `select_model_config`（§BO.6 还写成"排 `mean_rank_ic`"）。**这个归属是错的。**
+扫描 `research_v2/` 下**全部非测试 `.py`**（按路径排除 `tests`），判据是"没有任何非测试文件 import 它、也没有任何非测试文件在定义之外提到它"：
+
+| 函数 | 定义处 | 非测试 import | 非测试引用 | `__all__` 字符串 | 判决 |
+|---|---|---|---|---|---|
+| `select_model_config` | `search.py:509` | **0** | **0** | `:1026` | **生产死代码** |
+| `build_pre_registered_trials` | `search.py:479` | **0** | **0** | `:1024` | **生产死代码**（§BM.2 已记，本节用同一判据复核） |
+
+**真正的选择语句在驱动里，共 4 处（四个载体各一处），全是同一形状**：`max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])`，位于 `:1640 / :1892 / :2514 / :3199`。
+**所以 §BO.7 的实质论点不但成立、而且现在是从源码确认的**：**框架确实取 argmax，排的键确实是 `ensemble_validation_rank_ic`（不是 `mean_rank_ic`）**；要更正的只有函数名与字段名，**三处已在原文就地加了 `【2026-09-15 21:45 更正（§BP.4）】` 标记**。
+**这是本包第 N 次遇到同一形状**（§D 四处"永不触发的守卫"、§V 手工名单、§BM.1/§BM.2 的 `search_space`）：**`training/search.py` 里有一整套写得相当讲究的选择层**（预注册试验、内层/外层验证、`ValidationProvenanceVerifier`、平局用 `parameter_count` 与 `config_hash` 决胜），**而生产路径一行都不用**。**本节不主张删它**（有测试覆盖、可能留给未来），**只主张：任何关于"框架怎么选模型"的论述都必须以驱动里那 4 个 `max(...)` 为准。**
+
+**选择度量有两份定义，今天逐字相同，但"只定义一次"这个保证靠巧合成立**：`search_metrics.py` 的 docstring 自己写着 *"three copies would be three chances for 'the model the search selected' to mean something subtly different from 'the model the parent then fits and freezes'"*。
+**实测**：把两份函数体**去掉名字与 docstring 后做 AST 逐节点比对，完全相同**（不是文本相似）；**但驱动用的是自己那份，13 个调用点**（`:569, 891, 1385, 1871, 1878, 1910, 2175, 2493, 2500, 2581, 3178, 3185, 3266`），**共享模块只被两个 spawn worker 模块 import**（`temporal_search.py:47`、`cross_section_search.py:21`）。
+**风险很具体**：`search_metrics.py` 把下限 **30 硬编码**，而 `orchestration.py` 与 `model_evaluator.py` 都把它作为**参数**传递；**若有人只改一侧的下限、或只给一侧加上 `require_score_health=True`，"搜索选中的模型"与"父进程随后冻结的模型"就会静默地不再是同一个判据——而那正是这个模块被创建出来要防止的事。**
+**本节不改代码**（驱动正被 24 个 worker 逐折重导入），**只记下风险，并建议在 M2/M3 收尾后作为一次"合并两份定义"的清理。**
+
+**顺带把 §BO.6 的解释收窄到唯一可能**：`seed_validation_rank_ic` 与 `ensemble_validation_rank_ic` **都由同一个 `search_metrics.validation_rank_ic` 计算，已逐行核实**——时序族 `temporal_search.py:379`（单种子）与 `:274`（集成后），截面族 `cross_section_search.py:208` 与 `:84`，形状相同；**两处唯一差别是喂进去的预测帧**，估计量、下限、分数健康判据全同。**所以 §BO.6 那个"两个统计量在同一根轴上给出相反最优水平"不可能是口径差异，只能是集成这个操作本身改变了轴效应的方向。**
+
+**不允许说的**：**不能**说"验证与 OOS 的差（0.062711 → 0.085227）是分数健康判据造成的"——**年份不同才是主因，本节只证明判据也不同，没有量化它贡献多少**；
+**不能**说 `training/validation.py:57`（`score_column="raw_score"`）与前两条数值相同——RankIC 按日内秩算、单调重表达不改变秩，**但它的行集是"实际喂进训练的 batch"而非合并后的预测/标签帧，本节没有验证**；
+**不能**把 BP.4 读成"`search.py` 的选择层有 bug"——**它是死代码，不是错代码**。
+
+**仍未做**：**没有**量化 `require_score_health=True` 在 OOS 窗口上排掉了多少天（需读 OOS 预测与标签重算，**本节只做了源码侧判据对照**）；
+**没有**验证 `raw_score` 那条路径与另两条的数值关系；**没有**追 `datasets/selection.py` 的 `rules.minimum_cross_section` 实际绑定值；
+**没有**合并两份 `validation_rank_ic` 定义；**没有**删或改 `select_model_config` / `build_pre_registered_trials`；
+**没有**改任何仓库代码、**没有**写库、**没有**产出权重、**没有**给任何进程发信号（M2 pid 3588838 全程在跑）。

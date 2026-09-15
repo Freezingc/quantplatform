@@ -51,6 +51,11 @@ CITED_SOURCES = (
     "research_v2/src/research_v2/models/families.py",
     "research_v2/configs/models/set_attention.yaml",
     "research_v2/configs/models/residual_mlp.yaml",
+    # §BP reads every production call site of compute_daily_rank_ic, so all of them are pinned;
+    # the point of that section is that the validation and OOS paths pass different arguments to
+    # the same function, and a reader must be able to re-check the argument lists themselves.
+    "research_v2/src/research_v2/training/validation.py",
+    "research_v2/src/research_v2/datasets/selection.py",
 )
 G4_FILE = "research_v2/src/research_v2/evaluation/gates.py"
 DRIVER_FILE = "research_v2/scripts/run_real_candidate_training.py"

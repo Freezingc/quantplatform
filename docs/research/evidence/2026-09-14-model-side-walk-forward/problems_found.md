@@ -6437,7 +6437,12 @@ M1 与 M2 消费**同一份 15 因子顺序 `f00…f14` 与同一组数据集 id
 | 同时区组种子与折（正确） | 0.5668 | **0.9566** |
 | 区组 `种子×折`（12 个区组，见 BN.2） | 1.2823 | **0.1669** |
 
-**而在框架真正用来选模型的那个统计量上**（`select_model_config` 排的是**集成 RankIC**，每配置每折一个值，27×4 = 108 个）：
+**而在框架真正用来选模型的那个统计量上**（排的是**集成 RankIC**，每配置每折一个值，27×4 = 108 个）：
+**【2026-09-15 21:45 更正（§BP.4）】此处原写"由 `select_model_config` 排"——那个函数在生产路径上根本没有调用方**
+**（只有定义 `search.py:509` 与 `__all__` 导出 `:1026`，测试之外无调用者），与 §BM.2 查到的 `build_pre_registered_trials` 同类。**
+**真正的选择语句是驱动里的 `max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])`**
+**（`run_real_candidate_training.py:1640 / 1892 / 2514 / 3199`，四个载体各一处）。**
+**"排序键是集成 RankIC"这一点不变，所以本段的全部数字与结论不受影响。**
 **配置占 0.5379%、`F(26,78)=0.7431`、`p=0.8010`；折占 97.2905%。**
 **所以换成集成口径，配置效应照样测不出来。**
 
@@ -6674,7 +6679,10 @@ M1 与 M2 消费**同一份 15 因子顺序 `f00…f14` 与同一组数据集 id
 
 **M0-refined 的 `learning_rate`：逐种子口径最优是 `0.05`，集成口径最优是 `0.03`。**
 两个 p 值都很大（0.715 / 0.930），**所以这本身是噪声**；**但它是本项目里第一个被实测到的"同一批运行、同一根轴、两个统计量给出相反最优水平"的例子。**
-**框架选模型用的是集成口径**（`select_model_config` 排 `mean_rank_ic`），**而 §BL/§BN/本节的全部分解都建立在逐种子值上**——
+**框架选模型用的是集成口径**（`max(..., key="ensemble_validation_rank_ic")`），**而 §BL/§BN/本节的全部分解都建立在逐种子值上**——
+**【2026-09-15 21:45 更正（§BP.4）】此处原写"`select_model_config` 排 `mean_rank_ic`"，两处都错：**
+**① `select_model_config` 在生产路径上没有调用方；② 真正的排序键是 `ensemble_validation_rank_ic`，不是 `mean_rank_ic`。**
+**本段的论点（框架选模型用集成口径、而分解建立在逐种子值上）方向不变，但函数与字段引用要按 §BP.4 读。**
 **§BL.7 当时把这条写成"没有做的事"，现在它有了实例，应当升级成"凡引用逐种子口径的轴结论，必须同时报集成口径"。**
 
 **而且集成口径系统性地更不敏感**（在两个有真实配置信号的载体上）：
@@ -6706,7 +6714,9 @@ M1 与 M2 消费**同一份 15 因子顺序 `f00…f14` 与同一组数据集 id
 
 **所以"轴级结论可靠"与"具体冠军不可靠"可以同时成立，而在本项目的数据里它们确实同时成立。**
 **准确的操作性结论：这些网格搜索的正确产出是轴级边际（树：`max_depth=4` + `num_leaves=15`；M2：`hidden=64` + `lr=3e-4`），不是那个 argmax 配置编号。**
-**而 `select_model_config` 取的恰恰是 argmax——即四个统计量里携带信息最少的那一个。**
+**而框架的选择语句取的恰恰是 argmax——即四个统计量里携带信息最少的那一个。**
+**【2026-09-15 21:45 更正（§BP.4）】此处原写 `select_model_config`；实际是驱动里的 `max(search_results, key=…"ensemble_validation_rank_ic")`。**
+**"取的是 argmax"这个论点本身不变，而且 §BP.4 从源码侧确认了它。**
 **本节不主张改这条规则**（它在预注册里、且改动会影响已签名证据），**只主张在报告与论文里不要把它读成"最优架构"。**
 
 ### BO.8 对"接下来怎么训"的五条可直接用的结论
@@ -6723,7 +6733,7 @@ M1 与 M2 消费**同一份 15 因子顺序 `f00…f14` 与同一组数据集 id
 
 ### BO.9 本节没有做的事
 
-**没有**改 `select_model_config`、**没有**改任何网格或 yaml、**没有**改任何仓库文件（BO.7 明确只主张改"怎么报告"，不主张改规则）；
+**没有**改任何选择规则或选择函数、**没有**改任何网格或 yaml、**没有**改任何仓库文件（BO.7 明确只主张改"怎么报告"，不主张改规则）；
 **没有**把 M0R 纳入（每折 1 个配置，无网格可分解）；**没有**分析 `m0r_resume_a` / `m0r_resume_c` 的 `search/` 目录
 （它们是 M0R 的续跑工作区，每折仍是单配置）；
 **没有**对 M2 的 F2/F3/F4 做任何推断（还在跑）——**BO.3 那句"M2 的种子占比会塌到 ~1%"是按另外三个载体的一致性做的预期，不是实测**；
@@ -6732,3 +6742,129 @@ M1 与 M2 消费**同一份 15 因子顺序 `f00…f14` 与同一组数据集 id
 **没有**做多重比较校正——**BO.5 那张表里共 12 个轴检验 × 2 个统计量，`p=0.0296`（M1 `hidden_dim` 逐种子）与 `p=0.0561`（M0-base 集成口径）这类边缘值在 Bonferroni 下都不成立**；
 **本节只把 `p<1e-4` 与"四折全稳定"这类远超校正阈值的结论当作可靠**；
 **没有**写库、**没有**产出权重、**没有**给任何进程发信号（M2 驱动 pid 3588838 全程在跑）。
+
+
+## BP. 【已闭合，2026-09-15 21:40，**关掉【14:57】自认的"本节最大的未闭合假设"，并更正 §BN/§BO 的一处函数引用**】**`ensemble_validation_rank_ic` 与基线的 `mean_rank_ic` 是同一个估计量**——不是"看起来像"，是**字面上同一个字段**：`training/search_metrics.py:17-38` 的返回语句就是 `return float(summarize_rank_ic(daily).mean_rank_ic)`。**而且两条验证路径的日集判据也一致**：搜索侧 `minimum_cross_section=30`（硬编码）、`include_invalid` 取默认 `False`、于是 `require_score_health` 跟着取 `False`；基线侧 `baselines/orchestration.py:227` 是 `include_invalid=True` 但**显式传 `require_score_health=False`**、下限也是 30（默认值与 `configs/baselines/*.yaml` 都是 30）——**`compute_daily_rank_ic` 里 `rank_ic_valid` 的成立条件因此完全相同，两条路径对同一批天取平均，所以【14:57】那张名次表是可比的**。**真正不一致的是 OOS 侧**：`evaluation/model_evaluator.py:65`（候选）与 `:86`（基线）**都传 `require_score_health=True`**，**于是 OOS 的 `mean_rank_ic` 与验证的 `mean_rank_ic` 不是同一个估计量**——**这给【14:57】那句"验证与 OOS 的绝对水平本来就不同量"补上了一个源码级理由**
+
+仪器 `m2_walk_forward_progress/probes/probe_rank_ic_estimator_identity.py`，机读件 `measurements/rank_ic_estimator_identity.json`。
+**只读，而且比"只读"更强**：**探针用 `ast` 把仓库文件当数据解析，没有 import、没有执行任何仓库代码**；
+没有触库、没有加载权重、没有写 artifact 目录、没有发信号。驱动 sha256 仍为 `33742880f314ca21…f458f1f580b113`。
+
+### BP.1 七个生产调用点的实参，逐个从 AST 读出来
+
+`compute_daily_rank_ic` 的有效性判据只有一条（`evaluation/rank_ic.py:96-107`）：
+`rank_ic_valid = True` 当且仅当 `len(scored) >= minimum_cross_section` **且** `(not enforce_score_health or score_health_valid)`，
+而 `enforce_score_health = include_invalid if require_score_health is None else require_score_health`。
+**所以决定"哪些天进平均"的只有两个量：下限、和是否强制分数健康。**
+
+| 文件:行 | 所在函数 | `minimum_cross_section` | `include_invalid` | `require_score_health` | **实际是否强制分数健康** | `score_column` | 角色 |
+|---|---|---|---|---|---|---|---|
+| `training/search_metrics.py:29` | `validation_rank_ic` | **30**（硬编码） | 默认 `False` | 默认 `None` | **False** | 默认 `score` | **搜索的选择度量（驱动的 argmax 就排它）** |
+| `scripts/run_real_candidate_training.py:474` | `_validation_rank_ic` | **30**（硬编码） | 默认 `False` | 默认 `None` | **False** | 默认 `score` | **驱动自己的副本**（见 BP.4） |
+| `baselines/orchestration.py:227` | `_evaluate_predictions` | 参数（默认 **30**，两个 yaml 也是 30） | `True` | **`False`（显式）** | **False** | 默认 `score` | **基线验证（名次表的另一边）** |
+| `training/validation.py:57` | `evaluate_validation_batches` | 参数 | 默认 `False` | 默认 `None` | False | **`raw_score`** | 训练过程中的内层验证 |
+| `evaluation/model_evaluator.py:65` | `evaluate_frozen_oos` | 参数 | `True` | **`True`** | **True** | 默认 `score` | **OOS 验收：候选** |
+| `evaluation/model_evaluator.py:86` | `evaluate_frozen_oos` | 参数 | `True` | **`True`** | **True** | 默认 `score` | **OOS 验收：基线** |
+| `datasets/selection.py:158` | `select_training_factors` | `rules.minimum_cross_section` | 默认 `False` | 默认 `None` | False | 默认 `score` | 训练因子筛选 |
+
+### BP.2 结论一：**两条验证路径可比**，所以【14:57】那张名次表成立
+
+- **同一个汇总器、同一个字段**：`validation_rank_ic` 的返回值就是 `summarize_rank_ic(daily).mean_rank_ic`，
+  而基线侧 `_evaluate_predictions` 返回的也是 `summarize_rank_ic(daily)`。**所以 `ensemble_validation_rank_ic` 不是一个与 `mean_rank_ic` 平行的量，它就是一个 `mean_rank_ic`。**
+- **同一个日集**：搜索侧 `include_invalid=False` ⇒ `compute_daily_rank_ic` 在返回前就把 `rank_ic_valid` 为假的行丢掉、并把该列删除，
+  于是 `summarize_rank_ic` 走 `valid = finite` 分支；基线侧 `include_invalid=True` ⇒ 全部标签日都保留并带 `rank_ic_valid` 列，
+  于是 `summarize_rank_ic` 走 `valid = rank_ic_valid & finite` 分支。**而 `rank_ic_valid=True` 本身就蕴含 `rank_ic` 有限**（它只在 `math.isfinite` 通过时才置真），
+  **所以两条分支筛出的是同一批天**——差别只是"先丢行再汇总"还是"留着行、汇总时按标记丢"。
+- **同一个判据**：两侧的 `enforce_score_health` 都是 `False`（基线侧是显式传的），下限都是 30。
+- **一个已有的实测旁证**：`m2_f1_grid_and_standing.json` 记录基线 F1 的 `valid_day_count = 237`，
+  而 F1 验证切片本身就有 **237** 个不同 `signal_date`（`validation_split_shape.matches_baseline_valid_day_count = true`）。
+  **即在这一折上没有任何天被两条路径中的任意一条丢掉，日集重合是被数据确认过的，不只是被源码论证过的。**
+
+**所以【14:57】那句"若两者口径不同，上面整张名次表就不可比"的前件为假，名次表可比。**
+**M2 的 0.059239 与基线 B2 的 0.062711、与 M0R 的 0.067948、与 M1-full 的 0.060023 是同一个估计量在同一批天上的值。**
+
+### BP.3 结论二：**OOS 侧不是同一个估计量**，这是一条源码级的、此前没人写过的不可比理由
+
+`evaluation/model_evaluator.py:65` 与 `:86` **都传 `require_score_health=True`**，
+于是 `enforce_score_health=True`，`rank_ic_valid` 多了一个条件：`ScoreHealthEvidence(coverage, unique_score_count, score_std).passes()`。
+**所以 OOS 的 `mean_rank_ic` 是在"通过分数健康检查的天"上取平均，而验证的 `mean_rank_ic` 不是。**
+
+**这给【14:57】那条经验观察补上了机制**。当时写的是"验证与 OOS 的绝对水平本来就不同量（基线 F1 验证 0.062711 vs 基线 OOS 0.085227）"，
+并把原因归给"F1 的验证年 2021 是四个 fold 里最难的"。**年份不同确实是主因**（验证是 2021、OOS 是 2022），
+**但现在多了一条独立理由：两个数的日集判据本身就不同。**
+**准确的操作性表述**：**验证侧的数与验证侧的数比、OOS 侧的数与 OOS 侧的比；跨侧比绝对水平没有意义，跨侧连"同一批天"都不成立。**
+（这与 §BO.6 那条"框架选模型用集成口径、而分解建立在逐种子值上"是同一类问题的两个不同层面：
+**BO.6 是"同一批天上换了个统计量"，BP.3 是"同一个统计量换了批天"。**）
+
+### BP.4 更正 §BN.1 / §BO.6 / §BO.7 的函数引用：**`select_model_config` 在生产路径上是死代码**
+
+§BN 与 §BO 三处把"框架选模型"归给了 `training/search.py:509` 的 `select_model_config`（§BO.6 还写成"排 `mean_rank_ic`"）。**这个归属是错的。**
+本节把整个 `research_v2/` 下**所有非测试 `.py` 文件**都扫了一遍（按路径排除 `tests`），判据是"没有任何非测试文件 import 它、也没有任何非测试文件在定义之外提到它"：
+
+| 函数 | 定义处 | 非测试 import | 非测试引用 | `__all__` 里的字符串 | 判决 |
+|---|---|---|---|---|---|
+| `select_model_config` | `search.py:509` | **0** | **0** | `search.py:1026` | **生产死代码** |
+| `build_pre_registered_trials` | `search.py:479` | **0** | **0** | `search.py:1024` | **生产死代码**（§BM.2 已记录，本节用同一判据复核） |
+
+**真正的选择语句在驱动里，共 4 处**（四个载体各一处），全部是同一形状：
+
+```
+run_real_candidate_training.py:1640   max(search_results, key=lambda item: item["ensemble_validation_rank_ic"])
+run_real_candidate_training.py:1892   同上
+run_real_candidate_training.py:2514   同上
+run_real_candidate_training.py:3199   同上
+```
+
+**所以 §BO.7 的实质论点不但成立，而且现在是从源码确认的**：**框架确实取 argmax，排的键确实是 `ensemble_validation_rank_ic`**（不是 `mean_rank_ic`）。
+**要更正的只有函数名与字段名，三处已在 §BN/§BO 原文就地加了 `【2026-09-15 21:45 更正（§BP.4）】` 标记。**
+**这是本包第 N 次遇到同一形状**（§D 四处"永不触发的守卫"、§V 手工名单、§BM.1/§BM.2 的 `search_space` 与 `build_pre_registered_trials`）：
+**`training/search.py` 里有一整套写得相当讲究的选择层（预注册试验、内层/外层验证、`ValidationProvenanceVerifier`、平局用 `parameter_count` 与 `config_hash` 决胜），而生产路径一行都不用。**
+**本节不主张删它**（它是被测试覆盖的、可能是给未来用的），**只主张：任何关于"框架怎么选模型"的论述都必须以驱动里那 4 个 `max(...)` 为准。**
+
+### BP.5 选择度量有两份定义，**今天逐字相同，但"只定义一次"这个保证是靠巧合成立的**
+
+`training/search_metrics.py` 的模块 docstring 自己写明了它存在的理由：
+*"Three callers need this number: the driver's serial search loops and both spawned search workers. It is the value `max` picks the winning configuration by, so three copies would be three chances for 'the model the search selected' to mean something subtly different from 'the model the parent then fits and freezes'."*
+
+**实测**：
+- 把 `search_metrics.validation_rank_ic` 与 `run_real_candidate_training._validation_rank_ic` 的函数体**去掉名字与 docstring 后做 AST 逐节点比对：完全相同**（不是文本相似，是 AST 相同）。
+- **但驱动用的是自己那份**，共 **13 个调用点**：`:569, 891, 1385, 1871, 1878, 1910, 2175, 2493, 2500, 2581, 3178, 3185, 3266`。
+- **共享模块只被两个 spawn worker 模块 import**：`training/temporal_search.py:47`、`training/cross_section_search.py:21`。
+
+**所以那句"three copies would be three chances"担心对了方向，但只解决了一半**：
+**现在是两份定义，一份给并行 worker、一份给串行驱动，二者今天语义完全一致——**
+**因此本轮所有数字都是自洽的**（M2 F1 的 24 个配置走的是并行 worker 路径，基线走 orchestration，两侧口径如 BP.2 所证一致）。
+**但这个一致性是"两份代码碰巧相同"，不是"只有一份代码"。**
+**风险很具体**：`search_metrics.py` 把 `minimum_cross_section=30` 硬编码，而 `orchestration.py` 与 `model_evaluator.py` 都把它作为参数传递；
+**若有人只改其中一侧的下限（或只给一侧加上 `require_score_health=True`），"搜索选中的模型"与"父进程随后冻结的模型"就会静默地不再是同一个判据——而那正是这个模块被创建出来要防止的事。**
+**本节不主张改代码**（驱动正被 24 个 worker 逐折重导入，任何编辑都会影响在跑的实验），**只主张把这条风险记下来，并在 M2/M3 收尾后作为一次"合并两份定义"的清理。**
+
+### BP.6 本节**允许**和**不允许**说什么
+
+**允许**：
+- **【14:57】的名次表可比**，`ensemble_validation_rank_ic` 就是 `mean_rank_ic`，同一汇总器、同一日集判据、同一下限。
+- **§BL / §BN / §BO 全部分解的输入是自洽的**：它们读的都是 `ensemble_validation_rank_ic` 与 `seed_validation_rank_ic`，
+  **而这两者都由同一个 `search_metrics.validation_rank_ic` 计算，已逐行核实**：
+  时序族在 `training/temporal_search.py:379`（单种子，写进 `TemporalSeedFit.validation_rank_ic`，再由 `:265` 收集成 `seed_rank_ic`）
+  与 `:274`（集成后的预测）；截面族在 `training/cross_section_search.py:208` 与 `:84`，形状相同。
+  **两处唯一的差别是喂进去的预测帧（单种子 vs 三种子集成），估计量、下限、分数健康判据全部相同。**
+  **所以 §BO.6 那个"两个统计量在同一根轴上给出相反的最优水平"是同一估计量在两种输入上的差别，不是两种口径的差别——
+  这一条把 §BO.6 的解释收窄到了唯一可能：集成这个操作本身改变了轴效应的方向，而不是两个数在量不同的东西。**
+- **验证与 OOS 不可比有一条新的、源码级的理由**（分数健康判据只在 OOS 侧强制）。
+
+**不允许**：
+- 不能说"验证与 OOS 的差（0.062711 → 0.085227）是由分数健康判据造成的"。**年份不同（2021 验证 vs 2022 OOS）才是主因**，
+  本节只证明了"判据也不同"，**没有量化判据贡献了多少**。
+- 不能说 `training/validation.py:57` 那条路径与前两条数值相同。**它用 `score_column="raw_score"`**；
+  RankIC 是按日内秩算的，单调重表达不改变秩，**但它的行集是"实际喂进训练的 batch"而不是合并后的预测/标签帧，所以不是同一批行——本节没有验证它。**
+- 不能把 BP.4 读成"`search.py` 的选择层有 bug"。**它是死代码，不是错代码**；本节的主张只是"论述框架行为时不要引用它"。
+
+### BP.7 本节没有做的事
+
+**没有**量化 `require_score_health=True` 在 OOS 窗口上究竟排掉了多少天（那需要读 OOS 预测与标签并重算，
+**本节只做了源码侧的判据对照，没有做数值侧的影响测量**）；
+**没有**验证 `training/validation.py:57` 那条 `raw_score` 路径与另两条的数值关系；
+**没有**验证 `datasets/selection.py:158` 的 `rules.minimum_cross_section` 实际取值是多少（它是参数，本节没有追到它的绑定处）；
+**没有**合并 `search_metrics.validation_rank_ic` 与驱动的 `_validation_rank_ic`（BP.5 只记录风险，不改在跑的实验）；
+**没有**删或改 `select_model_config` / `build_pre_registered_trials`；
+**没有**改任何仓库代码、**没有**写库、**没有**产出权重、**没有**给任何进程发信号（M2 驱动 pid 3588838 全程在跑）。
