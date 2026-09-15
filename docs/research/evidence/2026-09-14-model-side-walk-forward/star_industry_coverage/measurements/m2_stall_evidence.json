@@ -1,0 +1,122 @@
+{
+ "question": "Is the M2 driver computing or hung?",
+ "driver_pid": 3588838,
+ "worker_pids": [
+  1073753,
+  1073756,
+  1073757,
+  3595008
+ ],
+ "interval_seconds": 30.0,
+ "workspace": "/data/zhangyudong/qrv2_research_artifacts/m2_v1",
+ "workspace_newest_file": "/data/zhangyudong/qrv2_research_artifacts/m2_v1/checkpoints/m2-f1-final-20260803-seed-20260803-epoch-12/manifest.json",
+ "workspace_silent_for_hours": 1.043,
+ "processes": [
+  {
+   "pid": 3588838,
+   "role": "driver",
+   "cores_busy": 0.0,
+   "state": "S",
+   "wchan": "futex_wait_queue",
+   "threads_total": 177,
+   "thread_states": {
+    "S": 177
+   },
+   "io_delta_over_interval": {
+    "rchar": 0,
+    "wchar": 0,
+    "syscr": 0,
+    "syscw": 0
+   },
+   "io_total_syscr": 227774,
+   "io_total_syscw": 8984,
+   "rss_gb": 14.66
+  },
+  {
+   "pid": 1073753,
+   "role": "worker",
+   "cores_busy": 1.0,
+   "state": "R",
+   "wchan": "0",
+   "threads_total": 153,
+   "thread_states": {
+    "R": 1,
+    "S": 152
+   },
+   "io_delta_over_interval": {
+    "rchar": 0,
+    "wchar": 0,
+    "syscr": 0,
+    "syscw": 0
+   },
+   "io_total_syscr": 9149,
+   "io_total_syscw": 103,
+   "rss_gb": 13.71
+  },
+  {
+   "pid": 1073756,
+   "role": "worker",
+   "cores_busy": 1.0,
+   "state": "R",
+   "wchan": "0",
+   "threads_total": 153,
+   "thread_states": {
+    "R": 1,
+    "S": 152
+   },
+   "io_delta_over_interval": {
+    "rchar": 0,
+    "wchar": 0,
+    "syscr": 0,
+    "syscw": 0
+   },
+   "io_total_syscr": 9166,
+   "io_total_syscw": 183,
+   "rss_gb": 13.84
+  },
+  {
+   "pid": 1073757,
+   "role": "worker",
+   "cores_busy": 0.0,
+   "state": "S",
+   "wchan": "pipe_read",
+   "threads_total": 153,
+   "thread_states": {
+    "S": 153
+   },
+   "io_delta_over_interval": {
+    "rchar": 0,
+    "wchar": 0,
+    "syscr": 0,
+    "syscw": 0
+   },
+   "io_total_syscr": 9130,
+   "io_total_syscw": 41,
+   "rss_gb": 13.79
+  },
+  {
+   "pid": 3595008,
+   "role": "worker",
+   "cores_busy": 0.0,
+   "state": "S",
+   "wchan": "pipe_read",
+   "threads_total": 1,
+   "thread_states": {
+    "S": 1
+   },
+   "io_delta_over_interval": {
+    "rchar": 0,
+    "wchar": 0,
+    "syscr": 0,
+    "syscw": 0
+   },
+   "io_total_syscr": 135,
+   "io_total_syscw": 0,
+   "rss_gb": 0.01
+  }
+ ],
+ "verdict": "WITHIN_TOLERANCE -- the newest file is 1.04 h old; the 17-minute checkpoint cadence does not explain that, but a post-epoch evaluation phase running in memory would",
+ "signals_written": false,
+ "processes_signalled": false,
+ "database_writes": false
+}
