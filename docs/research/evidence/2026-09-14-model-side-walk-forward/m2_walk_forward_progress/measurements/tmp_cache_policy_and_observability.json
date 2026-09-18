@@ -1,0 +1,444 @@
+{
+ "question": "what actually clears the fold cache that §CL's conclusion depends on, how long have the F3/F4 cache files already survived it, what fraction of executed epochs is observable at all, and is M1's fold-wise epoch drop an artefact of degenerate runs?",
+ "generated_at_local": "2026-09-18T21:18:27",
+ "tmp_policy": {
+  "policy_line": "D /tmp 1777 root root -",
+  "type": "D",
+  "policy_line_fields": {
+   "type": "D",
+   "path": "/tmp",
+   "mode": "1777",
+   "user": "root",
+   "group": "root",
+   "age": "-",
+   "note": "tmpfiles.d columns are Type Path Mode User Group Age Argument, so the age field is index 5 and NOT index 4. The first version of this probe read parts[4] and published age='root', which is the group column -- a wrong value in the one field the whole conclusion turns on, since age '-' is what makes the daily --clean a no-op here."
+  },
+  "type_man_gloss_D": "directory to create and REMOVE",
+  "type_man_gloss_d": "directory to create and CLEANUP",
+  "age_field": "-",
+  "age_field_meaning": "'-' means no age-based cleanup, so systemd-tmpfiles --clean deletes nothing here on account of age",
+  "clean_unit_execstart": "systemd-tmpfiles --clean",
+  "setup_unit_execstart": "systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev",
+  "timer_schedule": [
+   "15min",
+   "1d"
+  ],
+  "last_boot": "2026-08-11 15:41:07",
+  "last_boot_source": "/proc/stat btime (stable across calls; `uptime -s` is not)",
+  "last_boot_epoch": 1786434067,
+  "tmp_entries_older_than_last_boot": 0,
+  "tmp_entries_created_in_boot_hour": 13,
+  "reading": "a sharp cutoff at the boot instant is what an empty-at-boot policy produces; zero survivors older than boot is the evidence, and the daily --clean timer cannot be what clears /tmp because the age field is '-'"
+ },
+ "cache_survival": {
+  "per_file": {
+   "F1/train": {
+    "exists": true,
+    "rows": 2296573,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T01:33:04",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.82,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F1/validation": {
+    "exists": true,
+    "rows": 696906,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T01:35:08",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.82,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F1/test": {
+    "exists": true,
+    "rows": 804575,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T01:37:15",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.82,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F2/train": {
+    "exists": true,
+    "rows": 2539884,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:07:48",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.8,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F2/validation": {
+    "exists": true,
+    "rows": 783477,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:09:57",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.8,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F2/test": {
+    "exists": true,
+    "rows": 882426,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:12:22",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.8,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F3/train": {
+    "exists": true,
+    "rows": 2790995,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:30:13",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.78,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F3/validation": {
+    "exists": true,
+    "rows": 859748,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:32:34",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.78,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F3/test": {
+    "exists": true,
+    "rows": 932167,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:35:15",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.78,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F4/train": {
+    "exists": true,
+    "rows": 3046399,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:54:34",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.77,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F4/validation": {
+    "exists": true,
+    "rows": 908649,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:57:02",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.76,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   },
+   "F4/test": {
+    "exists": true,
+    "rows": 938594,
+    "rows_match_published": true,
+    "mtime": "2026-09-08T02:59:36",
+    "atime": "2026-09-18T20:17:44",
+    "days_survived": 10.76,
+    "daily_clean_cycles_survived": 10,
+    "atime_changed_by_this_pack_probes": true
+   }
+  },
+  "n_cache_files_total": 46,
+  "cache_bytes_total": 6393847594,
+  "n_files_modified_after_2026_09_09": 0,
+  "all_expected_rows_still_match": true,
+  "n_files_found": 12,
+  "n_files_expected": 12,
+  "atime_disclosure": "reading a parquet footer updates atime under this filesystem's relatime mount option, so the §CJ/§CK/§CL probes changed the atime of the 12 files they inspected. mtime is unchanged on all 46 files and none was modified after 09-09, so content is intact; the extractor depends only on path existence and file content, and with age '-' the cleaner consults no timestamp, so nothing in the pipeline reads atime.",
+  "mount_options_root": "rw,relatime,stripe=64"
+ },
+ "version_retention": {
+  "source": "opt1_feasibility/universe_versions_origin_20days.json",
+  "table_examined": "universe_daily",
+  "days_examined": 20,
+  "versions_coexisting_per_day": {
+   "2": 5,
+   "4": 15
+  },
+  "max_coexisting": 4,
+  "days_where_lexicographic_max_is_newest": 0,
+  "reading": "the database retains old versions rather than replacing them, so a cold re-assembly inside the SAME process -- which re-filters by the SAME pinned versions (filter_current, walk_forward_common.py:150-155) -- would reproduce the same rows provided those versions are still present",
+  "EVIDENCE_LIMIT": "this covers universe_daily on 20 days (2024-12-20 .. 2025-01-17) only. It does NOT evidence retention for factor_daily or label_daily, nor for the 2017-2025 training years. So 'a cache deletion without a restart is recoverable' is supported for one of three tables on a 20-day window and must not be cited as a general guarantee.",
+  "restart_is_the_dangerous_case": "current_versions sorts by published_at and lets later rows overwrite earlier ones, i.e. it picks the NEWEST published version per partition. A restarted process therefore pins whatever is newest at the new start time, which need not match 09-13's snapshot -- and --resume restores search records, not that in-memory snapshot."
+ },
+ "observability": {
+  "M1": {
+   "per_fold": {
+    "f1": {
+     "n_runs": 81,
+     "mean_peak": 10.1235,
+     "median_peak": 11,
+     "p25": 6,
+     "p75": 14,
+     "p90": 16,
+     "max_peak": 19,
+     "trimmed_mean_10pct": 10.1846,
+     "trimmed_mean_25pct": 10.2439,
+     "n_peak_ge_20": 0,
+     "bimodal_signature": "neither tail dominant",
+     "n_peak_eq_1": 3,
+     "share_peak_eq_1_pct": 3.7,
+     "n_peak_le_2": 6,
+     "share_peak_le_2_pct": 7.4,
+     "mean_checkpoints_saved": 5.1605,
+     "n_checkpoints_equals_peak_in_runs": 12,
+     "executed_epochs_lower_bound": 1630,
+     "observable_epochs": 418,
+     "observability_pct": 25.6
+    },
+    "f2": {
+     "n_runs": 81,
+     "mean_peak": 13.2716,
+     "median_peak": 15,
+     "p25": 3,
+     "p75": 19,
+     "p90": 24,
+     "max_peak": 62,
+     "trimmed_mean_10pct": 12.3538,
+     "trimmed_mean_25pct": 12.7561,
+     "n_peak_ge_20": 18,
+     "bimodal_signature": "upper tail heavy",
+     "n_peak_eq_1": 3,
+     "share_peak_eq_1_pct": 3.7,
+     "n_peak_le_2": 14,
+     "share_peak_le_2_pct": 17.3,
+     "mean_checkpoints_saved": 6.2963,
+     "n_checkpoints_equals_peak_in_runs": 23,
+     "executed_epochs_lower_bound": 1885,
+     "observable_epochs": 510,
+     "observability_pct": 27.1
+    },
+    "f3": {
+     "n_runs": 81,
+     "mean_peak": 9.0864,
+     "median_peak": 3,
+     "p25": 2,
+     "p75": 16,
+     "p90": 31,
+     "max_peak": 33,
+     "trimmed_mean_10pct": 7.2923,
+     "trimmed_mean_25pct": 4.7561,
+     "n_peak_ge_20": 13,
+     "bimodal_signature": "both tails heavy",
+     "n_peak_eq_1": 8,
+     "share_peak_eq_1_pct": 9.9,
+     "n_peak_le_2": 30,
+     "share_peak_le_2_pct": 37.0,
+     "mean_checkpoints_saved": 4.0741,
+     "n_checkpoints_equals_peak_in_runs": 41,
+     "executed_epochs_lower_bound": 1546,
+     "observable_epochs": 330,
+     "observability_pct": 21.3
+    },
+    "f4": {
+     "n_runs": 81,
+     "mean_peak": 6.963,
+     "median_peak": 4,
+     "p25": 2,
+     "p75": 12,
+     "p90": 15,
+     "max_peak": 20,
+     "trimmed_mean_10pct": 6.2462,
+     "trimmed_mean_25pct": 5.4878,
+     "n_peak_ge_20": 2,
+     "bimodal_signature": "lower tail heavy",
+     "n_peak_eq_1": 9,
+     "share_peak_eq_1_pct": 11.1,
+     "n_peak_le_2": 23,
+     "share_peak_le_2_pct": 28.4,
+     "mean_checkpoints_saved": 3.8395,
+     "n_checkpoints_equals_peak_in_runs": 31,
+     "executed_epochs_lower_bound": 1374,
+     "observable_epochs": 311,
+     "observability_pct": 22.6
+    }
+   },
+   "scope": "grid runs only (final-refit runs excluded, matching §CJ's phase split)",
+   "n_runs": 324,
+   "observability_pct": 24.4,
+   "n_runs_with_exactly_one_checkpoint": 23,
+   "n_runs_where_peak_eq_1": 23
+  },
+  "M2": {
+   "per_fold": {
+    "f1": {
+     "n_runs": 72,
+     "mean_peak": 7.4861,
+     "median_peak": 10.0,
+     "p25": 2,
+     "p75": 11,
+     "p90": 12,
+     "max_peak": 14,
+     "trimmed_mean_10pct": 7.6379,
+     "trimmed_mean_25pct": 8.3889,
+     "n_peak_ge_20": 0,
+     "bimodal_signature": "lower tail heavy",
+     "n_peak_eq_1": 16,
+     "share_peak_eq_1_pct": 22.2,
+     "n_peak_le_2": 20,
+     "share_peak_le_2_pct": 27.8,
+     "mean_checkpoints_saved": 5.9444,
+     "n_checkpoints_equals_peak_in_runs": 39,
+     "executed_epochs_lower_bound": 1259,
+     "observable_epochs": 428,
+     "observability_pct": 34.0
+    },
+    "f2": {
+     "n_runs": 72,
+     "mean_peak": 18.8056,
+     "median_peak": 17.0,
+     "p25": 9,
+     "p75": 29,
+     "p90": 31,
+     "max_peak": 71,
+     "trimmed_mean_10pct": 17.9483,
+     "trimmed_mean_25pct": 17.3611,
+     "n_peak_ge_20": 35,
+     "bimodal_signature": "upper tail heavy",
+     "n_peak_eq_1": 0,
+     "share_peak_eq_1_pct": 0.0,
+     "n_peak_le_2": 0,
+     "share_peak_le_2_pct": 0.0,
+     "mean_checkpoints_saved": 14.3333,
+     "n_checkpoints_equals_peak_in_runs": 20,
+     "executed_epochs_lower_bound": 2074,
+     "observable_epochs": 1032,
+     "observability_pct": 49.8
+    }
+   },
+   "scope": "grid runs only (final-refit runs excluded, matching §CJ's phase split)",
+   "n_runs": 144,
+   "observability_pct": 43.8,
+   "n_runs_with_exactly_one_checkpoint": 16,
+   "n_runs_where_peak_eq_1": 16
+  },
+  "reading": "a checkpoint is written only on strict improvement (trainer.py:110-116), so every epoch a run executed AFTER its peak leaves no trace. The observable fraction of executed epochs is this low, and runs with exactly one checkpoint have nothing but epoch 1 on the record. Every training-dynamics statistic in this pack (§BO.9's peak spread, §CA/§CB's peak-basis variance decomposition, §CI's epochs/run trend, §CJ's cap scan, §CK's four-fold pattern) is computed from peaks, which is the right quantity for 'where did it converge' but carries no information about the shape of the decline after the peak."
+ },
+ "fourth_candidate_excluded": {
+  "per_fold": {
+   "f1": {
+    "mean_peak": 10.1235,
+    "share_peak_eq_1_pct": 3.7,
+    "mean_peak_excluding_peak_eq_1": 10.4744,
+    "median_peak": 11,
+    "counterfactual_mean_at_F1_peak1_share": 10.1235
+   },
+   "f2": {
+    "mean_peak": 13.2716,
+    "share_peak_eq_1_pct": 3.7,
+    "mean_peak_excluding_peak_eq_1": 13.7436,
+    "median_peak": 15,
+    "counterfactual_mean_at_F1_peak1_share": 13.2716
+   },
+   "f3": {
+    "mean_peak": 9.0864,
+    "share_peak_eq_1_pct": 9.9,
+    "mean_peak_excluding_peak_eq_1": 9.9726,
+    "median_peak": 3,
+    "counterfactual_mean_at_F1_peak1_share": 9.6403
+   },
+   "f4": {
+    "mean_peak": 6.963,
+    "share_peak_eq_1_pct": 11.1,
+    "mean_peak_excluding_peak_eq_1": 7.7083,
+    "median_peak": 4,
+    "counterfactual_mean_at_F1_peak1_share": 7.4599
+   }
+  },
+  "F1_share_peak_eq_1_pct": 3.7,
+  "total_F2_to_F4_drop": 6.3086,
+  "drop_with_peak1_share_held_at_F1_level": 5.8117,
+  "share_of_drop_explained_by_peak1_influx_pct": 7.9,
+  "median_collapse": {
+   "f1": 11,
+   "f2": 15,
+   "f3": 3,
+   "f4": 4
+  },
+  "order_flip_between_mean_and_central_mass": {
+   "what": "does F3 or F4 have the longer TYPICAL run? The mean and the central mass disagree, so any comparison of these two folds must state its basis",
+   "by_mean": "F3 > F4",
+   "by_median": "F3 < F4",
+   "by_trimmed_25pct": "F3 < F4",
+   "flipped": true,
+   "means": {
+    "f3": 9.0864,
+    "f4": 6.963
+   },
+   "medians": {
+    "f3": 3,
+    "f4": 4
+   },
+   "trimmed_25pct": {
+    "f1": 10.2439,
+    "f2": 12.7561,
+    "f3": 4.7561,
+    "f4": 5.4878
+   },
+   "cause": "F3 is bimodal (30 runs at peak<=2 AND 13 at peak>=20, p90 31, max 33) while F4 is uniformly low (23 at peak<=2 but only 2 at peak>=20, p90 15, max 20), so F3's mean is lifted by its upper tail while its central mass sits below F4's",
+   "consequence": "§CI's 1.647x growth and §CK.2's 'non-monotone, peaking at F2' are both mean-basis statements and both hold on that basis, but neither discloses that F3 and F4 swap places on the median basis"
+  },
+  "verdict": "REJECTED as the explanation: holding the peak==1 share at F1's 3.7% removes only 7.9% of the drop. The real change is a whole-distribution leftward shift -- the median falls 15 -> 3 -> 4 while the 25%-trimmed mean falls only 12.76 -> 4.76 -> 5.49 and the raw mean 13.27 -> 9.09 -> 6.96. So §CK.8's open question loses a fourth candidate (degenerate-run influx) and keeps three excluded (config mix, panel size, validation signal strength), with no cause established."
+ },
+ "negative_controls_and_invariants": {
+  "invariant_i_n_checkpoints_le_peak": {
+   "violations": [],
+   "n_runs_checked": 468,
+   "holds": true
+  },
+  "invariant_ii_peak_eq_1_iff_one_checkpoint": {
+   "violations": [],
+   "n_runs_checked": 468,
+   "holds": true
+  },
+  "synthetic_impossible_run": {
+   "peak": 5,
+   "n_checkpoints": 9,
+   "rejected_by_guard": true,
+   "observability_it_would_have_reported_pct": 60.0,
+   "reading": "the guard is on n_ck <= peak, NOT on the ratio: this impossible input would have produced 60%, an ordinary-looking number, so an out-of-range check would not have caught it. The ratio itself is uninformative about the bug."
+  },
+  "ALL_CONTROLS_BEHAVE_AS_EXPECTED": true
+ },
+ "conclusion": {
+  "what_clears_the_cache": "a BOOT, not elapsed time and not the daily cleaner: tmp.conf uses type D (create-and-REMOVE) with age '-' (no age-based cleanup), and the boot unit runs --create --remove --boot while the daily timer runs only --clean",
+  "evidence_of_boot_clearing": "0 /tmp entries predate the last boot (2026-08-11 15:41:07), with 13 created inside the boot hour -- a sharp cutoff",
+  "clean_cycles_the_F3F4_files_survived": 10,
+  "all_12_cache_rows_still_match_published": true,
+  "no_cache_file_modified_after_2026_09_09": true,
+  "so_CL7b_should_read": "'the cache is deleted' means 'the machine reboots' (or a manual rm), not 'time passes' or 'the daily cleaner runs'. Over the ~2-3 weeks M2 still needs, the operative question is whether this host reboots, which is a much more specific thing to watch than /tmp hygiene.",
+  "observability_of_executed_epochs_pct": {
+   "M1": 24.4,
+   "M2": 43.8
+  },
+  "runs_with_a_single_checkpoint": {
+   "M1": 23,
+   "M2": 16
+  },
+  "fourth_candidate_for_CK8": "rejected (explains only 7.9% of the F2->F4 drop)"
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_row_data_loaded": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "side_effect_disclosed": "atime of the 12 inspected cache files was updated to 2026-09-18 20:17:44 by the §CJ/§CK/§CL probes reading their footers; mtime and content unchanged"
+}
