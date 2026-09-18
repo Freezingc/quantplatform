@@ -1,0 +1,117 @@
+{
+ "question": "How much longer will M2 run? Built from measured phase timings, measured panel row counts and the observed epochs-per-run, not from a geometric extrapolation of wall clock alone.",
+ "measured_phases": {
+  "f1_grid": {
+   "runs": 72,
+   "checkpoints": 428,
+   "ckpt_per_run": 5.9444,
+   "peak_median": 10.0,
+   "peak_max": 14,
+   "peak_mean": 7.4861,
+   "epochs_per_run_mean": 17.4861,
+   "first": 1789298882.3675,
+   "last": 1789412290.668,
+   "span_h": 31.5023
+  },
+  "f1_final": {
+   "runs": 3,
+   "checkpoints": 19,
+   "ckpt_per_run": 6.3333,
+   "peak_median": 11,
+   "peak_max": 12,
+   "peak_mean": 8.3333,
+   "epochs_per_run_mean": 18.3333,
+   "first": 1789431889.9383,
+   "last": 1789443075.4528,
+   "span_h": 3.1071
+  },
+  "f2_grid": {
+   "runs": 72,
+   "checkpoints": 1032,
+   "ckpt_per_run": 14.3333,
+   "peak_median": 17.0,
+   "peak_max": 71,
+   "peak_mean": 18.8056,
+   "epochs_per_run_mean": 28.8056,
+   "first": 1789455404.7245,
+   "last": 1789667924.5522,
+   "span_h": 59.0333
+  },
+  "f2_final": {
+   "runs": 3,
+   "checkpoints": 42,
+   "ckpt_per_run": 14.0,
+   "peak_median": 27,
+   "peak_max": 35,
+   "peak_mean": 24.3333,
+   "epochs_per_run_mean": 34.3333,
+   "first": 1789688813.9015,
+   "last": 1789724819.7233,
+   "span_h": 10.0016
+  }
+ },
+ "panel_rows": {
+  "F1": {
+   "train": 2296573,
+   "val": 696906,
+   "test": 804575,
+   "trainval": 2993479,
+   "ratio_trainval_over_test": 3.7205717304166797
+  },
+  "F2": {
+   "train": 2539884,
+   "val": 783477,
+   "test": 882426,
+   "trainval": 3323361,
+   "ratio_trainval_over_test": 3.7661639616239775
+  },
+  "F3": {
+   "test": 932167,
+   "ratio_trainval_over_test_projected": 3.857348424038573,
+   "trainval_projected": 3595692
+  },
+  "F4": {
+   "test": 938594,
+   "ratio_trainval_over_test_projected": 3.902940655245871,
+   "trainval_projected": 3663276
+  }
+ },
+ "cost_model": {
+  "form": "grid_wall_seconds = k * epochs_per_run * panel_train_val_rows",
+  "k_per_fold_s_per_row_epoch": {
+   "f1": 0.00216658,
+   "f2": 0.00221996
+  },
+  "k_mean": 0.00219327,
+  "k_spread_ratio": 1.0246,
+  "validation": {
+   "predicted_wall_ratio_f2_over_f1": 1.8289,
+   "observed_wall_ratio_f2_over_f1": 1.8739,
+   "model_error_pct": 2.4
+  }
+ },
+ "epochs_trend": {
+  "f1_grid_epochs_per_run": 17.49,
+  "f2_grid_epochs_per_run": 28.81,
+  "growth_ratio": 1.647,
+  "peak_max_f1": 14,
+  "peak_max_f2": 71,
+  "max_epochs_cap": 100,
+  "patience": 10,
+  "note": "peak + patience <= max_epochs, so epochs_per_run is capped at 100; F2's peak_max of 71 implies 81 epochs, still under the cap"
+ },
+ "inter_phase_gaps_h": {
+  "f1_grid_end_to_f1_final_start": 5.44,
+  "f1_final_end_to_f2_grid_start": 3.42,
+  "f2_grid_end_to_f2_final_start": 5.8
+ },
+ "f2_final_status": {
+  "span_h_so_far": 10.0,
+  "complete": false,
+  "note": "F2 final refit was still writing checkpoints at measurement time"
+ },
+ "generated_at_local": "2026-09-18T17:48:06",
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false
+}

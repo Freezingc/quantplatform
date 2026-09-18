@@ -1,0 +1,109 @@
+{
+ "generated_at_local": "2026-09-18T17:51:38",
+ "run_start_from_first_checkpoint": "2026-09-13T19:28:02",
+ "elapsed_days_at_generation": 4.93,
+ "cost_model_grid": {
+  "k_s_per_row_epoch": 0.00219327,
+  "fitted_on": "F1 and F2 grid phases",
+  "validation_error_pct": 2.4,
+  "k_spread_between_folds": 1.0246
+ },
+ "cost_model_final": {
+  "k_s_per_row_epoch": 0.00020381721864733542,
+  "under_prediction_bias_applied": 1.45,
+  "note": "the final-refit phase is 10.8x cheaper per (row x epoch) than the grid phase -- 3 runs over 24 workers in one round versus 72 runs in three rounds -- so it is modelled with its own constant, and the measured 1.45x under-prediction of F2's still-running final phase is carried as an explicit uplift"
+ },
+ "panel_rows_trainval": {
+  "F1": 2993479,
+  "F2": 3323361,
+  "F3": 3595693,
+  "F4": 3663277
+ },
+ "trainval_over_test_ratio": {
+  "F1": 3.7206,
+  "F2": 3.7662,
+  "F3": 3.8573,
+  "F4": 3.9029
+ },
+ "epochs_per_run_grid": {
+  "F1": 17.49,
+  "F2": 28.81,
+  "growth_ratio_F2_over_F1": 1.647,
+  "cap": 100,
+  "F2_peak_max_epoch": 71,
+  "F2_worst_case_epochs": 81
+ },
+ "inter_phase_gap_h_assumed": 5.0,
+ "oos_and_report_h_assumed": 2.0,
+ "f2_final_hours_already_elapsed": 10.0,
+ "scenarios": {
+  "optimistic_epochs_flat": {
+   "epochs_per_run_grid": {
+    "F3": 28.8,
+    "F4": 28.8
+   },
+   "f2_final_remaining_h": 0.0,
+   "f3_grid_h": 63.1,
+   "f3_final_h": 8.5,
+   "f4_grid_h": 64.3,
+   "f4_final_h": 8.7,
+   "gaps_and_oos_h": 22.0,
+   "total_remaining_h": 166.6,
+   "total_remaining_days": 6.9,
+   "projected_finish": "2026-09-25 16:25",
+   "elapsed_days_at_generation": 4.93,
+   "projected_total_run_days": 11.9
+  },
+  "linear_growth_capped": {
+   "epochs_per_run_grid": {
+    "F3": 40.1,
+    "F4": 51.4
+   },
+   "f2_final_remaining_h": 0.0,
+   "f3_grid_h": 87.9,
+   "f3_final_h": 11.8,
+   "f4_grid_h": 114.8,
+   "f4_final_h": 15.5,
+   "gaps_and_oos_h": 22.0,
+   "total_remaining_h": 252.0,
+   "total_remaining_days": 10.5,
+   "projected_finish": "2026-09-29 05:53",
+   "elapsed_days_at_generation": 4.93,
+   "projected_total_run_days": 15.4
+  },
+  "central_geometric_capped": {
+   "epochs_per_run_grid": {
+    "F3": 47.5,
+    "F4": 78.2
+   },
+   "f2_final_remaining_h": 0.0,
+   "f3_grid_h": 104.0,
+   "f3_final_h": 14.0,
+   "f4_grid_h": 174.5,
+   "f4_final_h": 23.5,
+   "gaps_and_oos_h": 22.0,
+   "total_remaining_h": 337.9,
+   "total_remaining_days": 14.1,
+   "projected_finish": "2026-10-02 19:47",
+   "elapsed_days_at_generation": 4.93,
+   "projected_total_run_days": 19.0
+  },
+  "pessimistic_all_hit_cap": {
+   "epochs_per_run_grid": {
+    "F3": 100,
+    "F4": 100
+   },
+   "f2_final_remaining_h": 0.0,
+   "f3_grid_h": 219.1,
+   "f3_final_h": 29.5,
+   "f4_grid_h": 223.2,
+   "f4_final_h": 30.1,
+   "gaps_and_oos_h": 22.0,
+   "total_remaining_h": 523.8,
+   "total_remaining_days": 21.8,
+   "projected_finish": "2026-10-10 13:41",
+   "elapsed_days_at_generation": 4.93,
+   "projected_total_run_days": 26.8
+  }
+ }
+}
