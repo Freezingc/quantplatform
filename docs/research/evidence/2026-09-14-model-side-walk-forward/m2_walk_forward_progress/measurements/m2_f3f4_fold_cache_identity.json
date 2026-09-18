@@ -1,0 +1,169 @@
+{
+ "question": "will M2's F3/F4 panels be the frames §CK/A15 measured, or a re-assembled object exposed to ~20 days of version drift as §CK.3 feared?",
+ "mechanism": {
+  "versions_resolved_once_at": "run_real_candidate_training.py:2228 (setup_full_run_context)",
+  "only_call_site_of_current_versions": true,
+  "m2_context_built_at": ":2923 (run_full_m2)",
+  "fold_loop_reuses_pinned_dict": ":2944-2949",
+  "m2_pid": 3588838,
+  "m2_start_from_etime": "2026-09-13 18:54:55",
+  "cache_checked_before_any_query": "walk_forward_factor_daily.py:246 computes the key, :248 tests existence, :254 returns the cached frame verbatim -- all before any query is issued",
+  "cache_root": "/tmp/walk_forward_cache_v1",
+  "consequence": "versions cannot change while the pid lives, so days passing and database churn are irrelevant to what this run consumes"
+ },
+ "validation_against_log_proven_hits": {
+  "per_split": {
+   "F1/train": {
+    "computed_key": "3a00d9a33131741a…",
+    "file_exists": true,
+    "cache_rows": 2296573,
+    "m2_log_rows": 2296573,
+    "m1_dataset_footer_rows": 2296573,
+    "triple_match": true,
+    "cache_mtime": "2026-09-08T01:33"
+   },
+   "F1/validation": {
+    "computed_key": "c258791e203f46bf…",
+    "file_exists": true,
+    "cache_rows": 696906,
+    "m2_log_rows": 696906,
+    "m1_dataset_footer_rows": 696906,
+    "triple_match": true,
+    "cache_mtime": "2026-09-08T01:35"
+   },
+   "F1/test": {
+    "computed_key": "0c14f9b161aabfa8…",
+    "file_exists": true,
+    "cache_rows": 804575,
+    "m2_log_rows": 804575,
+    "m1_dataset_footer_rows": 804575,
+    "triple_match": true,
+    "cache_mtime": "2026-09-08T01:37"
+   },
+   "F2/train": {
+    "computed_key": "2e64e81ea5877c5f…",
+    "file_exists": true,
+    "cache_rows": 2539884,
+    "m2_log_rows": 2539884,
+    "m1_dataset_footer_rows": 2539884,
+    "triple_match": true,
+    "cache_mtime": "2026-09-08T02:07"
+   },
+   "F2/validation": {
+    "computed_key": "60278a675f1e244a…",
+    "file_exists": true,
+    "cache_rows": 783477,
+    "m2_log_rows": 783477,
+    "m1_dataset_footer_rows": 783477,
+    "triple_match": true,
+    "cache_mtime": "2026-09-08T02:09"
+   },
+   "F2/test": {
+    "computed_key": "ae985cf2de4984e3…",
+    "file_exists": true,
+    "cache_rows": 882426,
+    "m2_log_rows": 882426,
+    "m1_dataset_footer_rows": 882426,
+    "triple_match": true,
+    "cache_mtime": "2026-09-08T02:12"
+   }
+  },
+  "all_six_triple_match": true,
+  "reading": "each computed key resolves to an existing file whose row count equals BOTH M2's own log line AND M1's dataset footer -- a three-way match on six independent splits, which is what licenses applying the same function to F3/F4"
+ },
+ "f3_f4_prediction": {
+  "per_split": {
+   "F3/train": {
+    "computed_key": "1546b0cfb48b1038…",
+    "file_exists": true,
+    "cache_rows": 2790995,
+    "m1_dataset_footer_rows": 2790995,
+    "ck_A15_published_rows": 2790995,
+    "matches": true,
+    "n_columns": 20,
+    "cache_mtime": "2026-09-08T02:30"
+   },
+   "F3/validation": {
+    "computed_key": "a3f645bcf8d91429…",
+    "file_exists": true,
+    "cache_rows": 859748,
+    "m1_dataset_footer_rows": 859748,
+    "ck_A15_published_rows": 859748,
+    "matches": true,
+    "n_columns": 20,
+    "cache_mtime": "2026-09-08T02:32"
+   },
+   "F3/test": {
+    "computed_key": "6350b5bf7012f849…",
+    "file_exists": true,
+    "cache_rows": 932167,
+    "m1_dataset_footer_rows": 932167,
+    "ck_A15_published_rows": 932167,
+    "matches": true,
+    "n_columns": 20,
+    "cache_mtime": "2026-09-08T02:35"
+   },
+   "F4/train": {
+    "computed_key": "5ec22abc8b0bd0ad…",
+    "file_exists": true,
+    "cache_rows": 3046399,
+    "m1_dataset_footer_rows": 3046399,
+    "ck_A15_published_rows": 3046399,
+    "matches": true,
+    "n_columns": 20,
+    "cache_mtime": "2026-09-08T02:54"
+   },
+   "F4/validation": {
+    "computed_key": "f7f96c8e66fd5198…",
+    "file_exists": true,
+    "cache_rows": 908649,
+    "m1_dataset_footer_rows": 908649,
+    "ck_A15_published_rows": 908649,
+    "matches": true,
+    "n_columns": 20,
+    "cache_mtime": "2026-09-08T02:57"
+   },
+   "F4/test": {
+    "computed_key": "363c44fb164b07bb…",
+    "file_exists": true,
+    "cache_rows": 938594,
+    "m1_dataset_footer_rows": 938594,
+    "ck_A15_published_rows": 938594,
+    "matches": true,
+    "n_columns": 20,
+    "cache_mtime": "2026-09-08T02:59"
+   }
+  },
+  "all_six_match_M1_footers_and_A15": true,
+  "F3_trainval_rows_M2_will_consume": 3650743,
+  "F4_trainval_rows_M2_will_consume": 3955048,
+  "A15_published_F3": 3650743,
+  "A15_published_F4": 3955048,
+  "A15_confirmed_as_exact_not_proxy": true,
+  "reading": "M2 will cache-hit these files for F3/F4, so the frames it trains on are these exact bytes; A15's row counts are the trained rows, not a proxy from M1."
+ },
+ "negative_controls": {
+  "one_day_version_flip_changes_key_must_be_True": true,
+  "flipped_versions_key_resolves_to_no_file_must_be_True": true,
+  "nonexistent_fold_F9_key_resolves_to_no_file_must_be_True": true,
+  "legacy_key_without_factor_set_differs_from_scoped_must_be_True": true,
+  "legacy_key_resolves_to_no_file_must_be_True": true,
+  "reading": "the key function is not returning hits for everything: flipping one of the 446 version entries, inventing fold F9, or dropping the factor_set scope each yield a key with no file. So the six F3/F4 hits are specific to the real pinned versions and the real factor set."
+ },
+ "conclusion": {
+  "all_six_log_hits_validated": true,
+  "all_six_f3f4_match": true,
+  "all_negative_controls_pass": true,
+  "A15_rows_are_exact_trained_rows": true,
+  "CK3_exposure_window_applies_to": "a RESTART of M2 (new process re-resolves versions) or a cleared /tmp cache, NOT to pid 3588838 running to completion -- within this run F3/F4 cache-hit and cannot drift"
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_row_data_loaded": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "generated_at_local": "2026-09-18T20:38:07"
+}
