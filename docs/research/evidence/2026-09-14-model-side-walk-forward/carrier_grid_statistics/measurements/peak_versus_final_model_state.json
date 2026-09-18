@@ -1,0 +1,291 @@
+{
+ "question": "§BY.6's unexplained metric mismatch: the search record scores the final-epoch weights while the persisted checkpoint is the peak-epoch model. Does selecting on the shipped model's score change the winner, and is that metric less noisy?",
+ "static_finding": {
+  "manifest_value_is": "peak-epoch score (trainer.py:106-116, saved only on strict improvement)",
+  "search_record_value_is": "final-epoch score (cross_section_search.py:203-208, temporal_search.py:374-379: percentile_frame(model, ...) after fit() returned)",
+  "shipped_checkpoint_is": "run.checkpoint_ids[-1] == the peak-epoch checkpoint",
+  "best_checkpoint_restored_before_scoring": false,
+  "load_state_dict_in_runner_or_search_modules": false,
+  "TrainingResult_best_validation_rank_ic_non_test_references": 1,
+  "that_one_reference_is": "its own field declaration at trainer.py:57",
+  "eliminated_by_reading": [
+   "score column: percentile_rank is a within-date rank of raw_score (models/base.py:154), so daily Spearman is invariant",
+   "minimum_cross_section: 30 on both paths (validation.py:28, driver _validation_rank_ic)",
+   "aggregator: both call compute_daily_rank_ic + summarize_rank_ic"
+  ],
+  "only_remaining_difference": "the model state the score is computed from"
+ },
+ "ensemble_caveat": "the driver's ensemble averages PREDICTIONS across seeds then scores the averaged frame, so an ensemble value cannot be rebuilt from scalar per-seed scores; rankings below use the MEAN OVER SEEDS as a proxy and this probe never claims to reproduce ensemble_validation_rank_ic",
+ "per_carrier": {
+  "M1": {
+   "workspace": "m1_full_v1",
+   "n_manifests_read": 1569,
+   "n_joinable_runs": 324,
+   "peak_minus_final": {
+    "mean": 0.00897555899621648,
+    "median": 0.005559660640461157,
+    "min": 3.750920252709733e-05,
+    "max": 0.05406825455933131,
+    "share_peak_higher": 1.0,
+    "median_ratio": 1.070621819469002
+   },
+   "winner_comparison": {
+    "F1": {
+     "winner_by_peak": 10,
+     "winner_by_final": 15,
+     "same": false,
+     "winner_by_driver_ensemble": 15,
+     "proxy_final_matches_driver_ensemble": true,
+     "proxy_peak_matches_driver_ensemble": false,
+     "spearman_proxyfinal_vs_driver_ensemble": 0.9822954822954822,
+     "spearman_proxypeak_vs_driver_ensemble": -0.14224664224664224,
+     "driver_ensemble_config": {
+      "hidden_dim": 128,
+      "num_blocks": 3,
+      "dropout": 0.0
+     },
+     "peak_config": {
+      "hidden_dim": 128,
+      "num_blocks": 1,
+      "dropout": 0.1
+     },
+     "final_config": {
+      "hidden_dim": 128,
+      "num_blocks": 3,
+      "dropout": 0.0
+     },
+     "n_configs_compared": 27,
+     "rank_correlation_peak_vs_final": -0.12759462759462756
+    },
+    "F2": {
+     "winner_by_peak": 7,
+     "winner_by_final": 3,
+     "same": false,
+     "winner_by_driver_ensemble": 14,
+     "proxy_final_matches_driver_ensemble": false,
+     "proxy_peak_matches_driver_ensemble": false,
+     "spearman_proxyfinal_vs_driver_ensemble": 0.7234432234432234,
+     "spearman_proxypeak_vs_driver_ensemble": 0.14285714285714285,
+     "driver_ensemble_config": {
+      "hidden_dim": 128,
+      "num_blocks": 2,
+      "dropout": 0.2
+     },
+     "peak_config": {
+      "hidden_dim": 64,
+      "num_blocks": 3,
+      "dropout": 0.1
+     },
+     "final_config": {
+      "hidden_dim": 64,
+      "num_blocks": 2,
+      "dropout": 0.0
+     },
+     "n_configs_compared": 27,
+     "rank_correlation_peak_vs_final": -0.3003663003663003
+    },
+    "F3": {
+     "winner_by_peak": 16,
+     "winner_by_final": 12,
+     "same": false,
+     "winner_by_driver_ensemble": 12,
+     "proxy_final_matches_driver_ensemble": true,
+     "proxy_peak_matches_driver_ensemble": false,
+     "spearman_proxyfinal_vs_driver_ensemble": 0.7374847374847374,
+     "spearman_proxypeak_vs_driver_ensemble": 0.2313797313797314,
+     "driver_ensemble_config": {
+      "hidden_dim": 128,
+      "num_blocks": 2,
+      "dropout": 0.0
+     },
+     "peak_config": {
+      "hidden_dim": 128,
+      "num_blocks": 3,
+      "dropout": 0.1
+     },
+     "final_config": {
+      "hidden_dim": 128,
+      "num_blocks": 2,
+      "dropout": 0.0
+     },
+     "n_configs_compared": 27,
+     "rank_correlation_peak_vs_final": 0.315018315018315
+    },
+    "F4": {
+     "winner_by_peak": 13,
+     "winner_by_final": 14,
+     "same": false,
+     "winner_by_driver_ensemble": 16,
+     "proxy_final_matches_driver_ensemble": false,
+     "proxy_peak_matches_driver_ensemble": false,
+     "spearman_proxyfinal_vs_driver_ensemble": 0.6782661782661782,
+     "spearman_proxypeak_vs_driver_ensemble": -0.33943833943833945,
+     "driver_ensemble_config": {
+      "hidden_dim": 128,
+      "num_blocks": 3,
+      "dropout": 0.1
+     },
+     "peak_config": {
+      "hidden_dim": 128,
+      "num_blocks": 2,
+      "dropout": 0.1
+     },
+     "final_config": {
+      "hidden_dim": 128,
+      "num_blocks": 2,
+      "dropout": 0.2
+     },
+     "n_configs_compared": 27,
+     "rank_correlation_peak_vs_final": -0.28266178266178266
+    }
+   },
+   "folds_where_winner_changed": [
+    "F1",
+    "F2",
+    "F3",
+    "F4"
+   ],
+   "anova_final_epoch_reported": {
+    "a": 27,
+    "b": 4,
+    "c": 3,
+    "config_F": 0.5668063174883422,
+    "config_p": 0.956632229756913,
+    "config_share_of_variance": 0.013987035792306887,
+    "resid_sd": 0.010669991871299713,
+    "sigma_c": 0.0,
+    "sigma_c_raw": -4.1098790913628095e-06,
+    "within_cell_variation_explained_by_seed_identity": 0.0415195285423415,
+    "config_mean_sd": 0.0023189469132425936,
+    "se_config_mean": 0.003080161339573004
+   },
+   "anova_peak_epoch_manifest": {
+    "a": 27,
+    "b": 4,
+    "c": 3,
+    "config_F": 0.34075923302270683,
+    "config_p": 0.9990568444746426,
+    "config_share_of_variance": 0.001696797302897936,
+    "resid_sd": 0.003767560052702117,
+    "sigma_c": 0.0,
+    "sigma_c_raw": -7.797999029740358e-07,
+    "within_cell_variation_explained_by_seed_identity": 0.3066061308753263,
+    "config_mean_sd": 0.0006348825294905842,
+    "se_config_mean": 0.001087600905307824
+   }
+  },
+  "M2": {
+   "workspace": "m2_v1",
+   "n_manifests_read": 1460,
+   "n_joinable_runs": 144,
+   "peak_minus_final": {
+    "mean": 0.007168596221012313,
+    "median": 0.005577102187714081,
+    "min": 0.00011131588758558908,
+    "max": 0.035442733431026954,
+    "share_peak_higher": 1.0,
+    "median_ratio": 1.0902659183493095
+   },
+   "winner_comparison": {
+    "F1": {
+     "winner_by_peak": 16,
+     "winner_by_final": 16,
+     "same": true,
+     "winner_by_driver_ensemble": 16,
+     "proxy_final_matches_driver_ensemble": true,
+     "proxy_peak_matches_driver_ensemble": true,
+     "spearman_proxyfinal_vs_driver_ensemble": 0.9852173913043477,
+     "spearman_proxypeak_vs_driver_ensemble": 0.9591304347826086,
+     "driver_ensemble_config": {
+      "family": "TCN",
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "learning_rate": 0.0003
+     },
+     "peak_config": {
+      "family": "TCN",
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "learning_rate": 0.0003
+     },
+     "final_config": {
+      "family": "TCN",
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "learning_rate": 0.0003
+     },
+     "n_configs_compared": 24,
+     "rank_correlation_peak_vs_final": 0.9582608695652173
+    },
+    "F2": {
+     "winner_by_peak": 17,
+     "winner_by_final": 17,
+     "same": true,
+     "winner_by_driver_ensemble": 17,
+     "proxy_final_matches_driver_ensemble": true,
+     "proxy_peak_matches_driver_ensemble": true,
+     "spearman_proxyfinal_vs_driver_ensemble": 0.7704347826086956,
+     "spearman_proxypeak_vs_driver_ensemble": 0.8617391304347826,
+     "driver_ensemble_config": {
+      "family": "TCN",
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "learning_rate": 0.001
+     },
+     "peak_config": {
+      "family": "TCN",
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "learning_rate": 0.001
+     },
+     "final_config": {
+      "family": "TCN",
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "learning_rate": 0.001
+     },
+     "n_configs_compared": 24,
+     "rank_correlation_peak_vs_final": 0.7521739130434782
+    }
+   },
+   "folds_where_winner_changed": [],
+   "anova_final_epoch_reported": {
+    "a": 24,
+    "b": 2,
+    "c": 3,
+    "config_F": 11.192687708286249,
+    "config_p": 5.002865502469077e-18,
+    "config_share_of_variance": 0.09219722198581984,
+    "resid_sd": 0.004096566217917077,
+    "sigma_c": 0.005339353970218326,
+    "sigma_c_raw": 2.8508700819286195e-05,
+    "within_cell_variation_explained_by_seed_identity": 0.7989664042658913,
+    "config_mean_sd": 0.005595147595513703,
+    "se_config_mean": 0.0016724161552366594
+   },
+   "anova_peak_epoch_manifest": {
+    "a": 24,
+    "b": 2,
+    "c": 3,
+    "config_F": 1.3363415502916378,
+    "config_p": 0.1663462448990292,
+    "config_share_of_variance": 0.01025995296516881,
+    "resid_sd": 0.004078678971395519,
+    "sigma_c": 0.0009656820512440968,
+    "sigma_c_raw": 9.325418240950063e-07,
+    "within_cell_variation_explained_by_seed_identity": 0.7581967720183327,
+    "config_mean_sd": 0.001924875454684192,
+    "se_config_mean": 0.001665113717423128
+   }
+  }
+ },
+ "read_only": true,
+ "database_access": false,
+ "network_or_vendor_call": false,
+ "mcp_used": false,
+ "checkpoint_pt_opened": false,
+ "weights_loaded": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "generated_at_local": "2026-09-18T13:54:34"
+}

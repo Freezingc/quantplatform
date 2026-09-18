@@ -36,7 +36,7 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-15T18:22:11+00:00",
+  "generated_at_utc": "2026-09-18T05:59:53+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "e2de1977fe23e0482ad523262e7a28424dceb6c17a45ce62a0358fd3ee749998"
@@ -45,13 +45,15 @@
     "all_carrier_grid_variance.json": "0b32cf9febc77138f02f611b5bd15b66e983e72c8c03e0bb3e5a0dd0341ddb21",
     "m1_config_effect_zero.json": "7ae8c41ce572ae581465a1a32855c4eae24d7a62b86b3eb1d49b5afaa6b23292",
     "m1_fourfold_variance_decomposition.json": "5a7293ce5ba11388eaea325565f383c8de4133901af1db01b13505d9cb212fbe",
-    "m1_training_dynamics.json": "08f837b02865a3efd6042ddcdee28cadcd100a7408dd121d03c70a6bbc68c9fa"
+    "m1_training_dynamics.json": "08f837b02865a3efd6042ddcdee28cadcd100a7408dd121d03c70a6bbc68c9fa",
+    "peak_versus_final_model_state.json": "0330a7bbda9086180775d8564544cc1d3cc7d27d9dabbf7af9792b7fe1b247b9"
   },
   "probe_scripts": {
     "probe_all_carrier_grid_variance.py": "a9352063c9952861d00c142f41de0aa13ce90b533d6247e66c22f2b8760155fa",
     "probe_m1_config_effect_zero_cause.py": "5c2ca52bc1d077e6078972cde6739a473c402192c0240c6770a37c7d7be356ef",
     "probe_m1_fourfold_variance_decomposition.py": "99f63ade5a4bbdb05f48d9f1b4d3fa6c73d685ae51c765647dd3b7a074734307",
-    "probe_m1_training_dynamics.py": "fe0e32d51b326306197a954b0085e340a9657d1e88023324a6141769420b7359"
+    "probe_m1_training_dynamics.py": "fe0e32d51b326306197a954b0085e340a9657d1e88023324a6141769420b7359",
+    "probe_peak_versus_final_model_state.py": "2ca09a9ff9bcf41ccc944707b90e21df421a5bbcbb06b1fb1bb9f7f469ab3392"
   },
   "repository_main_tree": {
     "branch": "codex/publish-quant-platform",
@@ -63,6 +65,6 @@
   "safety": "read-only analysis of search records that finished training runs already wrote. No database access at all. No weight or checkpoint was loaded -- every number here comes from the per-seed and ensemble validation RankIC fields inside JSON. Nothing was written into any artifact directory. No repository file was edited; run_real_candidate_training.py is hashed below to prove it, and the live M2 driver re-imports that file per fold. No process was signalled.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "e68e9c1b4c82063f2cb57d827eea691accd25603"
+    "commit_at_generation": "3ea41e8771581fb9f870b879ae303ba045e9a220"
   }
 }
