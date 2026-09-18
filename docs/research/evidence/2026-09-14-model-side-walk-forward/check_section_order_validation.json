@@ -1,0 +1,134 @@
+{
+ "tool": "check_section_order.py",
+ "tool_sha256": "7881c73d95b6325ab2ae58614ed22d61e9e88d8d99ea5e54b8c1db1ba674b27c",
+ "purpose": "problems_found.md must stay in chronological section order. This has broken twice, both times from the same cause: appending with apply_patch anchored on the closing 'safety declaration + driver sha256' lines, which are boilerplate at the end of nearly every section, so the anchor is not unique, apply_patch matches the first occurrence, and the new section silently lands mid-file while the patch still reports success.",
+ "instances_of_the_bug": [
+  {
+   "section": "CC",
+   "landed": "between BX and CB",
+   "found_order": [
+    "BW",
+    "BX",
+    "CC",
+    "CB",
+    "CA",
+    "BY",
+    "BZ"
+   ],
+   "repaired_to": [
+    "BW",
+    "BX",
+    "BY",
+    "BZ",
+    "CA",
+    "CB",
+    "CC"
+   ],
+   "detected_by": "manual grep of '^## ' headings"
+  },
+  {
+   "section": "CD",
+   "landed": "between CB and CC",
+   "found_order": [
+    "BW",
+    "BX",
+    "BY",
+    "BZ",
+    "CA",
+    "CB",
+    "CD",
+    "CC"
+   ],
+   "repaired_to": [
+    "BW",
+    "BX",
+    "BY",
+    "BZ",
+    "CA",
+    "CB",
+    "CC",
+    "CD"
+   ],
+   "detected_by": "manual grep of '^## ' headings"
+  }
+ ],
+ "lossless_reorder_verification": {
+  "method": "reorder by splitting on '^## <TAG>. ' headings, stripping trailing '---' separators, then rejoining with a uniform separator; verified by multiset comparison of content lines",
+  "cd_repair": {
+   "content_lines_before": 6856,
+   "content_lines_after": 6856,
+   "multiset_identical": true,
+   "separators_before": 42,
+   "separators_after": 42,
+   "h2_headings_identical": true,
+   "h2_count": 82,
+   "h3_subheadings_identical": true,
+   "h3_count": 371
+  },
+  "cc_repair": {
+   "content_lines_before": 6798,
+   "content_lines_after": 6798,
+   "multiset_identical": true,
+   "separators_before": 41,
+   "separators_after": 41,
+   "h2_headings_identical": true,
+   "h2_count": 81,
+   "h3_subheadings_identical": true,
+   "h3_count": 366
+  }
+ },
+ "negative_tests": {
+  "why": "a check that only ever prints OK is worthless; each failure mode was injected into a COPY in /tmp and the check was confirmed to exit non-zero with the right diagnosis. The pack's own file was never modified for these tests.",
+  "cases": [
+   {
+    "id": "baseline_clean",
+    "injection": "none",
+    "expected_exit": 0,
+    "observed_exit": 0,
+    "observed_output": "problems_found.md: 84 sections (A..CF), 363 subsections / OK: chronological order, no duplicate headings, all subsections contiguous",
+    "note": "re-run after §CE and §CF were appended, so the section/subsection counts in this line reflect the current file; the four injection cases were run against copies of the file as it stood at 82 sections and their conclusions are unaffected, since each injection is a local edit whose detection does not depend on the total count"
+   },
+   {
+    "id": "order_scrambled",
+    "injection": "the real CD-before-CC file (pf.before_cd_reorder.md)",
+    "expected_exit": 1,
+    "observed_exit": 1,
+    "observed_output": "first mismatch at index 80: found 'CD', expected 'CC' + cause hint"
+   },
+   {
+    "id": "duplicate_section_heading",
+    "injection": "a second '## CC. ' heading",
+    "expected_exit": 1,
+    "observed_exit": 1,
+    "observed_output": "duplicate section headings: ['CC'] (and the order failure it implies)"
+   },
+   {
+    "id": "subsection_gap",
+    "injection": "renumber '### CD.3' to '### CD.9'",
+    "expected_exit": 1,
+    "observed_exit": 1,
+    "observed_output": "section CD subsections are not contiguous from .1: [1, 2, 9, 4, 5]"
+   },
+   {
+    "id": "subsection_bad_start",
+    "injection": "renumber '### CD.1' to '### CD.2'",
+    "expected_exit": 1,
+    "observed_exit": 1,
+    "observed_output": "section CD subsections start at .2, expected .0 or .1: [2, 2, 3, 4, 5] + duplicate subsection numbers"
+   }
+  ],
+  "all_passed": true
+ },
+ "known_legal_exception": "section BR numbers its subsections from BR.0 by design ('validate the projection before pricing with it'), so a .0 start is accepted and only gaps or duplicates fail. The first run of the check flagged BR as a failure before this was relaxed -- a false positive, not a real defect.",
+ "how_to_run": "/data/zhangyudong/.conda/envs/quantyd/bin/python check_section_order.py  (from this directory; exit 0 = in order, 1 = not, safe to gate a commit)",
+ "read_only": true,
+ "database_access": false,
+ "network_or_vendor_call": false,
+ "mcp_used": false,
+ "weights_loaded": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "pack_file_modified_during_negative_tests": false,
+ "generated_at_local": "2026-09-18T15:57:45",
+ "revalidated_at_local": "2026-09-18T16:19:04"
+}

@@ -1,0 +1,186 @@
+{
+ "question": "§CA.3 showed M1 shipped a config chosen by a ranking nearly uncorrelated with the shipped model's quality. How much did that cost, in units that decide whether it matters at all?",
+ "integrity_gate": "the driver's ensemble argmax was verified to equal the config recorded in models/m1-<fold>/config.json on all four folds before any regret was computed, so regret is measured against what the framework really shipped",
+ "n_manifests_read": 1569,
+ "n_runs": 324,
+ "per_fold": {
+  "F1": {
+   "shipped_config_index": 15,
+   "shipped_config": {
+    "hidden_dim": 128,
+    "num_blocks": 3,
+    "dropout": 0.0
+   },
+   "integrity_gate_driver_argmax_equals_shipped": true,
+   "driver_ensemble_value": 0.06002328665131539,
+   "final_basis": {
+    "argmax_on_ensemble": 15,
+    "argmax_on_seedmean": 15,
+    "shipped_value": 0.05897655298314486,
+    "best_value": 0.05897655298314486,
+    "argmax_agrees_between_ensemble_and_seedmean": true
+   },
+   "peak_basis": {
+    "argmax": 10,
+    "argmax_config": {
+     "hidden_dim": 128,
+     "num_blocks": 1,
+     "dropout": 0.1
+    },
+    "shipped_value": 0.06358526018473348,
+    "best_value": 0.06586098373532027,
+    "shipped_rank_of_27": 4,
+    "config_mean_sd": 0.0012878026084343125,
+    "config_range": 0.00574475842890778
+   },
+   "regret_absolute": 0.0022757235505867918,
+   "regret_in_peak_config_sds": 1.7671369320749988,
+   "se_of_one_config_mean_peak": 0.001087600905307824,
+   "se_of_difference_between_two_config_means": 0.001538099950735581,
+   "regret_in_se_of_difference": 1.479568053752586,
+   "regret_distinguishable_from_zero_at_2se": false
+  },
+  "F2": {
+   "shipped_config_index": 14,
+   "shipped_config": {
+    "hidden_dim": 128,
+    "num_blocks": 2,
+    "dropout": 0.2
+   },
+   "integrity_gate_driver_argmax_equals_shipped": true,
+   "driver_ensemble_value": 0.09437554331853597,
+   "final_basis": {
+    "argmax_on_ensemble": 14,
+    "argmax_on_seedmean": 3,
+    "shipped_value": 0.08807275619441096,
+    "best_value": 0.09023923592502452,
+    "argmax_agrees_between_ensemble_and_seedmean": false
+   },
+   "peak_basis": {
+    "argmax": 7,
+    "argmax_config": {
+     "hidden_dim": 64,
+     "num_blocks": 3,
+     "dropout": 0.1
+    },
+    "shipped_value": 0.09394040156318355,
+    "best_value": 0.09609389306006715,
+    "shipped_rank_of_27": 16,
+    "config_mean_sd": 0.0015009053266622032,
+    "config_range": 0.005849863562876978
+   },
+   "regret_absolute": 0.002153491496883597,
+   "regret_in_peak_config_sds": 1.4347950257946325,
+   "se_of_one_config_mean_peak": 0.001087600905307824,
+   "se_of_difference_between_two_config_means": 0.001538099950735581,
+   "regret_in_se_of_difference": 1.4000985409652418,
+   "regret_distinguishable_from_zero_at_2se": false
+  },
+  "F3": {
+   "shipped_config_index": 12,
+   "shipped_config": {
+    "hidden_dim": 128,
+    "num_blocks": 2,
+    "dropout": 0.0
+   },
+   "integrity_gate_driver_argmax_equals_shipped": true,
+   "driver_ensemble_value": 0.08511112017685535,
+   "final_basis": {
+    "argmax_on_ensemble": 12,
+    "argmax_on_seedmean": 12,
+    "shipped_value": 0.08314011515782462,
+    "best_value": 0.08314011515782462,
+    "argmax_agrees_between_ensemble_and_seedmean": true
+   },
+   "peak_basis": {
+    "argmax": 16,
+    "argmax_config": {
+     "hidden_dim": 128,
+     "num_blocks": 3,
+     "dropout": 0.1
+    },
+    "shipped_value": 0.08486920437834154,
+    "best_value": 0.0863417882628405,
+    "shipped_rank_of_27": 9,
+    "config_mean_sd": 0.0011356084606418397,
+    "config_range": 0.0041121921770825715
+   },
+   "regret_absolute": 0.0014725838844989597,
+   "regret_in_peak_config_sds": 1.2967355699927272,
+   "se_of_one_config_mean_peak": 0.001087600905307824,
+   "se_of_difference_between_two_config_means": 0.001538099950735581,
+   "regret_in_se_of_difference": 0.9574045456504379,
+   "regret_distinguishable_from_zero_at_2se": false
+  },
+  "F4": {
+   "shipped_config_index": 16,
+   "shipped_config": {
+    "hidden_dim": 128,
+    "num_blocks": 3,
+    "dropout": 0.1
+   },
+   "integrity_gate_driver_argmax_equals_shipped": true,
+   "driver_ensemble_value": 0.10173055089765992,
+   "final_basis": {
+    "argmax_on_ensemble": 16,
+    "argmax_on_seedmean": 14,
+    "shipped_value": 0.09454983242246993,
+    "best_value": 0.09924654156180211,
+    "argmax_agrees_between_ensemble_and_seedmean": false
+   },
+   "peak_basis": {
+    "argmax": 13,
+    "argmax_config": {
+     "hidden_dim": 128,
+     "num_blocks": 2,
+     "dropout": 0.1
+    },
+    "shipped_value": 0.1015722467320348,
+    "best_value": 0.10307995890178444,
+    "shipped_rank_of_27": 6,
+    "config_mean_sd": 0.0008889192793608365,
+    "config_range": 0.003989011614154048
+   },
+   "regret_absolute": 0.0015077121697496393,
+   "regret_in_peak_config_sds": 1.6961182019066299,
+   "se_of_one_config_mean_peak": 0.001087600905307824,
+   "se_of_difference_between_two_config_means": 0.001538099950735581,
+   "regret_in_se_of_difference": 0.9802432989017332,
+   "regret_distinguishable_from_zero_at_2se": false
+  }
+ },
+ "summary": {
+  "regret_absolute_min": 0.0014725838844989597,
+  "regret_absolute_max": 0.0022757235505867918,
+  "regret_absolute_mean": 0.001852377775429747,
+  "regret_in_se_of_difference": [
+   1.479568053752586,
+   1.4000985409652418,
+   0.9574045456504379,
+   0.9802432989017332
+  ],
+  "regret_in_se_min": 0.9574045456504379,
+  "regret_in_se_max": 1.479568053752586,
+  "folds_where_regret_exceeds_2se": 0,
+  "shipped_rank_on_peak_basis": [
+   4,
+   16,
+   9,
+   6
+  ],
+  "peak_basis_config_share_of_variance": 0.001696797302897936,
+  "peak_basis_config_p": 0.9990568444746426,
+  "peak_basis_config_mean_sd": 0.0006348825294905842,
+  "peak_basis_se_config_mean": 0.001087600905307824,
+  "verdict": "the ranking is scrambled but the prize is almost nothing: on the peak metric M1's 27 configs are statistically indistinguishable, so the regret from shipping the wrong one is 1.0-1.5 SE of a difference between two config means and is not distinguishable from zero on any fold"
+ },
+ "read_only": true,
+ "database_access": false,
+ "network_or_vendor_call": false,
+ "mcp_used": false,
+ "checkpoint_pt_opened": false,
+ "weights_loaded": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "generated_at_local": "2026-09-18T15:48:59"
+}
