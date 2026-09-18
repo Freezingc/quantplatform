@@ -5,7 +5,7 @@
 每条都给出：现象 → 根因 → 处置 → 权威出处（原件已复制到 `vendored/`）。
 
 > **⚠ 引用任何数字之前先读 [`corrections_ledger.md`](corrections_ledger.md)。**
-> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CF 共 13 条数字作废、13 条表述需改读、6 条代码缺陷未修、10 条引用规则）。
+> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CG 共 13 条数字作废、13 条表述需改读、6 条代码缺陷、11 条引用规则；**其中 C1/C2/C5 已在 `codex/deferred-driver-fixes` 分支修复并通过全套测试，但刻意未合并，合并前仍是生产行为**）。
 > 那份登记表是全包唯一的集中清单：**A 类 = 已作废的数字，不得引用；B 类 = 需改读的表述；C 类 = 代码层面未修的缺陷，引用受影响数字时必须带条件；D 类 = 给写论文的人的引用规则。**
 > 正文里被推翻的地方都有 `> 【日期 就地更正…】` 标记，但标记是散的，登记表是全的。
 
@@ -8725,7 +8725,13 @@ F2 的 2,130 个新进行按月分布：**1月 197、2月 166、3月 148、4月 
 
 **所以修法是"调用一个已存在、已校验、已被测试覆盖的方法"，不是写新逻辑**——**这一点比 §CA.6 当时的说法更具体，也更乐观。**
 
-### CC.4 需要改的位置（**全部列出，但本节一处都没有改**）
+### CC.4 需要改的位置（**全部列出，但本节一处都没有改**）【**⚠ 本表的工作量估计已被 §CG.1 更正：不是 7 处改动，而是 1 处；且改动已在 `codex/deferred-driver-fixes` 上完成并通过全套测试**】
+
+> **【2026-09-18 16:55 就地更正，详见 §CG.1】**
+> **本表把"7 个调用点"误当成了"7 处改动"。实测：这 7 处全都是「拿到 runner 返回的那个 `model` 对象之后立刻给它打分」，而 `trainer.fit` 在非测试代码里只有 `runner.py:81` 一个调用点、runner 返回之后也没有任何地方继续训练这个模型——所以在 runner 里恢复一次最优权重，7 个调用点看到的就是同一个已恢复的对象，逐处去改是多余的。**
+> **本表末尾那条「`model, _ = _train_cross_section_seed(...)` 把 `checkpoint_path` 用 `_` 扔掉了，若要恢复权重得先把 `_` 接住」也随之作废：它扔掉的只是路径，而它下一行打分的 `model` 已经恢复过了。**
+> **改动已实施：`runner.py` 在 `trainer.fit(...)` 之后、`return` 之前插入 `checkpoint_store.load(checkpoint_ids[-1], model, optimizer)`，共 +13 行；提交 `1aa4a70` 在 `codex/deferred-driver-fixes` 分支，2092 passed / 46 skipped / 0 failed，ruff 与 mypy --strict 均过。刻意未合并（M2 仍从主树导入这些模块）。**
+> **下表照录，仅供追溯每处打分点的位置；行号是主树的，deferred 分支相差约 35 行，引用时必须说明分支。**
 
 | 路径 | 位置 | 现状 | 需要的改动 |
 |---|---|---|---|
@@ -8752,7 +8758,12 @@ F2 的 2,130 个新进行按月分布：**1月 197、2月 166、3月 148、4月 
 - **陷阱在于**：**任何人为了复现或诊断，从 bundle 里读那份 parquet、再拿重建的模型重新打分，会得到约 7%–9% 的系统性差异，并且极可能把它误判为"复现失败"或"权重损坏"**——**而 checksums 会全部通过，因为两个文件各自都是完好且被如实校验的**。**§BQ.1 那条"逐位复现"的成功经验会让人更倾向于相信"复现不上就是出问题了"，所以这个陷阱的误导性比它看起来强。**
 - **修法与 CC.3 是同一个**：**在打分前恢复权重，那份 parquet 就自动变成峰值轮的，工件内部一致**。**不需要单独修 bundle 写入逻辑。**
 
-### CC.6 本节没有做的事
+### CC.6 本节没有做的事【**其中前两条已被 §CG 关闭**】
+
+> **【2026-09-18 16:55 就地更正，详见 §CG】**
+> **① 「没有改任何仓库文件」已不成立**：修复已在 `codex/deferred-driver-fixes` 分支实施（提交 `1aa4a70`，3 个文件 +150 行，纯增量），**主工作树仍未被改动**（驱动 sha256 与 dirty=0 均可核对）。
+> **② 「没有在 `deferred-driver-fixes` 工作树上准备补丁」已不成立**：补丁就在那个分支上，且已通过全套测试。
+> **本节其余各条仍然成立**（没有加载权重、没有触库、没有重算 OOS、没有验证 M2 的 F2 bundle 等）。**合并时机的取舍见 §CG.5：合并会改变验证侧度量的口径，所以合并前跑完的折与合并后跑完的折不可直接比较，这一点必须在报告里写明。**
 
 **没有**改任何仓库文件——**CC.4 那张表列出的 7 处一处都没动**（M2 仍在关键路径上）；**没有**在 `deferred-driver-fixes` 工作树上准备补丁**——本节的交付是"精确到行号的修法清单 + 已存在的 `load()` API"，把实现留给 M2 退出之后的那一次改动，因为在一个与 M2 驱动共享导入图的工作树上提前改，收益不足以抵偿风险**；
 **没有**加载任何权重或张量——**CC.1 的哈希是对文件字节做的（`sha256` 流式读），没有 `torch.load`、没有反序列化、没有构建模型**；
@@ -8949,3 +8960,87 @@ F2 的 2,130 个新进行按月分布：**1月 197、2月 166、3月 148、4月 
 **取证工具**：`check_section_order.py`（sha256 `7881c73d95b6325ab2ae5861…`）、机读件 `check_section_order_validation.json`（**含两次重排的无损核对数据、五个负向用例的期望与实际退出码、以及 §BR 那条误报的记录**）。
 **只读**：只读本包自己的 markdown；**没有**触库、**没有**网络、**没有** MCP、**没有**导入或执行任何仓库模块、**没有**加载权重、**没有**训练、**没有**写入任何 artifacts 目录、**没有**给任何进程发信号。
 **维护约定已写进 §E 之外的一处**：**每次往 `problems_found.md` 追加新节之后都应当跑一次这道检查**；**追加时锚点必须用当次新增的最后一段独有文本，绝不能用各节通用的安全声明句式**——**这条要求此前只写在 §CC 的正文里，现在有了机器把关。**
+---
+
+## CG. 【已闭合，2026-09-18 16:55，**§CA/§CC 那个缺陷已经修好并通过全套测试，落在延后分支上未合并；而修的过程推翻了 §CC.4 自己给出的工作量估计——不是 7 处，是 1 处**】**§CC.4 列了 7 处需要改的位置，§CC.6 说明为什么在 M2 跑完之前不改。本轮把改动做完了，做法与 §CC.4 的估计不同**：**在 `runner.py` 里 `trainer.fit(...)` 返回之后、`return` 之前插入一次 `checkpoint_store.load(checkpoint_ids[-1], model, optimizer)`，这一处就覆盖了全部 7 个调用点**。**理由是 §CC.4 当时没有查清的一件事：那 7 处全都是"拿到 runner 返回的那个 `model` 对象之后立刻给它打分"，而 `trainer.fit` 在整个非测试代码里只被 `runner.py:81` 调用一次，也没有任何地方在 runner 返回之后继续训练这个模型**——**所以在 runner 里把最优权重恢复回这个对象，7 个调用点看到的就都是恢复后的同一个对象，逐处去改是多余的**。**连 §CC.4 特别点出的那处"`model, _ = _train_cross_section_seed(...)` 把 `checkpoint_path` 用 `_` 扔掉了"也不需要动：它扔掉的只是路径，而它接着打分的 `model` 已经是恢复过的**。**修法用的还是 §CC.3 查到的那个已存在、已校验、有单测覆盖但生产代码从未调用过的 `CheckpointStore.load()`（`artifacts.py:85-104`），它加载前会先 `verify()` 校验 sha256，所以现在最优检查点若损坏会在恢复时大声失败，而不是被静默发运**；**`save()` 是原子的（临时目录 + `rename`），所以这次重新校验不可能读到写了一半的文件**。**验证链完整**：两个新测试**都先看着它们失败、再看着它们通过**；`ruff check` 三个文件全过；`mypy --strict` 过；**`tests/unit` + `tests/integration` + `tests/golden` 共 2092 passed / 46 skipped / 0 failed**。**提交在 `codex/deferred-driver-fixes` 分支（`1aa4a70`），刻意没有合并、也没有动主工作树**：**M2（pid 3588838，已跑 4 天 22 小时）从主工作树导入这些模块，运行中改动会危及整个 5–6 天的作业**；**主树驱动 sha256 仍是 `33742880…b113`、dirty=0，可核对**。**一条必须随修复一起说明的后果：合并之后"选择度量"的含义变了，所以已发布的 M1/M2 验证侧数字是在旧口径下产生的，不能与合并之后的运行直接比较；OOS 侧不受影响**（`load_bundle_for_evaluation` 从持久化的 `seed-*.pt` 重建模型、驱动再据此重算 test 预测，**所以已发布的 OOS RankIC / G4 / G6 本来就描述发运的峰值模型**，§CC.1 已用 15/15 哈希实测确认）。
+
+### CG.1 为什么 1 处就够：**§CC.4 那张表把"7 个调用点"误当成了"7 处改动"**
+
+§CC.4 列的 7 处（本节的行号按 `codex/deferred-driver-fixes` 分支，与主树略有偏移）：
+
+| §CC.4 列出的位置 | 它实际做的事 | 需要单独改吗 |
+|---|---|---|
+| `cross_section_search.py:203` | `percentile_frame(model, validation_batches)` | **不需要** |
+| `temporal_search.py:374` | `percentile_frame(model, batches.validation_batches)` | **不需要** |
+| `run_real_candidate_training.py:601` | `_predict_validation_percentiles(model, …)` | **不需要** |
+| `run_real_candidate_training.py:923` | `_predict_temporal_validation_percentiles(model, …)` | **不需要** |
+| `run_real_candidate_training.py:2526` | `_predict_validation_percentiles(model, …)` | **不需要** |
+| `run_real_candidate_training.py:3209` | `_predict_temporal_validation_percentiles(model, …)` | **不需要** |
+| `run_real_candidate_training.py:2512` | `model, _ = _train_cross_section_seed(...)`（扔掉路径） | **不需要**（见下） |
+
+**三条支撑这个结论的检查**：
+1. **七处打分的是同一个对象**：**每一处都把 runner 收下的那个 `model` 传进打分函数**，**没有一处重新构造模型、也没有一处从别处取模型**。
+2. **`trainer.fit` 在非测试代码里只有一个调用点**：`runner.py:81`。**所以"训练结束"这个时刻在全代码库里是唯一的，在它之后恢复一次就覆盖了所有下游**。
+3. **runner 返回之后没有任何地方继续训练这个模型**：`rg "\.fit\(|optimizer\.step|loop\.train_epoch"` 在非测试代码里的命中全部是 `preprocessor.fit(...)` 与 LightGBM 的 `spec.fit(...)`，**没有一处是对同一个 torch 模型再训练**。**所以恢复不会被随后的训练覆盖掉**。
+
+**关于第 7 处**：§CC.4 特别提到 `model, _ = _train_cross_section_seed(...)` 把 `checkpoint_path` 用 `_` 扔了、"若要在这条路径上恢复权重，得先把 `_` 接住"。**在 runner 层修就不需要接住它**——**那一行扔掉的只是路径，而它下一行打分的 `model` 已经是恢复过的**。**所以 §CC.4 那条"得先把 `_` 接住"的前提也随之作废**。
+
+### CG.2 两个测试，**都是先看着失败、再看着通过**
+
+本包的惯例是"一把新仪器必须先证明它能失败"（§CF 那五个负向用例、§AL 那个 `summarize_universe_harmless_days.py` 当场推翻手写概括，都是同一件事）。**本轮对修复也照此办理**：
+
+| 测试 | 断言的不变式 | **撤掉修复后** | **装上修复后** |
+|---|---|---|---|
+| `test_training_returns_the_model_restored_to_the_best_checkpoint`（`tests/unit/training/test_validation_governed_runner.py`） | 训练返回后，活的 `model.state_dict()` 与最优检查点的 `model_state_dict` **逐张量相等** | **FAILED**：`live model diverges from the best checkpoint at '_blocks.0._network.0.bias': training left it at epoch 4 while the best checkpoint is epoch 1` | **passed** |
+| `test_the_score_a_seed_fit_reports_is_the_score_of_the_checkpoint_it_persists`（`tests/unit/training/test_temporal_search.py`） | 走**真实的并行 worker 路径**：返回的 `validation_rank_ic` 等于它所持久化那个检查点 manifest 里记的值 | **FAILED**（两值不等） | **passed** |
+
+**两个测试都带了"防止自己变成空测试"的守卫，这是关键**：
+- **第一个测试的 fixture 把验证集的目标取负**（`_anti_correlated_batch`：训练朝 `_batch` 的目标拟合，所以模型在训练集上越好、与这个验证目标的秩一致性就越差），**于是峰值确定性地落在 epoch 1、之后每个 epoch 都更差**。**守卫断言 `best_epoch == 1` 且 `epochs_run > best_epoch`**——**即"峰值严格早于末轮"是 fixture 保证的性质，不是碰运气碰出来的**；**若哪天 fixture 改了导致两者重合，测试会大声失败而不是静默通过**。
+- **第二个测试守卫"被持久化的检查点必须是保存下来的最大 epoch"且"至少保存了两个检查点"**，**否则 best 与 final 重合、断言就会因为错误的理由通过**。**它在撤掉修复与装上修复两种情况下守卫都成立，所以它是非空的**。
+
+**第二个测试断言的正是 §CA.6 实测被违反的那条性质**（真实运行里 M1 324/324、M2 144/144 全部不等），**所以它是这个缺陷的回归测试，而不只是修复的确认**。
+
+### CG.3 验证链
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| lint | `ruff check` 三个改动文件 | **All checks passed**（先有 14 处 E501，是我自己注释/docstring 超 100 列，已重新折行） |
+| 类型 | `mypy --strict src/research_v2/training/runner.py` | **Success: no issues found in 1 source file** |
+| 单测 | `pytest tests/unit -q` | **2070 passed, 1 skipped**（GPU 用例） |
+| 集成 + golden | `pytest tests/integration tests/golden -q` | **21 passed, 45 skipped**（45 个跳过是 `QRV2_INTEGRATION=1` 门控的，与本次改动无关） |
+| **全量** | `pytest tests/unit tests/integration tests/golden -q` | **2092 passed, 46 skipped, 0 failed**（147s） |
+| 格式 | `ruff format --check` | **`test_temporal_search.py` 有 1 处待格式化，但在第 201 行、HEAD 上就已存在，与本次改动无关**（我的改动只碰第 16 行与第 391 行之后），**故刻意不动，以免把无关重排混进这个 diff** |
+
+**改动规模**：**3 个文件、+150 行、0 删除**（`runner.py` +13、两个测试文件 +63 / +74）——**纯增量，没有修改任何既有行为之外的代码**。
+
+### CG.4 落点、以及为什么**没有**合并
+
+**提交 `1aa4a70` 落在 `codex/deferred-driver-fixes` 分支**（该分支此前的两个提交是 `1dbc36c` `--folds` 与 `4f44e12` fold-cache key，**都不涉及本缺陷，所以这是一个新的、不与之重叠的延后项**）。
+
+**刻意没有合并、也没有应用到主工作树**：
+- **M2（pid 3588838）从主工作树导入 `runner.py` / `cross_section_search.py` / `temporal_search.py`**，**而它已经连续跑了 4 天 22 小时、正处在 F2 重拟合阶段**；**运行中改动这些文件会危及整个 5–6 天的作业**。
+- **可核对的隔离证据**：**主树 `run_real_candidate_training.py` 的 sha256 仍是 `33742880f314ca21…f458f1f580b113`、主树 dirty=0**；**改动只存在于 `deferred-driver-fixes` 工作树**（该工作树的驱动 sha256 是 `1c9af45dc7f84e57…`，**本来就和主树不同，因为它是另一个分支**）。
+- **注意工作树之间的行号不可互换**：§CC.4 那张表给的是**主树**行号，本节 CG.1 给的是 **deferred 分支**行号，**两者相差约 35 行**（例如末轮打分那处在主树是 `cross_section_search.py:203`、在 deferred 分支也是 203，但驱动里的对应处主树 `:2477` 对 deferred `:2512`）。**引用行号时必须说明是哪个分支。**
+
+### CG.5 合并之后必须知道的一件事：**验证侧数字的口径变了**
+
+**这不是一个纯粹的内部修复，它改变了"选择度量"的含义**：
+- **合并前**：`seed_validation_rank_ic` / `ensemble_validation_rank_ic` 描述**末轮**模型。**已发布的 §BO / §BN / §BY / §CA / §CB / §CD 全部是在这个口径上算的**。
+- **合并后**：同样这两个字段描述**峰值轮**模型，也就是**发运的那个**。
+- **所以**：**合并前后的验证侧数字不可直接比较**。**已经跑完的 M1（四折）与 M2 的 F1/F2 是旧口径**；**M2 的 F3/F4 若在合并之后跑，就是新口径**——**那会造成同一次运行内部口径不一致，这是合并时机必须考虑的一件事**。**建议要么等 M2 四折全部跑完再合并（保持这一轮内部口径一致，事后用 §CA/§CD 的探针在峰值口径上重算），要么接受 F3/F4 与 F1/F2 不同口径并在报告里写明。**
+- **OOS 侧不受影响**：**`load_bundle_for_evaluation` 从持久化的 `seed-*.pt` 重建模型，驱动再据此重算 test 预测**（§CC.2 那条链），**而 §CC.1 已用哈希实测确认 `seed-<seed>.pt` 就是峰值检查点（15/15 逐字节相同）**。**所以已发布的 OOS RankIC、G4、G6 本来就描述发运的峰值模型，合并前后都一样。**
+
+### CG.6 本节没有做的事
+
+**没有**合并到主分支、**没有**动主工作树任何文件（**主树 dirty=0、驱动 sha256 未变，均已核对**）；
+**没有**在合并时机上替所有者做决定——**CG.5 给出了两个选项与各自的代价，决定权在所有者**；
+**没有**用峰值权重重算 M1 或 M2 的 OOS（**那是推理，需加载权重；§BT.1(b) 的内存约束虽已缓解（`MemAvailable` 454 GB），但 M2 仍在关键路径上，本轮不去抢它的 CPU**）；
+**没有**重跑 §CD.2 的遗憾表来验证"修复后 M1 的遗憾应当变成 0"——**那需要用修复后的代码重训 M1，属于训练**；**本节只证明了修复在单元与集成层面正确**；
+**没有**修 `ruff format` 在 `test_temporal_search.py:201` 报的那处**既有**格式问题（**与本次改动无关，避免把无关重排混进 diff**）；
+**没有**跑 `QRV2_INTEGRATION=1` 门控的那 45 个集成测试（**它们需要真实数据库，本轮全程不触库**）；
+**没有**改任何 yaml、门槛、预注册或冻结集；**没有**写库、**没有**产出权重、**没有**给任何进程发信号。
+
+**取证方式**：**改动与测试都在 `deferred-driver-fixes` 工作树里做，用 apply_patch 落盘、用仓库自己的 `pytest` / `ruff` / `mypy` 验证**；**CG.1 那张表与"7 处都打同一个对象"的结论是用 `rg` / `sed` 逐处读源码得到的**（**本节没有 import 或执行任何仓库模块来"看"它，只有 pytest 在子进程里正常执行被测代码**）。
+
+**安全声明**：**主工作树全程未被修改**——**没有**改任何被 M2 导入的文件、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**写任何 artifacts 目录、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**给任何进程发信号；
+驱动 sha256 仍为 `33742880f314ca21…f458f1f580b113`，主工作树 dirty=0，M2 pid 3588838 全程在跑（**F1/F2 检索记录 24/24，F2 重拟合进行中，`models/` 下仍只有 `m2-f1`，F3 未开始**）。
