@@ -49,13 +49,14 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-18T09:59:23+00:00",
+  "generated_at_utc": "2026-09-18T10:40:54+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "32848550f36fb6d05d1d87e345c60212532a79c99e4e8e0b234bcd1d99e054e8"
   },
   "measurements": {
     "candidate_side_validation_coverage.json": "3966c9ce065ec7848b02dfff57615439e4d810e9904448e51017d83e9d4e20d0",
+    "cap_truncation_scan.json": "8615fb9000bb4f92be3a583503372fdc6ea7ffc07fdc1463640b8acd93f519a3",
     "first_appearance_cause.json": "934dc8c748f62399aa651b16ac4ea8e0b220677bcfefcbc21ce81790a281cd28",
     "first_appearance_cohort_decomposition.json": "2d4465261d11662277dc9953fb2d14b0537879e0daea06338316be9336c369d3",
     "g6_exact_under_temporal_eligibility.json": "fa5ef50e9c30c6318976ac446a245bcefff9101d93294d561ba8478db1ffd36f",
@@ -93,6 +94,7 @@
   },
   "probe_scripts": {
     "m2_progress_stall_watcher_v2.py": "14d4d52737e6b28a5c646dc68d898adfbf79384e309f3e022cd8a24dc2c4c0a7",
+    "probe_cap_truncation_scan.py": "d329c4aca8d313ff7f29485bf558309b6ce42e9d9965b9308006253690280f5e",
     "probe_exact_g6_under_temporal_eligibility.py": "aea38f50a0a7bb3709f1668dc2e603cccefd20841bfa3d6cf50e7cbc6a491e46",
     "probe_first_appearance_cause.py": "8dd3b70cfbc9c3d6e708ea4c8e424c9ce0356b4e69cc3fc1dac281bc97ce0176",
     "probe_first_appearance_cohort_decomposition.py": "7d5c262345af0354ebf28c4376eaa71dbb494a66b6152a47f6a39712ec32992d",
@@ -127,6 +129,6 @@
   "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "3c89be497d75f2358b55218f4d5a176b1fb27e7b"
+    "commit_at_generation": "6d0e5e265cedbcbcd3f073d423f019624904a35d"
   }
 }
