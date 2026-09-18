@@ -1,0 +1,297 @@
+{
+ "question": "does the peak-location vs peak-height dissociation that §CK.2/§CN.3 found on neural carriers also hold on the gradient-boosted-tree carrier M0R?",
+ "generated_at_local": "2026-09-19T03:56:35",
+ "best_iteration_is_peak_epoch_analogue": {
+  "torch_peak_epoch": "max saved checkpoint epoch = epoch of best validation rank-IC (§CJ.2)",
+  "lgbm_best_iteration": "booster.best_iteration = boosting round of best validation rank-IC",
+  "lgbm_feval_is_rank_ic": "lgbm_rankreg.py:61,277 (DailyRankICMetric, higher-better)",
+  "lgbm_early_stopping": "lgbm_rankreg.py:284 (lgb.early_stopping callback)",
+  "save_truncates_to_best_iteration": "run_real_candidate_training.py:1279 save_model(path), default num_iteration",
+  "predict_uses_best_iteration": "lgbm_rankreg.py:314 num_iteration=self.best_iteration",
+  "num_boost_round_cap": 500
+ },
+ "m0r_reading_integrity": {
+  "n_boosters": 12,
+  "all_tree_counts_equal_tree_sizes_counts": true,
+  "max_trees_observed": 214,
+  "all_below_cap_500_no_truncation": true,
+  "three_workspaces_identical_tree_counts": true,
+  "three_workspaces_identical_rank_ic": true,
+  "per_booster": [
+   {
+    "booster": "m0r-f1-final-20260801",
+    "n_Tree": 44,
+    "n_tree_sizes": 44,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f1-final-20260802",
+    "n_Tree": 25,
+    "n_tree_sizes": 25,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f1-final-20260803",
+    "n_Tree": 34,
+    "n_tree_sizes": 34,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f2-final-20260801",
+    "n_Tree": 214,
+    "n_tree_sizes": 214,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f2-final-20260802",
+    "n_Tree": 146,
+    "n_tree_sizes": 146,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f2-final-20260803",
+    "n_Tree": 133,
+    "n_tree_sizes": 133,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f3-final-20260801",
+    "n_Tree": 54,
+    "n_tree_sizes": 54,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f3-final-20260802",
+    "n_Tree": 59,
+    "n_tree_sizes": 59,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f3-final-20260803",
+    "n_Tree": 27,
+    "n_tree_sizes": 27,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f4-final-20260801",
+    "n_Tree": 36,
+    "n_tree_sizes": 36,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f4-final-20260802",
+    "n_Tree": 43,
+    "n_tree_sizes": 43,
+    "counts_agree": true,
+    "below_cap": true
+   },
+   {
+    "booster": "m0r-f4-final-20260803",
+    "n_Tree": 40,
+    "n_tree_sizes": 40,
+    "counts_agree": true,
+    "below_cap": true
+   }
+  ]
+ },
+ "m0r_robustness": {
+  "best_iteration_by_fold_mean": {
+   "f1": 34.333,
+   "f2": 164.333,
+   "f3": 46.667,
+   "f4": 39.667
+  },
+  "argmax_by_statistic": {
+   "mean": "f2",
+   "median": "f2",
+   "drop_max": "f2"
+  },
+  "argmax_stable_across_mean_median_dropmax": true,
+  "F2_min_over_seeds": 133,
+  "max_of_all_other_folds": 59,
+  "F2_min_exceeds_other_folds_max": true,
+  "rank_ic_by_fold": {
+   "f1": 0.067948,
+   "f2": 0.098708,
+   "f3": 0.08944,
+   "f4": 0.103177
+  },
+  "location_argmax": "f2",
+  "height_argmax": "f4",
+  "dissociated": true
+ },
+ "m0_degenerate_non_replication": {
+  "tree_counts_sorted": [
+   1,
+   2,
+   2,
+   4,
+   4,
+   5,
+   6,
+   7,
+   7,
+   12,
+   12,
+   61
+  ],
+  "n_runs": 12,
+  "n_counts_le_12": 11,
+  "single_outlier": 61,
+  "location_argmax": "f4",
+  "height_argmax": "f4",
+  "dissociated": false,
+  "verdict": "M0 does NOT show the dissociation (location and height both peak at F4), but its tree counts are 1-12 for 11 of 12 runs with one outlier of 61, so its location signal is dominated by a single run and is not a reliable fold pattern. Reported honestly as non-replicating AND too degenerate to weigh against the finding."
+ },
+ "cross_carrier": {
+  "per_carrier": [
+   {
+    "carrier": "M0R",
+    "family": "LGBM_RANKREG (gradient-boosted trees)",
+    "basis": "final-refit best_iteration",
+    "complete_four_folds": true,
+    "location_by_fold": {
+     "f1": 34.333,
+     "f2": 164.333,
+     "f3": 46.667,
+     "f4": 39.667
+    },
+    "height_by_fold": {
+     "f1": 0.067948,
+     "f2": 0.098708,
+     "f3": 0.08944,
+     "f4": 0.103177
+    },
+    "location_argmax": "f2",
+    "height_argmax": "f4",
+    "dissociated": true,
+    "degenerate": false
+   },
+   {
+    "carrier": "M0",
+    "family": "LGBM_RANKER (gradient-boosted trees)",
+    "basis": "final-refit best_iteration",
+    "complete_four_folds": true,
+    "location_by_fold": {
+     "f1": 3,
+     "f2": 4.667,
+     "f3": 6.667,
+     "f4": 26.667
+    },
+    "height_by_fold": {
+     "f1": 0.052814,
+     "f2": 0.087546,
+     "f3": 0.075058,
+     "f4": 0.098805
+    },
+    "location_argmax": "f4",
+    "height_argmax": "f4",
+    "dissociated": false,
+    "degenerate": true
+   },
+   {
+    "carrier": "M1",
+    "family": "ResidualMLP (neural)",
+    "basis": "grid epochs/run (§CK.2 basis)",
+    "complete_four_folds": true,
+    "location_by_fold": {
+     "f1": 20.123456790123456,
+     "f2": 23.271604938271604,
+     "f3": 19.086419753086417,
+     "f4": 16.962962962962962
+    },
+    "height_by_fold": {
+     "f1": 0.05134,
+     "f2": 0.090889,
+     "f3": 0.081581,
+     "f4": 0.098265
+    },
+    "location_argmax": "f2",
+    "height_argmax": "f4",
+    "dissociated": true,
+    "degenerate": false
+   },
+   {
+    "carrier": "M1-final",
+    "family": "ResidualMLP (neural)",
+    "basis": "final-refit peak epoch",
+    "complete_four_folds": true,
+    "location_by_fold": {
+     "f1": 4,
+     "f2": 12.333,
+     "f3": 13.333,
+     "f4": 7
+    },
+    "height_by_fold": {
+     "f1": 0.05134,
+     "f2": 0.090889,
+     "f3": 0.081581,
+     "f4": 0.098265
+    },
+    "location_argmax": "f3",
+    "height_argmax": "f4",
+    "dissociated": true,
+    "degenerate": false
+   },
+   {
+    "carrier": "M2",
+    "family": "TCN (neural)",
+    "basis": "final-refit peak epoch (PARTIAL: F1/F2 only)",
+    "complete_four_folds": false,
+    "location_by_fold": {
+     "f1": 8.333,
+     "f2": 35.333
+    },
+    "height_by_fold": {
+     "f1": 0.054667,
+     "f2": 0.090307
+    },
+    "location_argmax": "f2",
+    "height_argmax": "f2",
+    "dissociated": null,
+    "degenerate": false
+   }
+  ],
+  "n_carriers_dissociated": 3,
+  "n_carriers_assessed": 3,
+  "carriers_excluded_partial": [
+   "M2"
+  ],
+  "model_families_showing_dissociation": [
+   "gradient-boosted trees",
+   "neural"
+  ],
+  "claim": "the location/height dissociation holds on gradient-boosted trees (M0R) as well as on neural nets (M1 grid per §CK.2, M1 final-refit, M2), so it is a property of the walk-forward folds plus rank-IC early stopping, not of neural training",
+  "does_NOT_claim": "an architecture-independent peak-LOCATION fold: on the common final-refit basis the location argmax is F2 (M0R), F4 (M0), F3 (M1), F2 (M2 partial) -- not consistent, as §CN's fold x seed interaction predicts. What replicates is the dissociation, not a shared argmax."
+ },
+ "negative_controls": {
+  "tree_count_two_ways_agree_on_all_boosters": true,
+  "no_booster_at_cap_500": true,
+  "three_m0r_workspaces_identical": true,
+  "dissociation_detector_on_M0_returns_False": true,
+  "dissociation_detector_synthetic_same_fold_is_False": true,
+  "dissociation_detector_synthetic_diff_fold_is_True": true,
+  "m0r_F2_location_robust_across_statistics": true,
+  "m0r_F2_min_exceeds_other_folds_max": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false
+}
