@@ -157,7 +157,103 @@
     "sigma_c_raw": -4.1098790913628095e-06,
     "within_cell_variation_explained_by_seed_identity": 0.0415195285423415,
     "config_mean_sd": 0.0023189469132425936,
-    "se_config_mean": 0.003080161339573004
+    "se_config_mean": 0.003080161339573004,
+    "gm": 0.07631793209594288,
+    "SS_config": 0.0016777846133684542,
+    "SS_tot": 0.11995283620359826,
+    "df_res": 214,
+    "df_config": 26,
+    "axis_main_effects": {
+     "hidden_dim": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "64",
+       "128",
+       "256"
+      ],
+      "level_means": [
+       0.077981421232174,
+       0.07642775327375055,
+       0.07454462178190407
+      ],
+      "best_level": "64",
+      "spread": 0.003436799450269923,
+      "SS": 0.0006397797168716853,
+      "df": 2,
+      "F": 2.809779855916338,
+      "p": 0.06244173731832003,
+      "share_of_SS_config": 0.3813241054745475
+     },
+     "num_blocks": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "1",
+       "2",
+       "3"
+      ],
+      "level_means": [
+       0.07628965234012136,
+       0.0770870999620646,
+       0.07557704398564269
+      ],
+      "best_level": "2",
+      "spread": 0.0015100559764219118,
+      "SS": 0.00012326408742755745,
+      "df": 2,
+      "F": 0.5413503127379146,
+      "p": 0.5827567172852695,
+      "share_of_SS_config": 0.07346836205636827
+     },
+     "dropout": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "0.0",
+       "0.1",
+       "0.2"
+      ],
+      "level_means": [
+       0.07714833955035172,
+       0.07580356458060615,
+       0.07600189215687078
+      ],
+      "best_level": "0.0",
+      "spread": 0.0013447749697455685,
+      "SS": 0.00011383542622009555,
+      "df": 2,
+      "F": 0.49994158778094683,
+      "p": 0.6072727415303429,
+      "share_of_SS_config": 0.0678486531066407
+     }
+    },
+    "grid_axes": {
+     "hidden_dim": [
+      "64",
+      "128",
+      "256"
+     ],
+     "num_blocks": [
+      "1",
+      "2",
+      "3"
+     ],
+     "dropout": [
+      "0.0",
+      "0.1",
+      "0.2"
+     ]
+    }
    },
    "anova_peak_epoch_manifest": {
     "a": 27,
@@ -171,7 +267,167 @@
     "sigma_c_raw": -7.797999029740358e-07,
     "within_cell_variation_explained_by_seed_identity": 0.3066061308753263,
     "config_mean_sd": 0.0006348825294905842,
-    "se_config_mean": 0.001087600905307824
+    "se_config_mean": 0.001087600905307824,
+    "gm": 0.08529349109215935,
+    "SS_config": 0.0001257596577907371,
+    "SS_tot": 0.07411589915657808,
+    "df_res": 214,
+    "df_config": 26,
+    "axis_main_effects": {
+     "hidden_dim": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "64",
+       "128",
+       "256"
+      ],
+      "level_means": [
+       0.08486046204735731,
+       0.08572908565425,
+       0.08529092557487074
+      ],
+      "best_level": "128",
+      "spread": 0.0008686236068926878,
+      "SS": 4.0744442668759404e-05,
+      "df": 2,
+      "F": 1.4352184842854083,
+      "p": 0.24034540010105324,
+      "share_of_SS_config": 0.32398658985346296
+     },
+     "num_blocks": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "1",
+       "2",
+       "3"
+      ],
+      "level_means": [
+       0.08496950571071621,
+       0.08532261208421492,
+       0.08558835548154696
+      ],
+      "best_level": "3",
+      "spread": 0.0006188497708307511,
+      "SS": 2.0818033311177313e-05,
+      "df": 2,
+      "F": 0.7333129196924855,
+      "p": 0.4815180787969304,
+      "share_of_SS_config": 0.16553824713660023
+     },
+     "dropout": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "0.0",
+       "0.1",
+       "0.2"
+      ],
+      "level_means": [
+       0.08518197236311302,
+       0.08547983649311462,
+       0.08521866442025045
+      ],
+      "best_level": "0.1",
+      "spread": 0.0002978641300016016,
+      "SS": 5.698087151139289e-06,
+      "df": 2,
+      "F": 0.2007144893567223,
+      "p": 0.8182998287855392,
+      "share_of_SS_config": 0.04530934046131751
+     }
+    },
+    "grid_axes": {
+     "hidden_dim": [
+      "64",
+      "128",
+      "256"
+     ],
+     "num_blocks": [
+      "1",
+      "2",
+      "3"
+     ],
+     "dropout": [
+      "0.0",
+      "0.1",
+      "0.2"
+     ]
+    }
+   },
+   "seed_cancellation": {
+    "pooled_seed_swing": 0.0042599866935749825,
+    "within_fold_seed_swings": [
+     0.022595728796990698,
+     0.013462520231714153,
+     0.0071006252261990865,
+     0.016033728028982022
+    ],
+    "mean_within_fold_swing": 0.01479815057097149,
+    "cancellation_ratio_pooled_over_mean_within": 0.28787291176314317,
+    "n_distinct_seed_orderings": 3,
+    "seed_orderings_by_fold": [
+     [
+      2,
+      1,
+      0
+     ],
+     [
+      2,
+      1,
+      0
+     ],
+     [
+      0,
+      2,
+      1
+     ],
+     [
+      0,
+      1,
+      2
+     ]
+    ],
+    "seed_labels": [
+     "20260801",
+     "20260802",
+     "20260803"
+    ],
+    "reading": "ratio 1.0 means pooling cancels nothing, so the seed main effect survives pooling intact and cannot collapse to ~1%. Measured on the three carriers §BO.3 relied on, whose seed ordering DOES flip between folds, the ratio is 0.667 (M0-base), 0.673 (M0-refined) and 0.288 (M1) -- so partial cancellation plus a much smaller pooled swing is what drove their seed share to ~1%. M2 is the counterexample to §BO.3's reasoning: it is a multi-fold carrier whose ordering does NOT flip (1 distinct ordering across both folds, 20260803>20260802>20260801 in each), so nothing cancels.",
+    "cancellation_ratio_other_carriers_for_contrast": {
+     "M0-base": {
+      "pooled": 0.00431,
+      "mean_within_fold": 0.00645,
+      "ratio": 0.667,
+      "distinct_orderings": 4,
+      "seed_share_pct": 0.99
+     },
+     "M0-refined": {
+      "pooled": 0.00444,
+      "mean_within_fold": 0.0066,
+      "ratio": 0.673,
+      "distinct_orderings": 3,
+      "seed_share_pct": 1.06
+     },
+     "M1": {
+      "pooled": 0.00426,
+      "mean_within_fold": 0.0148,
+      "ratio": 0.288,
+      "distinct_orderings": 3,
+      "seed_share_pct": 0.88
+     },
+     "note": "within-fold swings for these three are transcribed from §BO.3's published table; M2's are computed live in this run"
+    }
    }
   },
   "M2": {
@@ -261,7 +517,120 @@
     "sigma_c_raw": 2.8508700819286195e-05,
     "within_cell_variation_explained_by_seed_identity": 0.7989664042658913,
     "config_mean_sd": 0.005595147595513703,
-    "se_config_mean": 0.0016724161552366594
+    "se_config_mean": 0.0016724161552366594,
+    "gm": 0.06772896785401034,
+    "SS_config": 0.004320183372950421,
+    "SS_tot": 0.04685806448284175,
+    "df_res": 94,
+    "df_config": 23,
+    "axis_main_effects": {
+     "family": {
+      "level_indices": [
+       0,
+       1
+      ],
+      "levels": [
+       "GRU",
+       "TCN"
+      ],
+      "level_means": [
+       0.06498322915501592,
+       0.07047470655300475
+      ],
+      "best_level": "TCN",
+      "spread": 0.005491477397988831,
+      "SS": 0.0010856276644543984,
+      "df": 1,
+      "F": 64.69056482909505,
+      "p": 2.5932040180845704e-12,
+      "share_of_SS_config": 0.2512920334011149
+     },
+     "hidden_dim": {
+      "level_indices": [
+       0,
+       1
+      ],
+      "levels": [
+       "64",
+       "128"
+      ],
+      "level_means": [
+       0.07047092075283763,
+       0.064987014955183
+      ],
+      "best_level": "64",
+      "spread": 0.005483905797654634,
+      "SS": 0.001082636020711804,
+      "df": 1,
+      "F": 64.51229825592962,
+      "p": 2.736009534563952e-12,
+      "share_of_SS_config": 0.25059955266955014
+     },
+     "dropout": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "0.0",
+       "0.1",
+       "0.2"
+      ],
+      "level_means": [
+       0.0674148431205679,
+       0.0673741687306605,
+       0.06839789171080256
+      ],
+      "best_level": "0.2",
+      "spread": 0.0010237229801420555,
+      "SS": 3.2256762829241754e-05,
+      "df": 2,
+      "F": 0.9610607187458324,
+      "p": 0.3862128207745088,
+      "share_of_SS_config": 0.007466526312565375
+     },
+     "learning_rate": {
+      "level_indices": [
+       0,
+       1
+      ],
+      "levels": [
+       "0.0003",
+       "0.001"
+      ],
+      "level_means": [
+       0.07045255676221074,
+       0.0650053789458099
+      ],
+      "best_level": "0.0003",
+      "spread": 0.005447177816400833,
+      "SS": 0.0010681828618856167,
+      "df": 1,
+      "F": 63.651060984032576,
+      "p": 3.547928699316137e-12,
+      "share_of_SS_config": 0.24725405606015122
+     }
+    },
+    "grid_axes": {
+     "family": [
+      "GRU",
+      "TCN"
+     ],
+     "hidden_dim": [
+      "64",
+      "128"
+     ],
+     "dropout": [
+      "0.0",
+      "0.1",
+      "0.2"
+     ],
+     "learning_rate": [
+      "0.0003",
+      "0.001"
+     ]
+    }
    },
    "anova_peak_epoch_manifest": {
     "a": 24,
@@ -275,7 +644,172 @@
     "sigma_c_raw": 9.325418240950063e-07,
     "within_cell_variation_explained_by_seed_identity": 0.7581967720183327,
     "config_mean_sd": 0.001924875454684192,
-    "se_config_mean": 0.001665113717423128
+    "se_config_mean": 0.001665113717423128,
+    "gm": 0.07489756407502263,
+    "SS_config": 0.0005113100812143031,
+    "SS_tot": 0.049835519027244424,
+    "df_res": 94,
+    "df_config": 23,
+    "axis_main_effects": {
+     "family": {
+      "level_indices": [
+       0,
+       1
+      ],
+      "levels": [
+       "GRU",
+       "TCN"
+      ],
+      "level_means": [
+       0.07376266815793323,
+       0.07603245999211206
+      ],
+      "best_level": "TCN",
+      "spread": 0.0022697918341788303,
+      "SS": 0.00018547037893817638,
+      "df": 1,
+      "F": 11.148989634822788,
+      "p": 0.0012064231389422577,
+      "share_of_SS_config": 0.36273561925027054
+     },
+     "hidden_dim": {
+      "level_indices": [
+       0,
+       1
+      ],
+      "levels": [
+       "64",
+       "128"
+      ],
+      "level_means": [
+       0.075935541704756,
+       0.07385958644528928
+      ],
+      "best_level": "64",
+      "spread": 0.0020759552594667163,
+      "SS": 0.00015514524861507076,
+      "df": 1,
+      "F": 9.326086346531921,
+      "p": 0.0029387030282677687,
+      "share_of_SS_config": 0.3034269307708905
+     },
+     "dropout": {
+      "level_indices": [
+       0,
+       1,
+       2
+      ],
+      "levels": [
+       "0.0",
+       "0.1",
+       "0.2"
+      ],
+      "level_means": [
+       0.0744770533139363,
+       0.07482752087843048,
+       0.07538811803270112
+      ],
+      "best_level": "0.2",
+      "spread": 0.0009110647187648285,
+      "SS": 2.027416967866988e-05,
+      "df": 2,
+      "F": 0.6093601277362857,
+      "p": 0.5458321696171895,
+      "share_of_SS_config": 0.03965141784515776
+     },
+     "learning_rate": {
+      "level_indices": [
+       0,
+       1
+      ],
+      "levels": [
+       "0.0003",
+       "0.001"
+      ],
+      "level_means": [
+       0.07545365594791201,
+       0.07434147220213326
+      ],
+      "best_level": "0.0003",
+      "spread": 0.001112183745778747,
+      "SS": 4.453029663748e-05,
+      "df": 1,
+      "F": 2.676803802791271,
+      "p": 0.10516400594144469,
+      "share_of_SS_config": 0.08709058998352942
+     }
+    },
+    "grid_axes": {
+     "family": [
+      "GRU",
+      "TCN"
+     ],
+     "hidden_dim": [
+      "64",
+      "128"
+     ],
+     "dropout": [
+      "0.0",
+      "0.1",
+      "0.2"
+     ],
+     "learning_rate": [
+      "0.0003",
+      "0.001"
+     ]
+    }
+   },
+   "seed_cancellation": {
+    "pooled_seed_swing": 0.015686965777513932,
+    "within_fold_seed_swings": [
+     0.01990110889150061,
+     0.011472822663527213
+    ],
+    "mean_within_fold_swing": 0.01568696577751391,
+    "cancellation_ratio_pooled_over_mean_within": 1.0000000000000013,
+    "n_distinct_seed_orderings": 1,
+    "seed_orderings_by_fold": [
+     [
+      2,
+      1,
+      0
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "seed_labels": [
+     "20260801",
+     "20260802",
+     "20260803"
+    ],
+    "reading": "ratio 1.0 means pooling cancels nothing, so the seed main effect survives pooling intact and cannot collapse to ~1%. Measured on the three carriers §BO.3 relied on, whose seed ordering DOES flip between folds, the ratio is 0.667 (M0-base), 0.673 (M0-refined) and 0.288 (M1) -- so partial cancellation plus a much smaller pooled swing is what drove their seed share to ~1%. M2 is the counterexample to §BO.3's reasoning: it is a multi-fold carrier whose ordering does NOT flip (1 distinct ordering across both folds, 20260803>20260802>20260801 in each), so nothing cancels.",
+    "cancellation_ratio_other_carriers_for_contrast": {
+     "M0-base": {
+      "pooled": 0.00431,
+      "mean_within_fold": 0.00645,
+      "ratio": 0.667,
+      "distinct_orderings": 4,
+      "seed_share_pct": 0.99
+     },
+     "M0-refined": {
+      "pooled": 0.00444,
+      "mean_within_fold": 0.0066,
+      "ratio": 0.673,
+      "distinct_orderings": 3,
+      "seed_share_pct": 1.06
+     },
+     "M1": {
+      "pooled": 0.00426,
+      "mean_within_fold": 0.0148,
+      "ratio": 0.288,
+      "distinct_orderings": 3,
+      "seed_share_pct": 0.88
+     },
+     "note": "within-fold swings for these three are transcribed from §BO.3's published table; M2's are computed live in this run"
+    }
    }
   }
  },
@@ -287,5 +821,5 @@
  "weights_loaded": false,
  "training_performed": false,
  "repository_module_imported_or_executed": false,
- "generated_at_local": "2026-09-18T13:54:34"
+ "generated_at_local": "2026-09-18T14:35:21"
 }

@@ -134,7 +134,46 @@ def decompose(Y: np.ndarray) -> dict:
             "sigma_c_raw": float((SS_cfg / df_cfg - MS_res) / (b * c)),
             "within_cell_variation_explained_by_seed_identity": SS_seed / SS_within,
             "config_mean_sd": float(m_cfg.std(ddof=1)),
-            "se_config_mean": float(math.sqrt(MS_res / (b * c)))}
+            "se_config_mean": float(math.sqrt(MS_res / (b * c))),
+            "gm": gm, "SS_config": SS_cfg, "SS_tot": SS_tot, "df_res": df_res,
+            "df_config": df_cfg}
+
+
+def axis_effects(Y: np.ndarray, axes_idx: dict, dec: dict) -> dict:
+    """Orthogonal per-axis main-effect SS on a given metric tensor.
+
+    Exact because every grid here is a balanced full factorial. Run on BOTH the final-epoch and the
+    peak-epoch tensor so §CA.5's "the config effect mostly vanishes on the shipped model's metric" can
+    be pushed down to axis level: an axis significant on the final metric but not on the peak one is an
+    axis whose apparent answer was an artefact of scoring the wrong model state.
+    """
+    a, b, c = Y.shape
+    out = {}
+    for name, spec in axes_idx.items():
+        idx = np.asarray(spec["idx"])
+        values = spec["values"]
+        levels = sorted(set(idx.tolist()))
+        L = len(levels)
+        if L < 2:
+            continue
+        counts = np.array([(idx == t).sum() for t in levels])
+        assert (counts == counts[0]).all(), f"{name}: grid is not a full factorial on this axis"
+        n_obs_per_level = int(counts[0]) * b * c
+        assert n_obs_per_level * L == Y.size, f"{name}: unbalanced"
+        lvl_means = np.array([Y[idx == t].mean() for t in levels])
+        SS = float(n_obs_per_level * ((lvl_means - dec["gm"]) ** 2).sum())
+        df = L - 1
+        F = (SS / df) / (dec["resid_sd"] ** 2)
+        best = int(np.argmax(lvl_means))
+        out[name] = {"level_indices": [int(t) for t in levels],
+                     "levels": [str(values[t]) for t in levels],
+                     "level_means": [float(v) for v in lvl_means],
+                     "best_level": str(values[levels[best]]),
+                     "spread": float(lvl_means.max() - lvl_means.min()),
+                     "SS": SS, "df": df, "F": float(F),
+                     "p": float(stats.f.sf(F, df, dec["df_res"])),
+                     "share_of_SS_config": SS / dec["SS_config"] if dec["SS_config"] > 0 else None}
+    return out
 
 
 def main() -> None:
@@ -239,7 +278,77 @@ def main() -> None:
                 if not ok or np.isnan(Y).any():
                     entry[name] = {"skipped": "incomplete tensor"}
                     continue
-                entry[name] = decompose(Y)
+                dec = decompose(Y)
+                # axis level indices, from the config payloads the search records carry
+                proto = cfg_of.get((folds[0], cfgs[0])) or {}
+                axes_idx = {}
+                for ax in proto:
+                    vals = sorted({(cfg_of.get((folds[0], ci)) or {}).get(ax) for ci in cfgs},
+                                  key=lambda v: (isinstance(v, str), v))
+                    if len(vals) < 2:
+                        continue
+                    axes_idx[ax] = {
+                        "values": vals,
+                        "idx": [vals.index((cfg_of.get((folds[0], ci)) or {}).get(ax)) for ci in cfgs],
+                    }
+                dec["axis_main_effects"] = axis_effects(Y, axes_idx, dec)
+                dec["grid_axes"] = {k: [str(x) for x in sorted(
+                    {(cfg_of.get((folds[0], ci)) or {}).get(k) for ci in cfgs},
+                    key=lambda v: (isinstance(v, str), v))] for k in axes_idx}
+                entry[name] = dec
+
+        # ---- the cancellation ratio that decides whether pooling folds can rescue a seed effect.
+        # §BO.3 predicted M2's seed share would collapse to ~1% once more folds landed, on the
+        # reasoning that every multi-fold carrier's seed direction flips between folds and the flips
+        # cancel in the pooled main effect. The ratio pooled/mean(within-fold) measures that
+        # cancellation directly: ~0.2 for the three carriers whose ordering flips, and it should stay
+        # near 1.0 for a carrier whose ordering does not.
+        if len(folds) > 1:
+            Yf = np.full((len(cfgs), len(folds), len(seeds)), np.nan)
+            lookup = {(k[0], k[1], k[2]): (p, r) for k, p, r in pairs}
+            for i, ci in enumerate(cfgs):
+                for j, f in enumerate(folds):
+                    for kk, s in enumerate(seeds):
+                        v = lookup.get((f, ci, s))
+                        if v is not None:
+                            Yf[i, j, kk] = v[1]
+            if not np.isnan(Yf).any():
+                within = []
+                orderings = []
+                for j in range(Yf.shape[1]):
+                    sm = Yf[:, j, :].mean(axis=0)
+                    within.append(float(sm.max() - sm.min()))
+                    orderings.append(tuple(int(x) for x in np.argsort(-sm)))
+                pooled = Yf.mean(axis=(0, 1))
+                entry["seed_cancellation"] = {
+                    "pooled_seed_swing": float(pooled.max() - pooled.min()),
+                    "within_fold_seed_swings": within,
+                    "mean_within_fold_swing": float(np.mean(within)),
+                    "cancellation_ratio_pooled_over_mean_within": float(
+                        (pooled.max() - pooled.min()) / np.mean(within)),
+                    "n_distinct_seed_orderings": len(set(orderings)),
+                    "seed_orderings_by_fold": [list(o) for o in orderings],
+                    "seed_labels": seeds,
+                    "reading": ("ratio 1.0 means pooling cancels nothing, so the seed main effect "
+                                "survives pooling intact and cannot collapse to ~1%. Measured on the "
+                                "three carriers §BO.3 relied on, whose seed ordering DOES flip between "
+                                "folds, the ratio is 0.667 (M0-base), 0.673 (M0-refined) and 0.288 "
+                                "(M1) -- so partial cancellation plus a much smaller pooled swing is "
+                                "what drove their seed share to ~1%. M2 is the counterexample to "
+                                "§BO.3's reasoning: it is a multi-fold carrier whose ordering does NOT "
+                                "flip (1 distinct ordering across both folds, 20260803>20260802>"
+                                "20260801 in each), so nothing cancels."),
+                    "cancellation_ratio_other_carriers_for_contrast": {
+                        "M0-base": {"pooled": 0.00431, "mean_within_fold": 0.00645, "ratio": 0.667,
+                                    "distinct_orderings": 4, "seed_share_pct": 0.99},
+                        "M0-refined": {"pooled": 0.00444, "mean_within_fold": 0.00660, "ratio": 0.673,
+                                       "distinct_orderings": 3, "seed_share_pct": 1.06},
+                        "M1": {"pooled": 0.00426, "mean_within_fold": 0.01480, "ratio": 0.288,
+                               "distinct_orderings": 3, "seed_share_pct": 0.88},
+                        "note": ("within-fold swings for these three are transcribed from §BO.3's "
+                                 "published table; M2's are computed live in this run"),
+                    },
+                }
         doc["per_carrier"][label] = entry
 
     doc.update({"read_only": True, "database_access": False, "network_or_vendor_call": False,
@@ -284,6 +393,16 @@ def main() -> None:
                   f"sigma_c={a['sigma_c']:.6f} (raw {a['sigma_c_raw']:+.3e}) "
                   f"seed_explains={a['within_cell_variation_explained_by_seed_identity']*100:.1f}% "
                   f"cfg_mean_sd={a['config_mean_sd']:.6f} se={a['se_config_mean']:.6f}")
+            for ax, v in a.get("axis_main_effects", {}).items():
+                print(f"      axis {ax:14s} levels={v['levels']} best={v['best_level']} "
+                      f"spread={v['spread']:.5f} F={v['F']:8.3f} p={v['p']:.3e} "
+                      f"share_of_SS_config={v['share_of_SS_config']*100:6.2f}%")
+        sc = e.get("seed_cancellation")
+        if sc:
+            print(f"  seed cancellation: pooled swing {sc['pooled_seed_swing']:.5f} vs mean within-fold "
+                  f"{sc['mean_within_fold_swing']:.5f} -> ratio "
+                  f"{sc['cancellation_ratio_pooled_over_mean_within']:.3f}; distinct orderings "
+                  f"{sc['n_distinct_seed_orderings']} {sc['seed_orderings_by_fold']}")
     print("\nwrote", OUT)
 
 
