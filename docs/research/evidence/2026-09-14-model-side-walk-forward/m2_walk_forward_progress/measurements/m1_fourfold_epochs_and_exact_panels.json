@@ -1,0 +1,529 @@
+{
+ "question": "what do M1's four folds -- run on the SAME panels and the SAME config set as M2's two -- say about §CI's projected F3/F4 panel sizes and about the growth premise behind its scenario family?",
+ "generated_at_local": "2026-09-18T19:35:28",
+ "folds": {
+  "F1": {
+   "train_years": "2017-2020",
+   "validation_year": 2021,
+   "test_year": 2022,
+   "dataset_id": "226a8dfc497c2de6…",
+   "manifest_mtime": "2026-09-12T02:11",
+   "metadata_keys": [
+    "data_versions",
+    "factor_order",
+    "fold_id"
+   ],
+   "n_factor_order": 15,
+   "n_data_version_entries": 446,
+   "data_version_tables": [
+    "factor_daily",
+    "label_daily",
+    "universe_daily"
+   ]
+  },
+  "F2": {
+   "train_years": "2018-2021",
+   "validation_year": 2022,
+   "test_year": 2023,
+   "dataset_id": "eb9bba1b5a0bd66d…",
+   "manifest_mtime": "2026-09-12T10:07",
+   "metadata_keys": [
+    "data_versions",
+    "factor_order",
+    "fold_id"
+   ],
+   "n_factor_order": 15,
+   "n_data_version_entries": 446,
+   "data_version_tables": [
+    "factor_daily",
+    "label_daily",
+    "universe_daily"
+   ]
+  },
+  "F3": {
+   "train_years": "2019-2022",
+   "validation_year": 2023,
+   "test_year": 2024,
+   "dataset_id": "9766e69f342511c5…",
+   "manifest_mtime": "2026-09-12T21:12",
+   "metadata_keys": [
+    "data_versions",
+    "factor_order",
+    "fold_id"
+   ],
+   "n_factor_order": 15,
+   "n_data_version_entries": 446,
+   "data_version_tables": [
+    "factor_daily",
+    "label_daily",
+    "universe_daily"
+   ]
+  },
+  "F4": {
+   "train_years": "2020-2023",
+   "validation_year": 2024,
+   "test_year": 2025,
+   "dataset_id": "6f9478d7645c8c74…",
+   "manifest_mtime": "2026-09-13T08:28",
+   "metadata_keys": [
+    "data_versions",
+    "factor_order",
+    "fold_id"
+   ],
+   "n_factor_order": 15,
+   "n_data_version_entries": 446,
+   "data_version_tables": [
+    "factor_daily",
+    "label_daily",
+    "universe_daily"
+   ]
+  }
+ },
+ "panel_rows": {
+  "F1": {
+   "train": 2296573,
+   "validation": 696906,
+   "test": 804575,
+   "trainval": 2993479,
+   "manifest_total": 3798054,
+   "footer_total": 3798054,
+   "manifest_agrees_with_footers": true,
+   "trainval_over_test": 3.7206
+  },
+  "F2": {
+   "train": 2539884,
+   "validation": 783477,
+   "test": 882426,
+   "trainval": 3323361,
+   "manifest_total": 4205787,
+   "footer_total": 4205787,
+   "manifest_agrees_with_footers": true,
+   "trainval_over_test": 3.7662
+  },
+  "F3": {
+   "train": 2790995,
+   "validation": 859748,
+   "test": 932167,
+   "trainval": 3650743,
+   "manifest_total": 4582910,
+   "footer_total": 4582910,
+   "manifest_agrees_with_footers": true,
+   "trainval_over_test": 3.9164
+  },
+  "F4": {
+   "train": 3046399,
+   "validation": 908649,
+   "test": 938594,
+   "trainval": 3955048,
+   "manifest_total": 4893642,
+   "footer_total": 4893642,
+   "manifest_agrees_with_footers": true,
+   "trainval_over_test": 4.2138
+  }
+ },
+ "finding_1_exact_panels_versus_CI_projection": {
+  "per_fold": {
+   "F1": {
+    "ci_published_trainval": 2993479,
+    "measured_trainval": 2993479,
+    "delta": 0,
+    "ci_error_pct": 0.0,
+    "ratio_measured_over_published": 1.0,
+    "ci_cited_test_rows": 804575,
+    "measured_test_rows": 804575,
+    "test_rows_match_what_ci_cited": true,
+    "trainval_over_test_ci_assumed": 3.7206,
+    "trainval_over_test_measured": 3.7206
+   },
+   "F2": {
+    "ci_published_trainval": 3323361,
+    "measured_trainval": 3323361,
+    "delta": 0,
+    "ci_error_pct": 0.0,
+    "ratio_measured_over_published": 1.0,
+    "ci_cited_test_rows": 882426,
+    "measured_test_rows": 882426,
+    "test_rows_match_what_ci_cited": true,
+    "trainval_over_test_ci_assumed": 3.7662,
+    "trainval_over_test_measured": 3.7662
+   },
+   "F3": {
+    "ci_published_trainval": 3595693,
+    "measured_trainval": 3650743,
+    "delta": 55050,
+    "ci_error_pct": -1.508,
+    "ratio_measured_over_published": 1.0153,
+    "ci_cited_test_rows": 932167,
+    "measured_test_rows": 932167,
+    "test_rows_match_what_ci_cited": true,
+    "trainval_over_test_ci_assumed": 3.8573,
+    "trainval_over_test_measured": 3.9164
+   },
+   "F4": {
+    "ci_published_trainval": 3663277,
+    "measured_trainval": 3955048,
+    "delta": 291771,
+    "ci_error_pct": -7.377,
+    "ratio_measured_over_published": 1.0796,
+    "ci_cited_test_rows": 938594,
+    "measured_test_rows": 938594,
+    "test_rows_match_what_ci_cited": true,
+    "trainval_over_test_ci_assumed": 3.9029,
+    "trainval_over_test_measured": 4.2138
+   }
+  },
+  "the_decisive_fact": "§CI cited the F3/F4 TEST counts (932,167 / 938,594) as measured, and they match these datasets' footers exactly -- so the parquet files it used were M1's materialised F3/F4 datasets, whose train and validation footers are in the same directories. The train+validation totals were nevertheless extrapolated from a trainval/test ratio trend instead of read. Nothing new was needed to get them exactly.",
+  "worst_fold": "F4",
+  "n_folds_where_test_matched": 4
+ },
+ "finding_2_four_fold_epoch_pattern": {
+  "M1_epochs_per_run_by_fold": {
+   "F1": 20.1235,
+   "F2": 23.2716,
+   "F3": 19.0864,
+   "F4": 16.963
+  },
+  "M1_peak_mean_by_fold": {
+   "F1": 10.1235,
+   "F2": 13.2716,
+   "F3": 9.0864,
+   "F4": 6.963
+  },
+  "M1_peak_max_by_fold": {
+   "F1": 19,
+   "F2": 62,
+   "F3": 33,
+   "F4": 20
+  },
+  "M2_epochs_per_run_by_fold": {
+   "F1": 17.4861,
+   "F2": 28.8056
+  },
+  "panel_rows_by_fold": {
+   "F1": 2993479,
+   "F2": 3323361,
+   "F3": 3650743,
+   "F4": 3955048
+  },
+  "panel_row_ratios_fold_over_previous": {
+   "F2_over_F1": 1.1102,
+   "F3_over_F2": 1.0985,
+   "F4_over_F3": 1.0834
+  },
+  "M1_epoch_ratios_fold_over_previous": {
+   "F2_over_F1": 1.1564,
+   "F3_over_F2": 0.8202,
+   "F4_over_F3": 0.8887
+  },
+  "M2_epoch_ratio_F2_over_F1": 1.6473,
+  "is_monotone_increasing_in_fold_index": false,
+  "argmax_fold": "F2",
+  "argmin_fold": "F4",
+  "last_fold_vs_first": 0.8429,
+  "largest_panel_fold": "F4",
+  "spearman_panel_rows_vs_M1_peak_mean": {
+   "rho": -0.8,
+   "p": 0.2,
+   "n": 4,
+   "note": "n=4 cannot make anything significant; this is reported so that nobody upgrades it into a claim. The finding is the SHAPE (non-monotone, peak at F2, decline after), not the correlation."
+  },
+  "config_set_fold_invariant": {
+   "M1_identical_across_four_folds": true,
+   "M1_n_configs": 27,
+   "M2_identical_across_two_folds": true,
+   "M2_n_configs": 24,
+   "why_it_matters": "with the config_hash set byte-identical across folds, a difference in epochs/run between folds cannot be a config-mix effect; it is a fold effect. This is what licenses reading M1's four-point pattern as evidence about folds rather than about which configs were searched."
+  },
+  "epochs_run_uncorrelated_with_validation_signal": {
+   "M1_mean_ensemble_validation_rank_ic_by_fold": {
+    "F1": 0.05134,
+    "F2": 0.090889,
+    "F3": 0.081581,
+    "F4": 0.098265
+   },
+   "M1_max_ensemble_validation_rank_ic_by_fold": {
+    "F1": 0.060023,
+    "F2": 0.094376,
+    "F3": 0.085111,
+    "F4": 0.101731
+   },
+   "spearman_mean_ic_vs_epochs": {
+    "rho": -0.4,
+    "p": 0.6
+   },
+   "spearman_max_ic_vs_epochs": {
+    "rho": -0.4,
+    "p": 0.6
+   },
+   "reading": "F4 has the HIGHEST validation IC (0.098265 mean) and the LOWEST epochs/run (16.9630), so a stronger validation signal is not what makes runs longer. Whatever drives the fold pattern, it is not 'the model needs more epochs when there is more to learn'."
+  },
+  "paired_direction_M2_F1_to_F2": {
+   "n_pairs": 72,
+   "increased": 50,
+   "decreased": 20,
+   "equal": 2,
+   "F1_mean": 17.4861,
+   "F2_mean": 28.8056,
+   "F2_max_run_share_of_the_rise_pct": 6.5,
+   "reading": "M2's F1->F2 rise is not one outlier: over 72 (config, seed) pairs, 50 rose and 20 fell, and dropping the single largest peak (71) still leaves the ratio at 2.41x instead of 2.51x. So the rise §CI observed is real and broad -- the question is only whether it continues into F3/F4, and M1's four folds are evidence that it need not."
+  }
+ },
+ "panel_identity_M1_equals_M2": {
+  "shared_folds": [
+   {
+    "fold": "F1",
+    "dataset_id": "226a8dfc497c2de6…",
+    "present_in_both_workspaces": true,
+    "metadata_identical": true,
+    "shard_hashes_identical": true,
+    "split_content_hashes_identical": true,
+    "row_count_identical": true,
+    "m1_manifest_mtime": "2026-09-12T02:11",
+    "m2_manifest_mtime": "2026-09-13T19:00",
+    "gap_days": 1.7
+   },
+   {
+    "fold": "F2",
+    "dataset_id": "eb9bba1b5a0bd66d…",
+    "present_in_both_workspaces": true,
+    "metadata_identical": true,
+    "shard_hashes_identical": true,
+    "split_content_hashes_identical": true,
+    "row_count_identical": true,
+    "m1_manifest_mtime": "2026-09-12T10:07",
+    "m2_manifest_mtime": "2026-09-15T14:28",
+    "gap_days": 3.18
+   }
+  ],
+  "mechanism": "dataset_id IS the content hash (manifest.py:_hash_payload over business_keys, columns+dtypes, canonicalised metadata = {fold_id, factor_order, data_versions}, every row, and split_content_hashes), and publish_fold_dataset (run_real_candidate_training.py:676) puts no family and no model config into that metadata -- so identical ids across two carriers is proof of identical panels, not a coincidence of naming.",
+  "max_proven_no_drift_gap_days": 3.18,
+  "exposure_for_M2_F3_days_at_CI_central_scenario": 19.1,
+  "exposure_for_M2_F4_days_at_CI_central_scenario": 18.6,
+  "LIMIT": "data_versions is per-day (144-151 entries, and for label_daily/universe_daily 145 of 151 are distinct), so a single day's version changing changes the id. The proven no-drift window is this many days; M2's exposure when it materialises F3/F4 is roughly 20 days, several times longer, and that longer window is NOT measured. Every exact row count below is therefore 'measured on M1's datasets', never 'the rows M2 will train on'. If versions drift, M2's F3/F4 panels are different objects and must be re-read."
+ },
+ "cost_model_form_retest": {
+  "M1": {
+   "per_fold": {
+    "F1": {
+     "implied_k": 0.0002894,
+     "grid_span_h": 4.842,
+     "epochs_per_run": 20.1235,
+     "rows": 2993479
+    },
+    "F2": {
+     "implied_k": 0.0003103,
+     "grid_span_h": 6.6663,
+     "epochs_per_run": 23.2716,
+     "rows": 3323361
+    },
+    "F3": {
+     "implied_k": 0.0003493,
+     "grid_span_h": 6.7603,
+     "epochs_per_run": 19.0864,
+     "rows": 3650743
+    },
+    "F4": {
+     "implied_k": 0.0002767,
+     "grid_span_h": 5.157,
+     "epochs_per_run": 16.963,
+     "rows": 3955048
+    }
+   },
+   "n_folds": 4,
+   "k_mean": 0.0003064,
+   "k_spread_max_over_min": 1.2624,
+   "k_sd": 3.18e-05,
+   "spearman_rows_vs_implied_k": {
+    "rho": -0.2,
+    "p": 0.8
+   },
+   "model_family": {
+    "family": "RESIDUAL_MLP",
+    "model_code_version": "residual-mlp-1",
+    "model_status": "WALK_FORWARD_PASSED"
+   }
+  },
+  "M2": {
+   "per_fold": {
+    "F1": {
+     "implied_k": 0.0021666,
+     "grid_span_h": 31.5023,
+     "epochs_per_run": 17.4861,
+     "rows": 2993479
+    },
+    "F2": {
+     "implied_k": 0.00222,
+     "grid_span_h": 59.0333,
+     "epochs_per_run": 28.8056,
+     "rows": 3323361
+    }
+   },
+   "n_folds": 2,
+   "k_mean": 0.0021933,
+   "k_spread_max_over_min": 1.0246,
+   "k_sd": 3.78e-05,
+   "spearman_rows_vs_implied_k": null,
+   "model_family": {
+    "family": "TEMPORAL_TCN",
+    "model_code_version": "temporal-tcn-1",
+    "model_status": "WALK_FORWARD_PASSED"
+   }
+  },
+  "comparison": {
+   "M1_k_over_M2_k": 0.1397,
+   "reading": "k is family-specific and must not be transferred: M1 is RESIDUAL_MLP, M2 is TCN with history_length 20, so M2 does far more work per row. What transfers is the FORM -- implied k shows no monotone drift against panel rows on M1's four folds (rho -0.20, p 0.80), which is the same test §CI could only run on two points.",
+   "M1_spread_is_wider_and_why": "M1's k spread is max/min 1.2624 against M2's 1.0246. The likely cause is measurement resolution rather than model error: M1's grid spans are 4.8-6.8 h while M2's are 31.5-59.0 h, so the fixed error of an mtime-derived span (it omits the first run's startup and the last run's tail) is a far larger fraction of a smaller quantity. Both spreads are reported; only M2's 2.4% is good enough to price with, which is why the recomputation below keeps §CI's M2 k and changes only its inputs."
+  }
+ },
+ "scenario_recomputation": {
+  "step_0_reproduce_CI_exactly": {
+   "per_scenario": {
+    "optimistic_epochs_flat": {
+     "published_total_h": 166.6,
+     "recomputed_total_h": 166.5,
+     "diff_h": -0.1
+    },
+    "linear_growth_capped": {
+     "published_total_h": 252.0,
+     "recomputed_total_h": 251.9,
+     "diff_h": -0.1
+    },
+    "central_geometric_capped": {
+     "published_total_h": 337.9,
+     "recomputed_total_h": 338.1,
+     "diff_h": 0.2
+    },
+    "pessimistic_all_hit_cap": {
+     "published_total_h": 523.8,
+     "recomputed_total_h": 523.8,
+     "diff_h": 0.0
+    }
+   },
+   "max_abs_diff_h": 0.2,
+   "reading": "reproducing §CI's four published totals to within 0.2 h with its own projected rows is the gate on everything below: it proves this probe runs the same arithmetic, so any change in the recomputed totals is attributable to the changed inputs and not to a different model."
+  },
+  "effect_A_measured_rows_only": {
+   "what_changed": "F3/F4 train+val rows: projected -> measured footers. Epochs unchanged.",
+   "per_scenario": {
+    "optimistic_epochs_flat": {
+     "with_ci_projected_rows_h": 166.5,
+     "with_measured_rows_h": 173.4,
+     "delta_h": 6.9,
+     "delta_pct": 4.14
+    },
+    "linear_growth_capped": {
+     "with_ci_projected_rows_h": 251.9,
+     "with_measured_rows_h": 263.7,
+     "delta_h": 11.8,
+     "delta_pct": 4.68
+    },
+    "central_geometric_capped": {
+     "with_ci_projected_rows_h": 338.1,
+     "with_measured_rows_h": 355.7,
+     "delta_h": 17.6,
+     "delta_pct": 5.21
+    },
+    "pessimistic_all_hit_cap": {
+     "with_ci_projected_rows_h": 523.8,
+     "with_measured_rows_h": 547.8,
+     "delta_h": 24.0,
+     "delta_pct": 4.58
+    }
+   },
+   "range_pct": [
+    4.14,
+    5.21
+   ]
+  },
+  "effect_B_M1_shaped_epochs": {
+   "what_changed": "F3/F4 epochs/run taken from M1's observed fold ratios instead of flat / linear / geometric / capped. Rows are the measured ones.",
+   "M1_fold_ratios_used": {
+    "F3_over_F2": 0.8202,
+    "F4_over_F3": 0.8887
+   },
+   "M2_F2_anchor_epochs_per_run": 28.8056,
+   "implied_M2_F3_epochs_per_run": 23.63,
+   "implied_M2_F4_epochs_per_run": 21.0,
+   "scenario": {
+    "f3_epochs_per_run": 23.63,
+    "f4_epochs_per_run": 21.0,
+    "f3_grid_h": 52.5,
+    "f3_final_h": 7.1,
+    "f4_grid_h": 50.6,
+    "f4_final_h": 6.8,
+    "gaps_and_oos_h": 22.0,
+    "total_remaining_h": 139.0,
+    "total_remaining_days": 5.8
+   },
+   "projected_finish_from_now": "2026-09-24T14:35",
+   "versus_CI_optimistic_bound_h": 166.6,
+   "is_below_CI_optimistic_bound": true,
+   "reading": "§CI's four scenarios are all non-decreasing in fold index, so their optimistic end (166.6 h) is the floor of the family. M1 is a same-panels, same-config-set observation of a pattern that DECREASES after F2, and applying its ratios gives a lower total. So the honest interval is wider on the LOW side than §CI published, not merely on the high side. This does not make the low scenario likely -- M2's own F1->F2 rise was 2.51x, which M1 never showed (M1's was 1.31x) -- it makes it unexcluded."
+  },
+  "combined_interval_h": {
+   "low": 139.0,
+   "high": 547.8,
+   "note": "both ends use measured rows; the low end uses M1's fold ratios and the high end assumes both remaining folds hit the 100-epoch cap, which §CJ shows no published run has done."
+  },
+  "assumptions_carried_unchanged_from_CI": {
+   "k_grid": 0.00219327,
+   "k_final": 0.00020381721864733542,
+   "final_under_prediction_uplift": 1.45,
+   "inter_phase_gap_h": 5.0,
+   "oos_and_report_h": 2.0,
+   "f2_final_remaining_h": 0.0,
+   "why_f2_final_remaining_is_zero": "§CI set it to 0 because 10.0 h had already elapsed against its estimate; this probe keeps that choice so the comparison is not confounded, even though F2's refit is demonstrably still writing checkpoints."
+  }
+ },
+ "negative_controls": {
+  "config_set_identity": {
+   "test": "config_hash map identical across folds",
+   "same_fold_twice_must_be_True": true,
+   "same_carrier_different_fold_is_True_by_design": true,
+   "different_carrier_same_fold_must_be_False": false,
+   "n_configs_M1_F1": 27,
+   "n_configs_M2_F1": 24,
+   "config_hash_intersection_M1F1_M2F1": 0,
+   "verdict": "discriminates: it returns False for M1-F1 vs M2-F1 (27 versus 24 configs, zero shared config hashes), so the True on M1's four folds is not vacuous"
+  },
+  "panel_identity": {
+   "test": "panel identity (dataset_id / metadata / shard hashes / split hashes)",
+   "M1_F1_vs_M1_F2_dataset_id_equal_must_be_False": false,
+   "M1_F1_vs_M1_F2_shard_hashes_equal_must_be_False": false,
+   "M1_F1_vs_M1_F2_metadata_equal_must_be_False": false,
+   "one_day_version_flip_detected_must_be_False": false,
+   "flipped_entry": "factor_daily/2014-01",
+   "n_data_version_entries": 446,
+   "verdict": "panel identity is genuinely version-sensitive: flipping ONE day out of 446 entries breaks metadata equality, which is why the ~20-day exposure before M2 materialises F3/F4 is a real risk and not a formality"
+  },
+  "monotonicity": {
+   "test": "is_monotone_increasing_in_fold_index",
+   "M1_actual_epochs_must_be_False": false,
+   "M1_actual_values": [
+    20.1235,
+    23.2716,
+    19.0864,
+    16.963
+   ],
+   "synthetic_increasing_must_be_True": true,
+   "panel_rows_must_be_True": true,
+   "verdict": "the epochs test says False on the real data while the same predicate says True on the panel rows, so the non-monotonicity is a property of the epochs and not a broken predicate"
+  },
+  "scenario_arithmetic": {
+   "test": "the scenario arithmetic responds to its inputs",
+   "optimistic_total_with_k_plus_5pct_h": 173.8,
+   "ci_published_optimistic_h": 166.6,
+   "delta_pct": 4.3,
+   "verdict": "a 5% change in k moves the total by ~4%, so the recomputation is not insensitive to its inputs; together with step_0 reproducing §CI to within 0.2 h this bounds the arithmetic to being the same arithmetic"
+  },
+  "ALL_CONTROLS_BEHAVE_AS_EXPECTED": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "parquet_data_loaded": false,
+ "processes_signalled": []
+}
