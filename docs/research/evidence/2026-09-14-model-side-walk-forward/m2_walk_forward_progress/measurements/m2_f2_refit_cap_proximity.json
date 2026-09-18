@@ -1,0 +1,104 @@
+{
+ "question": "has the M2 F2 final-refit run that §CJ excluded as 'still writing' approached the cap, and does that change ledger D13's citable claims about the machine-wide max peak and the location of the cap risk?",
+ "generated_at_local": "2026-09-19T04:41:59",
+ "SNAPSHOT_WARNING": "every exact peak in this file is a live reading that changes minute to minute while the F2 refit runs. The DURABLE claims are the monotone-safe relations under 'durable_conclusions'; the exact numbers under 'snapshot' are NOT stable and must be re-read after the refit early-stops.",
+ "cap_semantics": {
+  "max_epochs_cap": 100,
+  "early_stopping_patience": 10,
+  "ambiguity_threshold_peak": 90,
+  "cap_source": "run_real_candidate_training.py:2940 (args.max_epochs), final fit at :2544",
+  "patience_source": "run_real_candidate_training.py:2086 TORCH_EARLY_STOPPING_PATIENCE=10",
+  "refit_uses_same_cap_as_grid": true,
+  "why_90_is_the_ambiguity_edge": "a run whose peak is 90 could have executed 90 + 10 = 100 epochs, i.e. hit the cap, so 'early-stopped at 90' and 'truncated at 100' are indistinguishable from the checkpoint record alone (§CJ.2)"
+ },
+ "snapshot": {
+  "n_torch_runs_scanned": 486,
+  "machine_wide_max_peak_NOW": 71,
+  "grid_stage_max_peak": 71,
+  "grid_stage_argmax_runs": [
+   "m2_v1/m2-f2-c17-20260802-seed-20260802"
+  ],
+  "CJ_published_grid_max": 71,
+  "runs_in_ambiguity_region_peak_ge_90": 0,
+  "ambiguity_runs": [],
+  "runs_at_or_over_cap_100": 0,
+  "active_runs_last_write_within_window": {
+   "m2_v1/m2-f2-final-20260802-seed-20260802": {
+    "peak": 71,
+    "minutes_since_last_write": 19.5
+   }
+  },
+  "active_window_minutes": 40,
+  "F2_refit_three_seeds": {
+   "20260801": {
+    "peak": 11,
+    "n_checkpoints": 10,
+    "last_write": "2026-09-18T10:48",
+    "active": false
+   },
+   "20260802": {
+    "peak": 71,
+    "n_checkpoints": 35,
+    "last_write": "2026-09-19T04:22",
+    "active": true,
+    "margin_to_ambiguity_90": 19
+   },
+   "20260803": {
+    "peak": 27,
+    "n_checkpoints": 16,
+    "last_write": "2026-09-18T15:37",
+    "active": false
+   }
+  },
+  "peak_by_stage": {
+   "grid": {
+    "n": 468,
+    "max": 71,
+    "mean": 10.872
+   },
+   "refit": {
+    "n": 18,
+    "max": 71
+   }
+  }
+ },
+ "durable_conclusions": {
+  "F2_refit_seed_02_peak_ge_grid_max": true,
+  "F2_refit_seed_02_peak_value_at_read": 71,
+  "grid_max_value": 71,
+  "monotone_safety": "peak only increases for a running fit, so 'seed 20260802 has reached at least the grid-stage max' stays true forever once observed; the exact value above is a snapshot and will only grow",
+  "cap_risk_is_at_the_running_F2_refit_not_F3F4": true,
+  "reason": "§CJ excluded the three F2 refit runs from its '483 completed, 0 truncated, max 71, margin 19'; the one still running has since reached at least the grid max under the same cap, so the forward cap risk D13 attributed to F3/F4 is in fact live at the F2 refit right now",
+  "CJ_483_excluded_the_F2_refit": true,
+  "machine_max_71_no_longer_a_stable_ceiling": true,
+  "D13_corrections": [
+   "the cap forward-risk is located at the RUNNING F2 refit, not at F3/F4",
+   "'machine-wide max peak = 71' was stated over 483 completed runs excluding this refit; the refit has reached at least 71 and is climbing, so re-read the max after it stops",
+   "'0 runs in the ambiguity region (peak >= 90)' holds at this timestamp but is a live quantity for the running refit, not a settled fact"
+  ]
+ },
+ "live_controls": {
+  "active_detector_separates_writing_from_stopped": true,
+  "seed_20260802_active": true,
+  "seed_20260801_stopped": true,
+  "seed_20260803_stopped": true,
+  "ambiguity_detector": {
+   "peak_71_below_threshold": true,
+   "peak_89_below_threshold": true,
+   "peak_90_at_threshold": true,
+   "peak_100_over_cap": true
+  },
+  "ambiguity_detector_all_correct": true,
+  "core_monotone_claim_seed02_ge_gridmax": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false
+}
