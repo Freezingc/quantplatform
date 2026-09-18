@@ -1,0 +1,289 @@
+{
+ "question": "is the seed effect on peak epoch config-specific (channel B, weight init) or config-independent (channel A, the sampler's date order), and with what power can this design answer that?",
+ "generated_at_local": "2026-09-19T00:59:51",
+ "design": {
+  "carrier": "M1 (RESIDUAL_MLP)",
+  "workspace": "m1_full_v1",
+  "n_configs": 27,
+  "n_folds": 4,
+  "n_seeds": 3,
+  "n_observations": 324,
+  "balanced_complete": true,
+  "observations_per_cell": 1,
+  "saturated_no_pure_error": true,
+  "residual_equals_config_x_fold_x_seed_df": 156,
+  "expected_three_way_df": 156
+ },
+ "decomposition": {
+  "fold": {
+   "ss": 1676.6759259259256,
+   "df": 3,
+   "pct_of_SST": 7.1718,
+   "ms": 558.8919753086419,
+   "F": 12.696,
+   "p": 1.8098812714003034e-07
+  },
+  "seed": {
+   "ss": 3807.1851851851843,
+   "df": 2,
+   "pct_of_SST": 16.2848,
+   "ms": 1903.5925925925922,
+   "F": 43.2427,
+   "p": 1.1435160551871032e-15
+  },
+  "config": {
+   "ss": 1454.6666666666665,
+   "df": 26,
+   "pct_of_SST": 6.2222,
+   "ms": 55.94871794871794,
+   "F": 1.271,
+   "p": 0.1862816111803824
+  },
+  "fold_x_seed": {
+   "ss": 3394.3703703703723,
+   "df": 6,
+   "pct_of_SST": 14.519,
+   "ms": 565.7283950617287,
+   "F": 12.8513,
+   "p": 9.021647059502534e-12
+  },
+  "config_x_seed": {
+   "ss": 2161.1481481481505,
+   "df": 52,
+   "pct_of_SST": 9.2441,
+   "ms": 41.56054131054135,
+   "F": 0.9441,
+   "p": 0.5848389551829674
+  },
+  "config_x_fold": {
+   "ss": 4017.407407407408,
+   "df": 78,
+   "pct_of_SST": 17.184,
+   "ms": 51.505223171889845,
+   "F": 1.17,
+   "p": 0.20405359024818268
+  },
+  "residual": {
+   "ss": 6867.296296296292,
+   "df": 156,
+   "pct_of_SST": 29.3741,
+   "ms": 44.02113010446341,
+   "F": null,
+   "p": null
+  }
+ },
+ "grand_mean": 9.861111,
+ "SST": 23378.75,
+ "additivity_error": 0.0,
+ "df_accounted": 323,
+ "df_total": 323,
+ "reproduces_CN_model_B": {
+  "per_shared_term": {
+   "fold": {
+    "CN_published_pct": 7.1718,
+    "recomputed_pct": 7.1718,
+    "matches": true
+   },
+   "seed": {
+    "CN_published_pct": 16.2848,
+    "recomputed_pct": 16.2848,
+    "matches": true
+   },
+   "fold_x_seed": {
+    "CN_published_pct": 14.519,
+    "recomputed_pct": 14.519,
+    "matches": true
+   },
+   "config": {
+    "CN_published_pct": 6.2222,
+    "recomputed_pct": 6.2222,
+    "matches": true
+   },
+   "config_x_fold": {
+    "CN_published_pct": 17.184,
+    "recomputed_pct": 17.184,
+    "matches": true
+   }
+  },
+  "residual_pct_CN": 38.6182,
+  "residual_pct_here": 29.3741,
+  "residual_difference_pct": 9.2441,
+  "residual_df_CN": 208,
+  "residual_df_here": 156,
+  "residual_df_difference": 52,
+  "difference_equals_config_x_seed_term": true,
+  "all_shared_terms_match": true,
+  "reading": "§CN's model B is this model minus the config x seed term, so its residual must exceed this one by exactly that term's SS share and df. It does, to four decimals, and all five shared terms reproduce §CN exactly -- so this is the same decomposition with one more term partitioned out, not a different model."
+ },
+ "config_x_seed_test": {
+  "pct_of_SST": 9.2441,
+  "df": 52,
+  "F": 0.9441,
+  "p": 0.5848389551829674,
+  "MS_interaction": 41.5605,
+  "MS_residual": 44.0211,
+  "F_below_1": true,
+  "MS_interaction_below_MS_residual": true
+ },
+ "power_analysis": {
+  "critical_F_at_alpha_0.05": 1.426,
+  "observed_F": 0.9441,
+  "observed_numerator_chi2": 49.09,
+  "null_mean_numerator_chi2": 52,
+  "null_sd_numerator_chi2": 10.2,
+  "sd_below_null_mean": 0.285,
+  "pure_noise_expected_interaction_ss": 2289.1,
+  "upper_95pct_confidence_bound": {
+   "lambda": 20.01,
+   "interaction_ss": 881.0,
+   "pct_of_SST": 3.7685,
+   "rms_epochs_per_observation": 1.649
+  },
+  "detectable_interaction_sizes": {
+   "50pct": {
+    "lambda": 22.67,
+    "interaction_ss": 998.0,
+    "pct_of_SST": 4.269,
+    "rms_epochs_per_observation": 1.755
+   },
+   "80pct": {
+    "lambda": 37.4,
+    "interaction_ss": 1646.5,
+    "pct_of_SST": 7.0427,
+    "rms_epochs_per_observation": 2.254
+   },
+   "95pct": {
+    "lambda": 53.35,
+    "interaction_ss": 2348.7,
+    "pct_of_SST": 10.0461,
+    "rms_epochs_per_observation": 2.692
+   }
+  },
+  "reading": "the observed interaction SS is below the pure-noise expectation and the numerator chi-square sits within a third of a sd of its null mean, so F = 0.94 is an ordinary null rather than a suspiciously small value",
+  "observed_interaction_ss": 2161.1,
+  "observed_interaction_ss_below_noise_expectation_pct": 5.59
+ },
+ "verdict_on_config_independence": {
+  "seed_main_effect_pct_of_SST": 16.2848,
+  "seed_main_effect_swing_epochs": 8.3519,
+  "config_x_seed_upper_95pct_bound_pct_of_SST": 3.7685,
+  "config_x_seed_upper_95pct_bound_rms_epochs": 1.649,
+  "min_share_of_seed_variance_that_is_config_independent_pct": 76.9,
+  "statement": "at least 76.9% of the seed variance in peak epoch is shared across all 27 configs, and no config-specific component larger than 3.7685% of SST (rms 1.649 epochs) can be present"
+ },
+ "channel_predictions_versus_observed": {
+  "channel_A_sampler_date_order": {
+   "source": "sampler.py:27-32 sorts dates by sha256 of the seed joined to the date; :33-34 rotates by epoch modulo the date count; constructed at torch_loop.py:43 from that fold's training dates",
+   "depends_on": "(seed, that fold's date set) -- identical for every config in a fold",
+   "predicts_seed_main_effect": true,
+   "predicts_fold_x_seed_interaction": true,
+   "predicts_config_x_seed_interaction": false
+  },
+  "channel_B_initial_weights": {
+   "source": "cross_section_search.py:178-179 calls configure_reproducibility(seed), whose torch.manual_seed is at seeds.py:46, then constructs the model",
+   "depends_on": "config, through how much of the seeded RNG stream its parameter count consumes",
+   "predicts_seed_main_effect": false,
+   "predicts_fold_x_seed_interaction": false,
+   "predicts_config_x_seed_interaction": true,
+   "PARTIAL_CAVEAT": "configs sharing an architecture prefix consume the same initial segment of the seeded stream, so two configs differing only in num_blocks draw identical values for their shared first block. Channel B is therefore only PARTLY config-dependent and could contribute some config-independent variance; this probe does not exclude it."
+  },
+  "observed": {
+   "seed_main_effect": "16.2848% (F 43.2427)",
+   "fold_x_seed": "14.519% (F 12.8513, p 9.02e-12)",
+   "config_x_seed": "9.2441% (F 0.9441, p 0.585)",
+   "matches_channel_A_signature": true
+  },
+  "what_is_established": "the seed effect on peak epoch is config-independent to within 3.7685% of SST, so any mechanism must act nearly identically on all 27 configs; of the two channels only the sampler's date order is config-independent BY CONSTRUCTION, which makes it the better-supported candidate",
+  "what_is_NOT_established": "that the sampler IS the mechanism. This probe measures variance structure only; it never runs the sampler, never constructs a model, never counts RNG draws. Channel B is not excluded, for the prefix-sharing reason above. Per ledger B1 no unverified mechanism is asserted."
+ },
+ "injection_control": {
+  "injected_interaction_target_pct_of_original_SST": 10.0,
+  "scale_applied_epochs": 3.216,
+  "expected_injected_ss_units": 2337.9,
+  "interaction_ss_before": 2161.1,
+  "interaction_ss_after": 4234.9,
+  "interaction_ss_increase": 2073.7,
+  "recovered_fraction_of_expected_increase": 0.887,
+  "recovered_pct_of_SST_after": 16.6384,
+  "recovered_F": 1.85,
+  "recovered_p": 0.0020268779438113588,
+  "F_before": 0.9441,
+  "detected_at_alpha_0.05": true,
+  "seed_main_effect_ss_before": 3807.2,
+  "seed_main_effect_ss_after": 3807.2,
+  "seed_main_effect_ss_change_pct": 0.0,
+  "config_main_effect_ss_before": 1454.7,
+  "config_main_effect_ss_after": 1454.7,
+  "config_main_effect_ss_change_pct": 0.0,
+  "reading": "the injection is margin-centred so it must not move the seed or config main effects in SS units; verifying that they stay put is part of the control, because an instrument that leaks injected interaction into a main effect would misattribute variance on the real data too. All comparisons are in absolute SS."
+ },
+ "permutation_calibration": {
+  "per_term": {
+   "config": {
+    "null_mean_F": 1.0226,
+    "null_mean_F_within_15pct_of_1": true,
+    "false_positive_rate_at_alpha_0.05": 0.0533,
+    "fpr_in_expected_band": true,
+    "n_permutations": 300
+   },
+   "config_x_fold": {
+    "null_mean_F": 1.0038,
+    "null_mean_F_within_15pct_of_1": true,
+    "false_positive_rate_at_alpha_0.05": 0.0233,
+    "fpr_in_expected_band": true,
+    "n_permutations": 300
+   },
+   "config_x_seed": {
+    "null_mean_F": 1.0145,
+    "null_mean_F_within_15pct_of_1": true,
+    "false_positive_rate_at_alpha_0.05": 0.0433,
+    "fpr_in_expected_band": true,
+    "n_permutations": 300
+   },
+   "fold": {
+    "null_mean_F": 1.0561,
+    "null_mean_F_within_15pct_of_1": true,
+    "false_positive_rate_at_alpha_0.05": 0.0333,
+    "fpr_in_expected_band": true,
+    "n_permutations": 300
+   },
+   "fold_x_seed": {
+    "null_mean_F": 1.023,
+    "null_mean_F_within_15pct_of_1": true,
+    "false_positive_rate_at_alpha_0.05": 0.0533,
+    "fpr_in_expected_band": true,
+    "n_permutations": 300
+   },
+   "seed": {
+    "null_mean_F": 0.9492,
+    "null_mean_F_within_15pct_of_1": true,
+    "false_positive_rate_at_alpha_0.05": 0.05,
+    "fpr_in_expected_band": true,
+    "n_permutations": 300
+   }
+  },
+  "all_terms_calibrated": true
+ },
+ "controls_pass": {
+  "reproduces_CN_exactly": true,
+  "CN_residual_difference_is_the_new_term": true,
+  "additivity_exact": true,
+  "df_accounted_equals_total": true,
+  "residual_is_the_three_way_interaction": true,
+  "injection_detected": true,
+  "injection_recovered_expected_ss_within_25pct": true,
+  "injection_did_not_move_seed_main_effect_ss": true,
+  "injection_did_not_move_config_main_effect_ss": true,
+  "permutation_calibrated": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false
+}
