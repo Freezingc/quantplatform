@@ -6,7 +6,7 @@
 
 **本表只登记"已发布内容被后续小节推翻或改读"的情况**，不重复各节自己的结论。
 **每条都给出权威小节（authority），即以哪一节为准。**
-**最后更新：2026-09-18 15:05（截至 §CB）。**
+**最后更新：2026-09-18 15:25（截至 §CC）。**
 
 ---
 
@@ -52,10 +52,11 @@
 
 | # | 缺陷 | 证据 | **哪些已发布数字受影响 / 不受影响** | 出处 |
 |---|---|---|---|---|
-| **C1** | **选择度量与发运工件是两个不同的模型状态**：检索记录的 `seed_validation_rank_ic`（以及由它合成的 `ensemble_validation_rank_ic`，即驱动 `argmax` 据以选择的那个量）是用**早停之后的末轮权重**打的分；而保存下来、之后被拿去做 OOS 的 bundle 来自 `checkpoint_ids[-1]`，即**峰值轮**模型。训练器算出了峰值并返回（`TrainingResult.best_validation_rank_ic`），但**非测试代码里只有它自己的字段声明一处引用**；`load_state_dict` 在 `runner.py` / `cross_section_search.py` / `temporal_search.py` 里**零命中**，即最优权重从未被恢复 | `trainer.py:106-119`、`cross_section_search.py:203-208`、`temporal_search.py:374-379`；实测峰值−末轮在 324/324（M1）与 144/144（M2）次运行上全为正 | **受影响**：**"选了哪个配置"**——**M1 四折的胜出配置在两个口径下全部改变，且"按发运模型质量排序"与"驱动实际据以选择的排序"spearman 只有 −0.1422 / +0.1429 / +0.2314 / −0.3394（三折为负）**；M2 的 F1/F2 不受影响（三口径都选 `c16` / `c17`）。**不受影响**：**已发布的 OOS 数字**（OOS 是用发运的 bundle 打的分，即峰值模型，自洽） | **§CA**（§CA.3 表、§CA.6） |
-| **C2** | **修法很小但未实施**：要么在打分前从 `checkpoint_ids[-1]` 恢复权重，要么直接用已返回的 `best_validation_rank_ic` | — | **未改的原因**：这四个文件都在 M2 驱动的导入图里，而 M2 已在关键路径上跑了 4 天 19 小时；按本包一贯的"后果不对称"原则（§BT.1(b)、§BZ.6 同一条）等它跑完 | §CA.6 |
+| **C1** | **选择度量与发运工件是两个不同的模型状态**：检索记录的 `seed_validation_rank_ic`（以及由它合成的 `ensemble_validation_rank_ic`，即驱动 `argmax` 据以选择的那个量）是用**早停之后的末轮权重**打的分；而保存下来、之后被拿去做 OOS 的 bundle 来自 `checkpoint_ids[-1]`，即**峰值轮**模型。训练器算出了峰值并返回（`TrainingResult.best_validation_rank_ic`），但**非测试代码里只有它自己的字段声明一处引用**；`load_state_dict` 在 `runner.py` / `cross_section_search.py` / `temporal_search.py` 里**零命中**，即最优权重从未被恢复 | `trainer.py:106-119`、`cross_section_search.py:203-208`、`temporal_search.py:374-379`；实测峰值−末轮在 324/324（M1）与 144/144（M2）次运行上全为正；**发运权重经哈希实测 = 峰值检查点，15/15 逐字节相同**（M1 全 12 + M2 F1 全 3） | **受影响**：**"选了哪个配置"**——**M1 四折的胜出配置在两个口径下全部改变，且"按发运模型质量排序"与"驱动实际据以选择的排序"spearman 只有 −0.1422 / +0.1429 / +0.2314 / −0.3394（三折为负）**；M2 的 F1/F2 不受影响（三口径都选 `c16` / `c17`）。**不受影响（已实测，非推断）**：**所有已发布的 OOS 数字、G6、G4** —— OOS 链条是 `load_bundle_for_evaluation` 从 `seed-*.pt` 重建模型（`artifact_loader.py:268`、`:284`）再 `_concat_date_scores(loaded.models, test_batches)`（驱动 `:2636`、`:3317`），而其 docstring 自称 test 预测 "provably come from the persisted artifact rather than from training memory" | **§CA.3 + §CC.1 / §CC.2** |
+| **C2** | **修法：只有"在打分前恢复权重"这一条成立；§CA.6 给的第二个选项已撤回**。原 §CA.6 写"要么恢复权重，要么直接用已返回的 `best_validation_rank_ic`"——**第二个选项是错的**：驱动的 argmax 排的是 `ensemble_validation_rank_ic`，而它由 `build_seed_ensemble` 从三个种子的**预测帧**合成（`ensemble.py:33` 调 `combine_seed_percentile_ranks`），`validation_rank_ic` 入参只用于 `seed_mean`/`seed_std`/`worst_seed`（`:34-39`），不参与 `predictions`；而那些预测帧同样来自末轮模型。**只换标量会得到混合体，选择结果不变、缺陷不修好** | `ensemble.py:23-40`；**恢复所需的 API 已存在且有测试覆盖：`CheckpointStore.load()`（`artifacts.py:85-104`，先 `verify()` 校验 sha256 再 `load_state_dict`），但生产代码里从未被调用**（`rg` 到的两处 `.load(` 是 `prediction_store.load`，另一个类） | **需要改的位置共 7 处**，逐处列在 §CC.4 的表里（含 `run_real_candidate_training.py:2477` 那处把 `checkpoint_path` 用 `_` 扔掉的）。**未改的原因**：这些文件都在 M2 驱动的导入图里，M2 已连续跑 4 天 20 小时且正向 F3 过渡；按本包一贯的"后果不对称"原则（§BT.1(b)、§BZ.6、§CA.6 同一条）等它跑完。`deferred-driver-fixes` 工作树（`1dbc36c`，干净）**没有**涉及本缺陷，所以这是一个新的、不与之重叠的延后项 | **§CC.3 / §CC.4**（撤回见 §CA.6 就地标记） |
 | **C3** | **`probe_all_carrier_grid_variance.py` 的输出路径在 artifacts 而不在包内**（`qrv2_research_artifacts/carrier_grid_statistics/all_carrier_grid_variance.json`），而 §BO 引用的是 `b=1` 那一版 | 本节为了拿 `b=2` 数字原样重跑它，**静默覆盖了 §BO 已发布数字所依赖的机读件** | **已处理**：`b=2` 结果另存为包内 `carrier_grid_statistics/measurements/all_carrier_grid_variance_m2_two_folds.json`；artifacts 那份**已还原成 `b=1` 并逐字段核对**（M2 `n_folds=1`、`n_observations=72`、种子 78.82%、配置 17.24%）；包内 `measurements/all_carrier_grid_variance.json` 自始未动。**⚠ M2 的 F3/F4 落盘后再重跑会再次覆盖，届时必须先另存或改输出路径** | §CB.5 |
-| **C4** | **清单里的 `validation_rank_ic` 与检索记录的 `seed_validation_rank_ic` 是两个不同的量，但名字几乎一样** | M1 324/324、M2 144/144 全部不同；中位比值 1.0706 / 1.0903；最大绝对差 0.052362 | **这是 §AU.1/§BP 那条"是否同一个估计量"主线的第三个 RankIC**（前两个是验证侧与 OOS 侧）。**任何从 `checkpoints/*/manifest.json` 取数的分析都必须声明用的是哪一个** | §CA.6 / §BY.6 |
+| **C4** | **清单里的 `validation_rank_ic` 与检索记录的 `seed_validation_rank_ic` 是两个不同的量，但名字几乎一样** | M1 324/324、M2 144/144 全部不同；中位比值 1.0706 / 1.0903；最大绝对差 0.052362 | **这是 §AU.1/§BP 那条"是否同一个估计量"主线的第三个 RankIC**（前两个是验证侧与 OOS 侧）。**任何从 `checkpoints/*/manifest.json` 取数的分析都必须声明用的是哪一个**。**注意 §CA.1 已证明两者用的是同一个统计量（同一分数列等价、同一 `minimum_cross_section=30`、同一聚合器），差别只在模型状态——所以它们*可以*直接比较，这正是 §CA.5 / §CB.3 那些峰值 vs 末轮对比成立的前提** | §CA.1 / §CA.6 / §BY.6 |
+| **C5** | **同一个已冻结 bundle 里并排装着两个模型状态的产物**：`seed-<seed>.pt` 是**峰值轮**权重（`model_bundle.py:86-90` 拷 `seed_checkpoints[seed]`，§CC.1 实测 15/15），而 `validation_predictions.parquet` 是**末轮**预测（`:91-97` 写 `ensemble.predictions`），两者相差中位 7.1%–9.1% | `model_bundle.py:86-97`、`:231` | **今天没有现行故障**：`src/` 里没有任何消费者用那份 parquet 打分（OOS 走 §CC.2 那条从 `seed-*.pt` 重建模型的路；`model_bundle.py:231` 只把它列为校验清单里的应有文件）。**但它是个陷阱**：任何人从 bundle 里读那份 parquet、再拿重建模型重新打分，会看到约 7%–9% 的系统性差异并极可能误判为"复现失败"或"权重损坏"——**而 `checksums.sha256` 会全部通过，因为两个文件各自都完好且被如实校验**。**§BQ.1 那条"逐位复现"的成功经验会加重这个误导**。**修法与 C2 是同一个**：在打分前恢复权重，那份 parquet 就自动变成峰值轮的，工件内部即一致，**不需要单独修 bundle 写入逻辑** | **§CC.5** |
 
 ---
 
@@ -68,6 +69,8 @@
 5. **"首次出现"≠"IPO"**：**准入不是新股专属通道**，任何证券都可以在任意年份重新进入面板（四折共 8 个 lag ≥ 6 年的再进入，其中 4 个已退市；最极端的是上市于 1990-12-19 的 `600654.SH` 中安科在 2024 年首次出现）。**这两个概念必须分开陈述**（§BZ.5）。
 6. **走前设计的一条固有限制（值得写进 limitation）**：**因为同年准入恒为 0，F4（测试年 2025）完全不含 2025 年上市的任何证券**，所以这个设计在**任何一折**上都无法检验"模型对当年新股的泛化能力"。**这是准入规则的四折共性，不是 F4 独有的缺陷**（§BX.8 第 4 条）。
 7. **跨折重复计数**：**任何把"每折首次出现"跨折相加的统计都要先去重**（24 家证券被两折各计一次；非相邻折对重叠为 0）。**§BZ.4 的去重矩阵是正确版本，机读件里那份朴素的键名带 `_DO_NOT_USE`。**
+8. **凡是涉及"哪个配置最好"的结论，必须先问它是哪个载体的**：**M2 的 F1/F2 可以放心引用**（峰值、末轮、驱动三者选同一个配置）；**M1 的四折胜出配置不得引用**——它与"发运模型的质量排序"几乎不相关（spearman −0.14 到 +0.23），**要引用 M1 的网格结论请只用 §CB.3 / §CA.4 那两节的轴级与方差结论，不要用它的"每折冠军"**（§BO.7 那条"每折冠军都是任意的"在 M1 上因此格外成立）。
+9. **OOS / G6 / G4 这一类数字可以照常引用**：§CC.1 已用哈希实测确认发运权重就是峰值检查点（15/15 逐字节相同），§CC.2 确认 test 预测由 bundle 重建的模型现算，**所以 §CA 那个缺陷不影响任何已发布的 OOS 侧数字，只影响"选了哪个配置"**。
 
 ---
 

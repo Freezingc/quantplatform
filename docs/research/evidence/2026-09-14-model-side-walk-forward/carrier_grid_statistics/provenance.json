@@ -36,7 +36,7 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-18T06:43:45+00:00",
+  "generated_at_utc": "2026-09-18T07:23:31+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "e2de1977fe23e0482ad523262e7a28424dceb6c17a45ce62a0358fd3ee749998"
@@ -66,6 +66,6 @@
   "safety": "read-only analysis of search records that finished training runs already wrote. No database access at all. No weight or checkpoint was loaded -- every number here comes from the per-seed and ensemble validation RankIC fields inside JSON. Nothing was written into any artifact directory. No repository file was edited; run_real_candidate_training.py is hashed below to prove it, and the live M2 driver re-imports that file per fold. No process was signalled.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "c001d647f01ba2ebcf31ab4271c7bb4ad819cb9d"
+    "commit_at_generation": "29fdec004ceffb9d1cd19fb43384fa423edd38e6"
   }
 }
