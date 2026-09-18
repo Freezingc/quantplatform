@@ -1,0 +1,926 @@
+{
+ "question": "is seed a usable blocking factor when the response is peak epoch, measured on the basis §BN.2 established (per fold), and does §CN.3's pooled verdict survive that correction?",
+ "generated_at_local": "2026-09-18T23:27:35",
+ "design": {
+  "carrier": "M1 (RESIDUAL_MLP)",
+  "workspace": "m1_full_v1",
+  "n_configs": 27,
+  "n_folds": 4,
+  "n_seeds": 3,
+  "n_observations": 324,
+  "balanced_complete": true,
+  "items": "3 seeds",
+  "raters": "27 configs within each fold"
+ },
+ "kendall_w_negative_controls": {
+  "unanimous_ranking_W_must_be_1": 1.0,
+  "unanimous_ok": true,
+  "random_200_raters_W_must_be_near_0": 0.0083,
+  "random_ok": true,
+  "transposed_unanimous_W": 0.0,
+  "note_on_orientation": "every row a permutation of (1,2,3) forces all row sums equal and hence W = 0 regardless of the data; that is the failure mode the first attempt hit and why items must be rows",
+  "ALL_OK": true
+ },
+ "concordance_on_peak_epoch": {
+  "variable": "peak_epoch",
+  "convention": "rank 1 and 'largest first' always mean the BIGGEST value (longest peak / best IC)",
+  "per_fold": {
+   "f1": {
+    "kendall_w": {
+     "W": 0.7514,
+     "chi2": 40.5741,
+     "p": 1.5468626763039547e-09,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 3,
+    "n_tie_free_cells": 24,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "03",
+       "02",
+       "01"
+      ],
+      "n_configs": 19,
+      "share_of_tie_free_pct": 79.2
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "01",
+       "02"
+      ],
+      "n_configs": 5,
+      "share_of_tie_free_pct": 20.8
+     }
+    ],
+    "modal_order_largest_first": [
+     "03",
+     "02",
+     "01"
+    ],
+    "modal_n_configs": 19,
+    "modal_share_pct": 79.2,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 2.9488186159683876e-11,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 6.037,
+     "02": 9.4444,
+     "03": 14.8889
+    },
+    "direction_largest_first": [
+     "03",
+     "02",
+     "01"
+    ]
+   },
+   "f2": {
+    "kendall_w": {
+     "W": 0.6245,
+     "chi2": 33.7222,
+     "p": 4.756773645401053e-08,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 1,
+    "n_tie_free_cells": 26,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "03",
+       "02",
+       "01"
+      ],
+      "n_configs": 17,
+      "share_of_tie_free_pct": 65.4
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "03",
+       "01"
+      ],
+      "n_configs": 7,
+      "share_of_tie_free_pct": 26.9
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "01",
+       "03"
+      ],
+      "n_configs": 2,
+      "share_of_tie_free_pct": 7.7
+     }
+    ],
+    "modal_order_largest_first": [
+     "03",
+     "02",
+     "01"
+    ],
+    "modal_n_configs": 17,
+    "modal_share_pct": 65.4,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 3.9676603532565594e-08,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 3.4815,
+     "02": 17.963,
+     "03": 18.3704
+    },
+    "direction_largest_first": [
+     "03",
+     "02",
+     "01"
+    ]
+   },
+   "f3": {
+    "kendall_w": {
+     "W": 0.1307,
+     "chi2": 7.0556,
+     "p": 0.029370110313745975,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 9,
+    "n_tie_free_cells": 18,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "03",
+       "02",
+       "01"
+      ],
+      "n_configs": 7,
+      "share_of_tie_free_pct": 38.9
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "01",
+       "03"
+      ],
+      "n_configs": 4,
+      "share_of_tie_free_pct": 22.2
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "03",
+       "01"
+      ],
+      "n_configs": 3,
+      "share_of_tie_free_pct": 16.7
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "01",
+       "02"
+      ],
+      "n_configs": 2,
+      "share_of_tie_free_pct": 11.1
+     },
+     {
+      "order_largest_first": [
+       "01",
+       "02",
+       "03"
+      ],
+      "n_configs": 1,
+      "share_of_tie_free_pct": 5.6
+     },
+     {
+      "order_largest_first": [
+       "01",
+       "03",
+       "02"
+      ],
+      "n_configs": 1,
+      "share_of_tie_free_pct": 5.6
+     }
+    ],
+    "modal_order_largest_first": [
+     "03",
+     "02",
+     "01"
+    ],
+    "modal_n_configs": 7,
+    "modal_share_pct": 38.9,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 0.020638936345350564,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 3.1111,
+     "02": 8.7778,
+     "03": 15.3704
+    },
+    "direction_largest_first": [
+     "03",
+     "02",
+     "01"
+    ]
+   },
+   "f4": {
+    "kendall_w": {
+     "W": 0.2315,
+     "chi2": 12.5,
+     "p": 0.0019304541362277095,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 3,
+    "n_tie_free_cells": 24,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "01",
+       "02",
+       "03"
+      ],
+      "n_configs": 8,
+      "share_of_tie_free_pct": 33.3
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "01",
+       "02"
+      ],
+      "n_configs": 7,
+      "share_of_tie_free_pct": 29.2
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "01",
+       "03"
+      ],
+      "n_configs": 5,
+      "share_of_tie_free_pct": 20.8
+     },
+     {
+      "order_largest_first": [
+       "01",
+       "03",
+       "02"
+      ],
+      "n_configs": 4,
+      "share_of_tie_free_pct": 16.7
+     }
+    ],
+    "modal_order_largest_first": [
+     "01",
+     "02",
+     "03"
+    ],
+    "modal_n_configs": 8,
+    "modal_share_pct": 33.3,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 0.03544407234392384,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 9.1111,
+     "02": 5.2593,
+     "03": 6.5185
+    },
+    "direction_largest_first": [
+     "01",
+     "03",
+     "02"
+    ]
+   }
+  },
+  "POOLED_wrong_basis": {
+   "kendall_w": {
+    "W": 0.1444,
+    "chi2": 31.1852,
+    "p": 1.6913094617808425e-07,
+    "n_items": 3,
+    "n_raters": 108
+   },
+   "n_cells": 108,
+   "n_cells_excluded_for_ties": 16,
+   "modal_order_largest_first": [
+    "03",
+    "02",
+    "01"
+   ],
+   "modal_n_cells": 43,
+   "modal_share_pct": 46.7,
+   "binomial_p_modal_exceeds_chance": 1.9820454355424768e-11,
+   "why_wrong": "pooling folds whose seed directions differ cancels real within-fold agreement; this is exactly the operation §BN.2 warns against when it establishes seed x fold -- not seed alone -- as the correct blocking"
+  }
+ },
+ "concordance_on_validation_rank_ic": {
+  "variable": "validation_rank_ic",
+  "convention": "rank 1 and 'largest first' always mean the BIGGEST value (longest peak / best IC)",
+  "per_fold": {
+   "f1": {
+    "kendall_w": {
+     "W": 0.7833,
+     "chi2": 42.2963,
+     "p": 6.538467310379493e-10,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 0,
+    "n_tie_free_cells": 27,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "03",
+       "02",
+       "01"
+      ],
+      "n_configs": 22,
+      "share_of_tie_free_pct": 81.5
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "01",
+       "02"
+      ],
+      "n_configs": 4,
+      "share_of_tie_free_pct": 14.8
+     },
+     {
+      "order_largest_first": [
+       "01",
+       "03",
+       "02"
+      ],
+      "n_configs": 1,
+      "share_of_tie_free_pct": 3.7
+     }
+    ],
+    "modal_order_largest_first": [
+     "03",
+     "02",
+     "01"
+    ],
+    "modal_n_configs": 22,
+    "modal_share_pct": 81.5,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 2.5757402704005865e-13,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 0.0377,
+     "02": 0.0485,
+     "03": 0.0603
+    },
+    "direction_largest_first": [
+     "03",
+     "02",
+     "01"
+    ]
+   },
+   "f2": {
+    "kendall_w": {
+     "W": 0.6214,
+     "chi2": 33.5556,
+     "p": 5.1701565378422755e-08,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 0,
+    "n_tie_free_cells": 27,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "03",
+       "02",
+       "01"
+      ],
+      "n_configs": 17,
+      "share_of_tie_free_pct": 63.0
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "03",
+       "01"
+      ],
+      "n_configs": 6,
+      "share_of_tie_free_pct": 22.2
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "01",
+       "02"
+      ],
+      "n_configs": 3,
+      "share_of_tie_free_pct": 11.1
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "01",
+       "03"
+      ],
+      "n_configs": 1,
+      "share_of_tie_free_pct": 3.7
+     }
+    ],
+    "modal_order_largest_first": [
+     "03",
+     "02",
+     "01"
+    ],
+    "modal_n_configs": 17,
+    "modal_share_pct": 63.0,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 9.035847966602695e-08,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 0.0774,
+     "02": 0.088,
+     "03": 0.0908
+    },
+    "direction_largest_first": [
+     "03",
+     "02",
+     "01"
+    ]
+   },
+   "f3": {
+    "kendall_w": {
+     "W": 0.3512,
+     "chi2": 18.963,
+     "p": 7.625088915607369e-05,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 0,
+    "n_tie_free_cells": 27,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "01",
+       "03",
+       "02"
+      ],
+      "n_configs": 13,
+      "share_of_tie_free_pct": 48.1
+     },
+     {
+      "order_largest_first": [
+       "01",
+       "02",
+       "03"
+      ],
+      "n_configs": 6,
+      "share_of_tie_free_pct": 22.2
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "01",
+       "02"
+      ],
+      "n_configs": 4,
+      "share_of_tie_free_pct": 14.8
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "02",
+       "01"
+      ],
+      "n_configs": 3,
+      "share_of_tie_free_pct": 11.1
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "01",
+       "03"
+      ],
+      "n_configs": 1,
+      "share_of_tie_free_pct": 3.7
+     }
+    ],
+    "modal_order_largest_first": [
+     "01",
+     "03",
+     "02"
+    ],
+    "modal_n_configs": 13,
+    "modal_share_pct": 48.1,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 0.0001483986415386002,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 0.0821,
+     "02": 0.075,
+     "03": 0.0791
+    },
+    "direction_largest_first": [
+     "01",
+     "03",
+     "02"
+    ]
+   },
+   "f4": {
+    "kendall_w": {
+     "W": 0.4705,
+     "chi2": 25.4074,
+     "p": 3.039845993982112e-06,
+     "n_items": 3,
+     "n_raters": 27
+    },
+    "n_configs": 27,
+    "n_cells_excluded_for_ties": 0,
+    "n_tie_free_cells": 27,
+    "ordering_distribution": [
+     {
+      "order_largest_first": [
+       "01",
+       "02",
+       "03"
+      ],
+      "n_configs": 15,
+      "share_of_tie_free_pct": 55.6
+     },
+     {
+      "order_largest_first": [
+       "02",
+       "01",
+       "03"
+      ],
+      "n_configs": 6,
+      "share_of_tie_free_pct": 22.2
+     },
+     {
+      "order_largest_first": [
+       "01",
+       "03",
+       "02"
+      ],
+      "n_configs": 4,
+      "share_of_tie_free_pct": 14.8
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "01",
+       "02"
+      ],
+      "n_configs": 1,
+      "share_of_tie_free_pct": 3.7
+     },
+     {
+      "order_largest_first": [
+       "03",
+       "02",
+       "01"
+      ],
+      "n_configs": 1,
+      "share_of_tie_free_pct": 3.7
+     }
+    ],
+    "modal_order_largest_first": [
+     "01",
+     "02",
+     "03"
+    ],
+    "modal_n_configs": 15,
+    "modal_share_pct": 55.6,
+    "chance_share_pct": 16.7,
+    "binomial_p_modal_exceeds_chance": 4.859062279496257e-06,
+    "modal_share_significant_at_0.05": true,
+    "seed_means_largest_first": {
+     "01": 0.0983,
+     "02": 0.0966,
+     "03": 0.0823
+    },
+    "direction_largest_first": [
+     "01",
+     "02",
+     "03"
+    ]
+   }
+  },
+  "POOLED_wrong_basis": {
+   "kendall_w": {
+    "W": 0.0442,
+    "chi2": 9.5556,
+    "p": 0.008414677489201165,
+    "n_items": 3,
+    "n_raters": 108
+   },
+   "n_cells": 108,
+   "n_cells_excluded_for_ties": 0,
+   "modal_order_largest_first": [
+    "03",
+    "02",
+    "01"
+   ],
+   "modal_n_cells": 43,
+   "modal_share_pct": 39.8,
+   "binomial_p_modal_exceeds_chance": 9.262928133632737e-09,
+   "why_wrong": "pooling folds whose seed directions differ cancels real within-fold agreement; this is exactly the operation §BN.2 warns against when it establishes seed x fold -- not seed alone -- as the correct blocking"
+  }
+ },
+ "direction_agreement_between_variables": {
+  "f1": {
+   "peak_largest_first": [
+    "03",
+    "02",
+    "01"
+   ],
+   "rank_ic_largest_first": [
+    "03",
+    "02",
+    "01"
+   ],
+   "same_ordering": true,
+   "same_top_seed": true,
+   "reading": "the seed that trains LONGEST is also the seed that scores BEST, and the full ordering agrees"
+  },
+  "f2": {
+   "peak_largest_first": [
+    "03",
+    "02",
+    "01"
+   ],
+   "rank_ic_largest_first": [
+    "03",
+    "02",
+    "01"
+   ],
+   "same_ordering": true,
+   "same_top_seed": true,
+   "reading": "the seed that trains LONGEST is also the seed that scores BEST, and the full ordering agrees"
+  },
+  "f3": {
+   "peak_largest_first": [
+    "03",
+    "02",
+    "01"
+   ],
+   "rank_ic_largest_first": [
+    "01",
+    "03",
+    "02"
+   ],
+   "same_ordering": false,
+   "same_top_seed": false,
+   "reading": "the seed that trains longest is NOT the one that scores best"
+  },
+  "f4": {
+   "peak_largest_first": [
+    "01",
+    "03",
+    "02"
+   ],
+   "rank_ic_largest_first": [
+    "01",
+    "02",
+    "03"
+   ],
+   "same_ordering": false,
+   "same_top_seed": true,
+   "reading": "the top seed agrees but the rest of the ordering differs"
+  }
+ },
+ "quantization_control": {
+  "per_fold": {
+   "f1": {
+    "n_distinct_peak_values": 19,
+    "W_peak": 0.7514,
+    "W_rank_ic_raw": 0.7833,
+    "W_rank_ic_quantized_mean": 0.8003,
+    "quantization_cost_W": -0.017,
+    "n_draws": 200,
+    "mean_cells_excluded_after_quantization": 1.0,
+    "gap_peak_vs_rank_ic": 0.0319,
+    "gap_is_material": false,
+    "fraction_of_material_gap_explained_by_quantization": null
+   },
+   "f2": {
+    "n_distinct_peak_values": 26,
+    "W_peak": 0.6245,
+    "W_rank_ic_raw": 0.6214,
+    "W_rank_ic_quantized_mean": 0.6384,
+    "quantization_cost_W": -0.017,
+    "n_draws": 200,
+    "mean_cells_excluded_after_quantization": 2.0,
+    "gap_peak_vs_rank_ic": -0.0031,
+    "gap_is_material": false,
+    "fraction_of_material_gap_explained_by_quantization": null
+   },
+   "f3": {
+    "n_distinct_peak_values": 18,
+    "W_peak": 0.1307,
+    "W_rank_ic_raw": 0.3512,
+    "W_rank_ic_quantized_mean": 0.3543,
+    "quantization_cost_W": -0.0031,
+    "n_draws": 200,
+    "mean_cells_excluded_after_quantization": 2.54,
+    "gap_peak_vs_rank_ic": 0.2205,
+    "gap_is_material": true,
+    "fraction_of_material_gap_explained_by_quantization": -0.014
+   },
+   "f4": {
+    "n_distinct_peak_values": 19,
+    "W_peak": 0.2315,
+    "W_rank_ic_raw": 0.4705,
+    "W_rank_ic_quantized_mean": 0.4541,
+    "quantization_cost_W": 0.0164,
+    "n_draws": 200,
+    "mean_cells_excluded_after_quantization": 1.0,
+    "gap_peak_vs_rank_ic": 0.239,
+    "gap_is_material": true,
+    "fraction_of_material_gap_explained_by_quantization": 0.0686
+   }
+  },
+  "folds_with_a_material_gap": [
+   "f3",
+   "f4"
+  ],
+  "max_fraction_of_gap_explained_by_quantization": 0.0686,
+  "reading": "quantizing RankIC to peak's level count changes its W by at most a couple of hundredths on every fold, while the peak-versus-RankIC gap on the two folds where it is material (F3, F4) is 0.22 and 0.24. Quantization therefore accounts for only a small fraction of those gaps, so they are a real property of the seed effect on peak epoch and not a coarse-response artefact. Without this control, 'W is low on peak for F3/F4' could not be distinguished from 'W is low because peak is an integer'.",
+  "quantization_explains_a_material_gap": false
+ },
+ "mechanism_discrimination": {
+  "channel_A_sampler_date_order": {
+   "source": "sampler.py:27-34 (sha256(f'{seed}|{date}')), constructed at torch_loop.py:43",
+   "depends_on": "(seed, dates) only -- identical for every config within a fold"
+  },
+  "channel_B_initial_weights": {
+   "source": "cross_section_search.py:178-179 -> configure_reproducibility(seed) -> torch.manual_seed at seeds.py:46, then _model(family, config_payload, ...)",
+   "depends_on": "config, through how much of the seeded RNG stream its parameter count consumes"
+  },
+  "parameter_count_groups": {
+   "(64, 1)": [
+    "c0",
+    "c1",
+    "c2"
+   ],
+   "(64, 2)": [
+    "c3",
+    "c4",
+    "c5"
+   ],
+   "(64, 3)": [
+    "c6",
+    "c7",
+    "c8"
+   ],
+   "(128, 1)": [
+    "c9",
+    "c10",
+    "c11"
+   ],
+   "(128, 2)": [
+    "c12",
+    "c13",
+    "c14"
+   ],
+   "(128, 3)": [
+    "c15",
+    "c16",
+    "c17"
+   ],
+   "(256, 1)": [
+    "c18",
+    "c19",
+    "c20"
+   ],
+   "(256, 2)": [
+    "c21",
+    "c22",
+    "c23"
+   ],
+   "(256, 3)": [
+    "c24",
+    "c25",
+    "c26"
+   ]
+  },
+  "n_groups": 9,
+  "dropout_does_not_change_parameter_count": true,
+  "agreement_same_param_count_pct": 44.2,
+  "n_pairs_same_param_count": 77,
+  "agreement_diff_param_count_pct": 42.1,
+  "n_pairs_diff_param_count": 953,
+  "chance_pct_identical_ordering_of_3": 16.7,
+  "chi2": 0.0553,
+  "p": 0.8140502508025824,
+  "discriminates_A_from_B": false,
+  "verdict": "the test cannot discriminate the two channels: agreement is statistically indistinguishable between identical-parameter-count pairs (44.2%) and different ones (42.1%), p = 0.814, though both are far above the 16.7% chance level. The mechanism behind the seed effect on peak epoch is therefore NOT established. Both groups being far above chance confirms a real seed effect; their equality rules out the only discrimination available in these artefacts.",
+  "not_established_so_no_explanation_is_offered": true
+ },
+ "correction_to_CN3": {
+  "CN3_claim": "modal seed ordering covers 49.1% of 108 pooled cells (chance 16.7%, binomial p = 7.73e-15), so seed is NOT a clean blocking factor for peak epoch, unlike on RankIC where §BN.2 found seed x fold blocking valid",
+  "the_basis_error": "§CN.3 pooled the four folds into one 108-cell count while §BN.2's blocking structure is per fold (seed x fold = 12 blocks, reported separately for each fold in §BN.2's worst_seed census). Pooling is the operation §BN.2 warns against, and §CN.3 cited §BN.2 in the same paragraph whose statistic violated §BN.2's lesson.",
+  "proof_that_pooling_is_the_problem_not_the_variable": {
+   "pooled_W_peak": 0.1444,
+   "per_fold_W_peak": {
+    "f1": 0.7514,
+    "f2": 0.6245,
+    "f3": 0.1307,
+    "f4": 0.2315
+   },
+   "pooled_W_rank_ic": 0.0442,
+   "per_fold_W_rank_ic": {
+    "f1": 0.7833,
+    "f2": 0.6214,
+    "f3": 0.3512,
+    "f4": 0.4705
+   },
+   "reading": "pooling destroys concordance on BOTH dependent variables -- peak 0.75/0.62 -> 0.14 and RankIC 0.78/0.62 -> 0.04 -- so the pooled figure measures fold-to-fold direction reversal, not within-fold seed agreement. Since §BN.2 already established seed x fold blocking as valid for RankIC, a pooled statistic that says 'RankIC seed agreement is 0.04' cannot be a valid basis for anything."
+  },
+  "CN3_pooled_modal_share_pct": 46.7,
+  "per_fold_modal_share_pct": {
+   "f1": 79.2,
+   "f2": 65.4,
+   "f3": 38.9,
+   "f4": 33.3
+  }
+ },
+ "revised_verdict": {
+  "per_fold": {
+   "F1": {
+    "W_peak": 0.7514,
+    "p_peak": 1.5468626763039547e-09,
+    "W_rank_ic": 0.7833,
+    "p_rank_ic": 6.538467310379493e-10,
+    "W_peak_over_W_rank_ic": 0.9593,
+    "modal_share_peak_pct": 79.2,
+    "modal_share_peak_binomial_p": 2.9488186159683876e-11,
+    "modal_share_peak_significant": true,
+    "tie_free_cells_peak": 24,
+    "cells_excluded_for_ties_peak": 3,
+    "peak_concordance_comparable_to_rank_ic": true,
+    "verdict": "W on peak epoch is 0.7514 against 0.7833 on RankIC (ratio 0.96); the modal seed ordering covers 79.2% of the 24 tie-free configs (chance 16.7%, binomial p = 2.95e-11, significant at 0.05). Seed concordance on peak epoch is comparable to its concordance on RankIC, so seed IS a usable blocking factor for peak epoch on this fold."
+   },
+   "F2": {
+    "W_peak": 0.6245,
+    "p_peak": 4.756773645401053e-08,
+    "W_rank_ic": 0.6214,
+    "p_rank_ic": 5.1701565378422755e-08,
+    "W_peak_over_W_rank_ic": 1.005,
+    "modal_share_peak_pct": 65.4,
+    "modal_share_peak_binomial_p": 3.9676603532565594e-08,
+    "modal_share_peak_significant": true,
+    "tie_free_cells_peak": 26,
+    "cells_excluded_for_ties_peak": 1,
+    "peak_concordance_comparable_to_rank_ic": true,
+    "verdict": "W on peak epoch is 0.6245 against 0.6214 on RankIC (ratio 1.00); the modal seed ordering covers 65.4% of the 26 tie-free configs (chance 16.7%, binomial p = 3.97e-08, significant at 0.05). Seed concordance on peak epoch is comparable to its concordance on RankIC, so seed IS a usable blocking factor for peak epoch on this fold."
+   },
+   "F3": {
+    "W_peak": 0.1307,
+    "p_peak": 0.029370110313745975,
+    "W_rank_ic": 0.3512,
+    "p_rank_ic": 7.625088915607369e-05,
+    "W_peak_over_W_rank_ic": 0.3722,
+    "modal_share_peak_pct": 38.9,
+    "modal_share_peak_binomial_p": 0.020638936345350564,
+    "modal_share_peak_significant": true,
+    "tie_free_cells_peak": 18,
+    "cells_excluded_for_ties_peak": 9,
+    "peak_concordance_comparable_to_rank_ic": false,
+    "verdict": "W on peak epoch is 0.1307 against 0.3512 on RankIC (ratio 0.37); the modal seed ordering covers 38.9% of the 18 tie-free configs (chance 16.7%, binomial p = 2.06e-02, significant at 0.05). Seed concordance on peak epoch is materially weaker than on RankIC, so seed is a much poorer blocking factor for peak epoch on this fold -- and since the modal share is still significantly above chance, the seed effect is real but noisy."
+   },
+   "F4": {
+    "W_peak": 0.2315,
+    "p_peak": 0.0019304541362277095,
+    "W_rank_ic": 0.4705,
+    "p_rank_ic": 3.039845993982112e-06,
+    "W_peak_over_W_rank_ic": 0.492,
+    "modal_share_peak_pct": 33.3,
+    "modal_share_peak_binomial_p": 0.03544407234392384,
+    "modal_share_peak_significant": true,
+    "tie_free_cells_peak": 24,
+    "cells_excluded_for_ties_peak": 3,
+    "peak_concordance_comparable_to_rank_ic": false,
+    "verdict": "W on peak epoch is 0.2315 against 0.4705 on RankIC (ratio 0.49); the modal seed ordering covers 33.3% of the 24 tie-free configs (chance 16.7%, binomial p = 3.54e-02, significant at 0.05). Seed concordance on peak epoch is materially weaker than on RankIC, so seed is a much poorer blocking factor for peak epoch on this fold -- and since the modal share is still significantly above chance, the seed effect is real but noisy."
+   }
+  },
+  "n_folds_where_peak_comparable_to_rank_ic": 2,
+  "n_folds_where_modal_share_significant": 4,
+  "summary": "There was never a single verdict available for 'peak epoch'. On 2 of 4 folds (F1, F2) seed concordance on peak epoch is comparable to its concordance on RankIC, so seed is a usable blocking factor there; on the other 2 (F3, F4) it is roughly a third to half as strong, so it is a poor one. §CN.3's blanket 'seed is NOT a clean blocking factor for peak epoch' is therefore wrong for F1/F2 and right in spirit for F3/F4 -- and the half that is wrong is the half that would have been used to justify an analysis-design decision. Note also that the modal share is significantly above chance on all 4 of 4 folds, so the seed effect itself is real everywhere; what varies is how consistently it orders the seeds within a fold.",
+  "what_CN3_should_be_reread_as": "seed's blockability for peak epoch is FOLD-SPECIFIC (usable on F1/F2, poor on F3/F4), and any single-number answer computed by pooling the four folds is measuring fold-to-fold direction reversal rather than within-fold agreement -- see correction_to_CN3.proof_that_pooling_is_the_problem_not_the_variable, where pooling drops W from 0.75/0.62 to 0.14 on peak AND from 0.78/0.62 to 0.04 on RankIC, the latter contradicting §BN.2, which established seed x fold blocking as valid for RankIC"
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": []
+}
