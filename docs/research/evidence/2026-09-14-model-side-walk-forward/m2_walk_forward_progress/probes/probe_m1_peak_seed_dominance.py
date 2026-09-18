@@ -186,6 +186,80 @@ def anova(Y: np.ndarray, factors: dict[str, np.ndarray], terms: list[tuple[str, 
             "df_total": dfT, "df_accounted": used_df + df_res}
 
 
+def seed_ordering_consistency(cell: dict, cfgs: list[str], folds: list[str],
+                              seeds: list[str]) -> dict:
+    """Can seed be used as a blocking factor when the response is peak epoch?
+
+    §BN.2 established that for validation RankIC the correct blocking is seed x fold (12 blocks), and
+    §BN.2's table shows seed 20260801 is the WORST seed on F1/F2 (bottom on 22/27 and 23/27 configs)
+    while being the BEST on F3/F4 -- i.e. the seed direction is consistent within a fold and flips
+    across folds, which is exactly what makes seed x fold a usable block.
+
+    For peak epoch the question is different and the answer is different. This measures, over all
+    27 x 4 = 108 (config, fold) cells, which seed had the longest peak, and asks how concentrated the
+    resulting ordering patterns are. Under no seed effect the six possible orderings would each occur
+    in 1/6 of cells (18 of 108); a modal share far above that means the seed effect is real and
+    directional, while a modal share well below 100% means the ordering is not stable enough to treat
+    seed as a clean blocking factor.
+
+    A Wilcoxon signed-rank test on each seed pair over the 108 paired cells gives the direction and
+    size without assuming normality -- important here because §BU.4/ledger B2 established this data is
+    heavy-tailed, which is why the parametric ANOVA's non-significant terms are reported as "not
+    detectable" rather than "no effect", and why a rank test is the right instrument for this one.
+    """
+    from collections import Counter
+
+    patterns: list[tuple[int, ...]] = []
+    for c in cfgs:
+        for f in folds:
+            v = [cell[(c, f, sd)] for sd in seeds]
+            patterns.append(tuple(int(x) for x in np.argsort(v)[::-1]))
+    counts = Counter(patterns)
+    n_cells = len(patterns)
+    modal_pattern, modal_n = counts.most_common(1)[0]
+
+    pairwise = {}
+    for i in range(len(seeds)):
+        for j in range(i + 1, len(seeds)):
+            a, b = seeds[i], seeds[j]
+            xs = [cell[(c, f, a)] for c in cfgs for f in folds]
+            ys = [cell[(c, f, b)] for c in cfgs for f in folds]
+            nz = [(x, y) for x, y in zip(xs, ys) if x != y]
+            w, pv = stats.wilcoxon([x for x, _ in nz], [y for _, y in nz])
+            pairwise[f"{a}_vs_{b}"] = {
+                "wins": sum(1 for x, y in zip(xs, ys) if x > y),
+                "losses": sum(1 for x, y in zip(xs, ys) if x < y),
+                "ties": sum(1 for x, y in zip(xs, ys) if x == y),
+                "n_paired_cells": n_cells,
+                "median_difference_epochs": float(np.median(np.array(xs) - np.array(ys))),
+                "wilcoxon_W": float(w), "wilcoxon_p": float(pv),
+                "reading": (f"seed {a[-2:]} has a LONGER peak than seed {b[-2:]} in "
+                            f"{sum(1 for x, y in zip(xs, ys) if x > y)} of {n_cells} cells"),
+            }
+    return {
+        "n_cells": n_cells,
+        "ordering_patterns": [
+            {"order": [seeds[i][-2:] for i in pat], "n_cells": cnt,
+             "share_pct": round(100 * cnt / n_cells, 1)}
+            for pat, cnt in counts.most_common()],
+        "modal_order": [seeds[i][-2:] for i in modal_pattern],
+        "modal_share_pct": round(100 * modal_n / n_cells, 1),
+        "chance_share_pct": round(100 / 6, 1),
+        "binomial_p_modal_exceeds_chance": float(
+            stats.binomtest(modal_n, n_cells, 1 / 6, alternative="greater").pvalue),
+        "pairwise": pairwise,
+        "verdict": (
+            f"the modal seed ordering occurs in {round(100 * modal_n / n_cells, 1)}% of cells against "
+            f"{round(100 / 6, 1)}% expected under no seed effect, so the seed effect on peak epoch is "
+            "real and directional -- but it is nowhere near 100%, so seed is NOT a clean blocking "
+            "factor for peak epoch. Contrast §BN.2 on validation RankIC, where the seed direction is "
+            "consistent within each fold (seed 20260801 bottom on 22/27 and 23/27 configs on F1/F2) "
+            "and flips across folds, which is exactly what makes seed x fold a usable 12-block "
+            "structure. For peak epoch, blocking on seed would remove a real effect while leaving most "
+            "of its cell-level variation in the residual."),
+    }
+
+
 def validate_against_BN1() -> dict:
     """The instrument must reproduce a decomposition this pack has ALREADY published.
 
@@ -450,6 +524,7 @@ def main() -> None:
                             "is not distinguishable from 'flat', which is §CI's own optimistic scenario"),
             },
         },
+        "seed_ordering_consistency": seed_ordering_consistency(cell, cfgs, folds, seeds),
         "config_x_fold_interaction_not_significant": {
             "pct_of_SST": model_a["terms"]["config_x_fold"]["pct_of_SST"],
             "df": model_a["terms"]["config_x_fold"]["df"],
@@ -555,6 +630,15 @@ def main() -> None:
     print(f"\n=== config x fold interaction: F={model_a['terms']['config_x_fold']['F']} "
           f"p={model_a['terms']['config_x_fold']['p']:.4f} -> "
           f"{'NOT significant' if model_a['terms']['config_x_fold']['p']>0.05 else 'significant'}")
+    so = doc["seed_ordering_consistency"]
+    print("\n=== can seed be a blocking factor for PEAK epoch? ===")
+    print(f"  {so['n_cells']} (config, fold) cells; modal ordering "
+          f"{'>'.join(so['modal_order'])} in {so['modal_share_pct']}% of cells "
+          f"(chance {so['chance_share_pct']}%, binomial p={so['binomial_p_modal_exceeds_chance']:.2e})")
+    for k, r in so["pairwise"].items():
+        print(f"  {k}: wins {r['wins']} losses {r['losses']} ties {r['ties']} | "
+              f"median diff {r['median_difference_epochs']:+.1f} epochs | "
+              f"Wilcoxon p={r['wilcoxon_p']:.2e}")
     v = doc["validation_and_controls"]
     print("\n=== primary validation: reproduce §BN.1's published decomposition on RankIC ===")
     print(f"  grand mean {v['primary_validation_reproduces_BN1']['grand_mean_recomputed']} "

@@ -1,6 +1,6 @@
 {
  "question": "on peak epoch, how much of the variation is fold, how much is seed, does the fold pattern depend on the seed, and does §CK.5's effect B survive being computed per seed instead of pooled?",
- "generated_at_local": "2026-09-18T21:58:50",
+ "generated_at_local": "2026-09-18T22:26:50",
  "design": {
   "carrier": "M1 (RESIDUAL_MLP)",
   "workspace": "m1_full_v1",
@@ -306,6 +306,106 @@
    "F4_over_F3_covers_1": true,
    "reading": "the F4/F3 half of effect B has a bootstrap CI covering 1.0, so that half is not distinguishable from 'flat', which is §CI's own optimistic scenario"
   }
+ },
+ "seed_ordering_consistency": {
+  "n_cells": 108,
+  "ordering_patterns": [
+   {
+    "order": [
+     "03",
+     "02",
+     "01"
+    ],
+    "n_cells": 53,
+    "share_pct": 49.1
+   },
+   {
+    "order": [
+     "03",
+     "01",
+     "02"
+    ],
+    "n_cells": 14,
+    "share_pct": 13.0
+   },
+   {
+    "order": [
+     "02",
+     "03",
+     "01"
+    ],
+    "n_cells": 12,
+    "share_pct": 11.1
+   },
+   {
+    "order": [
+     "02",
+     "01",
+     "03"
+    ],
+    "n_cells": 11,
+    "share_pct": 10.2
+   },
+   {
+    "order": [
+     "01",
+     "02",
+     "03"
+    ],
+    "n_cells": 9,
+    "share_pct": 8.3
+   },
+   {
+    "order": [
+     "01",
+     "03",
+     "02"
+    ],
+    "n_cells": 9,
+    "share_pct": 8.3
+   }
+  ],
+  "modal_order": [
+   "03",
+   "02",
+   "01"
+  ],
+  "modal_share_pct": 49.1,
+  "chance_share_pct": 16.7,
+  "binomial_p_modal_exceeds_chance": 7.734673199145687e-15,
+  "pairwise": {
+   "20260801_vs_20260802": {
+    "wins": 32,
+    "losses": 66,
+    "ties": 10,
+    "n_paired_cells": 108,
+    "median_difference_epochs": -2.0,
+    "wilcoxon_W": 1123.5,
+    "wilcoxon_p": 3.893622237829603e-06,
+    "reading": "seed 01 has a LONGER peak than seed 02 in 32 of 108 cells"
+   },
+   "20260801_vs_20260803": {
+    "wins": 29,
+    "losses": 75,
+    "ties": 4,
+    "n_paired_cells": 108,
+    "median_difference_epochs": -10.0,
+    "wilcoxon_W": 732.0,
+    "wilcoxon_p": 9.103466471650877e-11,
+    "reading": "seed 01 has a LONGER peak than seed 03 in 29 of 108 cells"
+   },
+   "20260802_vs_20260803": {
+    "wins": 32,
+    "losses": 70,
+    "ties": 6,
+    "n_paired_cells": 108,
+    "median_difference_epochs": -3.0,
+    "wilcoxon_W": 1491.5,
+    "wilcoxon_p": 0.0001491292637613509,
+    "reading": "seed 02 has a LONGER peak than seed 03 in 32 of 108 cells"
+   }
+  },
+  "verdict": "the modal seed ordering occurs in 49.1% of cells against 16.7% expected under no seed effect, so the seed effect on peak epoch is real and directional -- but it is nowhere near 100%, so seed is NOT a clean blocking factor for peak epoch. Contrast §BN.2 on validation RankIC, where the seed direction is consistent within each fold (seed 20260801 bottom on 22/27 and 23/27 configs on F1/F2) and flips across folds, which is exactly what makes seed x fold a usable 12-block structure. For peak epoch, blocking on seed would remove a real effect while leaving most of its cell-level variation in the residual."
  },
  "config_x_fold_interaction_not_significant": {
   "pct_of_SST": 17.184,
