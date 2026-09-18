@@ -1,0 +1,433 @@
+{
+ "question": "on peak epoch, how much of the variation is fold, how much is seed, does the fold pattern depend on the seed, and does §CK.5's effect B survive being computed per seed instead of pooled?",
+ "generated_at_local": "2026-09-18T21:58:50",
+ "design": {
+  "carrier": "M1 (RESIDUAL_MLP)",
+  "workspace": "m1_full_v1",
+  "n_configs": 27,
+  "n_folds": 4,
+  "n_seeds": 3,
+  "n_observations": 324,
+  "balanced_no_missing_cell": true,
+  "dependent_variable": "peak epoch = max saved checkpoint epoch (§CJ.2 consequence 1)"
+ },
+ "model_A_same_structure_as_BN1": {
+  "terms": {
+   "fold": {
+    "ss": 1676.6759259259256,
+    "df": 3,
+    "pct_of_SST": 7.1718,
+    "ms": 558.8919753086419,
+    "F": 9.6277,
+    "p": 5.4607297128453485e-06
+   },
+   "config": {
+    "ss": 1454.6666666666665,
+    "df": 26,
+    "pct_of_SST": 6.2222,
+    "ms": 55.94871794871794,
+    "F": 0.9638,
+    "p": 0.518987202004913
+   },
+   "seed": {
+    "ss": 3807.1851851851843,
+    "df": 2,
+    "pct_of_SST": 16.2848,
+    "ms": 1903.5925925925922,
+    "F": 32.792,
+    "p": 3.779689698365897e-13
+   },
+   "config_x_fold": {
+    "ss": 4017.4074074074097,
+    "df": 78,
+    "pct_of_SST": 17.184,
+    "ms": 51.50522317188987,
+    "F": 0.8872,
+    "p": 0.7269259523593201
+   }
+  },
+  "residual": {
+   "ss": 12422.814814814814,
+   "df": 214,
+   "pct_of_SST": 53.1372,
+   "ms": 58.05053651782623
+  },
+  "SST": 23378.75,
+  "additivity_error": 0.0,
+  "df_total": 323,
+  "df_accounted": 323
+ },
+ "model_B_adds_fold_x_seed": {
+  "terms": {
+   "fold": {
+    "ss": 1676.6759259259256,
+    "df": 3,
+    "pct_of_SST": 7.1718,
+    "ms": 558.8919753086419,
+    "F": 12.8759,
+    "p": 9.482736942215788e-08
+   },
+   "seed": {
+    "ss": 3807.1851851851843,
+    "df": 2,
+    "pct_of_SST": 16.2848,
+    "ms": 1903.5925925925922,
+    "F": 43.8555,
+    "p": 1.2834203590646617e-16
+   },
+   "fold_x_seed": {
+    "ss": 3394.3703703703723,
+    "df": 6,
+    "pct_of_SST": 14.519,
+    "ms": 565.7283950617287,
+    "F": 13.0334,
+    "p": 1.6804039969613981e-12
+   },
+   "config": {
+    "ss": 1454.6666666666665,
+    "df": 26,
+    "pct_of_SST": 6.2222,
+    "ms": 55.94871794871794,
+    "F": 1.289,
+    "p": 0.1672561011478294
+   },
+   "config_x_fold": {
+    "ss": 4017.4074074074097,
+    "df": 78,
+    "pct_of_SST": 17.184,
+    "ms": 51.50522317188987,
+    "F": 1.1866,
+    "p": 0.17121480740820394
+   }
+  },
+  "residual": {
+   "ss": 9028.444444444442,
+   "df": 208,
+   "pct_of_SST": 38.6182,
+   "ms": 43.405982905982896
+  },
+  "SST": 23378.75,
+  "additivity_error": 0.0,
+  "df_total": 323,
+  "df_accounted": 323
+ },
+ "BN1_reference_on_validation_rank_ic": {
+  "fold_pct": 74.5273,
+  "fold_F": 261.744,
+  "fold_p": 2.6e-71,
+  "config_pct": 1.3987,
+  "config_F": 0.5668,
+  "config_p": 0.9566,
+  "seed_pct": 0.8798,
+  "seed_F": 4.635,
+  "seed_p": 0.0107,
+  "config_x_fold_pct": 2.8831,
+  "config_x_fold_F": 0.3894,
+  "config_x_fold_p": 1.0,
+  "note": "quoted from §BN.1 so the two dependent variables can be compared line by line"
+ },
+ "dissociation": {
+  "seed_pct_on_peak": 16.2848,
+  "fold_pct_on_peak": 7.1718,
+  "seed_pct_on_rank_ic": 0.8798,
+  "fold_pct_on_rank_ic": 74.5273,
+  "seed_swing_epochs": 8.3519,
+  "fold_main_effect_range_epochs": 6.3086,
+  "seed_swing_exceeds_fold_range": true,
+  "ratio": 1.3239,
+  "fold_means_epochs_peak": {
+   "f1": 10.1235,
+   "f2": 13.2716,
+   "f3": 9.0864,
+   "f4": 6.963
+  },
+  "seed_means_epochs_peak": {
+   "20260801": 5.4352,
+   "20260802": 10.3611,
+   "20260803": 13.787
+  },
+  "reading": "peak LOCATION is seed-driven and peak QUALITY is fold-driven: the ordering of these two sources is inverted between the two dependent variables. Any sentence of the form 'runs on fold X converge after about N epochs' carries seed-induced uncertainty of the same order as the fold effect it describes."
+ },
+ "fold_x_seed_interaction": {
+  "pct_of_SST": 14.519,
+  "F": 13.0334,
+  "p": 1.6804039969613981e-12,
+  "fold_main_effect_pct": 7.1718,
+  "interaction_exceeds_main_effect": true,
+  "per_seed_fold_means": {
+   "20260801": {
+    "f1": 6.037,
+    "f2": 3.481,
+    "f3": 3.111,
+    "f4": 9.111
+   },
+   "20260802": {
+    "f1": 9.444,
+    "f2": 17.963,
+    "f3": 8.778,
+    "f4": 5.259
+   },
+   "20260803": {
+    "f1": 14.889,
+    "f2": 18.37,
+    "f3": 15.37,
+    "f4": 6.519
+   }
+  },
+  "per_seed_argmax_fold": {
+   "20260801": "f4",
+   "20260802": "f2",
+   "20260803": "f2"
+  },
+  "n_seeds_whose_argmax_is_F2": 2,
+  "shape_per_seed": {
+   "20260801": "other",
+   "20260802": "rise_then_fall_peak_F2",
+   "20260803": "rise_then_fall_peak_F2"
+  },
+  "reading": "the fold profile is not a property of the fold alone. §CK.2's 'rise then fall, peaking at F2' holds for 2 of 3 seeds and reverses for the third, whose argmax is F4."
+ },
+ "fold_ratios": {
+  "f2/f1": {
+   "per_seed": {
+    "20260801": 0.8406,
+    "20260802": 1.4381,
+    "20260803": 1.1399
+   },
+   "spread_across_seeds": 0.5975,
+   "pooled": 1.1564,
+   "pooled_bootstrap_95ci": [
+    1.0655,
+    1.2551
+   ],
+   "pooled_ci_covers_1": false,
+   "per_seed_direction": {
+    "20260801": "below 1",
+    "20260802": "above 1",
+    "20260803": "above 1"
+   }
+  },
+  "f3/f2": {
+   "per_seed": {
+    "20260801": 0.9725,
+    "20260802": 0.6715,
+    "20260803": 0.8943
+   },
+   "spread_across_seeds": 0.301,
+   "pooled": 0.8202,
+   "pooled_bootstrap_95ci": [
+    0.7161,
+    0.9345
+   ],
+   "pooled_ci_covers_1": false,
+   "per_seed_direction": {
+    "20260801": "below 1",
+    "20260802": "below 1",
+    "20260803": "below 1"
+   }
+  },
+  "f4/f3": {
+   "per_seed": {
+    "20260801": 1.4576,
+    "20260802": 0.8126,
+    "20260803": 0.6511
+   },
+   "spread_across_seeds": 0.8065,
+   "pooled": 0.8887,
+   "pooled_bootstrap_95ci": [
+    0.7699,
+    1.0264
+   ],
+   "pooled_ci_covers_1": true,
+   "per_seed_direction": {
+    "20260801": "above 1",
+    "20260802": "below 1",
+    "20260803": "below 1"
+   }
+  }
+ },
+ "effect_B_per_seed_versus_pooled": {
+  "per_seed_and_pooled": {
+   "seed_20260801": {
+    "F3_over_F2": 0.9725,
+    "F4_over_F3": 1.4576,
+    "M2_F3_epochs_per_run": 28.01,
+    "M2_F4_epochs_per_run": 40.83,
+    "total_remaining_h": 204.3,
+    "days": 8.5,
+    "above_CI_optimistic_published": true
+   },
+   "seed_20260802": {
+    "F3_over_F2": 0.6715,
+    "F4_over_F3": 0.8126,
+    "M2_F3_epochs_per_run": 19.34,
+    "M2_F4_epochs_per_run": 15.72,
+    "total_remaining_h": 113.8,
+    "days": 4.7,
+    "above_CI_optimistic_published": false
+   },
+   "seed_20260803": {
+    "F3_over_F2": 0.8943,
+    "F4_over_F3": 0.6511,
+    "M2_F3_epochs_per_run": 25.76,
+    "M2_F4_epochs_per_run": 16.77,
+    "total_remaining_h": 132.9,
+    "days": 5.5,
+    "above_CI_optimistic_published": false
+   },
+   "POOLED_as_published_in_CK5": {
+    "F3_over_F2": 0.8202,
+    "F4_over_F3": 0.8887,
+    "M2_F3_epochs_per_run": 23.63,
+    "M2_F4_epochs_per_run": 21.0,
+    "total_remaining_h": 139.0,
+    "days": 5.8,
+    "reproduces_CK5_139_0": true,
+    "above_CI_optimistic_published": false
+   }
+  },
+  "per_seed_range_h": [
+   113.8,
+   204.3
+  ],
+  "per_seed_spread_h": 90.5,
+  "n_seeds_above_CI_optimistic": 1,
+  "correction_to_CK5": "§CK.5 said effect B gives 139.0 h, below §CI's published optimistic bound of 166.6 h. That is the POOLED figure; computed per seed the same arithmetic gives 113.8 to 204.3 h, and the seed-01 branch (204.3 h) is ABOVE 166.6 h. So 'effect B lies below §CI's optimistic bound' is not robust -- it holds for 2 of 3 seeds. The defensible low end reverts to §CI's optimistic scenario on measured rows (173.4 h), with 139.0 h surviving only as one pooled point inside a seed-induced range.",
+  "half_of_effect_B_not_distinguishable_from_flat": {
+   "F3_over_F2_pooled_ci": [
+    0.7161,
+    0.9345
+   ],
+   "F3_over_F2_excludes_1": true,
+   "F4_over_F3_pooled_ci": [
+    0.7699,
+    1.0264
+   ],
+   "F4_over_F3_covers_1": true,
+   "reading": "the F4/F3 half of effect B has a bootstrap CI covering 1.0, so that half is not distinguishable from 'flat', which is §CI's own optimistic scenario"
+  }
+ },
+ "config_x_fold_interaction_not_significant": {
+  "pct_of_SST": 17.184,
+  "df": 78,
+  "F": 0.8872,
+  "p": 0.7269259523593201,
+  "config_main_p": 0.518987202004913,
+  "same_in_BN1_on_rank_ic": {
+   "pct": 2.8831,
+   "F": 0.3894,
+   "p": 1.0
+  },
+  "candidate_closed": "§CM's closing suggestion -- that F3's bimodality might correspond to a class of configs converging either very fast or very slowly -- is REJECTED: configs do not differ in their fold profiles on peak epoch (p = 0.727), just as they do not on validation RankIC (§BN.1, p = 1.0000)."
+ },
+ "what_this_does_not_change": [
+  "§CI's four scenarios: they never used M1's fold ratios, and their inputs are unaffected",
+  "§CK.2's four-fold epochs/run table: arithmetically correct, but it is a pooled mean over 3 seeds whose fold interaction is highly significant, so 'non-monotone, peaking at F2' is a statement about pooled data, not about every seed",
+  "§CM.4's mean-versus-median order flip between F3 and F4: independent of seeds",
+  "§CJ's cap scan: peak epochs are what they are; 0 truncated is unaffected",
+  "§CL's panel identity and A15's exact row counts: unrelated to peak epochs"
+ ],
+ "negative_controls": {},
+ "validation_and_controls": {
+  "primary_validation_reproduces_BN1": {
+   "per_term": {
+    "fold": {
+     "BN1_published_pct": 74.5273,
+     "recomputed_pct": 74.5273,
+     "BN1_published_F": 261.744,
+     "recomputed_F": 261.744,
+     "matches": 1.0
+    },
+    "config": {
+     "BN1_published_pct": 1.3987,
+     "recomputed_pct": 1.3987,
+     "BN1_published_F": 0.5668,
+     "recomputed_F": 0.5668,
+     "matches": 1.0
+    },
+    "seed": {
+     "BN1_published_pct": 0.8798,
+     "recomputed_pct": 0.8798,
+     "BN1_published_F": 4.635,
+     "recomputed_F": 4.635,
+     "matches": 1.0
+    },
+    "config_x_fold": {
+     "BN1_published_pct": 2.8831,
+     "recomputed_pct": 2.8831,
+     "BN1_published_F": 0.3894,
+     "recomputed_F": 0.3894,
+     "matches": 1.0
+    },
+    "residual": {
+     "BN1_published_pct": 20.311,
+     "recomputed_pct": 20.311,
+     "BN1_published_F": null,
+     "recomputed_F": null,
+     "matches": true
+    }
+   },
+   "grand_mean_published": 0.076318,
+   "grand_mean_recomputed": 0.076318,
+   "grand_mean_matches": true,
+   "ALL_MATCH": true,
+   "reading": "reproducing a decomposition another probe already published, on a different dependent variable, to four decimals -- this is the primary validation of the ANOVA, and it is a check against an external answer rather than an expectation baked into this probe"
+  },
+  "permutation_calibration": {
+   "per_term": {
+    "fold": {
+     "n_permutations": 300,
+     "null_mean_F": 1.101,
+     "null_mean_F_within_15pct_of_1": true,
+     "false_positive_rate_at_alpha_0.05": 0.0733,
+     "fpr_within_expected_band": true,
+     "critical_F_at_alpha_0.05": 2.6468
+    },
+    "config": {
+     "n_permutations": 300,
+     "null_mean_F": 1.0271,
+     "null_mean_F_within_15pct_of_1": true,
+     "false_positive_rate_at_alpha_0.05": 0.05,
+     "fpr_within_expected_band": true,
+     "critical_F_at_alpha_0.05": 1.5475
+    },
+    "seed": {
+     "n_permutations": 300,
+     "null_mean_F": 0.9954,
+     "null_mean_F_within_15pct_of_1": true,
+     "false_positive_rate_at_alpha_0.05": 0.0433,
+     "fpr_within_expected_band": true,
+     "critical_F_at_alpha_0.05": 3.0381
+    },
+    "config_x_fold": {
+     "n_permutations": 300,
+     "null_mean_F": 1.0138,
+     "null_mean_F_within_15pct_of_1": true,
+     "false_positive_rate_at_alpha_0.05": 0.0633,
+     "fpr_within_expected_band": true,
+     "critical_F_at_alpha_0.05": 1.3449
+    }
+   },
+   "all_terms_calibrated": true
+  },
+  "why_the_first_control_was_replaced": "the first version permuted the response ONCE and asserted all four terms had p > 0.01. Under the null each term has a 1% chance of falling below 0.01, so that control fails spuriously about 4% of the time -- it is flaky, and a flaky control is worse than none because it trains the reader to ignore failures. It did fail, on seed at p = 0.0037. Replacing a single draw with a 300-draw calibration (null mean F must be within 15% of the theoretical 1.0, and the false-positive rate at alpha = 0.05 must sit in 0.00-0.12) measures the same property stably.",
+  "internal_consistency": {
+   "additivity_errors": {
+    "model_A": 0.0,
+    "model_B": 0.0
+   },
+   "df_accounted_equals_total": true,
+   "design_balanced_no_missing_cell": true
+  },
+  "effect_B_pooled_reproduces_CK5": true,
+  "ALL_VALIDATIONS_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": []
+}
