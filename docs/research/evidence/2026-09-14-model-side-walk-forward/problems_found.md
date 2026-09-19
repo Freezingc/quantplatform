@@ -5,7 +5,7 @@
 每条都给出：现象 → 根因 → 处置 → 权威出处（原件已复制到 `vendored/`）。
 
 > **⚠ 引用任何数字之前先读 [`corrections_ledger.md`](corrections_ledger.md)。**
-> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CT 共 15 条数字作废、25 条表述需改读、8 条代码缺陷、19 条引用规则；**其中 C1/C2/C5 已在 `codex/deferred-driver-fixes` 分支修复并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
+> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CU 共 15 条数字作废、25 条表述需改读、9 条代码缺陷、19 条引用规则；**其中 C1/C2/C5/C9 已在 `codex/deferred-driver-fixes` 分支由同一个提交 `1aa4a70` 修复**（**C9 与 C1 同根因、一次修好两面**）**并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
 > 那份登记表是全包唯一的集中清单：**A 类 = 已作废的数字，不得引用；B 类 = 需改读的表述；C 类 = 代码层面未修的缺陷，引用受影响数字时必须带条件；D 类 = 给写论文的人的引用规则。**
 > 正文里被推翻的地方都有 `> 【日期 就地更正…】` 标记，但标记是散的，登记表是全的。
 
@@ -10600,3 +10600,93 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**加载任何 `.pt` 为张量、**没有**重建模型、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 14 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 09:16 有 43 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 09:06:46 报 ok，`MemAvailable` 163 GB，折缓存 46 个文件完好。
+
+---
+
+## CU. 【已闭合，2026-09-19 10:35，**每个已发运的 torch bundle 内部都不自洽：`seed-*.pt` 是峰值权重（§CT 实测 18/18 逐字节等于峰值检查点），而同一 bundle 里的 `validation_predictions.parquet` 是末轮内存模型算的，两者描述的不是同一个模型。这一点可以纯演绎证明、不需要加载任何权重：① `trainer.py` 全文没有任何恢复权重的调用（`load_state_dict` / `restore` / `best_state` / `best_weights` / `copy.deepcopy` 全部零命中），`fit` 以 `return TrainingResult(...)` 结束、之后不再碰 `model`，所以调用方拿到的 `model` 就是最后一轮的状态；② 早停必然在峰值后再跑满 `patience` 轮（`trainer.py:118-120` 只在 `stale_epochs >= patience` 时 break、`:117` 每轮不改善就 +1），所以末轮 ≥ 峰值 + 10；③ §CJ 已证 483 个完成运行 0 触顶、§CS 证实 M2 F2 重拟合也是早停，所以没有运行被截断。三条合起来：那份 parquet 出自一个比它旁边的权重多走了至少 10 步梯度更新的模型**】**但爆炸半径为零，而这才是要紧的部分**：**`validation_predictions.parquet` 被写入**（`model_bundle.py:97`）**、被 checksum、被列进 `expected_files`**（`:231`）**、被一个单测断言"文件存在"**（`test_model_artifact_bundle.py:39`），**但全仓库没有任何代码把它读回来**——**`load_bundle_for_evaluation` 只从 `io.BytesIO(bundle.files[f"seed-{seed}.pt"])` 重建模型**（`inference/artifact_loader.py:57`），**驱动用重建出的模型现算 test 预测**（`:2636`、`:3317`），**这正是 §CC.2 验证过的链条**。**所以没有任何已发布数字改变**（**OOS mean_rank_ic/icir、G6、G4、§BQ 的逐位复现、§BR 的地板扫描全不受影响**）。**树载体不受影响**（**LightGBM 的 predict 用 `num_iteration=self.best_iteration`、`lgbm_rankreg.py:314`，而 booster.txt 本身就截断到 best_iteration**（**§CQ 已验**），**所以 M0/M0R 的权重与预测描述同一个模型**）——**这是本节的差分对照，缺陷是 torch 特有的。**
+
+### CU.1 这条与 §CC.1 的关系：把一句顺带断言变成证明，并量出它的边界
+
+**§CC.1 在撤回"只换标量"那个修法时顺带说过一句**：**"只把标量换成 `best_validation_rank_ic` 会让选择量仍然描述错的模型状态，并且让 bundle 里那份 `validation_predictions.parquet` 继续与它自己的权重打架"**。**但那是推断、不是实测**——**"内部不自洽"这个说法在包里此前出现 0 次，`validation_predictions.parquet` 的 12 次出现全是在讲它怎么被写入或它属于哪个 bundle，没有一次是拿它与自己 bundle 里的权重对照过。**
+
+**本节做三件 §CC.1 没做的事**：
+1. **证明那份 parquet 确实出自末轮权重**（**CU.2 的三步演绎**），**而不是"大概是"**；
+2. **量出爆炸半径**（**CU.3 的穷举分类 + 读取者搜索**）——**结论是零，所以这条不需要紧急处置**；
+3. **确认 `1aa4a70` 那个已存在的修复顺带修好了它**（**CU.4**）——**它的注释逐字写出了这个缺陷**，**而 ledger C1 完全没提这一面**（**C1 行里 `validation_predictions`、`内部不自洽`、`parquet` 各出现 0 次，它只讲了选择侧**）。
+
+### CU.2 三步演绎：为什么那份 parquet 必然出自末轮权重
+
+**第一步：训练器从不把最佳权重恢复回内存模型。**`trainer.py` 全文搜 `load_state_dict`、`restore`、`best_state`、`best_weights`、`copy.deepcopy`、`state_dict()` **六个记号全部零命中**；**`fit` 的结尾是 `return TrainingResult(best_epoch, best_value, tuple(history))`**（**`trainer.py:125`**），**返回之后不再碰 `model`**。**所以调用方手里那个 `model` 对象，就是最后一个执行完的 epoch 留下的状态**。**注意这一步是"读源码得出的必然"，不是抽样观察**：**没有任何一条路径会把权重写回去。**
+
+**第二步：早停必然在峰值之后再跑满 `patience` 轮。**`trainer.py:118` 是 `stale_epochs += 1`（**每个不改善的 epoch**），**`:119-120` 是 `if stale_epochs >= self._config.early_stopping_patience: break`**。**所以循环只有在连续 `patience` 轮不改善之后才会退出，即末轮 ≥ 峰值 + patience**。**`TORCH_EARLY_STOPPING_PATIENCE = 10`**（**`run_real_candidate_training.py:2086`**）。
+
+**第三步：没有运行被 cap 截断，所以"≥"其实就是"="。**§CJ 已实测 **483 个完成运行 0 触顶**、**全机最大峰值 71 对 cap 100**；**§CS 又证实 M2 F2 重拟合的三个种子**（**峰值 11 / 71 / 27**）**也都远低于 100**。**所以每个 torch 运行都是"峰值之后再跑 10 轮不改善然后停"，末轮 = 峰值 + 10。**
+
+**三步合起来**：**bundle 里那份 parquet 的预测，出自一个比它旁边 `seed-*.pt` 的权重多走了 10 步 AdamW 更新的模型**。**它们描述的不是同一个模型**——**而且这不需要加载任何权重就能知道，是纯源码演绎**（**§CA.7 与本节都坚持"没有打开任何 `checkpoint.pt`、没有加载任何权重或张量"**）。
+
+**两条 torch 路径都是这样**：**cross-section 路径 `cross_section_search.py:203` 的 `predictions = percentile_frame(model, validation_batches)` 配 `:206` 的 `checkpoint_path = checkpoint_store._root / run.checkpoint_ids[-1] / "checkpoint.pt"`；temporal 路径 `temporal_search.py:374` 与 `:377` 是同构的两行**。**M2 走 temporal、M1 走 cross-section，所以两个载体都中招**（**6 个已发运 bundle：M1 四折 + M2 F1/F2，每个都是 3 个 `seed-*.pt` + 1 份 `validation_predictions.parquet`**）。
+
+### CU.3 爆炸半径：穷举分类 68 处提及，读取者是 0
+
+**"没有读取者"这个结论只在搜索本身有效时才成立**，**所以本节不是跑一个 grep 看它空不空，而是把每一处提及都归类、再配一个能失败的对照。**
+
+**全仓库**（`src/`、`scripts/`、`tests/`）**共 68 处提到 `validation_predictions` 这个子串，逐条分类**：
+
+| 角色 | 处数 | 说明 |
+|---|---|---|
+| 局部变量 `seed_validation_predictions` | **41** | 内存里的 DataFrame，朝 bundle 写入方向流动 |
+| 关键字实参 / 类型标注 `validation_predictions=` | **22** | 传参，不是文件访问 |
+| 写入前的 DataFrame 操作（`.columns` / `.sort_values` / `.rename`） | **2** | `model_bundle.py:70`、`:91` |
+| 写文件 | **1** | `model_bundle.py:97`（`temporary / "validation_predictions.parquet"`） |
+| 列进 `expected_files` | **1** | `model_bundle.py:231` |
+| 单测断言"文件存在" | **1** | `test_model_artifact_bundle.py:39`（`.is_file()`） |
+| **读取者** | **0** | — |
+
+**所以那份 parquet 被写一次、被 checksum、被列入期望文件清单、被一个测试断言存在，但从未被读回**。**分类器把"读取者"定义得很窄**（**必须是从 bundle 里取出字节或从磁盘读 parquet：`files[...validation_predictions...]`、`read_parquet(...validation_predictions...)`、`open(...validation_predictions...)`**），**因为宽定义会把 41 个同名局部变量误算进来。**
+
+**三条对照，每条都能失败**：
+1. **同一个搜索必须能找到权重的读取者**——**用 `BytesIO(bundle.files` / `files[f"seed-` 搜，命中 `inference/artifact_loader.py:57`**。**若这条也返回空，说明搜索本身是坏的、"parquet 无读取者"就是空真**（**§CM.6(iv)/§CP.7 的教训：对照要能失败**）。**它命中了，所以搜索有效。**
+2. **分类器必须能把真读取者认出来**——**注入四条合成读取语句**（`pq.read_parquet(io.BytesIO(bundle.files["validation_predictions.parquet"]))`、`pd.read_parquet(bundle.path / "validation_predictions.parquet")`、`open(root / "validation_predictions.parquet", "rb")`、`bundle.files["validation_predictions.parquet"]`），**四条全部被分类为 READER**。**若分类器对真读取者也返回"不是读取者"，那"0 个读取者"就毫无意义。**
+3. **分类器不能过度标记**——**注入五条非读取语句**（局部变量赋值、关键字实参、写入路径、期望文件列表项、`.is_file()` 断言），**五条全部不被判为 READER**。**否则"0"可能只是分类器什么都不认。**
+
+**分类器第一版是错的、而且错得正是本节要防的那种**：**初版按"行里有没有 `validation_predictions` 子串"分桶、认不出的丢进 OTHER，结果 OTHER 有 33 条、把 `parquet_has_no_reader` 这条对照顶成失败**。**查下去发现 33 条全是局部变量 `seed_validation_predictions`**（**41 处中的大部分**）**与关键字实参**——**子串搜索分不清"局部变量"与"文件访问"**。**改为按精确标识符与实际文件访问语法分类后，68 处全部归入 6 个角色、无 UNCLASSIFIED，读取者 0**。**这条对照失败是对的：它逼出了分类器的真实缺陷，而不是被放宽阈值掩盖过去。**
+
+### CU.4 `1aa4a70` 那个已存在的修复顺带修好了它，而 ledger C1 没记这一面
+
+**`codex/deferred-driver-fixes` 上的 `1aa4a70`**（**C1 的修复，刻意未合并**）**在 `runner.py:98` 加了 `checkpoint_store.load(checkpoint_ids[-1], model, optimizer)`**，**位置在 `run_validation_governed_training` 返回之前**；**而 `predictions = percentile_frame(model, ...)` 在调用方、即返回之后**（**`cross_section_search.py:203`**）。**所以合并之后，内存 model 在算 predictions 之前已被恢复成峰值权重，parquet 与 `seed-*.pt` 就描述同一个模型了。**
+
+**更值得注意的是那个修复的注释逐字写出了本节的发现**（**`runner.py:87-97`**）：
+
+> *"trainer.fit breaks out of its loop once early_stopping_patience stale epochs have passed, so `model` is left holding the FINAL epoch's weights, up to `patience` epochs past the peak. Checkpoints are saved only on strict improvement, so `checkpoint_ids[-1]` is the peak. Callers score the returned model to pick a configuration and separately persist that checkpoint as the shipped artifact; without this restore those two describe different models, the selection is made on a model that is never shipped, **and the bundle stores peak weights beside final-epoch validation predictions**."*
+
+**即：本节独立推出的三步演绎，与仓库里那个修复的注释是同一套论证**（**同一处 `checkpoint_ids[-1]` 是峰值、同一个 `patience` 轮差、同一个"选择用的模型从不发运"，外加本节量出的"bundle 内部不自洽"**）。**这是一次交叉验证**：**两条独立路径**（**本包只读取证 vs 修复作者写的注释**）**得到同一个机制。**
+
+**但 ledger C1 没有记这一面**：**C1 行里 `validation_predictions`、`内部不自洽`、`parquet` 各出现 0 次，它只讲了"选择度量与发运工件是两个模型状态"**（**选择侧**）。**所以本节给 C1 补一条就地标记，说明那个修复同时修好了 bundle 内部不自洽，并把"爆炸半径为零"这个量化结论记进 ledger C9**——**这不是新缺陷**（**修复已存在**），**而是把一个此前只被顺带断言、从未实测的性质变成有边界的事实。**
+
+### CU.5 这条对论文写作意味着什么
+
+**可以写**：**"发运的 torch bundle 里，权重是峰值轮的、而随包附带的 `validation_predictions.parquet` 是末轮模型算的；两者相差恰好 `patience`=10 个 epoch 的梯度更新。这个 parquet 在生产代码里从未被读取，所以它不影响任何已发布指标。"**
+
+**不可以写**：
+1. **"bundle 里的验证预测是错的"**——**它没有错，它是末轮模型的正确预测；错的是把它与峰值权重放在同一个包里而不加说明**（**而它又没人读，所以连"误导"都还没发生**）。
+2. **"这影响了 OOS 数字"**——**不影响。OOS 是从 `seed-*.pt` 重建模型现算 test 预测的**（**§CC.2 已用哈希与源码链条验证**），**与那份 parquet 无关。**
+3. **"这影响了配置选择"**——**选择侧的缺陷是 §CA/C1 那一条**（**检索记录打末轮分**），**它与本节是同一个根因的两个后果，但本节讲的是 bundle 内部、§CA 讲的是选择量。合并 `1aa4a70` 一次修好两者。**
+4. **任何关于"两者差多少"的量化**——**本节没有测**（**那需要加载权重重新打分，或把 parquet 与验证标签对起来算，两者都要执行代码/读 parquet 行数据**）。**按 ledger B1 不给未验证的量级。**
+
+**真正需要这条的场景只有一个**：**如果将来有人开始消费那份 parquet**（**例如想"从 bundle 直接报验证指标"而不重新打分**），**他会得到末轮模型的数字、却以为它在描述发运的峰值模型**。**所以处置是**：**要么合并 `1aa4a70`**（**它同时修好选择侧与 bundle 内部**），**要么在 bundle 的文档里写明这份 parquet 的口径**。**在两者都没做之前，不要读那份 parquet 来报任何指标。**
+
+### CU.6 本节没有做的事
+
+**没有**量化"末轮模型与峰值模型的验证预测差多少"——**需要加载权重重新打分或把 parquet 与验证标签对起来算，两者都超出只读约束**（**§CA.7 同样没做，理由一致**）；
+**没有**打开任何 `.pt` 或任何 parquet**（**连页脚都没读**）——**本节只读源码文本、bundle 的文件名清单、以及 §CT 已发布的哈希结论**；**bundle 里 parquet 的行数**（**776303**）**是 §CS 读页脚得到的，本节直接引用、没有重读**；
+**没有**改任何仓库文件、**没有**合并 `1aa4a70`——**合并时机由 §CH/D12 那条"等 M2 四折跑完"的科学有效性理由决定，本节不碰**；
+**没有**检查 F3/F4 的 bundle——**它们还不存在**（**F3 网格在跑、检索记录 0，F4 未开始**）；**但机制与折无关，所以 F3/F4 落地后必然同样不自洽，无需逐个再验**（**§CT 的探针可重跑确认 24/24**）；
+**没有**检查 M0/M0R 的 bundle 是否也有同名 parquet 的口径问题——**只从源码确认了树载体的 predict 用 `best_iteration`**（**`lgbm_rankreg.py:314`**）**、booster.txt 截断到 best_iteration**（**§CQ**），**所以树载体自洽**；**没有去逐字节比对树载体 bundle 里的 parquet 与 booster**（**那需要重新打分**）；
+**没有**触库、**没有**网络或数据商调用、**没有** MCP、**没有**训练、**没有**导入或执行任何仓库模块（**`trainer.py` / `runner.py` / `cross_section_search.py` / `temporal_search.py` / `model_bundle.py` / `artifact_loader.py` / `lgbm_rankreg.py` / `run_real_candidate_training.py` / `test_model_artifact_bundle.py` 全部只读文本**）、**没有**写 artifacts 目录（**机读件写在本包自己的 `measurements/` 下**）、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号。**与 §CN–§CT 一样本节不触碰 `/tmp/walk_forward_cache_v1`，无 atime 副作用**（**§CM.5 那条披露只适用于 §CJ/§CK/§CL/§CM**）。**本节不读任何实时状态**（**只读不可变的源码与已落盘 bundle 清单**），**所以机读件与 §CT 一样逐字节可复现**（**已跨 cwd 与跨运行验证**），**不适用 §CR/§CS 那套 live 快照纪律。**
+
+**取证工具**：`m2_walk_forward_progress/probes/probe_bundle_validation_predictions_are_last_epoch.py`（**含 CU.3 的三条对照与分类器自测；`assert` 全部通过才产出数字；用 `Path(__file__)` 定位、与 cwd 无关、逐字节可复现**）；
+**机读件**：`measurements/bundle_validation_predictions_are_last_epoch.json`（**含三步事实的逐行证据与源码 sha256、68 处提及的完整分类、分类器自测的正负用例、树载体差分对照、当前 6 个 torch bundle 的清单、以及全部对照的通过状态**）；`provenance.json` 已刷新（36 支探针 / 47 份机读件），两道闸门均退出 0；
+**输入**：上述九个源码文件的文本、`m1_full_v1/models/*/` 与 `m2_v1/models/*/` 的文件名清单、以及 §CT/§CS/§CJ/§CQ 已发布的结论（**作为引用**）。
+
+**安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt` 或任何 `.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
+驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 16 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 11:14 有 73 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 10:20:17 报 ok，`MemAvailable` 171 GB，折缓存 46 个文件完好。

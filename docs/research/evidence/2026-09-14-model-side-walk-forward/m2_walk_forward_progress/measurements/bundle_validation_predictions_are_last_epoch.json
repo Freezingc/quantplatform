@@ -1,0 +1,310 @@
+{
+ "question": "is the shipped bundle internally consistent -- do its validation_predictions and its seed weights describe the same model? and if not, does anything consume the inconsistent part?",
+ "generated_at_local": "2026-09-19T10:20:48",
+ "finding": {
+  "statement": "every shipped TORCH bundle is internally inconsistent: seed-*.pt are PEAK weights (§CT, 18/18 byte-identical to the peak checkpoint) while validation_predictions.parquet was produced by the LAST-EPOCH in-memory model, which by early stopping took >= patience (10) more optimizer steps",
+  "proof_is_deductive_no_weights_loaded": true,
+  "blast_radius": "ZERO -- no code reads validation_predictions.parquet back",
+  "scope": "torch carriers (M1 ResidualMLP, M2 TCN); tree carriers (M0, M0R) are consistent",
+  "upgrades": "§CC.1 asserted in passing that a scalar-only fix would leave the bundle's validation_predictions 'fighting its own weights'; this proves that fight already exists in every shipped torch bundle, and proves it is harmless because nothing reads the parquet"
+ },
+ "fact_1_trainer_never_restores_best": {
+  "file": "src/research_v2/training/trainer.py",
+  "sha256": "cba147edc2299668",
+  "restoration_tokens_found": {},
+  "any_restoration_token_present": false,
+  "return_statement": [
+   "return TrainingResult(best_epoch, best_value, tuple(history))"
+  ],
+  "conclusion": "fit() returns TrainingResult(best_epoch, best_value, history) and never writes back into `model`, so the caller's in-memory model is the LAST-EPOCH state"
+ },
+ "fact_2_early_stopping_runs_patience_past_peak": {
+  "file": "src/research_v2/training/trainer.py",
+  "lines": {
+   "98": "stale_epochs = 0",
+   "110": "if validation_rank_ic > best_value:",
+   "113": "stale_epochs = 0",
+   "118": "stale_epochs += 1",
+   "119": "if stale_epochs >= self._config.early_stopping_patience:"
+  },
+  "conclusion": "last_executed_epoch >= peak_epoch + patience, because the loop cannot exit until patience consecutive epochs fail to improve"
+ },
+ "fact_3_predictions_use_the_in_memory_model": {
+  "src/research_v2/training/cross_section_search.py": {
+   "prediction_line": {
+    "203": "predictions = percentile_frame(model, validation_batches)"
+   },
+   "checkpoint_source_line": {
+    "206": "checkpoint_path=checkpoint_store._root / run.checkpoint_ids[-1] / \"checkpoint.pt\","
+   },
+   "sha256": "e876ca2cc6dc222d"
+  },
+  "src/research_v2/training/temporal_search.py": {
+   "prediction_line": {
+    "374": "predictions = percentile_frame(model, batches.validation_batches)"
+   },
+   "checkpoint_source_line": {
+    "377": "checkpoint_path=checkpoint_store._root / run.checkpoint_ids[-1] / \"checkpoint.pt\","
+   },
+   "sha256": "dd0ef90294eb66ea"
+  }
+ },
+ "blast_radius_search": {
+  "n_mentions_total": 68,
+  "by_role": {
+   "DATAFRAME_OPERATION_BEFORE_WRITE": [
+    "src/research_v2/training/model_bundle.py:70: if missing := sorted(required_predictions.difference(validation_predictions.columns)):",
+    "src/research_v2/training/model_bundle.py:91: predictions = validation_predictions.sort_values("
+   ],
+   "FILENAME_IN_EXPECTED_LIST": [
+    "src/research_v2/training/model_bundle.py:231: \"validation_predictions.parquet\","
+   ],
+   "KEYWORD_ARGUMENT_OR_ANNOTATION": [
+    "src/research_v2/training/model_bundle.py:61: validation_predictions: pd.DataFrame,",
+    "scripts/run_real_candidate_training.py:587: validation_predictions=ensemble.predictions.rename(",
+    "scripts/run_real_candidate_training.py:909: validation_predictions=ensemble.predictions.rename(",
+    "scripts/run_real_candidate_training.py:1357: validation_predictions=ensemble_predictions,",
+    "scripts/run_real_candidate_training.py:2600: validation_predictions=ensemble.predictions.rename(",
+    "scripts/run_real_candidate_training.py:3287: validation_predictions=ensemble.predictions.rename(",
+    "tests/golden/test_models.py:80: validation_predictions=pd.DataFrame(",
+    "tests/integration/models/test_model_walk_forward.py:350: validation_predictions = ensemble.predictions.rename(",
+    "tests/integration/models/test_model_walk_forward.py:376: validation_predictions=validation_predictions,",
+    "tests/integration/models/test_model_walk_forward.py:391: validation_predictions=validation_predictions,",
+    "tests/unit/evaluation/test_model_walk_forward.py:141: validation_predictions=pd.DataFrame(",
+    "tests/unit/inference/test_artifact_loader.py:85: validation_predictions=pd.DataFrame(",
+    "tests/unit/inference/test_artifact_loader.py:178: validation_predictions=pd.DataFrame(",
+    "tests/unit/inference/test_artifact_loader.py:454: validation_predictions=pd.DataFrame(",
+    "tests/unit/inference/test_artifact_loader.py:499: validation_predictions=pd.DataFrame(",
+    "tests/unit/inference/test_artifact_loader.py:763: validation_predictions=pd.DataFrame(",
+    "tests/unit/inference/test_lgbm_artifact_loader.py:103: validation_predictions=validation,",
+    "tests/unit/inference/test_reproduction.py:510: validation_predictions=pd.DataFrame(",
+    "tests/unit/inference/test_reproduction.py:735: validation_predictions=pd.DataFrame(",
+    "tests/unit/scripts/test_run_real_candidate_training.py:1323: validation_predictions=pd.DataFrame(",
+    "tests/unit/scripts/test_run_real_candidate_training.py:1898: validation_predictions=pd.DataFrame(",
+    "tests/unit/training/test_model_artifact_bundle.py:35: validation_predictions=predictions,"
+   ],
+   "LOCAL_VARIABLE_seed_validation_predictions": [
+    "src/research_v2/training/cross_section_search.py:55: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "src/research_v2/training/cross_section_search.py:73: seed_validation_predictions[seed] = fitted.predictions",
+    "src/research_v2/training/cross_section_search.py:76: seed_validation_predictions,",
+    "src/research_v2/training/temporal_search.py:250: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "src/research_v2/training/temporal_search.py:264: seed_validation_predictions[seed] = fitted.predictions",
+    "src/research_v2/training/temporal_search.py:267: seed_validation_predictions, validation_rank_ic=seed_rank_ic",
+    "scripts/run_real_candidate_training.py:533: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "scripts/run_real_candidate_training.py:566: seed_validation_predictions[seed] = _predict_validation_percentiles(",
+    "scripts/run_real_candidate_training.py:570: seed_validation_predictions[seed], frames[\"validation\"]",
+    "scripts/run_real_candidate_training.py:572: ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)",
+    "scripts/run_real_candidate_training.py:866: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "scripts/run_real_candidate_training.py:888: seed_validation_predictions[seed] = _predict_temporal_validation_percentiles(",
+    "scripts/run_real_candidate_training.py:892: seed_validation_predictions[seed], frames[\"validation\"]",
+    "scripts/run_real_candidate_training.py:894: ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)",
+    "scripts/run_real_candidate_training.py:1367: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "scripts/run_real_candidate_training.py:1384: seed_validation_predictions[seed] = predictions",
+    "scripts/run_real_candidate_training.py:1386: ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)",
+    "scripts/run_real_candidate_training.py:1865: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "scripts/run_real_candidate_training.py:1870: seed_validation_predictions[seed] = predictions",
+    "scripts/run_real_candidate_training.py:1873: seed_validation_predictions, validation_rank_ic=seed_rank_ic",
+    "scripts/run_real_candidate_training.py:1896: seed_validation_predictions = {}",
+    "scripts/run_real_candidate_training.py:1909: seed_validation_predictions[seed] = predictions",
+    "scripts/run_real_candidate_training.py:1912: seed_validation_predictions, validation_rank_ic=seed_rank_ic",
+    "scripts/run_real_candidate_training.py:2474: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "scripts/run_real_candidate_training.py:2492: seed_validation_predictions[seed] = predictions",
+    "scripts/run_real_candidate_training.py:2495: seed_validation_predictions, validation_rank_ic=seed_rank_ic",
+    "scripts/run_real_candidate_training.py:2519: seed_validation_predictions = {}",
+    "scripts/run_real_candidate_training.py:2558: seed_validation_predictions[seed] = cast(",
+    "scripts/run_real_candidate_training.py:2580: seed_validation_predictions[seed] = predictions",
+    "scripts/run_real_candidate_training.py:2583: seed_validation_predictions, validation_rank_ic=seed_rank_ic",
+    "scripts/run_real_candidate_training.py:3147: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "scripts/run_real_candidate_training.py:3177: seed_validation_predictions[seed] = predictions",
+    "scripts/run_real_candidate_training.py:3180: seed_validation_predictions, validation_rank_ic=seed_rank_ic",
+    "scripts/run_real_candidate_training.py:3203: seed_validation_predictions = {}",
+    "scripts/run_real_candidate_training.py:3235: seed_validation_predictions[seed] = cast(pd.DataFrame, fitted[\"predictions\"])",
+    "scripts/run_real_candidate_training.py:3265: seed_validation_predictions[seed] = predictions",
+    "scripts/run_real_candidate_training.py:3268: seed_validation_predictions, validation_rank_ic=seed_rank_ic",
+    "tests/integration/models/test_model_walk_forward.py:325: seed_validation_predictions: dict[int, pd.DataFrame] = {}",
+    "tests/integration/models/test_model_walk_forward.py:344: seed_validation_predictions[seed] = _seed_predictions(model, validation_batch)",
+    "tests/integration/models/test_model_walk_forward.py:346: seed_validation_predictions[seed], validation_label_frame",
+    "tests/integration/models/test_model_walk_forward.py:349: ensemble = build_seed_ensemble(seed_validation_predictions, validation_rank_ic=seed_rank_ic)"
+   ],
+   "TEST_ASSERTS_FILE_EXISTS": [
+    "tests/unit/training/test_model_artifact_bundle.py:39: assert (bundle.path / \"validation_predictions.parquet\").is_file()"
+   ],
+   "WRITE_FILE": [
+    "src/research_v2/training/model_bundle.py:97: temporary / \"validation_predictions.parquet\","
+   ]
+  },
+  "n_readers": 0,
+  "readers": [],
+  "any_reader_found": false,
+  "unclassified_needing_review": [],
+  "CONTROL_weight_reader_must_be_found": {
+   "n_hits": 1,
+   "hits": [
+    "src/research_v2/inference/artifact_loader.py:268: io.BytesIO(bundle.files[f\"seed-{seed}.pt\"]),"
+   ],
+   "found_artifact_loader_reading_seed_pt": true
+  },
+  "classifier_self_test": {
+   "positives_detected_as_READER": {
+    "bundle_files_access": true,
+    "read_parquet_from_bundle_path": true,
+    "open_the_file": true,
+    "files_mapping_lookup": true
+   },
+   "all_positives_detected": true,
+   "negatives_not_flagged_as_READER": {
+    "local_variable": true,
+    "keyword_argument": true,
+    "write_side": true,
+    "expected_files_list": true,
+    "test_asserts_exists": true
+   },
+   "all_negatives_clean": true,
+   "ALL_OK": true
+  },
+  "conclusion": "the shipped parquet is written once, listed once among expected files, and existence-asserted once in a unit test; it is never read back. The weights beside it ARE read back by artifact_loader, so this search is not vacuous."
+ },
+ "tree_carrier_differential_control": {
+  "file": "src/research_v2/baselines/lgbm_rankreg.py",
+  "predict_uses_best_iteration": {
+   "314": "np.ndarray, predict(values, num_iteration=self.best_iteration or None)"
+  },
+  "best_iteration_captured_from_booster": {
+   "294": "best_iteration = getattr(booster, \"best_iteration\", None)"
+  },
+  "conclusion": "for M0/M0R both the shipped booster.txt (truncated to best_iteration, §CQ) and the shipped validation predictions (num_iteration=best_iteration) describe the SAME model, so tree bundles are internally consistent and the defect is torch-specific"
+ },
+ "shipped_torch_bundles_now": {
+  "m1_full_v1/m1-f1": {
+   "n_seed_pt": 3,
+   "has_validation_predictions_parquet": true,
+   "files": [
+    "checksums.sha256",
+    "config.json",
+    "feature_order.json",
+    "model_card.json",
+    "preprocessing.json",
+    "seed-20260801.pt",
+    "seed-20260802.pt",
+    "seed-20260803.pt",
+    "signature.json",
+    "validation_predictions.parquet"
+   ]
+  },
+  "m1_full_v1/m1-f2": {
+   "n_seed_pt": 3,
+   "has_validation_predictions_parquet": true,
+   "files": [
+    "checksums.sha256",
+    "config.json",
+    "feature_order.json",
+    "model_card.json",
+    "preprocessing.json",
+    "seed-20260801.pt",
+    "seed-20260802.pt",
+    "seed-20260803.pt",
+    "signature.json",
+    "validation_predictions.parquet"
+   ]
+  },
+  "m1_full_v1/m1-f3": {
+   "n_seed_pt": 3,
+   "has_validation_predictions_parquet": true,
+   "files": [
+    "checksums.sha256",
+    "config.json",
+    "feature_order.json",
+    "model_card.json",
+    "preprocessing.json",
+    "seed-20260801.pt",
+    "seed-20260802.pt",
+    "seed-20260803.pt",
+    "signature.json",
+    "validation_predictions.parquet"
+   ]
+  },
+  "m1_full_v1/m1-f4": {
+   "n_seed_pt": 3,
+   "has_validation_predictions_parquet": true,
+   "files": [
+    "checksums.sha256",
+    "config.json",
+    "feature_order.json",
+    "model_card.json",
+    "preprocessing.json",
+    "seed-20260801.pt",
+    "seed-20260802.pt",
+    "seed-20260803.pt",
+    "signature.json",
+    "validation_predictions.parquet"
+   ]
+  },
+  "m2_v1/m2-f1": {
+   "n_seed_pt": 3,
+   "has_validation_predictions_parquet": true,
+   "files": [
+    "checksums.sha256",
+    "config.json",
+    "feature_order.json",
+    "model_card.json",
+    "preprocessing.json",
+    "seed-20260801.pt",
+    "seed-20260802.pt",
+    "seed-20260803.pt",
+    "signature.json",
+    "validation_predictions.parquet"
+   ]
+  },
+  "m2_v1/m2-f2": {
+   "n_seed_pt": 3,
+   "has_validation_predictions_parquet": true,
+   "files": [
+    "checksums.sha256",
+    "config.json",
+    "feature_order.json",
+    "model_card.json",
+    "preprocessing.json",
+    "seed-20260801.pt",
+    "seed-20260802.pt",
+    "seed-20260803.pt",
+    "signature.json",
+    "validation_predictions.parquet"
+   ]
+  }
+ },
+ "source_hashes": {
+  "src/research_v2/training/trainer.py": "cba147edc2299668",
+  "src/research_v2/training/cross_section_search.py": "e876ca2cc6dc222d",
+  "src/research_v2/training/temporal_search.py": "dd0ef90294eb66ea",
+  "src/research_v2/training/model_bundle.py": "a12211e4e4f58eae",
+  "src/research_v2/inference/artifact_loader.py": "982b2b3b3a6d4064",
+  "src/research_v2/baselines/lgbm_rankreg.py": "2b75bbb6c66b752c",
+  "scripts/run_real_candidate_training.py": "33742880f314ca21"
+ },
+ "controls": {
+  "fact1_no_restoration_token_in_trainer": true,
+  "fact1_return_is_TrainingResult_only": true,
+  "fact2_patience_break_present": true,
+  "fact3_both_torch_paths_predict_from_model": true,
+  "fact3_both_torch_paths_source_checkpoint_from_ids_last": true,
+  "parquet_has_no_reader": true,
+  "every_mention_classified_no_unclassified": true,
+  "CONTROL_same_search_finds_the_weight_reader": true,
+  "CONTROL_classifier_detects_a_real_reader": true,
+  "CONTROL_classifier_does_not_overflag": true,
+  "CONTROL_tree_carrier_predicts_with_best_iteration": true,
+  "every_shipped_torch_bundle_carries_both_parts": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "pt_loaded_as_tensor": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true
+}

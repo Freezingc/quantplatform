@@ -49,12 +49,13 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-19T01:00:35+00:00",
+  "generated_at_utc": "2026-09-19T02:20:48+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "32848550f36fb6d05d1d87e345c60212532a79c99e4e8e0b234bcd1d99e054e8"
   },
   "measurements": {
+    "bundle_validation_predictions_are_last_epoch.json": "30adb9d32578d4285f5abcfd12ba3b283dd386bf9f87cc08b1616ea378b23cd2",
     "candidate_side_validation_coverage.json": "3966c9ce065ec7848b02dfff57615439e4d810e9904448e51017d83e9d4e20d0",
     "cap_truncation_scan.json": "8615fb9000bb4f92be3a583503372fdc6ea7ffc07fdc1463640b8acd93f519a3",
     "first_appearance_cause.json": "934dc8c748f62399aa651b16ac4ea8e0b220677bcfefcbc21ce81790a281cd28",
@@ -104,6 +105,7 @@
   },
   "probe_scripts": {
     "m2_progress_stall_watcher_v2.py": "14d4d52737e6b28a5c646dc68d898adfbf79384e309f3e022cd8a24dc2c4c0a7",
+    "probe_bundle_validation_predictions_are_last_epoch.py": "5ca35888588a1c33a6472ad2d2e05dc3b3ebf5258ea321bb16cc3488645cd639",
     "probe_cap_truncation_scan.py": "d329c4aca8d313ff7f29485bf558309b6ce42e9d9965b9308006253690280f5e",
     "probe_exact_g6_under_temporal_eligibility.py": "aea38f50a0a7bb3709f1668dc2e603cccefd20841bfa3d6cf50e7cbc6a491e46",
     "probe_first_appearance_cause.py": "8dd3b70cfbc9c3d6e708ea4c8e424c9ce0356b4e69cc3fc1dac281bc97ce0176",
@@ -149,6 +151,6 @@
   "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "8655012433d56d4f14936a2030c90ea70c47da17"
+    "commit_at_generation": "911475587d9676de531b544d14628a8c1aeaf199"
   }
 }
