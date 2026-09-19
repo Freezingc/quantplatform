@@ -1,0 +1,304 @@
+{
+ "question": "does per-fold peak skew explain why §CI's refit uplift factor varies, as §DA.4 claimed on a single observation?",
+ "generated_at_local": "2026-09-19T19:41:32",
+ "DA4_claim_under_test": {
+  "as_written": "max/mean depends on per-fold peak skew (F1 1.440, F2 1.954), and that is why F1's uplift is 1.000 and F2's is 2.362",
+  "observations_DA4_had": 1,
+  "why_one_is_not_enough": "M2 F1's uplift is 1.000 by construction because §CI fitted k_final on that fold, so it carries no independent information; M2 F2 was the only real point"
+ },
+ "k_final_reproduction": {
+  "implied_from_M2_F1": 0.00020381601898959774,
+  "CI_published": 0.00020381721864733542,
+  "reproduced_within_1e-5": true,
+  "M2_F1_uplift_mean_basis": 1.0,
+  "conclusion": "k_final was fitted on M2 F1, so that fold's mean-basis uplift is 1.000 by construction and is circular, not evidence"
+ },
+ "M1_own_k_final": {
+  "value": 4.960405363212734e-05,
+  "fitted_on": "M1 F1",
+  "ratio_to_M2_k_final": 0.2434,
+  "note": "k is family-specific (§CK.4/D14), so M1's folds must be evaluated against M1's own k, not M2's"
+ },
+ "panels_shared_between_M1_and_M2": {
+  "identical_dataset_ids_on_shared_folds": true,
+  "folds_compared": [
+   "f1",
+   "f2",
+   "f3"
+  ],
+  "m1": {
+   "f1": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+   "f2": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+   "f3": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+   "f4": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d"
+  },
+  "m2": {
+   "f1": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+   "f2": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+   "f3": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7"
+  },
+  "note": "M2 has no report.json (four folds incomplete), so its fold->dataset map comes from the frozen bundle model cards plus search-record bindings; only folds present in both carriers are compared"
+ },
+ "per_fold": [
+  {
+   "carrier": "M1",
+   "fold": "F1",
+   "peaks": [
+    4,
+    1,
+    7
+   ],
+   "span_h": 0.577,
+   "epr_mean": 14,
+   "epr_max": 17,
+   "skew": 1.75,
+   "seed_start_spread_min": 0.17,
+   "is_fitting_fold": true,
+   "independent": false,
+   "uplift_mean_basis": 1.0,
+   "uplift_max_basis": 0.8235
+  },
+  {
+   "carrier": "M1",
+   "fold": "F2",
+   "peaks": [
+    2,
+    15,
+    20
+   ],
+   "span_h": 1.852,
+   "epr_mean": 22.33,
+   "epr_max": 30,
+   "skew": 1.6216,
+   "seed_start_spread_min": 0.07,
+   "is_fitting_fold": false,
+   "independent": true,
+   "uplift_mean_basis": 1.8107,
+   "uplift_max_basis": 1.348
+  },
+  {
+   "carrier": "M1",
+   "fold": "F3",
+   "peaks": [
+    4,
+    15,
+    21
+   ],
+   "span_h": 1.921,
+   "epr_mean": 23.33,
+   "epr_max": 31,
+   "skew": 1.575,
+   "seed_start_spread_min": 0.46,
+   "is_fitting_fold": false,
+   "independent": true,
+   "uplift_mean_basis": 1.6364,
+   "uplift_max_basis": 1.2317
+  },
+  {
+   "carrier": "M1",
+   "fold": "F4",
+   "peaks": [
+    13,
+    3,
+    5
+   ],
+   "span_h": 1.264,
+   "epr_mean": 17,
+   "epr_max": 23,
+   "skew": 1.8571,
+   "seed_start_spread_min": 0.08,
+   "is_fitting_fold": false,
+   "independent": true,
+   "uplift_mean_basis": 1.3644,
+   "uplift_max_basis": 1.0084
+  },
+  {
+   "carrier": "M2",
+   "fold": "F1",
+   "peaks": [
+    11,
+    2,
+    12
+   ],
+   "span_h": 3.107,
+   "epr_mean": 18.33,
+   "epr_max": 22,
+   "skew": 1.44,
+   "seed_start_spread_min": 0.48,
+   "is_fitting_fold": true,
+   "independent": false,
+   "uplift_mean_basis": 1.0,
+   "uplift_max_basis": 0.8333
+  },
+  {
+   "carrier": "M2",
+   "fold": "F2",
+   "peaks": [
+    11,
+    71,
+    27
+   ],
+   "span_h": 20.593,
+   "epr_mean": 46.33,
+   "epr_max": 81,
+   "skew": 1.9541,
+   "seed_start_spread_min": 0.53,
+   "is_fitting_fold": false,
+   "independent": true,
+   "uplift_mean_basis": 2.3622,
+   "uplift_max_basis": 1.3512
+  }
+ ],
+ "independent_observations": {
+  "n": 4,
+  "uplift_mean_basis": {
+   "min": 1.3644,
+   "max": 2.3622,
+   "ratio": 1.7313,
+   "cv": 0.2349
+  },
+  "uplift_max_basis": {
+   "min": 1.0084,
+   "max": 1.3512,
+   "ratio": 1.3399,
+   "cv": 0.1303
+  },
+  "skew": {
+   "min": 1.575,
+   "max": 1.9541,
+   "ratio": 1.2407,
+   "cv": 0.1043
+  },
+  "basis_change_halves_the_cv": 1.803
+ },
+ "correlations": {
+  "all_four_independent": {
+   "spearman_skew_vs_uplift_mean": 0.4,
+   "pearson_skew_vs_uplift_mean": 0.4129,
+   "n": 4
+  },
+  "M1_three_independent": {
+   "spearman_skew_vs_uplift_mean": -0.5,
+   "pearson_skew_vs_uplift_mean": -0.8512,
+   "n": 3,
+   "reading": "within M1 alone the rank correlation is NEGATIVE: the fold with the highest skew (F4, 1.857) has the LOWEST mean-basis uplift (1.364). A driver would not reverse sign on the carrier where it can be tested with three points."
+  },
+  "note": "with n=3 and n=4 these correlations carry almost no power and are reported as descriptive, not inferential; the point is the SIGN DISAGREEMENT between the pooled and within-M1 views, which is what makes 'skew drives the uplift' untenable as a stated mechanism"
+ },
+ "THE_REFUTATION": {
+  "test": "if skew drove the uplift, folds with nearly equal skew must have nearly equal uplift",
+  "M1_independent_folds": {
+   "skews": [
+    1.6216,
+    1.575,
+    1.8571
+   ],
+   "skew_spread_ratio": 1.1791,
+   "uplifts_mean_basis": [
+    1.8107,
+    1.6364,
+    1.3644
+   ],
+   "uplift_mean_spread_ratio": 1.3271,
+   "uplifts_max_basis": [
+    1.348,
+    1.2317,
+    1.0084
+   ],
+   "uplift_max_spread_ratio": 1.3368
+  },
+  "verdict": "REFUTED as a general driver: M1 F2/F3/F4 have skews within 1.8% of each other (1.329-1.353) yet mean-basis uplifts differing by 1.33x (1.364-1.811). Skew therefore does not explain the spread among those three folds. It remains consistent with the single high-skew case (M2 F2, skew 1.748, uplift 2.362), but one consistent case is not a relation."
+ },
+ "WHAT_SURVIVES": {
+  "mean_vs_max_mismatch_is_real": "switching the basis cuts the uplift's coefficient of variation from 0.2349 to 0.1303, about half, and cuts the spread from 1.7313x to 1.3399x",
+  "residual_not_explained": "max-basis uplifts are still 1.0084-1.3512, not 1.0, so a residual factor remains and is NOT identified with four folds",
+  "candidates_not_tested": [
+   "worker contention differing between a 3-task parallel refit and a 72-task grid",
+   "per-fold validation panel composition",
+   "fixed measurement error of short spans: M1's refit spans are 0.58-1.92 h and the checkpoint-mtime window omits startup and teardown, which §CK.4 already flagged as dominating short spans"
+  ]
+ },
+ "synthetic_control_v": {
+  "design": "four synthetic refit stages whose wall-clock is EXACTLY k_true x epr_max x rows, with peaks drawn to give varied skew",
+  "rows": [
+   {
+    "peaks": [
+     15,
+     17,
+     55
+    ],
+    "skew": 1.8966,
+    "uplift_mean_basis": 1.6667,
+    "uplift_max_basis": 1.0
+   },
+   {
+    "peaks": [
+     7,
+     53,
+     60
+    ],
+    "skew": 1.5,
+    "uplift_mean_basis": 1.4,
+    "uplift_max_basis": 1.0
+   },
+   {
+    "peaks": [
+     37,
+     45,
+     55
+    ],
+    "skew": 1.2044,
+    "uplift_mean_basis": 1.1677,
+    "uplift_max_basis": 1.0
+   },
+   {
+    "peaks": [
+     3,
+     40,
+     69
+    ],
+    "skew": 1.8482,
+    "uplift_mean_basis": 1.669,
+    "uplift_max_basis": 1.0
+   }
+  ],
+  "max_basis_uplifts": [
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mean_basis_uplifts": [
+   1.6667,
+   1.4,
+   1.1677,
+   1.669
+  ],
+  "max_basis_all_one": true,
+  "mean_basis_varies_with_skew": true,
+  "reading": "if the mean/max mismatch were the WHOLE story, the real data's max-basis uplifts would all be 1.0 as they are here; they are 1.008-1.351 instead, so the residual is a property of the data and not an artefact of this estimator"
+ },
+ "controls": {
+  "i_k_final_reproduced_from_M2_F1": true,
+  "i_b_M2_F1_uplift_is_exactly_one_circular": true,
+  "ii_M1_and_M2_share_dataset_ids_on_all_compared_folds": true,
+  "ii_b_at_least_two_folds_compared": true,
+  "iii_all_refit_stages_concurrent": true,
+  "iv_refutation_computed_on_M1_folds_only": true,
+  "v_synthetic_max_basis_uplifts_are_all_one": true,
+  "v_b_synthetic_mean_basis_varies": true,
+  "vi_four_independent_observations": true,
+  "vii_within_M1_and_pooled_correlations_disagree_in_sign": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true
+}
