@@ -5,7 +5,7 @@
 每条都给出：现象 → 根因 → 处置 → 权威出处（原件已复制到 `vendored/`）。
 
 > **⚠ 引用任何数字之前先读 [`corrections_ledger.md`](corrections_ledger.md)。**
-> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CX 共 15 条数字作废、27 条表述需改读、9 条代码缺陷、19 条引用规则；**其中 C1/C2/C5/C9 已在 `codex/deferred-driver-fixes` 分支由同一个提交 `1aa4a70` 修复**（**C9 与 C1 同根因、一次修好两面**）**并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
+> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CY 共 15 条数字作废、28 条表述需改读、9 条代码缺陷、19 条引用规则；**其中 C1/C2/C5/C9 已在 `codex/deferred-driver-fixes` 分支由同一个提交 `1aa4a70` 修复**（**C9 与 C1 同根因、一次修好两面**）**并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
 > 那份登记表是全包唯一的集中清单：**A 类 = 已作废的数字，不得引用；B 类 = 需改读的表述；C 类 = 代码层面未修的缺陷，引用受影响数字时必须带条件；D 类 = 给写论文的人的引用规则。**
 > 正文里被推翻的地方都有 `> 【日期 就地更正…】` 标记，但标记是散的，登记表是全的。
 
@@ -10998,6 +10998,11 @@ for index, train_start_year in enumerate(range(2017, 2021), start=1):
 3. **任何关于 `.pt` 内容的断言**——**本节只把 `seed-*.pt` 当作不透明字节算 sha256，没有加载为张量、没有重建模型**（**那是 §CC.1/§CT 做的事，且它们比的是与峰值检查点的相等性**）；
 4. **"这条链能防住恶意篡改"**——**本节验的是一致性，不是密码学强度**；**`checksums.sha256` 与它保护的文件在同一目录、同一权限下，能改文件的人也能改 manifest**。**真正的绑定来自选择记录的签名**（**`record.json` 里的 `signature` 字段**），**而本节没有验证签名本身**（**那需要公钥与签名算法，超出只读取证的范围**）。
 
+> **【2026-09-19 15:00 就地更正（§CY）：第 4 条的结论方向对，但给的理由不完整，必须改读】**
+> 原文说「能改文件的人也能改 manifest，所以这条链防不住篡改」——这个推理少走了一环。§CY 查出评估器 `selection_evidence.py:138-146` 对每条冻结选择记录做的是**两道**校验：HMAC 签名，以及 `_evidence_id(typed) != evidence_id`（`:145`），而 `_evidence_id = sha256(_canonical_json(payload))`（`:568`）是**不含密钥的**。`model_bundle_digest` 就在 payload 里，所以改动链条是闭合的：改任何 bundle 文件 → 必须改 `checksums.sha256` → bundle digest 变 → 必须改 `payload.model_bundle_digest` → `sha256(canon(payload))` 变 → 无密钥的内容哈希校验失败（`evidence_id` 也必须同时改，而目录名就是 `<evidence_id>.json`，`report.json` 又指名了它）。
+> **实测**：**29/29 条选择记录**（**14 条 model + 15 条 baseline，跨四个载体**）**满足 `evidence_id == sha256(canonical_json(payload))`**，**12 折五链齐全**（**M1/M0/M0R 各四折**），**M2 两折是四链**（**L1 需要 `report.json`，M2 还没有，如实记为「不可用」而非「通过」**）。**六条篡改对照逐环验证：改 bundle 文件 → L5 断、改 manifest → L4 断、改 payload 里的 digest → L3（无密钥那道）断、改 evidence_id → L2 断、指向另一条记录 → L1 断、改 payload 任何字段 → L3 断**（**全部在内存里算，磁盘未写一字节**）。
+> **所以正确的表述是**：**这条链是「篡改可检出」**（**tamper-evident**）**，不是「篡改不可能」**（**tamper-proof**）——**任何改动都会被评估器检出，而要做到「改了还不被检出」，额外需要 HMAC 密钥 `QRV2_SELECTION_EVIDENCE_HMAC_KEY`**（**`selection_evidence.py:26`，只在部署环境里**，**本包不读环境密钥**）。**仍未证明的**：**HMAC 签名本身没有被验证**（**无密钥**），**所以持有密钥者可以伪造一条全新且自洽的记录**（**新 payload、新 evidence_id、新目录、并把 `report.json` 指向它**）**并通过包括 HMAC 在内的全部校验；也无法证明这些记录确实出自可信的 pre-TEST 选择服务**。详见 §CY 与 ledger B28。
+
 **与已发布结论的关系**：**本节不修改任何已发布数字，它补的是一条此前从未被独立核实过的链**——**§CC.1/§CC.2 核实了"发运权重是峰值检查点"与"OOS 从 bundle 重建"，§CT 把它扩到 18/18 并给出机制，本节核实的是"签名的选择记录与落盘 bundle 之间的绑定"，三者合起来才是完整的发运追溯**：**选择记录**（**签名 + digest**）**→ bundle**（**digest 相符 + 逐文件 checksum 相符**）**→ `seed-*.pt`**（**§CT：逐字节等于峰值检查点**）**→ OOS 预测**（**§CC.2：由 bundle 重建的模型现算**）。**这条链现在每一环都有实测证据。**
 
 ### CX.6 本节没有做的事
@@ -11015,3 +11020,117 @@ for index, train_start_year in enumerate(range(2017, 2021), start=1):
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt` 或把任何 `.pt` 加载为张量、**没有**读任何 parquet 数据、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 19 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 14:22 有 83 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 14:21:50 报 ok，`MemAvailable` 166 GB，折缓存 46 个文件完好。
+
+---
+
+## CY. 【已闭合，2026-09-19 15:05，**§CX.5 第 4 条说"这条链不能防篡改，因为 `checksums.sha256` 与被保护文件同目录同权限、能改文件的人也能改 manifest"——这个推理少走了一环。评估器对每条冻结选择记录做的是两道校验：HMAC 签名，以及 `_evidence_id(typed) != evidence_id`（`selection_evidence.py:145`），而 `_evidence_id = sha256(_canonical_json(payload))`（`:568`）是不含密钥的。`model_bundle_digest` 就在 payload 里，所以改动链条是闭合的：改任何 bundle 文件 → 必须改 manifest → bundle digest 变 → 必须改 payload 里的 digest → 无密钥的内容哈希校验失败。实测 29/29 条选择记录满足 `evidence_id == sha256(canonical_json(payload))`、12 折五链齐全、M2 两折四链（L1 需 `report.json`，如实记为不可用而非通过），六条篡改对照逐环验证都会断。所以正确表述是"篡改可检出"（tamper-evident）而不是"篡改不可能"（tamper-proof）**】**仍未证明的是 HMAC 签名本身**（**无密钥**）：**持有密钥者可以伪造一条全新且自洽的记录并通过包括 HMAC 在内的全部校验，也无法证明这些记录确实出自可信的 pre-TEST 选择服务**——**这两条如实留在"未做"里，不用"可检出"去冒充"不可伪造"。**
+
+### CY.1 §CX.5 第 4 条错在哪：推理少走了一环
+
+**§CX.5 列了一条"不可引用"：**「**这条链能防住恶意篡改**」**——**理由是「`checksums.sha256` 与它保护的文件在同一目录、同一权限下，能改文件的人也能改 manifest」，**并接着说「真正的绑定来自选择记录的签名，而本节没有验证签名本身」。**
+
+**这个推理漏掉了中间那一环**：**manifest 不是链条的终点，它的哈希被绑进了选择记录的 payload，而 payload 又被两道校验保护**。**`selection_evidence.py:138-146`**：
+
+```
+signature = document.get("signature")
+if not isinstance(signature, str) or not hmac.compare_digest(
+    signature, _signature(self._verification_key, evidence_id, typed),
+):
+    raise ValueError("selection evidence signature verification failed")
+if _evidence_id(typed) != evidence_id:
+    raise ValueError("selection evidence content hash does not match its identity")
+```
+
+**注意这是两道，不是一道**：**第一道是 HMAC**（**需要密钥**），**第二道是 `_evidence_id(typed) != evidence_id`**（**`:145`**），**而 `_evidence_id(payload) = sha256(_canonical_json(payload))`**（**`:568`**）**完全不含密钥**。**`_canonical_json` 是 `json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True)`**（**`:562`**）——**一个确定性的规范化序列化，任何人都能逐字节复现。**
+
+**于是改动链条是闭合的**：
+
+| 想改什么 | 必须连带改什么 | 哪一环断 |
+|---|---|---|
+| 某个 bundle 文件的内容 | `checksums.sha256` 里它那一行 | **L5**（逐文件 hash 不符） |
+| `checksums.sha256` | 无（但 digest = `sha256(manifest 字节)` 随之变） | **L4**（payload 里的 `model_bundle_digest` 不再等于它） |
+| `payload.model_bundle_digest` | 无（但 payload 变了） | **L3（无密钥那道）**：`sha256(canon(payload))` ≠ `evidence_id` |
+| `evidence_id` | 目录名（目录就是 `<evidence_id>.json`） | **L2** |
+| 整条记录 | `report.json` 里指名的 `model_selection_id` | **L1** |
+
+**所以「能改文件的人也能改 manifest」是对的，但他改完 manifest 之后过不了 L4；改 L4 就过不了 L3；而 L3 不需要密钥就能查**。**这正是 §CX.5 漏掉的那一环。**
+
+### CY.2 五个环节，全部在无密钥条件下实测
+
+| 环节 | 内容 | 权威出处 |
+|---|---|---|
+| **L1** | `report.json` 指名该折的 `model_selection_id` | 评估器的入口参数 |
+| **L2** | `evidence_id` 就是目录名 `<evidence_id>.json`，且记录自己的 `evidence_id` 字段等于它 | `selection_evidence.py:135` |
+| **L3** | **`evidence_id == sha256(_canonical_json(payload))`——无密钥的内容绑定** | `:568`，校验在 `:145` |
+| **L4** | `payload.model_bundle_digest == sha256(checksums.sha256 字节)` | §CX 已验，此处重列 |
+| **L5** | bundle 里每个文件的 sha256 等于 manifest 里它那一行 | §CX 已验，此处重列 |
+
+**L1–L3 是本轮新增，L4–L5 复述 §CX 以便整条链一次读完。**
+
+**实测结果**：
+
+| 载体 | 折 | L1 | L2 | L3 | L4 | L5 |
+|---|---|---|---|---|---|---|
+| M1 (ResidualMLP) | F1/F2/F3/F4 | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ |
+| **M2 (TCN)** | **F1/F2** | **不可用** | ✓✓ | ✓✓ | ✓✓ | ✓✓ |
+| M0 (LGBM_RANKER) | F1–F4 | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ |
+| M0R (LGBM_RANKREG) | F1–F4 | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ |
+
+**汇总**：**12 折五链齐全**（**M1/M0/M0R 各四折**）；**M2 两折是四链**——**L1 需要 `report.json`，而 M2 还没有**（**F3 网格在跑、F4 未开始**），**所以如实记为"不可用"，不记为"通过"**。
+
+**无密钥内容绑定覆盖全部选择记录**：**29/29 条**（**14 条 model + 15 条 baseline，跨四个载体**）**满足 `evidence_id == sha256(canonical_json(payload))`，且 29/29 的目录名等于 `<evidence_id>.json`**。**注意 baseline 记录也在内**：**它们的 payload 没有 `model_bundle_digest`**（**字段是 `selected_baseline_id` / `validation_scores` / `unselected_reasons` 等**），**但同一个内容绑定对它们同样成立**——**所以这条机制不是为 bundle 特设的，而是所有冻结选择记录的统一身份规则。**
+
+### CY.3 六条篡改对照：每一环都被单独打断过
+
+**"五链齐全"只有在检测器能失败时才有意义**（**§CM.6(v) 的 `all(... if exists)` 空真、§CO.6 的 Kendall's W 方向写反、§CU 的分类器过宽、§CV.6 的 p 值方向标反、§CX.2 的文件集基准错——同一个教训第五次**）。**所以逐环做篡改，每环都必须断**（**全部在内存里算，磁盘未写一字节**）：
+
+| 对照 | 篡改 | 必须断的环 | 实测 |
+|---|---|---|---|
+| i | `config.json` 中间一个字节 +1 | **L5** | **断** |
+| ii | `checksums.sha256` 的第一个十六进制字符改掉（保持行合法） | **L4** | **断** |
+| iii | `payload.model_bundle_digest` 的首字符改掉 | **L3（无密钥那道）** | **断** |
+| iv | `evidence_id` 改掉 | **L2** | **断** |
+| v | 指向另一折记录的 `evidence_id` | **L1** | **断** |
+| vi | `payload.validation_rank_ic` 加 1e-9（**与 digest 无关的字段**） | **L3** | **断** |
+
+**第 iii 条是本节更正的核心**：**它证明"改 payload 里的 digest"会被那道无密钥的校验抓住**——**§CX.5 以为改完 manifest 就没事了，实测不是**。**第 vi 条证明这个绑定覆盖整个 payload、不只是 `model_bundle_digest` 那一个字段**：**把 `validation_rank_ic` 动 1e-9 也会断**。**这一点很重要，因为它意味着选择记录里任何数字**（**包括 `validation_rank_ic`，也就是 §CA/§BO/§BN 分析的那个量**）**都被内容哈希绑住，事后改动会被查出。**
+
+**外加三条结构性对照**：**`L4`/`L5` 在每个存在的 bundle 上都为真**；**任何一环都没有报 False**；**`L1` 只在有 `report.json` 的载体上为真、只在没有的载体上为 None**（**这条是防止把"不可用"混成"通过"**）。**以及源码里必须同时找到 HMAC 校验与无密钥校验两行**——**若只有 HMAC 那一行，本节的更正就不成立，探针会中止。**
+
+### CY.4 第一版探针的一个空真缺陷，被自己的对照抓出来
+
+**初版把五链是否齐全写成 `all(row.get(k) is not False for k in LINKS)`**。**问题是 L1 对 M2 是 `None`**（**不可用**），**而 `None is not False` 为真**——**于是 M2 那两折被报成 `all_five_links_hold=True`，尽管只查了四环**。**这正是 §CM.6(v) 那个"聚合因为某项缺席而通过"的空真模式**（**当时是 `all(... if exists)`**）。**修正方式不是把 None 当成 False**（**那会把"尚未可查"误报成"失败"**），**而是把三种状态分开**：`links_verified_true` / `links_unavailable` / `links_failed`，**并要求 `verified + unavailable == 5` 且 `failed` 为空**。**于是诚实的计数变成 12 折五链、2 折四链，而不是初版那个 14 折五链。**
+
+**这个缺陷是第 iii 条篡改对照逼出来的**：**为了确认"L3 真的能断"，我不得不逐折看每一环的值，于是看见 M2 那两行的 L1 是 `None` 却报了 `all=True`**。**又一次印证：对照不只是给结论背书，它是发现自己仪器有洞的唯一途径。**
+
+### CY.5 仍未证明的：HMAC 本身
+
+**这一节把"篡改可检出"证到了，但没有、也不能把"不可伪造"证到**：
+
+1. **HMAC 签名没有被验证**。**密钥在 `QRV2_SELECTION_EVIDENCE_HMAC_KEY`**（**`selection_evidence.py:26`，由 `from_environment` 在 `:75-89` 读取**），**是部署环境专属的**；**本包不读环境密钥**（**那会是一次对秘密材料的访问，与只读取证的立场冲突**）。**所以 `record.json` 里那个 `signature` 字段的值，本节只确认它存在、没有确认它正确。**
+2. **因此持有密钥者可以伪造**：**构造一条全新的 payload、算出它的 `evidence_id`、建目录 `<evidence_id>.json/record.json`、用密钥签一个合法 HMAC、再把 `report.json` 指向它**——**这条记录会通过包括 HMAC 在内的全部校验**。**L1–L5 全都拦不住它，因为它们检查的是自洽性，而伪造品是自洽的。**
+3. **也无法证明这些记录出自可信的 pre-TEST 选择服务**。**`SelectionEvidenceStore` 的 docstring 说它是"the trusted pre-TEST selection service"，但"可信"来自它持有密钥，而不是来自记录本身可验证的性质。**
+
+**所以准确的表述分两层**：**对没有密钥的改动者，这条链是可检出的**（**本节实测**）；**对持有密钥者，这条链不提供任何保证**（**这是设计使然，不是缺陷**——**HMAC 本来就是对持有同一密钥者对称的**）。**论文里如果要写这条链，应当写"发运工件与冻结选择决定之间的绑定是密码学可检出的"，不要写"发运工件不可篡改"。**
+
+### CY.6 这一节对已发布内容的影响
+
+1. **§CX.5 第 4 条已在原处打就地更正标记**：**结论方向**（**不可引用"能防住恶意篡改"**）**是对的，理由不完整**；**改读为"篡改可检出、但不是不可伪造，伪造需要 HMAC 密钥"**（**ledger B28**）。
+2. **§CX 的 14/14 结论不受影响**：**本节复验的 L4/L5 与 §CX 完全一致**（**14 个 bundle、126 次逐文件比对**）；**新增的是 L1–L3 三环与六条篡改对照。**
+3. **一条对 §CA/§BO/§BN 的顺带加固**：**第 vi 条对照证明 `validation_rank_ic` 也被内容哈希绑住**。**所以 §CA 那个"检索记录打的是末轮权重的分"的缺陷是**产出时**的口径问题，不是**事后被改**的问题**——**已落盘的选择记录里那个数字与它的 `evidence_id` 是绑定的，改不动**（**改了就会被查出**）。**这让 §CA/§CB/§BO/§BN 引用的那些 `validation_rank_ic` 值有了完整性保证**（**注意：是完整性，不是正确性——它们描述的仍是末轮模型，这条由 §CA/C1 负责**）。
+4. **§CX.3 那个"12 已强制执行 / 2 仅外部核实"的分档继续有效**，**且本节把 M2 那两折的 L1 明确标为"不可用"**（**与 §CX.3 同一个理由：M2 无 `report.json`**），**没有把四链说成五链。**
+
+### CY.7 本节没有做的事
+
+**没有**验证 HMAC 签名——**无密钥，且刻意不读环境密钥**（**CY.5**）；
+**没有**声称这条链"不可篡改"——**只证到"篡改可检出"**，**并明确列出持密钥者的伪造路径**（**CY.5 第 2 条**）；
+**没有**验证 `predictions/` 里那些冻结预测工件的签名——**它们由 `FrozenPredictionStore` 用另一个密钥**（**`QRV2_PREDICTION_EVIDENCE_HMAC_KEY`，`:27`）**签，且有自己的一道无密钥校验**（**`:393` 的 `sha256(scores_bytes) != expected_hash`）**）；**本节只做了选择记录这一侧，预测侧的那道无密钥校验留作后续**；
+**没有**核实 `baseline` 记录与其所指基线工件之间的绑定——**baseline payload 里没有 bundle digest**（**它指的是 `selected_baseline_id`**），**所以链条结构不同，本节只验了它的内容绑定**（**L2/L3**）**而没有延伸到它指向的工件**；
+**没有**加载任何 `.pt`、**没有**读任何 parquet 数据、**没有**导入或执行任何仓库模块（**`selection_evidence.py` / `model_bundle.py` / `model_walk_forward.py` 都是读源码文本**）、**没有**触库、**没有**网络或数据商调用、**没有** MCP、**没有**训练、**没有**写 artifacts 目录（**六条篡改对照全部在内存里算，磁盘上的 bundle 与记录未被写入任何字节，所以它们与生产发运的仍逐字节相同**）、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号。**与 §CN–§CX 一样本节不触碰 `/tmp/walk_forward_cache_v1`，无 atime 副作用。**
+
+**取证工具**：`m2_walk_forward_progress/probes/probe_provenance_chain_tamper_evidence.py`（**含 CY.3 的六条篡改对照与 CY.4 修正后的三态链路判定；`_canonical_json` 与 `_evidence_id` 是 `selection_evidence.py:562/568` 的逐字节复现**（**29/29 记录复现成功即是这个复现正确的证据**）**；用 `Path(__file__)` 定位、与 cwd 无关，不读任何实时状态，跨 cwd 与跨运行逐字节可复现**（**已验证**））；
+**机读件**：`measurements/provenance_chain_tamper_evidence.json`（**含 §CX.5 更正记录、五环定义与源码出处、逐载体逐折的五环判定与三态清单、29 条记录的无密钥绑定明细、六条篡改对照结果、以及"仍未证明"的三条**）；`provenance.json` 已刷新（40 支探针 / 51 份机读件），两道闸门均退出 0；
+**输入**：四个载体的 `report.json`、`selections/{model,baseline}/*/record.json`、`models/*/`（**全部文件字节，只算 sha256**）、以及 `selection_evidence.py` / `model_bundle.py` / `model_walk_forward.py` 的源码文本。
+
+**安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**读取任何环境密钥或秘密材料、**没有**把任何 `.pt` 加载为张量、**没有**读任何 parquet 数据、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
+驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 20 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle 且无 `report.json`，F3 网格 07:53 启动、截至 15:40 有 97 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 15:35:21 报 ok，`MemAvailable` 163 GB，折缓存 46 个文件完好。
