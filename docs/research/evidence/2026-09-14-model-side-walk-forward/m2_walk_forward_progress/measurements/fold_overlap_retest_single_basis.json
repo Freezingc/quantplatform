@@ -1,0 +1,469 @@
+{
+ "question": "on a single honest analysis unit (the config), does training-window overlap induce positive dependence between folds, and does §CV.5's 'sign flips with the metric' verdict survive correcting its basis mismatch?",
+ "generated_at_local": "2026-09-19T13:30:52",
+ "cv5_basis_mismatch_corrected": {
+  "what_CV5_claimed": "ensemble RankIC -0.3230 (27 rows) versus per-seed RankIC +0.5510 (81 rows) differ in sign, so the test is inconclusive",
+  "why_that_comparison_is_invalid": "different analysis units. Centering 81 config-seed rows removes each row's own mean, and a config's three seeds correlate 0.67-0.93 in their fold profiles, so the 81-row centering mostly removes within-config seed agreement, not fold overlap",
+  "on_the_same_27row_config_basis": {
+   "ensemble": -0.323,
+   "seed_mean": -0.0631,
+   "same_sign": true
+  },
+  "conclusion": "the headline 'sign flip' was partly an artefact of comparing a 27-row statistic with an 81-row one -- the basis-mismatch family (B13, B17②, B21, B25). §CV.5's per-seed row did use a config-BLOCKED null, which was the right instinct about clustering, but the contrast VALUE it reported was still on the 81-row basis and so not comparable to the ensemble one.",
+  "basis_sensitivity_measured_on_peak_epoch": {
+   "seed_mean_27rows": 0.1905,
+   "seed_level_81rows": 0.0002,
+   "differ_materially": true,
+   "reading": "the same quantity gives +0.19 on one basis and +0.00 on the other, so a contrast quoted without its basis is meaningless"
+  }
+ },
+ "m0_is_an_independent_carrier_test": {
+  "m0_family": "LGBM_RANKER (gradient-boosted trees)",
+  "m1_family": "RESIDUAL_MLP (neural)",
+  "same_four_dataset_ids": true,
+  "m0_dataset_ids": {
+   "F1": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+   "F2": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+   "F3": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+   "F4": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d"
+  },
+  "m1_dataset_ids": {
+   "F1": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+   "F2": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+   "F3": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+   "F4": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d"
+  },
+  "m0_n_configs": 24,
+  "reading": "M0 trains a different model family on the SAME four fold windows, so its config x fold response is an independent test of whether the window overlap induces dependence; M0R cannot be used because it has 1 config per fold"
+ },
+ "tests_on_config_basis": {
+  "M1_ensemble_rank_ic": {
+   "metric": "M1 ensemble validation RankIC (27 configs)",
+   "n_rows": 27,
+   "analysis_unit": "config",
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": -0.6887,
+     "null_mean": -0.3269,
+     "null_sd": 0.1228,
+     "z": -2.944,
+     "two_sided_p": 0.0036
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.136,
+     "null_mean": -0.3323,
+     "null_sd": 0.1229,
+     "z": 1.597,
+     "two_sided_p": 0.1236
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": -0.1752,
+     "null_mean": -0.3274,
+     "null_sd": 0.1236,
+     "z": 1.23,
+     "two_sided_p": 0.2152
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.3112,
+     "null_mean": -0.3249,
+     "null_sd": 0.121,
+     "z": 0.113,
+     "two_sided_p": 0.8676
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.1865,
+     "null_mean": -0.3299,
+     "null_sd": 0.1203,
+     "z": 1.192,
+     "two_sided_p": 0.2284
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.4669,
+     "null_mean": -0.3292,
+     "null_sd": 0.1202,
+     "z": -1.146,
+     "two_sided_p": 0.2476
+    }
+   },
+   "contrast_observed": -0.323,
+   "contrast_null_mean": 0.0028,
+   "contrast_null_sd": 0.1191,
+   "contrast_z": -2.736,
+   "p_one_sided_adjacent_more_POSITIVE": 0.9976,
+   "p_one_sided_adjacent_more_NEGATIVE": 0.0024,
+   "significant_in_observed_direction": true,
+   "direction": "adjacent MORE NEGATIVELY correlated (opposite of what shared data predicts)"
+  },
+  "M1_seed_mean_rank_ic": {
+   "metric": "M1 seed-mean validation RankIC (27 configs)",
+   "n_rows": 27,
+   "analysis_unit": "config",
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": -0.4338,
+     "null_mean": -0.3264,
+     "null_sd": 0.1196,
+     "z": -0.898,
+     "two_sided_p": 0.37
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.0395,
+     "null_mean": -0.3317,
+     "null_sd": 0.1184,
+     "z": 2.467,
+     "two_sided_p": 0.018
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": -0.3257,
+     "null_mean": -0.3278,
+     "null_sd": 0.1192,
+     "z": 0.018,
+     "two_sided_p": 0.9632
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": 0.0774,
+     "null_mean": -0.3252,
+     "null_sd": 0.1169,
+     "z": 3.444,
+     "two_sided_p": 0.0024
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.48,
+     "null_mean": -0.3291,
+     "null_sd": 0.1168,
+     "z": -1.292,
+     "two_sided_p": 0.1876
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.6781,
+     "null_mean": -0.3287,
+     "null_sd": 0.1165,
+     "z": -2.999,
+     "two_sided_p": 0.0016
+    }
+   },
+   "contrast_observed": -0.0631,
+   "contrast_null_mean": 0.0027,
+   "contrast_null_sd": 0.1132,
+   "contrast_z": -0.581,
+   "p_one_sided_adjacent_more_POSITIVE": 0.7186,
+   "p_one_sided_adjacent_more_NEGATIVE": 0.2814,
+   "significant_in_observed_direction": false,
+   "direction": "adjacent MORE NEGATIVELY correlated (opposite of what shared data predicts)"
+  },
+  "M0_ensemble_rank_ic": {
+   "metric": "M0 (LGBM_RANKER) ensemble RankIC (24 configs)",
+   "n_rows": 24,
+   "analysis_unit": "config",
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": -0.6211,
+     "null_mean": -0.3278,
+     "null_sd": 0.1483,
+     "z": -1.978,
+     "two_sided_p": 0.0324
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.5609,
+     "null_mean": -0.3319,
+     "null_sd": 0.1505,
+     "z": -1.521,
+     "two_sided_p": 0.1228
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": 0.301,
+     "null_mean": -0.3293,
+     "null_sd": 0.1497,
+     "z": 4.211,
+     "two_sided_p": 0.0012
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.1143,
+     "null_mean": -0.3243,
+     "null_sd": 0.1488,
+     "z": 1.412,
+     "two_sided_p": 0.1696
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.5527,
+     "null_mean": -0.3312,
+     "null_sd": 0.1464,
+     "z": -1.514,
+     "two_sided_p": 0.1116
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.3759,
+     "null_mean": -0.3296,
+     "null_sd": 0.1476,
+     "z": -0.314,
+     "two_sided_p": 0.7844
+    }
+   },
+   "contrast_observed": -0.0995,
+   "contrast_null_mean": 0.0035,
+   "contrast_null_sd": 0.1558,
+   "contrast_z": -0.661,
+   "p_one_sided_adjacent_more_POSITIVE": 0.7424,
+   "p_one_sided_adjacent_more_NEGATIVE": 0.2576,
+   "significant_in_observed_direction": false,
+   "direction": "adjacent MORE NEGATIVELY correlated (opposite of what shared data predicts)"
+  },
+  "M1_peak_epoch_seed_mean": {
+   "metric": "M1 peak epoch, seed-mean (27 configs)",
+   "n_rows": 27,
+   "analysis_unit": "config",
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": 0.0694,
+     "null_mean": -0.326,
+     "null_sd": 0.1818,
+     "z": 2.175,
+     "two_sided_p": 0.0356
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.6333,
+     "null_mean": -0.3234,
+     "null_sd": 0.1897,
+     "z": -1.634,
+     "two_sided_p": 0.0896
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": 0.0298,
+     "null_mean": -0.3261,
+     "null_sd": 0.1842,
+     "z": 1.932,
+     "two_sided_p": 0.0652
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.5289,
+     "null_mean": -0.3246,
+     "null_sd": 0.1821,
+     "z": -1.122,
+     "two_sided_p": 0.2712
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.6169,
+     "null_mean": -0.326,
+     "null_sd": 0.1819,
+     "z": -1.599,
+     "two_sided_p": 0.0888
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.1893,
+     "null_mean": -0.327,
+     "null_sd": 0.184,
+     "z": 0.749,
+     "two_sided_p": 0.454
+    }
+   },
+   "contrast_observed": 0.1905,
+   "contrast_null_mean": -0.0007,
+   "contrast_null_sd": 0.1872,
+   "contrast_z": 1.021,
+   "p_one_sided_adjacent_more_POSITIVE": 0.1558,
+   "p_one_sided_adjacent_more_NEGATIVE": 0.8442,
+   "significant_in_observed_direction": false,
+   "direction": "adjacent MORE positively correlated (as shared data predicts)"
+  }
+ },
+ "basis_illustration_only_not_valid_units": {
+  "M1_seed_level_rank_ic_81rows_NOT_A_VALID_UNIT": {
+   "metric": "M1 per-seed RankIC (81 rows) -- basis illustration only",
+   "n_rows": 81,
+   "analysis_unit": "config",
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": 0.3306,
+     "null_mean": -0.33,
+     "null_sd": 0.0775,
+     "z": 8.523,
+     "two_sided_p": 0.0005
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.3745,
+     "null_mean": -0.3345,
+     "null_sd": 0.0768,
+     "z": -0.521,
+     "two_sided_p": 0.619
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": -0.7739,
+     "null_mean": -0.3312,
+     "null_sd": 0.0782,
+     "z": -5.662,
+     "two_sided_p": 0.0005
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.3467,
+     "null_mean": -0.3328,
+     "null_sd": 0.0741,
+     "z": -0.188,
+     "two_sided_p": 0.873
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.6046,
+     "null_mean": -0.332,
+     "null_sd": 0.0803,
+     "z": -3.396,
+     "two_sided_p": 0.0005
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.084,
+     "null_mean": -0.329,
+     "null_sd": 0.0768,
+     "z": 3.192,
+     "two_sided_p": 0.002
+    }
+   },
+   "contrast_observed": 0.551,
+   "contrast_null_mean": 0.002,
+   "contrast_null_sd": 0.0768,
+   "contrast_z": 7.152,
+   "p_one_sided_adjacent_more_POSITIVE": 0.0005,
+   "p_one_sided_adjacent_more_NEGATIVE": 1.0,
+   "significant_in_observed_direction": true,
+   "direction": "adjacent MORE positively correlated (as shared data predicts)"
+  },
+  "M1_peak_epoch_seed_level_81rows_NOT_A_VALID_UNIT": {
+   "metric": "M1 peak epoch per seed (81 rows) -- basis illustration only",
+   "n_rows": 81,
+   "analysis_unit": "config",
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": -0.1127,
+     "null_mean": -0.3261,
+     "null_sd": 0.1282,
+     "z": 1.665,
+     "two_sided_p": 0.113
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.4402,
+     "null_mean": -0.3286,
+     "null_sd": 0.1243,
+     "z": -0.898,
+     "two_sided_p": 0.394
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": 0.0668,
+     "null_mean": -0.3296,
+     "null_sd": 0.1271,
+     "z": 3.119,
+     "two_sided_p": 0.0005
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.4158,
+     "null_mean": -0.3302,
+     "null_sd": 0.124,
+     "z": -0.691,
+     "two_sided_p": 0.529
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.5596,
+     "null_mean": -0.3331,
+     "null_sd": 0.1318,
+     "z": -1.719,
+     "two_sided_p": 0.045
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.404,
+     "null_mean": -0.3263,
+     "null_sd": 0.1234,
+     "z": -0.63,
+     "two_sided_p": 0.561
+    }
+   },
+   "contrast_observed": 0.0002,
+   "contrast_null_mean": 0.0029,
+   "contrast_null_sd": 0.1273,
+   "contrast_z": -0.022,
+   "p_one_sided_adjacent_more_POSITIVE": 0.5055,
+   "p_one_sided_adjacent_more_NEGATIVE": 0.4945,
+   "significant_in_observed_direction": false,
+   "direction": "adjacent MORE positively correlated (as shared data predicts)"
+  }
+ },
+ "corrected_verdict": {
+  "n_tests": 4,
+  "n_with_negative_contrast": 3,
+  "n_with_significant_POSITIVE_contrast": 0,
+  "statement": "3 of 4 config-basis tests give a NEGATIVE contrast (adjacent folds LESS correlated than distant ones, the opposite of what shared training data predicts) and 0 give a significant positive one. So the corrected verdict is not 'the sign flips with the metric' but 'no metric shows the positive adjacency dependence that window overlap would induce, and most show the opposite sign'.",
+  "still_not_a_proof_of_independence": "the structural overlap (§CV.1/CV.2) remains certain, and a pure fold main effect is invisible to this test by construction (§CV.6 control vi), so absence of a measurable adjacency signal does not prove four folds carry four independent confirmations' worth of evidence. The §CV limitation for the paper stands; only §CV.5's 'inconclusive, sign flips' wording is replaced by this sharper statement."
+ },
+ "centering_artifact": {
+  "analytic": -0.3333,
+  "empirical": -0.333,
+  "within_0.05": true
+ },
+ "synthetic_controls": {
+  "independent": {
+   "contrast": -0.1963,
+   "p_more_positive": 0.8615,
+   "p_more_negative": 0.1385,
+   "significant": false
+  },
+  "planted_interaction": {
+   "contrast": 0.4948,
+   "z": 2.229,
+   "p_more_positive": 0.012,
+   "significant": true
+  },
+  "planted_detected_positive": true,
+  "independent_not_significant": true
+ },
+ "controls": {
+  "M0_and_M1_share_all_four_dataset_ids": true,
+  "centering_artifact_matches_analytic": true,
+  "basis_sensitivity_measured_not_assumed": true,
+  "cv5_basis_correction_confirmed_same_sign": true,
+  "synthetic_planted_detected": true,
+  "synthetic_independent_not_significant": true,
+  "all_four_config_basis_tests_have_a_null_centred_near_zero": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true
+}
