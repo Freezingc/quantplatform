@@ -1,0 +1,143 @@
+{
+ "question": "has §CI.2's refit uplift coefficient (1.45x, computed from an unfinished run) been exceeded, and how much does correcting it move §CK.5's projected total?",
+ "generated_at_local": "2026-09-19T07:50:16",
+ "SNAPSHOT_WARNING": "the F2 refit may still be running, so its stage span and peak only grow. Every exact value here is a live lower bound at this timestamp, NOT a final value; re-read after seed 20260802 early-stops. The durable claims are the monotone-safe relations under durable_conclusions. This measurement is deliberately NOT byte-reproducible across runs (like §CR's).",
+ "measure_validation_against_CI_completed_stages": {
+  "per_stage": {
+   "M2_F1_grid": {
+    "measured_span_h": 31.5,
+    "CI_published_h": 31.5,
+    "matches": true,
+    "n_checkpoints": 428
+   },
+   "M2_F1_refit": {
+    "measured_span_h": 3.11,
+    "CI_published_h": 3.11,
+    "matches": true,
+    "n_checkpoints": 19
+   },
+   "M2_F2_grid": {
+    "measured_span_h": 59.03,
+    "CI_published_h": 59.03,
+    "matches": true,
+    "n_checkpoints": 1032
+   }
+  },
+  "all_three_match": true,
+  "reading": "the stage-span measure reproduces §CI's three completed stages exactly, so it is the same quantity §CI used and the current F2-refit span is comparable to §CI's 9.08 h lower bound"
+ },
+ "past_snapshot_reconstruction_is_unreliable": {
+  "note": "filtering checkpoints to mtime <= §CI's stated 17:52 gives stage span 10.00 h and seed-20260802 peak 35, whereas §CI recorded 9.08 h and peak 32; so a past live snapshot cannot be faithfully reconstructed from surviving mtimes and this probe does not attempt it -- it compares the CURRENT span against §CI's own labelled lower bound instead"
+ },
+ "snapshot": {
+  "F2_refit_stage_span_h_now": 20.59,
+  "F2_refit_peak_mean_now": 36.33,
+  "per_seed": {
+   "20260801": {
+    "peak": 11,
+    "n_checkpoints": 10,
+    "last_write": "2026-09-18T10:48",
+    "minutes_since_last_write": 1261.3,
+    "active_within_window": false
+   },
+   "20260802": {
+    "peak": 71,
+    "n_checkpoints": 35,
+    "last_write": "2026-09-19T04:22",
+    "minutes_since_last_write": 207.8,
+    "active_within_window": false
+   },
+   "20260803": {
+    "peak": 27,
+    "n_checkpoints": 16,
+    "last_write": "2026-09-18T15:37",
+    "minutes_since_last_write": 973.2,
+    "active_within_window": false
+   }
+  },
+  "any_seed_still_active": false,
+  "CI_published_lower_bound_h": 9.08,
+  "span_over_CI_lower_bound": 2.268,
+  "uplift_ratio_lower_bound": 3.284,
+  "CI_uplift_coefficient": 1.45,
+  "ratio_lb_over_CI_coefficient": 2.265
+ },
+ "materiality": {
+  "optimistic_total_grid_term_h": 133.48,
+  "optimistic_total_refit_term_at_1.45x_h": 17.99,
+  "optimistic_total_gaps_oos_h": 22.0,
+  "optimistic_total_at_1.45x_h": 173.46,
+  "refit_term_share_of_total_pct": 10.4,
+  "optimistic_total_at_ratio_lower_bound_h": 196.22,
+  "total_increase_at_lower_bound_h": 22.75,
+  "total_increase_at_lower_bound_pct": 13.1,
+  "ratio_used_for_final_materiality": 2.3622,
+  "optimistic_total_at_final_consistent_uplift_h": 184.78,
+  "total_increase_at_final_uplift_h": 11.31,
+  "total_increase_at_final_uplift_pct": 6.5,
+  "completion": {
+   "bundle_dir": "/data/zhangyudong/qrv2_research_artifacts/m2_v1/models/m2-f2",
+   "bundle_exists": true,
+   "status": "F2 refit COMPLETE",
+   "bundle_checksums_ok": "9/9",
+   "bundle_checksums_all_ok": true,
+   "model_card": {
+    "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+    "family": "TEMPORAL_TCN",
+    "model_code_version": "temporal-tcn-1",
+    "model_status": "WALK_FORWARD_PASSED"
+   },
+   "per_seed_peaks": {
+    "20260801": 11,
+    "20260802": 71,
+    "20260803": 27
+   },
+   "final_stage_span_h": 20.593,
+   "final_epochs_per_run": 46.333,
+   "F1_constant_prediction_at_final_epr_h": 8.718,
+   "uplift_FINAL_consistent_basis": 2.3622,
+   "uplift_CI_published_1.45_numerator_incomplete": 1.4482,
+   "uplift_naive_3.28_denominator_stale": 3.2844,
+   "peak_never_reached_ambiguity_90": true,
+   "max_peak": 71,
+   "reading": "the consistent-basis uplift (2.362x) sits between §CI's underestimate (1.45x, incomplete numerator) and the naive live overestimate (3.28x, stale denominator); seed 20260802 early-stopped at peak 71 and never approached the ambiguity region at 90, so §CR's open question resolves as NO"
+  },
+  "reading": "the refit term is only ~10% of the optimistic total because k_final is ~1/10.8 of k_grid, so even though the uplift coefficient is exceeded by >= 2.27x in RELATIVE terms, the ABSOLUTE effect on the projected total is bounded at ~13%. This is the number that matters for D14's merge-timing guidance, and it is small."
+ },
+ "durable_conclusions": {
+  "measure_validated_on_3_completed_stages": true,
+  "F2_refit_stage_span_ge_h": 20.59,
+  "F2_refit_already_exceeds_CI_9.08h_lower_bound_by": ">= 2.27x",
+  "CI_uplift_1.45x_is_a_lower_bound_now_exceeded": true,
+  "uplift_ratio_is_at_least": 3.28,
+  "monotone_safety": "stage span and peak only grow for a running fit, so 'the F2 refit has run at least 20.59 h' and 'the uplift ratio is at least 3.28x' stay true forever; the exact values are snapshots and will only rise",
+  "NOT_a_final_uplift_UNLESS_complete": "if the bundle is absent this is NOT the final coefficient (the fit may still be running, and computing one from an unfinished run is §CI.2's error); if the bundle is present the consistent-basis uplift is final and is reported under materiality.completion",
+  "refit_complete": true,
+  "final_consistent_uplift": 2.3622,
+  "CR_ambiguity_question_resolved_no": true,
+  "basis_trap_avoided": "§CI's 1.45x used an incomplete numerator; the naive live 3.28x used a stale denominator (6.27 h at the then-current epochs/run 33.33); the consistent basis divides the final span by the prediction at the FINAL epochs/run, giving 2.362x",
+  "materiality_bound": "the correction moves §CK.5's optimistic total by ~+13% (173.5 -> >=196.2 h) because the refit term is only ~10% of it; the correction is large in relative terms but bounded in absolute terms",
+  "what_must_be_reread_after_the_refit_stops": "§CI.2's 1.45x coefficient, §CK.5's four-scenario totals and ledger D14, once seed 20260802 early-stops and the F2 refit stage span is final",
+  "mtime_active_flag_is_not_authoritative": "the per_seed active_within_window flag uses checkpoint mtime and will read False for a fit inside its patience window; worker_liveness_by_cpu_time is the authoritative signal. For seed 20260802 the mtime window reads inactive (>60 min since last checkpoint) while its worker is still computing, so 'stopped' must NOT be inferred from the mtime flag alone."
+ },
+ "live_controls": {
+  "stage_span_reproduces_F1_grid": true,
+  "stage_span_reproduces_F1_refit": true,
+  "stage_span_reproduces_F2_grid": true,
+  "refit_optimistic_total_reproduces_CK5_173_5": true,
+  "F2_refit_span_exceeds_CI_lower_bound": true,
+  "ratio_lower_bound_exceeds_CI_coefficient": true,
+  "ratio_reported_as_bound_not_value": true,
+  "cpu_liveness_agrees_M2_alive": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false
+}
