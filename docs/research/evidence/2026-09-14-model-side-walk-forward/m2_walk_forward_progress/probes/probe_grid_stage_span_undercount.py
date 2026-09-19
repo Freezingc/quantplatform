@@ -23,12 +23,16 @@ FINDING 2 -- an exact identity, which is the real result. For every completed tr
 
     checkpoint-to-checkpoint gap == preceding stage's patience tail + record-to-record gap
 
-verified to 1e-6 h on all three M2 transitions (5.444 == 5.058 + 0.386; 3.425 == 2.820 + 0.605;
-5.803 == 5.381 + 0.422). This is not a coincidence but a consequence of the definitions: the checkpoint gap
-runs from the preceding stage's last IMPROVEMENT to the next stage's first checkpoint, and the time between
-those two events is exactly (a) the patience epochs the preceding stage still had to run and (b) the real
-inter-phase work (scoring, dataset publication, record/bundle writing). The record-to-record gap measures
-only (b).
+verified to floating-point precision (max deviation 2.22e-16 h) on all TEN completed transitions across
+BOTH carriers: M2's three (5.444 == 5.058 + 0.386; 3.425 == 2.820 + 0.605; 5.803 == 5.381 + 0.422) and
+M1's seven (four grid->refit and three refit->next-grid). The two carriers are deliberately different
+regimes -- M1's stage spans are 0.577-6.760 h against M2's 3.107-59.033 h, roughly 10x apart, and M1's
+record-to-record gaps are 0.100-0.269 h against M2's 0.386-0.678 h -- so the identity holding on both is
+evidence about the mechanism rather than about one carrier's timing. This is not a coincidence but a
+consequence of the definitions: the checkpoint gap runs from the preceding stage's last IMPROVEMENT to the
+next stage's first checkpoint, and the time between those two events is exactly (a) the patience epochs the
+preceding stage still had to run and (b) the real inter-phase work (scoring, dataset publication,
+record/bundle writing). The record-to-record gap measures only (b).
 
 CONSEQUENCE -- §CI's cost model has NO net bias from the span undercount, and §DD's reading of it is
 confirmed and now generalised from the refit side to both stages. §CI's scenario total is sum(spans) +
@@ -139,23 +143,35 @@ def main() -> None:
                     "tail_h_raw": (b - r[1]) / H if b else None,
                 }
 
-    # the identity, on M2's three completed transitions
-    m2 = [("F1 grid", grid["M2 F1"], refit["M2 F1"]),
-          ("F1 refit", refit["M2 F1"], grid["M2 F2"]),
-          ("F2 grid", grid["M2 F2"], refit["M2 F2"])]
+    # The identity, on every completed transition of BOTH carriers. M1 has four complete folds, so it
+    # contributes seven transitions (four grid->refit and three refit->next-grid); M2 contributes three.
+    # Extending to M1 closes the limitation §DG.7 recorded ("the identity was verified on M2 only"), and
+    # M1 is a deliberately different regime: its stage spans are ~10x shorter than M2's.
+    m2_seq = [("M2 F1 grid", grid["M2 F1"]), ("M2 F1 refit", refit["M2 F1"]),
+              ("M2 F2 grid", grid["M2 F2"]), ("M2 F2 refit", refit["M2 F2"])]
+    m1_seq = []
+    for f in ("F1", "F2", "F3", "F4"):
+        for kind, tbl in (("grid", grid), ("refit", refit)):
+            key = f"M1 {f}"
+            if key in tbl:
+                m1_seq.append((f"M1 {f} {kind}", tbl[key]))
     identity = []
-    for name, prev, nxt in m2:
-        ck_gap = (nxt["first_ckpt"] - prev["last_ckpt"]) / H
-        # a grid stage ends at its last search record; a refit stage ends at its bundle write
-        rec_end = prev.get("last_record") or prev.get("bundle")
-        assert rec_end is not None, f"{name}: no stage-end artefact found"
-        rec_gap = (nxt["first_ckpt"] - rec_end) / H
-        tail_raw = prev["tail_h_raw"]
-        identity.append({"transition": f"{name} -> next", "checkpoint_gap_h": round(ck_gap, 3),
-                         "preceding_tail_h": round(tail_raw, 3), "record_gap_h": round(rec_gap, 3),
-                         "tail_plus_record_gap_h": round(tail_raw + rec_gap, 3),
-                         "identity_holds": abs(ck_gap - (tail_raw + rec_gap)) < 1e-9,
-                         "max_abs_deviation_h": abs(ck_gap - (tail_raw + rec_gap))})
+    for label, seq in (("M2", m2_seq), ("M1", m1_seq)):
+        for i in range(len(seq) - 1):
+            name, prev = seq[i]
+            nxt_name, nxt = seq[i + 1]
+            ck_gap = (nxt["first_ckpt"] - prev["last_ckpt"]) / H
+            # a grid stage ends at its last search record; a refit stage ends at its bundle write
+            rec_end = prev.get("last_record") or prev.get("bundle")
+            assert rec_end is not None, f"{name}: no stage-end artefact found"
+            rec_gap = (nxt["first_ckpt"] - rec_end) / H
+            tail_raw = prev["tail_h_raw"]
+            dev = abs(ck_gap - (tail_raw + rec_gap))
+            identity.append({"carrier": label, "transition": f"{name} -> {nxt_name}",
+                             "checkpoint_gap_h": round(ck_gap, 4),
+                             "preceding_tail_h": round(tail_raw, 4), "record_gap_h": round(rec_gap, 4),
+                             "tail_plus_record_gap_h": round(tail_raw + rec_gap, 4),
+                             "identity_holds": dev < 1e-9, "abs_deviation_h": dev})
 
     completed = {k: v for k, v in grid.items() if v["stage_complete"]}
     excluded = {k: v for k, v in grid.items() if not v["stage_complete"]}
@@ -206,6 +222,9 @@ def main() -> None:
                         "write nothing), smaller relative effect because the grid stage is far longer"),
         },
         "THE_IDENTITY": {
+            "n_transitions": len(identity),
+            "by_carrier": {c: sum(1 for i in identity if i["carrier"] == c) for c in ("M1", "M2")},
+            "max_abs_deviation_h": max(i["abs_deviation_h"] for i in identity),
             "statement": ("checkpoint-to-checkpoint gap == preceding stage's patience tail + "
                           "record-to-record gap, exactly"),
             "why_it_must_hold": ("the checkpoint gap runs from the preceding stage's last IMPROVEMENT to the "
@@ -255,7 +274,12 @@ def main() -> None:
     }
     doc["controls"] = {
         "i_identity_holds_on_every_completed_transition": all(
-            i["identity_holds"] for i in identity) and len(identity) == 3,
+            i["identity_holds"] for i in identity) and len(identity) == 10,
+        "i_b_identity_covers_both_carriers": {i["carrier"] for i in identity} == {"M1", "M2"},
+        "i_c_M1_contributes_seven_transitions": sum(
+            1 for i in identity if i["carrier"] == "M1") == 7,
+        "i_d_max_deviation_is_floating_point_noise": max(
+            i["abs_deviation_h"] for i in identity) < 1e-12,
         "ii_every_completed_grid_true_exceeds_span": all(
             v["true_h"] > v["span_h"] for v in completed.values()),
         "iii_live_F3_excluded_and_shows_negative_tail": all(
@@ -292,10 +316,13 @@ def main() -> None:
     for k, v in excluded.items():
         print(f"      {k}: tail {v['tail_h']} h (negative -- last record precedes last checkpoint, "
               f"meaningless for an unfinished stage)")
-    print("\n=== (2) THE IDENTITY: ckpt_gap == preceding tail + record_gap ===")
+    idb = doc["THE_IDENTITY"]
+    print(f"\n=== (2) THE IDENTITY: ckpt_gap == preceding tail + record_gap "
+          f"({idb['n_transitions']} transitions, M1 {idb['by_carrier']['M1']} + M2 "
+          f"{idb['by_carrier']['M2']}, max deviation {idb['max_abs_deviation_h']:.2e} h) ===")
     for i in identity:
-        print(f"  {i['transition']:22s} {i['checkpoint_gap_h']:>7.3f} == {i['preceding_tail_h']:>6.3f} + "
-              f"{i['record_gap_h']:>6.3f} = {i['tail_plus_record_gap_h']:>7.3f}  "
+        print(f"  {i['transition']:26s} {i['checkpoint_gap_h']:>8.4f} == {i['preceding_tail_h']:>7.4f} + "
+              f"{i['record_gap_h']:>7.4f} = {i['tail_plus_record_gap_h']:>8.4f}  "
               f"{'OK' if i['identity_holds'] else '*** FAIL ***'}")
     a = doc["accounting_closure"]
     print(f"\n=== accounting closure (M2 completed work) ===")

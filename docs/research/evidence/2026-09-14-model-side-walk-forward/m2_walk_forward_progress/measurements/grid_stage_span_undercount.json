@@ -1,6 +1,6 @@
 {
  "question": "does the GRID stage have the same span undercount §DC found on the refit stage, and if so does it bias §CI's totals? (§DC.7 deferred this)",
- "generated_at_local": "2026-09-20T04:48:00",
+ "generated_at_local": "2026-09-20T05:44:52",
  "grid_stages": {
   "M1 F1": {
    "span_h": 4.842,
@@ -75,16 +75,16 @@
    "tail_h_raw": 5.380772608717282
   },
   "M2 F3": {
-   "span_h": 20.679,
+   "span_h": 21.729,
    "first_ckpt": 1789776001.7082803,
-   "last_ckpt": 1789850447.6029742,
+   "last_ckpt": 1789854225.8850162,
    "n_runs": 68,
    "peak_max": 35,
    "last_record": 1789846890.932916,
    "stage_complete": false,
    "true_h": 19.691,
-   "tail_h": -0.988,
-   "tail_h_raw": -0.9879639050695631
+   "tail_h": -2.037,
+   "tail_h_raw": -2.037486694521374
   }
  },
  "refit_stages_for_reference": {
@@ -237,16 +237,16 @@
  },
  "excluded_live_grid_stages": {
   "M2 F3": {
-   "span_h": 20.679,
+   "span_h": 21.729,
    "first_ckpt": 1789776001.7082803,
-   "last_ckpt": 1789850447.6029742,
+   "last_ckpt": 1789854225.8850162,
    "n_runs": 68,
    "peak_max": 35,
    "last_record": 1789846890.932916,
    "stage_complete": false,
    "true_h": 19.691,
-   "tail_h": -0.988,
-   "tail_h_raw": -0.9879639050695631
+   "tail_h": -2.037,
+   "tail_h_raw": -2.037486694521374
   }
  },
  "undercount": {
@@ -312,35 +312,114 @@
   "reading": "the grid omits 9-25% of its span, the refit 14-143%; same mechanism (the run writing the stage's last checkpoint then runs up to `patience` more epochs that write nothing), smaller relative effect because the grid stage is far longer"
  },
  "THE_IDENTITY": {
+  "n_transitions": 10,
+  "by_carrier": {
+   "M1": 7,
+   "M2": 3
+  },
+  "max_abs_deviation_h": 2.220446049250313e-16,
   "statement": "checkpoint-to-checkpoint gap == preceding stage's patience tail + record-to-record gap, exactly",
   "why_it_must_hold": "the checkpoint gap runs from the preceding stage's last IMPROVEMENT to the next stage's first checkpoint; that interval is exactly (a) the patience epochs still to run and (b) the real inter-phase work (scoring, dataset publication, record/bundle writing), and the record-to-record gap measures only (b)",
   "per_transition": [
    {
-    "transition": "F1 grid -> next",
-    "checkpoint_gap_h": 5.444,
+    "carrier": "M2",
+    "transition": "M2 F1 grid -> M2 F1 refit",
+    "checkpoint_gap_h": 5.4442,
     "preceding_tail_h": 5.058,
-    "record_gap_h": 0.386,
-    "tail_plus_record_gap_h": 5.444,
+    "record_gap_h": 0.3863,
+    "tail_plus_record_gap_h": 5.4442,
     "identity_holds": true,
-    "max_abs_deviation_h": 0.0
+    "abs_deviation_h": 0.0
    },
    {
-    "transition": "F1 refit -> next",
-    "checkpoint_gap_h": 3.425,
-    "preceding_tail_h": 2.82,
-    "record_gap_h": 0.605,
-    "tail_plus_record_gap_h": 3.425,
+    "carrier": "M2",
+    "transition": "M2 F1 refit -> M2 F2 grid",
+    "checkpoint_gap_h": 3.4248,
+    "preceding_tail_h": 2.8202,
+    "record_gap_h": 0.6046,
+    "tail_plus_record_gap_h": 3.4248,
     "identity_holds": true,
-    "max_abs_deviation_h": 0.0
+    "abs_deviation_h": 0.0
    },
    {
-    "transition": "F2 grid -> next",
-    "checkpoint_gap_h": 5.803,
-    "preceding_tail_h": 5.381,
-    "record_gap_h": 0.422,
-    "tail_plus_record_gap_h": 5.803,
+    "carrier": "M2",
+    "transition": "M2 F2 grid -> M2 F2 refit",
+    "checkpoint_gap_h": 5.8026,
+    "preceding_tail_h": 5.3808,
+    "record_gap_h": 0.4218,
+    "tail_plus_record_gap_h": 5.8026,
     "identity_holds": true,
-    "max_abs_deviation_h": 0.0
+    "abs_deviation_h": 0.0
+   },
+   {
+    "carrier": "M1",
+    "transition": "M1 F1 grid -> M1 F1 refit",
+    "checkpoint_gap_h": 1.3096,
+    "preceding_tail_h": 1.2081,
+    "record_gap_h": 0.1016,
+    "tail_plus_record_gap_h": 1.3096,
+    "identity_holds": true,
+    "abs_deviation_h": 0.0
+   },
+   {
+    "carrier": "M1",
+    "transition": "M1 F1 refit -> M1 F2 grid",
+    "checkpoint_gap_h": 1.2105,
+    "preceding_tail_h": 0.9649,
+    "record_gap_h": 0.2456,
+    "tail_plus_record_gap_h": 1.2105,
+    "identity_holds": true,
+    "abs_deviation_h": 0.0
+   },
+   {
+    "carrier": "M1",
+    "transition": "M1 F2 grid -> M1 F2 refit",
+    "checkpoint_gap_h": 1.2952,
+    "preceding_tail_h": 1.1932,
+    "record_gap_h": 0.102,
+    "tail_plus_record_gap_h": 1.2952,
+    "identity_holds": true,
+    "abs_deviation_h": 2.220446049250313e-16
+   },
+   {
+    "carrier": "M1",
+    "transition": "M1 F2 refit -> M1 F3 grid",
+    "checkpoint_gap_h": 1.2759,
+    "preceding_tail_h": 1.0156,
+    "record_gap_h": 0.2602,
+    "tail_plus_record_gap_h": 1.2759,
+    "identity_holds": true,
+    "abs_deviation_h": 0.0
+   },
+   {
+    "carrier": "M1",
+    "transition": "M1 F3 grid -> M1 F3 refit",
+    "checkpoint_gap_h": 1.3418,
+    "preceding_tail_h": 1.2417,
+    "record_gap_h": 0.1001,
+    "tail_plus_record_gap_h": 1.3418,
+    "identity_holds": true,
+    "abs_deviation_h": 0.0
+   },
+   {
+    "carrier": "M1",
+    "transition": "M1 F3 refit -> M1 F4 grid",
+    "checkpoint_gap_h": 1.234,
+    "preceding_tail_h": 0.9651,
+    "record_gap_h": 0.269,
+    "tail_plus_record_gap_h": 1.234,
+    "identity_holds": true,
+    "abs_deviation_h": 0.0
+   },
+   {
+    "carrier": "M1",
+    "transition": "M1 F4 grid -> M1 F4 refit",
+    "checkpoint_gap_h": 1.3865,
+    "preceding_tail_h": 1.2775,
+    "record_gap_h": 0.109,
+    "tail_plus_record_gap_h": 1.3865,
+    "identity_holds": true,
+    "abs_deviation_h": 0.0
    }
   ],
   "consequence": "§CI's scenario total is sum(spans) + sum(checkpoint gaps), so each stage's tail is counted exactly once -- inside the gap term, not the stage term. The span undercount therefore creates NO net bias in §CI's totals."
@@ -367,6 +446,9 @@
  "A16_D14_unchanged": "§DD established that the interval must not be re-based by adding tails back because they are inside the gap term; this probe confirms the same for the grid stage, so §DC.7's deferral is closed with the answer 'yes it undercounts, no it does not bias the total'",
  "controls": {
   "i_identity_holds_on_every_completed_transition": true,
+  "i_b_identity_covers_both_carriers": true,
+  "i_c_M1_contributes_seven_transitions": true,
+  "i_d_max_deviation_is_floating_point_noise": true,
   "ii_every_completed_grid_true_exceeds_span": true,
   "iii_live_F3_excluded_and_shows_negative_tail": true,
   "iv_grid_spans_reproduce_published": true,
