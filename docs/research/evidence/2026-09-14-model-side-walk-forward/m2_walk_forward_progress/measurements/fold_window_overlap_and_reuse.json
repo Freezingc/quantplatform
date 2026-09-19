@@ -1,0 +1,462 @@
+{
+ "question": "are the four walk-forward folds independent datasets, and does their training-window overlap materially induce dependence between folds?",
+ "generated_at_local": "2026-09-19T12:34:21",
+ "design_from_source": {
+  "file": "src/research_v2/datasets/splits.py",
+  "loop_over_start_years": {
+   "58": "for index, train_start_year in enumerate(range(2017, 2021), start=1):"
+  },
+  "window_expression": {
+   "63": "train_years=tuple(range(train_start_year, train_start_year + 4)),"
+  },
+  "four_year_assert": {
+   "121": "if len(outer.train_years) != 4:"
+  },
+  "conclusion": "train_years = range(start, start+4) with start in range(2017,2021): a 4-year window advancing 1 year per fold, and the 4-year width is asserted at inner_folds(), so the overlap is mandated by design, not incidental"
+ },
+ "windows_from_directories": {
+  "per_fold": {
+   "F1": {
+    "dataset_id": "226a8dfc497c2de6",
+    "train_years": [
+     "2017",
+     "2018",
+     "2019",
+     "2020"
+    ],
+    "validation_years": [
+     "2021"
+    ],
+    "test_years": [
+     "2022"
+    ],
+    "n_train_years": 4
+   },
+   "F2": {
+    "dataset_id": "eb9bba1b5a0bd66d",
+    "train_years": [
+     "2018",
+     "2019",
+     "2020",
+     "2021"
+    ],
+    "validation_years": [
+     "2022"
+    ],
+    "test_years": [
+     "2023"
+    ],
+    "n_train_years": 4
+   },
+   "F3": {
+    "dataset_id": "9766e69f342511c5",
+    "train_years": [
+     "2019",
+     "2020",
+     "2021",
+     "2022"
+    ],
+    "validation_years": [
+     "2023"
+    ],
+    "test_years": [
+     "2024"
+    ],
+    "n_train_years": 4
+   },
+   "F4": {
+    "dataset_id": "6f9478d7645c8c74",
+    "train_years": [
+     "2020",
+     "2021",
+     "2022",
+     "2023"
+    ],
+    "validation_years": [
+     "2024"
+    ],
+    "test_years": [
+     "2025"
+    ],
+    "n_train_years": 4
+   }
+  },
+  "matches_source_design": true,
+  "source_design_expected": {
+   "F1": [
+    "2017",
+    "2018",
+    "2019",
+    "2020"
+   ],
+   "F2": [
+    "2018",
+    "2019",
+    "2020",
+    "2021"
+   ],
+   "F3": [
+    "2019",
+    "2020",
+    "2021",
+    "2022"
+   ],
+   "F4": [
+    "2020",
+    "2021",
+    "2022",
+    "2023"
+   ]
+  }
+ },
+ "overlap_structure": {
+  "pairs": [
+   {
+    "pair": "F1-F2",
+    "shared_years": [
+     "2018",
+     "2019",
+     "2020"
+    ],
+    "n_shared": 3,
+    "jaccard": 0.6,
+    "pct_of_either_window": 75.0,
+    "fold_distance": 1
+   },
+   {
+    "pair": "F1-F3",
+    "shared_years": [
+     "2019",
+     "2020"
+    ],
+    "n_shared": 2,
+    "jaccard": 0.3333,
+    "pct_of_either_window": 50.0,
+    "fold_distance": 2
+   },
+   {
+    "pair": "F1-F4",
+    "shared_years": [
+     "2020"
+    ],
+    "n_shared": 1,
+    "jaccard": 0.1429,
+    "pct_of_either_window": 25.0,
+    "fold_distance": 3
+   },
+   {
+    "pair": "F2-F3",
+    "shared_years": [
+     "2019",
+     "2020",
+     "2021"
+    ],
+    "n_shared": 3,
+    "jaccard": 0.6,
+    "pct_of_either_window": 75.0,
+    "fold_distance": 1
+   },
+   {
+    "pair": "F2-F4",
+    "shared_years": [
+     "2020",
+     "2021"
+    ],
+    "n_shared": 2,
+    "jaccard": 0.3333,
+    "pct_of_either_window": 50.0,
+    "fold_distance": 2
+   },
+   {
+    "pair": "F3-F4",
+    "shared_years": [
+     "2020",
+     "2021",
+     "2022"
+    ],
+    "n_shared": 3,
+    "jaccard": 0.6,
+    "pct_of_either_window": 75.0,
+    "fold_distance": 1
+   }
+  ],
+  "per_year_fold_membership": {
+   "2017": 1,
+   "2018": 2,
+   "2019": 3,
+   "2020": 4,
+   "2021": 3,
+   "2022": 2,
+   "2023": 1
+  },
+  "n_fold_years_total": 16,
+  "n_distinct_years": 7,
+  "data_reuse_factor": 2.2857,
+  "adjacent_share_pct": 75.0,
+  "year_in_all_four_folds": [
+   "2020"
+  ],
+  "years_in_exactly_one_fold": [
+   "2017",
+   "2023"
+  ],
+  "reading": "the four folds are four overlapping views of seven distinct years, not four independent datasets; one year is inside every fold's training set"
+ },
+ "centering_artifact": {
+  "analytic_minus_one_over_k_minus_1": -0.3333,
+  "empirical_mean_pairwise_corr_of_independent_data": -0.333,
+  "within_0.05_of_analytic": true,
+  "reading": "per-row centering of k=4 fold values forces the row sum to zero, which induces E[corr] = -1/3 under complete independence; fold correlations must never be compared against 0"
+ },
+ "empirical_tests": {
+  "ensemble_rank_ic": {
+   "metric": "M1 ensemble validation RankIC (27 configs)",
+   "n_rows": 27,
+   "blocked_null": false,
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": -0.6887,
+     "null_mean": -0.3269,
+     "null_sd": 0.1228,
+     "z": -2.944,
+     "two_sided_p": 0.0036
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.136,
+     "null_mean": -0.3323,
+     "null_sd": 0.1229,
+     "z": 1.597,
+     "two_sided_p": 0.1236
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": -0.1752,
+     "null_mean": -0.3274,
+     "null_sd": 0.1236,
+     "z": 1.23,
+     "two_sided_p": 0.2152
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.3112,
+     "null_mean": -0.3249,
+     "null_sd": 0.121,
+     "z": 0.113,
+     "two_sided_p": 0.8676
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.1865,
+     "null_mean": -0.3299,
+     "null_sd": 0.1203,
+     "z": 1.192,
+     "two_sided_p": 0.2284
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.4669,
+     "null_mean": -0.3292,
+     "null_sd": 0.1202,
+     "z": -1.146,
+     "two_sided_p": 0.2476
+    }
+   },
+   "contrast_observed": -0.323,
+   "contrast_null_mean": 0.0028,
+   "contrast_null_sd": 0.1191,
+   "contrast_z": -2.736,
+   "p_one_sided_adjacent_more_POSITIVE": 0.9976,
+   "p_one_sided_adjacent_more_NEGATIVE": 0.0024,
+   "p_value_direction_note": "P(null >= obs) tests 'adjacent more positively correlated'; P(null <= obs) tests 'adjacent more negatively correlated'. An earlier draft swapped these, which made a decisively detected planted effect read as p = 1.0.",
+   "direction": "adjacent MORE NEGATIVELY correlated (opposite of what shared data predicts)",
+   "significant_in_the_direction_observed": true
+  },
+  "per_seed_rank_ic": {
+   "metric": "M1 per-seed validation RankIC (81 rows)",
+   "n_rows": 81,
+   "blocked_null": true,
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": 0.3306,
+     "null_mean": -0.3284,
+     "null_sd": 0.1003,
+     "z": 6.567,
+     "two_sided_p": 0.0002
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.3745,
+     "null_mean": -0.3322,
+     "null_sd": 0.0986,
+     "z": -0.43,
+     "two_sided_p": 0.6752
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": -0.7739,
+     "null_mean": -0.3293,
+     "null_sd": 0.1,
+     "z": -4.447,
+     "two_sided_p": 0.0002
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.3467,
+     "null_mean": -0.3275,
+     "null_sd": 0.0976,
+     "z": -0.197,
+     "two_sided_p": 0.8572
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.6046,
+     "null_mean": -0.3306,
+     "null_sd": 0.0975,
+     "z": -2.812,
+     "two_sided_p": 0.002
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.084,
+     "null_mean": -0.3302,
+     "null_sd": 0.0981,
+     "z": 2.51,
+     "two_sided_p": 0.0132
+    }
+   },
+   "contrast_observed": 0.551,
+   "contrast_null_mean": 0.002,
+   "contrast_null_sd": 0.0947,
+   "contrast_z": 5.796,
+   "p_one_sided_adjacent_more_POSITIVE": 0.0002,
+   "p_one_sided_adjacent_more_NEGATIVE": 1.0,
+   "p_value_direction_note": "P(null >= obs) tests 'adjacent more positively correlated'; P(null <= obs) tests 'adjacent more negatively correlated'. An earlier draft swapped these, which made a decisively detected planted effect read as p = 1.0.",
+   "direction": "adjacent MORE positively correlated (as shared data would predict)",
+   "significant_in_the_direction_observed": true
+  },
+  "peak_epoch": {
+   "metric": "M1 peak epoch, grid, mean over 3 seeds (27 configs)",
+   "n_rows": 27,
+   "blocked_null": false,
+   "per_pair": {
+    "F1-F2": {
+     "shared_training_years": 3,
+     "observed_corr": 0.0694,
+     "null_mean": -0.326,
+     "null_sd": 0.1818,
+     "z": 2.175,
+     "two_sided_p": 0.0356
+    },
+    "F1-F3": {
+     "shared_training_years": 2,
+     "observed_corr": -0.6333,
+     "null_mean": -0.3234,
+     "null_sd": 0.1897,
+     "z": -1.634,
+     "two_sided_p": 0.0896
+    },
+    "F1-F4": {
+     "shared_training_years": 1,
+     "observed_corr": 0.0298,
+     "null_mean": -0.3261,
+     "null_sd": 0.1842,
+     "z": 1.932,
+     "two_sided_p": 0.0652
+    },
+    "F2-F3": {
+     "shared_training_years": 3,
+     "observed_corr": -0.5289,
+     "null_mean": -0.3246,
+     "null_sd": 0.1821,
+     "z": -1.122,
+     "two_sided_p": 0.2712
+    },
+    "F2-F4": {
+     "shared_training_years": 2,
+     "observed_corr": -0.6169,
+     "null_mean": -0.326,
+     "null_sd": 0.1819,
+     "z": -1.599,
+     "two_sided_p": 0.0888
+    },
+    "F3-F4": {
+     "shared_training_years": 3,
+     "observed_corr": -0.1893,
+     "null_mean": -0.327,
+     "null_sd": 0.184,
+     "z": 0.749,
+     "two_sided_p": 0.454
+    }
+   },
+   "contrast_observed": 0.1905,
+   "contrast_null_mean": -0.0007,
+   "contrast_null_sd": 0.1872,
+   "contrast_z": 1.021,
+   "p_one_sided_adjacent_more_POSITIVE": 0.1558,
+   "p_one_sided_adjacent_more_NEGATIVE": 0.8442,
+   "p_value_direction_note": "P(null >= obs) tests 'adjacent more positively correlated'; P(null <= obs) tests 'adjacent more negatively correlated'. An earlier draft swapped these, which made a decisively detected planted effect read as p = 1.0.",
+   "direction": "adjacent MORE positively correlated (as shared data would predict)",
+   "significant_in_the_direction_observed": false
+  },
+  "contrast_signs": {
+   "ensemble": -1.0,
+   "per_seed": 1.0,
+   "peak_epoch": 1.0
+  },
+  "all_three_agree_in_sign": false,
+  "verdict": "INCONCLUSIVE: the contrast's sign flips with the metric (ensemble -0.3230, per-seed +0.5510, peak epoch +0.1905), so four folds cannot settle whether the overlap induces dependence. The structural overlap is certain; its statistical consequence is not measurable here."
+ },
+ "synthetic_controls": {
+  "independent_synthetic": {
+   "contrast": -0.1963,
+   "z": -1.118,
+   "p_more_positive": 0.8615,
+   "p_more_negative": 0.1385
+  },
+  "shared_year_effect_synthetic_UNDETECTABLE_BY_DESIGN": {
+   "contrast": -0.1402,
+   "z": -1.025,
+   "p_more_positive": 0.8525,
+   "p_more_negative": 0.1475,
+   "why_undetectable": "a year effect common to all configs is constant across rows, i.e. a fold main effect; per-row centering removes it, so it cannot create fold-to-fold correlation and no test of this kind could detect it"
+  },
+  "config_year_interaction_synthetic": {
+   "contrast": 0.6408,
+   "z": 2.723,
+   "p_more_positive": 0.0005,
+   "p_more_negative": 1.0
+  },
+  "independent_is_nonsignificant": true,
+  "planted_dependence_is_detected": true,
+  "shared_year_effect_is_NOT_detected_as_expected": true,
+  "reading": "the instrument detects overlap-driven dependence when the dependence is of the kind overlap can produce (config x year interaction) and reports no dependence on independent data, so the real-data verdict of 'inconclusive, sign flips with the metric' is a property of the data rather than a broken test. It also shows that a pure fold main effect is invisible to this test by construction, which bounds what the test could ever have shown."
+ },
+ "implication_for_the_pack": {
+  "criterion_affected": "§BO.9's self-set reliability standard 'only p<1e-4 AND stable on all four folds count as reliable', cited to paper writers by ledger D4, and the fold-as-4-level-factor ANOVAs in §BN/§CN/§CP",
+  "what_must_be_stated": "'stable across all four folds' is not four independent confirmations: adjacent folds share 75% of training years, the reuse factor is 2.286, and 2020 is in every fold's training set, so a result driven by one peculiar year can appear in three or four folds at once. The effective number of independent folds is less than 4.",
+  "does_not_claim": "no published conclusion is shown to be wrong by this; it is a bound on how much weight the four-fold criterion can carry, and a limitation to state in the paper"
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true,
+ "controls": {
+  "windows_match_the_source_design": true,
+  "all_four_windows_are_4_years": true,
+  "centering_artifact_matches_analytic": true,
+  "synthetic_independent_is_nonsignificant": true,
+  "synthetic_planted_dependence_is_detected": true,
+  "synthetic_fold_main_effect_is_invisible_as_expected": true,
+  "null_contrast_centred_near_zero": true,
+  "ALL_PASS": true
+ }
+}
