@@ -5,7 +5,7 @@
 每条都给出：现象 → 根因 → 处置 → 权威出处（原件已复制到 `vendored/`）。
 
 > **⚠ 引用任何数字之前先读 [`corrections_ledger.md`](corrections_ledger.md)。**
-> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CW 共 15 条数字作废、27 条表述需改读、9 条代码缺陷、19 条引用规则；**其中 C1/C2/C5/C9 已在 `codex/deferred-driver-fixes` 分支由同一个提交 `1aa4a70` 修复**（**C9 与 C1 同根因、一次修好两面**）**并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
+> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CX 共 15 条数字作废、27 条表述需改读、9 条代码缺陷、19 条引用规则；**其中 C1/C2/C5/C9 已在 `codex/deferred-driver-fixes` 分支由同一个提交 `1aa4a70` 修复**（**C9 与 C1 同根因、一次修好两面**）**并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
 > 那份登记表是全包唯一的集中清单：**A 类 = 已作废的数字，不得引用；B 类 = 需改读的表述；C 类 = 代码层面未修的缺陷，引用受影响数字时必须带条件；D 类 = 给写论文的人的引用规则。**
 > 正文里被推翻的地方都有 `> 【日期 就地更正…】` 标记，但标记是散的，登记表是全的。
 
@@ -10924,3 +10924,94 @@ for index, train_start_year in enumerate(range(2017, 2021), start=1):
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 18 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 13:55 有 82 个检查点但检索记录仍为 0**（**网格未完成**；**看门狗报 24 核满载、CPU 在进，属 §CS.5 那个"patience 窗口不写盘"的已知行为**），**F4 未开始**），停滞看门狗 13:29:19 报 ok，`MemAvailable` 167 GB，折缓存 46 个文件完好。
+
+---
+
+## CX. 【已闭合，2026-09-19 14:25，**发运模型的追溯链是完整的，而且与 §CC.1 那个"检查存在但从不调用"的情形相反：`bundle_digest = sha256(checksums.sha256 的字节)`**（`model_bundle.py:249`）**，每个冻结选择记录都存了 `model_bundle_digest`，而独立评估器 `model_walk_forward.py:188` 真的把它作为 `expected_bundle_digest` 传进去、`model_bundle.py:152-153` 不匹配就 raise——所以这条链不是自证。14 个已落地 bundle 全部核实通过**（**每个文件的 sha256 对 checksums、文件集等于契约的 9 个 + manifest 自身、bundle digest 等于选择记录里的 digest、选择记录点名的 artifact 就是它核实的那个**）**，其中 12 个**（**M1 四折、M0 四折、M0R 四折**）**已由完成的评估器运行强制执行过这条校验**（**它们的 `report.json` 存在，而 report.json 只在 `model_walk_forward` 产出裁决后才写**），**只有 M2 的 2 个是"本节外部核实通过、但评估器尚未运行所以该校验还没在生产路径上执行过"**（**M2 无 `report.json`，F3 网格还在跑**）。**这个区分被如实记录而不是抹平。**】**检测器对照证明校验不是空真**：**篡改 manifest 的一个字节 → digest 改变**（`0ed7e641…` → `8fa701d8…`）；**篡改文件内容 → 该文件 hash 断**；**把每个 bundle 的真实 digest 与其他 bundle 记录的 digest 交叉配对 → 182 对全部识别为 mismatch**。
+
+### CX.1 链条的四个环节，每个都从源码读出来
+
+**§CC.1 的教训是"一个存在且有单测覆盖的检查可能在生产代码里从未被调用"**（**`CheckpointStore.load()` 就是这样**）。**所以本节不只核实数字对得上，还要核实这条校验真的会触发**：
+
+| 环节 | 位置 | 事实 |
+|---|---|---|
+| 1 | `model_bundle.py:249` | `digest=hashlib.sha256(checksums).hexdigest()`——**bundle digest 是 `checksums.sha256` 文件字节的 sha256** |
+| 2 | `selections/model/<evidence_id>/record.json` | 每条冻结选择记录存 `model_bundle_digest`（**由驱动在写 bundle 之后、用 `model_store.bundle_digest(model_id)` 取值**） |
+| 3 | `model_walk_forward.py:188` | `store.load_model_card(selection.model_artifact_id, expected_bundle_digest=selection.model_bundle_digest)`——**独立评估器把记录里的 digest 传进去** |
+| 4 | `model_bundle.py:152-153` | `if expected_bundle_digest is not None and bundle.digest != expected_bundle_digest: raise ValueError("model bundle digest does not match frozen model selection")` |
+
+**关键在于环节 3 的位置**：**`model_walk_forward.py` 是独立评估器**（**它的 docstring 自称 "Independently load only verified frozen artifact, TEST manifest, and selections"**），**不是产出 bundle 的那个驱动**。**所以这不是驱动给自己盖章，而是另一条代码路径拿着签名的选择记录去核对落盘的字节**——**与 §CC.1 那个从未被调用的 `CheckpointStore.load()` 是相反的情形。**
+
+**评估器还要求**（**`model_walk_forward.py:81-83`**）：**四折的 `model_family` 必须唯一**（**`_require_one_model_family`**）、**`model_artifact_id` 必须互不相同**（**`_require_distinct(..., "model_artifact_id", "artifact")`**）、**`evidence_id` 也必须互不相同**。**这三条本节也一并复核了**（**CX.3**）。
+
+### CX.2 14 个 bundle 逐个核实，四项全过
+
+| 载体 | bundle | 每文件 hash | 文件集 | digest==选择记录 | 评估器已运行 |
+|---|---|---|---|---|---|
+| M1 (ResidualMLP) | m1-f1 / f2 / f3 / f4 | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | **是**（`all_passed=True`） |
+| **M2 (TCN)** | **m2-f1 / f2** | ✓✓ | ✓✓ | ✓✓ | **否**（无 `report.json`） |
+| M0 (LGBM_RANKER) | m0-f1 / f2 / f3 / f4 | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | **是**（`all_passed=False`） |
+| M0R (LGBM_RANKREG) | m0r-f1 / f2 / f3 / f4 | ✓✓✓✓ | ✓✓✓✓ | ✓✓✓✓ | **是**（`all_passed=True`） |
+
+**四项检查的含义**：
+- **每文件 hash**：**bundle 里每个文件的 sha256 与 `checksums.sha256` 里它那一行逐字节相符**（**9 个文件 × 14 个 bundle = 126 次比对全过**）；
+- **文件集**：**目录里恰好是契约要求的 9 个文件**（`config.json`、`feature_order.json`、`model_card.json`、`preprocessing.json`、`signature.json`、`validation_predictions.parquet`、三个 `seed-*.pt`）**加上 `checksums.sha256` 自身**（**它不可能列自己的 hash**），**manifest 则恰好覆盖那 9 个**（**`model_bundle.py:225-233` 的 `expected_files`**）；
+- **digest==选择记录**：**`sha256(checksums.sha256 字节)` 与该折冻结选择记录里的 `model_bundle_digest` 相同**；
+- **选择记录点名的 artifact 就是它核实的那个**：**`model_artifact_id` == 被核实的 bundle 目录名**（**防止"A 折的记录指向 B 折的 bundle"**）。
+
+**这里第一版探针的比较基准是错的，而它被自己的对照抓出来了**：**初版把"目录里的文件集"直接等于 `expected_files`**（**9 个**），**于是 14 个 bundle 全部报"有一个多余文件"、`file_set_matches_expected` 全 False**。**原因是 bundle 目录还含 `checksums.sha256` 自身**（**10 个文件**），**而契约列的是 manifest 应当覆盖的 9 个**。**正确的做法是两个独立等式**：**manifest 的键集 == 契约的 9 个**，**目录文件集 == 那 9 个 + manifest 自身**。**修正后 14/14 通过**。**这条与 §CV.5 那个 27-vs-81 行、§CS.4 那个 6.27-vs-8.72 h 同族：比较的两边必须用同一个基准。**
+
+### CX.3 三个载体已由生产评估器强制执行过，M2 的还没有——这个区分不能抹平
+
+**`report.json` 只在 `model_walk_forward` 产出裁决之后才写**，**而那条路径正是环节 3 所在**。**所以 `report.json` 存在 = 这条 digest 校验已经在生产路径上执行过并通过**：
+
+| 载体 | `report.json` | `oos.all_passed` | 门 | 含义 |
+|---|---|---|---|---|
+| M1 | **有** | **True** | G1–G6 | digest 校验已执行并通过 |
+| M0 | **有** | **False** | G1–G6 | digest 校验已执行并通过（**门未过是另一回事**，见下） |
+| M0R | **有** | **True** | G1–G6 | digest 校验已执行并通过 |
+| **M2** | **无** | — | — | **评估器尚未运行，digest 校验还没在生产路径上执行过** |
+
+**所以准确的表述是分两档**：**12 个 bundle**（**M1/M0/M0R 各四折**）**是"本节核实通过 + 生产校验已执行通过"**；**2 个**（**m2-f1 / m2-f2**）**是"本节核实通过，但生产校验尚未执行"**——**对 M2 而言，本节的重新计算是一个外部核验，替代了一个生产还没做的检查**（**M2 的 F3 网格还在跑、F4 未开始，四折不全所以评估器不会跑**）。**把这两档混成"14/14 已验证"会把一个尚未发生的强制执行说成已经发生，所以本节明确分开报。**
+
+**M0 的 `all_passed=False` 不是新发现、也不影响本条**：**M0-base 本来就是那个未通过门的基线载体**（**包内早已记录**）；**digest 校验与门是两件独立的事**——**校验过了说明"发运的字节就是签名的选择所指的那些字节"，门没过说明"这个模型的 OOS 表现不达标"**。**两者都成立并不矛盾，而这恰好说明 digest 校验不是"通过门"的副产品。**
+
+### CX.4 检测器对照：证明这条校验不是空真
+
+**"14/14 都匹配"只有在检测器能失败时才有意义**（**§CM.6(v) 那个 `all(... if exists)` 空真、§CO.6 的 Kendall's W 方向写反、§CU 的分类器过宽、§CV.6 的 p 值方向标反，都是同一个教训**）。**三条，全部在内存里做、不写盘**：
+
+1. **篡改 manifest 一个字节 → digest 改变**：**把 `checksums.sha256` 的第一个十六进制字符改掉**（**保持行格式合法**），**digest 从 `0ed7e6418843e37b…` 变成 `8fa701d82c78e023…`**。**所以 digest 真的对 manifest 的每个字节敏感，不是常数。**
+2. **篡改文件内容 → 该文件 hash 断**：**把 `config.json` 倒数第二个字节 +1**（**内存里**），**它的 sha256 就不再等于 manifest 里那一行**。**所以逐文件比对不是无脑通过。**
+3. **交叉配对必须全部识别为 mismatch**：**把每个 bundle 的真实 digest 与其他 bundle 记录的 digest 两两配对**（**14 个 bundle 里取 digest 互异的对，共 182 对**），**182 对全部被判为不匹配**。**这正是"某折的选择记录指向了另一折的 bundle"那个失效场景**——**检测器抓住了它。**
+
+**外加两条结构性对照**：**四个载体的 `model_artifact_id` 与 `evidence_id` 各自互不相同**（**评估器 `_require_distinct` 要求的**）、**每个载体只有一个 `model_family`**（**`_require_one_model_family` 要求的**）。**以及源码链的四个环节都必须找到**（**若 `expected_bundle_digest` 那一行不在生产代码里，本节的"不是自证"论断就不成立，探针会中止**）。
+
+**十项 `assert` 全部通过才产出数字**；**两处篡改都只在内存里做，磁盘上的 bundle 未被写入任何字节，所以它们与生产发运的仍逐字节相同。**
+
+### CX.5 这一节对已发布内容的影响
+
+**可以引用**：**"每个已落地的发运 bundle 都通过了完整的追溯校验：bundle 里 9 个文件的 sha256 与 manifest 相符、文件集与契约相符、`sha256(checksums.sha256)` 等于该折冻结选择记录里的 `model_bundle_digest`、且记录点名的 artifact 就是被核实的那个；这条校验由独立评估器 `model_walk_forward.py:188` 强制执行、不匹配即 raise，已在 M1/M0/M0R 的 12 个 bundle 上于生产路径执行通过。"**
+
+**不可以引用**：
+1. **"M2 的 bundle 也已被生产校验强制执行"**——**M2 的评估器还没跑**（**无 `report.json`**），**本节做的是外部核实**（**CX.3**）；
+2. **"digest 校验通过说明模型质量达标"**——**M0 就是反例**（**digest 校验通过、`all_passed=False`**）；**这条校验保证的是"发运的字节 == 签名的选择所指的字节"，与表现无关**；
+3. **任何关于 `.pt` 内容的断言**——**本节只把 `seed-*.pt` 当作不透明字节算 sha256，没有加载为张量、没有重建模型**（**那是 §CC.1/§CT 做的事，且它们比的是与峰值检查点的相等性**）；
+4. **"这条链能防住恶意篡改"**——**本节验的是一致性，不是密码学强度**；**`checksums.sha256` 与它保护的文件在同一目录、同一权限下，能改文件的人也能改 manifest**。**真正的绑定来自选择记录的签名**（**`record.json` 里的 `signature` 字段**），**而本节没有验证签名本身**（**那需要公钥与签名算法，超出只读取证的范围**）。
+
+**与已发布结论的关系**：**本节不修改任何已发布数字，它补的是一条此前从未被独立核实过的链**——**§CC.1/§CC.2 核实了"发运权重是峰值检查点"与"OOS 从 bundle 重建"，§CT 把它扩到 18/18 并给出机制，本节核实的是"签名的选择记录与落盘 bundle 之间的绑定"，三者合起来才是完整的发运追溯**：**选择记录**（**签名 + digest**）**→ bundle**（**digest 相符 + 逐文件 checksum 相符**）**→ `seed-*.pt`**（**§CT：逐字节等于峰值检查点**）**→ OOS 预测**（**§CC.2：由 bundle 重建的模型现算**）。**这条链现在每一环都有实测证据。**
+
+### CX.6 本节没有做的事
+
+**没有**验证选择记录的**签名**本身——**只核对了记录里的 `model_bundle_digest` 字段与落盘 bundle 的 digest 相符，没有用公钥验 `signature`**（**需要签名算法与密钥材料，超出只读取证范围**）；
+**没有**加载任何 `.pt` 或重建任何模型——**`seed-*.pt` 只当作不透明字节算 sha256**；
+**没有**读 `validation_predictions.parquet` 的任何数据**（**连页脚都不读**）——**它只作为不透明字节参与 hash**；**所以 §CU 那个"该 parquet 出自末轮模型"的结论与本节无关，本节不依赖它、也不改变它**；
+**没有**核实 `predictions/` 目录里那些冻结的 test 预测工件与 bundle 的关系——**那是 §CC.2 的链条**（**OOS 由 bundle 重建的模型现算**），**本节只管 bundle 与选择记录之间的绑定**；
+**没有**在 M2 上等待评估器运行——**它要等 F3/F4 跑完**（**F3 网格进行中、检索记录 0**），**所以 M2 那一档在本节记为"外部核实通过、生产校验未执行"**，**等 `report.json` 出现后本探针可重跑确认升级为 14/14**；
+**没有**触库、**没有**网络或数据商调用、**没有** MCP、**没有**训练、**没有**导入或执行任何仓库模块（**`model_bundle.py` / `model_walk_forward.py` 都是读源码文本**）、**没有**写 artifacts 目录（**机读件写在本包自己的 `measurements/` 下**；**两处篡改都只在内存里**）、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号。**与 §CN–§CW 一样本节不触碰 `/tmp/walk_forward_cache_v1`，无 atime 副作用**（**§CM.5 那条披露只适用于 §CJ/§CK/§CL/§CM**）。**本节不读任何实时状态**（**bundle 与选择记录都是不可变工件**：`model_bundle.py:73` 对已存在目标抛 `FileExistsError`），**所以机读件与 §CT/§CU/§CV 一样跨 cwd 与跨运行逐字节可复现**（**已验证**）。
+
+**取证工具**：`m2_walk_forward_progress/probes/probe_shipped_bundle_provenance_chain.py`（**含 CX.4 的十项 `assert`；用 `Path(__file__)` 定位、与 cwd 无关、逐字节可复现**）；
+**机读件**：`measurements/shipped_bundle_provenance_chain.json`（**含源码链四环节的逐行证据、14 个 bundle 的逐文件 hash 比对与 digest 核对、评估器运行状态分档、distinctness/family 复核、三条检测器对照的结果、以及"12 已强制执行 / 2 仅外部核实"的分档清单**）；`provenance.json` 已刷新（39 支探针 / 50 份机读件），两道闸门均退出 0；
+**输入**：四个载体的 `models/*/`（**全部文件的字节，只算 sha256**）、`selections/model/*/record.json`、`report.json` 的存在性与 `oos` 字段、以及 `model_bundle.py` / `model_walk_forward.py` 的源码文本。
+
+**安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt` 或把任何 `.pt` 加载为张量、**没有**读任何 parquet 数据、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
+驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 19 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 14:22 有 83 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 14:21:50 报 ok，`MemAvailable` 166 GB，折缓存 46 个文件完好。

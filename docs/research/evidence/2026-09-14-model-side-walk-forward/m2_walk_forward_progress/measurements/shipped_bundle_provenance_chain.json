@@ -1,0 +1,1198 @@
+{
+ "question": "does each shipped bundle's digest match the frozen selection evidence that vouches for it, and is the check that enforces this actually wired into production code?",
+ "generated_at_local": "2026-09-19T14:21:26",
+ "source_chain": {
+  "digest_definition": {
+   "249": "digest=hashlib.sha256(checksums).hexdigest(),"
+  },
+  "digest_mismatch_raises": {
+   "153": "raise ValueError(\"model bundle digest does not match frozen model selection\")"
+  },
+  "evaluator_passes_expected_digest": {
+   "188": "expected_bundle_digest=selection.model_bundle_digest,"
+  },
+  "evaluator_requires_distinct_artifacts": {
+   "82": "_require_distinct(selections, \"model_artifact_id\", \"artifact\")"
+  },
+  "evaluator_requires_one_family": {
+   "81": "model_family = _require_one_model_family(selections)"
+  },
+  "expected_files_contract": {
+   "97": "temporary / \"validation_predictions.parquet\",",
+   "231": "\"validation_predictions.parquet\","
+  }
+ },
+ "contrast_with_CC1": "§CC.1 found CheckpointStore.load() existed and was unit-tested but was never called by production code, so it could not fire. This chain is the opposite: model_walk_forward.py:188 passes expected_bundle_digest into load_model_card, and model_bundle.py:152-153 raises on mismatch. The check lives in the INDEPENDENT evaluator, not in the driver that produced the bundle, so it is not self-attestation.",
+ "per_bundle": [
+  {
+   "workspace": "m1_full_v1",
+   "model_id": "m1-f1",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "b0b0656f1aa233d6",
+     "computed": "b0b0656f1aa233d6"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "04c3300ccbed2efb",
+     "computed": "04c3300ccbed2efb"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "30b1d555ca768489",
+     "computed": "30b1d555ca768489"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "b4ec98f6199e95d5",
+     "computed": "b4ec98f6199e95d5"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "bec51704fe1be18f",
+     "computed": "bec51704fe1be18f"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "f3d993f88cbb6c22",
+     "computed": "f3d993f88cbb6c22"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "316a08ab605356a0",
+     "computed": "316a08ab605356a0"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "27bbfcab9fa7f9de",
+     "computed": "27bbfcab9fa7f9de"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "0ed7e6418843e37b01d210c158c13e50e028c9540bb7bdbf456157ccd551f6b7",
+   "recorded_selection_digest": "0ed7e6418843e37b01d210c158c13e50e028c9540bb7bdbf456157ccd551f6b7",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F1",
+   "selection_artifact_id": "m1-f1",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "a24ced342267633a945064b804a5f3db8904284e1cde23bf2aefbec2b3d6a6a5",
+   "selection_record_path": "m1_full_v1/selections/model/a24ced342267633a945064b804a5f3db8904284e1cde23bf2aefbec2b3d6a6a5.json/record.json",
+   "family": "M1 ResidualMLP",
+   "fold_id": "F1",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m1_full_v1",
+   "model_id": "m1-f2",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "f2617c3653a240cc",
+     "computed": "f2617c3653a240cc"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "08c2108723624cce",
+     "computed": "08c2108723624cce"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "51e15a45274c8511",
+     "computed": "51e15a45274c8511"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "2ed6d6dad4ace71d",
+     "computed": "2ed6d6dad4ace71d"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "6f7c48029afe9dfa",
+     "computed": "6f7c48029afe9dfa"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "fb00345e39c1995b",
+     "computed": "fb00345e39c1995b"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "bdba2cf9f0f84a6a",
+     "computed": "bdba2cf9f0f84a6a"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "a14c03ef590a8790",
+     "computed": "a14c03ef590a8790"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "4add5c9e3b007c90620bfbea682ade77f0feb34542fed0204cdd49ec1bb28c24",
+   "recorded_selection_digest": "4add5c9e3b007c90620bfbea682ade77f0feb34542fed0204cdd49ec1bb28c24",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F2",
+   "selection_artifact_id": "m1-f2",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "a53c5d9fbebcaf67ccb848e4f3582581ebd2a4812a8e0e6392b9639cb0d10ec2",
+   "selection_record_path": "m1_full_v1/selections/model/a53c5d9fbebcaf67ccb848e4f3582581ebd2a4812a8e0e6392b9639cb0d10ec2.json/record.json",
+   "family": "M1 ResidualMLP",
+   "fold_id": "F2",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m1_full_v1",
+   "model_id": "m1-f3",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "3ef08ba90d44bc47",
+     "computed": "3ef08ba90d44bc47"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "4831c0a24fa51b8d",
+     "computed": "4831c0a24fa51b8d"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "0655d86acb456aac",
+     "computed": "0655d86acb456aac"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "3dcddc8ecdaffce5",
+     "computed": "3dcddc8ecdaffce5"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "fb817621e6cfcf78",
+     "computed": "fb817621e6cfcf78"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "7bd7019f440525e1",
+     "computed": "7bd7019f440525e1"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "d0fbf92fb60474a8",
+     "computed": "d0fbf92fb60474a8"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "b2b0a08eb5bcd3de",
+     "computed": "b2b0a08eb5bcd3de"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "b76fa9192ca5a69d582f6da68210506c3668fb579f4046fe12a1416567a3185e",
+   "recorded_selection_digest": "b76fa9192ca5a69d582f6da68210506c3668fb579f4046fe12a1416567a3185e",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F3",
+   "selection_artifact_id": "m1-f3",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "15ebe4a56c4114730e4eee06bfe568ef6a12aec9c502a416d3eaeb36786d2877",
+   "selection_record_path": "m1_full_v1/selections/model/15ebe4a56c4114730e4eee06bfe568ef6a12aec9c502a416d3eaeb36786d2877.json/record.json",
+   "family": "M1 ResidualMLP",
+   "fold_id": "F3",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m1_full_v1",
+   "model_id": "m1-f4",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "d1f26f7137255f63",
+     "computed": "d1f26f7137255f63"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "f2a6c0cd2db7ef83",
+     "computed": "f2a6c0cd2db7ef83"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "ff06f2ef79256a9d",
+     "computed": "ff06f2ef79256a9d"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "900c3e9ab7989bc9",
+     "computed": "900c3e9ab7989bc9"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "6053d806377d5bd5",
+     "computed": "6053d806377d5bd5"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "4fc1db7aceb70607",
+     "computed": "4fc1db7aceb70607"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "4e7b6bf301ace38d",
+     "computed": "4e7b6bf301ace38d"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "631d6b4cc0a6cf9e",
+     "computed": "631d6b4cc0a6cf9e"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "8df5d445be06aaca2f88022938d5e08d4439266440e8c526d092fdcc542a5906",
+   "recorded_selection_digest": "8df5d445be06aaca2f88022938d5e08d4439266440e8c526d092fdcc542a5906",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F4",
+   "selection_artifact_id": "m1-f4",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "c7a62d7ef2a439f29afc0fd352124c1b5824f9b0f50a8ae8e3bd2b0f9d7261b7",
+   "selection_record_path": "m1_full_v1/selections/model/c7a62d7ef2a439f29afc0fd352124c1b5824f9b0f50a8ae8e3bd2b0f9d7261b7.json/record.json",
+   "family": "M1 ResidualMLP",
+   "fold_id": "F4",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m2_v1",
+   "model_id": "m2-f1",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "0e2c8821d91b0f19",
+     "computed": "0e2c8821d91b0f19"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "97e508fc180886cf",
+     "computed": "97e508fc180886cf"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "30b1d555ca768489",
+     "computed": "30b1d555ca768489"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "c700eddb4623425e",
+     "computed": "c700eddb4623425e"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "1afc143df99b6413",
+     "computed": "1afc143df99b6413"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "5778913aed62f7b9",
+     "computed": "5778913aed62f7b9"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "c029ac15505c32c0",
+     "computed": "c029ac15505c32c0"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "24213c674da2434d",
+     "computed": "24213c674da2434d"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "3e285a450b7667d9552bf66688627deea9e23c4738db55e2f2c58ad0c8888340",
+   "recorded_selection_digest": "3e285a450b7667d9552bf66688627deea9e23c4738db55e2f2c58ad0c8888340",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F1",
+   "selection_artifact_id": "m2-f1",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "f8de9d1dc0c59bd17b000cfed323daecf085bc5ad828f7cc28e00bc3ece2feb4",
+   "selection_record_path": "m2_v1/selections/model/f8de9d1dc0c59bd17b000cfed323daecf085bc5ad828f7cc28e00bc3ece2feb4.json/record.json",
+   "family": "M2 TCN",
+   "fold_id": "F1",
+   "evaluator_has_run": false
+  },
+  {
+   "workspace": "m2_v1",
+   "model_id": "m2-f2",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "0e2c8821d91b0f19",
+     "computed": "0e2c8821d91b0f19"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "271d3015cafcfbbc",
+     "computed": "271d3015cafcfbbc"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "51e15a45274c8511",
+     "computed": "51e15a45274c8511"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "f4aaf27888dac398",
+     "computed": "f4aaf27888dac398"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "4e95078f070f2cf0",
+     "computed": "4e95078f070f2cf0"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "b007fee5cf5a9594",
+     "computed": "b007fee5cf5a9594"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "c029ac15505c32c0",
+     "computed": "c029ac15505c32c0"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "d9e60ea2c78d8fb9",
+     "computed": "d9e60ea2c78d8fb9"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "fdf4d27a07726aa7268b06b820f38d89a7edcd6d25a060fb61fdbf6bd724536f",
+   "recorded_selection_digest": "fdf4d27a07726aa7268b06b820f38d89a7edcd6d25a060fb61fdbf6bd724536f",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F2",
+   "selection_artifact_id": "m2-f2",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "fe9d1261872d02f6cc6e4eb5b6e4d17d72a3d6d2f64827f774afeafdc2661b96",
+   "selection_record_path": "m2_v1/selections/model/fe9d1261872d02f6cc6e4eb5b6e4d17d72a3d6d2f64827f774afeafdc2661b96.json/record.json",
+   "family": "M2 TCN",
+   "fold_id": "F2",
+   "evaluator_has_run": false
+  },
+  {
+   "workspace": "m0_v3",
+   "model_id": "m0-f1",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "0faab67009dba6fa",
+     "computed": "0faab67009dba6fa"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "c09f3e4ba173439c",
+     "computed": "c09f3e4ba173439c"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "17c26040eb292102",
+     "computed": "17c26040eb292102"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "36245a9428c03b4f",
+     "computed": "36245a9428c03b4f"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "9ea3b9e38d156aa9",
+     "computed": "9ea3b9e38d156aa9"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "71b85874ff36c41e",
+     "computed": "71b85874ff36c41e"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "a861b30ebcbd0ce3",
+     "computed": "a861b30ebcbd0ce3"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "c63037e91070f33668cc1afa1e1aa99342c593c7a219bf0d082e8b10ccf20db2",
+   "recorded_selection_digest": "c63037e91070f33668cc1afa1e1aa99342c593c7a219bf0d082e8b10ccf20db2",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F1",
+   "selection_artifact_id": "m0-f1",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "45d140f7fd1cbbe44a9eb82a3af499e4aaeae27427286296f02b079bd73ad3d4",
+   "selection_record_path": "m0_v3/selections/model/45d140f7fd1cbbe44a9eb82a3af499e4aaeae27427286296f02b079bd73ad3d4.json/record.json",
+   "family": "M0 LGBM_RANKER",
+   "fold_id": "F1",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m0_v3",
+   "model_id": "m0-f2",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "f2b3234ad96b91e4",
+     "computed": "f2b3234ad96b91e4"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "0f46fa6fff50d8a3",
+     "computed": "0f46fa6fff50d8a3"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "9ea5a833efb3397d",
+     "computed": "9ea5a833efb3397d"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "93f6964de9997c8f",
+     "computed": "93f6964de9997c8f"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "f3b44047b1de4f69",
+     "computed": "f3b44047b1de4f69"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "e2ca2d9ff38d964f",
+     "computed": "e2ca2d9ff38d964f"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "6d7ae8dc76211c8b",
+     "computed": "6d7ae8dc76211c8b"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "72162d42f4b88686102aacf151b540209917158c3a045a23f0de0a96e68bbd0e",
+   "recorded_selection_digest": "72162d42f4b88686102aacf151b540209917158c3a045a23f0de0a96e68bbd0e",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F2",
+   "selection_artifact_id": "m0-f2",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "2f43cb5e472a8da26adcbbc6b2dfed8beff2a79ee6d9c8363b2debe8f30ed7d4",
+   "selection_record_path": "m0_v3/selections/model/2f43cb5e472a8da26adcbbc6b2dfed8beff2a79ee6d9c8363b2debe8f30ed7d4.json/record.json",
+   "family": "M0 LGBM_RANKER",
+   "fold_id": "F2",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m0_v3",
+   "model_id": "m0-f3",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "c4ef344f591e706a",
+     "computed": "c4ef344f591e706a"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "bfafd5437bf327e0",
+     "computed": "bfafd5437bf327e0"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "654867a14a73f71d",
+     "computed": "654867a14a73f71d"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "1c42fe14249ad55d",
+     "computed": "1c42fe14249ad55d"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "e25fe34ce3e06d3d",
+     "computed": "e25fe34ce3e06d3d"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "11d398c48ca81408",
+     "computed": "11d398c48ca81408"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "1e3e3dc273a07492",
+     "computed": "1e3e3dc273a07492"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "fe1ca0ef52eedc63778d5980c4612ffde59132c549722d97971344df7139c181",
+   "recorded_selection_digest": "fe1ca0ef52eedc63778d5980c4612ffde59132c549722d97971344df7139c181",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F3",
+   "selection_artifact_id": "m0-f3",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "5c7b013902a8d03340c311f9fa40c274b23b5270daeb915214063b072f3d128d",
+   "selection_record_path": "m0_v3/selections/model/5c7b013902a8d03340c311f9fa40c274b23b5270daeb915214063b072f3d128d.json/record.json",
+   "family": "M0 LGBM_RANKER",
+   "fold_id": "F3",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m0_v3",
+   "model_id": "m0-f4",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "c4ef344f591e706a",
+     "computed": "c4ef344f591e706a"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "dbaa1a598f2a375f",
+     "computed": "dbaa1a598f2a375f"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "3db7db6d81eba1cd",
+     "computed": "3db7db6d81eba1cd"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "b48f83368d10c5a8",
+     "computed": "b48f83368d10c5a8"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "e7fa9b79e08ce69a",
+     "computed": "e7fa9b79e08ce69a"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "11d398c48ca81408",
+     "computed": "11d398c48ca81408"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "133a586605039dae",
+     "computed": "133a586605039dae"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "591c3422255af22fbb7411ad99a2a7d7074798359d19996218dafbde929d86da",
+   "recorded_selection_digest": "591c3422255af22fbb7411ad99a2a7d7074798359d19996218dafbde929d86da",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F4",
+   "selection_artifact_id": "m0-f4",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "305bc084e592a9d59b5d4b0039b435035edbb73aeaf21af850afb597a77cb6c4",
+   "selection_record_path": "m0_v3/selections/model/305bc084e592a9d59b5d4b0039b435035edbb73aeaf21af850afb597a77cb6c4.json/record.json",
+   "family": "M0 LGBM_RANKER",
+   "fold_id": "F4",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "model_id": "m0r-f1",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "c4ef344f591e706a",
+     "computed": "c4ef344f591e706a"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "7367bf64c9e7fabe",
+     "computed": "7367bf64c9e7fabe"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "d0c6a45827e05b42",
+     "computed": "d0c6a45827e05b42"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "eb65557f74c3ba17",
+     "computed": "eb65557f74c3ba17"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "88037517beb592ea",
+     "computed": "88037517beb592ea"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "29bde004e0e875a0",
+     "computed": "29bde004e0e875a0"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "4b205c9e12b1b919",
+     "computed": "4b205c9e12b1b919"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "1525f36b0ab3476ae4bef73b841c2eaccc1fb027a0f9e4edcf46fac9404568a4",
+   "recorded_selection_digest": "1525f36b0ab3476ae4bef73b841c2eaccc1fb027a0f9e4edcf46fac9404568a4",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F1",
+   "selection_artifact_id": "m0r-f1",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "1348cbd593c77fe6ad9009c40fbe0cebe3347e762c151c34c4f446e203152dad",
+   "selection_record_path": "m0r_v3/selections/model/1348cbd593c77fe6ad9009c40fbe0cebe3347e762c151c34c4f446e203152dad.json/record.json",
+   "family": "M0R LGBM_RANKREG",
+   "fold_id": "F1",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "model_id": "m0r-f2",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "c4ef344f591e706a",
+     "computed": "c4ef344f591e706a"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "1a2f990e974241d6",
+     "computed": "1a2f990e974241d6"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "e4ede853a2a9ed79",
+     "computed": "e4ede853a2a9ed79"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "64cd0499e44145d1",
+     "computed": "64cd0499e44145d1"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "4e2369e8bd85b743",
+     "computed": "4e2369e8bd85b743"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "29bde004e0e875a0",
+     "computed": "29bde004e0e875a0"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "4ce6381d2bba45e0",
+     "computed": "4ce6381d2bba45e0"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "f8612901212c53fc2346812687574606be4f88615406621fe331e64117a9f5d6",
+   "recorded_selection_digest": "f8612901212c53fc2346812687574606be4f88615406621fe331e64117a9f5d6",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F2",
+   "selection_artifact_id": "m0r-f2",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "82a52d182f2949a252471a38cc807e1387d7ca3c7f7d90136052457f497fe422",
+   "selection_record_path": "m0r_v3/selections/model/82a52d182f2949a252471a38cc807e1387d7ca3c7f7d90136052457f497fe422.json/record.json",
+   "family": "M0R LGBM_RANKREG",
+   "fold_id": "F2",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "model_id": "m0r-f3",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "c4ef344f591e706a",
+     "computed": "c4ef344f591e706a"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "7222bebb0631d01b",
+     "computed": "7222bebb0631d01b"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "ab31be060cd0e26c",
+     "computed": "ab31be060cd0e26c"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "69299393beca6f49",
+     "computed": "69299393beca6f49"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "4c6ae74ee424d075",
+     "computed": "4c6ae74ee424d075"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "29bde004e0e875a0",
+     "computed": "29bde004e0e875a0"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "b26414683819bc59",
+     "computed": "b26414683819bc59"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "ca9cdf98216989731ee6ddc037cb9479e01800f33421361863f59b68550e83ef",
+   "recorded_selection_digest": "ca9cdf98216989731ee6ddc037cb9479e01800f33421361863f59b68550e83ef",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F3",
+   "selection_artifact_id": "m0r-f3",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "b824fdb6ae086fce7673ebd135061c1b2a26302382ca36b450457b1fbf908687",
+   "selection_record_path": "m0r_v3/selections/model/b824fdb6ae086fce7673ebd135061c1b2a26302382ca36b450457b1fbf908687.json/record.json",
+   "family": "M0R LGBM_RANKREG",
+   "fold_id": "F3",
+   "evaluator_has_run": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "model_id": "m0r-f4",
+   "bundle_exists": true,
+   "checksums_present": true,
+   "manifest_covers_exactly_the_expected_files": true,
+   "file_set_matches_expected": true,
+   "missing_files": [],
+   "unexpected_files": [],
+   "n_files_on_disk": 10,
+   "n_files_in_manifest": 9,
+   "per_file": {
+    "config.json": {
+     "matches": true,
+     "recorded": "c4ef344f591e706a",
+     "computed": "c4ef344f591e706a"
+    },
+    "feature_order.json": {
+     "matches": true,
+     "recorded": "2ec5434d24d7928c",
+     "computed": "2ec5434d24d7928c"
+    },
+    "model_card.json": {
+     "matches": true,
+     "recorded": "a2a71a08fd651b83",
+     "computed": "a2a71a08fd651b83"
+    },
+    "preprocessing.json": {
+     "matches": true,
+     "recorded": "b6223351a6224dbb",
+     "computed": "b6223351a6224dbb"
+    },
+    "seed-20260801.pt": {
+     "matches": true,
+     "recorded": "644a0c548d7a350f",
+     "computed": "644a0c548d7a350f"
+    },
+    "seed-20260802.pt": {
+     "matches": true,
+     "recorded": "9445d382b9b0da60",
+     "computed": "9445d382b9b0da60"
+    },
+    "seed-20260803.pt": {
+     "matches": true,
+     "recorded": "3e267ca494dbe81f",
+     "computed": "3e267ca494dbe81f"
+    },
+    "signature.json": {
+     "matches": true,
+     "recorded": "29bde004e0e875a0",
+     "computed": "29bde004e0e875a0"
+    },
+    "validation_predictions.parquet": {
+     "matches": true,
+     "recorded": "a191dd5b4f610f9a",
+     "computed": "a191dd5b4f610f9a"
+    }
+   },
+   "all_files_match_checksums": true,
+   "recomputed_bundle_digest": "5f50bf50c4bcb52150c4b75f402bde7d02b159fa96c65e0da5c17574dcd94b62",
+   "recorded_selection_digest": "5f50bf50c4bcb52150c4b75f402bde7d02b159fa96c65e0da5c17574dcd94b62",
+   "digest_matches_selection_evidence": true,
+   "selection_fold_id": "F4",
+   "selection_artifact_id": "m0r-f4",
+   "artifact_id_matches_bundle_dir": true,
+   "selection_evidence_id": "179e6821d305bc8b212f928f4f4ce3ded87a2761fe4d801b69b02c5380e8c4ec",
+   "selection_record_path": "m0r_v3/selections/model/179e6821d305bc8b212f928f4f4ce3ded87a2761fe4d801b69b02c5380e8c4ec.json/record.json",
+   "family": "M0R LGBM_RANKREG",
+   "fold_id": "F4",
+   "evaluator_has_run": true
+  }
+ ],
+ "summary": {
+  "n_bundles_verified": 14,
+  "n_fully_ok": 14,
+  "all_ok": true,
+  "n_enforced_by_a_completed_evaluator_run": 12,
+  "n_verified_but_not_yet_enforced": 2,
+  "verified_but_not_yet_enforced": [
+   {
+    "model_id": "m2-f1",
+    "workspace": "m2_v1",
+    "reason": "no report.json yet (M2 F3 grid running, F4 not started)"
+   },
+   {
+    "model_id": "m2-f2",
+    "workspace": "m2_v1",
+    "reason": "no report.json yet (M2 F3 grid running, F4 not started)"
+   }
+  ],
+  "reading": "12 bundles are both verified here AND already enforced by a production evaluator run; 2 (M2 F1/F2) are verified here but the evaluator has not run yet, so for those the check has not executed in production. The distinction is recorded rather than blurred."
+ },
+ "evaluator_run_status": {
+  "m1_full_v1": {
+   "workspace": "m1_full_v1",
+   "report_json_present": true,
+   "evaluator_has_run": true,
+   "oos_all_passed": true,
+   "gates": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6"
+   ],
+   "reading": "report.json exists only after model_walk_forward has produced a verdict, and that path is where expected_bundle_digest is passed (model_walk_forward.py:188), so its presence means the digest check has already executed in production"
+  },
+  "m2_v1": {
+   "workspace": "m2_v1",
+   "report_json_present": false,
+   "evaluator_has_run": false,
+   "reading": "report.json exists only after model_walk_forward has produced a verdict, and that path is where expected_bundle_digest is passed (model_walk_forward.py:188), so its presence means the digest check has already executed in production"
+  },
+  "m0_v3": {
+   "workspace": "m0_v3",
+   "report_json_present": true,
+   "evaluator_has_run": true,
+   "oos_all_passed": false,
+   "gates": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6"
+   ],
+   "reading": "report.json exists only after model_walk_forward has produced a verdict, and that path is where expected_bundle_digest is passed (model_walk_forward.py:188), so its presence means the digest check has already executed in production"
+  },
+  "m0r_v3": {
+   "workspace": "m0r_v3",
+   "report_json_present": true,
+   "evaluator_has_run": true,
+   "oos_all_passed": true,
+   "gates": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6"
+   ],
+   "reading": "report.json exists only after model_walk_forward has produced a verdict, and that path is where expected_bundle_digest is passed (model_walk_forward.py:188), so its presence means the digest check has already executed in production"
+  }
+ },
+ "distinctness_and_family_checks": {
+  "m1_full_v1": {
+   "n_selections": 4,
+   "artifact_ids_distinct": true,
+   "evidence_ids_distinct": true,
+   "single_model_family": true,
+   "model_family": "M1",
+   "artifact_ids": [
+    "m1-f1",
+    "m1-f2",
+    "m1-f3",
+    "m1-f4"
+   ]
+  },
+  "m2_v1": {
+   "n_selections": 2,
+   "artifact_ids_distinct": true,
+   "evidence_ids_distinct": true,
+   "single_model_family": true,
+   "model_family": "M2",
+   "artifact_ids": [
+    "m2-f1",
+    "m2-f2"
+   ]
+  },
+  "m0_v3": {
+   "n_selections": 4,
+   "artifact_ids_distinct": true,
+   "evidence_ids_distinct": true,
+   "single_model_family": true,
+   "model_family": "M0",
+   "artifact_ids": [
+    "m0-f1",
+    "m0-f2",
+    "m0-f3",
+    "m0-f4"
+   ]
+  },
+  "m0r_v3": {
+   "n_selections": 4,
+   "artifact_ids_distinct": true,
+   "evidence_ids_distinct": true,
+   "single_model_family": true,
+   "model_family": "M0R",
+   "artifact_ids": [
+    "m0r-f1",
+    "m0r-f2",
+    "m0r-f3",
+    "m0r-f4"
+   ]
+  }
+ },
+ "controls": {
+  "every_bundle_file_matches_its_checksum": true,
+  "every_bundle_digest_matches_its_selection_evidence": true,
+  "every_bundle_file_set_equals_expected": true,
+  "every_selection_names_the_bundle_it_verifies": true,
+  "artifact_ids_and_evidence_ids_distinct_per_workspace": true,
+  "single_model_family_per_workspace": true,
+  "DETECTOR_digest_changes_when_manifest_byte_changes": true,
+  "DETECTOR_file_hash_breaks_when_content_corrupted": true,
+  "DETECTOR_cross_pairing_detected_as_mismatch": true,
+  "source_chain_all_four_links_present": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "pt_loaded_as_tensor": false,
+ "parquet_row_data_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true,
+ "detector_controls": {
+  "digest_changes_when_one_manifest_byte_changes": true,
+  "digest_of_original": "0ed7e6418843e37b",
+  "digest_of_mutated": "8fa701d82c78e023",
+  "file_hash_breaks_when_content_corrupted": true,
+  "note": "both are in-memory mutations; nothing on disk was written, so the bundles remain byte-identical to what production shipped"
+ },
+ "mismatch_control": {
+  "n_cross_pairs_tested": 182,
+  "all_detected_as_mismatch": true,
+  "sample": [
+   {
+    "bundle": "m1-f1",
+    "borrowed_record_from": "m1-f2",
+    "detected_as_mismatch": true
+   },
+   {
+    "bundle": "m1-f1",
+    "borrowed_record_from": "m1-f3",
+    "detected_as_mismatch": true
+   },
+   {
+    "bundle": "m1-f1",
+    "borrowed_record_from": "m1-f4",
+    "detected_as_mismatch": true
+   }
+  ]
+ }
+}

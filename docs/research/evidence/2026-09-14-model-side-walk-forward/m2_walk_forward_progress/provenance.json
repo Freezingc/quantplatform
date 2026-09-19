@@ -49,7 +49,7 @@
     ],
     "sha256": "7ff3c1d90fa68d2e548649556e86580305cb1ded4e70ad2ecbb08b88d2b547f9"
   },
-  "generated_at_utc": "2026-09-19T05:30:52+00:00",
+  "generated_at_utc": "2026-09-19T06:21:26+00:00",
   "generator": {
     "path": "make_provenance.py",
     "sha256": "32848550f36fb6d05d1d87e345c60212532a79c99e4e8e0b234bcd1d99e054e8"
@@ -98,6 +98,7 @@
     "recovered_row_predictability.json": "632361646ff199f0e749ceebb82553f3849989ebc4ce7f4b7495202c0370cccb",
     "residual_securities_closed.json": "50c8625c033751d60e068e27e7a00c88601a3320b84bd30b9c78ad90100a7496",
     "resource_snapshot_blocking_the_training_experiment.json": "2af5aaae10a0de7b66fe23092d3f9db5a64ac35d4444cbed3e5258d8ddaf2fdd",
+    "shipped_bundle_provenance_chain.json": "4cfb3bd2bc4c0a345fba598789a5520521386e0cbd23e195f1a46e32199c6edc",
     "tail_bucket_listdates.json": "22f1600e5a417b1d40b0e0553559cd673a6d75f499af67343b53f43cb54505a1",
     "temporal_eligibility_exact.json": "a0b5045e50a620e56764730679001128ab4a616f9b35ea56746fb700377fc3cd",
     "tmp_cache_policy_and_observability.json": "5fa51e4fdda4eab203b90b42686a9c1487018ecd43c3fd16c03578765cd87852",
@@ -140,6 +141,7 @@
     "probe_rank_ic_estimator_identity.py": "896e7dbf4cff68f47ddb7d7fbd05abf498c7063837decea0eed08da9d7a8d27c",
     "probe_recovered_row_identity.py": "8cc8c33414e0ec0293c943f1c49a71a5cd959e8206f4f990a207dfd777b288a4",
     "probe_recovered_row_predictability.py": "265d25606f2a4a549368c195979f2047ef671d04f6314bd1869da90f27b449c6",
+    "probe_shipped_bundle_provenance_chain.py": "2927edf98fdb123838da3253d9a1b938331ad18d8d2e53f8924aecaf2d1a922d",
     "probe_temporal_eligibility_exact.py": "63a446e6235d924720d8ec91a752eded4cd231a4baf0317e7eb1f153e82eacf4",
     "probe_tmp_cache_policy_and_observability.py": "aeaedcab69500d07730172b540dd03a07f4a7518c0caf7b599d386da903124fc",
     "probe_validation_rowset_asymmetry.py": "bba10b18e67e2af4b425db0bc9a52ae1ee8c94ae1896ec7f30bab039ce0f529b",
@@ -155,6 +157,6 @@
   "safety": "read-only investigation of a live training run. No database access at all -- every input is a JSON record the run itself already wrote, plus one parquet read in place for a day count. No weight was loaded, nothing was written into any artifact directory, no process was signalled except this pack's own v1 stall watcher, which was stopped deliberately and is recorded as stopped in measurements/watcher_v2_deployment.json. No repository file was edited; run_real_candidate_training.py is hashed below to prove it.",
   "this_evidence_branch": {
     "branch": "codex/research-conditional-factor-review",
-    "commit_at_generation": "5ad3c42d46fe7bf6b89758f69de85ab31ebf70e4"
+    "commit_at_generation": "7ba5c5f29046e854786407d9c4c2c204b7a6d547"
   }
 }
