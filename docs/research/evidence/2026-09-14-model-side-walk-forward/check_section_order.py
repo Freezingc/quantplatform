@@ -36,6 +36,14 @@ Run this after every append to problems_found.md. It checks three things:
      splits cells on an unescaped pipe even when it is inside backticks. An unescaped one silently splits
      the row into too many cells. This was found by writing the very row that documents it: ledger C10's
      text quoted `） | ` and `|` inside code spans, which gave that row 8 pipes instead of 6.
+  7. every non-blank line of corrections_ledger.md must have an even count of "**" outside code spans.
+     The ledger has no legitimate multi-line bold -- each A/B/C row is one physical line, and a D rule's
+     in-place correction markers are indented ">" lines of their own -- so an orphan "**" left by a marker
+     leaks bold into the next line. Checks 5 and 6 cover table rows only, which is why two such defects
+     (D13 and D14, both introduced while adding markers in one commit) shipped undetected. An earlier
+     version of check 7 matched only lines starting with "<n>. **" and so still missed them, because the
+     markers sit on their own indented lines; its negative test passed the defective file and forced the
+     wider scope.
 
 It reads only this pack's own markdown. No database, no network, no repository module, nothing written.
 Exit status is 0 when the file is in order and 1 when it is not, so it can gate a commit.
@@ -147,6 +155,36 @@ def find_unbalanced_table_rows(text: str, filename: str) -> list[str]:
     return problems
 
 
+def find_unbalanced_ledger_lines(text: str, filename: str) -> list[str]:
+    """Flag any ledger line whose bold runs do not close within that line (code spans excluded).
+
+    The ledger has no legitimate multi-line bold: every A/B/C row is one physical line, and a D rule's
+    in-place correction markers are indented `> ` lines of their own. So EVERY non-blank line must carry an
+    even count of "**" outside code spans.
+
+    THE FIRST VERSION OF THIS CHECK WAS SCOPED WRONG, and its own negative test caught it. It matched only
+    lines beginning with "<n>. **" -- i.e. the numbered D rule itself -- but a D rule's correction markers
+    live on SEPARATE indented lines, so an orphan "**" left at the end of a marker (the exact defect that
+    shipped in D13 and D14) was never inspected and the gate passed on the defective file. This is the same
+    scope error as §CW.1 (comparing a 27-row statistic with an 81-row one) and §CZ.8 (applying a table-row
+    check only to problems_found.md when the defect was in corrections_ledger.md): the check's scope must
+    cover where the defect actually lives, and the only way to confirm that is to inject the defect and
+    require the gate to fail.
+    """
+    problems = []
+    for n, line in enumerate(text.split("\n"), 1):
+        if not line.strip():
+            continue
+        no_code = re.sub(r"`[^`]*`", "", line)
+        if no_code.count("**") % 2 != 0:
+            problems.append(
+                f"{filename} line {n}: bold run does not close within the line ({no_code.count('**')} "
+                f"'**' outside code spans, odd). The ledger has no legitimate multi-line bold, so an orphan "
+                f"'**' (typically left by an in-place correction marker) leaks bold into the next line; "
+                f"line starts: {line.strip()[:70]!r}")
+    return problems
+
+
 def main() -> int:
     lines = TARGET.read_text(encoding="utf-8").split("\n")
     found = [SEC.match(l).group(1) for l in lines if SEC.match(l)]
@@ -189,8 +227,10 @@ def main() -> int:
     for fname in PACK_FILES:
         fpath = HERE / fname
         if fpath.is_file():
-            problems.extend(find_unbalanced_table_rows(
-                fpath.read_text(encoding="utf-8"), fname))
+            ftext = fpath.read_text(encoding="utf-8")
+            problems.extend(find_unbalanced_table_rows(ftext, fname))
+            if fname == "corrections_ledger.md":
+                problems.extend(find_unbalanced_ledger_lines(ftext, fname))
 
     print(f"{TARGET.name}: {len(found)} sections ({found[0] if found else '-'}..{found[-1] if found else '-'}), "
           f"{sum(len(v) for v in subs.values())} subsections, "
@@ -201,7 +241,8 @@ def main() -> int:
             print("  -", p)
         return 1
     print("OK: chronological order, no duplicate headings, all subsections contiguous, no duplicated "
-          "declarations, all table-row bold runs balanced, no unescaped pipes in table code spans")
+          "declarations, all table-row bold runs balanced, no unescaped pipes in table code spans, "
+          "all ledger lines bold-balanced")
     return 0
 
 
