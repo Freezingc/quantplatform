@@ -1,0 +1,219 @@
+{
+ "question": "now that the M2 F2 refit has finished: what does §CJ's cap scan read, how do §CK.5's scenarios move under §CS's final uplift, and why can §CI's refit uplift never be a single constant?",
+ "generated_at_local": "2026-09-19T18:24:15",
+ "cap_scan_reread": {
+  "n_completed_stage_runs": 486,
+  "CJ_published_total_runs": 486,
+  "CJ_published_completed_then": 483,
+  "the_3_that_were_still_writing_have_finished": true,
+  "reconciles_with_CJ": true,
+  "completed_grew_by": 3,
+  "machine_wide_max_peak": 71,
+  "max_holders": [
+   "m2_v1/m2-f2-c17-20260802-seed-20260802",
+   "m2_v1/m2-f2-final-20260802-seed-20260802"
+  ],
+  "max_is_a_tie": true,
+  "CR_predicted_this_tie": true,
+  "n_in_ambiguity_region_peak_ge_90": 0,
+  "n_at_or_over_cap_100": 0,
+  "margin_to_ambiguity_epochs": 19,
+  "n_in_progress_runs_m2_f3": 49,
+  "in_progress_max_peak_so_far": 9,
+  "per_bucket": {
+   "m1_full_v1/f1/grid": {
+    "n_runs": 81,
+    "max_peak": 19
+   },
+   "m1_full_v1/f1/refit": {
+    "n_runs": 3,
+    "max_peak": 7
+   },
+   "m1_full_v1/f2/grid": {
+    "n_runs": 81,
+    "max_peak": 62
+   },
+   "m1_full_v1/f2/refit": {
+    "n_runs": 3,
+    "max_peak": 20
+   },
+   "m1_full_v1/f3/grid": {
+    "n_runs": 81,
+    "max_peak": 33
+   },
+   "m1_full_v1/f3/refit": {
+    "n_runs": 3,
+    "max_peak": 21
+   },
+   "m1_full_v1/f4/grid": {
+    "n_runs": 81,
+    "max_peak": 20
+   },
+   "m1_full_v1/f4/refit": {
+    "n_runs": 3,
+    "max_peak": 13
+   },
+   "m2_v1/f1/grid": {
+    "n_runs": 72,
+    "max_peak": 14
+   },
+   "m2_v1/f1/refit": {
+    "n_runs": 3,
+    "max_peak": 12
+   },
+   "m2_v1/f2/grid": {
+    "n_runs": 72,
+    "max_peak": 71
+   },
+   "m2_v1/f2/refit": {
+    "n_runs": 3,
+    "max_peak": 71
+   },
+   "m2_v1/f3/grid": {
+    "n_runs": 49,
+    "max_peak": 9
+   }
+  }
+ },
+ "refit_seed_parallelism": {
+  "f1": {
+   "seed_start_times": [
+    "2026-09-15T08:25",
+    "2026-09-15T08:24",
+    "2026-09-15T08:25"
+   ],
+   "spread_minutes": 0.5,
+   "concurrent": true
+  },
+  "f2": {
+   "seed_start_times": [
+    "2026-09-18T07:47",
+    "2026-09-18T07:46",
+    "2026-09-18T07:47"
+   ],
+   "spread_minutes": 0.5,
+   "concurrent": true
+  }
+ },
+ "refit_mean_vs_max": {
+  "F1": {
+   "per_seed_peaks": [
+    11,
+    2,
+    12
+   ],
+   "stage_span_h": 3.107,
+   "epr_mean": 18.333,
+   "epr_max": 22,
+   "pred_mean_h": 3.107,
+   "pred_max_h": 3.729,
+   "uplift_mean_basis": 1.0,
+   "uplift_max_basis": 0.8333,
+   "peak_skew_max_over_mean": 1.44
+  },
+  "F2": {
+   "per_seed_peaks": [
+    11,
+    71,
+    27
+   ],
+   "stage_span_h": 20.593,
+   "epr_mean": 46.333,
+   "epr_max": 81,
+   "pred_mean_h": 8.718,
+   "pred_max_h": 15.241,
+   "uplift_mean_basis": 2.3622,
+   "uplift_max_basis": 1.3512,
+   "peak_skew_max_over_mean": 1.9541
+  },
+  "why_the_uplift_is_not_a_constant": "the three refit seeds run in parallel, so stage wall-clock is the SLOWEST seed (a MAX), while §CI's model multiplies k_final by the MEAN epochs/run; max/mean depends on per-fold peak skew, which differs by fold (F1 1.440, F2 1.954), so the fitted 'uplift' is partly a mean->max conversion and is fold-dependent by construction",
+  "F1_uplift_is_circular": "k_final was FITTED on F1, so F1's mean-basis uplift is exactly 1.000 by construction and carries no information",
+  "max_basis_is_not_stable_either": "max-basis uplift is 0.8333 for F1 and 1.3512 for F2, so switching to a max basis does not produce a constant either; with two folds there is no basis to fit a better model, so no replacement constant is proposed"
+ },
+ "scenario_repricing": {
+  "optimistic_epochs_flat": {
+   "published_CK5_total_h": 173.5,
+   "recomputed_at_1.45_h": 173.5,
+   "reproduces_CK5": true,
+   "at_final_uplift_2.362_h": 184.8,
+   "delta_h": 11.3,
+   "delta_pct": 6.5,
+   "refit_share_pct_at_1.45": 10.4
+  },
+  "linear_growth_capped": {
+   "published_CK5_total_h": 263.7,
+   "recomputed_at_1.45_h": 263.8,
+   "reproduces_CK5": true,
+   "at_final_uplift_2.362_h": 281.8,
+   "delta_h": 18.0,
+   "delta_pct": 6.8,
+   "refit_share_pct_at_1.45": 10.9
+  },
+  "central_geometric_capped": {
+   "published_CK5_total_h": 355.7,
+   "recomputed_at_1.45_h": 355.4,
+   "reproduces_CK5": true,
+   "at_final_uplift_2.362_h": 380.3,
+   "delta_h": 24.9,
+   "delta_pct": 7.0,
+   "refit_share_pct_at_1.45": 11.1
+  },
+  "pessimistic_all_hit_cap": {
+   "published_CK5_total_h": 547.8,
+   "recomputed_at_1.45_h": 547.8,
+   "reproduces_CK5": true,
+   "at_final_uplift_2.362_h": 587.1,
+   "delta_h": 39.3,
+   "delta_pct": 7.2,
+   "refit_share_pct_at_1.45": 11.4
+  },
+  "effect_B_M1_shaped": {
+   "published_CK5_total_h": 139.0,
+   "recomputed_at_1.45_h": 139.0,
+   "reproduces_CK5": true,
+   "at_final_uplift_2.362_h": 147.8,
+   "delta_h": 8.8,
+   "delta_pct": 6.3,
+   "refit_share_pct_at_1.45": 10.0
+  }
+ },
+ "summary": {
+  "completed_runs_reconcile_with_CJ": true,
+  "machine_max_peak": 71,
+  "max_is_a_tie_between_grid_and_refit": true,
+  "zero_in_ambiguity_region": true,
+  "zero_at_or_over_cap": true,
+  "all_scenarios_reproduced_at_1.45": true,
+  "all_scenarios_increase_at_final_uplift": true,
+  "new_published_interval_h": [
+   184.8,
+   587.1
+  ],
+  "delta_pct_range": [
+   6.3,
+   7.2
+  ]
+ },
+ "controls": {
+  "i_run_classification_reconciles_with_CJ_total_486": true,
+  "i_b_completed_grew_by_exactly_the_3_still_writing": true,
+  "ii_scenarios_reproduce_CK5_at_1.45": true,
+  "iii_refit_seeds_are_concurrent": true,
+  "iv_max_basis_uplift_reported_as_not_stable": true,
+  "v_every_scenario_increases_at_final_uplift": true,
+  "vi_no_run_in_ambiguity_region": true,
+  "vii_M1_f3_counted_as_completed": true,
+  "viii_M2_f3_all_in_progress": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "live_snapshot_note": "the M2 F3 grid counts are a live snapshot and will grow; the completed-stage figures (M1 all folds, M2 F1/F2) are immutable"
+}
