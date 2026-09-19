@@ -1,0 +1,364 @@
+{
+ "question": "does the measured refit stage span cover `peak` epochs or `peak + patience` epochs, and if only `peak`, is §CI/§CS's fold-varying 'uplift factor' a basis artifact?",
+ "generated_at_local": "2026-09-19T21:57:10",
+ "mechanism": {
+  "save_only_on_strict_improvement": "trainer.py:110-116 (§CM.3)",
+  "early_stop_runs_patience_past_peak": "trainer.py:118-120, patience = 10",
+  "span_definition": "max(last ckpt mtime) - min(first ckpt mtime) across the 3 parallel seeds",
+  "first_checkpoint_epoch_is_1_for_all_stages": true,
+  "conclusion": "the span covers about `peak` epochs of the slowest seed, while the stage executes `peak + patience` epochs, so the span omits the patience tail by a fraction patience/peak -- 83% when peak = 12, 14% when peak = 71"
+ },
+ "basis_comparison": {
+  "mean_plus_patience (§CI/§CS published)": {
+   "per_fold": {
+    "M1 ResidualMLP F1": {
+     "k_fitted": 4.960405363212734e-05,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M1 ResidualMLP F2": {
+     "k_implied": 8.981735861761112e-05,
+     "uplift": 1.8107,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F3": {
+     "k_implied": 8.117391053507842e-05,
+     "uplift": 1.6364,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F4": {
+     "k_implied": 6.767764047432722e-05,
+     "uplift": 1.3644,
+     "fitting_fold": false
+    },
+    "M2 TCN F1": {
+     "k_fitted": 0.00020381601898959774,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M2 TCN F2": {
+     "k_implied": 0.00048145795767946874,
+     "uplift": 2.3622,
+     "fitting_fold": false
+    }
+   },
+   "independent_uplifts": [
+    1.8107,
+    1.6364,
+    1.3644,
+    2.3622
+   ],
+   "n_independent": 4,
+   "uplift_min": 1.3644,
+   "uplift_max": 2.3622,
+   "uplift_ratio": 1.7314,
+   "uplift_cv": 0.23493
+  },
+  "max_plus_patience (§DA.4)": {
+   "per_fold": {
+    "M1 ResidualMLP F1": {
+     "k_fitted": 4.085039710881075e-05,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M1 ResidualMLP F2": {
+     "k_implied": 6.686403363755497e-05,
+     "uplift": 1.6368,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F3": {
+     "k_implied": 6.109864233823108e-05,
+     "uplift": 1.4957,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F4": {
+     "k_implied": 5.002260382885055e-05,
+     "uplift": 1.2245,
+     "fitting_fold": false
+    },
+    "M2 TCN F1": {
+     "k_fitted": 0.0001698466824913315,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M2 TCN F2": {
+     "k_implied": 0.00027540187702652734,
+     "uplift": 1.6215,
+     "fitting_fold": false
+    }
+   },
+   "independent_uplifts": [
+    1.6368,
+    1.4957,
+    1.2245,
+    1.6215
+   ],
+   "n_independent": 4,
+   "uplift_min": 1.2245,
+   "uplift_max": 1.6368,
+   "uplift_ratio": 1.3367,
+   "uplift_cv": 0.12768
+  },
+  "span_consistent_peak (this section)": {
+   "per_fold": {
+    "M1 ResidualMLP F1": {
+     "k_fitted": 9.920810726425468e-05,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M1 ResidualMLP F2": {
+     "k_implied": 0.00010029605045633245,
+     "uplift": 1.011,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F3": {
+     "k_implied": 9.019323392786492e-05,
+     "uplift": 0.9091,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F4": {
+     "k_implied": 8.850152985104329e-05,
+     "uplift": 0.8921,
+     "fitting_fold": false
+    },
+    "M2 TCN F1": {
+     "k_fitted": 0.00031138558456744107,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M2 TCN F2": {
+     "k_implied": 0.000314190873790827,
+     "uplift": 1.009,
+     "fitting_fold": false
+    }
+   },
+   "independent_uplifts": [
+    1.011,
+    0.9091,
+    0.8921,
+    1.009
+   ],
+   "n_independent": 4,
+   "uplift_min": 0.8921,
+   "uplift_max": 1.011,
+   "uplift_ratio": 1.1333,
+   "uplift_cv": 0.06651
+  },
+  "span_consistent_peak_minus_one": {
+   "per_fold": {
+    "M1 ResidualMLP F1": {
+     "k_fitted": 0.00011574279180829713,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M1 ResidualMLP F2": {
+     "k_implied": 0.00010557478995403415,
+     "uplift": 0.9122,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F3": {
+     "k_implied": 9.470289562425818e-05,
+     "uplift": 0.8182,
+     "fitting_fold": false
+    },
+    "M1 ResidualMLP F4": {
+     "k_implied": 9.587665733863023e-05,
+     "uplift": 0.8284,
+     "fitting_fold": false
+    },
+    "M2 TCN F1": {
+     "k_fitted": 0.000339693364982663,
+     "uplift": 1.0,
+     "fitting_fold": true
+    },
+    "M2 TCN F2": {
+     "k_implied": 0.00031867931484498167,
+     "uplift": 0.9381,
+     "fitting_fold": false
+    }
+   },
+   "independent_uplifts": [
+    0.9122,
+    0.8182,
+    0.8284,
+    0.9381
+   ],
+   "n_independent": 4,
+   "uplift_min": 0.8182,
+   "uplift_max": 0.9381,
+   "uplift_ratio": 1.1466,
+   "uplift_cv": 0.06852
+  }
+ },
+ "published_spans_are_lower_bounds": {
+  "M1 ResidualMLP F1": {
+   "published_span_h": 0.577,
+   "peak_max": 7,
+   "omitted_patience_epochs": 10,
+   "omitted_fraction_pct": 142.9,
+   "estimated_tail_h": 0.825,
+   "estimated_true_duration_h": 1.402,
+   "span_is_a_lower_bound": true
+  },
+  "M1 ResidualMLP F2": {
+   "published_span_h": 1.852,
+   "peak_max": 20,
+   "omitted_patience_epochs": 10,
+   "omitted_fraction_pct": 50.0,
+   "estimated_tail_h": 0.926,
+   "estimated_true_duration_h": 2.778,
+   "span_is_a_lower_bound": true
+  },
+  "M1 ResidualMLP F3": {
+   "published_span_h": 1.921,
+   "peak_max": 21,
+   "omitted_patience_epochs": 10,
+   "omitted_fraction_pct": 47.6,
+   "estimated_tail_h": 0.915,
+   "estimated_true_duration_h": 2.835,
+   "span_is_a_lower_bound": true
+  },
+  "M1 ResidualMLP F4": {
+   "published_span_h": 1.264,
+   "peak_max": 13,
+   "omitted_patience_epochs": 10,
+   "omitted_fraction_pct": 76.9,
+   "estimated_tail_h": 0.972,
+   "estimated_true_duration_h": 2.236,
+   "span_is_a_lower_bound": true
+  },
+  "M2 TCN F1": {
+   "published_span_h": 3.107,
+   "peak_max": 12,
+   "omitted_patience_epochs": 10,
+   "omitted_fraction_pct": 83.3,
+   "estimated_tail_h": 2.589,
+   "estimated_true_duration_h": 5.696,
+   "span_is_a_lower_bound": true
+  },
+  "M2 TCN F2": {
+   "published_span_h": 20.593,
+   "peak_max": 71,
+   "omitted_patience_epochs": 10,
+   "omitted_fraction_pct": 14.1,
+   "estimated_tail_h": 2.9,
+   "estimated_true_duration_h": 23.494,
+   "span_is_a_lower_bound": true
+  }
+ },
+ "out_of_sample_prediction": {
+  "rows": [
+   {
+    "carrier": "M1 ResidualMLP",
+    "fold": "F2",
+    "k_fitted_on": "F1",
+    "span_h": 1.852,
+    "true_duration_est_h": 2.778,
+    "predicted_h": 2.748,
+    "abs_err_pct": 1.08
+   },
+   {
+    "carrier": "M1 ResidualMLP",
+    "fold": "F3",
+    "k_fitted_on": "F1",
+    "span_h": 1.921,
+    "true_duration_est_h": 2.835,
+    "predicted_h": 3.119,
+    "abs_err_pct": 10.0
+   },
+   {
+    "carrier": "M1 ResidualMLP",
+    "fold": "F4",
+    "k_fitted_on": "F1",
+    "span_h": 1.264,
+    "true_duration_est_h": 2.236,
+    "predicted_h": 2.507,
+    "abs_err_pct": 12.1
+   },
+   {
+    "carrier": "M2 TCN",
+    "fold": "F2",
+    "k_fitted_on": "F1",
+    "span_h": 20.593,
+    "true_duration_est_h": 23.494,
+    "predicted_h": 23.284,
+    "abs_err_pct": 0.89
+   }
+  ],
+  "n": 4,
+  "mean_abs_err_pct": 6.02,
+  "max_abs_err_pct": 12.1,
+  "worst_fold": "F4",
+  "reading": "the two largest errors are M1's short spans (1.92 h and 1.26 h), exactly where §CK.4 point 3 warned that the fixed checkpoint-mtime error dominates; M2's long spans predict to within 1%"
+ },
+ "synthetic_control": {
+  "rows": [
+   {
+    "peak": 7,
+    "true_cost": 0.0003,
+    "span_h": 1.75,
+    "k_recovered_on_peak_basis": 0.0003,
+    "k_recovered_on_peak_plus_patience_basis": 0.00012352941176470587,
+    "peak_basis_recovers_true_cost": true,
+    "patience_basis_recovers_true_cost": false
+   },
+   {
+    "peak": 20,
+    "true_cost": 0.0003,
+    "span_h": 5.0,
+    "k_recovered_on_peak_basis": 0.0002999999999999999,
+    "k_recovered_on_peak_plus_patience_basis": 0.00019999999999999996,
+    "peak_basis_recovers_true_cost": true,
+    "patience_basis_recovers_true_cost": false
+   },
+   {
+    "peak": 71,
+    "true_cost": 0.0003,
+    "span_h": 17.75,
+    "k_recovered_on_peak_basis": 0.0003,
+    "k_recovered_on_peak_plus_patience_basis": 0.00026296296296296294,
+    "peak_basis_recovers_true_cost": true,
+    "patience_basis_recovers_true_cost": false
+   }
+  ],
+  "peak_basis_always_recovers_true_cost": true,
+  "patience_basis_never_recovers_true_cost": true
+ },
+ "resolves_DB5_residual": {
+  "DB5_candidates": [
+   "worker contention",
+   "per-fold validation panel composition",
+   "fixed measurement error of short spans"
+  ],
+  "actual_cause": "none of the three as stated: the dominant term is the basis mismatch itself -- the span measures `peak` epochs while the model prices `mean + patience` (published) or `max + patience` (§DA.4). On the span-consistent basis the implied per-epoch cost is nearly constant: M1 CV 0.0641, M2 CV 0.0063",
+  "residual_after_correction": "0.8921-1.011 (CV 0.06651), against 1.3644-2.3622 (CV 0.23493) on the published basis",
+  "short_span_error_remains_a_real_second_order_effect": "the out-of-sample errors are 6.02% mean and 12.1% max, with the worst on F4 -- M1's 1.3-1.9 h spans, so §CK.4 point 3's fixed-error concern survives as a second-order term"
+ },
+ "consequence_for_published_numbers": {
+  "CI_published_M2_F1_refit_3.11h": "a span, so a LOWER bound; estimated true duration 5.70 h",
+  "CS_published_M2_F2_refit_20.59h": "a span, so a LOWER bound; estimated true duration 23.49 h",
+  "A16_D14_interval_unchanged": "the repriced interval 184.8-587.1 h is NOT recomputed here: it replaced only the uplift coefficient inside §CI's published basis, and re-basing would need peak_max for F3/F4 in advance, which is unknowable. The interval stands; its interpretation changes.",
+  "direction_of_the_error": "understating the refit stage duration, i.e. the projections are optimistic on the refit term by roughly the patience-tail fraction, which for M2 F2 is 14%"
+ },
+ "controls": {
+  "i_first_checkpoint_is_epoch_1_in_every_stage": true,
+  "ii_span_basis_has_lower_uplift_cv_than_mean_basis": true,
+  "iii_off_by_one_choice_does_not_change_conclusion": true,
+  "iv_synthetic_peak_basis_recovers_true_cost": true,
+  "iv_b_synthetic_patience_basis_does_not": true,
+  "v_out_of_sample_excludes_the_fitting_fold": true,
+  "vi_tail_fraction_equals_patience_over_peak": true,
+  "vii_span_basis_uplifts_bracket_one": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true
+}

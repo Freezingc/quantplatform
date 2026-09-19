@@ -5,7 +5,7 @@
 每条都给出：现象 → 根因 → 处置 → 权威出处（原件已复制到 `vendored/`）。
 
 > **⚠ 引用任何数字之前先读 [`corrections_ledger.md`](corrections_ledger.md)。**
-> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §DB 共 16 条数字作废、30 条表述需改读、10 条代码缺陷、19 条引用规则；**其中 C1/C2/C5/C9 已在 `codex/deferred-driver-fixes` 分支由同一个提交 `1aa4a70` 修复**（**C9 与 C1 同根因、一次修好两面**）**并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8/C10 是本包自己的四个维护陷阱，都已加机器把关**）。
+> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §DC 共 16 条数字作废、32 条表述需改读、10 条代码缺陷、19 条引用规则；**其中 C1/C2/C5/C9 已在 `codex/deferred-driver-fixes` 分支由同一个提交 `1aa4a70` 修复**（**C9 与 C1 同根因、一次修好两面**）**并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8/C10 是本包自己的四个维护陷阱，都已加机器把关**）。
 > 那份登记表是全包唯一的集中清单：**A 类 = 已作废的数字，不得引用；B 类 = 需改读的表述；C 类 = 代码层面未修的缺陷，引用受影响数字时必须带条件；D 类 = 给写论文的人的引用规则。**
 > 正文里被推翻的地方都有 `> 【日期 就地更正…】` 标记，但标记是散的，登记表是全的。
 
@@ -9353,6 +9353,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **机读件**：`measurements/cap_truncation_scan.json`（**含逐阶段峰值统计、余量阶梯、交叉验证表与差值、三个被取代工作区、负向对照、在跑运行快照**）；`provenance.json` 已刷新（25 支探针 / 36 份机读件），其中 `probe_cap_truncation_scan.py` 与 `cap_truncation_scan.json` 的 sha256 均已登记；
 **输入**：五个 torch 工作区的 `checkpoints/*-epoch-*/manifest.json` 与目录名、`search/F*/c*.json` 的 `bindings/budget`、`models/` 下的 bundle 目录存在性、`run_real_candidate_training.py` 与 `trainer.py` 的预算常数（**只读源码行，未 import、未执行**）、`/proc/3588838/cmdline`（**只读**）。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录（**机读件写在本包自己的 `measurements/` 下**）、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 4 天 23 小时，F1/F2 检索记录各 24/24，F2 重拟合三个种子当前峰值 36 / 27 / 11 且仍在增长，`models/` 下仍只有 `m2-f1`，F3 未开始**），停滞看门狗 18:14:05 报 ok（**worker 树 2.00 核、state R**），`MemAvailable` 476 GB。
 
@@ -9540,6 +9542,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **取证工具**：`m2_walk_forward_progress/probes/probe_m1_fourfold_epochs_and_exact_panels.py`（**用 `Path(__file__)` 定位、与 cwd 无关，已从未相关目录重跑两次验证逐字节可复现；内含 CK.7 那七个对照的 `assert`**）；
 **机读件**：`measurements/m1_fourfold_epochs_and_exact_panels.json`（**含四折逐 split 精确行数、面板同一性逐字段核对、成本模型四折重验、step_0 复现闸门、效应 A/B 的逐情景数字、合并区间、以及全部负向对照**）；`provenance.json` 已刷新（26 支探针 / 37 份机读件，两者 sha256 均已登记）；
 **输入**：`m1_full_v1/datasets/*/` 与 `m2_v1/datasets/*/` 的 `manifest.json` 与 parquet 页脚、两个工作区 `checkpoints/*-epoch-*/` 的目录名与 mtime、`search/F*/c*.json` 的 `config_hash` 与 `ensemble_validation_rank_ic`、`models/*/model_card.json`、`run_real_candidate_training.py:676` 与 `datasets/manifest.py` 的源码文本（只读）、§CI 已发布的 `measurements/m2_runtime_projection*.json`（作为复现闸门的目标值）。
+
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录（**机读件写在本包自己的 `measurements/` 下**）、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 0 小时，F1/F2 检索记录各 24/24，F2 重拟合三个种子峰值 36 / 27 / 11 且 20260802 仍在增长，`models/` 下仍只有 `m2-f1`，F3 未开始**），停滞看门狗 19:06:36 报 ok，`MemAvailable` 476 GB。
@@ -9789,6 +9793,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **机读件**：`measurements/tmp_cache_policy_and_observability.json`（**含策略行逐字段解析、开机截断证据、12 个缓存文件的行数/mtime/atime/存活天数、版本保留证据及其边界、逐折可观测比例、反事实分解、不变式与负向对照、atime 披露**）；`provenance.json` 已刷新（28 支探针 / 39 份机读件）；
 **输入**：`/usr/lib/tmpfiles.d/tmp.conf`、`/etc/tmpfiles.d/` 与 `/run/tmpfiles.d/`（**确认无 `/tmp` 相关覆盖**）、`systemd-tmpfiles-setup.service` / `systemd-tmpfiles-clean.{service,timer}` 的单元定义、`/proc/stat` 的 `btime`、`/proc/meminfo`、`findmnt` 的挂载选项、`/tmp/walk_forward_cache_v1/*.parquet` 的 stat 与页脚、`m1_full_v1.log`、两个工作区的 `checkpoints/*-epoch-*/` 目录名、以及 §CE 已取回的 `opt1_feasibility/universe_versions_origin_20days.json`（**只读，未触库**）。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读，**但有一处元数据改动必须披露**——**§CJ/§CK/§CL/§CM 的探针读 parquet 页脚，在本机 `relatime` 挂载语义下更新了所读文件的 atime**（**12 个折缓存文件的 atime 现为 2026-09-18 20:17:44；mtime 与内容未变，见 CM.5**）。**除此之外**：**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**加载任何 parquet 数据行、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 2 小时，启动于 2026-09-13 18:54:55，F1/F2 检索记录各 24/24，F2 重拟合三个种子峰值 11 / 44 / 27 且 20260802 仍在增长，`models/` 下仍只有 `m2-f1`，F3 未开始**），停滞看门狗 21:02:07 报 ok，`MemAvailable` 476 GB，折缓存 46 个文件 / 5.95 GiB 完好。
 ### CM.9 本节暴露并修复了一个本包自己的维护缺陷：`provenance.json` 可以陈旧而不被任何检查发现
@@ -9990,6 +9996,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **取证工具**：`m2_walk_forward_progress/probes/probe_m1_peak_seed_dominance.py`（**含 CN.1 的 §BN.1 复现闸门与 300 次置换校准，`assert` 全部通过才产出数字；用 `Path(__file__)` 定位、与 cwd 无关，四次独立运行逐字节可复现**）；
 **机读件**：`measurements/m1_peak_seed_dominance.json`（**含两个模型的完整 ANOVA 表、§BN.1 逐项复现对照、分离表、折×种子的逐种子轮廓与形状判定、逐种子与合并的折比值及其自助 CI、效应 B 的四个分支、修订区间、以及全部验证与校准结果**）；`provenance.json` 已刷新（29 支探针 / 40 份机读件），两道闸门均退出 0；
 **输入**：`m1_full_v1/checkpoints/*-epoch-*/` 的目录名（**取每个运行的峰值**）、`m1_full_v1/search/F*/c*.json` 的 `config_index` 与 `seed_validation_rank_ic`（**仅用于 CN.1 的复现闸门与 CN.3 的 M2/M1 对比**）、`m2_v1/` 的同类工件、以及 §BN.1 已发布的分解数字（**作为复现目标**）。
+
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet 数据或页脚、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；**本节读 `/tmp` 下的折缓存文件吗——不读，与 §CJ/§CK/§CL 不同，本节不触碰 `/tmp/walk_forward_cache_v1`，所以没有 atime 副作用**；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 3 小时，F1/F2 检索记录各 24/24，F2 重拟合三个种子峰值 11 / 47 / 27 且 20260802 仍在增长，`models/` 下仍只有 `m2-f1`，F3 未开始**），停滞看门狗 21:54:38 报 ok，折缓存 46 个文件完好。
@@ -10245,6 +10253,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **机读件**：`measurements/m1_config_seed_interaction.json`（**含完整分解、§CN 复现逐项对照、功效表、95% 置信上界、通道 A/B 的预测对照、注入对照的 SS 单位结果、置换校准、以及十条对照的通过状态**）；`provenance.json` 已刷新，两道闸门均退出 0；
 **输入**：`m1_full_v1/checkpoints/*-epoch-*/` 的目录名（**取每个运行的峰值**）、§CN 已发布的分解数字（**作为复现目标**）、以及 `sampler.py` / `torch_loop.py` / `cross_section_search.py` / `seeds.py` 的源码文本（**只读**）。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 5 小时，F1/F2 检索记录各 24/24，F2 重拟合三个种子峰值 11 / 57 / 27 且 20260802 仍在增长，`models/` 下仍只有 `m2-f1`，F3 未开始**），停滞看门狗 00:21:40 报 ok，`MemAvailable` 475 GB，折缓存 46 个文件完好。
 
@@ -10352,6 +10362,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **取证工具**：`m2_walk_forward_progress/probes/probe_m0r_tree_carrier_fold_dissociation.py`（**含 CQ.6 的八条 `assert`；用 `Path(__file__)` 定位、与 cwd 无关，跨 cwd 与跨运行逐字节可复现；`dissociated` 判定只对四折齐全的载体给出，M2 部分快照标 partial 不计数**）；
 **机读件**：`measurements/m0r_tree_carrier_fold_dissociation.json`（**含 best_iteration 语义论证、读数完整性逐 booster 核对、M0R 位置/高度逐折值与稳健性、M0 退化非复现、跨载体分离表、负向对照**）；`provenance.json` 已刷新（32 支探针 / 43 份机读件），两道闸门均退出 0；
 **输入**：`m0r_v3` / `m0r_resume_a` / `m0r_resume_c` / `m0_v3` 的 `checkpoints/*/booster.txt`（**只数 `Tree=` 与 `tree_sizes=` 行**）、`report.json`（**rank_ic**）、`m1_full_v1` / `m2_v1` 的 `checkpoints/*-epoch-*/` 目录名与 `search/F*/c*.json`、以及 `lgbm_rankreg.py` / `lgbm_ranker.py` / `run_real_candidate_training.py` 的源码文本（**只读**）。
+
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**加载任何 booster、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 9 小时，F1/F2 检索记录各 24/24，F2 重拟合三个种子峰值 11 / 68 / 27 且 20260802 仍在增长、已接近 §CJ 的歧义区 90，`models/` 下仍只有 `m2-f1`，F3 未开始**），停滞看门狗 03:51:42 报 ok，`MemAvailable` 482 GB，折缓存 46 个文件完好。
@@ -10598,6 +10610,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **机读件**：`measurements/m2_f2_bundle_equals_peak_checkpoint.json`（**含 18 个运行的逐行 bundle/峰值 sha256 与相等判定、三步机制链条、负向对照的 17/17 mismatch、按载体汇总**）；`provenance.json` 已刷新（35 支探针 / 46 份机读件），两道闸门均退出 0；
 **输入**：`m1_full_v1` / `m2_v1` 的 `models/*/seed-*.pt` 与 `checkpoints/*-epoch-*/checkpoint.pt`（**只算 sha256**）、以及 `trainer.py` / `cross_section_search.py` / `model_bundle.py` / `artifact_loader.py` 的源码文本（**只读**）。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**加载任何 `.pt` 为张量、**没有**重建模型、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 14 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 09:16 有 43 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 09:06:46 报 ok，`MemAvailable` 163 GB，折缓存 46 个文件完好。
 
@@ -10687,6 +10701,8 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 **取证工具**：`m2_walk_forward_progress/probes/probe_bundle_validation_predictions_are_last_epoch.py`（**含 CU.3 的三条对照与分类器自测；`assert` 全部通过才产出数字；用 `Path(__file__)` 定位、与 cwd 无关、逐字节可复现**）；
 **机读件**：`measurements/bundle_validation_predictions_are_last_epoch.json`（**含三步事实的逐行证据与源码 sha256、68 处提及的完整分类、分类器自测的正负用例、树载体差分对照、当前 6 个 torch bundle 的清单、以及全部对照的通过状态**）；`provenance.json` 已刷新（36 支探针 / 47 份机读件），两道闸门均退出 0；
 **输入**：上述九个源码文件的文本、`m1_full_v1/models/*/` 与 `m2_v1/models/*/` 的文件名清单、以及 §CT/§CS/§CJ/§CQ 已发布的结论（**作为引用**）。
+
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt` 或任何 `.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 16 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 11:14 有 73 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 10:20:17 报 ok，`MemAvailable` 171 GB，折缓存 46 个文件完好。
@@ -10812,6 +10828,8 @@ for index, train_start_year in enumerate(range(2017, 2021), start=1):
 **机读件**：`measurements/fold_window_overlap_and_reuse.json`（**含源码设计与目录核对、六个折对的共享年与 Jaccard、逐年归属与复用因子、去均值伪影的解析-实测对照、三个指标各自的六对相关与双向 p 值、三个合成对照**（**含那个有意保留的"不可检"模型**）**、以及对包内判据的影响陈述**）；`provenance.json` 已刷新（37 支探针 / 48 份机读件），两道闸门均退出 0；
 **输入**：`splits.py` 的源码文本、`m1_full_v1/datasets/*/split=*/year=*/` 的目录名、`m1_full_v1/report.json` 的 fold→dataset 映射、`m1_full_v1/search/F*/c*.json` 的 `ensemble_validation_rank_ic` 与 `seed_validation_rank_ic`、以及 `m1_full_v1/checkpoints/*-epoch-*/` 的目录名。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 18 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 13:00 有 81 个检查点但检索记录仍为 0**（**网格未完成**；**26 分钟无新检查点而看门狗报 24 核满载、CPU 在进，正是 §CS.5 那个「patience 窗口不写盘」的已知行为**），**F4 未开始**），停滞看门狗 12:57:49 报 ok，`MemAvailable` 167 GB，折缓存 46 个文件完好。
 
@@ -10922,6 +10940,8 @@ for index, train_start_year in enumerate(range(2017, 2021), start=1):
 **机读件**：`measurements/fold_overlap_retest_single_basis.json`（**含 CV.5 basis-mismatch 的更正记录、口径敏感性的两个基础对照、M0 与 M1 的 dataset_id 逐折核对、四个配置基础检验的六对相关与双向 p 值、两个"仅作口径示意"的 81 行结果**（**明确标注不是有效单位**）**、合成对照、去均值伪影的解析-实测对照**）；`provenance.json` 已刷新（38 支探针 / 49 份机读件），两道闸门均退出 0；
 **输入**：`m1_full_v1/report.json` 与 `m0_v3/report.json` 的 fold→dataset_id 映射、`m1_full_v1/search/F*/c*.json` 的 `ensemble_validation_rank_ic` 与 `seed_validation_rank_ic`、`m1_full_v1/checkpoints/*-epoch-*/` 的目录名。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 18 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 13:55 有 82 个检查点但检索记录仍为 0**（**网格未完成**；**看门狗报 24 核满载、CPU 在进，属 §CS.5 那个"patience 窗口不写盘"的已知行为**），**F4 未开始**），停滞看门狗 13:29:19 报 ok，`MemAvailable` 167 GB，折缓存 46 个文件完好。
 
@@ -11017,6 +11037,8 @@ for index, train_start_year in enumerate(range(2017, 2021), start=1):
 **取证工具**：`m2_walk_forward_progress/probes/probe_shipped_bundle_provenance_chain.py`（**含 CX.4 的十项 `assert`；用 `Path(__file__)` 定位、与 cwd 无关、逐字节可复现**）；
 **机读件**：`measurements/shipped_bundle_provenance_chain.json`（**含源码链四环节的逐行证据、14 个 bundle 的逐文件 hash 比对与 digest 核对、评估器运行状态分档、distinctness/family 复核、三条检测器对照的结果、以及"12 已强制执行 / 2 仅外部核实"的分档清单**）；`provenance.json` 已刷新（39 支探针 / 50 份机读件），两道闸门均退出 0；
 **输入**：四个载体的 `models/*/`（**全部文件的字节，只算 sha256**）、`selections/model/*/record.json`、`report.json` 的存在性与 `oos` 字段、以及 `model_bundle.py` / `model_walk_forward.py` 的源码文本。
+
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt` 或把任何 `.pt` 加载为张量、**没有**读任何 parquet 数据、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 19 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 14:22 有 83 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 14:21:50 报 ok，`MemAvailable` 166 GB，折缓存 46 个文件完好。
@@ -11132,6 +11154,8 @@ if _evidence_id(typed) != evidence_id:
 **机读件**：`measurements/provenance_chain_tamper_evidence.json`（**含 §CX.5 更正记录、五环定义与源码出处、逐载体逐折的五环判定与三态清单、29 条记录的无密钥绑定明细、六条篡改对照结果、以及"仍未证明"的三条**）；`provenance.json` 已刷新（40 支探针 / 51 份机读件），两道闸门均退出 0；
 **输入**：四个载体的 `report.json`、`selections/{model,baseline}/*/record.json`、`models/*/`（**全部文件字节，只算 sha256**）、以及 `selection_evidence.py` / `model_bundle.py` / `model_walk_forward.py` 的源码文本。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**读取任何环境密钥或秘密材料、**没有**把任何 `.pt` 加载为张量、**没有**读任何 parquet 数据、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 20 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle 且无 `report.json`，F3 网格 07:53 启动、截至 15:40 有 97 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 15:35:21 报 ok，`MemAvailable` 163 GB，折缓存 46 个文件完好。
 
@@ -11245,6 +11269,8 @@ baseline  = prediction_store.load(request.best_simple_prediction_id, selections=
 **机读件**：`measurements/frozen_prediction_artefact_integrity.json`（**含源码链六处的逐行证据、28 个工件的逐个哈希与五路绑定明细、按折按类的计数、四条篡改对照结果、以及"仍未证明"的 HMAC 部分**）；`provenance.json` 已刷新（41 支探针 / 52 份机读件），两道闸门均退出 0；
 **输入**：四个载体的 `predictions/*/manifest.json` 与 `predictions/*/scores.parquet`（**只算 sha256**）、`selections/{model,baseline}/*/record.json`、以及 `selection_evidence.py` / `model_walk_forward.py` 的源码文本。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**读取任何环境密钥或秘密材料、**没有**把任何 `.pt` 加载为张量、**没有**读任何 parquet 行数据、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 21 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle 且无 `report.json`，F3 网格 07:53 启动、截至 17:21 有 120 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 17:20:23 报 ok，`MemAvailable` 159 GB，折缓存 46 个文件完好。
 
@@ -11356,6 +11382,8 @@ baseline  = prediction_store.load(request.best_simple_prediction_id, selections=
 **机读件**：`measurements/cap_scan_reread_and_scenario_repricing.json`（**含逐桶运行分类与最大峰值、486 对账、并列持有者、歧义区与触顶计数、五情景在两个系数下的逐项分解与涨幅、重拟合种子并行性实测、mean 口径与 max 口径的上抬系数对照、以及 `live_snapshot_note` 标明哪些量是活的**）；`provenance.json` 已刷新（42 支探针 / 53 份机读件），两道闸门均退出 0；
 **输入**：`m1_full_v1` / `m2_v1` 的 `checkpoints/*-epoch-*/` 目录名与 mtime、`models/m2-f2/` 的存在性、§CI/§CK 已发布的常数（**作为字面量携带：`k_grid`、`k_final`、`GAP_H`、`OOS_H`、实测面板行数、`ANCHOR_EPR`、M1 折比值、§CK.5 五情景发布值、§CJ 的 486/483**）、以及 `run_real_candidate_training.py` 的源码文本（**只读**）。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 23 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle 且无 `report.json`，F3 网格 07:53 启动、截至 18:56 有 127 个检查点**（**51 个运行**）**但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 18:54:54 报 ok，`MemAvailable` 159 GB，折缓存 46 个文件完好。
 
@@ -11427,6 +11455,11 @@ baseline  = prediction_store.load(request.best_simple_prediction_id, selections=
 
 **按 B1，本节不给这三个候选中任何一个下结论**。**四个观测也不足以拟合任何含这些项的模型**（**参数会比观测多**）。
 
+> **【2026-09-19 21:30 已被 §DC 解决：那个残差的主因不是这三个候选里的任何一个】**
+> **§DC 查出真因是口径错配**：**重拟合阶段的墙钟跨度只覆盖 `peak` 个 epoch，不是 `peak + patience` 个**——**因为峰值之后的 10 轮 patience 不写检查点**（**§CM.3**），**而跨度定义是 `max(末检查点 mtime) − min(首检查点 mtime)`，六个阶段的首检查点实测全部在 epoch 1**。**换成与跨度同口径的基准**（**`k × peak × 行数`**）**后残差基本消失**：**四个独立折的上抬从 1.364–2.362**（**CV 0.2349**）**变成 0.892–1.011**（**CV 0.0665，跨在 1.0 两侧**），**逐折独立反推的每 epoch 成本 CV 是 M2 0.0063、M1 0.0641**。**所以本节列的三个候选都不是主因**：**worker 争用与验证面板构成若为主因，同口径下 k 仍会逐折漂**（**而 M2 的 CV 只有 0.63%**）；**"短跨度的固定测量误差"作为二阶项仍然存在**（**§DC.4 的样本外误差里 M1 的 1.92 h 与 1.26 h 跨度误差最大，10.00% 与 12.10%，而 M2 的 20.59 h 只 0.89%**），**但它不是那个残差的主因。**
+> **本节的第 3 条候选最接近**（**都指向"跨度这个测量本身有问题"**），**但方向说反了**：**本节说"跨度少掉启动与收尾时间，所以 M1 三折的上抬被压低"；§DC 查出的是"跨度少掉峰值之后的整个 patience 尾巴，占比 `patience/peak`"**——**后者对 M1 的低峰值折是 47.6%–142.9%、对 M2 F2 是 14.1%，量级远大于启动收尾那点固定误差，而且它是可算的、不是不可算的**（**本节当时说"需要一个不依赖 mtime 的墙钟来源"，其实不需要：尾巴长度由 patience 与该折 peak 决定**）。
+> **连带一条必须改读的已发布数字**：**§CI.1 表格里的"M2 F1 重拟合 3.11 h"与 §CS.3 的"M2 F2 重拟合 20.59 h"都是跨度、因此都是真实阶段时长的下界**（**估真值约 5.70 h 与 23.49 h**）。**这两处原文都没有声明它们是下界**（**§CI 把 9.08 h 叫下界是因为运行未完成，那是另一个理由、当时也对**）。**详见 §DC.1 / §DC.2 / §DC.5 与 ledger B31。**
+
 ### DB.6 对照
 
 **十条，探针内 `assert` 全部**：
@@ -11463,5 +11496,132 @@ baseline  = prediction_store.load(request.best_simple_prediction_id, selections=
 **机读件**：`measurements/refit_uplift_skew_hypothesis_refuted.json`（**含 `k_final` 的复现、M1 自己的 k、面板同一性核对、逐折的峰值/偏斜/墙钟/两种口径的上抬、合并与 M1 内部的 Spearman、否证段、"站得住的部分"、三个未测候选、以及合成对照**）；`provenance.json` 已刷新（43 支探针 / 54 份机读件），两道闸门均退出 0；
 **输入**：`m1_full_v1` 与 `m2_v1` 的 `checkpoints/*-final-*-epoch-*/` 目录名与 mtime、`m1_full_v1/report.json`、`m2_v1/models/*/model_card.json`、`m2_v1/search/F*/c*.json` 的 `bindings`，以及 §CI 已发布的常数（**作为字面量携带**）。
 
+> **【2026-09-19 22:10 措辞更正（ledger B32）：本节那句「逐字节可复现」不精确，应读作「除 `generated_at_local` 外逐字节确定」**——本节机读件写时间戳，所以文件字节跨运行必然不同；验证时是先去掉该字段再比相等，结论本身不变。工作流后果：重跑探针会让 `provenance.json` 的哈希失配、`check_provenance_fresh.py` 报 STALE，所以「重跑验证可复现」必须在 `make_provenance.py` 之前做、或做完后重新生成。
+
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 6 天 0 小时 48 分，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle 且无 `report.json`，F3 网格 07:53 启动、截至 20:29 有 140 个检查点并已产出 6 条检索记录**（**24 个配置里已有 6 个跑完三种子，网格尚未完成**），**F4 未开始**），停滞看门狗 20:29:26 报 ok，`MemAvailable` 160 GB，折缓存 46 个文件完好。
+
+---
+
+## DC. 【已闭合，2026-09-19 21:25，**§DB.5 那个"未识别的残差"找到了原因，而且不是它列的三个候选中的任何一个：重拟合阶段的墙钟跨度只覆盖 `peak` 个 epoch，不是 `peak + patience` 个——因为峰值之后的 patience 轮不写检查点（§CM.3），而跨度的定义是 `max(末检查点 mtime) − min(首检查点 mtime)`，六个重拟合阶段的首检查点全部落在 epoch 1。所以 §CI/§CS/§DA 那个逐折变动的"上抬系数"主要是口径错配的产物，不是真实的逐折成本效应：换成与跨度同口径的基准（`k × peak × 行数`）后，隐含的每 epoch 成本几乎变成常数——M1 四折 CV 0.0641、M2 两折 CV 0.0063，上抬系数落在 0.892–1.011 并且跨在 1.0 两侧；而 §CI 已发布的均值口径给出 1.364–2.362（CV 0.2349）**】**连带一个必须记的后果**：§CI 发布的「M2 F1 重拟合 3.11 h」与 §CS 发布的「M2 F2 重拟合 20.59 h」都是**跨度**，因此都是真实阶段时长的**下界**——漏掉的 patience 尾巴占比是 `patience/peak`，对 M2 F2 是 14.1%（估真值 23.49 h）、对 M2 F1 是 83.3%（估真值 5.70 h）。**A16/D14 的区间 184.8–587.1 h 不在本节重算**（**那需要事前知道 F3/F4 的 peak，不可能**），**但它的解读要改：重拟合项被系统性低估约一个 patience 尾巴的量**。
+
+### DC.1 机制：跨度为什么少掉 patience 尾巴
+
+**三条已确立的事实合起来就够了**：
+
+1. **`trainer.py:110-116` 只在严格改善时写检查点**（**§CM.3/§CJ 已确立**）；
+2. **`trainer.py:118-120` 的早停要在峰值之后再跑满 `patience = 10` 轮不改善才 break**（**§CS.5/§CU.2 已确立**）——**所以这 10 轮执行了、但不写检查点**；
+3. **§CI/§CS/§DA 用的"阶段墙钟"是 `max(最后一个检查点 mtime) − min(第一个检查点 mtime)`**（**在三个并行种子上取**）。
+
+**本节实测第 3 条的起点**：**六个重拟合阶段**（**M1 四折 + M2 F1/F2**）**的首检查点全部落在 epoch 1**（**`first_checkpoint_epochs` 六个阶段都是 `[1, 1, 1]`，探针 `assert`**）。**所以跨度覆盖的是"最慢那个种子的 epoch 1 到它的 peak"，约 `peak` 个 epoch 的成本；而阶段真正执行的是 `peak + patience` 轮。**
+
+**漏掉的比例就是 `patience / peak`**：
+
+| 阶段 | 已发布跨度 | peak | 漏掉的 patience 尾巴 | **估真值** |
+|---|---|---|---|---|
+| M2 F1 | **3.107 h**（§CI 发布 3.11） | 12 | **83.3%**（2.589 h） | **≈5.70 h** |
+| **M2 F2** | **20.593 h**（§CS 发布 20.59） | **71** | **14.1%**（2.900 h） | **≈23.49 h** |
+| M1 F1 | 0.577 h | 7 | 142.9%（0.825 h） | ≈1.40 h |
+| M1 F2 | 1.852 h | 20 | 50.0%（0.926 h） | ≈2.78 h |
+| M1 F3 | 1.921 h | 21 | 47.6%（0.915 h） | ≈2.84 h |
+| M1 F4 | 1.264 h | 13 | 76.9%（0.972 h） | ≈2.24 h |
+
+**注意 M1 F1 那一行漏掉 142.9%**——**峰值只有 7 轮时，10 轮 patience 比整个跨度还长**。**这不是算错，是这类"短跨度 + 低峰值"阶段的固有性质：跨度根本不覆盖它自己的大部分执行时间。**
+
+### DC.2 §DB.5 的残差就是这个口径错配，不是它列的三个候选
+
+**§DB 在 max 口径下仍留下 1.008–1.351 的残差，并列了三个未测候选**（**worker 争用、逐折验证面板构成、短跨度的固定测量误差**）。**本节换到与跨度同口径的基准后，残差基本消失**：
+
+**基准 = `k × peak_max × 行数`**（**即"跨度覆盖的 epoch 数"，而不是"阶段执行的 epoch 数"**），**k 在每个载体自己的 F1 上拟合**（**k 是族特定的，§CK.4/D14**）：
+
+| 口径 | 四个独立折的上抬 | 极差 | CV |
+|---|---|---|---|
+| **mean + patience**（**§CI/§CS 已发布**） | 1.364 / 1.636 / 1.811 / 2.362 | **1.731 倍** | **0.2349** |
+| **max + patience**（**§DA.4**） | 1.224 / 1.496 / 1.621 / 1.637 | **1.337 倍** | **0.1277** |
+| **peak（与跨度同口径，本节）** | **0.892 / 0.909 / 1.009 / 1.011** | **1.133 倍** | **0.0665** |
+| peak − 1（差一轮的另一种取法） | 0.818 / 0.828 / 0.912 / 0.938 | 1.147 倍 | 0.0685 |
+
+**两点**：
+
+1. **上抬系数落在 1.0 两侧**（**0.892–1.011**），**即换成同口径后不再需要"上抬系数"这个东西**——**模型本身就说对了，之前需要的 1.45×/2.362× 主要是口径差**；
+2. **差一轮**（**`peak` vs `peak − 1`**）**不改变结论**（**CV 0.0665 对 0.0685，探针 `assert` 差 < 0.01**），**只把水平整体平移**——**所以这不是靠挑基准挑出来的结果。**
+
+**隐含的每 epoch 成本**（**各折独立反推，不拟合**）**也几乎恒定**：
+
+| 载体 | 逐折 `k_span` | 极差 | CV |
+|---|---|---|---|
+| **M2 (TCN)** | 0.000311 / 0.000314 | **1.009 倍** | **0.0063** |
+| M1 (ResidualMLP) | 0.000099 / 0.000100 / 0.000090 / 0.000089 | 1.133 倍 | 0.0641 |
+
+**M2 的 CV 是 0.63%**——**这比 §CI 声称的"2.4% 验证误差"还好一个量级，因为 §CI 那 2.4% 是在网格阶段**（**跨度长、patience 尾巴占比小**）**测的，而这里是重拟合阶段用对了口径之后的结果。**
+
+**所以 §DB.5 的三个候选都不是主因**：
+- **worker 争用**：**若是主因，同口径下 k 仍会逐折漂**；**M2 的 CV 是 0.0063，没有可看的漂移**；
+- **逐折验证面板构成**：**同上，没有留下可见残差**；
+- **短跨度的固定测量误差**：**这条作为二阶项仍然存在**（**DC.4 的样本外误差显示 M1 的短跨度误差最大**），**但它不是那个残差的主因。**
+
+**§DB.5 应当改读为：残差的主因是"跨度测的是 peak 个 epoch、模型定价的是 peak+patience 个 epoch"这个口径错配；换到同口径后残差降到 CV 0.0665（M2 甚至 0.0063），剩下的短跨度误差是二阶项。**
+
+### DC.3 合成对照：证明"peak 口径"是被识别出来的，不是挑出来让 CV 变小的
+
+**换基准能把 CV 变小，这件事本身不能证明基准是对的**——**随便挑一个基准也可能碰巧让 CV 变小**。**所以用合成数据验证识别性**：**造三个阶段，让跨度严格等于 `真实每 epoch 成本 × peak × 行数`**（**peak 取 7 / 20 / 71，跨度因此是 1.75 / 5.00 / 17.75 h**），**然后看两种口径能否把那个已知的真实成本还原出来**：
+
+| peak | 合成跨度 | peak 口径还原的 k | peak+patience 口径还原的 k | 真实 k |
+|---|---|---|---|---|
+| 7 | 1.7500 h | **3.00e-04 ✓** | 1.24e-04 ✗ | 3.00e-04 |
+| 20 | 5.0000 h | **3.00e-04 ✓** | 2.00e-04 ✗ | 3.00e-04 |
+| 71 | 17.7500 h | **3.00e-04 ✓** | 2.63e-04 ✗ | 3.00e-04 |
+
+**peak 口径在三个不同的 peak 上都精确还原真实成本；peak+patience 口径三个都还原不出来，而且还原值随 peak 变化**（**1.24e-04 → 2.00e-04 → 2.63e-04，正是 §CI 看到的"系数随折变"的形状**）。**所以"上抬系数逐折变动"这个现象是口径造成的，合成数据把它复现了出来。**
+
+**这条对照是这一节的关键**：**它把"哪个基准对"从"哪个 CV 小"这种择优问题，变成了"哪个基准能还原已知真值"这种可判定问题。**
+
+### DC.4 样本外预测检验
+
+**只在每个载体的 F1 上拟合 `k_span`，然后预测其余折的真实阶段时长**（= `k_span × (peak+patience) × 行数`），**与跨度外推的估计值作比**（= 跨度 × `(peak+patience)/peak`）：
+
+| 载体 | 折 | 跨度 | 真实时长估计 | 模型预测 | 误差 |
+|---|---|---|---|---|---|
+| M1 | F2 | 1.852 h | 2.778 h | 2.748 h | **1.08%** |
+| M1 | F3 | 1.921 h | 2.835 h | 3.119 h | **10.00%** |
+| M1 | F4 | 1.264 h | 2.236 h | 2.507 h | **12.10%** |
+| **M2** | **F2** | **20.593 h** | **23.494 h** | **23.284 h** | **0.89%** |
+
+**平均 6.02%、最大 12.10%**（**最差是 M1 F4**）。**两个大误差都在 M1 的短跨度上**（**1.92 h 与 1.26 h**），**M2 的长跨度预测到 1% 以内**——**这正是 §CK.4 第 3 条早就指出的"固定测量误差在短量上占比大"**，**所以那条作为二阶项保留**（**DC.2 已说明它不是主因**）。
+
+### DC.5 对已发布数字的影响：解读变了，数字不重算
+
+**必须改读的**：
+
+1. **§CI.1 表格里的"M2 F1 重拟合 3.11 h"与 §CS.3 的"M2 F2 重拟合 20.59 h"都是跨度、因此都是下界**——**估真值分别约 5.70 h 与 23.49 h**（**漏掉 83.3% 与 14.1%**）。**这两处原文都没说它们是下界**（**§CI 把 9.08 h 说成下界是因为运行未完成，那是另一个理由、当时也对**）。**引用时要说清是哪个口径**：**"跨度"还是"含 patience 尾巴的真实时长"**。
+2. **§CI.2 的 1.45× 与 §CS 的 2.362× 上抬系数，主要成分是这个口径错配**——**不是重拟合阶段真的比 F1 常数贵 2.36 倍**。**同口径下不需要上抬系数**（**0.892–1.011，跨在 1.0 两侧**）。**B25 与 A16 的数字部分不改**（**2.362× 是同口径实测值、重定价也是在同一口径内自洽的**），**但它们的解释要加上这一条。**
+3. **A16/D14 的区间 184.8–587.1 h 不在本节重算**——**重算需要事前知道 F3/F4 重拟合的 `peak`**（尾巴占比 = `patience/peak`），**而这在跑完之前不可知**。**所以区间维持，但它的解读要加一句**：**重拟合项被系统性低估约一个 patience 尾巴的量**（对 M2 F2 是 14.1%；F3/F4 的尾巴占比取决于它们的 peak，peak 越低占比越大）。**方向是「偏乐观」**，与 §CS.5 那条「重拟合项只占总值一成、所以影响有界」一起读：即便尾巴让重拟合项涨 14%–80%，对总值的影响仍在几个百分点量级。
+
+**不受影响的**：**§CK.4 的成本模型形式重验**（**它验的是网格阶段，网格跨度长、尾巴占比小**）；**§CJ 的 0 触顶结论**（**与墙钟无关**）；**所有 OOS 侧数字**（**§CC/§CT/§CX/§CY/§CZ 那条链与墙钟无关**）；**§DA.2 的 cap 扫描重读**（**486/486、最大峰值 71 并列**）——**峰值本身不受这个发现影响，受影响的只是"由峰值推墙钟"的那一步。**
+
+### DC.6 对照
+
+**八条，探针内 `assert` 全部**：
+1. **六个重拟合阶段的首检查点都在 epoch 1**——**这是"跨度从 epoch 1 开始"这个前提，不成立则整个论证无效**；
+2. **peak 口径的上抬 CV 低于 mean 口径**（**0.0665 < 0.2349**）；
+3. **差一轮的取法不改变结论**（**peak 与 peak−1 的 CV 差 < 0.01**）——**防止"靠挑基准挑出结论"**；
+4. **合成阶段在 peak 口径下精确还原已知真实成本**；
+5. **同一批合成阶段在 peak+patience 口径下还原不出来**（**4 与 5 成对：只有 4 没有意义，一个恒返回真值的估计器也会通过 4；配上 5 才说明这个区分是有信息的**）；
+6. **样本外预测确实排除了拟合折**（**只用 F1 拟合、只在 F2/F3/F4 上评**）；
+7. **尾巴占比恰好等于 `patience/peak`**（**逐阶段核，不是假设**）；
+8. **peak 口径的上抬跨在 1.0 两侧**（**0.85 < max 且 min < 1.05**）——**这条把"不需要上抬系数"做成可失败的断言：若四个值全在 1.0 同一侧，说明还差一个系统因子，结论要改。**
+
+### DC.7 本节没有做的事
+
+**没有**重算 A16/D14 的区间——**需要事前知道 F3/F4 的 peak**（**DC.5 第 3 条**）；
+**没有**声称尾巴估计是精确的——**它是"按同速外推 10 轮"的估计**，**而且跨度到底覆盖 `peak` 还是 `peak − 1` 个 epoch 有差一轮的模糊**（**首检查点在 epoch 1 完成之后才写，所以严格说覆盖的是 epoch 2..peak**）；**这个模糊对高峰值阶段几乎无影响**（**M2 F2 差 1.4%**），**对低峰值阶段影响明显**（**M1 F1 差 16.7%**），**所以 DC.1 那张表的"估真值"应读作"约"**（**对照 3 已证这个模糊不改变主结论**）；
+**没有**用这个发现去改 §CI 的 `k_grid` 或网格阶段的任何数字——**网格阶段的跨度是按 72 个运行分批跑的、"首检查点到末检查点"覆盖的内容与重拟合不同，本节没有验证网格侧是否存在同类低估**（**这需要逐运行而不是逐阶段地分析，留作后续**）；
+**没有**测 §DB.5 的 worker 争用与验证面板构成两个候选——**本节只证明它们不是主因**（**同口径下 k 的 CV 已经小到 0.0063/0.0641，没有留给它们的可见残差**），**不等于它们不存在**；
+**没有**触库、**没有**网络或数据商调用、**没有** MCP、**没有**训练、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**导入或执行任何仓库模块、**没有**写 artifacts 目录（**机读件写在本包自己的 `measurements/` 下**）、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号。**与 §CN–§DB 一样本节不触碰 `/tmp/walk_forward_cache_v1`，无 atime 副作用**（**§CM.5 那条披露只适用于 §CJ/§CK/§CL/§CM**）。**本节只读已完成折的不可变工件**（**M1 四折与 M2 F1/F2 的检查点目录名与 mtime**），**不读任何实时状态**，**所以机读件的每一个字段都跨 cwd 与跨运行确定**（**已验证：相隔两秒重跑两次，除 `generated_at_local` 外逐字节相同**）。**措辞更正**：**§CJ/§CK/§CM/§CN/§CP/§CQ/§CT/§CU/§CV/§CW/§CX/§CY/§CZ/§DA/§DB 与本节共 16 节都写了「逐字节可复现」，这个说法不精确、按 ledger B32 改读**——**这些探针的机读件都写 `generated_at_local`**（**50 份里有 43 份如此**），**所以文件字节跨运行必然不同；准确的说法是「除时间戳外逐字节确定」**（**验证方法是先去掉该字段再比相等，本包历次验证都是这么做的，只是表述里没讲**）。**这条区别不是吹毛求疵，它有一个工作流后果**：**重跑任何探针都会让 `provenance.json` 里记录的哈希失配、`check_provenance_fresh.py` 随即 FAIL**（**C7 那道闸门正是为此而设**），**所以正确顺序是「跑探针 → 跑 `make_provenance.py` → 提交」，而「重跑以验证可复现」这一步必须在 `make_provenance.py` 之前做、或做完之后重新生成**。**本节就撞了一次**：**先验证可复现、后生成 provenance，闸门如实报 STALE**。
+
+**取证工具**：`m2_walk_forward_progress/probes/probe_refit_span_omits_patience_tail.py`（**含 DC.6 的八条 `assert`；用 `Path(__file__)` 定位、与 cwd 无关，除 `generated_at_local` 外逐字节确定**）；
+**机读件**：`measurements/refit_span_omits_patience_tail.json`（**含机制说明、四种口径的逐折对比与 CV、六个阶段的尾巴估计、样本外预测误差、合成对照的还原结果、以及对 §DB.5 三个候选的逐条处置**）；`provenance.json` 已刷新（44 支探针 / 55 份机读件），两道闸门均退出 0；
+**输入**：`m1_full_v1` 与 `m2_v1` 的 `checkpoints/*-final-*-epoch-*/` 目录名与 mtime、§CI 已发布的 `k_final` 与面板行数（**作为字面量携带**）、以及 `trainer.py` 的源码文本（**只读，引用行号沿用 §CM.3/§CJ/§CS 已核实的**）。
+
+**安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt`、**没有**加载权重或张量、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
+驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 6 天 2 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle 且无 `report.json`，F3 网格 07:53 启动、截至 22:28 有 164 个检查点、24 个配置里已有 6 个跑完三种子**（**网格尚未完成**），**F4 未开始**），停滞看门狗 22:24:57 报 ok，`MemAvailable` 160 GB，折缓存 46 个文件完好。
