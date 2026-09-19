@@ -5,7 +5,7 @@
 每条都给出：现象 → 根因 → 处置 → 权威出处（原件已复制到 `vendored/`）。
 
 > **⚠ 引用任何数字之前先读 [`corrections_ledger.md`](corrections_ledger.md)。**
-> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CS 共 15 条数字作废、25 条表述需改读、8 条代码缺陷、19 条引用规则；**其中 C1/C2/C5 已在 `codex/deferred-driver-fixes` 分支修复并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
+> 本文件按时间顺序累加，**后面的节经常推翻前面的节**（截至 §CT 共 15 条数字作废、25 条表述需改读、8 条代码缺陷、19 条引用规则；**其中 C1/C2/C5 已在 `codex/deferred-driver-fixes` 分支修复并通过全套测试，但刻意未合并，合并前仍是生产行为；C6/C7/C8 是本包自己的三个维护陷阱，都已加机器把关**）。
 > 那份登记表是全包唯一的集中清单：**A 类 = 已作废的数字，不得引用；B 类 = 需改读的表述；C 类 = 代码层面未修的缺陷，引用受影响数字时必须带条件；D 类 = 给写论文的人的引用规则。**
 > 正文里被推翻的地方都有 `> 【日期 就地更正…】` 标记，但标记是散的，登记表是全的。
 
@@ -10528,3 +10528,75 @@ for epoch in 1..max_epochs:                    # max_epochs = 100
 
 **安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**打开 `checkpoint.pt` 或 bundle 里的 `.pt`、**没有**加载权重或张量、**没有**读任何 parquet 数据行、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
 驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 13 小时，F1/F2 检索记录各 24/24，`models/` 下现有 `m2-f1` 与 `m2-f2` 两个 bundle——F2 重拟合于 07:19 完成、`WALK_FORWARD_PASSED`、三个种子峰值 11 / 71 / 27，F3 网格已于 07:53 启动、截至 08:36 已产出 33 个检查点、24 个配置全部在跑**（**26 进程、24 核、`MemAvailable` 从 482 GB 降到 163 GB**），**F3 检索记录仍为 0**（**网格未完成**）），停滞看门狗 08:35:15 报 ok，折缓存 46 个文件完好。
+
+
+---
+
+## CT. 【已闭合，2026-09-19 08:55，**把 §CC.1 那个"发运 bundle 的权重 == 峰值检查点"的检查从 15/15 扩展到 18/18——补上刚落地的 M2 F2 refit 三个种子（seed 20260802 峰值 71、35 个检查点是最强测试案例），并把它从"逐字节观测相等"升级为"源码机制保证"：`trainer.py:110-116` 只在严格改善时存（所以最后存的==峰值）+ `cross_section_search.py:206` 把 bundle 源设为 `checkpoint_ids[-1]`（即峰值）+ `model_bundle.py:90` 用 `shutil.copyfile` 逐字节复制 ⟹ bundle==峰值检查点是构造保证、不是巧合**】**这条直接巩固 §CA/§CC/D9 的核心结论**：**§CA 发现"检索记录打的是末轮权重的分、发运用的是峰值模型"，§CC.1 实测证明发运 bundle 就是峰值检查点、所以已发布的 OOS 数字描述的就是发运模型；本节把这个结论扩到 M2 F2，并给出为什么它必然成立的源码链条**——**于是"§CA 的缺陷不影响任何已发布 OOS 数字"这句话，现在对全部 18 个已落地的 torch refit bundle 都有逐字节证据 + 机制论证。**
+
+### CT.1 §CC.1 留的口子：M2 F2 bundle 当时还不存在
+
+**§CC.1 用 sha256 验证了 `models/<id>/seed-<seed>.pt` 与 `checkpoints/…-final-<seed>-epoch-<峰值>/checkpoint.pt` 逐字节相同，覆盖 M1 的 12 次**（**4 折 × 3 种子**）**与 M2 F1 的 3 次，共 15/15**。**但 §CC.1 写作时**（**2026-09-18 15:20**）**M2 F2 的重拟合还没完成、`models/m2-f2` bundle 还不存在，所以那 3 个种子无法检查**——**这是 §CC.1 自己列出的覆盖边界。**
+
+**§CS 期间 F2 重拟合完成了**（**`models/m2-f2` 于 07:19 写出、`WALK_FORWARD_PASSED`、checksums 9/9**），**于是这个口子现在能补上**。**而且 F2 的 seed 20260802 是迄今最强的测试案例**：**它峰值 71、有 35 个检查点**（**epoch 1,2,3,11,12,13,15,16,21,25,…,70,71**），**所以"bundle==峰值检查点"与"bundle==最后一个检查点"在这个运行上是可以区分的**——**若有任何一个峰值之后的非改善轮被存盘，两者就会分叉**（**§CM.3 已确立不会，但这个 bundle 正是那个"会分叉就露馅"的地方**）。
+
+### CT.2 实测：18/18 逐字节相同
+
+**对每个已落地的 torch refit bundle，比较 `models/<id>/seed-<s>.pt` 与 `checkpoints/<…-final-<s>-epoch-<峰值>/checkpoint.pt` 的 sha256**：
+
+| 载体 | 折 × 种子 | bundle==峰值检查点 |
+|---|---|---|
+| M1 (ResidualMLP) | 4 折 × 3 种子 = 12 | **12/12** |
+| M2 (TCN) F1 | 3 种子 | **3/3** |
+| **M2 (TCN) F2**（**本节新增**） | 3 种子 | **3/3** |
+| **合计** | **18** | **18/18** |
+
+**M2 F2 的三个种子明细**：
+
+| 种子 | 峰值 epoch | 检查点数 | bundle sha256（前 16） | ==峰值检查点 |
+|---|---|---|---|---|
+| 20260801 | 11 | 10 | `f4aaf27888dac398` | ✓ |
+| **20260802** | **71** | **35** | `4e95078f070f2cf0` | ✓ |
+| 20260803 | 27 | 16 | `b007fee5cf5a9594` | ✓ |
+
+**所以 §CC.1 的 15/15 现在是 18/18，且最强的那个案例（峰值 71、35 检查点）也通过。**
+
+### CT.3 从"观测相等"升级为"机制保证"：三步源码链条
+
+**18/18 逐字节相同是观测，但更强的结论是它由构造保证**——**这条链条 §CC.1 没有完整读出，本节补上**：
+
+1. **`trainer.py:110-116`：只在严格改善时存检查点**（**`if validation_rank_ic > best_value:` … `checkpoint_epoch(epoch, validation_rank_ic)`**）。**所以被保存的 epoch 序列在验证 rank_ic 上严格递增，最后一个被保存的检查点就是峰值**（**§CJ.2/§CM.3 已确立这条**）。
+2. **`cross_section_search.py:206`：bundle 的源路径设为 `checkpoint_store._root / run.checkpoint_ids[-1] / "checkpoint.pt"`**——**即最后一个被保存的检查点，由第 1 步它就是峰值。**
+3. **`model_bundle.py:90`：`shutil.copyfile(source, temporary / f"seed-{seed}.pt")`**——**逐字节复制，所以 bundle 的 `.pt` 与那个峰值检查点位级相同。**
+
+**三步合起来**：**最后保存 == 峰值**（**严格改善才存**）→ **bundle 源 == 最后保存** → **bundle == 源的逐字节副本**，**所以 bundle == 峰值检查点是构造保证**。**18/18 的实测是这条链条的经验确认，而不是 18 次巧合。**
+
+**这条机制论证顺带解释了 §CA 的缺陷为什么不碰 bundle**：**§CA 的问题是"检索记录给末轮权重打分"**（**`seed_validation_rank_ic` / `ensemble_validation_rank_ic` 描述的是末轮模型**），**但 bundle 是从峰值检查点复制的、与检索记录打了谁的分无关**。**所以"发运的是峰值模型、OOS 数字描述发运模型"**（**§CC.1/D9**）**有机制支撑**：**打分口径的缺陷在选择侧**（**选了哪个配置**），**不在发运侧**（**发运的权重**）。**`load_bundle_for_evaluation`**（**`artifact_loader.py:212`，`models=` 于 `:284`**）**从 bundle 的 `seed-*.pt` 重建模型产出 test 预测，其 docstring 自己写着 test 预测"provably come from the persisted artifact rather than from training memory"——本节给这句话补上了"而那个 persisted artifact 逐字节就是峰值检查点"。**
+
+### CT.4 负向对照：bundle 必须等于峰值、但不等于非峰值
+
+**"bundle==峰值检查点"若不配一个能失败的对照，就无法排除"所有检查点都长得一样、所以等于谁都行"这种空真**（**同 §CM.6(v) 那个 `all(... if exists)` 空真、§CO.6 那个 Kendall's W 方向写反的教训**）。**对照**：**对有多个检查点的运行，把 bundle 与一个非峰值检查点**（**取最小的那个 epoch**）**比 sha256，必须不同**：
+
+- **17 个运行有非峰值对照**（**峰值唯一的运行没有**），**17/17 全部正确 mismatch**（**bundle != 非峰值检查点**）；
+- **最强案例 seed 20260802**：**峰值 71、35 个检查点，bundle == epoch-71 检查点**（**True**）**而 bundle != epoch-1 检查点**（**False**）——**证明相等是峰值特有的，不是"检查点都一样"。**
+
+**探针内 `assert` 了 `all_match`**（**18/18**）**与 `all_controls_mismatch`**（**17/17**）**两条，任一不符即中止不产出数字。**
+
+### CT.5 这一节与 §CR/§CS 的不同：它回归"逐字节可复现"
+
+**§CR/§CS 的机读件是 live 快照、有意不可复现**（**因为它们读的是运行中 fit 的实时状态**）。**本节不同**：**bundle 与检查点都是不可变工件**（**`model_bundle.py:73` 与 `artifacts.py:44` 都对已存在的目标抛 `FileExistsError`，即"immutable and already exists"**），**所以本节的 sha256 比较跨 cwd 与跨运行逐字节可复现**（**已验证**）——**它回到了本包 32 支非 live 探针的常规可复现惯例**。**这条区别值得点明**：**同一个包里，读"已完成的不可变工件"的探针可复现、读"运行中状态"的探针不可复现，两者都对，关键是与被读对象的性质匹配。**
+
+### CT.6 本节没有做的事
+
+**没有**加载任何 `.pt` 为张量、**没有**重建模型、**没有**对 test 侧评分——**本节只算 sha256、只读目录名与源码文本**；**所以"bundle==峰值检查点"是文件级的逐字节相等，不是"重建出的模型行为相同"**（**后者更强，但需要执行代码，本包只读约束下不做；不过逐字节相等已经蕴含行为相同，因为加载是确定性的**）；
+**没有**验证 F3/F4 的 bundle——**它们还没跑**（**F3 网格 07:53 才启动、尚无检索记录，F4 未开始**），**所以 18/18 是当前全部已落地的 torch refit bundle，F3/F4 落地后这个数会涨到 24/24**；
+**没有**重验 M0/M0R 的树载体 bundle——**它们发运的是 `booster.txt` 不是 `seed-*.pt`，机制不同**（**§CQ 已说明树载体的 best_iteration 语义**），**本节的 sha256 比较只适用于 torch 载体的 `.pt`**；
+**没有**碰 §BQ.4 那个"F2 投影换实测"——**`models/m2-f2` bundle 现在存在了、这是它的前置条件，但把 F2 的投影 OOS 换成 bundle 重算的实测值需要加载权重对 test 侧评分，那是执行代码、本包不做**（**与 §CS.9 一致，记为交接给所有者的可推进项**）；
+**没有**触库、**没有**网络或数据商调用、**没有** MCP、**没有**训练、**没有**读任何 parquet**（**连 `validation_predictions.parquet` 的页脚都没读，本节只读 `.pt` 的 sha256 与检查点目录名**）、**没有**导入或执行任何仓库模块（**`trainer.py` / `cross_section_search.py` / `model_bundle.py` / `artifact_loader.py` 都是读源码文本**）、**没有**写 artifacts 目录（**机读件写在本包自己的 `measurements/` 下**）、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号。**与 §CN–§CS 一样本节不触碰 `/tmp/walk_forward_cache_v1`，无 atime 副作用。**
+
+**取证工具**：`m2_walk_forward_progress/probes/probe_m2_f2_bundle_equals_peak_checkpoint.py`（**含 CT.4 的负向对照；纯 sha256、不加载张量；用 `Path(__file__)` 定位、与 cwd 无关，跨 cwd 与跨运行逐字节可复现**）；
+**机读件**：`measurements/m2_f2_bundle_equals_peak_checkpoint.json`（**含 18 个运行的逐行 bundle/峰值 sha256 与相等判定、三步机制链条、负向对照的 17/17 mismatch、按载体汇总**）；`provenance.json` 已刷新（35 支探针 / 46 份机读件），两道闸门均退出 0；
+**输入**：`m1_full_v1` / `m2_v1` 的 `models/*/seed-*.pt` 与 `checkpoints/*-epoch-*/checkpoint.pt`（**只算 sha256**）、以及 `trainer.py` / `cross_section_search.py` / `model_bundle.py` / `artifact_loader.py` 的源码文本（**只读**）。
+
+**安全声明**：本节全程只读——**没有**修改任何仓库文件、**没有**合并任何分支、**没有**导入或执行任何仓库模块、**没有**加载任何 `.pt` 为张量、**没有**重建模型、**没有**读任何 parquet、**没有**训练、**没有**访问数据库、**没有**网络或数据商调用、**没有** MCP、**没有**写入任何 artifacts 目录、**没有**触碰 `materialization_status.*` / 冻结链 / 2026 锁定段、**没有**给任何进程发信号；
+驱动 sha256 仍为 `33742880f314ca2151b76b02e65531f5fbf7554e3e1d93a858f458f1f580b113`，主工作树 dirty=0 且分支为 `codex/publish-quant-platform`，`deferred-driver-fixes` dirty=0 且 HEAD 为 `1aa4a70`，M2 pid 3588838 全程在跑（**已 5 天 14 小时，`models/` 下有 `m2-f1` 与 `m2-f2` 两个 bundle，F3 网格 07:53 启动、截至 09:16 有 43 个检查点但检索记录仍为 0**（**网格未完成**），**F4 未开始**），停滞看门狗 09:06:46 报 ok，`MemAvailable` 163 GB，折缓存 46 个文件完好。
