@@ -25,6 +25,17 @@ Run this after every append to problems_found.md. It checks three things:
      heading) and neither does a `****` scan. It was found only by counting declarations per section.
      The check flags any section with two identical adjacent declaration blocks, or a trailing sentence
      of a declaration repeated immediately after itself.
+  5. every markdown TABLE row (a line starting with "|") closes its bold runs within the line, i.e. the
+     count of "**" outside code spans is even. A table row is a single physical line, so an unclosed "**"
+     in one leaks into the next cell and garbles the render. This catches a real defect that shipped in
+     ledger row A1: a stray "**" before a closing parenthesis paired with the next cell's "**", bolding
+     "） | §BZ.3 / §BZ.4". Prose paragraphs and blockquotes are deliberately EXCLUDED -- markdown allows a
+     bold run to span soft line breaks there, so requiring per-line balance would flag hundreds of
+     legitimate multi-line bold passages. Only single-line elements (table rows) must balance.
+  6. inside a table row, a "|" written literally in a code span must be escaped as "\\|", because GFM
+     splits cells on an unescaped pipe even when it is inside backticks. An unescaped one silently splits
+     the row into too many cells. This was found by writing the very row that documents it: ledger C10's
+     text quoted `） | ` and `|` inside code spans, which gave that row 8 pipes instead of 6.
 
 It reads only this pack's own markdown. No database, no network, no repository module, nothing written.
 Exit status is 0 when the file is in order and 1 when it is not, so it can gate a commit.
@@ -98,6 +109,44 @@ def find_duplicate_declarations(text: str) -> list[str]:
     return problems
 
 
+PACK_FILES = ("problems_found.md", "corrections_ledger.md", "README.md")
+
+
+def find_unbalanced_table_rows(text: str, filename: str) -> list[str]:
+    """Flag table rows whose bold runs do not close within the line (code spans excluded).
+
+    Only lines starting with "|" are checked. Bold may legitimately span lines inside prose and
+    blockquotes, so those are not checked; a table row cannot span lines, so its "**" count outside
+    `code spans` must be even. Runs over every pack markdown file -- the defect that motivated this check
+    (ledger row A1) lives in corrections_ledger.md, which the section-ordering part of this gate never
+    looks at, so scoping the table check to problems_found.md alone would have missed it. Returns
+    human-readable problems, empty when clean.
+    """
+    problems = []
+    for n, line in enumerate(text.split("\n"), 1):
+        if not line.strip().startswith("|"):
+            continue
+        for span in re.finditer(r"`[^`]*`", line):
+            body = span.group(0)[1:-1]
+            if "|" in body and "\\|" not in body:
+                problems.append(
+                    f"{filename} line {n}: table row has an unescaped pipe inside a code span "
+                    f"({span.group(0)!r}) -- GFM splits cells on it, so the row gains a phantom column; "
+                    f"write it as \\| instead")
+        no_code = re.sub(r"`[^`]*`", "", line)
+        if no_code.count("**") % 2 != 0:
+            problems.append(
+                f"{filename} line {n}: table row has an unclosed bold run ({no_code.count('**')} '**' "
+                f"outside code spans, odd) -- a stray '**' in a table row leaks into the next cell and "
+                f"garbles the render; row starts: {line.strip()[:70]!r}")
+        if no_code.count("|") != 6 and filename == "corrections_ledger.md" \
+                and re.match(r"^\| \*\*[ABCD]\d+\*\*", line.strip()):
+            problems.append(
+                f"{filename} line {n}: ledger row has {no_code.count('|')} pipes outside code spans, "
+                f"expected 6 (4 cells + 2 delimiters); row starts: {line.strip()[:70]!r}")
+    return problems
+
+
 def main() -> int:
     lines = TARGET.read_text(encoding="utf-8").split("\n")
     found = [SEC.match(l).group(1) for l in lines if SEC.match(l)]
@@ -137,6 +186,11 @@ def main() -> int:
 
     text = TARGET.read_text(encoding="utf-8")
     problems.extend(find_duplicate_declarations(text))
+    for fname in PACK_FILES:
+        fpath = HERE / fname
+        if fpath.is_file():
+            problems.extend(find_unbalanced_table_rows(
+                fpath.read_text(encoding="utf-8"), fname))
 
     print(f"{TARGET.name}: {len(found)} sections ({found[0] if found else '-'}..{found[-1] if found else '-'}), "
           f"{sum(len(v) for v in subs.values())} subsections, "
@@ -146,7 +200,8 @@ def main() -> int:
         for p in problems:
             print("  -", p)
         return 1
-    print("OK: chronological order, no duplicate headings, all subsections contiguous, no duplicated declarations")
+    print("OK: chronological order, no duplicate headings, all subsections contiguous, no duplicated "
+          "declarations, all table-row bold runs balanced, no unescaped pipes in table code spans")
     return 0
 
 

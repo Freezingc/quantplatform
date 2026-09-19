@@ -1,0 +1,823 @@
+{
+ "question": "do the frozen prediction artefacts that the OOS gates actually score carry the same keyless tamper-evidence as the bundles, and is their metadata bound to the frozen selection records the way model_walk_forward.py requires?",
+ "generated_at_local": "2026-09-19T16:00:45",
+ "why_this_is_the_last_link": "the published G1-G6 / OOS numbers are computed from predictions/<id>/scores.parquet loaded at model_walk_forward.py:95-105, not from the bundle directly; §CY.7 left this side unverified",
+ "source_chain": {
+  "keyless_scores_integrity_check": {
+   "393": "if hashlib.sha256(scores_bytes).hexdigest() != expected_hash:"
+  },
+  "prediction_signature_is_hmac": {
+   "389": "_prediction_signature(self._signing_key, signed_payload),"
+  },
+  "signed_payload_fields": {
+   "385": "\"sha256\": expected_hash,"
+  },
+  "evaluator_loads_candidate_and_baseline": {
+   "95": "candidate = prediction_store.load(",
+   "99": "baseline = prediction_store.load("
+  },
+  "evaluator_candidate_binding_predicate": {
+   "209": "prediction.kind != \"candidate\""
+  },
+  "evaluator_baseline_binding_predicate": {
+   "226": "prediction.kind != \"best_simple\""
+  }
+ },
+ "per_workspace": {
+  "m1_full_v1": {
+   "workspace": "m1_full_v1",
+   "artefacts": [
+    {
+     "prediction_id": "03152f85200045efd006aae76c2aa4262c85fdbe92df790b6f68c2484cda5413",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "7227306a74f2b3d6",
+     "sha256_of_scores_bytes": "7227306a74f2b3d6",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "candidate",
+      "model_id": "m1-f2",
+      "selection_id": "a53c5d9fbebcaf67ccb848e4f3582581ebd2a4812a8e0e6392b9639cb0d10ec2"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "1fa5694aae43b7a0a35ad5b1ace0b32db65f17cec98025e6e7364f5655243641",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "a1df2bb6f79f5780",
+     "sha256_of_scores_bytes": "a1df2bb6f79f5780",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "candidate",
+      "model_id": "m1-f1",
+      "selection_id": "a24ced342267633a945064b804a5f3db8904284e1cde23bf2aefbec2b3d6a6a5"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "2a357f340366397aaf17c9aad7d324a56223b307df03a10d45f73b9e5e50b532",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "39181729701d40fc",
+     "sha256_of_scores_bytes": "39181729701d40fc",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold_id": "F4",
+      "kind": "candidate",
+      "model_id": "m1-f4",
+      "selection_id": "c7a62d7ef2a439f29afc0fd352124c1b5824f9b0f50a8ae8e3bd2b0f9d7261b7"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "2b6e02510033079774e79a84f1592651b2856259aed4153106d7dc5a5a35e1ee",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "f5a5420db601ca5f",
+     "sha256_of_scores_bytes": "f5a5420db601ca5f",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold_id": "F3",
+      "kind": "candidate",
+      "model_id": "m1-f3",
+      "selection_id": "15ebe4a56c4114730e4eee06bfe568ef6a12aec9c502a416d3eaeb36786d2877"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "2f0d131c22fe3b6525ce685deb78fd5a30ee4a96a00dbbd2b82f12b9c3dcc4ec",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "bf62ef60ce4a2859",
+     "sha256_of_scores_bytes": "bf62ef60ce4a2859",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "310f824c0e4b7f7b78a942de7090228a8ac7d4cabe5645209eb28bbec0166997",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "566d2ef985888667",
+     "sha256_of_scores_bytes": "566d2ef985888667",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold_id": "F3",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "ad9c27304eda827707677ec9e0450d5b77db37c21daf45a5f28f38fc7666e6ee",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "aa5b21a7127a8cda",
+     "sha256_of_scores_bytes": "aa5b21a7127a8cda",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "f999d5c128a514ac81c7a738393d623364642d02a8c3029826b5b1695d884b6a",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "30e7a97892c2fcf8",
+     "sha256_of_scores_bytes": "30e7a97892c2fcf8",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold_id": "F4",
+      "kind": "best_simple",
+      "model_id": "B3",
+      "selection_id": "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    }
+   ],
+   "present": true,
+   "n_artefacts": 8,
+   "per_fold_kind_counts": {
+    "F1/best_simple": 1,
+    "F1/candidate": 1,
+    "F2/best_simple": 1,
+    "F2/candidate": 1,
+    "F3/best_simple": 1,
+    "F3/candidate": 1,
+    "F4/best_simple": 1,
+    "F4/candidate": 1
+   },
+   "n_folds_with_predictions": 4,
+   "every_fold_has_exactly_candidate_and_best_simple": true
+  },
+  "m2_v1": {
+   "workspace": "m2_v1",
+   "artefacts": [
+    {
+     "prediction_id": "19c44fdb8e556472764610cb0e4266fecda2ba360381deb7c403526f419ab29c",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "93459aed56863e3a",
+     "sha256_of_scores_bytes": "93459aed56863e3a",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "candidate",
+      "model_id": "m2-f1",
+      "selection_id": "f8de9d1dc0c59bd17b000cfed323daecf085bc5ad828f7cc28e00bc3ece2feb4"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "2f0d131c22fe3b6525ce685deb78fd5a30ee4a96a00dbbd2b82f12b9c3dcc4ec",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "bf62ef60ce4a2859",
+     "sha256_of_scores_bytes": "bf62ef60ce4a2859",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "9498a9e04f2686064b8215fb9b835891a20750b72afb32cb7fb641aced987279",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "7c314c332464ff86",
+     "sha256_of_scores_bytes": "7c314c332464ff86",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "candidate",
+      "model_id": "m2-f2",
+      "selection_id": "fe9d1261872d02f6cc6e4eb5b6e4d17d72a3d6d2f64827f774afeafdc2661b96"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "ad9c27304eda827707677ec9e0450d5b77db37c21daf45a5f28f38fc7666e6ee",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "aa5b21a7127a8cda",
+     "sha256_of_scores_bytes": "aa5b21a7127a8cda",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    }
+   ],
+   "present": true,
+   "n_artefacts": 4,
+   "per_fold_kind_counts": {
+    "F1/best_simple": 1,
+    "F1/candidate": 1,
+    "F2/best_simple": 1,
+    "F2/candidate": 1
+   },
+   "n_folds_with_predictions": 2,
+   "every_fold_has_exactly_candidate_and_best_simple": true
+  },
+  "m0_v3": {
+   "workspace": "m0_v3",
+   "artefacts": [
+    {
+     "prediction_id": "07d663b75ef2746ea26ed428393649c58ce2bd79f8a450b1af081cb5d486cd1e",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "54f6e7b8a0a3fa37",
+     "sha256_of_scores_bytes": "54f6e7b8a0a3fa37",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold_id": "F3",
+      "kind": "candidate",
+      "model_id": "m0-f3",
+      "selection_id": "5c7b013902a8d03340c311f9fa40c274b23b5270daeb915214063b072f3d128d"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "0f2564f5947f4339d5e500490f6f203e255b38830750fbe4a607e5e318fecd74",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "d50fda23b8146d40",
+     "sha256_of_scores_bytes": "d50fda23b8146d40",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "candidate",
+      "model_id": "m0-f2",
+      "selection_id": "2f43cb5e472a8da26adcbbc6b2dfed8beff2a79ee6d9c8363b2debe8f30ed7d4"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "2f0d131c22fe3b6525ce685deb78fd5a30ee4a96a00dbbd2b82f12b9c3dcc4ec",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "bf62ef60ce4a2859",
+     "sha256_of_scores_bytes": "bf62ef60ce4a2859",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "2f8aaeb70752ba2f811d1ab4c78be6f779b2abe7b3ae48140922a5ff9f55167d",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "7bc28bc2ec570b08",
+     "sha256_of_scores_bytes": "7bc28bc2ec570b08",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold_id": "F4",
+      "kind": "candidate",
+      "model_id": "m0-f4",
+      "selection_id": "305bc084e592a9d59b5d4b0039b435035edbb73aeaf21af850afb597a77cb6c4"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "310f824c0e4b7f7b78a942de7090228a8ac7d4cabe5645209eb28bbec0166997",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "566d2ef985888667",
+     "sha256_of_scores_bytes": "566d2ef985888667",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold_id": "F3",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "3bbae89e20c12f8742703ad3a5bd8fc3c3ab0e8963719605c2a9dd50c363cb85",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "a4fd74abf9f2c646",
+     "sha256_of_scores_bytes": "a4fd74abf9f2c646",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "candidate",
+      "model_id": "m0-f1",
+      "selection_id": "45d140f7fd1cbbe44a9eb82a3af499e4aaeae27427286296f02b079bd73ad3d4"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "ad9c27304eda827707677ec9e0450d5b77db37c21daf45a5f28f38fc7666e6ee",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "aa5b21a7127a8cda",
+     "sha256_of_scores_bytes": "aa5b21a7127a8cda",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "f999d5c128a514ac81c7a738393d623364642d02a8c3029826b5b1695d884b6a",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "30e7a97892c2fcf8",
+     "sha256_of_scores_bytes": "30e7a97892c2fcf8",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold_id": "F4",
+      "kind": "best_simple",
+      "model_id": "B3",
+      "selection_id": "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    }
+   ],
+   "present": true,
+   "n_artefacts": 8,
+   "per_fold_kind_counts": {
+    "F1/best_simple": 1,
+    "F1/candidate": 1,
+    "F2/best_simple": 1,
+    "F2/candidate": 1,
+    "F3/best_simple": 1,
+    "F3/candidate": 1,
+    "F4/best_simple": 1,
+    "F4/candidate": 1
+   },
+   "n_folds_with_predictions": 4,
+   "every_fold_has_exactly_candidate_and_best_simple": true
+  },
+  "m0r_v3": {
+   "workspace": "m0r_v3",
+   "artefacts": [
+    {
+     "prediction_id": "2f0d131c22fe3b6525ce685deb78fd5a30ee4a96a00dbbd2b82f12b9c3dcc4ec",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "bf62ef60ce4a2859",
+     "sha256_of_scores_bytes": "bf62ef60ce4a2859",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "310f824c0e4b7f7b78a942de7090228a8ac7d4cabe5645209eb28bbec0166997",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "566d2ef985888667",
+     "sha256_of_scores_bytes": "566d2ef985888667",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold_id": "F3",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "8a870cadd1ed54b3ae18c838d84fa957fa2c18055e3d6ea766c53f831915b85e",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "b4ce8c6a0d4af2fc",
+     "sha256_of_scores_bytes": "b4ce8c6a0d4af2fc",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold_id": "F4",
+      "kind": "candidate",
+      "model_id": "m0r-f4",
+      "selection_id": "179e6821d305bc8b212f928f4f4ce3ded87a2761fe4d801b69b02c5380e8c4ec"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "98dc1610117ab6e881d0f9d0917cf3615c6a21f78f66bc43a0ca7727bedf34c0",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "b881c8bf5f1a6eb5",
+     "sha256_of_scores_bytes": "b881c8bf5f1a6eb5",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+      "fold_id": "F1",
+      "kind": "candidate",
+      "model_id": "m0r-f1",
+      "selection_id": "1348cbd593c77fe6ad9009c40fbe0cebe3347e762c151c34c4f446e203152dad"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "ad9c27304eda827707677ec9e0450d5b77db37c21daf45a5f28f38fc7666e6ee",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "aa5b21a7127a8cda",
+     "sha256_of_scores_bytes": "aa5b21a7127a8cda",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "best_simple",
+      "model_id": "B2",
+      "selection_id": "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "b69fa46adb984d347f16b3e09e5f6cd30b22f854a720fef4d85670f8f9eb566f",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "a50b48d713389c57",
+     "sha256_of_scores_bytes": "a50b48d713389c57",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+      "fold_id": "F3",
+      "kind": "candidate",
+      "model_id": "m0r-f3",
+      "selection_id": "b824fdb6ae086fce7673ebd135061c1b2a26302382ca36b450457b1fbf908687"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "ed752887b6614ae1e901ce1490b1caa9125a69d27cf3f8425ee215ff69e0e0ea",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "aa811c62dad1a25a",
+     "sha256_of_scores_bytes": "aa811c62dad1a25a",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+      "fold_id": "F2",
+      "kind": "candidate",
+      "model_id": "m0r-f2",
+      "selection_id": "82a52d182f2949a252471a38cc807e1387d7ca3c7f7d90136052457f497fe422"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_candidate": true,
+      "model_id_matches_selection_artifact": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    },
+    {
+     "prediction_id": "f999d5c128a514ac81c7a738393d623364642d02a8c3029826b5b1695d884b6a",
+     "complete": true,
+     "manifest_prediction_id_matches_dir": true,
+     "sha256_in_manifest": "30e7a97892c2fcf8",
+     "sha256_of_scores_bytes": "30e7a97892c2fcf8",
+     "keyless_sha256_matches": true,
+     "signature_present": true,
+     "metadata": {
+      "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+      "fold_id": "F4",
+      "kind": "best_simple",
+      "model_id": "B3",
+      "selection_id": "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219"
+     },
+     "binding": {
+      "selection_record_found": true,
+      "kind_is_best_simple": true,
+      "model_id_matches_selected_baseline_id": true,
+      "dataset_id_matches_selection_test_dataset": true,
+      "fold_matches_selection_fold": true
+     },
+     "all_binding_checks_pass": true
+    }
+   ],
+   "present": true,
+   "n_artefacts": 8,
+   "per_fold_kind_counts": {
+    "F1/best_simple": 1,
+    "F1/candidate": 1,
+    "F2/best_simple": 1,
+    "F2/candidate": 1,
+    "F3/best_simple": 1,
+    "F3/candidate": 1,
+    "F4/best_simple": 1,
+    "F4/candidate": 1
+   },
+   "n_folds_with_predictions": 4,
+   "every_fold_has_exactly_candidate_and_best_simple": true
+  }
+ },
+ "summary": {
+  "n_artefacts_total": 28,
+  "n_complete": 28,
+  "n_keyless_sha256_ok": 28,
+  "all_keyless_sha256_ok": true,
+  "n_binding_ok": 28,
+  "all_binding_ok": true,
+  "structural_two_per_fold_ok": true,
+  "by_kind": {
+   "candidate": 14,
+   "best_simple": 14
+  },
+  "signature_present_on_all": true
+ },
+ "tamper_controls": {
+  "target": {
+   "workspace": "m1_full_v1",
+   "prediction_id": "03152f85200045ef",
+   "kind": "candidate",
+   "fold_id": "F2",
+   "scores_bytes": 6312419
+  },
+  "i_corrupt_scores_byte_breaks_keyless_sha256": true,
+  "ii_change_metadata_fold_breaks_binding": true,
+  "iii_change_manifest_sha256_breaks_keyless_check": true,
+  "iv_swap_kind_breaks_kind_check": true,
+  "note": "all four mutations were computed in memory; no byte was written to any prediction artefact, so the scored scores.parquet files remain exactly what production froze"
+ },
+ "what_remains_unproven": "the HMAC over {metadata, prediction_id, sha256} is not verified -- the key QRV2_PREDICTION_EVIDENCE_HMAC_KEY (selection_evidence.py:27) is deployment-only and this pack does not read environment secrets. So a key holder could forge a self-consistent prediction artefact. What IS proven keylessly: the scores.parquet the gates would read is byte-identical to the sha256 the signed manifest names, and its metadata is bound five ways to the frozen selection records.",
+ "read_only": true,
+ "database_access": false,
+ "parquet_row_data_read": false,
+ "pt_loaded_as_tensor": false,
+ "environment_secret_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true,
+ "controls": {
+  "all_complete_artefacts_keyless_sha256_ok": true,
+  "all_complete_artefacts_binding_ok": true,
+  "every_fold_has_candidate_and_best_simple": true,
+  "signature_present_on_every_artefact": true,
+  "TAMPER_i_scores_byte_breaks_sha256": true,
+  "TAMPER_ii_metadata_fold_breaks_binding": true,
+  "TAMPER_iii_manifest_sha_breaks_check": true,
+  "TAMPER_iv_kind_swap_breaks_kind_check": true,
+  "source_shows_keyless_check_and_both_binding_predicates": true,
+  "ALL_PASS": true
+ }
+}
