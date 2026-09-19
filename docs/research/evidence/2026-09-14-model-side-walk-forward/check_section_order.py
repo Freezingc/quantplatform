@@ -9,7 +9,7 @@ the new section silently lands in the middle of the file. It happened with §CC 
 §CB) and again with §CD (which landed between §CB and §CC), and in both cases nothing else looked
 wrong -- the file applied cleanly and only the section order revealed it.
 
-Run this after every append to problems_found.md. It checks three things:
+Run this after every append to problems_found.md. It checks eight things:
   1. every ## <LETTERS>. heading appears in the expected alphabetical/chronological sequence;
   2. there are no duplicate section headings;
   3. the ### subsections of each section are numbered contiguously, starting at .0 or .1 -- §BR starts
@@ -44,6 +44,15 @@ Run this after every append to problems_found.md. It checks three things:
      version of check 7 matched only lines starting with "<n>. **" and so still missed them, because the
      markers sit on their own indented lines; its negative test passed the defective file and forced the
      wider scope.
+  8. no line of any pack markdown file may contain "****" outside a code span. Four adjacent asterisks are
+     what a bold run closing immediately against another bold run opening produces; markdown does not
+     render them as intended and the emphasis leaks. This recurred about eight times while adding in-place
+     correction markers this session (B26, A16, D9, D14, DA.3, the DC heading, C10, B34) and every time it
+     was found only by counting asterisks, never by reading. Two instances had already shipped and sat in
+     the file for days: the BU section heading and a BZ revision paragraph. Checks 5 and 7 cannot catch it,
+     because "****" is an EVEN count of "**" -- the line still balances, it just renders wrong. The fix is
+     always the same: put a space between the two bold runs, which leaves the marker count unchanged and so
+     preserves every downstream pairing.
 
 It reads only this pack's own markdown. No database, no network, no repository module, nothing written.
 Exit status is 0 when the file is in order and 1 when it is not, so it can gate a commit.
@@ -185,6 +194,30 @@ def find_unbalanced_ledger_lines(text: str, filename: str) -> list[str]:
     return problems
 
 
+def find_bold_collisions(text: str, filename: str) -> list[str]:
+    """Flag "****" outside code spans: a bold run closing directly against another one opening.
+
+    Checks 5 and 7 cannot catch this, because four asterisks are an even count of "**" so the line still
+    balances. It recurred about eight times while adding in-place markers this session, and two instances
+    had already shipped, so it gets its own check.
+    """
+    problems = []
+    for n, line in enumerate(text.split("\n"), 1):
+        # Replace code spans with a PLACEHOLDER, not with the empty string. Deleting them would make two
+        # bold markers that were separated by a code span (e.g. **`N/A`**) look adjacent and produce a
+        # false "****". This bug was found on the check's first run, which flagged ~40 lines that all came
+        # from bolded code spans rather than real collisions.
+        no_code = re.sub(r"`[^`]*`", "\x00", line)
+        if "****" in no_code:
+            at = no_code.index("****")
+            problems.append(
+                f"{filename} line {n}: four adjacent asterisks (a bold run closing against another "
+                f"opening) render wrong and leak emphasis; insert a space between the two runs, which "
+                f"keeps the '**' count unchanged so downstream pairing is unaffected. Context: "
+                f"{no_code[max(0, at - 40):at + 40]!r}")
+    return problems
+
+
 def main() -> int:
     lines = TARGET.read_text(encoding="utf-8").split("\n")
     found = [SEC.match(l).group(1) for l in lines if SEC.match(l)]
@@ -229,6 +262,7 @@ def main() -> int:
         if fpath.is_file():
             ftext = fpath.read_text(encoding="utf-8")
             problems.extend(find_unbalanced_table_rows(ftext, fname))
+            problems.extend(find_bold_collisions(ftext, fname))
             if fname == "corrections_ledger.md":
                 problems.extend(find_unbalanced_ledger_lines(ftext, fname))
 
@@ -242,7 +276,7 @@ def main() -> int:
         return 1
     print("OK: chronological order, no duplicate headings, all subsections contiguous, no duplicated "
           "declarations, all table-row bold runs balanced, no unescaped pipes in table code spans, "
-          "all ledger lines bold-balanced")
+          "all ledger lines bold-balanced, no **** bold collisions")
     return 0
 
 

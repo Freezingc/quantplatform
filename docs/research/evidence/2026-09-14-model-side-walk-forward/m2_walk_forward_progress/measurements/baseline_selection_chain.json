@@ -1,0 +1,459 @@
+{
+ "question": "is the baseline side of the selection chain internally consistent and consistently shared, and does the F2 near-tie threaten any published verdict?",
+ "generated_at_local": "2026-09-20T02:37:26",
+ "structure_differs_from_candidate_side": "a baseline selection names a LABEL (B0..B3), not a file, so there is no bundle digest to compare; what is verifiable is the recorded competition's internal consistency and its sharing across carriers",
+ "n_references": 15,
+ "n_distinct_records": 4,
+ "per_reference_checks": [
+  {
+   "workspace": "m1_full_v1",
+   "fold": "F3",
+   "evidence_id": "3a9ac836c383cfd0",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m1_full_v1",
+   "fold": "F2",
+   "evidence_id": "3ea7d0c5c7a44d23",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m1_full_v1",
+   "fold": "F4",
+   "evidence_id": "6b26867126c28a5d",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m1_full_v1",
+   "fold": "F1",
+   "evidence_id": "6fe33eda88430e5e",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m2_v1",
+   "fold": "F3",
+   "evidence_id": "3a9ac836c383cfd0",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m2_v1",
+   "fold": "F2",
+   "evidence_id": "3ea7d0c5c7a44d23",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m2_v1",
+   "fold": "F1",
+   "evidence_id": "6fe33eda88430e5e",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0_v3",
+   "fold": "F3",
+   "evidence_id": "3a9ac836c383cfd0",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0_v3",
+   "fold": "F2",
+   "evidence_id": "3ea7d0c5c7a44d23",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0_v3",
+   "fold": "F4",
+   "evidence_id": "6b26867126c28a5d",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0_v3",
+   "fold": "F1",
+   "evidence_id": "6fe33eda88430e5e",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "fold": "F3",
+   "evidence_id": "3a9ac836c383cfd0",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "fold": "F2",
+   "evidence_id": "3ea7d0c5c7a44d23",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "fold": "F4",
+   "evidence_id": "6b26867126c28a5d",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  },
+  {
+   "workspace": "m0r_v3",
+   "fold": "F1",
+   "evidence_id": "6fe33eda88430e5e",
+   "dir_matches_evidence_id": true,
+   "all_five_invariants": true,
+   "keyless_binding_ok": true
+  }
+ ],
+ "per_distinct_record": {
+  "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565": {
+   "fold_id": "F3",
+   "selected": "B2",
+   "invariant_a_scores_exactly_B0_B3": true,
+   "invariant_b_selected_is_argmax_with_tiebreak": true,
+   "invariant_c_rank_ic_bit_equal_to_winner": true,
+   "invariant_d_reasons_are_exact_complement": true,
+   "invariant_e_selected_in_B0_B3": true,
+   "all_five_invariants": true,
+   "keyless_content_binding_ok": true,
+   "ranking": [
+    {
+     "baseline": "B2",
+     "mean_rank_ic": 0.09870781290204374,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B3",
+     "mean_rank_ic": 0.07344804111141587,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B0",
+     "mean_rank_ic": 0.06298493533993492,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B1",
+     "mean_rank_ic": -0.09270888657260162,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    }
+   ],
+   "margin_over_runner_up": 0.02525977179062787,
+   "margin_pct_of_winner": 25.590448261370472,
+   "valid_day_counts_identical_across_baselines": true,
+   "n_copies": 4
+  },
+  "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74": {
+   "fold_id": "F2",
+   "selected": "B2",
+   "invariant_a_scores_exactly_B0_B3": true,
+   "invariant_b_selected_is_argmax_with_tiebreak": true,
+   "invariant_c_rank_ic_bit_equal_to_winner": true,
+   "invariant_d_reasons_are_exact_complement": true,
+   "invariant_e_selected_in_B0_B3": true,
+   "all_five_invariants": true,
+   "keyless_content_binding_ok": true,
+   "ranking": [
+    {
+     "baseline": "B2",
+     "mean_rank_ic": 0.08521889544606599,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B3",
+     "mean_rank_ic": 0.08500634733838454,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B0",
+     "mean_rank_ic": 0.06061342379951242,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B1",
+     "mean_rank_ic": -0.0829615386323984,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    }
+   ],
+   "margin_over_runner_up": 0.00021254810768145393,
+   "margin_pct_of_winner": 0.24941429546686986,
+   "valid_day_counts_identical_across_baselines": true,
+   "n_copies": 4
+  },
+  "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219": {
+   "fold_id": "F4",
+   "selected": "B3",
+   "invariant_a_scores_exactly_B0_B3": true,
+   "invariant_b_selected_is_argmax_with_tiebreak": true,
+   "invariant_c_rank_ic_bit_equal_to_winner": true,
+   "invariant_d_reasons_are_exact_complement": true,
+   "invariant_e_selected_in_B0_B3": true,
+   "all_five_invariants": true,
+   "keyless_content_binding_ok": true,
+   "ranking": [
+    {
+     "baseline": "B3",
+     "mean_rank_ic": 0.10194636590879384,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B2",
+     "mean_rank_ic": 0.0867125001020169,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B0",
+     "mean_rank_ic": 0.07085580074303398,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B1",
+     "mean_rank_ic": -0.07851800422007522,
+     "valid_day_count": 236,
+     "invalid_day_count": 0
+    }
+   ],
+   "margin_over_runner_up": 0.015233865806776936,
+   "margin_pct_of_winner": 14.943019960521095,
+   "valid_day_counts_identical_across_baselines": true,
+   "n_copies": 3
+  },
+  "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9": {
+   "fold_id": "F1",
+   "selected": "B2",
+   "invariant_a_scores_exactly_B0_B3": true,
+   "invariant_b_selected_is_argmax_with_tiebreak": true,
+   "invariant_c_rank_ic_bit_equal_to_winner": true,
+   "invariant_d_reasons_are_exact_complement": true,
+   "invariant_e_selected_in_B0_B3": true,
+   "all_five_invariants": true,
+   "keyless_content_binding_ok": true,
+   "ranking": [
+    {
+     "baseline": "B2",
+     "mean_rank_ic": 0.06271081108523915,
+     "valid_day_count": 237,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B0",
+     "mean_rank_ic": 0.05443341929751267,
+     "valid_day_count": 237,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B3",
+     "mean_rank_ic": 0.045002947625990934,
+     "valid_day_count": 237,
+     "invalid_day_count": 0
+    },
+    {
+     "baseline": "B1",
+     "mean_rank_ic": -0.07198795496062839,
+     "valid_day_count": 237,
+     "invalid_day_count": 0
+    }
+   ],
+   "margin_over_runner_up": 0.008277391787726483,
+   "margin_pct_of_winner": 13.199305900342297,
+   "valid_day_counts_identical_across_baselines": true,
+   "n_copies": 4
+  }
+ },
+ "sharing": {
+  "copies_per_record": {
+   "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565": 4,
+   "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74": 4,
+   "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219": 3,
+   "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9": 4
+  },
+  "byte_identical_across_carriers": {
+   "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565": true,
+   "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74": true,
+   "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219": true,
+   "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9": true
+  },
+  "per_fold_report_consistency": {
+   "F1": {
+    "n_carriers": 3,
+    "carriers": [
+     "m0_v3",
+     "m0r_v3",
+     "m1_full_v1"
+    ],
+    "n_distinct_ids": 1,
+    "consistent": true
+   },
+   "F2": {
+    "n_carriers": 3,
+    "carriers": [
+     "m0_v3",
+     "m0r_v3",
+     "m1_full_v1"
+    ],
+    "n_distinct_ids": 1,
+    "consistent": true
+   },
+   "F3": {
+    "n_carriers": 3,
+    "carriers": [
+     "m0_v3",
+     "m0r_v3",
+     "m1_full_v1"
+    ],
+    "n_distinct_ids": 1,
+    "consistent": true
+   },
+   "F4": {
+    "n_carriers": 3,
+    "carriers": [
+     "m0_v3",
+     "m0r_v3",
+     "m1_full_v1"
+    ],
+    "n_distinct_ids": 1,
+    "consistent": true
+   }
+  },
+  "reading": "baselines are model-independent, so each fold's decision is made once and reused by every carrier; a defect in one record would propagate to all of them at once"
+ },
+ "F2_near_tie_vs_G4": {
+  "F2_margin": 0.00021254810768145393,
+  "F2_margin_pct_of_winner": 0.24941429546686986,
+  "F2_ranking": [
+   {
+    "baseline": "B2",
+    "mean_rank_ic": 0.08521889544606599,
+    "valid_day_count": 236,
+    "invalid_day_count": 0
+   },
+   {
+    "baseline": "B3",
+    "mean_rank_ic": 0.08500634733838454,
+    "valid_day_count": 236,
+    "invalid_day_count": 0
+   },
+   {
+    "baseline": "B0",
+    "mean_rank_ic": 0.06061342379951242,
+    "valid_day_count": 236,
+    "invalid_day_count": 0
+   },
+   {
+    "baseline": "B1",
+    "mean_rank_ic": -0.0829615386323984,
+    "valid_day_count": 236,
+    "invalid_day_count": 0
+   }
+  ],
+  "F2_day_counts_identical": true,
+  "all_fold_margins": {
+   "F3": 0.02525977,
+   "F2": 0.00021255,
+   "F4": 0.01523387,
+   "F1": 0.00827739
+  },
+  "published_G4_observed": 0.007826986071187494,
+  "published_G4_threshold": 0.005,
+  "published_G4_margin": 0.002827,
+  "BASIS_NOTE": "the F2 margin above is a VALIDATION-side difference while published_G4_margin is TEST-side; their ratio is NOT a headroom bound and is deliberately not reported",
+  "frozen_best_simple_per_fold": {
+   "F1": [
+    "B2"
+   ],
+   "F2": [
+    "B2"
+   ],
+   "F3": [
+    "B2"
+   ],
+   "F4": [
+    "B3"
+   ]
+  },
+  "F2_runner_up": "B3",
+  "runner_up_test_score_available": false,
+  "counterfactual_is_unmeasurable": true,
+  "verdict": "the F2 selection was a near-tie on validation; the protocol made it pre-TEST from validation data and G4 uses the selected baseline's test score as pre-registered, so the published verdict is procedurally sound, but whether a different validation winner would have moved G4 across its threshold cannot be determined from the frozen artefacts and no bound is claimed"
+ },
+ "validator_asymmetry": {
+  "write_time_validator_line": 506,
+  "load_time_validator_line": 529,
+  "write_checks_unselected_reasons": true,
+  "load_checks_unselected_reasons": false,
+  "load_checks_valid_day_count": false,
+  "load_rechecks_argmax": true,
+  "load_rechecks_rank_ic": true,
+  "load_is_called_from_load_baseline_selection": true,
+  "asymmetry": true
+ },
+ "validator_asymmetry_blast_radius": {
+  "claim": "load-time validation omits unselected_reasons and the day counts, so altering those fields would not be caught at load",
+  "why_the_radius_is_small": "the whole payload is keyless-content-hash bound (§CY), so altering ANY field changes evidence_id and fails both the content-hash check at selection_evidence.py:145 and the directory-name check; verified here on all 15 references and all 4 distinct records",
+  "scenario_that_would_matter": "a record produced by a path bypassing _validate_baseline_selection_record while still holding the signing key -- not constructible or observable from this pack",
+  "classification": "defence-in-depth observation, not a defect with demonstrated impact"
+ },
+ "tie_break_controls": {
+  "all_four_tied_picks_B0": true,
+  "tie_among_B1_B2_picks_B1": true,
+  "clear_winner_beats_complexity": true,
+  "none_are_ineligible_raises": true
+ },
+ "controls": {
+  "i_all_15_references_pass_five_invariants": true,
+  "i_b_tie_break_rule_exercised_by_synthetic_ties": true,
+  "ii_all_keyless_content_bindings_hold": true,
+  "iii_all_copies_byte_identical": true,
+  "iii_b_every_fold_consistent_across_carriers": true,
+  "iv_near_tie_confined_to_F2": true,
+  "iv_b_F2_day_counts_identical_across_baselines": true,
+  "iv_c_runner_up_test_score_absent_so_no_bound_claimed": true,
+  "v_source_shows_reasons_checked_on_write_not_on_load": true,
+  "v_b_load_validator_is_actually_called": true,
+  "vi_directory_names_match_evidence_ids": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "environment_secret_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false,
+ "byte_reproducible": true
+}
