@@ -1,0 +1,387 @@
+{
+ "question": "does the GRID stage have the same span undercount §DC found on the refit stage, and if so does it bias §CI's totals? (§DC.7 deferred this)",
+ "generated_at_local": "2026-09-20T04:48:00",
+ "grid_stages": {
+  "M1 F1": {
+   "span_h": 4.842,
+   "first_ckpt": 1789150749.2273817,
+   "last_ckpt": 1789168180.3463311,
+   "n_runs": 81,
+   "peak_max": 19,
+   "last_record": 1789172529.3623335,
+   "stage_complete": true,
+   "true_h": 6.05,
+   "tail_h": 1.208,
+   "tail_h_raw": 1.2080600006712807
+  },
+  "M1 F2": {
+   "span_h": 6.666,
+   "first_ckpt": 1789179331.5345006,
+   "last_ckpt": 1789203330.0686133,
+   "n_runs": 81,
+   "peak_max": 62,
+   "last_record": 1789207625.5313702,
+   "stage_complete": true,
+   "true_h": 7.859,
+   "tail_h": 1.193,
+   "tail_h_raw": 1.1931840991311604
+  },
+  "M1 F3": {
+   "span_h": 6.76,
+   "first_ckpt": 1789219252.4525094,
+   "last_ckpt": 1789243589.528829,
+   "n_runs": 81,
+   "peak_max": 33,
+   "last_record": 1789248059.6485317,
+   "stage_complete": true,
+   "true_h": 8.002,
+   "tail_h": 1.242,
+   "tail_h_raw": 1.2416999173826642
+  },
+  "M1 F4": {
+   "span_h": 5.157,
+   "first_ckpt": 1789259777.4644847,
+   "last_ckpt": 1789278342.799251,
+   "n_runs": 81,
+   "peak_max": 20,
+   "last_record": 1789282941.7373505,
+   "stage_complete": true,
+   "true_h": 6.435,
+   "tail_h": 1.277,
+   "tail_h_raw": 1.27748280538453
+  },
+  "M2 F1": {
+   "span_h": 31.502,
+   "first_ckpt": 1789298882.3674595,
+   "last_ckpt": 1789412290.6680028,
+   "n_runs": 72,
+   "peak_max": 14,
+   "last_record": 1789430499.3709,
+   "stage_complete": true,
+   "true_h": 36.56,
+   "tail_h": 5.058,
+   "tail_h_raw": 5.057973026964399
+  },
+  "M2 F2": {
+   "span_h": 59.033,
+   "first_ckpt": 1789455404.7244675,
+   "last_ckpt": 1789667924.5522053,
+   "n_runs": 72,
+   "peak_max": 71,
+   "last_record": 1789687295.3335967,
+   "stage_complete": true,
+   "true_h": 64.414,
+   "tail_h": 5.381,
+   "tail_h_raw": 5.380772608717282
+  },
+  "M2 F3": {
+   "span_h": 20.679,
+   "first_ckpt": 1789776001.7082803,
+   "last_ckpt": 1789850447.6029742,
+   "n_runs": 68,
+   "peak_max": 35,
+   "last_record": 1789846890.932916,
+   "stage_complete": false,
+   "true_h": 19.691,
+   "tail_h": -0.988,
+   "tail_h_raw": -0.9879639050695631
+  }
+ },
+ "refit_stages_for_reference": {
+  "M1 F1": {
+   "span_h": 0.577,
+   "first_ckpt": 1789172895.02057,
+   "last_ckpt": 1789174973.86227,
+   "n_runs": 3,
+   "peak_max": 7,
+   "bundle": 1789178447.4004056,
+   "stage_complete": true,
+   "true_h": 1.542,
+   "tail_h": 0.965,
+   "tail_h_raw": 0.9648717043134901
+  },
+  "M1 F2": {
+   "span_h": 1.852,
+   "first_ckpt": 1789207992.9085422,
+   "last_ckpt": 1789214659.308193,
+   "n_runs": 3,
+   "peak_max": 20,
+   "bundle": 1789218315.6293483,
+   "stage_complete": true,
+   "true_h": 2.867,
+   "tail_h": 1.016,
+   "tail_h_raw": 1.0156447653637992
+  },
+  "M1 F3": {
+   "span_h": 1.921,
+   "first_ckpt": 1789248420.1766198,
+   "last_ckpt": 1789255334.8952854,
+   "n_runs": 3,
+   "peak_max": 21,
+   "bundle": 1789258809.1828005,
+   "stage_complete": true,
+   "true_h": 2.886,
+   "tail_h": 0.965,
+   "tail_h_raw": 0.9650798653231727
+  },
+  "M1 F4": {
+   "span_h": 1.264,
+   "first_ckpt": 1789283334.257088,
+   "last_ckpt": 1789287884.6184702,
+   "n_runs": 3,
+   "peak_max": 13,
+   "bundle": 1789291617.310464,
+   "stage_complete": true,
+   "true_h": 2.301,
+   "tail_h": 1.037,
+   "tail_h_raw": 1.0368588871426052
+  },
+  "M2 F1": {
+   "span_h": 3.107,
+   "first_ckpt": 1789431889.9382873,
+   "last_ckpt": 1789443075.452787,
+   "n_runs": 3,
+   "peak_max": 12,
+   "bundle": 1789453228.3067677,
+   "stage_complete": true,
+   "true_h": 5.927,
+   "tail_h": 2.82,
+   "tail_h_raw": 2.8202372168832355
+  },
+  "M2 F2": {
+   "span_h": 20.593,
+   "first_ckpt": 1789688813.9015107,
+   "last_ckpt": 1789762949.949963,
+   "n_runs": 3,
+   "peak_max": 71,
+   "bundle": 1789773560.8547177,
+   "stage_complete": true,
+   "true_h": 23.541,
+   "tail_h": 2.947,
+   "tail_h_raw": 2.9474735429551866
+  }
+ },
+ "completed_grid_stages": {
+  "M1 F1": {
+   "span_h": 4.842,
+   "first_ckpt": 1789150749.2273817,
+   "last_ckpt": 1789168180.3463311,
+   "n_runs": 81,
+   "peak_max": 19,
+   "last_record": 1789172529.3623335,
+   "stage_complete": true,
+   "true_h": 6.05,
+   "tail_h": 1.208,
+   "tail_h_raw": 1.2080600006712807
+  },
+  "M1 F2": {
+   "span_h": 6.666,
+   "first_ckpt": 1789179331.5345006,
+   "last_ckpt": 1789203330.0686133,
+   "n_runs": 81,
+   "peak_max": 62,
+   "last_record": 1789207625.5313702,
+   "stage_complete": true,
+   "true_h": 7.859,
+   "tail_h": 1.193,
+   "tail_h_raw": 1.1931840991311604
+  },
+  "M1 F3": {
+   "span_h": 6.76,
+   "first_ckpt": 1789219252.4525094,
+   "last_ckpt": 1789243589.528829,
+   "n_runs": 81,
+   "peak_max": 33,
+   "last_record": 1789248059.6485317,
+   "stage_complete": true,
+   "true_h": 8.002,
+   "tail_h": 1.242,
+   "tail_h_raw": 1.2416999173826642
+  },
+  "M1 F4": {
+   "span_h": 5.157,
+   "first_ckpt": 1789259777.4644847,
+   "last_ckpt": 1789278342.799251,
+   "n_runs": 81,
+   "peak_max": 20,
+   "last_record": 1789282941.7373505,
+   "stage_complete": true,
+   "true_h": 6.435,
+   "tail_h": 1.277,
+   "tail_h_raw": 1.27748280538453
+  },
+  "M2 F1": {
+   "span_h": 31.502,
+   "first_ckpt": 1789298882.3674595,
+   "last_ckpt": 1789412290.6680028,
+   "n_runs": 72,
+   "peak_max": 14,
+   "last_record": 1789430499.3709,
+   "stage_complete": true,
+   "true_h": 36.56,
+   "tail_h": 5.058,
+   "tail_h_raw": 5.057973026964399
+  },
+  "M2 F2": {
+   "span_h": 59.033,
+   "first_ckpt": 1789455404.7244675,
+   "last_ckpt": 1789667924.5522053,
+   "n_runs": 72,
+   "peak_max": 71,
+   "last_record": 1789687295.3335967,
+   "stage_complete": true,
+   "true_h": 64.414,
+   "tail_h": 5.381,
+   "tail_h_raw": 5.380772608717282
+  }
+ },
+ "excluded_live_grid_stages": {
+  "M2 F3": {
+   "span_h": 20.679,
+   "first_ckpt": 1789776001.7082803,
+   "last_ckpt": 1789850447.6029742,
+   "n_runs": 68,
+   "peak_max": 35,
+   "last_record": 1789846890.932916,
+   "stage_complete": false,
+   "true_h": 19.691,
+   "tail_h": -0.988,
+   "tail_h_raw": -0.9879639050695631
+  }
+ },
+ "undercount": {
+  "n_completed_grid_stages": 6,
+  "omitted_pct_range": [
+   9.1,
+   24.9
+  ],
+  "per_stage": {
+   "M1 F1": {
+    "span_h": 4.842,
+    "true_h": 6.05,
+    "tail_h": 1.208,
+    "omitted_pct_of_span": 24.9,
+    "n_runs": 81,
+    "peak_max": 19
+   },
+   "M1 F2": {
+    "span_h": 6.666,
+    "true_h": 7.859,
+    "tail_h": 1.193,
+    "omitted_pct_of_span": 17.9,
+    "n_runs": 81,
+    "peak_max": 62
+   },
+   "M1 F3": {
+    "span_h": 6.76,
+    "true_h": 8.002,
+    "tail_h": 1.242,
+    "omitted_pct_of_span": 18.4,
+    "n_runs": 81,
+    "peak_max": 33
+   },
+   "M1 F4": {
+    "span_h": 5.157,
+    "true_h": 6.435,
+    "tail_h": 1.277,
+    "omitted_pct_of_span": 24.8,
+    "n_runs": 81,
+    "peak_max": 20
+   },
+   "M2 F1": {
+    "span_h": 31.502,
+    "true_h": 36.56,
+    "tail_h": 5.058,
+    "omitted_pct_of_span": 16.1,
+    "n_runs": 72,
+    "peak_max": 14
+   },
+   "M2 F2": {
+    "span_h": 59.033,
+    "true_h": 64.414,
+    "tail_h": 5.381,
+    "omitted_pct_of_span": 9.1,
+    "n_runs": 72,
+    "peak_max": 71
+   }
+  },
+  "compare_refit_pct_range": [
+   14.1,
+   142.9
+  ],
+  "reading": "the grid omits 9-25% of its span, the refit 14-143%; same mechanism (the run writing the stage's last checkpoint then runs up to `patience` more epochs that write nothing), smaller relative effect because the grid stage is far longer"
+ },
+ "THE_IDENTITY": {
+  "statement": "checkpoint-to-checkpoint gap == preceding stage's patience tail + record-to-record gap, exactly",
+  "why_it_must_hold": "the checkpoint gap runs from the preceding stage's last IMPROVEMENT to the next stage's first checkpoint; that interval is exactly (a) the patience epochs still to run and (b) the real inter-phase work (scoring, dataset publication, record/bundle writing), and the record-to-record gap measures only (b)",
+  "per_transition": [
+   {
+    "transition": "F1 grid -> next",
+    "checkpoint_gap_h": 5.444,
+    "preceding_tail_h": 5.058,
+    "record_gap_h": 0.386,
+    "tail_plus_record_gap_h": 5.444,
+    "identity_holds": true,
+    "max_abs_deviation_h": 0.0
+   },
+   {
+    "transition": "F1 refit -> next",
+    "checkpoint_gap_h": 3.425,
+    "preceding_tail_h": 2.82,
+    "record_gap_h": 0.605,
+    "tail_plus_record_gap_h": 3.425,
+    "identity_holds": true,
+    "max_abs_deviation_h": 0.0
+   },
+   {
+    "transition": "F2 grid -> next",
+    "checkpoint_gap_h": 5.803,
+    "preceding_tail_h": 5.381,
+    "record_gap_h": 0.422,
+    "tail_plus_record_gap_h": 5.803,
+    "identity_holds": true,
+    "max_abs_deviation_h": 0.0
+   }
+  ],
+  "consequence": "§CI's scenario total is sum(spans) + sum(checkpoint gaps), so each stage's tail is counted exactly once -- inside the gap term, not the stage term. The span undercount therefore creates NO net bias in §CI's totals."
+ },
+ "accounting_closure": {
+  "spans_sum_h": 114.235,
+  "checkpoint_gaps_sum_h": 14.672,
+  "CI_basis_total_h": 128.908,
+  "true_elapsed_h": 131.855,
+  "residual_h": 2.947,
+  "residual_pct": 2.24,
+  "final_stage_tail_h": 2.947,
+  "residual_equals_final_stage_tail": true,
+  "residual_vs_final_tail_abs_diff_h": 6.661338147750939e-15,
+  "algebra": "§CI basis = sum(spans) + sum over i=1..3 of (tail_i + record_gap_i); wall clock = sum(spans) + sum over i=1..4 of tail_i + sum over i=1..3 of record_gap_i; the difference is therefore exactly tail_4, the FINAL stage's tail, which has no following checkpoint gap to absorb it",
+  "note": "so the first draft's claim that the residual was 'tail minus the final record gap' was wrong twice over -- wrong basis and wrong algebra. The residual is the final stage's tail and nothing else, and §CI carries that separately as OOS_H"
+ },
+ "only_remaining_assumption": {
+  "CI_OOS_H_assumed": 2.0,
+  "measured_M2_F1": 2.82,
+  "measured_M2_F2": 2.947,
+  "reading": "OOS_H is the only quantity in §CI's model that is assumed rather than measured, and it is light by 0.82-0.95 h per M2 fold; this is unchanged from §DD"
+ },
+ "A16_D14_unchanged": "§DD established that the interval must not be re-based by adding tails back because they are inside the gap term; this probe confirms the same for the grid stage, so §DC.7's deferral is closed with the answer 'yes it undercounts, no it does not bias the total'",
+ "controls": {
+  "i_identity_holds_on_every_completed_transition": true,
+  "ii_every_completed_grid_true_exceeds_span": true,
+  "iii_live_F3_excluded_and_shows_negative_tail": true,
+  "iv_grid_spans_reproduce_published": true,
+  "iv_b_refit_spans_reproduce_published": true,
+  "v_tails_from_ground_truth_not_from_the_identity": true,
+  "vi_residual_is_exactly_the_final_stage_tail": true,
+  "ALL_PASS": true
+ },
+ "read_only": true,
+ "database_access": false,
+ "weights_loaded": false,
+ "checkpoint_pt_opened": false,
+ "parquet_read": false,
+ "training_performed": false,
+ "repository_module_imported_or_executed": false,
+ "processes_signalled": [],
+ "atime_side_effect": false
+}
