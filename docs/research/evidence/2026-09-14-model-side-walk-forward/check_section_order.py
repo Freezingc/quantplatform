@@ -9,7 +9,7 @@ the new section silently lands in the middle of the file. It happened with §CC 
 §CB) and again with §CD (which landed between §CB and §CC), and in both cases nothing else looked
 wrong -- the file applied cleanly and only the section order revealed it.
 
-Run this after every append to problems_found.md. It checks eight things:
+Run this after every append to problems_found.md. It checks nine things:
   1. every ## <LETTERS>. heading appears in the expected alphabetical/chronological sequence;
   2. there are no duplicate section headings;
   3. the ### subsections of each section are numbered contiguously, starting at .0 or .1 -- §BR starts
@@ -53,6 +53,28 @@ Run this after every append to problems_found.md. It checks eight things:
      because "****" is an EVEN count of "**" -- the line still balances, it just renders wrong. The fix is
      always the same: put a space between the two bold runs, which leaves the marker count unchanged and so
      preserves every downstream pairing.
+  9. RATCHET on CommonMark emphasis leaks, measured with a real parser (markdown-it-py) rather than by
+     counting asterisks. The mechanism, verified case by case against the parser: a "**" run is
+     RIGHT-flanking (and so able to close) only if it is not preceded by whitespace AND either (a) not
+     preceded by punctuation or (b) preceded by punctuation and followed by whitespace or punctuation. So a
+     run PRECEDED BY PUNCTUATION and FOLLOWED BY a letter or digit can only OPEN, never close, and when no
+     other closer is available its literal "**" reaches the HTML. The pack's idiom
+     "**篡改**」**——**理由是" does this: the second run follows a full-width bracket and precedes a CJK
+     letter. Contrast "**篡改**——**理由是**", which renders correctly because that closer is preceded by a
+     letter. Checks 5, 7 and 8 cannot see any of this: they count asterisks, and the offending blocks have
+     an EVEN count -- flanking, not parity, decides pairing. An earlier draft of this check's message
+     described the cause as "a '**' followed directly by a CJK letter", which is wrong: "**篡改**理由"
+     renders fine. The message was corrected by testing five minimal cases against the parser. A whole-document parse found 96 leaked "**" in
+     problems_found.md and 66 in README.md, in 53 blocks, of which 44 predate this session. The 9 blocks in
+     sections CX-DG were repaired (space insertion where that restores the intended bold, marker deletion
+     otherwise, always with rendered text verified unchanged), bringing the total to LEAK_BUDGET below. The
+     budgets are the MEASURED post-repair counts, not aspirational ones -- the ledger's was first written as
+     6 by guessing and the gate immediately rejected the real file at 8, which is the ratchet working. The
+     44 pre-existing blocks were deliberately NOT mass-repaired: an automated whole-file repair strips bold
+     from 37 spans, 17 of which are polarity-bearing negations ("没有", "不是", "不可"), and in this pack bold
+     marks the citable/not-citable distinction, so silently un-bolding a negation in text whose authoring
+     intent cannot be verified here is worse than leaving a stray asterisk visible. The ratchet keeps the
+     count from growing; fixing the remainder properly needs per-block human judgement.
 
 It reads only this pack's own markdown. No database, no network, no repository module, nothing written.
 Exit status is 0 when the file is in order and 1 when it is not, so it can gate a commit.
@@ -218,6 +240,50 @@ def find_bold_collisions(text: str, filename: str) -> list[str]:
     return problems
 
 
+# Total leaked "**" in rendered HTML across the three pack files, measured by markdown-it-py.
+# A ratchet, not a target of zero: the residual sits in blocks authored before this session, where an
+# automated repair would strip bold from polarity-bearing negations. See check 9's docstring.
+LEAK_BUDGET = {"problems_found.md": 78, "README.md": 66, "corrections_ledger.md": 8}
+
+
+def count_emphasis_leaks(text: str) -> int:
+    """Count literal '**' that survive into rendered HTML outside <code> spans."""
+    try:
+        from markdown_it import MarkdownIt
+    except ImportError:
+        return -1                      # parser unavailable: skip rather than guess
+    html = MarkdownIt("commonmark").render(text)
+    return len(re.findall(r"\*\*", re.sub(r"<code>.*?</code>", "", html, flags=re.S)))
+
+
+def find_emphasis_leak_overage(files: dict[str, str]) -> list[str]:
+    """Flag any file whose rendered-HTML '**' leak count exceeds its ratcheted budget."""
+    problems = []
+    for fname, text in files.items():
+        budget = LEAK_BUDGET.get(fname)
+        if budget is None:
+            continue
+        n = count_emphasis_leaks(text)
+        if n < 0:
+            problems.append(f"{fname}: markdown-it-py not installed, so the emphasis-leak ratchet could "
+                            f"not be evaluated; install it or inspect the file manually")
+            continue
+        if n > budget:
+            problems.append(
+                f"{fname}: {n} literal '**' leak into rendered HTML, above the ratcheted budget of "
+                f"{budget}. Cause: under CommonMark's flanking rules a '**' run that is PRECEDED BY "
+                f"PUNCTUATION and FOLLOWED BY a non-whitespace non-punctuation character (a CJK letter or "
+                f"digit) is left-flanking only, so it can OPEN emphasis but never CLOSE it; if no other "
+                f"closer is available the run renders literally. The pack's idiom "
+                f"'**篡改**」**——**理由是' triggers this: the second '**' follows a full-width bracket and "
+                f"precedes 理, so it opens instead of closing. Note '**篡改**——**理由是**' is FINE (the "
+                f"closer there is preceded by a letter), so the fix is contextual: insert a space or "
+                f"re-punctuate so the closer is preceded by a letter, or remove the stray run. A parity "
+                f"count cannot catch this -- the offending blocks have an EVEN '**' count. Do NOT raise "
+                f"the budget without recording why in the ledger.")
+    return problems
+
+
 def main() -> int:
     lines = TARGET.read_text(encoding="utf-8").split("\n")
     found = [SEC.match(l).group(1) for l in lines if SEC.match(l)]
@@ -257,14 +323,17 @@ def main() -> int:
 
     text = TARGET.read_text(encoding="utf-8")
     problems.extend(find_duplicate_declarations(text))
+    file_texts = {}
     for fname in PACK_FILES:
         fpath = HERE / fname
         if fpath.is_file():
             ftext = fpath.read_text(encoding="utf-8")
+            file_texts[fname] = ftext
             problems.extend(find_unbalanced_table_rows(ftext, fname))
             problems.extend(find_bold_collisions(ftext, fname))
             if fname == "corrections_ledger.md":
                 problems.extend(find_unbalanced_ledger_lines(ftext, fname))
+    problems.extend(find_emphasis_leak_overage(file_texts))
 
     print(f"{TARGET.name}: {len(found)} sections ({found[0] if found else '-'}..{found[-1] if found else '-'}), "
           f"{sum(len(v) for v in subs.values())} subsections, "
@@ -276,7 +345,7 @@ def main() -> int:
         return 1
     print("OK: chronological order, no duplicate headings, all subsections contiguous, no duplicated "
           "declarations, all table-row bold runs balanced, no unescaped pipes in table code spans, "
-          "all ledger lines bold-balanced, no **** bold collisions")
+          "all ledger lines bold-balanced, no **** bold collisions, emphasis leaks within budget")
     return 0
 
 
