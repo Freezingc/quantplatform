@@ -1,0 +1,127 @@
+{
+  "pnl_concentration": {
+    "largest_single_position_pp": 2.5583333333333336,
+    "mean_daily_basket_return_pp": 0.4573551905973472,
+    "note": "Each position contributes its 5-day return divided by that day's basket size. Shares are of the sum of WINNING positions, so they read as 'what fraction of all the profit these positions made comes from the best k of them'.",
+    "positions": 29070,
+    "share_of_days_positive": 0.5655314757481941,
+    "sum_of_winning_positions": 18.02364193365976,
+    "top0.1pct_positions_share_of_gross_profit": 0.024190458270196162,
+    "top1000_positions_share_of_gross_profit": 0.2947816301050046,
+    "top100_positions_share_of_gross_profit": 0.06311822653435686,
+    "top10_positions_share_of_gross_profit": 0.01042123186513705,
+    "top1pct_positions_share_of_gross_profit": 0.1331349891546225,
+    "top300_positions_share_of_gross_profit": 0.13620613449431965,
+    "top30_positions_share_of_gross_profit": 0.024830643066417236,
+    "top3_positions_share_of_gross_profit": 0.003955240750763075,
+    "top5pct_positions_share_of_gross_profit": 0.36831982404735797,
+    "total_sum_of_daily_basket_returns": 4.4317717968882935
+  },
+  "redundancy": {
+    "effective_dimensions_participation_ratio": 4.0114786928325445,
+    "eigenvalues_top5": [
+      6.996862810198316,
+      1.7101773789165888,
+      1.1892732486925623,
+      0.8812478556749078,
+      0.7258800834689928
+    ],
+    "ic_effective_dimensions": 3.128786103618972,
+    "ic_pc1_variance_share": 0.5335944380112817,
+    "max_abs_factor_correlation": 0.872680817695182,
+    "mean_abs_factor_correlation": 0.4184617020901851,
+    "mean_abs_ic_series_correlation": 0.4869527368229367,
+    "median_abs_factor_correlation": 0.3973891166897866,
+    "note": "level_corr is the cross-date average of the per-date cross-sectional Spearman correlation between two factors; ic_series_corr is the correlation between their per-date IC time series. participation ratio 15 = 15 independent signals, 1 = one.",
+    "per_fold_abs_offdiag_mean_median_max_n": {
+      "F1": [
+        0.41356066379456846,
+        0.39681410792257427,
+        0.9138145594289263,
+        25410
+      ],
+      "F2": [
+        0.4277467793192293,
+        0.4095541701674839,
+        0.9321702026937116,
+        25410
+      ],
+      "F3": [
+        0.39675677265139764,
+        0.382100845570139,
+        0.9668868746011997,
+        25410
+      ],
+      "F4": [
+        0.4392344747144759,
+        0.4287363712284545,
+        0.9260324104866906,
+        25515
+      ]
+    },
+    "top10_pairs_by_abs_correlation": [
+      {
+        "a": "yeslab_375",
+        "b": "yeslab_384",
+        "ic_series_corr": 0.9109,
+        "level_corr": 0.8727
+      },
+      {
+        "a": "yeslab_384",
+        "b": "yeslab_406",
+        "ic_series_corr": 0.8841,
+        "level_corr": 0.8365
+      },
+      {
+        "a": "yeslab_375",
+        "b": "yeslab_406",
+        "ic_series_corr": 0.9067,
+        "level_corr": 0.8113
+      },
+      {
+        "a": "yeslab_389",
+        "b": "yeslab_390",
+        "ic_series_corr": 0.7018,
+        "level_corr": 0.7181
+      },
+      {
+        "a": "yeslab_372",
+        "b": "yeslab_375",
+        "ic_series_corr": 0.8545,
+        "level_corr": 0.6845
+      },
+      {
+        "a": "yeslab_471",
+        "b": "yeslab_484",
+        "ic_series_corr": -0.5566,
+        "level_corr": -0.684
+      },
+      {
+        "a": "yeslab_372",
+        "b": "yeslab_384",
+        "ic_series_corr": 0.7547,
+        "level_corr": 0.6627
+      },
+      {
+        "a": "yeslab_381",
+        "b": "yeslab_464",
+        "ic_series_corr": 0.5413,
+        "level_corr": 0.6583
+      },
+      {
+        "a": "yeslab_206",
+        "b": "yeslab_406",
+        "ic_series_corr": 0.6846,
+        "level_corr": 0.6397
+      },
+      {
+        "a": "yeslab_375",
+        "b": "yeslab_390",
+        "ic_series_corr": 0.5689,
+        "level_corr": 0.5943
+      }
+    ],
+    "variance_explained_by_pc1": 0.46645752067988766,
+    "weighted_by_rows": 3553163
+  }
+}
