@@ -1,0 +1,212 @@
+{
+ "scope": "PREDICTION_PERSISTENCE_AUDIT_2026-10-08",
+ "generated_at": "2026-10-08T17:27:41.984531+08:00",
+ "all15": {
+  "status": "PERSISTED_AND_VERIFIED",
+  "families": {
+   "m0_v3": {
+    "model_family": "M0/LGBM_RANKER",
+    "model_code_version": "lgbm-ranker-1",
+    "role": "chain's tuned all15 candidate (24-config refined grid per fold)"
+   },
+   "m0r_v2": {
+    "model_family": "M0R/LGBM_RANKREG",
+    "model_code_version": "lgbm-rankreg-1",
+    "role": "pinned single-config all15 candidate; G4 PASS"
+   },
+   "m0r_v3": {
+    "model_family": "M0R/LGBM_RANKREG",
+    "model_code_version": "lgbm-rankreg-1",
+    "role": "independent rerun of m0r_v2 (report numbers identical)"
+   }
+  },
+  "seed_ensemble": {
+   "required_seeds": [
+    20260801,
+    20260802,
+    20260803
+   ],
+   "ensemble_rule": "mean of per-seed percentile ranks on (signal_date, ts_code)"
+  },
+  "integrity": {
+   "m0_v3": {
+    "predictions_sha256_ok": "8/8",
+    "model_checksum_mismatches": 0
+   },
+   "m0r_v2": {
+    "predictions_sha256_ok": "8/8",
+    "model_checksum_mismatches": 0
+   },
+   "m0r_v3": {
+    "predictions_sha256_ok": "8/8",
+    "model_checksum_mismatches": 0
+   }
+  },
+  "recomputation_vs_archived": {
+   "m0_v3": {
+    "mean_rank_ic": {
+     "recomputed": 0.08942912316040101,
+     "archived": 0.08942912316040101,
+     "abs_diff": 0.0
+    },
+    "delta_rank_ic": {
+     "recomputed": 0.004202256886699618,
+     "archived": 0.004202256886699618,
+     "abs_diff": 0.0
+    },
+    "hac_t": {
+     "recomputed": 12.383336031329783,
+     "archived": 12.383336031329783,
+     "abs_diff": 0.0
+    },
+    "valid_days": {
+     "recomputed": 945,
+     "archived": 945
+    }
+   },
+   "m0r_v2": {
+    "mean_rank_ic": {
+     "recomputed": 0.09437596139252168,
+     "archived": 0.09437596139252168,
+     "abs_diff": 0.0
+    },
+    "delta_rank_ic": {
+     "recomputed": 0.009149095118820283,
+     "archived": 0.009149095118820283,
+     "abs_diff": 0.0
+    },
+    "hac_t": {
+     "recomputed": 12.905448712183105,
+     "archived": 12.905448712183105,
+     "abs_diff": 0.0
+    },
+    "valid_label_days": {
+     "recomputed": 969,
+     "archived": 969
+    }
+   }
+  },
+  "per_fold": {
+   "m0_v3": {
+    "F1": {
+     "candidate_mean_rank_ic": 0.08857110716724456,
+     "delta_rank_ic": 0.007934346842151635,
+     "valid_days": 241
+    },
+    "F2": {
+     "candidate_mean_rank_ic": 0.06710309031954875,
+     "delta_rank_ic": -0.002703231537127815,
+     "valid_days": 219
+    },
+    "F3": {
+     "candidate_mean_rank_ic": 0.09962589027862422,
+     "delta_rank_ic": 0.009021717300004228,
+     "valid_days": 242
+    },
+    "F4": {
+     "candidate_mean_rank_ic": 0.10024626474018432,
+     "delta_rank_ic": 0.0019247213539200642,
+     "valid_days": 243
+    }
+   },
+   "m0r_v2": {
+    "F1": {
+     "candidate_mean_rank_ic": 0.09312791086598766,
+     "delta_rank_ic": 0.012491150540894738,
+     "valid_days": 241
+    },
+    "F2": {
+     "candidate_mean_rank_ic": 0.07299840359660018,
+     "delta_rank_ic": 0.003192081739923608,
+     "valid_days": 219
+    },
+    "F3": {
+     "candidate_mean_rank_ic": 0.10452343097784839,
+     "delta_rank_ic": 0.013919257999228399,
+     "valid_days": 242
+    },
+    "F4": {
+     "candidate_mean_rank_ic": 0.10477422351002139,
+     "delta_rank_ic": 0.006452680123757132,
+     "valid_days": 243
+    }
+   }
+  },
+  "pooled": {
+   "m0_v3": {
+    "candidate_mean_rank_ic": 0.08942912316040101,
+    "delta_rank_ic": 0.004202256886699618,
+    "hac_t": 12.383336031329783,
+    "candidate_valid_days": 945,
+    "valid_label_days": 969,
+    "g6_ratio": 0.9752321981424149
+   },
+   "m0r_v2": {
+    "candidate_mean_rank_ic": 0.09437596139252168,
+    "delta_rank_ic": 0.009149095118820283,
+    "hac_t": 12.905448712183105,
+    "candidate_valid_days": 945,
+    "valid_label_days": 969,
+    "g6_ratio": 0.9752321981424149
+   }
+  },
+  "paired_row_total": 3417963,
+  "paired_row_total_note": "candidate x baseline intersection across F1-F4 == the 3,417,963 paired rows the ablation doc reports, confirming the ablation consumed these archived predictions"
+ },
+ "dense9": {
+  "status": "PREDICTIONS_NOT_PERSISTED",
+  "searched": [
+   "qrv2_research_artifacts/**/datasets/*/manifest.json (feature-count scan: 53 x 15-feature, 1 x 14-feature, 0 x 9-feature)",
+   "qrv2_research_artifacts/*/models/*/ (no dense9 model bundle)",
+   "qrv2_research_artifacts/*/predictions/*/manifest.json (all candidate manifests name 15-feature datasets)",
+   "/tmp/es_metric_diag/ (does not exist)",
+   "repo + all worktrees: grep 'dense9' -> 3 handoff docs + 1 code comment only, no ablation driver script"
+  ],
+  "only_surviving_evidence": "docs/handoffs/2026-09-08-m0-attribution-and-carrier-findings.md section 3 (summary table: dense9 tuned +0.00347, dense9 fixed +0.00177, all15 fixed +0.00109, sparse6 -0.02122)",
+  "not_recoverable_without": "re-running the ablation (scripts lived in the deleted /tmp/es_metric_diag)"
+ },
+ "baseline_v2_oos": [
+  {
+   "fold_id": "F1",
+   "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F1.parquet",
+   "sha256": "00a9a9db01fa79809631ea9026fcfa654521f03a493dd212afb10d9ee83c0e6f",
+   "bytes": 6947716
+  },
+  {
+   "fold_id": "F2",
+   "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F2.parquet",
+   "sha256": "8722f9843ca2bab49946ee90fde88b3c6e69d1c505f5793c4935889e60577c36",
+   "bytes": 8199057
+  },
+  {
+   "fold_id": "F3",
+   "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F3.parquet",
+   "sha256": "5bbc55291db103e63a29e1b6af0d4cd08d041502d0b7080d13a6892f7058cbd8",
+   "bytes": 8050441
+  },
+  {
+   "fold_id": "F4",
+   "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F4.parquet",
+   "sha256": "74024a9e462ff1b51757976e18486e1af59e0552cb0fa22b8883bf6cd3cfcc62",
+   "bytes": 4360597
+  }
+ ],
+ "daily_tables": {
+  "m0_v3": {
+   "candidate": "/data/zhangyudong/qrv2_research_artifacts/prediction_persistence_audit_20261008/daily_rank_ic/m0_v3_daily_rank_ic.parquet",
+   "baseline": "/data/zhangyudong/qrv2_research_artifacts/prediction_persistence_audit_20261008/daily_rank_ic/m0_v3_baseline_daily_rank_ic.parquet"
+  },
+  "m0r_v2": {
+   "candidate": "/data/zhangyudong/qrv2_research_artifacts/prediction_persistence_audit_20261008/daily_rank_ic/m0r_v2_daily_rank_ic.parquet",
+   "baseline": "/data/zhangyudong/qrv2_research_artifacts/prediction_persistence_audit_20261008/daily_rank_ic/m0r_v2_baseline_daily_rank_ic.parquet"
+  }
+ },
+ "environment": {
+  "python": "3.11.13",
+  "lightgbm": "4.6.0",
+  "pandas": "2.3.3",
+  "numpy": "2.3.3",
+  "pyarrow": "21.0.0",
+  "production_window_head": "bd021ff97313be54eafe85021c011c25427a4005 (2026-09-09 04:56 docs: two independent full M0R runs are byte-identical)"
+ }
+}
