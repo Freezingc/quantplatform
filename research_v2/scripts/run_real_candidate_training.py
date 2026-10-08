@@ -3367,6 +3367,7 @@ def run_full_m2(args: argparse.Namespace) -> dict[str, Any]:
         "family": "M2",
         "mode": "full",
         "folds": fold_reports,
+        "unscored_scoreable_rows_by_fold": dict(walk_forward.unscored_scoreable_rows_by_fold),
         "oos": {
             "valid_day_count": evaluation.summary.valid_day_count,
             "mean_rank_ic": evaluation.summary.mean_rank_ic,

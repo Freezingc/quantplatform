@@ -190,3 +190,36 @@ def test_load_split_returns_a_hash_bound_snapshot_when_a_shard_changes_during_re
 
     assert loaded.loc[0, "f1"] == 1.0
     assert mutated is False
+
+
+def test_load_splits_verifies_one_snapshot_and_checks_fold(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    train = pd.DataFrame({"signal_date": [date(2020, 1, 2)], "ts_code": ["a"], "f1": [1.0]})
+    validation = pd.DataFrame(
+        {"signal_date": [date(2021, 1, 2)], "ts_code": ["a"], "f1": [2.0]}
+    )
+    test = pd.DataFrame({"signal_date": [date(2022, 1, 2)], "ts_code": ["a"], "f1": [3.0]})
+    splits = {"train": train, "validation": validation, "test": test}
+    manifest = build_split_dataset_manifest(
+        splits, business_keys=("signal_date", "ts_code"), metadata={"fold_id": "F1"}
+    )
+    store = DatasetArtifactStore(tmp_path / "datasets")
+    store.write(manifest, splits, preprocessing={})
+    original_load = store._load_verified_snapshot
+    calls = 0
+
+    def counted_load(dataset_id: str) -> tuple[dict[str, object], dict[str, pd.DataFrame]]:
+        nonlocal calls
+        calls += 1
+        return original_load(dataset_id)
+
+    monkeypatch.setattr(store, "_load_verified_snapshot", counted_load)
+
+    loaded = store.load_splits(manifest.dataset_id, expected_fold_id="F1")
+
+    assert calls == 1
+    assert set(loaded) == set(splits)
+    assert loaded["test"].loc[0, "f1"] == 3.0
+    with pytest.raises(ValueError, match="fold_id"):
+        store.load_splits(manifest.dataset_id, expected_fold_id="F2")

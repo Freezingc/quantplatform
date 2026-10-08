@@ -96,6 +96,21 @@ class DatasetArtifactStore:
         """Load one named split only after full immutable-artifact verification."""
         if split_name not in {"train", "validation", "test"}:
             raise ValueError("split_name must be train, validation, or test")
+        loaded_splits = self._verified_splits(dataset_id, expected_fold_id)
+        if split_name not in loaded_splits:
+            raise ValueError(f"dataset artifact has no {split_name} split: {dataset_id}")
+        return loaded_splits[split_name].copy(deep=True)
+
+    def load_splits(
+        self, dataset_id: str, *, expected_fold_id: str | None = None
+    ) -> dict[str, pd.DataFrame]:
+        """Load all splits from one verified snapshot, avoiding repeated full-manifest checks."""
+        loaded_splits = self._verified_splits(dataset_id, expected_fold_id)
+        return {name: frame.copy(deep=True) for name, frame in loaded_splits.items()}
+
+    def _verified_splits(
+        self, dataset_id: str, expected_fold_id: str | None
+    ) -> dict[str, pd.DataFrame]:
         if expected_fold_id is not None and (
             not isinstance(expected_fold_id, str) or not expected_fold_id.strip()
         ):
@@ -113,9 +128,7 @@ class DatasetArtifactStore:
                     "dataset artifact fold_id does not match expected fold: "
                     f"{expected_fold_id}"
                 )
-        if split_name not in loaded_splits:
-            raise ValueError(f"dataset artifact has no {split_name} split: {dataset_id}")
-        return loaded_splits[split_name].copy(deep=True)
+        return loaded_splits
 
     def artifact_path(self, dataset_id: str) -> Path:
         """Return an artifact location for diagnostics; callers still must call ``verify``."""

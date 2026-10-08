@@ -9,10 +9,11 @@ import pandas as pd
 import pytest
 
 from research_v2.baselines.orchestration import BaselineSelectionRecord, BaselineValidationScore
-from research_v2.datasets.manifest import build_dataset_manifest
+from research_v2.datasets.manifest import build_dataset_manifest, build_split_dataset_manifest
 from research_v2.datasets.storage import DatasetArtifactStore
 from research_v2.evaluation.model_walk_forward import (
     ModelOosFold,
+    _temporal_history_ineligible_keys,
     evaluate_model_walk_forward,
 )
 from research_v2.evaluation.selection_evidence import (
@@ -82,9 +83,41 @@ def _test_frame(year: int, *, unlabelled_per_day: int = 0) -> pd.DataFrame:
 
 
 def _write_dataset(
-    store: DatasetArtifactStore, year: int, *, unlabelled_per_day: int = 0
+    store: DatasetArtifactStore,
+    year: int,
+    *,
+    unlabelled_per_day: int = 0,
+    temporal_history: bool = False,
 ) -> str:
     frame = _test_frame(year, unlabelled_per_day=unlabelled_per_day)
+    if temporal_history:
+        codes = [f"S{index:03d}" for index in range(1, 30)]
+        train = pd.DataFrame(
+            {
+                "signal_date": [date(year - 2, 1, day) for day in range(1, 15) for _ in codes],
+                "ts_code": codes * 14,
+                "raw_return_5d": [1.0] * (14 * len(codes)),
+                "label_valid": [True] * (14 * len(codes)),
+                "f1": [1.0] * (14 * len(codes)),
+            }
+        )
+        validation = pd.DataFrame(
+            {
+                "signal_date": [date(year - 1, 1, 2)] * len(codes),
+                "ts_code": codes,
+                "raw_return_5d": [1.0] * len(codes),
+                "label_valid": [True] * len(codes),
+                "f1": [1.0] * len(codes),
+            }
+        )
+        splits = {"train": train, "validation": validation, "test": frame}
+        manifest = build_split_dataset_manifest(
+            splits,
+            business_keys=("signal_date", "ts_code"),
+            metadata={"fold_id": f"F{year - 2021}"},
+        )
+        store.write(manifest, splits, preprocessing={})
+        return manifest.dataset_id
     manifest = build_dataset_manifest(
         frame,
         business_keys=("signal_date", "ts_code"),
@@ -162,10 +195,14 @@ def _fold(
     candidate_coverage: _Coverage = "all",
     selection_family: str = "M1",
     card_family: str = "M1",
+    temporal_history: bool = False,
 ) -> ModelOosFold:
     fold_id = f"F{year - 2021}"
     test_dataset_id = _write_dataset(
-        dataset_store, year, unlabelled_per_day=unlabelled_per_day
+        dataset_store,
+        year,
+        unlabelled_per_day=unlabelled_per_day,
+        temporal_history=temporal_history,
     )
     model_id = f"model-{fold_id.lower()}"
     # What every real writer emits: the selection names the train split of the same dataset
@@ -268,6 +305,8 @@ def _folds(
     candidate_coverage: _Coverage = "all",
     selection_family: str = "M1",
     card_family: str = "M1",
+    temporal_history: bool = False,
+    missing_first_row_in_fold: str | None = None,
 ) -> tuple[
     dict[str, ModelOosFold],
     DatasetArtifactStore,
@@ -295,9 +334,14 @@ def _folds(
             tmp_path=tmp_path,
             card_form=card_form,
             unlabelled_per_day=unlabelled_per_day,
-            candidate_coverage=candidate_coverage,
+            candidate_coverage=(
+                "labelled_missing_one"
+                if f"F{index}" == missing_first_row_in_fold
+                else candidate_coverage
+            ),
             selection_family=selection_family,
             card_family=card_family,
+            temporal_history=temporal_history,
         )
         for index in range(1, 5)
     }
@@ -327,6 +371,56 @@ def test_model_walk_forward_loads_verified_evidence_and_test_manifests(
         "F4",
     ]
     assert result.evaluation.delta_rank_ic == pytest.approx(2.0)
+
+
+def test_temporal_history_eligibility_counts_observed_rows_across_splits() -> None:
+    train = pd.DataFrame(
+        {
+            "signal_date": [date(2020, 1, day) for day in range(1, 15)],
+            "ts_code": ["READY"] * 14,
+        }
+    )
+    validation = pd.DataFrame(
+        {
+            "signal_date": [date(2021, 1, 2), date(2021, 1, 2)],
+            "ts_code": ["READY", "NEW"],
+        }
+    )
+    test = pd.DataFrame(
+        {
+            "signal_date": [date(2022, 1, 2), date(2022, 1, 3)] * 2,
+            "ts_code": ["READY", "READY", "NEW", "NEW"],
+        }
+    )
+
+    assert _temporal_history_ineligible_keys(
+        train.iloc[::-1], validation.iloc[::-1], test.iloc[::-1]
+    ) == frozenset(
+        {(date(2022, 1, 2), "NEW"), (date(2022, 1, 3), "NEW")}
+    )
+
+
+def test_m2_walk_forward_discloses_verified_history_gap(tmp_path: object) -> None:
+    folds, datasets, models, _, _ = _folds(
+        tmp_path,
+        card_form="bare",
+        selection_family="M2",
+        card_family="TEMPORAL_GRU",
+        missing_first_row_in_fold="F1",
+        temporal_history=True,
+    )
+
+    result = evaluate_model_walk_forward(
+        folds,
+        dataset_store=datasets,
+        model_store=models,
+        selection_root=tmp_path / "selections",  # type: ignore[operator]
+        prediction_root=tmp_path / "predictions",  # type: ignore[operator]
+    )
+
+    assert result.model_family == "M2"
+    assert result.unscored_scoreable_rows_by_fold == {"F1": 1, "F2": 0, "F3": 0, "F4": 0}
+    assert result.evaluation.summary.valid_day_count == 7
 
 
 def test_model_walk_forward_rejects_tampered_model_bundle_before_test_evaluation(

@@ -19,10 +19,12 @@ from research_v2.evaluation.selection_evidence import (
 from research_v2.evaluation.walk_forward import (
     ORDINARY_TEST_FOLDS,
     OosFold,
+    _scoreable_label_keys,
     evaluate_walk_forward_oos,
 )
 from research_v2.models.families import CARRIER_CARD_FAMILIES
 from research_v2.training.model_bundle import ModelArtifactBundleStore
+from research_v2.training.temporal_search import MINIMUM_VALID_HISTORY_LENGTH
 
 # One source of truth for which model families the walk-forward evaluator will accept, and
 # which model-card family names each may carry. The candidate driver imports this tuple
@@ -59,6 +61,7 @@ class ModelWalkForwardResult:
     model_family: str
     selections: tuple[ModelSelectionEvidence, ...]
     evaluation: FrozenOosEvaluation
+    unscored_scoreable_rows_by_fold: Mapping[str, int]
 
 
 def evaluate_model_walk_forward(
@@ -70,7 +73,7 @@ def evaluate_model_walk_forward(
     prediction_root: Path,
     minimum_cross_section: int = 30,
 ) -> ModelWalkForwardResult:
-    """Independently load only verified frozen artifact, TEST manifest, and selections."""
+    """Evaluate verified frozen evidence; M2 gaps require verified split history."""
     _require_complete_fold_set(folds)
     selections_store = SelectionEvidenceVerifier.from_environment(selection_root)
     prediction_store = FrozenPredictionStore.from_environment(prediction_root)
@@ -82,16 +85,14 @@ def evaluate_model_walk_forward(
     _require_distinct(selections, "model_artifact_id", "artifact")
     _require_distinct(selections, "evidence_id", "selection")
     oos_folds: dict[str, OosFold] = {}
+    coverage_gaps: dict[str, int] = {}
     for fold_id, selection in zip(ORDINARY_TEST_FOLDS, selections, strict=True):
         request = folds[fold_id]
         if selection.fold_id != fold_id:
             raise ValueError(f"{fold_id} model selection evidence is bound to {selection.fold_id}")
         _require_verified_model_bundle(model_store, selection)
-        test_frame = dataset_store.load_split(
-            selection.test_dataset_id,
-            "test",
-            expected_fold_id=fold_id,
-        )
+        splits = dataset_store.load_splits(selection.test_dataset_id, expected_fold_id=fold_id)
+        test_frame = splits["test"]
         candidate = prediction_store.load(
             request.candidate_prediction_id,
             selections=selections_store,
@@ -112,10 +113,25 @@ def evaluate_model_walk_forward(
             selection.test_dataset_id,
         )
         labels = _labels_with_lineage(test_frame, fold_id, selection.test_dataset_id)
+        candidate_scores = _prediction_with_lineage(candidate.scores, candidate, fold_id)
+        scoreable = _scoreable_label_keys(labels)
+        candidate_keys_frame = candidate_scores.loc[:, ["signal_date", "ts_code"]].copy()
+        candidate_keys_frame["signal_date"] = pd.to_datetime(
+            candidate_keys_frame["signal_date"], errors="raise"
+        ).dt.date
+        candidate_keys = set(map(tuple, candidate_keys_frame.itertuples(index=False, name=None)))
+        missing = scoreable - candidate_keys
+        history_ineligible_keys: frozenset[tuple[object, object]] = frozenset()
+        if missing and model_family == "M2":
+            history_ineligible_keys = _temporal_history_ineligible_keys(
+                splits["train"], splits["validation"], test_frame
+            )
+        coverage_gaps[fold_id] = len(missing)
         oos_folds[fold_id] = OosFold(
-            candidate_predictions=_prediction_with_lineage(candidate.scores, candidate, fold_id),
+            candidate_predictions=candidate_scores,
             labels=labels,
             baseline_predictions=_prediction_with_lineage(baseline.scores, baseline, fold_id),
+            history_ineligible_keys=history_ineligible_keys,
         )
     return ModelWalkForwardResult(
         model_family=model_family,
@@ -125,7 +141,38 @@ def evaluate_model_walk_forward(
             minimum_cross_section=minimum_cross_section,
             is_baseline=False,
         ),
+        unscored_scoreable_rows_by_fold=coverage_gaps,
     )
+
+
+def _temporal_history_ineligible_keys(
+    train: pd.DataFrame, validation: pd.DataFrame, test: pd.DataFrame
+) -> frozenset[tuple[object, object]]:
+    """Test keys with fewer than 15 observed rows across the frozen chronological panel."""
+    keys = ["signal_date", "ts_code"]
+    historical = pd.concat(
+        [train.loc[:, keys], validation.loc[:, keys], test.loc[:, keys]],
+        ignore_index=True,
+    )
+    historical["signal_date"] = pd.to_datetime(
+        historical["signal_date"], errors="raise"
+    ).dt.date
+    test_start = len(train) + len(validation)
+    historical["is_test"] = historical.index >= test_start
+    # The dataset's annual split contract puts TRAIN and VALIDATION before TEST. The
+    # cumulative count therefore has the same meaning as temporal_batches' code_start rule.
+    if not (
+        historical.iloc[:test_start]["signal_date"].max()
+        < historical.iloc[test_start:]["signal_date"].min()
+    ):
+        raise ValueError("temporal history splits are not chronologically ordered")
+    historical = historical.sort_values(["ts_code", "signal_date"], kind="mergesort")
+    historical["observed_count"] = historical.groupby("ts_code", sort=False).cumcount() + 1
+    test_rows = historical.loc[historical["is_test"]]
+    short = test_rows.loc[
+        test_rows["observed_count"] < MINIMUM_VALID_HISTORY_LENGTH, keys
+    ]
+    return frozenset(map(tuple, short.itertuples(index=False, name=None)))
 
 
 def _require_complete_fold_set(folds: Mapping[str, ModelOosFold]) -> None:
@@ -237,6 +284,7 @@ def _labels_with_lineage(frame: pd.DataFrame, fold_id: str, dataset_id: str) -> 
     if missing := sorted(required.difference(frame.columns)):
         raise ValueError(f"verified TEST dataset is missing label columns: {missing}")
     labels = frame.loc[:, ["signal_date", "ts_code", "raw_return_5d", "label_valid"]].copy()
+    labels["signal_date"] = pd.to_datetime(labels["signal_date"], errors="raise").dt.date
     labels["fold_id"] = fold_id
     labels["dataset_id"] = dataset_id
     return labels

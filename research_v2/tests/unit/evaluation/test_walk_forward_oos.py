@@ -199,6 +199,43 @@ def test_walk_forward_rejects_a_candidate_that_drops_a_scoreable_label_row() -> 
         evaluate_walk_forward_oos(folds)
 
 
+def test_walk_forward_accepts_only_disclosed_temporal_history_gaps() -> None:
+    folds = {f"F{index}": _fold(2021 + index) for index in range(1, 5)}
+    fold = folds["F1"]
+    missing_key = (date(2022, 1, 2), "S000")
+    trimmed = fold.candidate_predictions.loc[
+        ~(
+            fold.candidate_predictions["signal_date"].eq(missing_key[0])
+            & fold.candidate_predictions["ts_code"].eq(missing_key[1])
+        )
+    ].reset_index(drop=True)
+    folds["F1"] = OosFold(
+        candidate_predictions=trimmed,
+        labels=fold.labels,
+        baseline_predictions=fold.baseline_predictions,
+        history_ineligible_keys=frozenset({missing_key}),
+    )
+
+    evaluation = evaluate_walk_forward_oos(folds)
+
+    assert evaluation.summary.valid_day_count == 7
+
+
+def test_walk_forward_still_rejects_undisclosed_scoreable_gap() -> None:
+    folds = {f"F{index}": _fold(2021 + index) for index in range(1, 5)}
+    fold = folds["F1"]
+    trimmed = fold.candidate_predictions.iloc[2:].reset_index(drop=True)
+    folds["F1"] = OosFold(
+        candidate_predictions=trimmed,
+        labels=fold.labels,
+        baseline_predictions=fold.baseline_predictions,
+        history_ineligible_keys=frozenset({(date(2022, 1, 2), "S000")}),
+    )
+
+    with pytest.raises(ValueError, match="usable label are not scored"):
+        evaluate_walk_forward_oos(folds)
+
+
 def test_walk_forward_accepts_a_candidate_that_skips_rows_without_a_usable_label() -> None:
     """The torch carriers' row set, at the evaluator's own level.
 

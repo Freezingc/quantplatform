@@ -36,6 +36,7 @@ class OosFold:
     candidate_predictions: pd.DataFrame
     labels: pd.DataFrame
     baseline_predictions: pd.DataFrame
+    history_ineligible_keys: frozenset[tuple[object, object]] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -212,12 +213,14 @@ def _assemble_oos_frames(
             candidate,
             labels_frame,
             f"{fold_id} candidate predictions and labels",
+            history_ineligible_keys=folds[fold_id].history_ineligible_keys,
         )
         _require_baseline_covered_by_candidate(
             candidate,
             baseline,
             labels_frame,
             f"{fold_id} baseline predictions",
+            history_ineligible_keys=folds[fold_id].history_ineligible_keys,
         )
         dataset_ids = {
             str(candidate["dataset_id"].iloc[0]),
@@ -267,9 +270,13 @@ def _validate_oos_frame(
 
 
 def _require_candidate_covers_the_scoreable_labels(
-    candidate: pd.DataFrame, labels: pd.DataFrame, name: str
+    candidate: pd.DataFrame,
+    labels: pd.DataFrame,
+    name: str,
+    *,
+    history_ineligible_keys: frozenset[tuple[object, object]] = frozenset(),
 ) -> None:
-    """The candidate must sit inside the TEST frame and cover every row the metric can score.
+    """Require verified TEST keys and scoreable coverage except proven history-ineligible rows.
 
     Two families legitimately produce different row sets. The LightGBM carriers score the whole TEST
     cross-section, so their candidate keys equal the label frame's. The torch carriers build batches
@@ -301,9 +308,10 @@ def _require_candidate_covers_the_scoreable_labels(
             "TEST frame"
         )
     scoreable = _scoreable_label_keys(labels)
-    if not scoreable.issubset(candidate_keys):
+    unexpected_missing = scoreable - candidate_keys - history_ineligible_keys
+    if unexpected_missing:
         raise ValueError(
-            f"{name}: {len(scoreable - candidate_keys)} rows with a usable label are not scored "
+            f"{name}: {len(unexpected_missing)} rows with a usable label are not scored "
             "by the candidate"
         )
 
@@ -330,8 +338,10 @@ def _require_baseline_covered_by_candidate(
     baseline: pd.DataFrame,
     labels: pd.DataFrame,
     name: str,
+    *,
+    history_ineligible_keys: frozenset[tuple[object, object]] = frozenset(),
 ) -> None:
-    """The candidate must cover the baseline's SCOREABLE rows, and the baseline must be real.
+    """Require baseline coverage except proven history-ineligible rows; baseline must be real.
 
     Two requirements, and each has a measurement behind it rather than a preference.
 
@@ -365,9 +375,10 @@ def _require_baseline_covered_by_candidate(
             "TEST frame"
         )
     scoreable_baseline = baseline_keys & _scoreable_label_keys(labels)
-    if not scoreable_baseline.issubset(candidate_keys):
+    unexpected_missing = scoreable_baseline - candidate_keys - history_ineligible_keys
+    if unexpected_missing:
         raise ValueError(
-            f"{name}: {len(scoreable_baseline - candidate_keys)} scoreable baseline rows are not "
+            f"{name}: {len(unexpected_missing)} scoreable baseline rows are not "
             "covered by the candidate"
         )
 
