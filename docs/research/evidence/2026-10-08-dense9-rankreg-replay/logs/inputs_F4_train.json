@@ -1,0 +1,30 @@
+{
+  "fold_id": "F4",
+  "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+  "role": "train",
+  "rows": 3046399,
+  "days": 964,
+  "columns": [
+    "signal_date",
+    "ts_code",
+    "f00",
+    "f01",
+    "f02",
+    "f03",
+    "f04",
+    "f05",
+    "f06",
+    "f07",
+    "f08",
+    "f09",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f14",
+    "raw_return_5d",
+    "label_valid",
+    "exit_date",
+    "year"
+  ]
+}

@@ -1,0 +1,456 @@
+{
+ "scope": "DENSE9_RANKREG_MINIMAL_REPLAY_2026-10-08",
+ "run_id": "dense9_rankreg_replay_20261008",
+ "purpose": "restore the lost dense9 M0R/LGBMRankRegBaseline predictions (12 fits) and compute the all15-dense9 daily increment interval; exploratory replay after a known historical summary, NOT a new method search, pre-registration, or independent market confirmation",
+ "original_sources": {
+  "source_commit": "d89b46d9cb0da5ed97d2174323b347452049bf2d",
+  "source_branch": "codex/research-conditional-factor-review",
+  "script": {
+   "path": "docs/research/evidence/2026-09-10-conditional-factor/experiment/run_rankreg_subsets.py",
+   "git_blob": "3d930399c36d7b208d10f3291206432d6f606dd0",
+   "sha256": "41931618246abfe050437fafa93f896faba757615992ea9ab90b51790b8ee560",
+   "immutable_copy": "source/run_rankreg_subsets.py.orig"
+  },
+  "json": {
+   "path": "docs/research/evidence/2026-09-10-conditional-factor/experiment/rankreg_subsets.json",
+   "git_blob": "faea5bc0adc62bbaec3bbb960978f537d4b47075",
+   "sha256": "10618f69af351a1a81e8e2c8014b4d9ab864248d5a7093d8449c6b205ebcbe22",
+   "immutable_copy": "source/rankreg_subsets.json.orig"
+  },
+  "verification": "both SHA-256 and git blob hashes verified byte-for-byte against the relayed task statement"
+ },
+ "driver": {
+  "path": "replay_dense9_rankreg.py",
+  "sha256": "0c362a806d95632219f42edc92fbffa8ab4acd3577c657b6c9ee3bbaead2db4a",
+  "diff_path": "source/replay_driver.diff",
+  "diff_sha256": "3116385d3112eb277de1d578cf20da36838a03e4e27f06015ba2cd52002e9433",
+  "changes": [
+   "output persistence (new run dir, per-seed boosters, per-fold scores.parquet, progress jsonl)",
+   "path parameters (output only)",
+   "SUBSETS={'dense9': DENSE9}",
+   "removed _verdict (needs the all15/sparse6 cells that are not re-run)",
+   "added input/seed/code summaries + hashing helpers"
+  ],
+  "unchanged": [
+   "data preparation (parquet reads, KEYS/LAB/DENSE9 column projection)",
+   "model training (LGBMRankRegBaseline.fit arguments incl. hyperparameters, seeds, 500 rounds, patience 50, min_cross_section 30, allow_nan=True)",
+   "scoring (percentile() within-day rank on the FULL test cross-section, then 3-seed mean)",
+   "evaluation (evaluate_frozen_oos per fold + pooled)"
+  ]
+ },
+ "audit_script_source": {
+  "path": "source/audit_predictions.py",
+  "sha256": "b5f71b859974d5920ffea59375f184f8582abc1bcca618bf435fc2277e44f6c0",
+  "origin": "read-only prediction-persistence audit, branch codex/prediction-persistence-audit @ 0720f00"
+ },
+ "folds": {
+  "F1": {
+   "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+   "test_year": 2022
+  },
+  "F2": {
+   "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+   "test_year": 2023
+  },
+  "F3": {
+   "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+   "test_year": 2024
+  },
+  "F4": {
+   "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+   "test_year": 2025
+  }
+ },
+ "dataset_shards": {
+  "F1": {
+   "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+   "splits": {
+    "train": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538/split=train/year=2017/part-00000.parquet",
+      "sha256": "1d7e69db07acbb1bd11d826f946b034638f1deb412dd11d4797bdb10190f7d89",
+      "bytes": 38297495
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538/split=train/year=2018/part-00000.parquet",
+      "sha256": "3f0f642c7051f7f7ec33ad8e46e25b4cd9754ac6ea9eb8f012b2ea90d3b992c5",
+      "bytes": 45809565
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538/split=train/year=2019/part-00000.parquet",
+      "sha256": "e2eb533f33b0a00bc7a28dea4d17c84e84624a80e2cd19ea42946f12b23dea86",
+      "bytes": 53849501
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538/split=train/year=2020/part-00000.parquet",
+      "sha256": "af7b97f3dea4c3f1913741a4a503c7be48d92f4c5659b1f88b463537623fc41f",
+      "bytes": 55653035
+     }
+    ],
+    "validation": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538/split=validation/year=2021/part-00000.parquet",
+      "sha256": "5d9a5ba9bcf9d58d72b1e1bd3eb4d035529d67ca5ba12d89ab33721f0931d00d",
+      "bytes": 59449863
+     }
+    ],
+    "test": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538/split=test/year=2022/part-00000.parquet",
+      "sha256": "e9a98223dfa910177c748e10a79324b27b7aa929c973750358246e895714e712",
+      "bytes": 67500341
+     }
+    ]
+   }
+  },
+  "F2": {
+   "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+   "splits": {
+    "train": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234/split=train/year=2018/part-00000.parquet",
+      "sha256": "3f0f642c7051f7f7ec33ad8e46e25b4cd9754ac6ea9eb8f012b2ea90d3b992c5",
+      "bytes": 45809565
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234/split=train/year=2019/part-00000.parquet",
+      "sha256": "e2eb533f33b0a00bc7a28dea4d17c84e84624a80e2cd19ea42946f12b23dea86",
+      "bytes": 53849501
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234/split=train/year=2020/part-00000.parquet",
+      "sha256": "92309f529e4965875c49a1ff8a7aaf88c375a7199220401fdc6664d24c3a5c0d",
+      "bytes": 57007485
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234/split=train/year=2021/part-00000.parquet",
+      "sha256": "5d9a5ba9bcf9d58d72b1e1bd3eb4d035529d67ca5ba12d89ab33721f0931d00d",
+      "bytes": 59449863
+     }
+    ],
+    "validation": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234/split=validation/year=2022/part-00000.parquet",
+      "sha256": "ed422628c0e9e8dbeabafaf9c5ba114dcfd5cb2e8e0f6e3c215e5f3cf1af7b67",
+      "bytes": 65954825
+     }
+    ],
+    "test": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234/split=test/year=2023/part-00000.parquet",
+      "sha256": "4cd3d4b9bc27668f2f81bb97effa501f098b4ee7e02c5b4431970504e7e7d46a",
+      "bytes": 73469916
+     }
+    ]
+   }
+  },
+  "F3": {
+   "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+   "splits": {
+    "train": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7/split=train/year=2019/part-00000.parquet",
+      "sha256": "e2eb533f33b0a00bc7a28dea4d17c84e84624a80e2cd19ea42946f12b23dea86",
+      "bytes": 53849501
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7/split=train/year=2020/part-00000.parquet",
+      "sha256": "92309f529e4965875c49a1ff8a7aaf88c375a7199220401fdc6664d24c3a5c0d",
+      "bytes": 57007485
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7/split=train/year=2021/part-00000.parquet",
+      "sha256": "98fd60f343e79294eab128b793fc3b56bec94df2b0401aa43df56535e81e2778",
+      "bytes": 60900613
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7/split=train/year=2022/part-00000.parquet",
+      "sha256": "ed422628c0e9e8dbeabafaf9c5ba114dcfd5cb2e8e0f6e3c215e5f3cf1af7b67",
+      "bytes": 65954825
+     }
+    ],
+    "validation": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7/split=validation/year=2023/part-00000.parquet",
+      "sha256": "cd61fbdfd5ba901ce514ed99c59fcffe3c0f05f5fe85a659330664143991e4b5",
+      "bytes": 71662121
+     }
+    ],
+    "test": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7/split=test/year=2024/part-00000.parquet",
+      "sha256": "015c51ea13d5aec8c375a6dfdba7cd7dca79f524ea4196d5a11a71649278d30f",
+      "bytes": 78991390
+     }
+    ]
+   }
+  },
+  "F4": {
+   "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+   "splits": {
+    "train": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d/split=train/year=2020/part-00000.parquet",
+      "sha256": "92309f529e4965875c49a1ff8a7aaf88c375a7199220401fdc6664d24c3a5c0d",
+      "bytes": 57007485
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d/split=train/year=2021/part-00000.parquet",
+      "sha256": "98fd60f343e79294eab128b793fc3b56bec94df2b0401aa43df56535e81e2778",
+      "bytes": 60900613
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d/split=train/year=2022/part-00000.parquet",
+      "sha256": "e9a98223dfa910177c748e10a79324b27b7aa929c973750358246e895714e712",
+      "bytes": 67500341
+     },
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d/split=train/year=2023/part-00000.parquet",
+      "sha256": "cd61fbdfd5ba901ce514ed99c59fcffe3c0f05f5fe85a659330664143991e4b5",
+      "bytes": 71662121
+     }
+    ],
+    "validation": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d/split=validation/year=2024/part-00000.parquet",
+      "sha256": "f0498f55164daf3525dcaf988827cfdf055b30f56d0049e3d492cea7d582b114",
+      "bytes": 77210417
+     }
+    ],
+    "test": [
+     {
+      "path": "/data/zhangyudong/qrv2_research_artifacts/m0_v3/datasets/6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d/split=test/year=2025/part-00000.parquet",
+      "sha256": "f29f5c46b8a6f8aba7b949540369691bbe7a74e9afdff3bd525df53b3f9efee4",
+      "bytes": 79358450
+     }
+    ]
+   }
+  }
+ },
+ "inputs_reused": {
+  "all15_candidate_predictions": {
+   "F1": {
+    "prediction_id": "98dc1610117ab6e881d0f9d0917cf3615c6a21f78f66bc43a0ca7727bedf34c0",
+    "sha256": "b881c8bf5f1a6eb5a9b183261c644835c50feeb0e2c58f8fe5d56c276d8657ca",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/98dc1610117ab6e881d0f9d0917cf3615c6a21f78f66bc43a0ca7727bedf34c0/scores.parquet",
+    "model_id": "m0r-f1"
+   },
+   "F2": {
+    "prediction_id": "ed752887b6614ae1e901ce1490b1caa9125a69d27cf3f8425ee215ff69e0e0ea",
+    "sha256": "aa811c62dad1a25a676918b7ab8616d2a6e34721fdb941446133011f6da9c1fa",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/ed752887b6614ae1e901ce1490b1caa9125a69d27cf3f8425ee215ff69e0e0ea/scores.parquet",
+    "model_id": "m0r-f2"
+   },
+   "F3": {
+    "prediction_id": "b69fa46adb984d347f16b3e09e5f6cd30b22f854a720fef4d85670f8f9eb566f",
+    "sha256": "a50b48d713389c5737b4d9ff35135f658c8591f29363308857a9047fd558ace7",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/b69fa46adb984d347f16b3e09e5f6cd30b22f854a720fef4d85670f8f9eb566f/scores.parquet",
+    "model_id": "m0r-f3"
+   },
+   "F4": {
+    "prediction_id": "8a870cadd1ed54b3ae18c838d84fa957fa2c18055e3d6ea766c53f831915b85e",
+    "sha256": "b4ce8c6a0d4af2fcd2fe5a587bde43f5bdf9a693acf84d73e999540be7892c92",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/8a870cadd1ed54b3ae18c838d84fa957fa2c18055e3d6ea766c53f831915b85e/scores.parquet",
+    "model_id": "m0r-f4"
+   }
+  },
+  "best_simple_predictions": {
+   "F1": {
+    "prediction_id": "2f0d131c22fe3b6525ce685deb78fd5a30ee4a96a00dbbd2b82f12b9c3dcc4ec",
+    "sha256": "bf62ef60ce4a2859cb8d2bed44ecb0217bc402cda5f60f35e5d35ed88a447b3e",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/2f0d131c22fe3b6525ce685deb78fd5a30ee4a96a00dbbd2b82f12b9c3dcc4ec/scores.parquet",
+    "model_id": "B2"
+   },
+   "F2": {
+    "prediction_id": "ad9c27304eda827707677ec9e0450d5b77db37c21daf45a5f28f38fc7666e6ee",
+    "sha256": "aa5b21a7127a8cdabab6fef13f2ada49c461b736e7f2280eff7a46bfa1a65bc3",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/ad9c27304eda827707677ec9e0450d5b77db37c21daf45a5f28f38fc7666e6ee/scores.parquet",
+    "model_id": "B2"
+   },
+   "F3": {
+    "prediction_id": "310f824c0e4b7f7b78a942de7090228a8ac7d4cabe5645209eb28bbec0166997",
+    "sha256": "566d2ef98588866764eb601554c8251c6e94c19a474a3a93fa9b4382c31362d1",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/310f824c0e4b7f7b78a942de7090228a8ac7d4cabe5645209eb28bbec0166997/scores.parquet",
+    "model_id": "B2"
+   },
+   "F4": {
+    "prediction_id": "f999d5c128a514ac81c7a738393d623364642d02a8c3029826b5b1695d884b6a",
+    "sha256": "30e7a97892c2fcf8d7d6c877972c8aa4b8cf81691aa6e9aff67a81f64757622a",
+    "path": "/data/zhangyudong/qrv2_research_artifacts/m0r_v2/predictions/f999d5c128a514ac81c7a738393d623364642d02a8c3029826b5b1695d884b6a/scores.parquet",
+    "model_id": "B3"
+   }
+  },
+  "baseline_v2_oos_parquet": {
+   "F1": {
+    "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F1.parquet",
+    "sha256": "00a9a9db01fa79809631ea9026fcfa654521f03a493dd212afb10d9ee83c0e6f"
+   },
+   "F2": {
+    "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F2.parquet",
+    "sha256": "8722f9843ca2bab49946ee90fde88b3c6e69d1c505f5793c4935889e60577c36"
+   },
+   "F3": {
+    "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F3.parquet",
+    "sha256": "5bbc55291db103e63a29e1b6af0d4cd08d041502d0b7080d13a6892f7058cbd8"
+   },
+   "F4": {
+    "path": "/data/zhangyudong/qrv2_research_artifacts/baseline_v2/baseline_oos/F4.parquet",
+    "sha256": "74024a9e462ff1b51757976e18486e1af59e0552cb0fa22b8883bf6cd3cfcc62"
+   }
+  },
+  "note": "no new factor materialization, no row deletion; the same four dataset_ids the original m0r_v2 report names"
+ },
+ "parameters": {
+  "model": "LGBMRankRegBaseline",
+  "objective": "regression",
+  "metric": "None (custom feval DailyRankICMetric)",
+  "num_leaves": 15,
+  "max_depth": 4,
+  "learning_rate": 0.05,
+  "min_child_samples": 200,
+  "feature_fraction": 0.85,
+  "lambda_l2": 0.0,
+  "num_threads": 16,
+  "deterministic": true,
+  "seeds": [
+   20260801,
+   20260802,
+   20260803
+  ],
+  "num_boost_round": 500,
+  "early_stopping_patience": 50,
+  "minimum_cross_section": 30,
+  "allow_nan": true,
+  "dense9_column_order": [
+   "f00",
+   "f01",
+   "f04",
+   "f09",
+   "f10",
+   "f11",
+   "f12",
+   "f13",
+   "f14"
+  ],
+  "max_fits": 12,
+  "ensemble": "mean of per-seed within-day percentile ranks over the FULL test cross-section"
+ },
+ "training_implementation": {
+  "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/baselines/lgbm_rankreg.py": "2b75bbb6c66b752cdac0f7e5ddbe73a686915f5ae3662e31b68a568f0c5518d4",
+  "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/baselines/lgbm_ranker.py": "096126303a242dc6cc79fc7949cd17645e4706d602ec31efa08d27c5492eee57",
+  "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/evaluation/model_evaluator.py": "4e4c80a336c01d1c36a764d8189c588f0176360dbb15dcb35bf38cff7078e0b1",
+  "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/evaluation/rank_ic.py": "5089732da9f5349a53835ad70ea08c36b167469c8b4a950aa5053396ae260d31"
+ },
+ "training_implementation_note": {
+  "pinned": "lgbm_rankreg.py has exactly one commit (c43e038, ancestor of source_commit d89b46d) and its bytes are identical at d89b46d, in the research worktree, and in the current production worktree",
+  "dataset_lifecycle": "one fresh lgb.Dataset per fit call (the module documents the hoisted-Dataset determinism hazard); this replay makes 12 separate fit calls, one per (fold, seed)",
+  "import_path": "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src (the path the original script itself hardcodes)",
+  "rescore_policy": "no all15 refit; if a frozen-implementation rescore is used for a score-consistency check, it will be recorded in the run log and README"
+ },
+ "environment": {
+  "python": "3.11.13",
+  "lightgbm": "4.6.0",
+  "pandas": "2.3.3",
+  "numpy": "2.3.3",
+  "pyarrow": "21.0.0",
+  "conda_env": "quantyd",
+  "verified_against": "the environment recorded by the 2026-10-08 prediction-persistence audit"
+ },
+ "outputs": {
+  "root": "/data/zhangyudong/qrv2_research_artifacts/dense9_rankreg_replay_20261008",
+  "results": "analysis/dense9_replay_results.json",
+  "per_seed_fits": "fits/<fold>_seed<seed>/{booster.txt,test_percentile.parquet,fit_meta.json}",
+  "per_fold_scores": "predictions/<fold>/{scores.parquet,meta.json}",
+  "logs": "logs/{inputs_<fold>_<role>.json,fits_progress.jsonl,replay_run.log,time_v.txt}",
+  "analysis": "analysis/{paired_daily.csv,pairing_provenance.json,increment_interval.json,export_paired_daily.py}"
+ },
+ "run_controls": {
+  "hard_cap_seconds": 7200,
+  "timeout": "timeout --kill-after=60 7200",
+  "time_wrapper": "/usr/bin/time -v",
+  "no_parallel_research_training": true,
+  "append_only": "per-seed records are appended, never rewritten; a rerun uses a new run_id",
+  "stop_rules": [
+   "projected total beyond the 2h cap -> report resource reasons, do NOT reduce seeds or change parameters",
+   "first divergence in trees/keys/column order -> record fully, diagnose once, do NOT auto-retry to force a match"
+  ]
+ },
+ "replication_reference": {
+  "original_dense9_trees": {
+   "F1": [
+    3,
+    14,
+    27
+   ],
+   "F2": [
+    142,
+    158,
+    204
+   ],
+   "F3": [
+    54,
+    32,
+    52
+   ],
+   "F4": [
+    187,
+    133,
+    156
+   ]
+  },
+  "original_dense9_seconds": 647.1,
+  "original_all15_seconds": 578.2,
+  "usage": "reference only for the replication check; must never be imposed as training rounds"
+ },
+ "targets": {
+  "all15_pooled_mean_rank_ic": 0.09437596139252168,
+  "dense9_pooled_mean_rank_ic": 0.09405814016074272,
+  "point_spread_all15_minus_dense9": 0.00031782123177895305,
+  "all15_per_fold_paired_delta": [
+   0.012491150540894738,
+   0.003192081739923608,
+   0.013919257999228399,
+   0.006452680123757132
+  ],
+  "dense9_per_fold_paired_delta_reference": [
+   0.010248951627842742,
+   0.001642643390710713,
+   0.01697752431167221,
+   0.005791179814624084
+  ]
+ },
+ "statistical_contract": {
+  "primary": "daily mean (all15 - dense9) over the three-way paired stock-days",
+  "hac_lags": 5,
+  "bootstrap": {
+   "scheme": "circular block bootstrap within fold",
+   "block": 10,
+   "reps": 5000,
+   "seed": 20260912
+  },
+  "ci": 0.95,
+  "descriptive_resolution": 0.002,
+  "also_output": [
+   "yearly aggregates",
+   "every invalid/excluded day",
+   "paired/unpaired counts per fold and per caliber"
+  ],
+  "calibers": {
+   "three_way_primary": "all15 ∩ dense9 ∩ best_simple on (signal_date, ts_code)",
+   "legacy_supporting": "each candidate matched to best_simple separately (the original script's per-fold behavior)"
+  },
+  "non_goals": "a gap that reproduces, and a CI that crosses zero, must not change the stop rules; this supplement does not establish that CAF admission beats simple rules or produces net financial return"
+ },
+ "exclusions": {
+  "locked_segment": "2026 / E9 never read (evaluator role=TEST, folds 2022-2025 only)",
+  "no_production_changes": "no DB writes, no artifact-store writes, no model/signature changes, no LambdaRank/M1/M2 fits, no extra configs or seeds"
+ },
+ "open_items": [
+  "the referenced pairing task document 2026-10-08-remote-pairing-extraction-task.md was NOT found on this server; the three-way contract above is implemented from the relayed task text and that derivation is recorded here",
+  "the pairing doc's exact column schema could not be checked locally; paired_daily.csv column names are documented in the README"
+ ],
+ "git_head_before_start": {
+  "branch": "codex/publish-quant-platform",
+  "commit": "2502014df94a07bc8e52d621e3a7f65e92640858"
+ }
+}

@@ -1,0 +1,65 @@
+{
+ "scope": "DENSE9_REPLAY_PAIRING_V1",
+ "folds": {
+  "F1": {
+   "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+   "rows": {
+    "all15": 804575,
+    "dense9": 804575,
+    "baseline": 747461
+   },
+   "three_way_paired_rows": 747461,
+   "legacy_paired_rows": {
+    "all15_x_baseline": 747461,
+    "dense9_x_baseline": 747461
+   },
+   "three_way_equals_all15_keys": false,
+   "calibers_identical": true
+  },
+  "F2": {
+   "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+   "rows": {
+    "all15": 882426,
+    "dense9": 882426,
+    "baseline": 820829
+   },
+   "three_way_paired_rows": 820829,
+   "legacy_paired_rows": {
+    "all15_x_baseline": 820829,
+    "dense9_x_baseline": 820829
+   },
+   "three_way_equals_all15_keys": false,
+   "calibers_identical": true
+  },
+  "F3": {
+   "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+   "rows": {
+    "all15": 932167,
+    "dense9": 932167,
+    "baseline": 924499
+   },
+   "three_way_paired_rows": 924499,
+   "legacy_paired_rows": {
+    "all15_x_baseline": 924499,
+    "dense9_x_baseline": 924499
+   },
+   "three_way_equals_all15_keys": false,
+   "calibers_identical": true
+  },
+  "F4": {
+   "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+   "rows": {
+    "all15": 938594,
+    "dense9": 938594,
+    "baseline": 925174
+   },
+   "three_way_paired_rows": 925174,
+   "legacy_paired_rows": {
+    "all15_x_baseline": 925174,
+    "dense9_x_baseline": 925174
+   },
+   "three_way_equals_all15_keys": false,
+   "calibers_identical": true
+  }
+ }
+}

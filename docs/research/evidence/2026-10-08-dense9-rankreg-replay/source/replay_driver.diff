@@ -1,0 +1,162 @@
+--- source/run_rankreg_subsets.py.orig
++++ replay_dense9_rankreg.py
+@@ -15,6 +15,7 @@
+ """
+ from __future__ import annotations
+ 
++import hashlib
+ import json
+ import sys
+ import time
+@@ -33,7 +34,28 @@
+ BASE = ART / "baseline_v2" / "baseline_oos"
+ REPORT = json.loads((ART / "m0r_v2" / "report.json").read_text())
+ FOLD_DS = {f["fold_id"]: f["dataset_id"] for f in REPORT["folds"]}
+-OUT = Path("/tmp/es_metric_diag/rankreg_subsets.json")
++RUN_DIR = Path("/data/zhangyudong/qrv2_research_artifacts/dense9_rankreg_replay_20261008")
++OUT = RUN_DIR / "analysis" / "dense9_replay_results.json"
++FITS_DIR = RUN_DIR / "fits"
++PREDS_DIR = RUN_DIR / "predictions"
++LOGS_DIR = RUN_DIR / "logs"
++PROGRESS_LOG = LOGS_DIR / "fits_progress.jsonl"
++for _d in (RUN_DIR / "analysis", FITS_DIR, PREDS_DIR, LOGS_DIR):
++    _d.mkdir(parents=True, exist_ok=True)
++CODE_PATHS = (
++    "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/baselines/lgbm_rankreg.py",
++    "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/baselines/lgbm_ranker.py",
++    "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/evaluation/model_evaluator.py",
++    "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/evaluation/rank_ic.py",
++)
++
++def _sha(path: str) -> str:
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++def _progress(record: dict) -> None:
++    """Append-only per-fit progress record (never rewrites earlier lines)."""
++    with PROGRESS_LOG.open("a", encoding="utf-8") as fh:
++        fh.write(json.dumps(record, default=str, ensure_ascii=False) + "\n")
+ FOLDS = ("F1", "F2", "F3", "F4")
+ KEYS = ["signal_date", "ts_code"]
+ LAB = KEYS + ["raw_return_5d", "label_valid"]
+@@ -44,7 +66,7 @@
+ ALL15 = tuple(f"f{i:02d}" for i in range(15))
+ DENSE9 = ("f00", "f01", "f04", "f09", "f10", "f11", "f12", "f13", "f14")
+ SPARSE6 = ("f02", "f03", "f05", "f06", "f07", "f08")
+-SUBSETS = {"all15": ALL15, "dense9": DENSE9, "sparse6": SPARSE6}
++SUBSETS = {"dense9": DENSE9}  # replay scope: dense9 only (the two other subsets are not re-run)
+ CONFIG = LGBMHyperparameters(num_leaves=15, max_depth=4, learning_rate=0.05,
+                              min_child_samples=200, feature_fraction=0.85,
+                              num_threads=16, lambda_l2=0.0)
+@@ -62,6 +84,11 @@
+     for fold in FOLDS:
+         ds = DS / FOLD_DS[fold]
+         frames[fold] = {r: pd.read_parquet(ds / f"split={r}") for r in ("train", "validation", "test")}
++        for _role, _fr in frames[fold].items():
++            (LOGS_DIR / f"inputs_{fold}_{_role}.json").write_text(json.dumps(
++                {"fold_id": fold, "dataset_id": FOLD_DS[fold], "role": _role,
++                 "rows": int(len(_fr)), "days": int(_fr["signal_date"].nunique()),
++                 "columns": list(_fr.columns)}, indent=2))
+         bases[fold] = pd.read_parquet(BASE / f"{fold}.parquet").loc[:, KEYS + ["score"]]
+         labels[fold] = frames[fold]["test"].loc[:, LAB]
+         print(f"[{fold}] loaded", flush=True)
+@@ -75,20 +102,66 @@
+             feats = KEYS + list(order)
+             pcts, trees = [], []
+             for seed in SEEDS:
++                fit_t0 = time.time()
++                fit_dir = FITS_DIR / f"{fold}_seed{seed}"
++                fit_dir.mkdir(parents=True, exist_ok=True)
+                 model = LGBMRankRegBaseline.fit(
+                     tr.loc[:, feats], tr.loc[:, LAB], factor_order=order, role="TRAIN",
+                     num_boost_round=ROUNDS, minimum_cross_section=MIN_CS,
+                     hyperparameters=CONFIG,
+                     evaluation_features=va.loc[:, feats], evaluation_labels=va.loc[:, LAB],
+                     early_stopping_patience=PATIENCE, seed=seed, allow_nan=True)
+-                trees.append(int(model.booster.num_trees()))
+-                pcts.append(percentile(model, te, order))
++                n_trees = int(model.booster.num_trees())
++                trees.append(n_trees)
++                pct = percentile(model, te, order)
++                pcts.append(pct)
++                fit_seconds = round(time.time() - fit_t0, 1)
++                model.booster.save_model(str(fit_dir / "booster.txt"))
++                pct.to_parquet(fit_dir / "test_percentile.parquet", index=False)
++                (fit_dir / "fit_meta.json").write_text(json.dumps({
++                    "fold_id": fold, "seed": seed, "factor_order": list(order),
++                    "num_boost_round": ROUNDS, "early_stopping_patience": PATIENCE,
++                    "minimum_cross_section": MIN_CS, "allow_nan": True,
++                    "config": {"num_leaves": CONFIG.num_leaves, "max_depth": CONFIG.max_depth,
++                               "learning_rate": CONFIG.learning_rate,
++                               "min_child_samples": CONFIG.min_child_samples,
++                               "feature_fraction": CONFIG.feature_fraction,
++                               "num_threads": CONFIG.num_threads, "lambda_l2": CONFIG.lambda_l2},
++                    "trees": n_trees, "best_iteration": model.best_iteration,
++                    "training_day_count": model.training_day_count,
++                    "eligible_training_day_count": model.eligible_training_day_count,
++                    "fit_seconds": fit_seconds,
++                    "inputs": {"train_rows": int(len(tr)), "validation_rows": int(len(va)),
++                               "test_rows": int(len(te)),
++                               "train_days": int(tr["signal_date"].nunique()),
++                               "validation_days": int(va["signal_date"].nunique()),
++                               "test_days": int(te["signal_date"].nunique()),
++                               "columns_used": feats},
++                    "dataset_id": FOLD_DS[fold],
++                }, indent=2, default=str))
++                _progress({"event": "fit_complete", "fold_id": fold, "seed": seed,
++                           "trees": n_trees, "best_iteration": model.best_iteration,
++                           "fit_seconds": fit_seconds,
++                           "training_day_count": model.training_day_count,
++                           "eligible_training_day_count": model.eligible_training_day_count})
++                print(f"    [{name}] {fold} seed={seed} trees={n_trees} "
++                      f"best_iter={model.best_iteration} ({fit_seconds}s)", flush=True)
+             merged = pcts[0].rename(columns={"score": "s0"})
+             for i, extra in enumerate(pcts[1:], start=1):
+                 merged = merged.merge(extra.rename(columns={"score": f"s{i}"}), on=KEYS,
+                                       validate="one_to_one")
+             merged["score"] = merged[[f"s{i}" for i in range(len(pcts))]].mean(axis=1)
+             cand = merged.loc[:, KEYS + ["score"]]
++            fold_pred_dir = PREDS_DIR / fold
++            fold_pred_dir.mkdir(parents=True, exist_ok=True)
++            cand.to_parquet(fold_pred_dir / "scores.parquet", index=False)
++            (fold_pred_dir / "meta.json").write_text(json.dumps({
++                "fold_id": fold, "dataset_id": FOLD_DS[fold], "factor_order": list(order),
++                "seeds": list(SEEDS), "ensemble": "mean of per-seed within-day percentile ranks "
++                "computed on the FULL test cross-section (never intersected with the baseline first)",
++                "rows": int(len(cand)), "days": int(cand["signal_date"].nunique()),
++                "trees": trees,
++            }, indent=2, default=str))
+             ev = evaluate_frozen_oos(cand, labels[fold], baseline_predictions=bases[fold], role="TEST")
+             per_fold[fold] = {"trees": trees, "paired_delta": ev.delta_rank_ic}
+             cand_folds.append(cand); base_folds.append(bases[fold]); lab_folds.append(labels[fold])
+@@ -111,20 +184,19 @@
+               f"delta={pooled.delta_rank_ic:+.6f} all_passed={pooled.gate_report.all_passed} "
+               f"({time.time()-t0:.0f}s)", flush=True)
+ 
+-    a = results["all15"]["pooled"]["delta"]
+-    d = results["dense9"]["pooled"]["delta"]
+-    results["_verdict"] = {
+-        "all15_delta": a, "dense9_delta": d, "sparse_marginal_contribution": a - d,
+-        "reading": ("the better carrier DOES unlock the sparse factors"
+-                    if a - d > 0.001 else
+-                    "the sparse factors add nothing measurable even under the better carrier"
+-                    if a - d < -0.001 else
+-                    "the sparse factors are within noise of contributing nothing"),
+-        "lambdarank_comparison": {"all15": 0.00109, "dense9": 0.00177, "sparse6": -0.02122},
++    # Replay scope is dense9 only: the cross-subset verdict is deliberately omitted
++    # (it required the all15 and sparse6 cells, which are not re-run here).
++    results["_code_summary"] = {
++        "driver_path": str(Path(__file__).resolve()),
++        "driver_sha256": _sha(str(Path(__file__).resolve())),
++        "training_implementation": {p: _sha(p) for p in CODE_PATHS},
++        "lightgbm_version": __import__("lightgbm").__version__,
++        "pandas_version": pd.__version__,
++        "python_version": sys.version.split()[0],
+     }
+     OUT.write_text(json.dumps(results, indent=2, default=str))
+-    print(f"\n=== VERDICT: all15={a:+.6f} dense9={d:+.6f} marginal={a-d:+.6f}", flush=True)
+-    print(f"    {results['_verdict']['reading']}", flush=True)
++    print(f"\n=== dense9 pooled delta={results['dense9']['pooled']['delta']:+.6f} "
++          f"cand={results['dense9']['pooled']['cand']:.6f}", flush=True)
+     print(f"written {OUT}", flush=True)
+ 
+ 

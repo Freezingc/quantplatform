@@ -1,0 +1,55 @@
+{
+  "fold_id": "F4",
+  "seed": 20260802,
+  "factor_order": [
+    "f00",
+    "f01",
+    "f04",
+    "f09",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f14"
+  ],
+  "num_boost_round": 500,
+  "early_stopping_patience": 50,
+  "minimum_cross_section": 30,
+  "allow_nan": true,
+  "config": {
+    "num_leaves": 15,
+    "max_depth": 4,
+    "learning_rate": 0.05,
+    "min_child_samples": 200,
+    "feature_fraction": 0.85,
+    "num_threads": 16,
+    "lambda_l2": 0.0
+  },
+  "trees": 133,
+  "best_iteration": 133,
+  "training_day_count": 964,
+  "eligible_training_day_count": 964,
+  "fit_seconds": 65.3,
+  "inputs": {
+    "train_rows": 3046399,
+    "validation_rows": 908649,
+    "test_rows": 938594,
+    "train_days": 964,
+    "validation_days": 236,
+    "test_days": 243,
+    "columns_used": [
+      "signal_date",
+      "ts_code",
+      "f00",
+      "f01",
+      "f04",
+      "f09",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14"
+    ]
+  },
+  "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d"
+}

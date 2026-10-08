@@ -1,0 +1,12 @@
+{"event": "fit_complete", "fold_id": "F1", "seed": 20260801, "trees": 3, "best_iteration": 3, "fit_seconds": 29.4, "training_day_count": 967, "eligible_training_day_count": 967}
+{"event": "fit_complete", "fold_id": "F1", "seed": 20260802, "trees": 14, "best_iteration": 14, "fit_seconds": 27.9, "training_day_count": 967, "eligible_training_day_count": 967}
+{"event": "fit_complete", "fold_id": "F1", "seed": 20260803, "trees": 27, "best_iteration": 27, "fit_seconds": 28.4, "training_day_count": 967, "eligible_training_day_count": 967}
+{"event": "fit_complete", "fold_id": "F2", "seed": 20260801, "trees": 142, "best_iteration": 142, "fit_seconds": 62.0, "training_day_count": 967, "eligible_training_day_count": 967}
+{"event": "fit_complete", "fold_id": "F2", "seed": 20260802, "trees": 158, "best_iteration": 158, "fit_seconds": 65.2, "training_day_count": 967, "eligible_training_day_count": 967}
+{"event": "fit_complete", "fold_id": "F2", "seed": 20260803, "trees": 204, "best_iteration": 204, "fit_seconds": 77.0, "training_day_count": 967, "eligible_training_day_count": 967}
+{"event": "fit_complete", "fold_id": "F3", "seed": 20260801, "trees": 54, "best_iteration": 54, "fit_seconds": 42.5, "training_day_count": 966, "eligible_training_day_count": 966}
+{"event": "fit_complete", "fold_id": "F3", "seed": 20260802, "trees": 32, "best_iteration": 32, "fit_seconds": 34.5, "training_day_count": 966, "eligible_training_day_count": 966}
+{"event": "fit_complete", "fold_id": "F3", "seed": 20260803, "trees": 52, "best_iteration": 52, "fit_seconds": 38.5, "training_day_count": 966, "eligible_training_day_count": 966}
+{"event": "fit_complete", "fold_id": "F4", "seed": 20260801, "trees": 187, "best_iteration": 187, "fit_seconds": 79.4, "training_day_count": 964, "eligible_training_day_count": 964}
+{"event": "fit_complete", "fold_id": "F4", "seed": 20260802, "trees": 133, "best_iteration": 133, "fit_seconds": 65.3, "training_day_count": 964, "eligible_training_day_count": 964}
+{"event": "fit_complete", "fold_id": "F4", "seed": 20260803, "trees": 156, "best_iteration": 156, "fit_seconds": 70.7, "training_day_count": 964, "eligible_training_day_count": 964}

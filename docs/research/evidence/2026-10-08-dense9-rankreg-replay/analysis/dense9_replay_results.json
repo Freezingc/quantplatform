@@ -1,0 +1,76 @@
+{
+  "dense9": {
+    "factor_count": 9,
+    "per_fold": {
+      "F1": {
+        "trees": [
+          3,
+          14,
+          27
+        ],
+        "paired_delta": 0.010248951627842742
+      },
+      "F2": {
+        "trees": [
+          142,
+          158,
+          204
+        ],
+        "paired_delta": 0.001642643390710713
+      },
+      "F3": {
+        "trees": [
+          54,
+          32,
+          52
+        ],
+        "paired_delta": 0.01697752431167221
+      },
+      "F4": {
+        "trees": [
+          187,
+          133,
+          156
+        ],
+        "paired_delta": 0.005791179814624084
+      }
+    },
+    "pooled": {
+      "cand": 0.09405814016074272,
+      "base": 0.0852268662737014,
+      "delta": 0.00883127388704133,
+      "icir": 0.771236977475296,
+      "hac_t": 12.96563007235339,
+      "valid_days": 945,
+      "yearly": {
+        "2022": 0.09088571195293567,
+        "2023": 0.07144896524738728,
+        "2024": 0.1075816972902922,
+        "2025": 0.10411272320088834
+      },
+      "gates": {
+        "G1": "PASS",
+        "G2": "PASS",
+        "G3": "PASS",
+        "G4": "PASS",
+        "G5": "PASS",
+        "G6": "PASS"
+      },
+      "all_passed": true
+    },
+    "seconds": 701.7
+  },
+  "_code_summary": {
+    "driver_path": "/data/zhangyudong/qrv2_research_artifacts/dense9_rankreg_replay_20261008/replay_dense9_rankreg.py",
+    "driver_sha256": "0c362a806d95632219f42edc92fbffa8ab4acd3577c657b6c9ee3bbaead2db4a",
+    "training_implementation": {
+      "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/baselines/lgbm_rankreg.py": "2b75bbb6c66b752cdac0f7e5ddbe73a686915f5ae3662e31b68a568f0c5518d4",
+      "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/baselines/lgbm_ranker.py": "096126303a242dc6cc79fc7949cd17645e4706d602ec31efa08d27c5492eee57",
+      "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/evaluation/model_evaluator.py": "4e4c80a336c01d1c36a764d8189c588f0176360dbb15dcb35bf38cff7078e0b1",
+      "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/evaluation/rank_ic.py": "5089732da9f5349a53835ad70ea08c36b167469c8b4a950aa5053396ae260d31"
+    },
+    "lightgbm_version": "4.6.0",
+    "pandas_version": "2.3.3",
+    "python_version": "3.11.13"
+  }
+}

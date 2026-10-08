@@ -1,0 +1,30 @@
+{
+  "fold_id": "F3",
+  "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+  "role": "test",
+  "rows": 932167,
+  "days": 242,
+  "columns": [
+    "signal_date",
+    "ts_code",
+    "f00",
+    "f01",
+    "f02",
+    "f03",
+    "f04",
+    "f05",
+    "f06",
+    "f07",
+    "f08",
+    "f09",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f14",
+    "raw_return_5d",
+    "label_valid",
+    "exit_date",
+    "year"
+  ]
+}

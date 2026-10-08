@@ -1,0 +1,24 @@
+[F1] loaded
+[F2] loaded
+[F3] loaded
+[F4] loaded
+    [dense9] F1 seed=20260801 trees=3 best_iter=3 (29.4s)
+    [dense9] F1 seed=20260802 trees=14 best_iter=14 (27.9s)
+    [dense9] F1 seed=20260803 trees=27 best_iter=27 (28.4s)
+  [dense9] F1: trees=[3, 14, 27] delta=+0.01025
+    [dense9] F2 seed=20260801 trees=142 best_iter=142 (62.0s)
+    [dense9] F2 seed=20260802 trees=158 best_iter=158 (65.2s)
+    [dense9] F2 seed=20260803 trees=204 best_iter=204 (77.0s)
+  [dense9] F2: trees=[142, 158, 204] delta=+0.00164
+    [dense9] F3 seed=20260801 trees=54 best_iter=54 (42.5s)
+    [dense9] F3 seed=20260802 trees=32 best_iter=32 (34.5s)
+    [dense9] F3 seed=20260803 trees=52 best_iter=52 (38.5s)
+  [dense9] F3: trees=[54, 32, 52] delta=+0.01698
+    [dense9] F4 seed=20260801 trees=187 best_iter=187 (79.4s)
+    [dense9] F4 seed=20260802 trees=133 best_iter=133 (65.3s)
+    [dense9] F4 seed=20260803 trees=156 best_iter=156 (70.7s)
+  [dense9] F4: trees=[187, 133, 156] delta=+0.00579
+  [dense9] POOLED cand=0.09406 delta=+0.008831 all_passed=True (702s)
+
+=== dense9 pooled delta=+0.008831 cand=0.094058
+written /data/zhangyudong/qrv2_research_artifacts/dense9_rankreg_replay_20261008/analysis/dense9_replay_results.json
