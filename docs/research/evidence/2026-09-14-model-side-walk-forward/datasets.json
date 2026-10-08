@@ -3415,8 +3415,317 @@
             ]
           }
         }
+      },
+      {
+        "business_keys": [
+          "signal_date",
+          "ts_code"
+        ],
+        "column_order": [
+          "signal_date",
+          "ts_code",
+          "f00",
+          "f01",
+          "f02",
+          "f03",
+          "f04",
+          "f05",
+          "f06",
+          "f07",
+          "f08",
+          "f09",
+          "f10",
+          "f11",
+          "f12",
+          "f13",
+          "f14",
+          "raw_return_5d",
+          "label_valid",
+          "exit_date"
+        ],
+        "data_versions_digest": {
+          "present": true,
+          "sha256_of_full_mapping": "affafe860083128592d89e3d194796b1df6d1d7d7681fb1fcf96543ef8682c08",
+          "tables": {
+            "factor_daily": {
+              "distinct_data_versions": 12,
+              "first_partition": "2014-01",
+              "last_partition": "2025-12",
+              "month_partitions": 144,
+              "sha256_of_mapping": "b5da59b2f93da2289e90b39c446499a908c32d8e4b0fc17e67af2e1c46e26a27"
+            },
+            "label_daily": {
+              "distinct_data_versions": 145,
+              "first_partition": "2014-01",
+              "last_partition": "2026-07",
+              "month_partitions": 151,
+              "sha256_of_mapping": "a79576777ffed8e4f63526257a31c41a54f8c038dd2338ff4b2d896484bf43b4"
+            },
+            "universe_daily": {
+              "distinct_data_versions": 145,
+              "first_partition": "2014-01",
+              "last_partition": "2026-07",
+              "month_partitions": 151,
+              "sha256_of_mapping": "e01ad873d570c639866b95e098cbf7dbb4f926e7f49d6d8ae9041eb89ca72efd"
+            }
+          }
+        },
+        "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+        "factor_columns": [
+          "f00",
+          "f01",
+          "f02",
+          "f03",
+          "f04",
+          "f05",
+          "f06",
+          "f07",
+          "f08",
+          "f09",
+          "f10",
+          "f11",
+          "f12",
+          "f13",
+          "f14"
+        ],
+        "manifest_sha256": "06ef8f00e81c75e7ee26e74431b68b5139d621d473a92fffde209134b8ea49cc",
+        "row_count": 4893642,
+        "split_content_hashes": {
+          "test": "3f399d886e97cb4b22ccad2e23cc882d4ca483af25c952fd762a5c84605aea29",
+          "train": "d373a158d652d9499a5f62fd35f1872b2e110cf1a2372169abc88501ce0a501c",
+          "validation": "ae7649d0317187ea0397ddc2c053834a70a4e922e309ba5d25cd9b79c7c211ff"
+        },
+        "splits": {
+          "test": {
+            "shards": 1,
+            "years": [
+              2025
+            ]
+          },
+          "train": {
+            "shards": 4,
+            "years": [
+              2020,
+              2021,
+              2022,
+              2023
+            ]
+          },
+          "validation": {
+            "shards": 1,
+            "years": [
+              2024
+            ]
+          }
+        }
+      },
+      {
+        "business_keys": [
+          "signal_date",
+          "ts_code"
+        ],
+        "column_order": [
+          "signal_date",
+          "ts_code",
+          "f00",
+          "f01",
+          "f02",
+          "f03",
+          "f04",
+          "f05",
+          "f06",
+          "f07",
+          "f08",
+          "f09",
+          "f10",
+          "f11",
+          "f12",
+          "f13",
+          "f14",
+          "raw_return_5d",
+          "label_valid",
+          "exit_date"
+        ],
+        "data_versions_digest": {
+          "present": true,
+          "sha256_of_full_mapping": "affafe860083128592d89e3d194796b1df6d1d7d7681fb1fcf96543ef8682c08",
+          "tables": {
+            "factor_daily": {
+              "distinct_data_versions": 12,
+              "first_partition": "2014-01",
+              "last_partition": "2025-12",
+              "month_partitions": 144,
+              "sha256_of_mapping": "b5da59b2f93da2289e90b39c446499a908c32d8e4b0fc17e67af2e1c46e26a27"
+            },
+            "label_daily": {
+              "distinct_data_versions": 145,
+              "first_partition": "2014-01",
+              "last_partition": "2026-07",
+              "month_partitions": 151,
+              "sha256_of_mapping": "a79576777ffed8e4f63526257a31c41a54f8c038dd2338ff4b2d896484bf43b4"
+            },
+            "universe_daily": {
+              "distinct_data_versions": 145,
+              "first_partition": "2014-01",
+              "last_partition": "2026-07",
+              "month_partitions": 151,
+              "sha256_of_mapping": "e01ad873d570c639866b95e098cbf7dbb4f926e7f49d6d8ae9041eb89ca72efd"
+            }
+          }
+        },
+        "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+        "factor_columns": [
+          "f00",
+          "f01",
+          "f02",
+          "f03",
+          "f04",
+          "f05",
+          "f06",
+          "f07",
+          "f08",
+          "f09",
+          "f10",
+          "f11",
+          "f12",
+          "f13",
+          "f14"
+        ],
+        "manifest_sha256": "7c9afc5114e34347819ed1927a97f2446b776239c312db6da19233283a55fa2d",
+        "row_count": 4582910,
+        "split_content_hashes": {
+          "test": "dff4deb56195a6f93a1f04a705243db3affcbe4c6811a5908949e9aa39ecd10f",
+          "train": "6e3f81a38bcc91c3881db8ff98d4a702b8b64a7704964a20030dcd8cd71e9906",
+          "validation": "82c6a3149485e9b5403cfe02855b96326f795585cbfe8139bcb5d6753f3d3c8a"
+        },
+        "splits": {
+          "test": {
+            "shards": 1,
+            "years": [
+              2024
+            ]
+          },
+          "train": {
+            "shards": 4,
+            "years": [
+              2019,
+              2020,
+              2021,
+              2022
+            ]
+          },
+          "validation": {
+            "shards": 1,
+            "years": [
+              2023
+            ]
+          }
+        }
+      },
+      {
+        "business_keys": [
+          "signal_date",
+          "ts_code"
+        ],
+        "column_order": [
+          "signal_date",
+          "ts_code",
+          "f00",
+          "f01",
+          "f02",
+          "f03",
+          "f04",
+          "f05",
+          "f06",
+          "f07",
+          "f08",
+          "f09",
+          "f10",
+          "f11",
+          "f12",
+          "f13",
+          "f14",
+          "raw_return_5d",
+          "label_valid",
+          "exit_date"
+        ],
+        "data_versions_digest": {
+          "present": true,
+          "sha256_of_full_mapping": "affafe860083128592d89e3d194796b1df6d1d7d7681fb1fcf96543ef8682c08",
+          "tables": {
+            "factor_daily": {
+              "distinct_data_versions": 12,
+              "first_partition": "2014-01",
+              "last_partition": "2025-12",
+              "month_partitions": 144,
+              "sha256_of_mapping": "b5da59b2f93da2289e90b39c446499a908c32d8e4b0fc17e67af2e1c46e26a27"
+            },
+            "label_daily": {
+              "distinct_data_versions": 145,
+              "first_partition": "2014-01",
+              "last_partition": "2026-07",
+              "month_partitions": 151,
+              "sha256_of_mapping": "a79576777ffed8e4f63526257a31c41a54f8c038dd2338ff4b2d896484bf43b4"
+            },
+            "universe_daily": {
+              "distinct_data_versions": 145,
+              "first_partition": "2014-01",
+              "last_partition": "2026-07",
+              "month_partitions": 151,
+              "sha256_of_mapping": "e01ad873d570c639866b95e098cbf7dbb4f926e7f49d6d8ae9041eb89ca72efd"
+            }
+          }
+        },
+        "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+        "factor_columns": [
+          "f00",
+          "f01",
+          "f02",
+          "f03",
+          "f04",
+          "f05",
+          "f06",
+          "f07",
+          "f08",
+          "f09",
+          "f10",
+          "f11",
+          "f12",
+          "f13",
+          "f14"
+        ],
+        "manifest_sha256": "45910a4929cd90f2442db63d0fa6eb6406e5a859f1cac41879aecb8d66baf601",
+        "row_count": 4205787,
+        "split_content_hashes": {
+          "test": "8074dadcabab58d5b629b9e9f36ec366f2aa091907fba3e246d6e3b167681065",
+          "train": "21b64381b7f59a1a148504459dcaf00e30a3889a5f098a017f076b084cbe0fa6",
+          "validation": "badc574e8c3e26783c3433e6273f8221ef48512e1023af550bd5aefc8d16efe2"
+        },
+        "splits": {
+          "test": {
+            "shards": 1,
+            "years": [
+              2023
+            ]
+          },
+          "train": {
+            "shards": 4,
+            "years": [
+              2018,
+              2019,
+              2020,
+              2021
+            ]
+          },
+          "validation": {
+            "shards": 1,
+            "years": [
+              2022
+            ]
+          }
+        }
       }
     ]
   },
-  "extracted_at_utc": "2026-09-14T07:58:47+00:00"
+  "extracted_at_utc": "2026-10-08T05:44:05+00:00"
 }

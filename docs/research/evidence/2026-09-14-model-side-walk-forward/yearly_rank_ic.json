@@ -368,7 +368,48 @@
         "2024": 0.10486958771009264,
         "2025": 0.10110318030088321
       }
+    },
+    "m2_v1": {
+      "gates": {
+        "G1": {
+          "observed_value": 0.09008272053326746,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 10.872586712384685,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.00495917328733296,
+          "status": "FAIL",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.28370153725241365,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9339525283797729,
+          "status": "FAIL",
+          "threshold": 0.95
+        }
+      },
+      "valid_day_count": 905,
+      "yearly_mean_rank_ic": {
+        "2022": 0.08881984269224931,
+        "2023": 0.06816712588052325,
+        "2024": 0.10059822550584631,
+        "2025": 0.09700655921294865
+      }
     }
   },
-  "extracted_at_utc": "2026-09-14T07:58:47+00:00"
+  "extracted_at_utc": "2026-10-08T05:44:05+00:00"
 }

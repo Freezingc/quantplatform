@@ -2353,21 +2353,329 @@
       }
     },
     {
-      "authoritative": false,
+      "authoritative": true,
+      "baseline_selections": null,
       "carrier": "M2 / TemporalGRU + TemporalTCN (history_length 20)",
+      "data_versions_digest": {
+        "present": false
+      },
+      "environment": null,
       "factor_source": "frozen_v2 (15 factors)",
-      "folds": null,
-      "gates": null,
-      "note": "RUNNING at extraction time; no report.json, therefore no OOS number exists.",
-      "oos": null,
+      "family": "M2",
+      "folds": [
+        {
+          "baseline_selection_id": "6fe33eda88430e5ee90e8d975c16f36c8d0de1a44a70eda594b12b82ff5678b9",
+          "best_config": {
+            "dropout": 0.2,
+            "family": "TCN",
+            "hidden_dim": 64,
+            "learning_rate": 0.0003
+          },
+          "best_ensemble_validation_rank_ic": 0.059238829903105104,
+          "configs_searched": 24,
+          "dataset_id": "226a8dfc497c2de6b07516711f058f26a9270675916c9e67dbf7f087a07d2538",
+          "fold_id": "F1",
+          "model_id": "m2-f1",
+          "model_selection_id": "f8de9d1dc0c59bd17b000cfed323daecf085bc5ad828f7cc28e00bc3ece2feb4",
+          "top3_by_validation": [
+            {
+              "config": {
+                "dropout": 0.2,
+                "family": "TCN",
+                "hidden_dim": 64,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.059238829903105104,
+              "seed_validation_rank_ic": {
+                "20260801": 0.04956588408875686,
+                "20260802": 0.05657593310578804,
+                "20260803": 0.06712964019232637
+              },
+              "worst_seed": 20260801
+            },
+            {
+              "config": {
+                "dropout": 0.1,
+                "family": "TCN",
+                "hidden_dim": 64,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.05801166178064738,
+              "seed_validation_rank_ic": {
+                "20260801": 0.04901361068478671,
+                "20260802": 0.05335959538368713,
+                "20260803": 0.06743006382214589
+              },
+              "worst_seed": 20260801
+            },
+            {
+              "config": {
+                "dropout": 0.0,
+                "family": "GRU",
+                "hidden_dim": 64,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.05796521957207684,
+              "seed_validation_rank_ic": {
+                "20260801": 0.04721104335310143,
+                "20260802": 0.05548105464086526,
+                "20260803": 0.06740581136109206
+              },
+              "worst_seed": 20260801
+            }
+          ]
+        },
+        {
+          "baseline_selection_id": "3ea7d0c5c7a44d23ab43b3e1ade5079b50d771ac3d6313f4564e2d8e45678d74",
+          "best_config": {
+            "dropout": 0.2,
+            "family": "TCN",
+            "hidden_dim": 64,
+            "learning_rate": 0.001
+          },
+          "best_ensemble_validation_rank_ic": 0.10142585808803034,
+          "configs_searched": 24,
+          "dataset_id": "eb9bba1b5a0bd66d0ad6c82536b295de1fc079aec125cb27bb68491bdb21a234",
+          "fold_id": "F2",
+          "model_id": "m2-f2",
+          "model_selection_id": "fe9d1261872d02f6cc6e4eb5b6e4d17d72a3d6d2f64827f774afeafdc2661b96",
+          "top3_by_validation": [
+            {
+              "config": {
+                "dropout": 0.2,
+                "family": "TCN",
+                "hidden_dim": 64,
+                "learning_rate": 0.001
+              },
+              "ensemble_validation_rank_ic": 0.10142585808803034,
+              "seed_validation_rank_ic": {
+                "20260801": 0.0870783115197871,
+                "20260802": 0.09512994734856578,
+                "20260803": 0.09550221236939707
+              },
+              "worst_seed": 20260801
+            },
+            {
+              "config": {
+                "dropout": 0.0,
+                "family": "TCN",
+                "hidden_dim": 64,
+                "learning_rate": 0.001
+              },
+              "ensemble_validation_rank_ic": 0.0967693945777977,
+              "seed_validation_rank_ic": {
+                "20260801": 0.08616056945094598,
+                "20260802": 0.08844347696311311,
+                "20260803": 0.09754893643526524
+              },
+              "worst_seed": 20260801
+            },
+            {
+              "config": {
+                "dropout": 0.2,
+                "family": "TCN",
+                "hidden_dim": 128,
+                "learning_rate": 0.001
+              },
+              "ensemble_validation_rank_ic": 0.09584812267980039,
+              "seed_validation_rank_ic": {
+                "20260801": 0.08487169894539515,
+                "20260802": 0.08864554383540806,
+                "20260803": 0.0818179717778607
+              },
+              "worst_seed": 20260803
+            }
+          ]
+        },
+        {
+          "baseline_selection_id": "3a9ac836c383cfd0e6778af132e6f5d3f84e1b9dd4966db2e59374f1c29ed565",
+          "best_config": {
+            "dropout": 0.0,
+            "family": "TCN",
+            "hidden_dim": 64,
+            "learning_rate": 0.0003
+          },
+          "best_ensemble_validation_rank_ic": 0.08255531615151732,
+          "configs_searched": 24,
+          "dataset_id": "9766e69f342511c5bda30188df15a7b9b17d936bdc26b9b60ba244e8e7e0c9e7",
+          "fold_id": "F3",
+          "model_id": "m2-f3",
+          "model_selection_id": "c6d3530f7bb3c3718355e3472df3a6a5354c6d4564e5fe9ff8ea5f45980233b4",
+          "top3_by_validation": [
+            {
+              "config": {
+                "dropout": 0.0,
+                "family": "TCN",
+                "hidden_dim": 64,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.08255531615151732,
+              "seed_validation_rank_ic": {
+                "20260801": 0.08881753247359148,
+                "20260802": 0.06674315931984151,
+                "20260803": 0.0839849752290268
+              },
+              "worst_seed": 20260802
+            },
+            {
+              "config": {
+                "dropout": 0.2,
+                "family": "TCN",
+                "hidden_dim": 64,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.08237560377770942,
+              "seed_validation_rank_ic": {
+                "20260801": 0.08902527797546747,
+                "20260802": 0.06547566653548387,
+                "20260803": 0.08384775354449471
+              },
+              "worst_seed": 20260802
+            },
+            {
+              "config": {
+                "dropout": 0.1,
+                "family": "TCN",
+                "hidden_dim": 128,
+                "learning_rate": 0.001
+              },
+              "ensemble_validation_rank_ic": 0.0822980378885543,
+              "seed_validation_rank_ic": {
+                "20260801": 0.08925692458380402,
+                "20260802": 0.05857412604186096,
+                "20260803": 0.08471635681079276
+              },
+              "worst_seed": 20260802
+            }
+          ]
+        },
+        {
+          "baseline_selection_id": "6b26867126c28a5d99a62bc539d04f00a653039d564e2757e669f0e13c7c6219",
+          "best_config": {
+            "dropout": 0.2,
+            "family": "GRU",
+            "hidden_dim": 64,
+            "learning_rate": 0.0003
+          },
+          "best_ensemble_validation_rank_ic": 0.09928368608349676,
+          "configs_searched": 24,
+          "dataset_id": "6f9478d7645c8c745a73f00c03b6122e17d0c06c05cc159ece531fb00df9fb9d",
+          "fold_id": "F4",
+          "model_id": "m2-f4",
+          "model_selection_id": "7bae18c1622726a91212082fb052d7c076a8946853dceaa72d4870578cbc6395",
+          "top3_by_validation": [
+            {
+              "config": {
+                "dropout": 0.2,
+                "family": "GRU",
+                "hidden_dim": 64,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.09928368608349676,
+              "seed_validation_rank_ic": {
+                "20260801": 0.09755879568866768,
+                "20260802": 0.09667580234607126,
+                "20260803": 0.09683785379179174
+              },
+              "worst_seed": 20260802
+            },
+            {
+              "config": {
+                "dropout": 0.1,
+                "family": "GRU",
+                "hidden_dim": 64,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.0991383274290086,
+              "seed_validation_rank_ic": {
+                "20260801": 0.09825346251111099,
+                "20260802": 0.09684495898889388,
+                "20260803": 0.09583511365692678
+              },
+              "worst_seed": 20260803
+            },
+            {
+              "config": {
+                "dropout": 0.2,
+                "family": "GRU",
+                "hidden_dim": 128,
+                "learning_rate": 0.0003
+              },
+              "ensemble_validation_rank_ic": 0.09707720505730813,
+              "seed_validation_rank_ic": {
+                "20260801": 0.09581488897468196,
+                "20260802": 0.09578105533571692,
+                "20260803": 0.09146218412192939
+              },
+              "worst_seed": 20260803
+            }
+          ]
+        }
+      ],
+      "gates": {
+        "G1": {
+          "observed_value": 0.09008272053326746,
+          "status": "PASS",
+          "threshold": 0.03
+        },
+        "G2": {
+          "observed_value": 10.872586712384685,
+          "status": "PASS",
+          "threshold": 2.0
+        },
+        "G3": {
+          "observed_value": 1.0,
+          "status": "PASS",
+          "threshold": 0.7
+        },
+        "G4": {
+          "observed_value": 0.00495917328733296,
+          "status": "FAIL",
+          "threshold": 0.005
+        },
+        "G5": {
+          "observed_value": 0.28370153725241365,
+          "status": "PASS",
+          "threshold": 0.5
+        },
+        "G6": {
+          "observed_value": 0.9339525283797729,
+          "status": "FAIL",
+          "threshold": 0.95
+        }
+      },
+      "mode": "full",
+      "note": "COMPLETE 2026-10-08; report.json exists. G4 FAIL (+0.004959 against the 0.005 bar, short by 4.08e-05) and G6 FAIL (905/969 = 0.933953 against the 0.95 bar); G1/G2/G3/G5 PASS, so all_passed=false and no promotion evidence was emitted. The G6 loss is a coverage loss, not a score collapse: M2's 15-observation minimum history leaves 17,306 labelled rows unscored (F1 6,333 / F2 5,709 / F3 3,603 / F4 1,661), and M2 fails the daily health check on 64 of the 969 ordinary test days where the 945-day carriers fail 24 -- 40 additional days. M2's delta is NOT comparable by subtraction with M0R/M1/M0; see comparison_basis.",
+      "oos": {
+        "all_passed": false,
+        "baseline_mean_rank_ic": 0.0851235472459345,
+        "delta_rank_ic": 0.00495917328733296,
+        "hac_t_statistic": 10.872586712384685,
+        "icir": 0.6734605446326987,
+        "mean_rank_ic": 0.09008272053326746,
+        "valid_day_count": 905
+      },
       "promotion_evidence_sha256": null,
-      "report_exists": false,
-      "role": "candidate-in-progress",
+      "report_exists": true,
+      "report_sha256": "34ed15813b15abe58431e98747b07a52e3b5c01b454b48bd118807d0b54e35c1",
+      "role": "candidate",
       "search_grid": "24 configs = family{GRU,TCN} x hidden{64,128} x dropout{0,.1,.2} x lr{3e-4,1e-3}",
+      "unscored_scoreable_rows_by_fold": {
+        "F1": 6333,
+        "F2": 5709,
+        "F3": 3603,
+        "F4": 1661
+      },
       "workspace": "m2_v1",
-      "workspace_path": "/data/zhangyudong/qrv2_research_artifacts/m2_v1"
+      "workspace_path": "/data/zhangyudong/qrv2_research_artifacts/m2_v1",
+      "yearly_mean_rank_ic": {
+        "2022": 0.08881984269224931,
+        "2023": 0.06816712588052325,
+        "2024": 0.10059822550584631,
+        "2025": 0.09700655921294865
+      }
     }
   ],
-  "comparison_basis": "All candidates share one baseline run (baseline_v2), one 945-valid-day pooled OOS set (2022-2025) and one baseline_mean_rank_ic, so their G4 delta_rank_ic values are directly comparable by subtraction.",
-  "extracted_at_utc": "2026-09-14T07:58:47+00:00"
+  "comparison_basis": "M0 (m0_v3), M0R (m0r_v2) and M1 (m1_full_v1) share one baseline run (baseline_v2), one 945-valid-day pooled OOS set (2022-2025) and one matched baseline_mean_rank_ic (0.0852268662737014), so their G4 delta_rank_ic values ARE directly comparable by subtraction. M2 (m2_v1) is not in that set and must not be subtracted against them: its 15-observation minimum history scores fewer rows, leaving 905 valid days and a different matched baseline mean (0.0851235472459345). The reason is mechanical -- model_evaluator._match_prediction_coverage inner-joins candidate and baseline onto identical (signal_date, ts_code) keys, so baseline_mean_rank_ic is a carrier-dependent quantity, not one shared reference. G6's denominator is the 969 ordinary test days for every family (945/969 = 0.9752321981424149; 905/969 = 0.9339525283797729), so G6 ratios remain comparable across carriers even though the G4 deltas are not.",
+  "extracted_at_utc": "2026-10-08T05:44:05+00:00"
 }

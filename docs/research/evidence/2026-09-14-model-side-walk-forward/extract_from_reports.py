@@ -122,12 +122,22 @@ CANDIDATES: tuple[dict[str, Any], ...] = (
     },
     {
         "workspace": "m2_v1",
-        "role": "candidate-in-progress",
+        "role": "candidate",
         "carrier": "M2 / TemporalGRU + TemporalTCN (history_length 20)",
         "factor_source": "frozen_v2 (15 factors)",
         "search_grid": "24 configs = family{GRU,TCN} x hidden{64,128} x dropout{0,.1,.2} x lr{3e-4,1e-3}",
-        "authoritative": False,
-        "note": "RUNNING at extraction time; no report.json, therefore no OOS number exists.",
+        "authoritative": True,
+        "note": (
+            "COMPLETE 2026-10-08; report.json exists. G4 FAIL (+0.004959 against the 0.005 "
+            "bar, short by 4.08e-05) and G6 FAIL (905/969 = 0.933953 against the 0.95 bar); "
+            "G1/G2/G3/G5 PASS, so all_passed=false and no promotion evidence was emitted. "
+            "The G6 loss is a coverage loss, not a score collapse: M2's 15-observation "
+            "minimum history leaves 17,306 labelled rows unscored (F1 6,333 / F2 5,709 / "
+            "F3 3,603 / F4 1,661), and M2 fails the daily health check on 64 of the 969 "
+            "ordinary test days where the 945-day carriers fail 24 -- 40 additional days. "
+            "M2's delta is NOT comparable by subtraction with M0R/M1/M0; see "
+            "comparison_basis."
+        ),
     },
 )
 
@@ -241,7 +251,7 @@ def summarise_report(report: dict[str, Any]) -> dict[str, Any]:
             }
         )
     environment = report.get("environment")
-    return {
+    summary = {
         "family": report.get("family"),
         "mode": report.get("mode"),
         "oos": {key: oos.get(key) for key in OOS_KEYS if key in oos},
@@ -252,6 +262,13 @@ def summarise_report(report: dict[str, Any]) -> dict[str, Any]:
         "data_versions_digest": digest_versions(report.get("data_versions")),
         "environment": environment,
     }
+    # Only the temporal carrier reports this: labelled rows the candidate never scored,
+    # because a security needs >=15 observed rows before M2 will window it. Copied verbatim
+    # when present so the G6 coverage story stays traceable to the signed report instead of
+    # being retyped; absent (not null) for carriers that score every labelled row.
+    if "unscored_scoreable_rows_by_fold" in report:
+        summary["unscored_scoreable_rows_by_fold"] = report["unscored_scoreable_rows_by_fold"]
+    return summary
 
 
 def read_factor_sets(repo: Path) -> dict[str, Any]:
@@ -463,9 +480,19 @@ def main() -> int:
             "extracted_at_utc": extracted_at,
             "artifacts_root": str(args.artifacts),
             "comparison_basis": (
-                "All candidates share one baseline run (baseline_v2), one 945-valid-day "
-                "pooled OOS set (2022-2025) and one baseline_mean_rank_ic, so their G4 "
-                "delta_rank_ic values are directly comparable by subtraction."
+                "M0 (m0_v3), M0R (m0r_v2) and M1 (m1_full_v1) share one baseline run "
+                "(baseline_v2), one 945-valid-day pooled OOS set (2022-2025) and one matched "
+                "baseline_mean_rank_ic (0.0852268662737014), so their G4 delta_rank_ic values "
+                "ARE directly comparable by subtraction. M2 (m2_v1) is not in that set and "
+                "must not be subtracted against them: its 15-observation minimum history "
+                "scores fewer rows, leaving 905 valid days and a different matched baseline "
+                "mean (0.0851235472459345). The reason is mechanical -- "
+                "model_evaluator._match_prediction_coverage inner-joins candidate and "
+                "baseline onto identical (signal_date, ts_code) keys, so baseline_mean_rank_ic "
+                "is a carrier-dependent quantity, not one shared reference. G6's denominator "
+                "is the 969 ordinary test days for every family (945/969 = "
+                "0.9752321981424149; 905/969 = 0.9339525283797729), so G6 ratios remain "
+                "comparable across carriers even though the G4 deltas are not."
             ),
             "candidates": standings,
         },
