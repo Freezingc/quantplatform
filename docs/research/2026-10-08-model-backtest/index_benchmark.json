@@ -1,0 +1,157 @@
+{
+  "config": {
+    "buy_and_hold_definition": "index close-to-close, calendar years and the full 2022-2025 window",
+    "cycle_matched_definition": "index open(T+6)/open(T+1)-1, same 192 non-overlapping cycles as the strategy",
+    "cycles_per_year": 48.6,
+    "holding_days": 5,
+    "source": "dfs://YesLab index_daily_data"
+  },
+  "indices": {
+    "000001.SH": {
+      "buy_and_hold": {
+        "first_close": 3632.3289,
+        "first_date": "2022-01-04",
+        "last_close": 3968.8401,
+        "last_date": "2025-12-31",
+        "max_drawdown_on_closes": -0.25607369971370164,
+        "total_close_return_2022_2025": 0.09264337268577183,
+        "yearly_close_return": {
+          "2022": -0.14951041465435577,
+          "2023": -0.0454280633422256,
+          "2024": 0.13148227028931347,
+          "2025": 0.21648007958901716
+        }
+      },
+      "cycle_matched": {
+        "annualized_return": 0.046213982984971175,
+        "annualized_vol": 0.14179277459039175,
+        "cycles": 192,
+        "max_drawdown": -0.22974116930827515,
+        "mean_per_cycle": 0.0009509049996907649,
+        "sharpe": 0.3259262195727057,
+        "signal_dates_matched": 960,
+        "signal_dates_missing_index_price": 0,
+        "total_return": 0.154845192284484,
+        "win_rate_per_cycle": 0.5208333333333334,
+        "yearly_annualized": {
+          "2022": -0.11784062964658162,
+          "2023": -0.06446138891675769,
+          "2024": 0.12629151204390418,
+          "2025": 0.2434034706005744
+        }
+      },
+      "label": "上证综指 SSE Composite (requested standard)"
+    },
+    "000852.SH": {
+      "buy_and_hold": {
+        "first_close": 7983.0677,
+        "first_date": "2022-01-04",
+        "last_close": 7595.2845,
+        "last_date": "2025-12-31",
+        "max_drawdown_on_closes": -0.4622280981031891,
+        "total_close_return_2022_2025": -0.04857571231670754,
+        "yearly_close_return": {
+          "2022": -0.21313195176836586,
+          "2023": -0.08351358118099295,
+          "2024": 0.017587055049700373,
+          "2025": 0.31018938988171474
+        }
+      },
+      "cycle_matched": {
+        "annualized_return": 0.03989460860458802,
+        "annualized_vol": 0.22341751422149167,
+        "cycles": 192,
+        "max_drawdown": -0.40885159815768535,
+        "mean_per_cycle": 0.0008208767202590126,
+        "sharpe": 0.17856526935053665,
+        "signal_dates_matched": 960,
+        "signal_dates_missing_index_price": 0,
+        "total_return": 0.06370701485686237,
+        "win_rate_per_cycle": 0.5,
+        "yearly_annualized": {
+          "2022": -0.1499163399688851,
+          "2023": -0.11254972521220459,
+          "2024": 0.06640343426959758,
+          "2025": 0.35883747063167454
+        }
+      },
+      "label": "中证1000 CSI 1000 (mid/small)"
+    },
+    "000985.CSI": {
+      "buy_and_hold": {
+        "first_close": 5958.7424,
+        "first_date": "2022-01-04",
+        "last_close": 5919.1153,
+        "last_date": "2025-12-31",
+        "max_drawdown_on_closes": -0.3847078370093663,
+        "total_close_return_2022_2025": -0.006650245528318166,
+        "yearly_close_return": {
+          "2022": -0.20174035380351396,
+          "2023": -0.08180381336697784,
+          "2024": 0.08195279596750726,
+          "2025": 0.2797777774798873
+        }
+      },
+      "cycle_matched": {
+        "annualized_return": 0.03447335561779205,
+        "annualized_vol": 0.18014484168132794,
+        "cycles": 192,
+        "max_drawdown": -0.35191394896278083,
+        "mean_per_cycle": 0.0007093283048928405,
+        "sharpe": 0.19136465577390566,
+        "signal_dates_matched": 960,
+        "signal_dates_missing_index_price": 0,
+        "total_return": 0.07718514608012783,
+        "win_rate_per_cycle": 0.46875,
+        "yearly_annualized": {
+          "2022": -0.1636841776394693,
+          "2023": -0.11339639344745918,
+          "2024": 0.10336146559241542,
+          "2025": 0.31356254676524975
+        }
+      },
+      "label": "中证全指 CSI All Share (whole market, cap-weighted)"
+    },
+    "932000.CSI": {
+      "buy_and_hold": {
+        "first_close": 2697.7209,
+        "first_date": "2022-01-04",
+        "last_close": 3203.2319,
+        "last_date": "2025-12-31",
+        "max_drawdown_on_closes": -0.4069739756992652,
+        "total_close_return_2022_2025": 0.18738446960914312,
+        "yearly_close_return": {
+          "2022": -0.15746436186189605,
+          "2023": 0.02877548827653542,
+          "2024": -0.0224497785750285,
+          "2025": 0.38440352194764693
+        }
+      },
+      "cycle_matched": {
+        "annualized_return": 0.09898865725545074,
+        "annualized_vol": 0.24420071748594865,
+        "cycles": 192,
+        "max_drawdown": -0.3399310715066223,
+        "mean_per_cycle": 0.0020368036472314965,
+        "sharpe": 0.40535776583517436,
+        "signal_dates_matched": 960,
+        "signal_dates_missing_index_price": 0,
+        "total_return": 0.31675449508169407,
+        "win_rate_per_cycle": 0.546875,
+        "yearly_annualized": {
+          "2022": -0.08122842832905182,
+          "2023": 0.013944282718091382,
+          "2024": 0.04934268413064151,
+          "2025": 0.4233294705741461
+        }
+      },
+      "label": "中证2000 CSI 2000 (micro/small)"
+    }
+  },
+  "signal_dates_per_fold": {
+    "F1": 242,
+    "F2": 242,
+    "F3": 242,
+    "F4": 243
+  }
+}
