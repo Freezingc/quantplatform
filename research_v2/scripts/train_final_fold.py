@@ -38,6 +38,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "research_v2" / "scripts"))
@@ -59,6 +60,7 @@ from research_v2.training.artifacts import CheckpointStore  # noqa: E402
 from research_v2.training.ensemble import REQUIRED_SEEDS, build_seed_ensemble  # noqa: E402
 from research_v2.training.model_bundle import ModelArtifactBundleStore  # noqa: E402
 from research_v2.training.static_batches import build_static_training_batches  # noqa: E402
+from research_v2.training.torch_loop import _batch_to_device  # noqa: E402
 
 FINAL_FOLD = "FINAL"
 #: first day of the locked 2026 test segment; nothing here may touch it
@@ -122,7 +124,21 @@ def run_torch_final(
     this run is for.
     """
     family_name, model_code_version, factory_name = TORCH_FAMILY[args.family]
-    model_factory = getattr(drv, factory_name)
+    base_factory = getattr(drv, factory_name)
+
+    device = torch.device(
+        "cuda" if (args.device == "cuda" or (args.device == "auto" and torch.cuda.is_available()))
+        else "cpu"
+    )
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise SystemExit("--device cuda requested but torch.cuda.is_available() is False")
+    print(f"device: {device}"
+          + (f" ({torch.cuda.get_device_name(device)})" if device.type == "cuda" else ""),
+          flush=True)
+
+    def model_factory(config_payload, factor_order):
+        """Build on CPU then move, so the training loop derives the device from the model."""
+        return base_factory(config_payload, factor_order).to(device)
 
     preprocessor = FoldPreprocessor(factor_order=factor_order)
     preprocessor.fit(frames["train"].loc[:, list(factor_order)], role="TRAIN")
@@ -167,7 +183,8 @@ def run_torch_final(
                 learning_rate=float(payload.get("learning_rate", 0.003)),
             )
             ics.append(drv._validation_rank_ic(
-                drv._predict_validation_percentiles(model, validation_batches),
+                drv._predict_validation_percentiles(
+                    model, _prediction_batches(validation_batches, device)),
                 frames["validation"]))
         ic = sum(ics) / len(ics)
         trials.append({"config": payload, "screened_mean_rank_ic": ic,
@@ -199,7 +216,8 @@ def run_torch_final(
             learning_rate=float(best_config.get("learning_rate", 0.003)),
         )
         seed_checkpoints[seed] = checkpoint_path
-        predictions = drv._predict_validation_percentiles(model, validation_batches)
+        predictions = drv._predict_validation_percentiles(
+            model, _prediction_batches(validation_batches, device))
         seed_predictions[seed] = predictions
         seed_rank_ic[seed] = drv._validation_rank_ic(predictions, frames["validation"])
         print(f"  seed {seed}: validation RankIC {seed_rank_ic[seed]:+.6f}", flush=True)
@@ -221,6 +239,7 @@ def run_torch_final(
             "validation_span": spans["validation"],
             "note": "trained for operational scoring; carries no G1-G6 gate evidence and "
                     "must not be represented as walk-forward-passed",
+            "device": str(device),
         },
         config=dict(best_config, raw_factor_count=len(factor_order)),
         signature=asdict(prototype.artifact_signature()),
@@ -242,6 +261,7 @@ def run_torch_final(
         "ensemble_validation_mean_rank_ic": ensemble.seed_mean_validation_rank_ic,
         "ensemble_validation_std_rank_ic": ensemble.seed_std_validation_rank_ic,
         "worst_seed": int(ensemble.worst_seed),
+        "device": str(device),
         "bundle_path": str(bundle.path),
     }
 
@@ -275,6 +295,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                         help="epoch budget for screening only (M1). Ranking configs does not "
                              "need the full budget that the final fit gets, so this is the "
                              "cheapest honest way to cut the search cost")
+    parser.add_argument("--device", default="cpu", choices=("cpu", "cuda", "auto"),
+                        help="torch device for the M1 carrier. Defaults to cpu because "
+                             "_m1_model_factory builds on CPU and the F1-F4 M1 models were "
+                             "CPU-trained, so cpu is the device the existing family was "
+                             "measured on; cuda is faster but is a numerically different "
+                             "carrier, and the repo records no device field in old artifacts "
+                             "to detect the difference after the fact")
     parser.add_argument("--smoke", action="store_true",
                         help="one config, one screening seed, two epochs: verifies the whole "
                              "path including the bundle write, in minutes")
@@ -282,6 +309,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                         help="accepted for parity with the driver; unused by LightGBM")
     parser.add_argument("--report", type=Path, default=None)
     return parser.parse_args(argv)
+
+
+def _prediction_batches(batches, device):
+    """Move prediction batches onto the model's device.
+
+    `score_batch` calls `model(batch.inputs)` with no device logic of its own, so a CUDA model
+    fed CPU tensors raises a device mismatch. Reusing the training loop's own `_batch_to_device`
+    keeps the move identical to what training does rather than reimplementing it.
+    """
+    if device.type == "cpu":
+        return batches
+    return {day: _batch_to_device(batch, device) for day, batch in batches.items()}
 
 
 def finish_torch(
@@ -313,6 +352,7 @@ def finish_torch(
         "ensemble_validation_mean_rank_ic": outcome["ensemble_validation_mean_rank_ic"],
         "ensemble_validation_std_rank_ic": outcome["ensemble_validation_std_rank_ic"],
         "worst_seed": outcome["worst_seed"],
+        "device": outcome["device"],
         "seeds": list(REQUIRED_SEEDS),
         "bundle_path": outcome["bundle_path"],
         "model_status": "OPERATIONAL_UNGATED",
