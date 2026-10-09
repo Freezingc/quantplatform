@@ -20,6 +20,7 @@ stack = json.loads((HERE / "optimization_stack_results.json").read_text())
 redun = json.loads((HERE / "factor_redundancy_results.json").read_text())
 conc = json.loads((HERE / "concentration_results.json").read_text())
 idx = json.loads((HERE / "index_benchmark.json").read_text())
+gateclean = json.loads((HERE / "gate_clean_ensemble_results.json").read_text())
 
 FACTOR_MAP = levers["factor_diagnostics"]["factor_map"]
 L: list[str] = []
@@ -100,6 +101,13 @@ w(row("**已证伪**", "**波动率目标（vol targeting）**", "否",
 w(row("**已证伪**", "**换一种集成方式**", "否",
     f"等权原始分数已是四种组合里最好的；z-score 平均是灾难"
     f"（Sharpe {levers['ensemble_variants']['30']['zscore_mean']['net_sharpe']:.3f}）"))
+w("")
+w(f"> **本文所有数字的参照系是 M0R+M1+M2 三模型集成，而 M2 未过 G4/G6。**"
+  f"§12 单独测了治理干净的 M0R+M1：在参照系配置下它**四项指标全部不差于三模型**，"
+  f"并且把合格行从 {gateclean['member_sets']['M0R+M1+M2']['total_eligible_rows']:,} 扩到 "
+  f"{gateclean['member_sets']['M0R+M1 (gate-clean)']['total_eligible_rows']:,}"
+  f"（正好多出 {gateclean['member_sets']['M0R+M1 (gate-clean)']['total_eligible_rows'] - gateclean['member_sets']['M0R+M1+M2']['total_eligible_rows']:,} 行）。"
+  f"**治理与性能的冲突不存在，可以直接选干净的那个。**")
 w("")
 w(f"**一句话**：这个策略的回撤主要是**市场/风格 beta**，不是选股失败——所以降回撤是"
   f"**仓位问题**；而提收益的主要来源是**换手**（纯净额，不用改模型）。"
@@ -559,8 +567,85 @@ w(f"* **全部基于三模型覆盖的交集行**，宽度由 M2 最窄的覆盖
   f"修掉 M2 的历史门槛（§9.3）会让样本变大，数字会变。")
 w("")
 
-# ---------------------------------------------------------------- 12. repro
-w("## 12. 复现")
+# ---------------------------------------------------------------- 12. gate-clean
+w("## 12. 治理干净的方案要不要付性能代价：不用")
+w("")
+w("本文的参照系是 M0R+M1+M2 等权集成，但门槛状态是：")
+w("")
+w(row("模型", "门槛", "注册表"))
+w(row("---", "---", "---"))
+for m, (g, r) in (("M0R", ("六门全过", "`WALK_FORWARD_PASSED`")),
+                  ("M1", ("六门全过", "**未注册**（注册是独立的显式命令，训练不会自动触发）")),
+                  ("M2", ("**G4 差 4.08e-05、G6 = 905/969 = 0.9340 < 0.95**", "无晋级证据"))):
+    w(row(f"`{m}`", g, r))
+w("")
+w("所以治理干净的选择是 M0R+M1。它要不要付性能代价，是实测出来的，不是判断：")
+w("")
+gc = gateclean["member_sets"]
+w(row("成员集", "合格行", "日均候选", "年化", "Sharpe", "最大回撤", "累计"))
+w(row("---", "---", "---", "---", "---", "---", "---"))
+for tag in ("M0R+M1+M2", "M0R+M1 (gate-clean)", "M0R only", "M1 only"):
+    e = gc[tag]
+    m = e["variants"]["top30_exit60"]["none"]
+    label = f"**{tag}**" if tag == "M0R+M1 (gate-clean)" else tag
+    w(row(label, f"{e['total_eligible_rows']:,}", f"{e['total_signal_dates'] and e['total_eligible_rows']/e['total_signal_dates']:.0f}",
+          pct(m["net_annualized"]), f"{m['net_sharpe']:.3f}", pct(m["max_drawdown"]), pct(m["total_return"])))
+bl = gc["M0R+M1 (gate-clean)"]["baseline_same_rows"]
+w(row("基线 best_simple（同行、top30）", "同上", "同上", pct(bl["net_annualized"]),
+    f"{bl['net_sharpe']:.3f}", pct(bl["max_drawdown"]), pct(bl["total_return"])))
+w("")
+_3 = gc["M0R+M1+M2"]
+_2 = gc["M0R+M1 (gate-clean)"]
+_gain = _2["total_eligible_rows"] - _3["total_eligible_rows"]
+w(f"**三条结论**：")
+w("")
+w(f"* **去掉 M2 不亏**。参照系配置下两模型集成在年化"
+  f"（{pct(_3['variants']['top30_exit60']['none']['net_annualized'])} → "
+  f"{pct(_2['variants']['top30_exit60']['none']['net_annualized'])}）、Sharpe"
+  f"（{_3['variants']['top30_exit60']['none']['net_sharpe']:.3f} → "
+  f"{_2['variants']['top30_exit60']['none']['net_sharpe']:.3f}）、回撤"
+  f"（{pct(_3['variants']['top30_exit60']['none']['max_drawdown'])} → "
+  f"{pct(_2['variants']['top30_exit60']['none']['max_drawdown'])}）、累计"
+  f"（{pct(_3['variants']['top30_exit60']['none']['total_return'])} → "
+  f"{pct(_2['variants']['top30_exit60']['none']['total_return'])}）**四项全部不差**。"
+  f"Sharpe 差 {_2['variants']['top30_exit60']['none']['net_sharpe'] - _3['variants']['top30_exit60']['none']['net_sharpe']:+.3f}，"
+  f"**在 1 个标准误（≈0.085）以内**，所以准确说法是「不比它差」而不是「比它好」。")
+w(f"* **换回了正好 {_gain:,} 行覆盖**。这与独立记录的 M2 因 "
+  f"`minimum_valid_history_length=15` 而无法评分的行数**逐位吻合**——"
+  f"两条完全独立的测量路径给出同一个数，这本身就是 M2 覆盖缺口归因的硬证据。")
+w(f"* **集成仍然值得**：两模型集成（Sharpe "
+  f"{_2['variants']['top30_exit60']['none']['net_sharpe']:.3f}）明显优于任何单模型"
+  f"（M0R {gc['M0R only']['variants']['top30_exit60']['none']['net_sharpe']:.3f}、"
+  f"M1 {gc['M1 only']['variants']['top30_exit60']['none']['net_sharpe']:.3f}），"
+  f"也远优于同行基线（{bl['net_sharpe']:.3f}，回撤 {pct(bl['max_drawdown'])}）。"
+  f"**即使三个模型的 top50 只有 8.7 只重合，等权集成依然稳定地好过其中任何一个。**")
+w("")
+w("加上趋势过滤后结论不变（top30 / N_exit=150 / 中证2000 MA10）：")
+w("")
+w(row("成员集", "年化", "Sharpe", "最大回撤", "累计"))
+w(row("---", "---", "---", "---", "---"))
+for tag in ("M0R+M1+M2", "M0R+M1 (gate-clean)"):
+    m = gc[tag]["variants"]["top30_exit150"]["ma10"]
+    label = f"**{tag}**" if tag == "M0R+M1 (gate-clean)" else tag
+    w(row(label, pct(m["net_annualized"]), f"{m['net_sharpe']:.3f}", pct(m["max_drawdown"]),
+          pct(m["total_return"])))
+w("")
+_3f = _3["variants"]["top30_exit150"]["ma10"]
+_2f = _2["variants"]["top30_exit150"]["ma10"]
+w(f"这一档三模型的 Sharpe 略高（{_3f['net_sharpe']:.3f} 对 {_2f['net_sharpe']:.3f}，"
+  f"差 {_3f['net_sharpe']-_2f['net_sharpe']:+.3f}，约 "
+  f"{(_3f['net_sharpe']-_2f['net_sharpe'])/0.085:.1f} 个标准误），"
+  f"两模型的回撤更好（{pct(_2f['max_drawdown'])} 对 {pct(_3f['max_drawdown'])}）。"
+  f"**这点差距不足以支撑「为了性能保留一个未过门的模型」**，"
+  f"何况保留 M2 还会把本文所有数字的样本继续压窄 {_gain:,} 行。")
+w("")
+w(f"> **推荐**：以 **M0R + M1 等权集成**为准。它六门全过、覆盖更宽、性能不差，"
+  f"且把 M2 的门槛问题从关键路径上移走了。若日后修好 M2 的 "
+  f"`minimum_valid_history_length`（§9.3）并让它过门，再把它加回来重测一次即可。")
+w("")
+
+# ---------------------------------------------------------------- 13. repro
+w("## 13. 复现")
 w("")
 w("```bash")
 w("cd docs/research/2026-10-08-model-backtest")
@@ -569,6 +654,7 @@ w("$PY optimization_probes.py      # -> optimization_probe_results.json   (回�
 w("$PY optimization_levers.py      # -> optimization_levers_results.json  (归因 / 择时 / 换手 / 集成 / 单因子)")
 w("$PY optimization_stack.py       # -> optimization_stack_results.json   (边界 / 叠加网格 / 单事件检验)")
 w("$PY factor_redundancy.py        # -> factor_redundancy_results.json    (有效维度 / IC 共动 / P&L 集中度)")
+w("$PY gate_clean_ensemble.py      # -> gate_clean_ensemble_results.json  (去掉 M2 值不值 / 覆盖换回多少)")
 w("$PY write_optimization_report.py")
 w("$PY verify_optimization_report.py")
 w("```")

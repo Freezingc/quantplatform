@@ -27,6 +27,7 @@ probes = json.loads((HERE / "optimization_probe_results.json").read_text())
 levers = json.loads((HERE / "optimization_levers_results.json").read_text())
 stack = json.loads((HERE / "optimization_stack_results.json").read_text())
 redun = json.loads((HERE / "factor_redundancy_results.json").read_text())
+gateclean = json.loads((HERE / "gate_clean_ensemble_results.json").read_text())
 
 text = DOC.read_text()
 lines = text.split("\n")
@@ -179,6 +180,31 @@ claims: list[tuple[str, str]] = [
 for pair in rd["top10_pairs_by_abs_correlation"][:5]:
     claims.append((f"冗余对 {pair['a']}~{pair['b']} 水平", f"{pair['level_corr']:+.3f}"))
     claims.append((f"冗余对 {pair['a']}~{pair['b']} IC", f"{pair['ic_series_corr']:+.3f}"))
+
+# ---- section 12: the gate-clean comparison
+gc = gateclean["member_sets"]
+_g3, _g2 = gc["M0R+M1+M2"], gc["M0R+M1 (gate-clean)"]
+for tag, e in gc.items():
+    v = e["variants"]["top30_exit60"]["none"]
+    claims.append((f"{tag} 合格行", f"{e['total_eligible_rows']:,}"))
+    claims.append((f"{tag} top30/exit60 年化", pct(v["net_annualized"])))
+    claims.append((f"{tag} top30/exit60 Sharpe", f"{v['net_sharpe']:.3f}"))
+    claims.append((f"{tag} top30/exit60 回撤", pct(v["max_drawdown"])))
+    claims.append((f"{tag} top30/exit60 累计", pct(v["total_return"])))
+    # the overlay table in the document only carries the two ensembles, so only those
+    # two are asserted here; claiming rows the document does not contain is a false pass
+    if tag in ("M0R+M1+M2", "M0R+M1 (gate-clean)"):
+        f10 = e["variants"]["top30_exit150"]["ma10"]
+        claims.append((f"{tag} exit150+MA10 Sharpe", f"{f10['net_sharpe']:.3f}"))
+        claims.append((f"{tag} exit150+MA10 回撤", pct(f10["max_drawdown"])))
+_bl = _g2["baseline_same_rows"]
+claims += [
+    ("同行基线年化", pct(_bl["net_annualized"])),
+    ("同行基线 Sharpe", f"{_bl['net_sharpe']:.3f}"),
+    ("同行基线回撤", pct(_bl["max_drawdown"])),
+    ("同行基线累计", pct(_bl["total_return"])),
+    ("覆盖换回行数", f"{_g2['total_eligible_rows'] - _g3['total_eligible_rows']:,}"),
+]
 
 compared = 0
 for label, expected in claims:
