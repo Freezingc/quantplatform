@@ -1,0 +1,59 @@
+# Portfolio policy -- the layer downstream of inference that turns scores into holdings.
+#
+# Every value here was measured on the frozen 2022-2025 TEST predictions before being
+# written down; see docs/research/2026-10-08-optimization-levers.md. Changing a number
+# here changes what the backtest verified, so re-run the replay check afterwards:
+#
+#   python research_v2/scripts/verify_portfolio_policy_replay.py
+#
+# Two refuted settings are NOT offered here and raise if added: volatility targeting
+# (halved return, did not move drawdown) and z-score ensemble averaging (Sharpe 0.458).
+selection:
+  # Hold the top n_enter names; keep an incumbent until its rank falls below n_exit.
+  # Widening the buffer from 60 to 150 cut turnover 0.356 -> 0.209 and RAISED net
+  # annualised return 20.07% -> 21.29%, so this is a pure net gain, not a trade-off.
+  n_enter: 30
+  n_exit: 150
+ensemble:
+  # M0R + M1: both pass all six gates. M2 is excluded because it fails G4 (by 4.08e-05)
+  # and G6 (905/969 = 0.9340 < 0.95); excluding it was measured to cost nothing at the
+  # reference config and to buy back exactly 17,306 rows of coverage.
+  members:
+    - M0R
+    - M1
+  weighting: equal_raw_score
+exposure:
+  # Reduce exposure when the style index closes below its own trailing moving average.
+  #
+  # THIS IS A RISK DIAL, NOT A FREE IMPROVEMENT. Re-priced under daily accounting
+  # (exposure_daily_results.json, exposure_floor_results.json), every one of the 24
+  # index x MA x floor cells cuts max drawdown, and every one also costs annual return.
+  # No setting raises return and lowers drawdown at the same time.
+  #
+  # This cell (CSI 2000, MA20, floor 0.5) was chosen for ROBUSTNESS, not for the highest
+  # Sharpe. Measured: Sharpe 1.009 -> 1.108, max drawdown -22.89% -> -14.09%, annualised
+  # 21.17% -> 17.48%, cumulative 111.85% -> 90.20%, mean exposure 77.7%.
+  # The in-sample best cell was CSI All Share MA30 floor 0.25 at Sharpe 1.205, and it was
+  # NOT chosen: it is the maximum of 24 cells searched on TEST, where the Sharpe standard
+  # error is ~0.085. CSI 2000 at floor 0.5 gives 1.083 / 1.108 / 1.101 for MA10 / MA20 /
+  # MA30 -- flat in the parameter, which is what a defensible default looks like -- and
+  # CSI 2000 is the style-matched index for this small-cap book, so it is the a-priori
+  # right choice rather than a fitted one.
+  #
+  # CAVEAT: index, MA window and floor were all selected on TEST. The direction (drawdown
+  # down, return down) is robust across all 24 cells; the specific Sharpe gain is not yet
+  # confirmed out of sample. The 2026 locked segment is the intended confirmation set.
+  index_code: 932000.CSI
+  ma_window: 20
+  floor: 0.5
+cost:
+  # Round-trip, in basis points. This is an ASSUMPTION, not a measurement: roughly 10bp
+  # of explicit commission/stamp plus 5bp of slippage. There is no limit-up filter
+  # anywhere in this stack, so realised cost on concentrated books will be higher.
+  round_trip_bp: 15.0
+  # What fraction of a round trip an exposure switch costs. 0.5 is correct: going to cash
+  # is a sell and coming back is a buy, i.e. one leg each. The published research numbers
+  # used 1.0, which overstates the overlay's cost twofold; 1.0 is still reachable so those
+  # numbers stay reproducible, and verify_portfolio_policy_replay.py uses it for exactly
+  # that purpose. Do not set this above 0.5 for anything but reproduction.
+  switch_cost_factor: 0.5
