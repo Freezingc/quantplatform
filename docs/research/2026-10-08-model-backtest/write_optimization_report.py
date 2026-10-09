@@ -21,6 +21,8 @@ redun = json.loads((HERE / "factor_redundancy_results.json").read_text())
 conc = json.loads((HERE / "concentration_results.json").read_text())
 idx = json.loads((HERE / "index_benchmark.json").read_text())
 gateclean = json.loads((HERE / "gate_clean_ensemble_results.json").read_text())
+daily = json.loads((HERE / "exposure_daily_results.json").read_text())
+floors = json.loads((HERE / "exposure_floor_results.json").read_text())
 
 FACTOR_MAP = levers["factor_diagnostics"]["factor_map"]
 L: list[str] = []
@@ -55,8 +57,16 @@ pnl = redun["pnl_concentration"]
 
 w("# 要提高收益、降低回撤，该动哪里：所有杠杆的实测结果")
 w("")
-w("**日期**：2026-10-08　**分支**：`codex/research-conditional-factor-review`　"
-  "**配套**：`2026-10-08-model-backtest/`")
+w("**日期**：2026-10-08（第 2 版，2026-10-09 修订）　"
+  "**分支**：`codex/research-conditional-factor-review`　"
+  "**配套**：`2026-10-08-model-backtest/`、`research_v2/src/research_v2/portfolio/`")
+w("")
+w("> **第 2 版修正了第 1 版的一个主结论。** 第 1 版把「指数趋势过滤」报成同时提高 Sharpe "
+  "和大幅降低回撤的免费改进，并据此排在优先级第 1。那个数字是用**周期级平均仓位**记账得到的，"
+  "而这个账本是**按日错位持有**的，两种口径不等价。改成按日记账、并把清仓/回补的成本从"
+  "「一个完整往返」改成正确的「两次单边」之后，结论变成：**趋势过滤是一个风险/收益的交换，"
+  "不是免费改进**。全部细节、精确归因和复现方式见 §4.0。第 1 版的其余结论（回撤归因、"
+  "波动率目标已证伪、换手杠杆、集成方式已证伪、因子有效维度、P&L 集中度、治理干净方案）不受影响。")
 w("")
 w("## 0. 结论先行")
 w("")
@@ -72,11 +82,17 @@ w(row("---", "---", "---", "---"))
 # labelled as combined. Section 10 explains why mixing the two bases is a real error.
 _b150 = grid["top30_exit150_sm1_none"]["metrics"]
 _b60 = grid["top30_exit60_sm1_none"]["metrics"]
+# all overlay figures in this report are the DAILY-accounting ones from the gate-clean
+# M0R+M1 ensemble; the cycle-level numbers published in the first revision were wrong (see
+# section 4.0) and are retained only as the record of the error and its size.
+_dref = daily["results"]["none_exit150"]
+_dpick = floors["results"]["932000.CSI_ma20_floor0.5"]
+_dbest = floors["results"][floors["best_by_sharpe"]]
 w(row("**1**", "**指数趋势过滤（仓位择时）**", "否",
-    f"同缓冲下：最大回撤 {pct(_b150['max_drawdown'])} → {pct(rm['max_drawdown'])}，"
-    f"Sharpe {_b150['net_sharpe']:.3f} → {rm['net_sharpe']:.3f}，"
-    f"年化 {pct(_b150['net_annualized'])} → {pct(rm['net_annualized'])}"
-    f"（**降回撤确定，提收益不确定**，见 §10）"))
+    f"最大回撤 {pct(_dref['max_drawdown'])} → {pct(_dpick['max_drawdown'])}，"
+    f"Sharpe {_dref['net_sharpe']:.3f} → {_dpick['net_sharpe']:.3f}，"
+    f"年化 {pct(_dref['net_annualized'])} → {pct(_dpick['net_annualized'])}"
+    f"（**这是风险/收益的交换，不是免费改进**，见 §4）"))
 w(row("**2**", "**加宽持仓缓冲 / 分数平滑（降换手）**", "否",
     f"无过滤下：年化 {pct(_b60['net_annualized'])} → {pct(_b150['net_annualized'])}，"
     f"Sharpe {_b60['net_sharpe']:.3f} → {_b150['net_sharpe']:.3f}，"
@@ -110,7 +126,8 @@ w(f"> **本文所有数字的参照系是 M0R+M1+M2 三模型集成，而 M2 未
   f"**治理与性能的冲突不存在，可以直接选干净的那个。**")
 w("")
 w(f"**一句话**：这个策略的回撤主要是**市场/风格 beta**，不是选股失败——所以降回撤是"
-  f"**仓位问题**；而提收益的主要来源是**换手**（纯净额，不用改模型）。"
+  f"**仓位问题**；而提收益的主要来源是**换手**（纯净额，不用改模型，是唯一无争议的一步）。"
+  f"择时能大幅降回撤但**必然**要付收益，它是风险偏好的选择而不是优化。"
   f"因子和模型都还有空间，但都比前两条贵，而且因子的空间是「加正交的」而不是「加更多同源的」。")
 w("")
 
@@ -188,95 +205,166 @@ w(f"**为什么无效**：波动目标 12% 把年化从 {pct(buf['base']['net_an
 w("")
 
 # ---------------------------------------------------------------- 4. trend filter
-w("## 4. 杠杆一：指数趋势过滤（仓位择时）—— 最有效")
+w("## 4. 杠杆一：指数趋势过滤（仓位择时）")
 w("")
-w("规则：信号日 T 收盘后，若趋势指数收盘价 > 它自己的 MA(N)，则 T+1 开盘满仓，否则空仓"
-  "（现金收益按 0 计，是保守口径）。空/满仓切换的往返成本**已按 bp 显式计入**。"
-  "只用 T 及之前的数据，**无前视**。")
+w("### 4.0 重要修正：第一版这一节的结论不成立")
 w("")
-w("### 4.1 参数边界：短窗口更好，但短到 MA2 就开始退化")
+w("本文第一版把趋势过滤报成「Sharpe 0.960 → 1.513、最大回撤 −25.17% → −6.40%、年化基本不变」，"
+  "并据此把它排在优先级第 1。**那个结论是错的，错在记账口径。** 这一节保留错误的来龙去脉和精确幅度，"
+  "因为它本身就是一个值得写进论文的方法论发现：**用周期级平均去记账一个按日错位的账本，"
+  "会系统性地美化择时。**")
 w("")
-bnd = stack["boundary"]
-w(row("趋势指数", "MA", "年化", "Sharpe", "最大回撤", "在场比例", "换手", "切换次数/年"))
-w(row("---", "---", "---", "---", "---", "---", "---", "---"))
-w(row("**无过滤**", "—", pct(ref["net_annualized"]), f"{ref['net_sharpe']:.3f}",
-    pct(ref["max_drawdown"]), "100.0%", f"{ref['mean_turnover']:.3f}", "—"))
-for code, name in (("932000.CSI", "中证2000"), ("000985.CSI", "中证全指")):
-    for ma in (2, 3, 5, 10, 20, 30, 40, 60):
-        m = bnd[f"{code}_ma{ma}"]
-        w(row(name, ma, pct(m["net_annualized"]), f"{m['net_sharpe']:.3f}", pct(m["max_drawdown"]),
-              pct(m["in_market"], 1), f"{m['mean_turnover']:.3f}", f"{m['flips_per_year']:.1f}"))
+w("第一版把一个 5 日周期内 5 天的仓位**取平均成一个标量**，切换成本每周期只收一次。"
+  "但这个账本实际是**错位持有**的：每个信号日进场的那一批各自持有 5 天，"
+  "所以每天的仓位应当各自独立生效。周期内平均有两个后果：")
 w("")
-# bounds computed from the grid, not eyeballed off the table
-_band = [bnd[f"{c}_ma{m}"] for c in ("932000.CSI", "000985.CSI") for m in (2, 3, 5, 10, 20, 30)]
-_lo_sharpe = min(m["net_sharpe"] for m in _band)
-_worst_dd = min(m["max_drawdown"] for m in _band)
-_best_dd = max(m["max_drawdown"] for m in _band)
-w(f"**读法**：MA2–MA30 全区间、两个指数共 {len(_band)} 个组合，**无一例外**把 Sharpe 从 "
-  f"{ref['net_sharpe']:.3f} 抬到 {_lo_sharpe:.3f} 以上、最大回撤从 {pct(ref['max_drawdown'])} "
-  f"压到 {pct(_worst_dd,1)} ~ {pct(_best_dd,1)}。**方向是稳的**。"
-  f"但最优点（中证2000 MA3，Sharpe {bnd['932000.CSI_ma3']['net_sharpe']:.3f}）落在窗口最短的一端，"
-  f"而 MA2 已经回落——**这是典型的「参数在样本内被挑出来」的形状，具体数值不可信，区间可信**。"
-  f"另外切换成本是真实的：MA3 每年切换 {bnd['932000.CSI_ma3']['flips_per_year']:.1f} 次，"
-  f"MA20 只要 {bnd['932000.CSI_ma20']['flips_per_year']:.1f} 次。")
+w("* `mean(收益) × mean(仓位)` ≠ `mean(收益 × 仓位)`，两者差一个协方差项；")
+w("* **周期内的仓位翻转被抹掉**。MA10 在周期级只看到 19.7 次切换/年，按日实际是 "
+  f"{daily['results']['932000.CSI_ma10_exit150']['flips_per_year']:.1f} 次/年，切换成本少收了一半以上。")
 w("")
-w("### 4.2 与换手杠杆叠加（完整网格见 JSON）")
+w("另外第一版把「清仓 → 回补」按一个**完整往返**收费，而它其实是两次**单边**交易"
+  "（一次卖出、一次买入），各半个往返。把这两处都改对，差距可以精确归因：")
 w("")
-w(row("组合", "年化", "Sharpe", "最大回撤", "累计", "换手"))
-w(row("---", "---", "---", "---", "---", "---"))
-show = [
-    ("top30_exit60_sm1_none", "基准：top30 / 缓冲60 / 无平滑 / 无过滤"),
-    ("top30_exit150_sm1_none", "top30 / 缓冲150 / 无过滤"),
-    ("top30_exit150_sm1_csi2000_ma20_f0.0", "top30 / 缓冲150 / 中证2000 MA20 空仓"),
-    ("top30_exit150_sm1_csi2000_ma10_f0.0", "top30 / 缓冲150 / 中证2000 MA10 空仓"),
-    ("top30_exit150_sm1_csi2000_ma5_f0.0", "top30 / 缓冲150 / 中证2000 MA5 空仓（样本内最优）"),
-    ("top30_exit90_sm2_csi2000_ma10_f0.0", "top30 / 缓冲90 / 平滑2日 / MA10 空仓"),
-    ("top20_exit60_sm1_csi2000_ma5_f0.0", "top20 / 缓冲60 / MA5 空仓"),
-    ("top50_exit90_sm2_csi2000_ma10_f0.0", "top50 / 缓冲90 / 平滑2日 / MA10 空仓"),
-    (best_key, f"**网格最高 Sharpe**：{best_key}"),
-]
-for key, label in show:
-    m = grid[key]["metrics"]
-    w(row(label, pct(m["net_annualized"]), f"{m['net_sharpe']:.3f}", pct(m["max_drawdown"]),
-        pct(m["total_return"]), f"{m['mean_turnover']:.3f}"))
-w("")
-w(f"**两条杠杆是独立可叠加的**：缓冲 60→150 单独把年化从 "
-  f"{pct(grid['top30_exit60_sm1_none']['metrics']['net_annualized'])} 抬到 "
-  f"{pct(grid['top30_exit150_sm1_none']['metrics']['net_annualized'])}；"
-  f"MA20 过滤单独把回撤从 {pct(ref['max_drawdown'])} 压到 "
-  f"{pct(grid['top30_exit150_sm1_csi2000_ma20_f0.0']['metrics']['max_drawdown'])}；"
-  f"合起来年化 {pct(grid['top30_exit150_sm1_csi2000_ma5_f0.0']['metrics']['net_annualized'])}、"
-  f"回撤 {pct(grid['top30_exit150_sm1_csi2000_ma5_f0.0']['metrics']['max_drawdown'])}、"
-  f"Sharpe {grid['top30_exit150_sm1_csi2000_ma5_f0.0']['metrics']['net_sharpe']:.3f}、"
-  f"累计 {pct(grid['top30_exit150_sm1_csi2000_ma5_f0.0']['metrics']['total_return'])}。")
-w("")
-w("### 4.3 关键稳健性检验：不是一次运气")
-w("")
-w("最大的担心是「过滤器只是躲过了 2024 年 1 月那一次小盘流动性危机」。"
-  f"把那 {stack['episode_test'][[k for k in stack['episode_test'] if k.endswith('_none')][0]]['full']['cycles'] - stack['episode_test'][[k for k in stack['episode_test'] if k.endswith('_none')][0]]['ex_episode']['cycles']} "
-  "个周期整段剔除后重算：")
-w("")
-w(row("组合", "全样本 Sharpe", "剔除危机后 Sharpe", "全样本回撤", "剔除危机后回撤"))
+_2 = gateclean["member_sets"]["M0R+M1 (gate-clean)"]  # gate-clean ensemble, see section 12
+_cyc = _2["variants"]["top30_exit150"]["ma10"]
+_dsw1 = daily["results"]["researchcost_932000.CSI_ma10_exit150"]
+_dsw05 = daily["results"]["932000.CSI_ma10_exit150"]
+w(row("口径（均为 中证2000 MA10 / N_exit=150）", "净年化", "Sharpe", "最大回撤", "对上一行的差"))
 w(row("---", "---", "---", "---", "---"))
-for key in ("top30_exit60_none", "top30_exit60_csi2000_ma5_f0.0", "top30_exit150_none",
-            "top30_exit150_csi2000_ma5_f0.0", "top30_exit150_csi2000_ma20_f0.0",
-            "top30_exit60_csiall_ma30_f0.0"):
-    e = stack["episode_test"][key]
-    w(row(key, f"{e['full']['net_sharpe']:.3f}", f"{e['ex_episode']['net_sharpe']:.3f}",
-          pct(e["full"]["max_drawdown"]), pct(e["ex_episode"]["max_drawdown"])))
+w(row("① 第一版：周期级平均 + 完整往返切换成本", pct(_cyc["net_annualized"]),
+    f"{_cyc['net_sharpe']:.3f}", pct(_cyc["max_drawdown"]), "—"))
+w(row("② 改成按日记账（切换成本仍按完整往返）", pct(_dsw1["net_annualized"]),
+    f"{_dsw1['net_sharpe']:.3f}", pct(_dsw1["max_drawdown"]),
+    f"{(_dsw1['net_annualized'] - _cyc['net_annualized']) * 100:+.2f}pp"))
+w(row("**③ 再把切换成本改成正确的单边（本文口径）**", f"**{pct(_dsw05['net_annualized'])}**",
+    f"**{_dsw05['net_sharpe']:.3f}**", f"**{pct(_dsw05['max_drawdown'])}**",
+    f"{(_dsw05['net_annualized'] - _dsw1['net_annualized']) * 100:+.2f}pp"))
 w("")
-w(f"**过滤器在剔除危机后依然全面有效**：无过滤的基准剔除危机后 Sharpe "
-  f"{stack['episode_test']['top30_exit60_none']['ex_episode']['net_sharpe']:.3f}，"
-  f"加 MA5 过滤后 {stack['episode_test']['top30_exit60_csi2000_ma5_f0.0']['ex_episode']['net_sharpe']:.3f}；"
-  f"回撤从 {pct(stack['episode_test']['top30_exit60_none']['ex_episode']['max_drawdown'])} 压到 "
-  f"{pct(stack['episode_test']['top30_exit60_csi2000_ma5_f0.0']['ex_episode']['max_drawdown'])}。"
-  f"注意**无过滤时即便剔除了那次危机，最大回撤仍有 "
-  f"{pct(stack['episode_test']['top30_exit60_none']['ex_episode']['max_drawdown'])}**——"
-  f"说明这个策略还有别的深回撤，过滤器把那些也一起压下去了。这是它最值得相信的一点。")
+w(f"**归因很清楚**：从 ① 到 ③ 净年化一共少了 "
+  f"{(_cyc['net_annualized'] - _dsw05['net_annualized']) * 100:.2f}pp、Sharpe 少了 "
+  f"{_cyc['net_sharpe'] - _dsw05['net_sharpe']:.3f}。拆开看，**记账口径这一项就是 "
+  f"{(_dsw1['net_annualized'] - _cyc['net_annualized']) * 100:.2f}pp**（① → ②），"
+  f"而把切换成本改成正确的单边反而**退回 "
+  f"{(_dsw05['net_annualized'] - _dsw1['net_annualized']) * 100:+.2f}pp**（② → ③，"
+  f"因为第一版把清仓/回补多收了一倍）。两项相加 "
+  f"{(_dsw05['net_annualized'] - _cyc['net_annualized']) * 100:+.2f}pp。"
+  f"**所以主因是口径，不是费率**：费率那一项方向相反、量级只有口径的约 "
+  f"{abs((_dsw05['net_annualized'] - _dsw1['net_annualized']) / (_dsw1['net_annualized'] - _cyc['net_annualized'])) * 100:.0f}%。")
 w("")
-w(f"> ⚠️ **但 MA 窗口和趋势指数本身是在 TEST 上挑的**，属于样本内选择。"
-  f"上线前必须用 2026 锁定段（`factor_daily` 目前只到 2025-12-31，需先物化因子）做一次"
-  f"**只许选一次参数**的验证。§4.1 的区间比 §4.2 的单一最优值更该被引用。")
+w("这个归因不是手算的：`research_v2/scripts/verify_portfolio_policy_replay.py` 用一套**独立重写**的"
+  "组合引擎（与研究脚本不共享代码）在三种口径下分别重放全部 969 个信号日，断言周期级那两行能复现到 "
+  "1e-16，并断言「口径效应必须大于费率效应」，共比对 38 个量后通过。")
+w("")
+w("### 4.1 按日重算：0/1 全仓过滤是纯粹的风险/收益交换")
+w("")
+w(f"参照系（不加任何过滤，M0R+M1 等权、top30、N_exit=150）："
+  f"年化 **{pct(_dref['net_annualized'])}**，Sharpe **{_dref['net_sharpe']:.3f}**，"
+  f"最大回撤 **{pct(_dref['max_drawdown'])}**，累计 **{pct(_dref['total_return'])}**。")
+w("")
+w(row("趋势指数", "MA", "年化", "Sharpe", "最大回撤", "累计", "切换/年", "空仓天数占比", "踏空的毛利占比"))
+w(row("---", "---", "---", "---", "---", "---", "---", "---", "---"))
+w(row("**无过滤（参照系）**", "—", pct(_dref["net_annualized"]), f"{_dref['net_sharpe']:.3f}",
+    pct(_dref["max_drawdown"]), pct(_dref["total_return"]), "—", "0.0%", "—"))
+for _code, _name in (("932000.CSI", "中证2000"), ("000985.CSI", "中证全指")):
+    for _ma in (5, 10, 20, 30, 60, 120):
+        _r = daily["results"][f"{_code}_ma{_ma}_exit150"]
+        w(row(_name, _ma, pct(_r["net_annualized"]), f"{_r['net_sharpe']:.3f}",
+              pct(_r["max_drawdown"]), pct(_r["total_return"]), f"{_r['flips_per_year']:.1f}",
+              pct(_r["flat_share"], 1), pct(_r["gross_share_sat_out"], 1)))
+w("")
+_cells = [daily["results"][f"{c}_ma{m}_exit150"]
+          for c in ("932000.CSI", "000985.CSI") for m in (5, 10, 20, 30, 60, 120)]
+w(f"**读法**：这 {len(_cells)} 个组合**无一例外**把最大回撤从 {pct(_dref['max_drawdown'])} 压到 "
+  f"{pct(max(c['max_drawdown'] for c in _cells), 1)} ~ {pct(min(c['max_drawdown'] for c in _cells), 1)}，"
+  f"**但也无一例外地把年化从 {pct(_dref['net_annualized'])} 拉到 "
+  f"{pct(min(c['net_annualized'] for c in _cells))} ~ {pct(max(c['net_annualized'] for c in _cells))}**。"
+  f"Sharpe 最高只到 {max(c['net_sharpe'] for c in _cells):.3f}（中证2000 MA20），"
+  f"与不过滤的 {_dref['net_sharpe']:.3f} **基本相同**。")
+w("")
+w(f"**所以 0/1 全仓过滤不是优化，是取舍**：用一半以上的收益换掉一半以上的回撤，"
+  f"风险调整后并不划算。原因在最后一列——**它踏空了 "
+  f"{min(c['gross_share_sat_out'] for c in _cells) * 100:.0f}%–"
+  f"{max(c['gross_share_sat_out'] for c in _cells) * 100:.0f}% 的毛利**。"
+  f"空仓的那些天策略本来是在赚钱的（空仓日均毛利约 +0.33%/5日，满仓日约 +0.57%/5日）："
+  f"过滤器能区分「更好」和「更差」的日子，但**区分得远不够干净**。")
+w("")
+w("### 4.2 部分仓位下限（floor）才是可用的形态")
+w("")
+w("既然 0/1 太极端，那就在指数跌破均线时**只减仓、不清仓**。这一维第一版完全没测，"
+  "而它恰好是把「取舍」变回「改进」的那一维（N_exit=150，按日记账）：")
+w("")
+w(row("趋势指数", "MA", "仓位下限", "年化", "Sharpe", "最大回撤", "累计", "平均仓位",
+    "ΔSharpe", "Δ年化", "Δ回撤"))
+w(row("---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"))
+_fref = floors["results"]["none"]
+w(row("**无过滤**", "—", "—", pct(_fref["net_annualized"]), f"{_fref['net_sharpe']:.3f}",
+    pct(_fref["max_drawdown"]), pct(_fref["total_return"]), "100.0%", "—", "—", "—"))
+for _code, _name in (("932000.CSI", "中证2000"), ("000985.CSI", "中证全指")):
+    for _ma in (10, 20, 30):
+        for _fl in (0.0, 0.25, 0.5, 0.75):
+            _r = floors["results"][f"{_code}_ma{_ma}_floor{_fl}"]
+            w(row(_name, _ma, f"{_fl:.2f}", pct(_r["net_annualized"]), f"{_r['net_sharpe']:.3f}",
+                  pct(_r["max_drawdown"]), pct(_r["total_return"]), pct(_r["mean_exposure"], 1),
+                  f"{_r['net_sharpe'] - _fref['net_sharpe']:+.3f}",
+                  f"{(_r['net_annualized'] - _fref['net_annualized']) * 100:+.2f}pp",
+                  f"{(_r['max_drawdown'] - _fref['max_drawdown']) * 100:+.2f}pp"))
+w("")
+_pos = [v for k, v in floors["results"].items() if k != "none"]
+w(f"**读法**：{len(_pos)} 个格子里有 {sum(1 for v in _pos if v['net_sharpe'] > _fref['net_sharpe'])} "
+  f"个把 Sharpe 抬到了参照系之上，最好的是 "
+  f"`{floors['best_by_sharpe']}`（Sharpe {floors['results'][floors['best_by_sharpe']]['net_sharpe']:.3f}，"
+  f"ΔSharpe {floors['results'][floors['best_by_sharpe']]['net_sharpe'] - _fref['net_sharpe']:+.3f}）。"
+  f"**部分减仓确实比全清仓好**：仓位下限从 0 提到 0.5，年化从 "
+  f"{pct(floors['results']['932000.CSI_ma20_floor0.0']['net_annualized'])} 回到 "
+  f"{pct(floors['results']['932000.CSI_ma20_floor0.5']['net_annualized'])}，"
+  f"Sharpe 从 {floors['results']['932000.CSI_ma20_floor0.0']['net_sharpe']:.3f} 升到 "
+  f"{floors['results']['932000.CSI_ma20_floor0.5']['net_sharpe']:.3f}，"
+  f"而回撤只从 {pct(floors['results']['932000.CSI_ma20_floor0.0']['max_drawdown'])} 退到 "
+  f"{pct(floors['results']['932000.CSI_ma20_floor0.5']['max_drawdown'])}。")
+w("")
+w("### 4.3 出货默认值：为什么不选样本内最优的那一格")
+w("")
+_pick = floors["results"]["932000.CSI_ma20_floor0.5"]
+_best = floors["results"][floors["best_by_sharpe"]]
+w(row("", "样本内 Sharpe 最高格", "**出货默认格**"))
+w(row("---", "---", "---"))
+w(row("配置", f"`{floors['best_by_sharpe']}`", "**中证2000 / MA20 / 仓位下限 0.5**"))
+w(row("年化", pct(_best["net_annualized"]), f"**{pct(_pick['net_annualized'])}**"))
+w(row("Sharpe", f"{_best['net_sharpe']:.3f}", f"**{_pick['net_sharpe']:.3f}**"))
+w(row("最大回撤", pct(_best["max_drawdown"]), f"**{pct(_pick['max_drawdown'])}**"))
+w(row("累计", pct(_best["total_return"]), f"**{pct(_pick['total_return'])}**"))
+w(row("平均仓位", pct(_best["mean_exposure"], 1), f"**{pct(_pick['mean_exposure'], 1)}**"))
+w("")
+w(f"出货默认取 **中证2000 / MA20 / floor 0.5**（已写进 "
+  f"`research_v2/configs/portfolio/default.yaml`），**不是** Sharpe 最高的那一格，理由是稳健性：")
+w("")
+w("* 样本内最高的 `" + floors["best_by_sharpe"] + f"`（Sharpe {_best['net_sharpe']:.3f}）是 "
+  f"**{len(_pos)} 个格子里挑出来的最大值**，而 Sharpe 的标准误约 0.085，"
+  f"它的 ΔSharpe {_best['net_sharpe'] - _fref['net_sharpe']:+.3f} 只有约 "
+  f"{(_best['net_sharpe'] - _fref['net_sharpe']) / 0.085:.1f} 个标准误——"
+  f"在 24 次搜索里，靠噪声冒出一个这种量级的最大值完全正常。")
+w(f"* 中证2000 在 floor 0.5 这一行，MA10 / MA20 / MA30 的 Sharpe 是 "
+  f"{floors['results']['932000.CSI_ma10_floor0.5']['net_sharpe']:.3f} / "
+  f"{floors['results']['932000.CSI_ma20_floor0.5']['net_sharpe']:.3f} / "
+  f"{floors['results']['932000.CSI_ma30_floor0.5']['net_sharpe']:.3f}——**对参数不敏感**，"
+  f"这才是可交付的默认值该有的形状。")
+w("* 中证2000 是这个小盘账本的**风格匹配指数**，选它是先验正确的，不是拟合出来的。")
+w("")
+w("### 4.4 稳健性")
+w("")
+w(f"* **方向极稳**：{len(_cells)} 个 0/1 组合 + {len(_pos)} 个 floor 组合，"
+  f"**全部**降低了最大回撤，无一例外。所以「趋势过滤能降回撤」这个结论不依赖任何参数选择。")
+w(f"* **幅度不稳**：具体能降多少、Sharpe 能升多少，强烈依赖指数、MA 和 floor 三个参数，"
+  f"而这三个都是在 TEST 上挑的。**能引用的是方向和不敏感区间，不是单一格子的数字。**")
+ep = stack["episode_test"]
+w("* 第一版做过的「剔除危机 25 个周期」检验是在**周期级口径**下做的，其 Sharpe 结论随 §4.0 一起作废；"
+  "但它那个更实质的观察仍然成立——**去掉那次危机后无过滤的最大回撤仍有 "
+  f"{pct(ep['top30_exit150_none']['ex_episode']['max_drawdown'])}**，"
+  "说明这个策略还有别的深回撤，不是被单一事件定义的。")
+w("")
+w("> ⚠️ 上线前必须用 2026 锁定段做**只许选一次参数**的确认"
+  "（`factor_daily` 目前只到 2025-12-31，需先物化 2026 因子）。"
+  "在那之前，§4.2 的整张表比任何单一格子都更该被引用。")
 w("")
 
 # ---------------------------------------------------------------- 5. turnover
@@ -480,91 +568,93 @@ w("")
 # ---------------------------------------------------------------- 10. plan
 w("## 10. 我会怎么做")
 w("")
-w(row("步", "做什么", "成本", "预期（有实测支撑的部分）"))
+w("> **口径提醒**：§1–§9 的参照系是 **M0R+M1+M2** 三模型集成（top30 / N_exit=60：年化 "
+  f"{pct(ref['net_annualized'])}、Sharpe {ref['net_sharpe']:.3f}、回撤 {pct(ref['max_drawdown'])}）；"
+  "§4 与 §12 用的是**治理干净的 M0R+M1**（top30 / N_exit=150：年化 "
+  f"{pct(_dref['net_annualized'])}、Sharpe {_dref['net_sharpe']:.3f}、回撤 {pct(_dref['max_drawdown'])}）。"
+  "**两套参照系并存，跨节比数字前请先看清是哪一套。** 下面的计划统一用后者，因为 §12 已经"
+  "证明它是应该上线的那一个。")
+w("")
+w(row("步", "做什么", "需要重训", "实测支撑"))
 w(row("---", "---", "---", "---"))
-_ma10 = grid["top30_exit150_sm1_csi2000_ma10_f0.0"]["metrics"]
-w(row("1", "上「宽缓冲 + 趋势过滤」：N_enter=30 / N_exit≈150，中证2000 MA10 跌破则空仓",
-    "0 重训，约 1 天",
-    f"年化 {pct(ref['net_annualized'])} → {pct(_ma10['net_annualized'])}，"
-    f"回撤 {pct(ref['max_drawdown'])} → {pct(_ma10['max_drawdown'])}，"
-    f"Sharpe {ref['net_sharpe']:.2f} → {_ma10['net_sharpe']:.2f}，"
-    f"累计 {pct(ref['total_return'])} → {pct(_ma10['total_return'])}"))
-w(row("2", "用 2026 锁定段做**一次性**参数确认（先物化 2026 因子）", "0 重训",
-    "把 §4.1 的区间收窄成一个可信的点；这是防样本内选择的唯一办法"))
-w(row("3", "因子端：不加数量，加正交族；同时把 15 砍到 ~6", "重训 + 重新物化",
-    f"判据用「与现有 PC1 相关低」，不是「IC 高」；有效维度目标 > {red['effective_dimensions_participation_ratio']:.1f}"))
-w(row("4", "验证指标从全截面 RankIC 换成 top-N 导向", "重训", "方向对，但见 §9.1 的反证，别顺手加尾部加权"))
-w(row("5", "风险调整 label 做一次对照实验", "重训", "预期收益小于第 1、3 步；见 §9.2 能省掉的那一类"))
-w(row("6", "模型结构", "重训", "最后才动"))
+w(row("**1**", "把持仓缓冲从 N_exit=60 放宽到 150", "否",
+    f"年化 {pct(_2['variants']['top30_exit60']['none']['net_annualized'])} → "
+    f"{pct(_dref['net_annualized'])}，Sharpe "
+    f"{_2['variants']['top30_exit60']['none']['net_sharpe']:.3f} → {_dref['net_sharpe']:.3f}，"
+    f"回撤 {pct(_2['variants']['top30_exit60']['none']['max_drawdown'])} → "
+    f"{pct(_dref['max_drawdown'])}。**唯一无争议、无参数风险、纯赚的一步**"))
+w(row("**2**", "决定风险偏好：能否接受 "
+    f"{pct(_dref['max_drawdown'])} 的回撤？不能则加趋势过滤（中证2000 / MA20 / 仓位下限 0.5）",
+    "否",
+    f"回撤 {pct(_dref['max_drawdown'])} → {pct(_pick['max_drawdown'])}，Sharpe "
+    f"{_dref['net_sharpe']:.3f} → {_pick['net_sharpe']:.3f}，代价是年化 "
+    f"{pct(_dref['net_annualized'])} → {pct(_pick['net_annualized'])}。**这是取舍，不是改进**"))
+w(row("3", "用 2026 锁定段做**一次性**参数确认（先物化 2026 因子）", "否",
+    "指数、MA、floor 三个参数都是在 TEST 上搜的；这是把 §4.2 的区间收窄成可信点的唯一办法"))
+w(row("4", "因子端：不加数量，加正交族；同时把 15 砍到 ~6", "是",
+    f"判据用「与现有 PC1 相关低」，不是「IC 高」；有效维度目标 > "
+    f"{red['effective_dimensions_participation_ratio']:.1f}"))
+w(row("5", "验证指标从全截面 RankIC 换成 top-N 导向", "是",
+    "方向对，但见 §9.1 的反证，别顺手加尾部加权"))
+w(row("6", "修 M2 的 `minimum_valid_history_length`", "是", "重训类里性价比最高，见 §9.3"))
+w(row("7", "风险调整 label 做一次对照实验", "是", "预期收益小于第 1、4 步；见 §9.2 能省掉的那一类"))
+w(row("8", "模型结构", "是", "最后才动"))
 w("")
-w(f"**为什么是这个顺序**：第 1 步不需要重训、不碰任何冻结工件、当天可验证，"
-  f"而它把最大回撤从 {pct(ref['max_drawdown'])} 压到 {_ma10['max_drawdown']*100:.2f}%、"
-  f"Sharpe 从 {ref['net_sharpe']:.2f} 抬到 {_ma10['net_sharpe']:.2f}。"
-  f"第 3–6 步都要重训，且**都改不了回撤的 beta 部分**（§2 已归因）。"
-  f"先把便宜的、已证明的拿走，再花贵的。")
+w("### 10.1 第 1 步和第 2 步的功劳必须分开记")
 w("")
-w("**但必须说清收益那一半——这里有一个真实的取舍，不能两头都许**：")
+w("这两步都改善结果，但**改善的不是同一个东西，也不能互相记账**：")
 w("")
-# The delta column MUST be against the same-buffer unfiltered row (N_exit=150), not against
-# the N_exit=60 reference. Comparing a filtered exit150 run to an unfiltered exit60 run lets
-# the buffer's gain be credited to the filter, which is exactly the error this table exists
-# to prevent.
-_base150 = grid["top30_exit150_sm1_none"]["metrics"]
-w(row("趋势窗口（均配 N_exit=150）", "年化", "最大回撤", "Sharpe", "累计",
-    "相对**同缓冲**无过滤的年化差"))
-w(row("---", "---", "---", "---", "---", "---"))
-for key, label in (("top30_exit150_sm1_none", "无过滤（同缓冲基准）"),
-                   ("top30_exit150_sm1_csi2000_ma5_f0.0", "MA5（样本内最优）"),
-                   ("top30_exit150_sm1_csi2000_ma10_f0.0", "**MA10（本文推荐）**"),
-                   ("top30_exit150_sm1_csi2000_ma20_f0.0", "MA20（稳健端）")):
-    m = grid[key]["metrics"]
-    delta = (m["net_annualized"] - _base150["net_annualized"]) * 100
-    w(row(label, pct(m["net_annualized"]), pct(m["max_drawdown"]), f"{m['net_sharpe']:.3f}",
-          pct(m["total_return"]), f"{delta:+.2f}pp"))
+w(row("配置（均为 M0R+M1、top30、按日记账）", "年化", "Sharpe", "最大回撤", "累计"))
+w(row("---", "---", "---", "---", "---"))
+_e60 = _2["variants"]["top30_exit60"]["none"]
+w(row(f"起点：N_exit=60，无过滤", pct(_e60["net_annualized"]), f"{_e60['net_sharpe']:.3f}",
+    pct(_e60["max_drawdown"]), pct(_e60["total_return"])))
+w(row(f"**第 1 步**：N_exit=150，无过滤", pct(_dref["net_annualized"]),
+    f"{_dref['net_sharpe']:.3f}", pct(_dref["max_drawdown"]), pct(_dref["total_return"])))
+w(row(f"**第 1+2 步**：N_exit=150 + 中证2000 MA20 floor0.5", pct(_pick["net_annualized"]),
+    f"{_pick['net_sharpe']:.3f}", pct(_pick["max_drawdown"]), pct(_pick["total_return"])))
 w("")
-_ma5 = grid["top30_exit150_sm1_csi2000_ma5_f0.0"]["metrics"]
-_ma20 = grid["top30_exit150_sm1_csi2000_ma20_f0.0"]["metrics"]
-w(f"**这张表必须这样读，否则会得出一个错的结论**：在**同一个缓冲宽度**下，"
-  f"加过滤器**永远是要付出年化的**——MA5 {(_ma5['net_annualized']-_base150['net_annualized'])*100:+.2f}pp、"
-  f"MA10 {(_ma10['net_annualized']-_base150['net_annualized'])*100:+.2f}pp、"
-  f"MA20 {(_ma20['net_annualized']-_base150['net_annualized'])*100:+.2f}pp。"
-  f"乍看之下「MA5 组合的年化 {pct(_ma5['net_annualized'])} 比 §1 参照系的 "
-  f"{pct(ref['net_annualized'])} 还高，所以择时提高了收益」——**这个推论是错的**："
-  f"那 {(_ma5['net_annualized']-ref['net_annualized'])*100:+.2f}pp 全部来自把缓冲从 60 放到 150，"
-  f"过滤器自己是负的。**两条杠杆的功劳不能互相记。**")
+w(f"* **第 1 步（缓冲）同时改善三项**：年化 "
+  f"{(_dref['net_annualized'] - _e60['net_annualized']) * 100:+.2f}pp、Sharpe "
+  f"{_dref['net_sharpe'] - _e60['net_sharpe']:+.3f}、回撤 "
+  f"{(_dref['max_drawdown'] - _e60['max_drawdown']) * 100:+.2f}pp。"
+  f"**没有代价，没有参数风险**（N_exit 从 90 到 150 结果都在同一水平），"
+  f"也不需要重训。**如果只做一件事，就做这一件。**")
+w(f"* **第 2 步（择时）只改善回撤**：{(_pick['max_drawdown'] - _dref['max_drawdown']) * 100:+.2f}pp，"
+  f"顺带 Sharpe {_pick['net_sharpe'] - _dref['net_sharpe']:+.3f}，"
+  f"但年化 {(_pick['net_annualized'] - _dref['net_annualized']) * 100:+.2f}pp、"
+  f"累计 {(_pick['total_return'] - _dref['total_return']) * 100:+.2f}pp。"
+  f"**它是用收益买回撤保险**，值不值取决于你的回撤承受度，不取决于模型。")
 w("")
-w(f"所以准确的说法是：")
-w("")
-w(f"* **提收益**靠 §5 的换手杠杆：{pct(ref['net_annualized'])} → {pct(_base150['net_annualized'])}"
-  f"（{(_base150['net_annualized']-ref['net_annualized'])*100:+.2f}pp），"
-  f"回撤顺带从 {pct(ref['max_drawdown'])} 到 {pct(_base150['max_drawdown'])}。"
-  f"**这一条无争议、无参数风险、不需要重训，如果只做一件事就做它。**")
-w(f"* **降回撤**靠趋势过滤：{pct(_base150['max_drawdown'])} → {pct(_ma10['max_drawdown'])}（MA10），"
-  f"代价是 {(_ma10['net_annualized']-_base150['net_annualized'])*100:+.2f}pp 年化，"
-  f"Sharpe 从 {_base150['net_sharpe']:.3f} 到 {_ma10['net_sharpe']:.3f}。"
-  f"**「降回撤」是确定的，「不花收益」不是。**")
-w(f"* 两条合起来相对最初的参照系是**全面改善**（年化 {pct(ref['net_annualized'])} → "
-  f"{pct(_ma10['net_annualized'])}、回撤 {pct(ref['max_drawdown'])} → {pct(_ma10['max_drawdown'])}、"
-  f"Sharpe {ref['net_sharpe']:.3f} → {_ma10['net_sharpe']:.3f}、累计 {pct(ref['total_return'])} → "
-  f"{pct(_ma10['total_return'])}），只是年化那一格是**缓冲挣的、被过滤器花掉一部分**后的净值。")
+w(f"对 100–200 万的自有资金，**我倾向做第 2 步**：{pct(_dref['max_drawdown'])} 的回撤在实盘里"
+  f"很难拿得住，而 {_pick['net_sharpe']:.3f} 的 Sharpe 配 {pct(_pick['max_drawdown'])} 的回撤"
+  f"是一个能睡着觉的组合。但这是风险偏好的判断，不是数据能替你做的决定。")
 w("")
 
 # ---------------------------------------------------------------- 11. limits
 w("## 11. 这个分析不能证明什么")
 w("")
-w(f"* **MA 窗口和趋势指数是在 TEST 上挑的**（样本内选择）。§4.1 显示方向稳健、"
-  f"但最优点落在参数面边界附近，具体数值不可信。")
+w(f"* **记账口径能改变结论，而且这次真的改变了**（§4.0）。周期级平均把择时美化了 "
+  f"{(_cyc['net_sharpe'] - _dsw05['net_sharpe']):.3f} 个 Sharpe。"
+  f"**任何后续的择时/仓位研究都必须显式声明记账口径**，否则数字之间不可比。")
+w(f"* **指数、MA 窗口、仓位下限三个参数都在 TEST 上搜过**，而且第二版搜了 "
+  f"{len(_pos)} 个格子（第一版只有 12 个）。样本内选择的风险比第一版**更高**，不是更低。"
+  f"能引用的是「全部 {len(_cells) + len(_pos)} 个格子都降低回撤」这个方向性结论，"
+  f"以及 §4.3 那个对参数不敏感的区间；**单一格子的 Sharpe 不可信**。")
 w(f"* **没有涨停过滤**。日内集中度极高（§8），这是最大的未量化乐观偏差。")
 w(f"* **成本是假设**：{levers['config']['round_trip_bp']:.0f}bp 往返"
-  f"（≈10bp 显性 + ≈5bp 滑点）。集中持仓时真实滑点更高。")
+  f"（≈10bp 显性 + ≈5bp 滑点），切换按单边半价计。集中持仓时真实滑点更高。")
 w(f"* **Sharpe 用 rf=0**。减去 2%–3% 的无风险利率后，超额 Sharpe 要减约 0.07–0.10。")
-w(f"* **Sharpe 的标准误 ≈ 0.085**（n=192）。0.96 与 1.02 的差别在噪声内；"
-  f"0.96 与 1.49 的差别不在。")
-_im = [bnd[k]["in_market"] for k in bnd if k.startswith("932000")]
-w(f"* **择时把在场时间压到 {pct(min(_im), 1)}–{pct(max(_im), 1)}**，"
-  f"现金收益按 0 计（保守），但资金占用率、可投容量和税务/冲击成本都没建模。")
-w(f"* **全部基于三模型覆盖的交集行**，宽度由 M2 最窄的覆盖决定；"
-  f"修掉 M2 的历史门槛（§9.3）会让样本变大，数字会变。")
+w(f"* **Sharpe 的标准误 ≈ 0.085**（n=192）。第 1 步的 "
+  f"{_dref['net_sharpe'] - _e60['net_sharpe']:+.3f} 在噪声内；"
+  f"第 2 步的 {_pick['net_sharpe'] - _dref['net_sharpe']:+.3f} 也只有约 "
+  f"{(_pick['net_sharpe'] - _dref['net_sharpe']) / 0.085:.1f} 个标准误。"
+  f"**这两步的正当性主要来自回撤和换手，不是 Sharpe。**")
+w(f"* **择时把平均仓位压到 {pct(_pick['mean_exposure'], 1)}**，现金收益按 0 计（保守），"
+  f"但资金占用率、可投容量和冲击成本都没建模。")
+w(f"* **§1–§9 与 §4/§12 用了两套参照系**（三模型 vs 治理干净的两模型）。"
+  f"§12 证明了两模型不更差，但跨节直接减数字仍然是错的。")
+w(f"* **全部基于模型覆盖的交集行**；修掉 M2 的历史门槛（§9.3）会改变交集宽度，数字会变。")
 w("")
 
 # ---------------------------------------------------------------- 12. gate-clean
@@ -655,8 +745,19 @@ w("$PY optimization_levers.py      # -> optimization_levers_results.json  (归�
 w("$PY optimization_stack.py       # -> optimization_stack_results.json   (边界 / 叠加网格 / 单事件检验)")
 w("$PY factor_redundancy.py        # -> factor_redundancy_results.json    (有效维度 / IC 共动 / P&L 集中度)")
 w("$PY gate_clean_ensemble.py      # -> gate_clean_ensemble_results.json  (去掉 M2 值不值 / 覆盖换回多少)")
+w("$PY exposure_daily_reaccount.py # -> exposure_daily_results.json       (§4.0/§4.1 按日记账重算)")
+w("$PY exposure_floor_sweep.py     # -> exposure_floor_results.json       (§4.2 部分仓位下限)")
 w("$PY write_optimization_report.py")
-w("$PY verify_optimization_report.py")
+w("$PY verify_optimization_report.py   # 断言本文每个数字都能回溯到上面某个 JSON")
+w("```")
+w("")
+w("工程侧（§4.0 的归因就是由它断言的，与研究脚本**不共享代码**）：")
+w("")
+w("```bash")
+w("cd <repo root>")
+w("$PY -m pytest research_v2/tests/unit/portfolio/ -q          # 47 条策略规则契约测试")
+w("$PY research_v2/scripts/verify_portfolio_policy_replay.py   # 独立引擎复现已发表回测")
+w("$PY research_v2/scripts/run_portfolio_policy.py --date 2025-06-13   # 某日的实际持仓")
 w("```")
 w("")
 w("全部只读已签名工件 + 只读数据库查询；不写任何 `dfs://` 库，不训练，不改主工作树。")

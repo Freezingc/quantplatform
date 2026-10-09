@@ -28,6 +28,8 @@ levers = json.loads((HERE / "optimization_levers_results.json").read_text())
 stack = json.loads((HERE / "optimization_stack_results.json").read_text())
 redun = json.loads((HERE / "factor_redundancy_results.json").read_text())
 gateclean = json.loads((HERE / "gate_clean_ensemble_results.json").read_text())
+daily = json.loads((HERE / "exposure_daily_results.json").read_text())
+floors = json.loads((HERE / "exposure_floor_results.json").read_text())
 
 text = DOC.read_text()
 lines = text.split("\n")
@@ -89,6 +91,9 @@ pn = redun["pnl_concentration"]
 attr = levers["drawdown_attribution"]
 ts = stack["tail_shape"]
 
+_g2 = gateclean["member_sets"]["M0R+M1 (gate-clean)"]
+bnd = stack["boundary"]
+ep = stack["episode_test"]
 claims: list[tuple[str, str]] = [
     # reference / baseline of every comparison
     ("参照系年化", pct(ref["net_annualized"])),
@@ -110,29 +115,22 @@ claims: list[tuple[str, str]] = [
     ("vol12 回撤", pct(probes["variants"]["plain"]["vol_target_0.12"]["max_drawdown"])),
     ("buffered vol12 年化", pct(probes["variants"]["buffered"]["vol_target_0.12"]["net_annualized"])),
     ("buffered vol12 回撤", pct(probes["variants"]["buffered"]["vol_target_0.12"]["max_drawdown"])),
-    # trend filter boundary
-    ("MA3 Sharpe", f"{bnd['932000.CSI_ma3']['net_sharpe']:.3f}"),
-    ("MA3 年化", pct(bnd["932000.CSI_ma3"]["net_annualized"])),
-    ("MA20 Sharpe", f"{bnd['932000.CSI_ma20']['net_sharpe']:.3f}"),
-    ("MA60 Sharpe", f"{bnd['932000.CSI_ma60']['net_sharpe']:.3f}"),
-    ("MA3 切换/年", f"{bnd['932000.CSI_ma3']['flips_per_year']:.1f}"),
-    ("MA20 切换/年", f"{bnd['932000.CSI_ma20']['flips_per_year']:.1f}"),
+    # section 4.0 decomposition: cycle-level -> daily -> one-leg switch cost
+    ("① 周期级 年化", pct(_g2["variants"]["top30_exit150"]["ma10"]["net_annualized"])),
+    ("① 周期级 Sharpe", f"{_g2['variants']['top30_exit150']['ma10']['net_sharpe']:.3f}"),
+    ("② 按日/整往返 年化",
+     pct(daily["results"]["researchcost_932000.CSI_ma10_exit150"]["net_annualized"])),
+    ("② 按日/整往返 Sharpe",
+     f"{daily['results']['researchcost_932000.CSI_ma10_exit150']['net_sharpe']:.3f}"),
+    ("③ 按日/单边 年化", pct(daily["results"]["932000.CSI_ma10_exit150"]["net_annualized"])),
+    ("③ 按日/单边 Sharpe", f"{daily['results']['932000.CSI_ma10_exit150']['net_sharpe']:.3f}"),
+    ("按日切换次数/年", f"{daily['results']['932000.CSI_ma10_exit150']['flips_per_year']:.1f}"),
     # stack grid
     ("基准 grid 年化", pct(grid["top30_exit60_sm1_none"]["metrics"]["net_annualized"])),
     ("缓冲150 无过滤 年化", pct(grid["top30_exit150_sm1_none"]["metrics"]["net_annualized"])),
     ("缓冲150 无过滤 Sharpe", f"{grid['top30_exit150_sm1_none']['metrics']['net_sharpe']:.3f}"),
-    ("缓冲150+MA20 年化", pct(grid["top30_exit150_sm1_csi2000_ma20_f0.0"]["metrics"]["net_annualized"])),
-    ("缓冲150+MA20 回撤", pct(grid["top30_exit150_sm1_csi2000_ma20_f0.0"]["metrics"]["max_drawdown"])),
-    ("缓冲150+MA20 Sharpe", f"{grid['top30_exit150_sm1_csi2000_ma20_f0.0']['metrics']['net_sharpe']:.3f}"),
-    ("缓冲150+MA5 年化", pct(grid["top30_exit150_sm1_csi2000_ma5_f0.0"]["metrics"]["net_annualized"])),
-    ("缓冲150+MA5 回撤", pct(grid["top30_exit150_sm1_csi2000_ma5_f0.0"]["metrics"]["max_drawdown"])),
-    ("缓冲150+MA5 Sharpe", f"{grid['top30_exit150_sm1_csi2000_ma5_f0.0']['metrics']['net_sharpe']:.3f}"),
-    ("缓冲150+MA5 累计", pct(grid["top30_exit150_sm1_csi2000_ma5_f0.0"]["metrics"]["total_return"])),
-    # episode test
-    ("剔除危机 基准 Sharpe", f"{ep['top30_exit60_none']['ex_episode']['net_sharpe']:.3f}"),
-    ("剔除危机 MA5 Sharpe", f"{ep['top30_exit60_csi2000_ma5_f0.0']['ex_episode']['net_sharpe']:.3f}"),
-    ("剔除危机 基准 回撤", pct(ep["top30_exit60_none"]["ex_episode"]["max_drawdown"])),
-    ("剔除危机 MA5 回撤", pct(ep["top30_exit60_csi2000_ma5_f0.0"]["ex_episode"]["max_drawdown"])),
+    # section 4.4 keeps only the unfiltered ex-episode drawdown from that test
+    ("剔除危机后无过滤回撤", pct(ep["top30_exit150_none"]["ex_episode"]["max_drawdown"])),
     # turnover levers
     ("缓冲30 年化", pct(levers["buffer_sweep"]["30"]["net_annualized"])),
     ("缓冲150 换手", f"{levers['buffer_sweep']['150']['mean_turnover']:.3f}"),
@@ -204,6 +202,46 @@ claims += [
     ("同行基线回撤", pct(_bl["max_drawdown"])),
     ("同行基线累计", pct(_bl["total_return"])),
     ("覆盖换回行数", f"{_g2['total_eligible_rows'] - _g3['total_eligible_rows']:,}"),
+]
+
+# ---- section 4.1: the daily-accounting 0/1 sweep
+_dref = daily["results"]["none_exit150"]
+claims += [
+    ("按日参照系 年化", pct(_dref["net_annualized"])),
+    ("按日参照系 Sharpe", f"{_dref['net_sharpe']:.3f}"),
+    ("按日参照系 回撤", pct(_dref["max_drawdown"])),
+    ("按日参照系 累计", pct(_dref["total_return"])),
+]
+for _code in ("932000.CSI", "000985.CSI"):
+    for _ma in (5, 10, 20, 30, 60, 120):
+        _r = daily["results"][f"{_code}_ma{_ma}_exit150"]
+        claims += [
+            (f"{_code} MA{_ma} 年化", pct(_r["net_annualized"])),
+            (f"{_code} MA{_ma} Sharpe", f"{_r['net_sharpe']:.3f}"),
+            (f"{_code} MA{_ma} 回撤", pct(_r["max_drawdown"])),
+            (f"{_code} MA{_ma} 踏空毛利", pct(_r["gross_share_sat_out"], 1)),
+        ]
+
+# ---- section 4.2/4.3: the floor sweep and the shipped default
+_fref = floors["results"]["none"]
+claims += [("floor 参照系 Sharpe", f"{_fref['net_sharpe']:.3f}")]
+for _code in ("932000.CSI", "000985.CSI"):
+    for _ma in (10, 20, 30):
+        for _fl in (0.0, 0.25, 0.5, 0.75):
+            _r = floors["results"][f"{_code}_ma{_ma}_floor{_fl}"]
+            claims += [
+                (f"{_code} MA{_ma} floor{_fl} Sharpe", f"{_r['net_sharpe']:.3f}"),
+                (f"{_code} MA{_ma} floor{_fl} 年化", pct(_r["net_annualized"])),
+                (f"{_code} MA{_ma} floor{_fl} 回撤", pct(_r["max_drawdown"])),
+            ]
+_pick = floors["results"]["932000.CSI_ma20_floor0.5"]
+_best = floors["results"][floors["best_by_sharpe"]]
+claims += [
+    ("出货默认 累计", pct(_pick["total_return"])),
+    ("出货默认 平均仓位", pct(_pick["mean_exposure"], 1)),
+    ("样本内最优 Sharpe", f"{_best['net_sharpe']:.3f}"),
+    ("样本内最优 年化", pct(_best["net_annualized"])),
+    ("样本内最优 回撤", pct(_best["max_drawdown"])),
 ]
 
 compared = 0
