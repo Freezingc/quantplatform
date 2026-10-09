@@ -120,6 +120,18 @@ def main(argv=None) -> int:
     if definitions:
         market_start = min(_calculator_market_start(client, d, args.start, args.end) for d in definitions) - timedelta(days=90)
     open_dates = _query_open_dates(client, market_start, args.end)
+    # _query_open_dates drops every date on or after 2026-01-01 without saying so, so a window
+    # that reaches into 2026 used to come back empty and this script "succeeded" while writing
+    # nothing: each factor replayed to an empty frame, was skipped, and the run reported a
+    # clean no-op. Fail loudly instead.
+    if not any(args.start <= day <= args.end for day in open_dates):
+        last = open_dates[-1] if open_dates else "none"
+        raise SystemExit(
+            f"no open trading dates in {args.start} .. {args.end}: the calendar returned "
+            f"{len(open_dates)} dates from {market_start}, last one {last}. A 2026 window is "
+            f"locked by design and cannot be materialised by this script; any other gap means "
+            f"trade_calendar does not cover the window."
+        )
     fields = required_market_fields(definitions) if definitions else ("amount", "pct_chg")
     fields = tuple(sorted(set(fields) | {"amount", "pct_chg"}))
     market = fetch_full_tushare_shsz_market(open_dates, token=os.getenv("QRV2_TUSHARE_TOKEN", ""), cache_dir=CACHE, include_daily_basic=requires_daily_basic(fields))
