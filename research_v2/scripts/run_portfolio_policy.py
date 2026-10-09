@@ -197,16 +197,37 @@ def _print_decision(today, previous, policy, source, members, index_note, index_
     print("eligible universe: " + ("label-valid names only (backtest-consistent)"
           if eligibility_applied else "every scored name (live mode)"))
 
-    state = "ABOVE MA -> fully invested" if today.exposure > policy.trend_exposure_floor else \
-            "AT/BELOW MA -> flat"
+    # the message must follow the actual exposure number, not the binary above/below test:
+    # with a partial floor the index being below its MA means "hold LESS", and telling the
+    # operator to hold cash when the policy says hold half is how a tool gets traded wrong
     close = f"{today.index_close:.2f}" if today.index_close else "n/a"
     ma = f"{today.index_ma:.2f}" if today.index_ma else "n/a"
+    above = today.index_close is not None and today.index_ma is not None \
+        and today.index_close > today.index_ma
+    if above:
+        state = f"ABOVE MA -> fully invested ({today.exposure:.0%})"
+    elif today.exposure <= 0.0:
+        state = f"AT/BELOW MA -> FLAT ({today.exposure:.0%})"
+    else:
+        state = f"AT/BELOW MA -> reduced to the floor ({today.exposure:.0%})"
     print(f"\nexposure overlay: {index_note}")
     print(f"  {index_code} close {close}  MA{policy.trend_ma_window} {ma}  {state}")
-    print(f"  EXPOSURE = {today.exposure:.2f}")
-    if today.exposure <= policy.trend_exposure_floor:
-        print("  -> the overlay is flat: hold CASH today, the names below are the book you "
-              "re-enter when the index closes back above its MA")
+    print(f"  EXPOSURE = {today.exposure:.2f}  "
+          f"(floor {policy.trend_exposure_floor:.2f}, so below-MA days hold "
+          f"{policy.trend_exposure_floor:.0%}, not cash)"
+          if policy.trend_exposure_floor > 0 else
+          f"  EXPOSURE = {today.exposure:.2f}  (floor 0.00, so below-MA days hold cash)")
+    if not above:
+        if today.exposure <= 0.0:
+            print("  -> the overlay is FLAT: hold cash today. The names below are the book "
+                  "you re-enter when the index closes back above its MA.")
+        else:
+            print(f"  -> the overlay is REDUCED: hold the names below at "
+                  f"{today.exposure:.0%} of normal size, i.e. "
+                  f"{today.exposure / len(today.holdings) * 100:.2f}% each, and keep "
+                  f"{(1 - today.exposure) * 100:.0f}% in cash. Scale back up to "
+                  f"{1.0 / len(today.holdings) * 100:.2f}% each when the index closes "
+                  f"above its MA.")
 
     per_name = today.exposure / len(today.holdings) if today.holdings else 0.0
     print(f"\nbook: {len(today.holdings)} names x {per_name * 100:.2f}% "
