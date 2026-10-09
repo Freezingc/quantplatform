@@ -135,14 +135,20 @@ def run_torch_final(
     print(f"batches: train {len(train_batches)} dates, validation {len(validation_batches)} dates",
           flush=True)
 
-    configs = drv.m1_config_grid(args.max_configs)
+    configs = drv.m1_config_grid(None)
+    if args.config_hidden_dim is not None:
+        configs = [c for c in configs if c["hidden_dim"] == args.config_hidden_dim]
+    if args.max_configs is not None:
+        configs = configs[: args.max_configs]
+    screening_epochs = args.screen_max_epochs or args.max_epochs
     search_seeds = tuple(REQUIRED_SEEDS[: args.search_seeds])
     dataset_ids = {"train": f"final-{args.family.lower()}-train",
                    "validation": f"final-{args.family.lower()}-validation"}
     checkpoint_store = CheckpointStore(args.workspace / "checkpoints")
 
     print(f"\nscreening {len(configs)} configs with {len(search_seeds)} seed(s), "
-          f"max_epochs={args.max_epochs}", flush=True)
+          f"screen budget {screening_epochs} epochs, final budget {args.max_epochs}",
+          flush=True)
     trials: list[dict[str, Any]] = []
     best_config: dict[str, Any] | None = None
     best_ic = float("-inf")
@@ -156,7 +162,7 @@ def run_torch_final(
                 checkpoint_prefix=f"{args.family.lower()}-final-screen-{index}-{seed}",
                 train_dataset_id=dataset_ids["train"],
                 validation_dataset_id=dataset_ids["validation"],
-                max_epochs=args.max_epochs,
+                max_epochs=screening_epochs,
                 model_factory=model_factory,
                 learning_rate=float(payload.get("learning_rate", 0.003)),
             )
@@ -227,7 +233,8 @@ def run_torch_final(
     return {
         "configs_screened": len(configs),
         "screened_seeds": list(search_seeds),
-        "screening_budget_epochs": args.max_epochs,
+        "screening_budget_epochs": screening_epochs,
+        "config_hidden_dim_filter": args.config_hidden_dim,
         "trials": trials,
         "best_config": best_config,
         "best_screened_mean_rank_ic": best_ic,
@@ -258,6 +265,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                              "uses all three required seeds so the bundle stays well-formed; "
                              "reducing this speeds up the screen at the cost of a noisier "
                              "config pick, and the report records what was used")
+    parser.add_argument("--config-hidden-dim", type=int, default=None,
+                        choices=(64, 128, 256),
+                        help="restrict the M1 grid to one hidden_dim. All four ordinary folds "
+                             "selected hidden_dim=128, so screening that slice is the useful "
+                             "reduction; note --max-configs cannot express it, because the grid "
+                             "is ordered by hidden_dim and the first nine entries are all 64")
+    parser.add_argument("--screen-max-epochs", type=int, default=None,
+                        help="epoch budget for screening only (M1). Ranking configs does not "
+                             "need the full budget that the final fit gets, so this is the "
+                             "cheapest honest way to cut the search cost")
     parser.add_argument("--smoke", action="store_true",
                         help="one config, one screening seed, two epochs: verifies the whole "
                              "path including the bundle write, in minutes")
