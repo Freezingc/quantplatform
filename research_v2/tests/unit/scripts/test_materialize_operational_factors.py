@@ -92,6 +92,36 @@ def test_require_frozen_factors_refuses_an_id_outside_the_v2_set() -> None:
         operational.require_frozen_factors(("yeslab_96", "yeslab_405"))
 
 
+def test_universe_map_from_frame_keeps_only_window_members() -> None:
+    frame = pd.DataFrame(
+        {
+            "signal_date": pd.to_datetime(
+                ["2026-08-03", "2026-08-03", "2026-08-04", "2026-09-01"]
+            ),
+            "ts_code": ["a", "b", "a", "c"],
+            "is_member": [True, False, True, True],
+        }
+    )
+    universe = operational.universe_map_from_frame(
+        frame, date(2026, 8, 1), date(2026, 8, 31)
+    )
+    assert set(universe) == {date(2026, 8, 3), date(2026, 8, 4)}
+    assert universe[date(2026, 8, 3)] == {"a"}
+    assert universe[date(2026, 8, 4)] == {"a"}
+
+
+def test_universe_map_from_frame_refuses_an_empty_window() -> None:
+    frame = pd.DataFrame(
+        {
+            "signal_date": pd.to_datetime(["2026-08-03"]),
+            "ts_code": ["a"],
+            "is_member": [True],
+        }
+    )
+    with pytest.raises(ValueError, match="no universe members"):
+        operational.universe_map_from_frame(frame, date(2026, 9, 1), date(2026, 9, 30))
+
+
 def _market_frame(volumes: dict[str, list[float]], dates: pd.DatetimeIndex) -> pd.DataFrame:
     rows = [
         {"trade_date": day, "ts_code": code, "vol": volume}

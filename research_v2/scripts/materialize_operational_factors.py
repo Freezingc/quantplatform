@@ -313,7 +313,37 @@ def replay_market_only_factor(
     ].reset_index(drop=True)
 
 
-def _query_all_open_dates(client: object, start: date, end: date) -> tuple[date, ...]:
+def universe_map_from_frame(
+    frame: pd.DataFrame, start: date, end: date
+) -> dict[date, set[str]]:
+    """``{signal_date: member codes}`` from a universe frame, restricted to the window.
+
+    Used for ``--universe-parquet``, which exists because the published universe stops before the
+    raw market data does: past that boundary the cross-section has to come from a rebuild, and
+    feeding it here is what lets the replay write factors for those dates at all.
+    """
+    required = {"signal_date", "ts_code"}
+    missing = sorted(required.difference(frame.columns))
+    if missing:
+        raise ValueError(f"universe frame is missing columns: {missing}")
+    normalized = frame.copy(deep=True)
+    if "is_member" in normalized.columns:
+        normalized = normalized.loc[normalized["is_member"].fillna(False).astype(bool)]
+    normalized["signal_date"] = [
+        as_plain_date(value) for value in normalized["signal_date"]
+    ]
+    normalized["ts_code"] = normalized["ts_code"].astype(str)
+    normalized = normalized.loc[
+        normalized["signal_date"].map(lambda day: start <= day <= end)
+    ]
+    if normalized.empty:
+        raise ValueError(f"no universe members in {start} .. {end}")
+    return {
+        day: set(group["ts_code"]) for day, group in normalized.groupby("signal_date")
+    }
+
+
+def query_open_dates(client: object, start: date, end: date) -> tuple[date, ...]:
     """Full SSE calendar over the window, with no locked-test filter applied."""
     result = client.run(
         "select cal_date from loadTable('dfs://YesLab','trade_calendar') "
@@ -335,6 +365,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True, help="parquet path to write")
     parser.add_argument(
         "--factors", type=str, default=None, help="comma-separated subset (default all frozen v2)"
+    )
+    parser.add_argument(
+        "--universe-parquet",
+        type=Path,
+        default=None,
+        help="use this universe frame (is_member/ts_code/signal_date) instead of the published "
+        "table; required for dates the published universe does not reach",
     )
     parser.add_argument(
         "--cross-check-factor-daily",
@@ -380,7 +417,7 @@ def main(argv: list[str] | None = None) -> int:
             tushare_replay._calculator_market_start(client, definition, args.start, args.end)
             for definition in definitions
         ) - timedelta(days=90)
-    fetched_dates = _query_all_open_dates(client, market_start, args.end)
+    fetched_dates = query_open_dates(client, market_start, args.end)
     open_dates = window_open_dates(fetched_dates, args.start, args.end)
     print(
         f"window {args.start} .. {args.end}: {len(open_dates)} signal dates "
@@ -408,7 +445,12 @@ def main(argv: list[str] | None = None) -> int:
         OperationalPITIndustryProvider.from_cache(frozen_mod.CACHE, source="SW2021"),
         cutover=frozen_mod.PIT_CUTOVER,
     )
-    universe = frozen_mod.load_official_universe(client, args.start, args.end)
+    if args.universe_parquet is not None:
+        universe = universe_map_from_frame(
+            pd.read_parquet(args.universe_parquet), args.start, args.end
+        )
+    else:
+        universe = frozen_mod.load_official_universe(client, args.start, args.end)
     print(f"universe dates: {len(universe)}", flush=True)
 
     frames: list[pd.DataFrame] = []
