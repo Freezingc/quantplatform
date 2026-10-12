@@ -38,6 +38,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "research_v2" / "scripts"))
 sys.path.insert(0, str(REPO_ROOT / "research_v2" / "src"))
 
+# Imported after the path setup, like every other script-level dependency in this package: the
+# module is a sibling script, so it is only importable once ``research_v2/scripts`` is on the path.
+from materialize_operational_factors import as_plain_date  # noqa: E402
+
 FROZEN_V2_PATH = (
     REPO_ROOT / "research_v2" / "artifacts" / "diagnostics" / "factor_set_frozen_v2.json"
 )
@@ -85,6 +89,23 @@ def missing_factor_ids(frame: pd.DataFrame, required: Sequence[str]) -> tuple[st
     """Required factor ids with no row at all in a replayed window."""
     present = set(frame["factor_id"].astype(str).unique())
     return tuple(factor for factor in required if factor not in present)
+
+
+def partition_by_date(
+    frame: pd.DataFrame, column: str = "signal_date"
+) -> dict[date, pd.DataFrame]:
+    """One pass over a long frame, keyed by plain dates.
+
+    The label-free builder re-copies and re-parses whatever it is handed before narrowing it to the
+    signal date, so scoring a 139-date window through one 6.4M-row frame costs 139 full copies.
+    Partitioning once and handing over the date's rows is the same batch for a fraction of the
+    work -- pinned by an equality test against the unpartitioned call.
+    """
+    if column not in frame.columns:
+        raise ValueError(f"frame is missing the {column} column")
+    return {
+        as_plain_date(day): group for day, group in frame.groupby(column, sort=False)
+    }
 
 
 def _rank_frame(rows: list[tuple[object, str, float]], column: str) -> pd.DataFrame:
@@ -254,6 +275,15 @@ def main(argv: list[str] | None = None) -> int:
     scored = set(covered_dates)
     window_factors = factors.loc[factors["signal_date"].isin(scored)]
     window_universe = universe_rows
+    # Partition once; the per-date loop below would otherwise re-copy the whole window each time.
+    factors_by_date = partition_by_date(window_factors)
+    universe_by_date = partition_by_date(window_universe)
+    for day in covered_dates:
+        if day not in factors_by_date or day not in universe_by_date:
+            raise SystemExit(
+                f"scoring date {day} has no factor rows ({day in factors_by_date}) or no "
+                f"universe rows ({day in universe_by_date})"
+            )
 
     for model_id in model_ids:
         family = _read_bundle_family(store, model_id)
@@ -268,8 +298,8 @@ def main(argv: list[str] | None = None) -> int:
             frames = []
             for day in covered_dates:
                 batch = build_label_free_inference_batch(
-                    window_universe,
-                    window_factors,
+                    universe_by_date[day],
+                    factors_by_date[day],
                     factor_members=factor_members(),
                     signal_date=day,
                     preprocessor=loaded.preprocessor,

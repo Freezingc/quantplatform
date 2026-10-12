@@ -13,7 +13,12 @@ from datetime import date
 import pandas as pd
 import pytest
 import score_operational_dates as scoring
+import torch
 import walk_forward_factor_daily as wffd
+
+from research_v2.datasets.builder import FactorInput
+from research_v2.datasets.preprocessing import FoldPreprocessor
+from research_v2.inference.builder import build_label_free_inference_batch
 
 
 def test_feature_factor_pairs_follow_the_training_contract_order() -> None:
@@ -81,3 +86,73 @@ def test_missing_factor_ids_reports_absent_ids() -> None:
     frame = pd.DataFrame({"factor_id": ["yeslab_96", "yeslab_206"]})
     assert scoring.missing_factor_ids(frame, ("yeslab_96", "yeslab_425")) == ("yeslab_425",)
     assert scoring.missing_factor_ids(frame, ("yeslab_96", "yeslab_206")) == ()
+
+
+def test_partition_by_date_keeps_every_row_exactly_once() -> None:
+    frame = pd.DataFrame(
+        {
+            "signal_date": [date(2026, 1, 5), date(2026, 1, 5), date(2026, 1, 6)],
+            "ts_code": ["a", "b", "a"],
+            "value": [1.0, 2.0, 3.0],
+        }
+    )
+    parts = scoring.partition_by_date(frame)
+    assert set(parts) == {date(2026, 1, 5), date(2026, 1, 6)}
+    assert sum(len(part) for part in parts.values()) == len(frame)
+    assert sorted(parts[date(2026, 1, 5)]["ts_code"]) == ["a", "b"]
+
+
+def _inference_fixture() -> tuple[pd.DataFrame, pd.DataFrame, tuple[FactorInput, ...]]:
+    days = (date(2026, 1, 5), date(2026, 1, 6))
+    universe = pd.DataFrame(
+        {
+            "signal_date": [day for day in days for _ in ("a", "b")],
+            "ts_code": ["a", "b"] * len(days),
+            "is_member": [True] * (2 * len(days)),
+        }
+    )
+    rows = [
+        {
+            "signal_date": day,
+            "ts_code": code,
+            "factor_id": factor_id,
+            "factor_version": 1,
+            "value": value,
+            "available_date": day,
+        }
+        for day in days
+        for code, first, second in (("a", 1.0, 4.0), ("b", 2.0, 5.0))
+        for factor_id, value in (("factor_a", first), ("factor_b", second))
+    ]
+    members = (FactorInput("factor_a", 1, "f00"), FactorInput("factor_b", 1, "f01"))
+    return universe, pd.DataFrame(rows), members
+
+
+def test_date_scoped_factor_rows_match_the_full_frame_batch() -> None:
+    """Scoping the long frame to one date must not change a single batch element.
+
+    The builder re-copies and re-parses whatever frame it is handed, so scoring 139 dates through
+    one 6.4M-row frame costs 139 full copies. Handing it only the date's rows is the fix; this pins
+    that the two produce the same batch.
+    """
+    universe, factors, members = _inference_fixture()
+    preprocessor = FoldPreprocessor(factor_order=("f00", "f01"))
+    preprocessor.fit(
+        pd.DataFrame({"f00": [1.0, 2.0, 3.0], "f01": [4.0, 5.0, 6.0]}), role="TRAIN"
+    )
+    day = date(2026, 1, 5)
+    full = build_label_free_inference_batch(
+        universe, factors, factor_members=members, signal_date=day, preprocessor=preprocessor
+    )
+    scoped = build_label_free_inference_batch(
+        universe,
+        scoring.partition_by_date(factors)[day],
+        factor_members=members,
+        signal_date=day,
+        preprocessor=preprocessor,
+    )
+    assert full.ts_codes == scoped.ts_codes
+    assert full.signal_dates == scoped.signal_dates
+    assert torch.equal(full.features, scoped.features)
+    assert torch.equal(full.feature_missing, scoped.feature_missing)
+    assert torch.equal(full.stock_mask, scoped.stock_mask)
