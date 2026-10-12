@@ -54,6 +54,13 @@ LONG_COLUMNS = [
     "universe_id",
 ]
 
+#: The two frozen ids whose definition is a direct function of the market frame rather than a
+#: calculator module. Both names mirror ``materialize_frozen_factor_daily`` and are checked against
+#: it at run time, so a rename there fails loudly here instead of silently dropping a factor.
+ALPHA206_FACTOR_ID = "yeslab_206"
+REPAIR_VARIANT_443_FACTOR_ID = "yeslab_443_reg30_max20_v1"
+MARKET_ONLY_FACTORS = frozenset({ALPHA206_FACTOR_ID, REPAIR_VARIANT_443_FACTOR_ID})
+
 
 def as_plain_date(value: object) -> date:
     """Normalize ``date``/``datetime``/``pd.Timestamp`` to a plain ``datetime.date``."""
@@ -196,6 +203,49 @@ def compare_against_reference(
     }
 
 
+def replay_market_only_factor(
+    factor_id: str, market: pd.DataFrame, start: date, end: date
+) -> pd.DataFrame:
+    """Replay a market-only factor over any window, including one that reaches 2026.
+
+    The frozen drivers route these two ids through ``materialize_alpha206_median_repair`` and the
+    Alpha443 repair variant, and both of those refuse a window ending on or after 2026-01-01 --
+    ``_validate_window`` raises before any computation happens. That refusal is correct for the
+    audit and repair callers it was written for, and this script leaves it in place for them.
+
+    What it means for the operational window is that the *window check* has to live here instead.
+    The formulas are still the shared ones (``compute_variants`` and ``compute_gp074_variant``),
+    so there is no second definition of either factor to drift; only the date guard differs, and
+    the caller is an inference-time replay that writes a parquet rather than the frozen table.
+    """
+    if factor_id == ALPHA206_FACTOR_ID:
+        from evaluate_alpha206_volume_variants import compute_variants
+
+        panel = compute_variants(market)["median_abs"]
+    elif factor_id == REPAIR_VARIANT_443_FACTOR_ID:
+        from repair_alpha443_window_scan import compute_gp074_variant
+
+        wide = {
+            field: market.pivot_table(
+                index="trade_date", columns="ts_code", values=field, aggfunc="last"
+            ).sort_index()
+            for field in ("amount", "pct_chg")
+        }
+        panel = compute_gp074_variant(wide, 30, 20)
+    else:
+        raise ValueError(f"{factor_id} is not a market-only factor")
+    long = (
+        panel.rename_axis("trade_date")
+        .reset_index()
+        .melt(id_vars=["trade_date"], var_name="ts_code", value_name="replay_value")
+    )
+    long["trade_date"] = pd.to_datetime(long["trade_date"]).dt.normalize()
+    long["ts_code"] = long["ts_code"].astype(str)
+    return long.loc[
+        long["trade_date"].between(pd.Timestamp(start), pd.Timestamp(end))
+    ].reset_index(drop=True)
+
+
 def _query_all_open_dates(client: object, start: date, end: date) -> tuple[date, ...]:
     """Full SSE calendar over the window, with no locked-test filter applied."""
     result = client.run(
@@ -244,6 +294,14 @@ def main(argv: list[str] | None = None) -> int:
     from audit_tushare_pit_industry import VersionedPITIndustryProvider
 
     client = tushare_replay._connect()
+    # The frozen module owns the two market-only ids; a rename there must fail here rather than
+    # silently skip a factor, and both must still be members of the frozen v2 set.
+    if {frozen_mod.MEDIAN_206, frozen_mod.REPAIR_VARIANT_443} != MARKET_ONLY_FACTORS:
+        raise SystemExit(
+            "market-only factor ids disagree with materialize_frozen_factor_daily: "
+            f"{sorted(MARKET_ONLY_FACTORS)} vs "
+            f"{sorted({frozen_mod.MEDIAN_206, frozen_mod.REPAIR_VARIANT_443})}"
+        )
     definitions = [
         replay.REPLAY_DEFINITIONS[factor]
         for factor in factors
@@ -287,9 +345,16 @@ def main(argv: list[str] | None = None) -> int:
     frames: list[pd.DataFrame] = []
     per_factor_rows: dict[str, int] = {}
     for factor in factors:
-        values = frozen_mod.replay_factor_values(
-            factor, session, market, provider, args.start, args.end
-        )
+        if factor in MARKET_ONLY_FACTORS:
+            values = replay_market_only_factor(factor, market, args.start, args.end)
+        else:
+            values = replay._replay_factor(
+                session,
+                replay.REPLAY_DEFINITIONS[factor],
+                args.start,
+                args.end,
+                industry_provider=provider if factor in frozen_mod.PIT_FACTORS else None,
+            )
         assembled = assemble_long_frame(
             values, universe, factor_id=factor, factor_version=1
         )

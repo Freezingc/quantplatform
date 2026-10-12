@@ -92,6 +92,45 @@ def test_require_frozen_factors_refuses_an_id_outside_the_v2_set() -> None:
         operational.require_frozen_factors(("yeslab_96", "yeslab_405"))
 
 
+def _market_frame(volumes: dict[str, list[float]], dates: pd.DatetimeIndex) -> pd.DataFrame:
+    rows = [
+        {"trade_date": day, "ts_code": code, "vol": volume}
+        for code, series in volumes.items()
+        for day, volume in zip(dates, series, strict=True)
+    ]
+    return pd.DataFrame(rows)
+
+
+def test_replay_market_only_factor_computes_alpha206_inside_2026() -> None:
+    """The frozen 206 repair refuses any window reaching 2026; the operational path must not.
+
+    The formula itself is the shared one, so the values must stay the 60-day rolling median
+    deviation of volume -- 61 days of volume 1..61 give a last-day deviation of 29.5/31.5.
+    """
+    dates = pd.bdate_range("2026-01-05", periods=61)
+    market = _market_frame(
+        {"000001.SZ": [float(i) for i in range(1, 62)], "000002.SZ": [10.0] * 61}, dates
+    )
+    values = operational.replay_market_only_factor(
+        "yeslab_206", market, date(2026, 1, 5), date(2026, 3, 31)
+    )
+    assert set(values.columns) == {"trade_date", "ts_code", "replay_value"}
+    finite = values.dropna(subset=["replay_value"])
+    assert finite["trade_date"].max().date() == dates[-1].date()
+    last = finite.loc[finite["trade_date"].eq(dates[-1])].set_index("ts_code")["replay_value"]
+    assert last.loc["000001.SZ"] == pytest.approx(29.5 / 31.5)
+    assert last.loc["000002.SZ"] == pytest.approx(0.0)
+
+
+def test_replay_market_only_factor_rejects_an_unknown_factor_id() -> None:
+    dates = pd.bdate_range("2026-01-05", periods=61)
+    market = _market_frame({"000001.SZ": [1.0] * 61}, dates)
+    with pytest.raises(ValueError, match="not a market-only"):
+        operational.replay_market_only_factor(
+            "yeslab_96", market, date(2026, 1, 5), date(2026, 3, 31)
+        )
+
+
 def test_compare_against_reference_reports_agreement_and_disagreement() -> None:
     replay = pd.DataFrame(
         {
