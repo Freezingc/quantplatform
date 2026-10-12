@@ -760,3 +760,72 @@ def test_a_state_fitted_on_other_factors_is_refused(tmp_path: Path) -> None:
             expected_feature_order=feature_order, expected_preprocessor_hash=foreign_hash,
             device=torch.device("cpu"),
         )
+
+
+# ---------- operational load path: scoring bundles that carry no gate evidence ----------
+
+
+def _write_operational_bundle(
+    tmp_path: Path,
+) -> tuple[ModelArtifactBundleStore, str, tuple[str, ...]]:
+    return _write_residual_bundle(
+        tmp_path, model_card_overrides={"model_status": "OPERATIONAL_UNGATED"}
+    )
+
+
+def test_operational_load_restores_three_seeds_and_the_fitted_preprocessor(
+    tmp_path: Path,
+) -> None:
+    store, model_id, feature_order = _write_operational_bundle(tmp_path)
+    loaded = artifact_loader.load_operational_bundle(
+        store, model_id, expected_feature_order=feature_order, device=torch.device("cpu")
+    )
+    assert len(loaded.models) == len(REQUIRED_SEEDS)
+    assert loaded.preprocessor is not None
+    assert loaded.preprocessor.fitted_factor_order == feature_order
+    assert loaded.audit is not None
+    assert loaded.audit.model_id == model_id
+    # An operational load makes no promotion claim, so it must not name an authority.
+    assert loaded.promotion_model_id == ""
+    assert loaded.promotion_status == ""
+
+
+def test_operational_load_refuses_a_card_that_claims_walk_forward_passing(
+    tmp_path: Path,
+) -> None:
+    """The operational path must not quietly serve a bundle as if it had gate evidence."""
+    store, model_id, feature_order = _write_residual_bundle(tmp_path)
+    with pytest.raises(ValueError, match="OPERATIONAL_UNGATED"):
+        artifact_loader.load_operational_bundle(
+            store, model_id, expected_feature_order=feature_order, device=torch.device("cpu")
+        )
+
+
+def test_operational_load_refuses_a_foreign_feature_order(tmp_path: Path) -> None:
+    store, model_id, _ = _write_operational_bundle(tmp_path)
+    with pytest.raises(ValueError, match="feature order"):
+        artifact_loader.load_operational_bundle(
+            store, model_id, expected_feature_order=("f00", "f01"), device=torch.device("cpu")
+        )
+
+
+def test_operational_load_refuses_a_tampered_bundle(tmp_path: Path) -> None:
+    store, model_id, feature_order = _write_operational_bundle(tmp_path)
+    (store.bundle_path(model_id) / "config.json").write_text("{}", encoding="utf-8")
+    with pytest.raises(ValueError):
+        artifact_loader.load_operational_bundle(
+            store, model_id, expected_feature_order=feature_order, device=torch.device("cpu")
+        )
+
+
+def test_operational_load_refuses_a_hash_only_preprocessing_record(tmp_path: Path) -> None:
+    """A bundle that records only the hash cannot transform a frame and must not load."""
+    store, model_id, feature_order = _write_residual_bundle(
+        tmp_path,
+        model_card_overrides={"model_status": "OPERATIONAL_UNGATED"},
+        preprocessing_override={"state_hash": "identity"},
+    )
+    with pytest.raises(ValueError, match="preprocessor"):
+        artifact_loader.load_operational_bundle(
+            store, model_id, expected_feature_order=feature_order, device=torch.device("cpu")
+        )

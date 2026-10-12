@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime
@@ -18,7 +19,10 @@ from research_v2.models.set_attention import SetAttention, SetAttentionConfig
 from research_v2.models.temporal import TemporalGRU, TemporalGRUConfig
 from research_v2.registry.promotion_evidence import PromotedRun
 from research_v2.training.ensemble import REQUIRED_SEEDS
-from research_v2.training.model_bundle import ModelArtifactBundleStore
+from research_v2.training.model_bundle import (
+    ModelArtifactBundleStore,
+    VerifiedModelArtifactBundle,
+)
 
 InferenceContract: TypeAlias = Mapping[str, object]
 _INFERENCE_CONTRACT_FIELDS = frozenset(
@@ -39,6 +43,11 @@ _MODEL_CODE_VERSIONS = {
     "TEMPORAL_GRU": "temporal-gru-1",
     "SET_ATTENTION": "set-attention-1",
 }
+
+#: The marker ``train_final_fold.py`` writes into an operational bundle. It asserts the opposite
+#: of ``WALK_FORWARD_PASSED``: the bundle was trained on the FINAL window and carries no G1-G6
+#: evidence, so it may score dates but may never be presented as walk-forward-passed.
+_OPERATIONAL_MODEL_STATUS = "OPERATIONAL_UNGATED"
 
 
 @dataclass(frozen=True)
@@ -239,6 +248,99 @@ def load_bundle_for_evaluation(
         preprocessing=metadata["preprocessing"],
         preprocessor=preprocessor,
         unverified_bindings=unverified_bindings(model_card, expected_inference_contract),
+        audit=InferenceLoadAudit(
+            model_id=model_id,
+            bundle_digest=bundle.digest,
+            artifact_hashes=MappingProxyType(dict(bundle.artifact_hashes)),
+            device=str(device),
+            code_version=_model_card_code_version(model_card),
+            loaded_at=datetime.now(UTC),
+            run_id=run_id,
+        ),
+    )
+
+
+def _bundle_json(bundle: VerifiedModelArtifactBundle, filename: str) -> Mapping[str, object]:
+    """Decode one already checksum-verified bundle document, keeping the string-key contract."""
+    loaded = json.loads(bundle.files[filename].decode("utf-8"))
+    if not isinstance(loaded, dict) or not all(isinstance(key, str) for key in loaded):
+        raise ValueError(f"model bundle metadata is not a string-keyed mapping: {filename}")
+    return loaded
+
+
+def load_operational_bundle(
+    store: ModelArtifactBundleStore,
+    model_id: str,
+    *,
+    expected_feature_order: tuple[str, ...],
+    device: torch.device,
+    run_id: str | None = None,
+) -> LoadedInferenceArtifact:
+    """Load an OPERATIONAL_UNGATED bundle to score dates, with no promotion claim.
+
+    Both governed paths refuse these bundles on purpose and must keep refusing them:
+    ``load_bundle_for_evaluation`` requires the walk-forward writer's ``WALK_FORWARD_PASSED``
+    marker, and ``load_inference_artifact`` additionally requires registry-promoted authority.
+    An operational bundle, trained on the FINAL window, has neither -- it carries no G1-G6
+    evidence at all. Rather than borrow a claim it does not have by relaxing those guards, this
+    loader asserts the opposite marker, refuses every other status, and returns an artifact whose
+    ``promotion_*`` fields stay empty so no caller can mistake the load for authorisation.
+
+    The integrity, allowlist, signature, preprocessor-restore and seed-shape checks are the same
+    ones the evaluation path performs, because a bundle that cannot transform a frame or whose
+    weights are not the allowlisted class is not servable however it was trained.
+    """
+    bundle = store.load_verified_bundle(model_id)
+    model_card = _bundle_json(bundle, "model_card.json")
+    config = _bundle_json(bundle, "config.json")
+    signature = _bundle_json(bundle, "signature.json")
+    preprocessing = _bundle_json(bundle, "preprocessing.json")
+    recorded_order = tuple(
+        str(name) for name in _bundle_json(bundle, "feature_order.json").get("feature_order", ())
+    )
+    status = model_card.get("model_status")
+    if status != _OPERATIONAL_MODEL_STATUS:
+        raise ValueError(
+            f"operational scoring requires a bundle marked {_OPERATIONAL_MODEL_STATUS}; "
+            f"this bundle's model_status is {status!r}"
+        )
+    if recorded_order != tuple(expected_feature_order):
+        raise ValueError("model bundle feature order does not match the requested feature order")
+    factory = _allowlisted_factory(model_card, config)
+    prototype = cast(ResidualMLP | TemporalGRU | SetAttention, factory())
+    if dict(signature) != asdict(prototype.artifact_signature()):
+        raise ValueError("model bundle signature does not match reconstructed model contract")
+    preprocessor = _restored_preprocessor(preprocessing)
+    # The state's own factor order must be the bundle's feature order, or transform() silently
+    # scores the wrong columns while each half passes its own separate check.
+    if preprocessor.fitted_factor_order != tuple(expected_feature_order):
+        raise ValueError(
+            "model bundle preprocessor state was fitted on a different factor order than the "
+            "bundle's feature order"
+        )
+    reference_state = cast(Mapping[str, torch.Tensor], prototype.state_dict())
+    seed_states: dict[int, Mapping[str, torch.Tensor]] = {}
+    for seed in REQUIRED_SEEDS:
+        payload = torch.load(
+            io.BytesIO(bundle.files[f"seed-{seed}.pt"]),
+            map_location="cpu",
+            weights_only=True,
+        )
+        state = _state_dict(payload)
+        _validate_state_dict(state, reference_state)
+        seed_states[seed] = state
+    models: list[nn.Module] = []
+    for seed in REQUIRED_SEEDS:
+        model = factory()
+        model.load_state_dict(seed_states[seed], strict=True)
+        model.to(device)
+        model.eval()
+        models.append(model)
+    return LoadedInferenceArtifact(
+        model_id=model_id,
+        models=tuple(models),
+        preprocessing=preprocessing,
+        preprocessor=preprocessor,
         audit=InferenceLoadAudit(
             model_id=model_id,
             bundle_digest=bundle.digest,
