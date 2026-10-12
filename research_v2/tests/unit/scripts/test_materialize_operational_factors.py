@@ -245,3 +245,31 @@ def test_compare_against_reference_uses_a_relative_tolerance() -> None:
     )
     assert summary["max_abs_diff"] == pytest.approx(0.2, abs=0.05)
     assert summary["within_tolerance_rows"] == 1
+
+
+def test_compare_against_reference_excludes_undefined_reference_values() -> None:
+    """A reference row with no value is not a disagreement, and must not be counted as one.
+
+    Published labels are undefined until the exit date prices, so a comparison that treats NaN as
+    "differs" reports every not-yet-mature signal date as a total mismatch -- which is exactly how
+    an otherwise perfect reproduction looked like a 26% failure.
+    """
+    replay = pd.DataFrame(
+        {
+            "signal_date": [date(2026, 7, 22), date(2026, 7, 24)],
+            "ts_code": ["a", "a"],
+            "value": [0.01, 0.02],
+        }
+    )
+    reference = pd.DataFrame(
+        {
+            "signal_date": [date(2026, 7, 22), date(2026, 7, 24)],
+            "ts_code": ["a", "a"],
+            "value": [0.01, float("nan")],
+        }
+    )
+    summary = operational.compare_against_reference(replay, reference, tolerance=1e-9)
+    assert summary["matched_rows"] == 1
+    assert summary["non_finite_rows"] == 1
+    assert summary["within_tolerance_rows"] == 1
+    assert summary["replay_only_rows"] == 0

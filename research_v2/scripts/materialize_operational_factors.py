@@ -259,10 +259,17 @@ def compare_against_reference(
     right = reference.loc[:, [*keys, "value"]].rename(columns={"value": "reference_value"})
     merged = left.merge(right, on=keys, how="outer", indicator=True)
     matched = merged.loc[merged["_merge"].eq("both")]
+    # A reference row with no value is undefined, not a disagreement: published labels stay NaN
+    # until the exit date prices, so counting those as mismatches reports every not-yet-mature
+    # signal date as a total failure.
+    defined = matched["replay_value"].notna() & matched["reference_value"].notna()
+    non_finite_rows = int((~defined).sum())
+    matched = matched.loc[defined]
     difference = (matched["replay_value"] - matched["reference_value"]).abs()
     allowed = tolerance + relative_tolerance * matched["reference_value"].abs()
     return {
         "matched_rows": int(len(matched)),
+        "non_finite_rows": non_finite_rows,
         "replay_only_rows": int(merged["_merge"].eq("left_only").sum()),
         "reference_only_rows": int(merged["_merge"].eq("right_only").sum()),
         "within_tolerance_rows": int((difference <= allowed).sum()),
