@@ -131,6 +131,50 @@ def test_replay_market_only_factor_rejects_an_unknown_factor_id() -> None:
         )
 
 
+def _industry_frames() -> tuple[pd.DataFrame, pd.DataFrame]:
+    members = pd.DataFrame(
+        {
+            "index_code": ["801010.SI"],
+            "con_code": ["000001.SZ"],
+            "in_date": ["20211213"],
+            "out_date": [None],
+        }
+    )
+    classifications = pd.DataFrame(
+        {"index_code": ["801010.SI"], "industry_name": ["农林牧渔"], "level": ["L1"]}
+    )
+    return members, classifications
+
+
+def test_base_industry_provider_refuses_2026_dates() -> None:
+    """The shared provider's guard is the reason a separate operational provider exists."""
+    from audit_tushare_pit_industry import PITIndustryProvider
+
+    members, classifications = _industry_frames()
+    provider = PITIndustryProvider(members, classifications)
+    with pytest.raises(ValueError, match="2026 locked-test"):
+        provider.get_industry_labels([date(2026, 3, 2)], ["000001.SZ"])
+
+
+def test_operational_industry_provider_serves_2026_dates() -> None:
+    members, classifications = _industry_frames()
+    provider = operational.OperationalPITIndustryProvider(members, classifications)
+    labels = provider.get_industry_labels([date(2026, 3, 2)], ["000001.SZ"])
+    assert labels.loc[pd.Timestamp("2026-03-02"), "000001.SZ"] == "农林牧渔"
+
+
+def test_operational_industry_provider_matches_the_base_before_the_boundary() -> None:
+    """The override duplicates the shared snapshot body, so pin the two together."""
+    from audit_tushare_pit_industry import PITIndustryProvider
+
+    members, classifications = _industry_frames()
+    base = PITIndustryProvider(members, classifications).snapshot(date(2025, 6, 2), ["000001.SZ"])
+    override = operational.OperationalPITIndustryProvider(members, classifications).snapshot(
+        date(2025, 6, 2), ["000001.SZ"]
+    )
+    pd.testing.assert_frame_equal(base, override)
+
+
 def test_compare_against_reference_reports_agreement_and_disagreement() -> None:
     replay = pd.DataFrame(
         {

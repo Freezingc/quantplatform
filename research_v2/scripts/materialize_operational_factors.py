@@ -31,11 +31,17 @@ import hashlib
 import json
 import os
 import sys
+from collections.abc import Sequence
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from audit_tushare_pit_industry import (
+    PITIndustryProvider,
+    normalize_classifications,
+    normalize_members,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "research_v2" / "scripts"))
@@ -60,6 +66,67 @@ LONG_COLUMNS = [
 ALPHA206_FACTOR_ID = "yeslab_206"
 REPAIR_VARIANT_443_FACTOR_ID = "yeslab_443_reg30_max20_v1"
 MARKET_ONLY_FACTORS = frozenset({ALPHA206_FACTOR_ID, REPAIR_VARIANT_443_FACTOR_ID})
+
+
+class OperationalPITIndustryProvider(PITIndustryProvider):
+    """``PITIndustryProvider`` that also resolves dates past the locked-test boundary.
+
+    Both ``snapshot`` and the ``build_pit_snapshot`` helper it delegates to refuse every ``as_of``
+    from 2026-01-01 onward, and that refusal is shared by seven callers protecting the audit and
+    backfill paths; it is left exactly as it is. The cost is that the two industry-normalized
+    frozen factors cannot be replayed for a 2026 window at all, because their calculators ask this
+    provider for industry labels on 2026 dates.
+
+    The snapshot body below is the helper's, verbatim, minus the boundary check. A test asserts
+    that this override returns exactly what the base provider returns for a pre-2026 date, so the
+    duplicated body cannot drift from the one it mirrors without a failure.
+    """
+
+    def snapshot(self, as_of: date, codes: Sequence[str]) -> pd.DataFrame:
+        as_of_value = pd.Timestamp(as_of).date()
+        code_values = tuple(dict.fromkeys(map(str, codes)))
+        cache_key = (as_of_value, tuple(sorted(code_values)))
+        if cache_key not in self._snapshot_cache:
+            snapshot = self._build_unbounded_snapshot(as_of_value, code_values)
+            conflict_count = int(snapshot.attrs.get("overlap_conflict_code_count", 0))
+            if self.strict and conflict_count:
+                raise ValueError(
+                    f"PIT industry membership overlap on {as_of_value}: {conflict_count} code(s)"
+                )
+            self._snapshot_cache[cache_key] = snapshot
+        return self._snapshot_cache[cache_key].copy(deep=True)
+
+    def _build_unbounded_snapshot(
+        self, as_of: date, codes: Sequence[str] | None
+    ) -> pd.DataFrame:
+        """The shared snapshot body, without its locked-test boundary refusal."""
+        classification_frame = normalize_classifications(self.classifications)
+        member_frame = normalize_members(self.members)
+        active = member_frame.loc[
+            (member_frame["in_date"] <= pd.Timestamp(as_of))
+            & (
+                member_frame["out_date"].isna()
+                | (pd.Timestamp(as_of) < member_frame["out_date"])
+            )
+        ].merge(classification_frame, on="index_code", how="inner")
+        if codes is not None:
+            code_set = set(map(str, codes))
+            active = active.loc[active["con_code"].isin(code_set)]
+        conflict_counts = active.groupby("con_code")["index_code"].nunique()
+        conflict_code_values = tuple(
+            sorted(conflict_counts.loc[conflict_counts > 1].index.astype(str))
+        )
+        active = active.sort_values(
+            ["con_code", "in_date", "index_code"], kind="stable"
+        ).drop_duplicates("con_code", keep="last")
+        snapshot = active.loc[
+            :, ["con_code", "index_code", "industry_name", "in_date", "out_date"]
+        ].rename(columns={"con_code": "ts_code", "index_code": "industry_code"})
+        snapshot = snapshot.sort_values("ts_code").reset_index(drop=True)
+        snapshot.attrs["overlap_conflict_code_count"] = len(conflict_code_values)
+        snapshot.attrs["overlap_conflict_codes"] = conflict_code_values
+        snapshot.attrs["as_of"] = pd.Timestamp(as_of).date().isoformat()
+        return snapshot
 
 
 def as_plain_date(value: object) -> date:
@@ -336,8 +403,10 @@ def main(argv: list[str] | None = None) -> int:
     session = tushare_replay.TushareMarketSession(
         client, market, tuple(sorted(market["ts_code"].unique()))
     )
-    provider = VersionedPITIndustryProvider.from_cache(
-        frozen_mod.CACHE, cutover=frozen_mod.PIT_CUTOVER
+    provider = VersionedPITIndustryProvider(
+        OperationalPITIndustryProvider.from_cache(frozen_mod.CACHE, source="SW2014"),
+        OperationalPITIndustryProvider.from_cache(frozen_mod.CACHE, source="SW2021"),
+        cutover=frozen_mod.PIT_CUTOVER,
     )
     universe = frozen_mod.load_official_universe(client, args.start, args.end)
     print(f"universe dates: {len(universe)}", flush=True)
