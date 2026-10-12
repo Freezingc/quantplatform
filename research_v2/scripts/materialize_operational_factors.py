@@ -31,7 +31,7 @@ import hashlib
 import json
 import os
 import sys
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -53,6 +53,17 @@ LONG_COLUMNS = [
     "available_date",
     "universe_id",
 ]
+
+
+def as_plain_date(value: object) -> date:
+    """Normalize ``date``/``datetime``/``pd.Timestamp`` to a plain ``datetime.date``."""
+    # ``datetime`` (and so ``pd.Timestamp``) is a subclass of ``date``, but a datetime compared
+    # against a date key is never equal, so every datetime-shaped input must be truncated.
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return pd.Timestamp(value).date()
 
 
 def load_frozen_v2_factors() -> tuple[str, ...]:
@@ -97,7 +108,7 @@ def window_open_dates(
 
 def assemble_long_frame(
     replay: pd.DataFrame,
-    universe_by_date: dict[date, set[str]],
+    universe_by_date: dict[object, set[str]],
     *,
     factor_id: str,
     factor_version: int,
@@ -109,13 +120,24 @@ def assemble_long_frame(
     storage bookkeeping (run ids, watermarks), plus ``available_date`` -- which for a canonical
     replay value is its own signal date, matching what the fold extractor stamps when it reads
     ``factor_daily``.
+
+    ``universe_by_date`` is keyed by whatever the caller holds -- ``load_official_universe``
+    returns ``pd.Timestamp`` keys while the values below are ``datetime.date`` -- so both sides are
+    normalized before the lookup. Comparing a date against a Timestamp key matches nothing, which
+    is silent: every factor then reports zero universe-aligned rows and the window is written
+    empty.
     """
     required = {"trade_date", "ts_code", "replay_value"}
     missing = sorted(required.difference(replay.columns))
     if missing:
         raise ValueError(f"replay frame is missing columns: {missing}")
+    normalized_universe = {
+        as_plain_date(key): members for key, members in universe_by_date.items()
+    }
     values = replay.loc[:, ["trade_date", "ts_code", "replay_value"]].copy()
-    values["signal_date"] = pd.to_datetime(values["trade_date"]).dt.normalize().dt.date
+    values["signal_date"] = [
+        as_plain_date(day) for day in pd.to_datetime(values["trade_date"]).dt.normalize()
+    ]
     values["ts_code"] = values["ts_code"].astype(str)
     values = values.loc[:, ["signal_date", "ts_code", "replay_value"]]
     if values.duplicated(["signal_date", "ts_code"]).any():
@@ -124,7 +146,7 @@ def assemble_long_frame(
             f"emitting one value per (signal_date, ts_code)"
         )
     keep = [
-        (code in universe_by_date.get(day, set())) and np.isfinite(value)
+        (code in normalized_universe.get(day, set())) and np.isfinite(value)
         for day, code, value in zip(
             values["signal_date"], values["ts_code"], values["replay_value"], strict=True
         )
@@ -145,20 +167,31 @@ def assemble_long_frame(
 
 
 def compare_against_reference(
-    replay: pd.DataFrame, reference: pd.DataFrame, *, tolerance: float
+    replay: pd.DataFrame,
+    reference: pd.DataFrame,
+    *,
+    tolerance: float,
+    relative_tolerance: float = 0.0,
 ) -> dict[str, float | int]:
-    """How closely a replayed window reproduces a stored one, on shared business keys."""
+    """How closely a replayed window reproduces a stored one, on shared business keys.
+
+    Agreement is ``|replay - reference| <= tolerance + relative_tolerance * |reference|``. The
+    relative term is not optional in practice: several frozen factors carry values around 1e6, so
+    an absolute-only bound of 1e-9 reports float noise as a total mismatch and hides which factors
+    genuinely disagree.
+    """
     keys = ["signal_date", "ts_code"]
     left = replay.loc[:, [*keys, "value"]].rename(columns={"value": "replay_value"})
     right = reference.loc[:, [*keys, "value"]].rename(columns={"value": "reference_value"})
     merged = left.merge(right, on=keys, how="outer", indicator=True)
     matched = merged.loc[merged["_merge"].eq("both")]
     difference = (matched["replay_value"] - matched["reference_value"]).abs()
+    allowed = tolerance + relative_tolerance * matched["reference_value"].abs()
     return {
         "matched_rows": int(len(matched)),
         "replay_only_rows": int(merged["_merge"].eq("left_only").sum()),
         "reference_only_rows": int(merged["_merge"].eq("right_only").sum()),
-        "within_tolerance_rows": int((difference <= tolerance).sum()),
+        "within_tolerance_rows": int((difference <= allowed).sum()),
         "max_abs_diff": float(difference.max()) if len(difference) else 0.0,
     }
 
@@ -192,6 +225,12 @@ def main(argv: list[str] | None = None) -> int:
         help="also read the frozen factor_daily rows for this window and report agreement",
     )
     parser.add_argument("--tolerance", type=float, default=1e-9)
+    parser.add_argument(
+        "--relative-tolerance",
+        type=float,
+        default=1e-6,
+        help="relative bound for the cross-check, because several factors carry ~1e6 values",
+    )
     args = parser.parse_args(argv)
     if args.start > args.end:
         raise SystemExit("--start must not be after --end")
@@ -286,7 +325,13 @@ def main(argv: list[str] | None = None) -> int:
     }
     if args.cross_check_factor_daily:
         sidecar["cross_check"] = _cross_check(
-            client, result, factors, args.start, args.end, args.tolerance
+            client,
+            result,
+            factors,
+            args.start,
+            args.end,
+            args.tolerance,
+            args.relative_tolerance,
         )
     sidecar_path = args.output.with_suffix(".meta.json")
     sidecar_path.write_text(
@@ -309,6 +354,7 @@ def _cross_check(
     start: date,
     end: date,
     tolerance: float,
+    relative_tolerance: float,
 ) -> dict[str, dict[str, float | int]]:
     """Compare the replay against the frozen factor_daily rows on the same window."""
     import materialize_frozen_factor_daily as frozen_mod
@@ -332,7 +378,7 @@ def _cross_check(
             reference["factor_id"].astype(str).eq(factor), ["signal_date", "ts_code", "value"]
         ]
         summaries[factor] = compare_against_reference(
-            replayed, stored, tolerance=tolerance
+            replayed, stored, tolerance=tolerance, relative_tolerance=relative_tolerance
         )
     return summaries
 

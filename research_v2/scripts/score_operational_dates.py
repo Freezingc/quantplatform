@@ -201,7 +201,15 @@ def main(argv: list[str] | None = None) -> int:
 
         client = tushare_replay._connect()
         try:
-            membership = frozen_mod.load_official_universe(client, args.start, args.end)
+            # ``load_official_universe`` keys its map by ``pd.Timestamp`` while every date below
+            # is a plain ``datetime.date``; normalizing here is what makes the membership lookup
+            # match at all. An unnormalized lookup silently drops every scoring date.
+            membership = {
+                operational.as_plain_date(day): members
+                for day, members in frozen_mod.load_official_universe(
+                    client, args.start, args.end
+                ).items()
+            }
         finally:
             client.close()
     else:
