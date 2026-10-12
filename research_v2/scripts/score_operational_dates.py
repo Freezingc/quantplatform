@@ -108,6 +108,24 @@ def partition_by_date(
     }
 
 
+def sparse_dates(
+    counts: Mapping[date, int], *, floor_share: float
+) -> tuple[date, ...]:
+    """Scored-name counts well below the window's median, in date order.
+
+    The published universe is not guaranteed to be complete on every date: 2026-05-08 carries 946
+    members inside the same monthly ``data_version`` whose neighbouring dates carry ~3,880, and
+    nothing in the pipeline reports that. Ranking a tenth of a cross-section is not the same
+    decision as ranking all of it, so the sidecar names these dates instead of leaving a consumer
+    to notice by accident.
+    """
+    if not counts:
+        return ()
+    values = pd.Series(dict(counts), dtype=float)
+    threshold = float(values.median()) * floor_share
+    return tuple(sorted(day for day, count in counts.items() if count < threshold))
+
+
 def _rank_frame(rows: list[tuple[object, str, float]], column: str) -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -356,6 +374,10 @@ def main(argv: list[str] | None = None) -> int:
         ascending=[True, False, True],
         kind="mergesort",
     ).reset_index(drop=True)
+    names_per_date = {
+        as_plain_date(day): int(count)
+        for day, count in combined.groupby("signal_date").size().items()
+    }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     combined.to_parquet(args.output, index=False)
     sidecar = {
@@ -368,6 +390,8 @@ def main(argv: list[str] | None = None) -> int:
         "factor_source_sha256": hashlib.sha256(args.factors.read_bytes()).hexdigest(),
         "feature_factor_order": [[name, factor] for name, factor in pairs],
         "rows": int(len(combined)),
+        "names_per_date_median": int(pd.Series(dict(names_per_date)).median()),
+        "sparse_dates": [day.isoformat() for day in sparse_dates(names_per_date, floor_share=0.5)],
         "models": audit,
         "output": str(args.output),
         "output_sha256": hashlib.sha256(args.output.read_bytes()).hexdigest(),

@@ -102,6 +102,24 @@ def test_partition_by_date_keeps_every_row_exactly_once() -> None:
     assert sorted(parts[date(2026, 1, 5)]["ts_code"]) == ["a", "b"]
 
 
+def test_sparse_dates_flags_a_date_far_below_the_median() -> None:
+    """A published universe can be partial on one date without any error; scoring it silently
+    produces ranks over a tenth of the cross-section."""
+    counts = {
+        date(2026, 5, 6): 3879,
+        date(2026, 5, 7): 3880,
+        date(2026, 5, 8): 946,
+        date(2026, 5, 11): 3879,
+    }
+    assert scoring.sparse_dates(counts, floor_share=0.5) == (date(2026, 5, 8),)
+    assert scoring.sparse_dates(counts, floor_share=0.2) == ()
+
+
+def test_sparse_dates_is_empty_for_a_uniform_window() -> None:
+    counts = {date(2026, 1, 5): 3923, date(2026, 1, 6): 3924}
+    assert scoring.sparse_dates(counts, floor_share=0.5) == ()
+
+
 def _inference_fixture() -> tuple[pd.DataFrame, pd.DataFrame, tuple[FactorInput, ...]]:
     days = (date(2026, 1, 5), date(2026, 1, 6))
     universe = pd.DataFrame(
