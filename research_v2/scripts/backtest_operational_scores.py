@@ -28,6 +28,7 @@ import json
 import os
 import sys
 from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -135,6 +136,20 @@ def parse_policies(text: str) -> tuple[PortfolioPolicy, ...]:
     return tuple(policies)
 
 
+def apply_trend_floor(
+    policies: Sequence[PortfolioPolicy], *, floor: float
+) -> tuple[PortfolioPolicy, ...]:
+    """Pin the exposure floor on every policy, preserving everything else.
+
+    The trend overlay can move the book to cash while the benchmark stays fully invested, so a
+    rising market makes the overlay look like negative selection. Setting the floor to 1.0 turns
+    the overlay off, which is how the two effects get told apart.
+    """
+    return tuple(
+        replace(policy, trend_exposure_floor=floor) for policy in policies
+    )
+
+
 def _scores_by_member(
     frame: pd.DataFrame, members: Mapping[str, str]
 ) -> dict[str, dict[date, dict[str, float]]]:
@@ -189,6 +204,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True, help="JSON result path")
     parser.add_argument("--policies", type=str, default="10:50,20:100,30:150,50:250,100:400")
     parser.add_argument("--index-code", type=str, default="932000.CSI")
+    parser.add_argument(
+        "--trend-floor",
+        type=float,
+        default=None,
+        help="pin the exposure floor (1.0 disables the trend overlay); default keeps the policy's",
+    )
     parser.add_argument("--verify-start", type=date.fromisoformat, default=date(2026, 7, 1))
     parser.add_argument("--verify-end", type=date.fromisoformat, default=date(2026, 7, 31))
     args = parser.parse_args(argv)
@@ -269,7 +290,10 @@ def main(argv: list[str] | None = None) -> int:
 
     results: dict[str, object] = {}
     benchmark_cycles = None
-    for policy in parse_policies(args.policies):
+    policies = parse_policies(args.policies)
+    if args.trend_floor is not None:
+        policies = apply_trend_floor(policies, floor=args.trend_floor)
+    for policy in policies:
         decisions = replay(
             scores_by_member,
             policy=policy,

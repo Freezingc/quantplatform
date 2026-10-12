@@ -35,6 +35,32 @@ after T's close and traded at the next open. Buying on a Monday uses the previou
    snapshot froze them; the two agree exactly from 2026-07-06 onward. 23,553 further rows have no
    published label at all because their exit date falls past the ingested market data.
 
+## Backtest, full 2026 window — signal dates 2026-01-05 .. 2026-09-24 (178 dates, 35 cycles)
+
+Equal-weight books, 15bp round trip, holding buffer `n_exit`, trend overlay on 932000.CSI as the
+policy defines. Benchmark = the same engine holding every rankable name (~3,900), which **lost
+3.51%** over the window with a **-19.90%** maximum drawdown.
+
+| book | total | excess vs benchmark | max DD | ann. net | vol | Sharpe | turnover | mean names |
+|---|---|---|---|---|---|---|---|---|
+| 20:100 | **+3.37%** | **+6.88%** | -9.07% | 5.45% | 13.3% | 0.41 | 0.234 | 20 |
+| 100:400 | +3.12% | +6.63% | -13.54% | 5.33% | 14.9% | 0.36 | 0.149 | 100 |
+| 30:150 | +3.02% | +6.53% | -9.61% | 5.02% | 13.6% | 0.37 | 0.203 | 30 |
+| 50:250 | +1.80% | +5.31% | -12.12% | 3.45% | 14.2% | 0.24 | 0.165 | 50 |
+| 10:50 | +0.50% | +4.01% | -10.24% | 1.61% | 13.8% | 0.12 | 0.281 | 10 |
+
+### Findings (full window)
+
+* Every book was **positive while the average stock fell 3.5%**, and every book roughly **halved the
+  benchmark's drawdown** (-9% to -13.5% against -19.9%). Selection added value net of costs.
+* **20:100 and 30:150** are the best pair of excess and drawdown; 10:50 is the weakest on excess and
+  the most expensive to run, so the earlier "best 10-30 names" reading is only half right — the
+  narrowest book is not the best one.
+* Sharpe 0.41 at 35 cycles is modest and still noisy, but it is the right order of magnitude for a
+  five-day rebalancing strategy on a falling market.
+
+## The same test on a shorter window — and why it is reported as a warning
+
 ## Backtest result — signal dates 2026-08-03 .. 2026-09-24 (7 cycles)
 
 Equal-weight books, 15bp round trip, holding buffer `n_exit`, trend overlay on 932000.CSI as the
@@ -48,18 +74,22 @@ policy defines. Benchmark = the same engine holding every rankable name (~3,900)
 | 50:250 | +1.94% | +4.46% | -2.53% | -1.65% | 0.158 | 0.71 |
 | 100:400 | +2.59% | +4.46% | **-1.87%** | -1.55% | 0.143 | 0.71 |
 
-### Findings
+### Findings (and the sample-size lesson)
 
-* Every configuration **underperformed the equal-weight universe** on this window, and the gap
-  narrows monotonically with book width: the more concentrated the book, the worse it did. Top-10
-  lost money outright.
-* This **does not support** the earlier reading that the best 10-30 names were the strongest
-  region. Here the opposite held, which is the first thing to re-check on a longer window.
+* On this window **every** configuration underperformed the equal-weight universe, and the top-10
+  book lost money outright — the **opposite** of the full-window result above.
+* The two windows disagree because seven cycles is not a sample: the sign of the excess flips, which
+  is exactly the failure mode of reading a short backtest. The full-window numbers are the ones to
+  use; this section is kept so the mistake is not repeated.
 * Cycle returns move together across all books (one clearly negative cycle in the sixth), i.e. the
   books are dominated by market/style beta rather than by stock selection — consistent with the
   earlier drawdown attribution.
 * **The annualised figures in the sidecar are not results.** Seven cycles carry no information about
-  annual Sharpe; only the cumulative and cycle-level numbers above should be read.
+  annual Sharpe.
+
+* The trend overlay was **fully invested for the whole August-September window**: pinning
+  `--trend-floor 1.0` reproduced the same totals to the digit, so the shortfall there was selection,
+  not the overlay parking the book in cash.
 
 ### Caveats
 
@@ -76,4 +106,7 @@ Outside the repository, in `/data/zhangyudong/qrv2_operational/`:
 * `factors_2026ext.parquet` (+ `.meta.json`)
 * `scores_2026ext.parquet` (+ `.meta.json`) — 45 signal dates, 176,943 rows
 * `backtest_2026ext.json` — full policy summaries and per-cycle returns
+* `backtest_2026ext_nooverlay.json` — the same window with the overlay pinned off (identical)
+* `backtest_2026full.json` — the full 2026 window (the result to use)
+* `scores_2026full.parquet`, `universe_2026full.parquet` — the combined inputs for that run
 * earlier: `fidelity_2025Q4.*` (factor fidelity), `factors_2026H1.*`, `scores_2026H1.*`

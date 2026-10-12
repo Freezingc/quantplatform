@@ -76,3 +76,11 @@ def test_parse_policies_reads_enter_exit_pairs() -> None:
 def test_parse_policies_refuses_a_narrower_buffer() -> None:
     with pytest.raises(ValueError):
         backtest.parse_policies("30:10")
+
+
+def test_apply_trend_floor_overrides_every_policy() -> None:
+    """The overlay can park the book in cash while the benchmark stays invested, so isolating
+    stock selection from the overlay means being able to pin the floor at 1.0."""
+    policies = backtest.apply_trend_floor(backtest.parse_policies("10:50,30:150"), floor=1.0)
+    assert [policy.trend_exposure_floor for policy in policies] == [1.0, 1.0]
+    assert [policy.n_enter for policy in policies] == [10, 30]
