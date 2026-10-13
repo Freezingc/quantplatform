@@ -138,6 +138,11 @@ ORDINARY_FOLDS: tuple[str, ...] = ("F1", "F2", "F3", "F4")
 # MODEL_FAMILIES is imported from research_v2.evaluation.model_walk_forward, which is the
 # evaluator's admission list. Do not redeclare it here: a family this driver accepts but the
 # evaluator does not trains for an hour and then fails at the final gate step.
+# A deviation from the E-plan order is a plan-level decision, not a convenience flag.
+# The reason has to be long enough to state what was authorized and why, so an empty or
+# token string cannot be used to smuggle past the guard.
+MINIMUM_DEVIATION_REASON_LENGTH = 24
+
 FAMILY_ORDER_PREREQUISITES: dict[str, tuple[str, ...]] = {
     "M0": (),
     # M0R is an alternative CARRIER for the same LightGBM candidate slot, not a later stage
@@ -244,6 +249,32 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
             "(repeatable; enforces the E-plan execution order)"
         ),
     )
+    parser.add_argument(
+        "--prior-report-failed",
+        action="append",
+        default=[],
+        help=(
+            "FAMILY=PATH evidence that a prerequisite family ran full walk-forward and "
+            "did NOT pass all gates (repeatable). Only meaningful together with "
+            "--family-order-deviation; the report's identity and gate statuses are "
+            "recorded in the run report so the deviation is auditable."
+        ),
+    )
+    parser.add_argument(
+        "--family-order-deviation",
+        default=None,
+        help=(
+            "Owner-authorized reason for running a family whose E-plan prerequisites "
+            "did not all pass. Refused when empty or shorter than "
+            f"{MINIMUM_DEVIATION_REASON_LENGTH} characters, and refused unless every "
+            "missing prerequisite is also supplied via --prior-report-failed."
+        ),
+    )
+    parser.add_argument(
+        "--family-order-deviation-owner",
+        default=None,
+        help="Name of the owner authorizing --family-order-deviation (required with it).",
+    )
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
@@ -349,19 +380,154 @@ def load_baseline_predictions(directory: Path) -> dict[str, pd.DataFrame]:
     return frames
 
 
-def validate_family_order(
+def missing_prerequisites(
     family: str, prior_families_passed: Mapping[str, object] | tuple[str, ...]
-) -> None:
-    """Refuse to run a family before its E-plan predecessors are evidenced."""
+) -> list[str]:
+    """Return the E-plan prerequisites of ``family`` that have no passed evidence."""
     if family not in FAMILY_ORDER_PREREQUISITES:
         raise ValueError(f"unknown model family: {family}")
-    prerequisites = FAMILY_ORDER_PREREQUISITES[family]
-    missing = [prior for prior in prerequisites if prior not in prior_families_passed]
-    if missing:
+    return [
+        prior
+        for prior in FAMILY_ORDER_PREREQUISITES[family]
+        if prior not in prior_families_passed
+    ]
+
+
+def validate_family_order(
+    family: str,
+    prior_families_passed: Mapping[str, object] | tuple[str, ...],
+    *,
+    acknowledged_failed_priors: Sequence[Mapping[str, object]] = (),
+    deviation_reason: str | None = None,
+    deviation_owner: str | None = None,
+) -> None:
+    """Refuse to run a family before its E-plan predecessors are evidenced.
+
+    The guard is fail-closed by default. It can be deviated from only with an explicit,
+    recorded owner authorization: a reason of at least
+    ``MINIMUM_DEVIATION_REASON_LENGTH`` characters, an owner name, and -- for every
+    missing prerequisite -- the actual full-mode report that failed, supplied through
+    ``acknowledged_failed_priors``. A deviation that is not needed is refused, so the
+    audit record can never claim an authorization the run did not depend on.
+    """
+    missing = missing_prerequisites(family, prior_families_passed)
+    reason = (deviation_reason or "").strip()
+    owner = (deviation_owner or "").strip()
+    if not missing:
+        if reason or owner or acknowledged_failed_priors:
+            raise ValueError(
+                f"family {family} needs no order deviation; drop --family-order-deviation, "
+                "--family-order-deviation-owner and --prior-report-failed"
+            )
+        return
+    if not reason:
+        raise ValueError(_order_violation_message(family, missing))
+    if len(reason) < MINIMUM_DEVIATION_REASON_LENGTH:
         raise ValueError(
-            f"family {family} requires prior passed families {missing} "
-            f"(E-plan execution order M1 -> M2 -> M3)"
+            f"--family-order-deviation must state the authorization in at least "
+            f"{MINIMUM_DEVIATION_REASON_LENGTH} characters, got {len(reason)}: {reason!r}"
         )
+    if not owner:
+        raise ValueError(
+            "--family-order-deviation-owner is required to record who authorized "
+            f"deviating from the E-plan order for {family}"
+        )
+    acknowledged = {str(entry.get("family")) for entry in acknowledged_failed_priors}
+    unevidenced = [prior for prior in missing if prior not in acknowledged]
+    if unevidenced:
+        raise ValueError(
+            f"{_order_violation_message(family, missing)}; a deviation additionally requires "
+            f"the failing full-mode report for {unevidenced} via --prior-report-failed "
+            "FAMILY=PATH, so the deviation is auditable"
+        )
+
+
+def _order_violation_message(family: str, missing: Sequence[str]) -> str:
+    return (
+        f"family {family} requires prior passed families {list(missing)} "
+        f"(E-plan execution order M1 -> M2 -> M3)"
+    )
+
+
+def prior_families_from_failed_reports(
+    entries: Sequence[str],
+) -> tuple[dict[str, Any], ...]:
+    """Resolve acknowledged-but-failed prerequisite reports, fail-closed in both directions.
+
+    Each entry must be ``FAMILY=PATH`` pointing at a full-mode run of FAMILY whose
+    ``oos.all_passed`` is NOT true. A report that did pass is refused here: it belongs in
+    ``--prior-report``, and accepting it as "failed" would let a caller hide which
+    prerequisite was actually missing.
+    """
+    records: list[dict[str, Any]] = []
+    for entry in entries:
+        family, separator, raw_path = entry.partition("=")
+        if not separator or not raw_path:
+            raise SystemExit(f"--prior-report-failed expects FAMILY=PATH, got: {entry}")
+        family = family.strip().upper()
+        if family not in MODEL_FAMILIES:
+            raise SystemExit(f"--prior-report-failed references unknown family: {family}")
+        report_path = Path(raw_path)
+        if not report_path.exists():
+            raise SystemExit(f"--prior-report-failed path does not exist: {report_path}")
+        raw_bytes = report_path.read_bytes()
+        report = json.loads(raw_bytes.decode("utf-8"))
+        if report.get("family") != family:
+            raise SystemExit(
+                f"--prior-report-failed family mismatch for {family}: {report_path}"
+            )
+        if report.get("mode") != "full":
+            raise SystemExit(
+                f"--prior-report-failed for {family} is not a full run: {report_path}"
+            )
+        oos = report.get("oos")
+        if isinstance(oos, dict) and oos.get("all_passed") is True:
+            raise SystemExit(
+                f"--prior-report-failed for {family} actually passed all gates; supply it "
+                f"via --prior-report instead: {report_path}"
+            )
+        gates = oos.get("gates") if isinstance(oos, dict) else None
+        records.append(
+            {
+                "family": family,
+                "report_path": str(report_path),
+                "report_sha256": hashlib.sha256(raw_bytes).hexdigest(),
+                "all_passed": bool(isinstance(oos, dict) and oos.get("all_passed") is True),
+                "failed_gates": sorted(
+                    str(name)
+                    for name, result in (gates or {}).items()
+                    if isinstance(result, dict) and result.get("status") != "PASS"
+                ),
+                "observed_gates": {
+                    str(name): result.get("observed_value")
+                    for name, result in sorted((gates or {}).items())
+                    if isinstance(result, dict)
+                },
+            }
+        )
+    return tuple(records)
+
+
+def family_order_deviation_record(
+    family: str,
+    prior_families_passed: tuple[str, ...],
+    acknowledged_failed_priors: Sequence[Mapping[str, object]],
+    reason: str,
+    owner: str,
+) -> dict[str, Any]:
+    """Render the audit block persisted into the run report for an order deviation."""
+    return {
+        "family": family,
+        "deviated_from_e_plan_order": True,
+        "reason": reason.strip(),
+        "authorized_by": owner.strip(),
+        "prerequisites": list(FAMILY_ORDER_PREREQUISITES[family]),
+        "prerequisites_with_passed_evidence": list(prior_families_passed),
+        "prerequisites_acknowledged_as_failed": [
+            str(entry.get("family")) for entry in acknowledged_failed_priors
+        ],
+        "failed_prior_reports": [dict(entry) for entry in acknowledged_failed_priors],
+    }
 
 
 def prior_families_from_reports(entries: Sequence[str]) -> tuple[str, ...]:
@@ -3447,10 +3613,30 @@ def main() -> None:
         print(json.dumps(report["oos"], ensure_ascii=False, indent=2))
         print(f"smoke complete; report={args.report}")
         return
+    passed_priors = prior_families_from_reports(args.prior_report)
+    acknowledged_failed_priors = prior_families_from_failed_reports(args.prior_report_failed)
     validate_family_order(
         args.family,
-        prior_families_passed=prior_families_from_reports(args.prior_report),
+        prior_families_passed=passed_priors,
+        acknowledged_failed_priors=acknowledged_failed_priors,
+        deviation_reason=args.family_order_deviation,
+        deviation_owner=args.family_order_deviation_owner,
     )
+    deviation_record: dict[str, Any] | None = None
+    if missing_prerequisites(args.family, passed_priors):
+        deviation_record = family_order_deviation_record(
+            args.family,
+            passed_priors,
+            acknowledged_failed_priors,
+            cast(str, args.family_order_deviation),
+            cast(str, args.family_order_deviation_owner),
+        )
+        print(
+            "WARNING: running "
+            f"{args.family} under an owner-authorized E-plan order deviation: "
+            f"{deviation_record['reason']} (authorized by {deviation_record['authorized_by']})",
+            flush=True,
+        )
     if args.baseline_artifacts is None:
         raise SystemExit("--baseline-artifacts is required for full runs")
     if args.baseline_report is None:
@@ -3470,6 +3656,8 @@ def main() -> None:
         report = run_full_m3(args)
     else:
         raise SystemExit(f"unsupported family: {args.family}")
+    if deviation_record is not None:
+        report["family_order_deviation"] = deviation_record
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report["oos"], ensure_ascii=False, indent=2))

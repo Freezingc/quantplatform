@@ -363,6 +363,170 @@ def test_parse_args_collects_prior_reports(tmp_path: Path) -> None:
     assert args.prior_report == [f"M1={tmp_path / 'm1.json'}"]
 
 
+# --- E-plan order deviation (owner-authorized, auditable) -------------------
+
+
+def _failed_family_report(family: str, *, mode: str = "full") -> dict:
+    """A full-mode report whose gates did not all pass, shaped like m2_v1's."""
+    return {
+        "family": family,
+        "mode": mode,
+        "folds": [],
+        "oos": {
+            "all_passed": False,
+            "gates": {
+                "G1": {"status": "PASS", "observed_value": 0.09, "threshold": 0.03},
+                "G4": {"status": "FAIL", "observed_value": 0.0049, "threshold": 0.005},
+                "G6": {"status": "FAIL", "observed_value": 0.934, "threshold": 0.95},
+            },
+        },
+    }
+
+
+_REASON = "owner authorized running M3 after M2 failed G4/G6"
+
+
+def test_missing_prerequisites_reports_only_the_unpassed() -> None:
+    assert MODULE.missing_prerequisites("M3", ("M1",)) == ["M2"]
+    assert MODULE.missing_prerequisites("M3", ("M1", "M2")) == []
+
+
+def test_deviation_requires_a_reason(tmp_path: Path) -> None:
+    """Without a deviation the guard stays fail-closed, exactly as before."""
+    failed = tmp_path / "m2.json"
+    failed.write_text(json.dumps(_failed_family_report("M2")), encoding="utf-8")
+    acknowledged = MODULE.prior_families_from_failed_reports([f"M2={failed}"])
+    with pytest.raises(ValueError, match="requires prior passed families"):
+        MODULE.validate_family_order(
+            "M3",
+            prior_families_passed=("M1",),
+            acknowledged_failed_priors=acknowledged,
+        )
+
+
+def test_deviation_rejects_a_token_reason() -> None:
+    with pytest.raises(ValueError, match="at least"):
+        MODULE.validate_family_order(
+            "M3",
+            prior_families_passed=("M1",),
+            acknowledged_failed_priors=({"family": "M2"},),
+            deviation_reason="m2 failed",
+            deviation_owner="owner",
+        )
+
+
+def test_deviation_requires_an_owner() -> None:
+    with pytest.raises(ValueError, match="family-order-deviation-owner"):
+        MODULE.validate_family_order(
+            "M3",
+            prior_families_passed=("M1",),
+            acknowledged_failed_priors=({"family": "M2"},),
+            deviation_reason=_REASON,
+        )
+
+
+def test_deviation_requires_the_failing_report_for_every_missing_prerequisite() -> None:
+    """An authorization without the failing evidence on file is not auditable."""
+    with pytest.raises(ValueError, match="--prior-report-failed"):
+        MODULE.validate_family_order(
+            "M3",
+            prior_families_passed=(),
+            acknowledged_failed_priors=({"family": "M2"},),
+            deviation_reason=_REASON,
+            deviation_owner="owner",
+        )
+
+
+def test_deviation_allows_m3_with_m1_passed_and_m2_acknowledged_failed() -> None:
+    MODULE.validate_family_order(
+        "M3",
+        prior_families_passed=("M1",),
+        acknowledged_failed_priors=({"family": "M2"},),
+        deviation_reason=_REASON,
+        deviation_owner="owner",
+    )
+
+
+def test_deviation_refused_when_no_prerequisite_is_missing() -> None:
+    """The audit record must never claim an authorization the run did not need."""
+    with pytest.raises(ValueError, match="needs no order deviation"):
+        MODULE.validate_family_order(
+            "M3",
+            prior_families_passed=("M1", "M2"),
+            deviation_reason=_REASON,
+            deviation_owner="owner",
+        )
+
+
+def test_failed_reports_record_identity_and_gate_statuses(tmp_path: Path) -> None:
+    path = tmp_path / "m2.json"
+    payload = json.dumps(_failed_family_report("M2"))
+    path.write_text(payload, encoding="utf-8")
+    (record,) = MODULE.prior_families_from_failed_reports([f"M2={path}"])
+    assert record["family"] == "M2"
+    assert record["all_passed"] is False
+    assert record["failed_gates"] == ["G4", "G6"]
+    assert record["observed_gates"]["G4"] == 0.0049
+    assert record["report_path"] == str(path)
+    import hashlib
+
+    assert record["report_sha256"] == hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def test_failed_reports_reject_a_report_that_actually_passed(tmp_path: Path) -> None:
+    path = tmp_path / "m2.json"
+    path.write_text(json.dumps(_passed_family_report("M2")), encoding="utf-8")
+    with pytest.raises(SystemExit, match="actually passed all gates"):
+        MODULE.prior_families_from_failed_reports([f"M2={path}"])
+
+
+def test_failed_reports_reject_smoke_mode(tmp_path: Path) -> None:
+    path = tmp_path / "m2.json"
+    path.write_text(
+        json.dumps(_failed_family_report("M2", mode="smoke")), encoding="utf-8"
+    )
+    with pytest.raises(SystemExit, match="not a full run"):
+        MODULE.prior_families_from_failed_reports([f"M2={path}"])
+
+
+def test_deviation_record_names_what_was_skipped() -> None:
+    record = MODULE.family_order_deviation_record(
+        "M3",
+        ("M1",),
+        ({"family": "M2", "failed_gates": ["G4", "G6"]},),
+        _REASON,
+        "owner",
+    )
+    assert record["deviated_from_e_plan_order"] is True
+    assert record["prerequisites"] == ["M1", "M2"]
+    assert record["prerequisites_with_passed_evidence"] == ["M1"]
+    assert record["prerequisites_acknowledged_as_failed"] == ["M2"]
+    assert record["authorized_by"] == "owner"
+    assert record["reason"] == _REASON
+
+
+def test_parse_args_collects_deviation_flags(tmp_path: Path) -> None:
+    args = MODULE.parse_args(
+        [
+            "--family",
+            "M3",
+            "--report",
+            str(tmp_path / "m3.json"),
+            "--prior-report",
+            f"M1={tmp_path / 'm1.json'}",
+            "--prior-report-failed",
+            f"M2={tmp_path / 'm2.json'}",
+            "--family-order-deviation",
+            _REASON,
+            "--family-order-deviation-owner",
+            "owner",
+        ]
+    )
+    assert args.prior_report_failed == [f"M2={tmp_path / 'm2.json'}"]
+    assert args.family_order_deviation == _REASON
+    assert args.family_order_deviation_owner == "owner"
+
+
 # --- padding-mask regression -------------------------------------------------
 #
 # Every smoke fixture in this file gives each signal date the same number of
