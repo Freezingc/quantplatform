@@ -1,0 +1,7 @@
+candidate,source,lag,used_safe_lag,icir_2022_2025,icir_2022_2024,mean_ic,coverage,worst_frozen_rho,worst_frozen_partner,worst_survivor_rho,worst_survivor_partner,retention_given_dense9,retention_flag,residual_rank_ic,raw_rank_ic_on_retention_days,retention_days,within_day_coverage,clears_icir_bar,clears_residual_ic_bar,dim_at_cap_090,dim_at_cap_080,dim_retention_aware
+high_dist,cyq_perf,0,True,0.351,0.33,0.0422,0.999,0.18,yeslab_443_reg30_max20_v1,0.207,repay_intensity,0.622,PASS,0.0276,0.0444,243,0.9857,False,True,True,True,True
+buy_intensity,margin_detail,1,True,-0.557,-0.564,-0.0715,0.722,0.574,yeslab_425,0.881,repay_intensity,0.254,WEAK,-0.0186,-0.0734,242,0.9877,True,False,True,True,False
+repay_intensity,margin_detail,1,True,-0.543,-0.561,-0.0701,0.722,0.576,yeslab_425,0.881,buy_intensity,0.23,WEAK,-0.0161,-0.07,242,0.9877,True,False,True,False,False
+rzye_chg5,margin_detail,1,True,-0.425,-0.386,-0.0262,0.722,0.198,yeslab_375,0.261,buy_intensity,0.37,PASS,-0.0118,-0.032,242,0.9877,False,False,True,True,True
+winner_rate,cyq_perf,0,True,-0.285,-0.276,-0.0328,0.999,0.506,yeslab_390,0.264,buy_intensity,-0.306,SIGN_FLIP,0.0097,-0.0317,243,0.9857,False,False,True,True,False
+net_fin_ratio,margin_detail,0,False,-0.277,-0.24,-0.0144,0.725,0.174,yeslab_372,0.1,winner_rate,0.455,PASS,-0.0085,-0.0187,243,0.9877,False,False,True,True,True

@@ -1,0 +1,30 @@
+  NOTE: safe-lag alignment did not clear the threshold for ['net_fin_ratio']; using their strongest-|ICIR| row and flagging it
+survivors (|ICIR| >= 0.25, one row per candidate): 6
+2026-10-13 19:14:22.456227: [125513183143744] Warn: Server does not support initialization check. Please upgrade.
+version filter: universe_daily 3,812,332 -> 3,557,762 rows | label_daily 3,616,487 -> 3,557,762 rows
+2026-10-13 19:16:17.901261: [125513183143744] Warn: Server does not support initialization check. Please upgrade.
+  loaded yeslab_206: 925,434 non-null values in 2025
+  loaded yeslab_357: 938,113 non-null values in 2025
+  loaded yeslab_372: 464,887 non-null values in 2025
+  loaded yeslab_375: 441,664 non-null values in 2025
+  loaded yeslab_381: 937,657 non-null values in 2025
+  loaded yeslab_384: 463,153 non-null values in 2025
+  loaded yeslab_389: 479,610 non-null values in 2025
+  loaded yeslab_390: 480,243 non-null values in 2025
+  loaded yeslab_406: 446,854 non-null values in 2025
+  loaded yeslab_425: 936,455 non-null values in 2025
+  loaded yeslab_443_reg30_max20_v1: 927,713 non-null values in 2025
+  loaded yeslab_464: 935,546 non-null values in 2025
+  loaded yeslab_471: 933,603 non-null values in 2025
+  loaded yeslab_484: 938,604 non-null values in 2025
+  loaded yeslab_96: 934,108 non-null values in 2025
+wide frame: 938,594 rows, 936,317 with a valid label
+  margin_detail/buy_intensity lag1: vs frozen yeslab_425=0.574 [PASS] | vs survivors repay_intensity=0.881 [MONITOR] | retention=0.254
+  cyq_perf/high_dist lag0: vs frozen yeslab_443_reg30_max20_v1=0.180 [PASS] | vs survivors repay_intensity=0.207 [PASS] | retention=0.622
+  margin_detail/net_fin_ratio lag0: vs frozen yeslab_372=0.174 [PASS] | vs survivors winner_rate=0.100 [PASS] | retention=0.455
+  margin_detail/repay_intensity lag1: vs frozen yeslab_425=0.576 [PASS] | vs survivors buy_intensity=0.881 [MONITOR] | retention=0.23
+  margin_detail/rzye_chg5 lag1: vs frozen yeslab_375=0.198 [PASS] | vs survivors buy_intensity=0.261 [PASS] | retention=0.37
+  cyq_perf/winner_rate lag0: vs frozen yeslab_390=0.506 [PASS] | vs survivors buy_intensity=0.264 [PASS] | retention=-0.306
+
+greedy effective new dimensions from this screen: 6 -> ['buy_intensity', 'repay_intensity', 'rzye_chg5', 'high_dist', 'winner_rate', 'net_fin_ratio']
+wrote analysis/redundancy_survivors.json

@@ -1,0 +1,30 @@
+  NOTE: safe-lag alignment did not clear the threshold for ['net_fin_ratio']; using their strongest-|ICIR| row and flagging it
+survivors (|ICIR| >= 0.25, one row per candidate): 6
+2026-10-13 19:12:01.274312: [135259523868480] Warn: Server does not support initialization check. Please upgrade.
+version filter: universe_daily 3,812,332 -> 3,557,762 rows | label_daily 3,616,487 -> 3,557,762 rows
+2026-10-13 19:13:38.992953: [135259523868480] Warn: Server does not support initialization check. Please upgrade.
+Traceback (most recent call last):
+  File "/data/zhangyudong/.local/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'yeslab_206'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/redundancy_survivors.py", line 304, in <module>
+    raise SystemExit(main(float(sys.argv[1]) if len(sys.argv) > 1 else 0.25))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/redundancy_survivors.py", line 226, in main
+    print(f"  loaded {fid}: {int(df[fid].notna().sum()):,} non-null values in 2025", flush=True)
+                                 ~~^^^^^
+  File "/data/zhangyudong/.local/lib/python3.12/site-packages/pandas/core/frame.py", line 4113, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/zhangyudong/.local/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'yeslab_206'

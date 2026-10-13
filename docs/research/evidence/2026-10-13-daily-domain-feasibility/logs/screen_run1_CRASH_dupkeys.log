@@ -1,0 +1,14 @@
+context: universe member-days=3,812,332 labelled=4,104,981
+Traceback (most recent call last):
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/screen_daily_domains.py", line 152, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/screen_daily_domains.py", line 134, in main
+    r = screen(frame, cand, ctx, lag)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/screen_daily_domains.py", line 101, in screen
+    d = compute_daily_rank_ic(merged.loc[:, KEYS + [cand]].rename(columns={cand: "score"}),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/zhangyudong/FDU/Quant-Platform-Prod_CODEX/research_v2/src/research_v2/evaluation/rank_ic.py", line 66, in compute_daily_rank_ic
+    raise ValueError("predictions and labels must have unique signal-date keys")
+ValueError: predictions and labels must have unique signal-date keys

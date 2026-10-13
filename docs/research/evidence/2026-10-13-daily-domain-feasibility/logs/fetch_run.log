@@ -1,0 +1,87 @@
+2026-10-13T18:07:21.678019+08:00   moneyflow 2022: 60/242 days, 278,002 rows, 43s
+2026-10-13T18:08:24.524231+08:00   moneyflow 2022: 120/242 days, 559,221 rows, 105s
+2026-10-13T18:09:30.530199+08:00   moneyflow 2022: 180/242 days, 844,886 rows, 171s
+2026-10-13T18:10:42.784231+08:00   moneyflow 2022: 240/242 days, 1,136,471 rows, 244s
+2026-10-13T18:10:47.242075+08:00 [done] moneyflow 2022: 1,146,266 rows, 242 days, 248s -> moneyflow_2022.parquet
+2026-10-13T18:12:06.214303+08:00   moneyflow 2023: 60/242 days, 294,961 rows, 79s
+2026-10-13T18:12:51.755329+08:00   moneyflow 2023: 120/242 days, 592,998 rows, 124s
+2026-10-13T18:13:26.559120+08:00   moneyflow 2023: 180/242 days, 895,012 rows, 159s
+2026-10-13T18:14:00.538851+08:00   moneyflow 2023: 240/242 days, 1,199,485 rows, 193s
+2026-10-13T18:14:04.820987+08:00 [done] moneyflow 2023: 1,209,660 rows, 242 days, 197s -> moneyflow_2023.parquet
+2026-10-13T18:14:38.994091+08:00   moneyflow 2024: 60/242 days, 306,002 rows, 34s
+2026-10-13T18:15:13.588352+08:00   moneyflow 2024: 120/242 days, 611,813 rows, 69s
+2026-10-13T18:15:48.249387+08:00   moneyflow 2024: 180/242 days, 917,066 rows, 103s
+2026-10-13T18:16:22.739847+08:00   moneyflow 2024: 240/242 days, 1,222,991 rows, 138s
+2026-10-13T18:16:27.602715+08:00 [done] moneyflow 2024: 1,233,202 rows, 242 days, 143s -> moneyflow_2024.parquet
+2026-10-13T18:17:01.131603+08:00   moneyflow 2025: 60/243 days, 307,148 rows, 33s
+2026-10-13T18:17:35.150202+08:00   moneyflow 2025: 120/243 days, 614,778 rows, 67s
+2026-10-13T18:18:09.330586+08:00   moneyflow 2025: 180/243 days, 923,320 rows, 102s
+2026-10-13T18:18:44.218967+08:00   moneyflow 2025: 240/243 days, 1,232,599 rows, 137s
+2026-10-13T18:18:49.909195+08:00 [done] moneyflow 2025: 1,248,109 rows, 243 days, 142s -> moneyflow_2025.parquet
+2026-10-13T18:19:16.631073+08:00   cyq_perf 2022: 60/242 days, 275,715 rows, 27s
+2026-10-13T18:19:43.233241+08:00   cyq_perf 2022: 120/242 days, 557,250 rows, 53s
+2026-10-13T18:20:10.268443+08:00   cyq_perf 2022: 180/242 days, 846,220 rows, 80s
+2026-10-13T18:20:36.661410+08:00   cyq_perf 2022: 240/242 days, 1,143,904 rows, 107s
+2026-10-13T18:20:39.346091+08:00 [done] cyq_perf 2022: 1,154,034 rows, 242 days, 109s -> cyq_perf_2022.parquet
+2026-10-13T18:21:06.800343+08:00   cyq_perf 2023: 60/242 days, 306,804 rows, 27s
+2026-10-13T18:21:34.296247+08:00   cyq_perf 2023: 120/242 days, 620,875 rows, 55s
+2026-10-13T18:22:02.008326+08:00   cyq_perf 2023: 180/242 days, 943,022 rows, 83s
+2026-10-13T18:22:29.515251+08:00   cyq_perf 2023: 240/242 days, 1,270,175 rows, 110s
+2026-10-13T18:22:32.009507+08:00 [done] cyq_perf 2023: 1,281,158 rows, 242 days, 113s -> cyq_perf_2023.parquet
+2026-10-13T18:22:59.844697+08:00   cyq_perf 2024: 60/242 days, 331,240 rows, 28s
+2026-10-13T18:23:27.950921+08:00   cyq_perf 2024: 120/242 days, 664,211 rows, 56s
+2026-10-13T18:23:58.071997+08:00   cyq_perf 2024: 180/242 days, 998,473 rows, 86s
+2026-10-13T18:24:26.422736+08:00   cyq_perf 2024: 240/242 days, 1,334,187 rows, 114s
+2026-10-13T18:24:29.502484+08:00 [done] cyq_perf 2024: 1,345,404 rows, 242 days, 117s -> cyq_perf_2024.parquet
+2026-10-13T18:24:58.530787+08:00   cyq_perf 2025: 60/243 days, 337,542 rows, 29s
+2026-10-13T18:25:26.656518+08:00   cyq_perf 2025: 120/243 days, 675,529 rows, 57s
+2026-10-13T18:25:54.018708+08:00   cyq_perf 2025: 180/243 days, 1,014,693 rows, 84s
+2026-10-13T18:26:26.894746+08:00   cyq_perf 2025: 240/243 days, 1,341,575 rows, 117s
+2026-10-13T18:26:30.090992+08:00 [done] cyq_perf 2025: 1,357,945 rows, 243 days, 120s -> cyq_perf_2025.parquet
+2026-10-13T18:26:53.652934+08:00   margin_detail 2022: 60/242 days, 147,030 rows, 23s
+2026-10-13T18:27:17.597293+08:00   margin_detail 2022: 120/242 days, 297,826 rows, 47s
+2026-10-13T18:27:42.144472+08:00   margin_detail 2022: 180/242 days, 453,610 rows, 72s
+2026-10-13T18:28:07.093345+08:00   margin_detail 2022: 240/242 days, 643,426 rows, 97s
+2026-10-13T18:28:09.405822+08:00 [done] margin_detail 2022: 650,055 rows, 242 days, 99s -> margin_detail_2022.parquet
+2026-10-13T18:28:34.271988+08:00   margin_detail 2023: 60/242 days, 202,585 rows, 25s
+2026-10-13T18:28:57.974475+08:00   margin_detail 2023: 120/242 days, 386,619 rows, 48s
+2026-10-13T18:29:21.391556+08:00   margin_detail 2023: 180/242 days, 566,603 rows, 72s
+2026-10-13T18:29:46.545512+08:00   margin_detail 2023: 240/242 days, 793,002 rows, 97s
+2026-10-13T18:29:48.219974+08:00 [done] margin_detail 2023: 796,842 rows, 224 days, 99s -> margin_detail_2023.parquet
+Traceback (most recent call last):
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/fetch_daily_domains.py", line 78, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/fetch_daily_domains.py", line 62, in main
+    days = trading_days(pro, year)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/zhangyudong/qrv2_research_artifacts/daily_domain_feasibility_20261013/fetch_daily_domains.py", line 39, in trading_days
+    return sorted(cal["cal_date"].astype(str).tolist())
+                  ~~~^^^^^^^^^^^^
+  File "/data/zhangyudong/.conda/envs/quantyd/lib/python3.11/site-packages/pandas/core/frame.py", line 4113, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/zhangyudong/.conda/envs/quantyd/lib/python3.11/site-packages/pandas/core/indexes/range.py", line 417, in get_loc
+    raise KeyError(key)
+KeyError: 'cal_date'
+2026-10-13T18:37:36.681897+08:00 [skip] moneyflow_2022.parquet already present
+2026-10-13T18:37:36.683734+08:00 [skip] moneyflow_2023.parquet already present
+2026-10-13T18:37:36.683897+08:00 [skip] moneyflow_2024.parquet already present
+2026-10-13T18:37:36.684050+08:00 [skip] moneyflow_2025.parquet already present
+2026-10-13T18:37:36.684184+08:00 [skip] cyq_perf_2022.parquet already present
+2026-10-13T18:37:36.684301+08:00 [skip] cyq_perf_2023.parquet already present
+2026-10-13T18:37:36.684420+08:00 [skip] cyq_perf_2024.parquet already present
+2026-10-13T18:37:36.684539+08:00 [skip] cyq_perf_2025.parquet already present
+2026-10-13T18:37:36.684658+08:00 [skip] margin_detail_2022.parquet already present
+2026-10-13T18:37:36.684769+08:00 [skip] margin_detail_2023.parquet already present
+2026-10-13T18:38:04.127832+08:00   margin_detail 2024: 60/242 days, 231,313 rows, 27s
+2026-10-13T18:38:30.572706+08:00   margin_detail 2024: 120/242 days, 463,146 rows, 54s
+2026-10-13T18:38:56.876801+08:00   margin_detail 2024: 180/242 days, 697,984 rows, 80s
+2026-10-13T18:39:22.622547+08:00   margin_detail 2024: 240/242 days, 935,621 rows, 106s
+2026-10-13T18:39:24.666444+08:00 [done] margin_detail 2024: 943,581 rows, 242 days, 108s -> margin_detail_2024.parquet
+2026-10-13T18:39:51.003118+08:00   margin_detail 2025: 60/243 days, 242,985 rows, 26s
+2026-10-13T18:40:17.736335+08:00   margin_detail 2025: 120/243 days, 489,360 rows, 53s
+2026-10-13T18:40:44.418525+08:00   margin_detail 2025: 180/243 days, 738,355 rows, 80s
+2026-10-13T18:41:11.213669+08:00   margin_detail 2025: 240/243 days, 993,219 rows, 106s
+2026-10-13T18:41:13.685755+08:00 [done] margin_detail 2025: 1,006,059 rows, 243 days, 109s -> margin_detail_2025.parquet
+2026-10-13T18:41:13.686051+08:00 ALL_FETCH_DONE

@@ -1,0 +1,64 @@
+2026-10-13 18:53:20.666405: [127934511970112] Warn: Server does not support initialization check. Please upgrade.
+version filter: universe_daily 3,812,332 -> 3,557,762 rows | label_daily 3,616,487 -> 3,557,762 rows
+context: universe member-days=3,557,762 labelled=3,557,762
+  moneyflow      net_mf_amount      lag0 ic=+0.0159 icir=+0.146 days=969 cov=1.00
+  moneyflow      net_mf_amount      lag1 ic=+0.0153 icir=+0.144 days=968 cov=1.00
+  moneyflow      net_lg             lag0 ic=-0.0002 icir=-0.003 days=969 cov=1.00
+  moneyflow      net_lg             lag1 ic=+0.0044 icir=+0.066 days=968 cov=1.00
+  moneyflow      net_elg            lag0 ic=-0.0030 icir=-0.055 days=969 cov=1.00
+  moneyflow      net_elg            lag1 ic=+0.0013 icir=+0.024 days=968 cov=1.00
+  moneyflow      net_sm             lag0 ic=+0.0022 icir=+0.031 days=969 cov=1.00
+  moneyflow      net_sm             lag1 ic=-0.0018 icir=-0.026 days=968 cov=1.00
+  moneyflow      net_lg_ratio       lag0 ic=-0.0149 icir=-0.227 days=969 cov=1.00
+  moneyflow      net_lg_ratio       lag1 ic=-0.0096 icir=-0.151 days=968 cov=1.00
+  moneyflow      net_elg_ratio      lag0 ic=-0.0110 icir=-0.232 days=969 cov=1.00
+  moneyflow      net_elg_ratio      lag1 ic=-0.0063 icir=-0.132 days=968 cov=1.00
+  moneyflow      net_sm_ratio       lag0 ic=+0.0170 icir=+0.235 days=969 cov=1.00
+  moneyflow      net_sm_ratio       lag1 ic=+0.0119 icir=+0.169 days=968 cov=1.00
+  moneyflow      net_mf_ratio       lag0 ic=+0.0006 icir=+0.005 days=969 cov=1.00
+  moneyflow      net_mf_ratio       lag1 ic=-0.0002 icir=-0.002 days=968 cov=1.00
+  cyq_perf       winner_rate        lag0 ic=-0.0328 icir=-0.285 days=969 cov=0.99
+  cyq_perf       winner_rate        lag1 ic=-0.0294 icir=-0.254 days=968 cov=0.99
+  cyq_perf       cost_dispersion    lag0 ic=+0.0207 icir=+0.193 days=969 cov=0.99
+  cyq_perf       cost_dispersion    lag1 ic=+0.0206 icir=+0.194 days=968 cov=0.99
+  cyq_perf       cost_iqr_rel       lag0 ic=+0.0151 icir=+0.146 days=969 cov=0.99
+  cyq_perf       cost_iqr_rel       lag1 ic=+0.0161 icir=+0.158 days=968 cov=0.99
+  cyq_perf       high_dist          lag0 ic=+0.0422 icir=+0.351 days=969 cov=0.99
+  cyq_perf       high_dist          lag1 ic=+0.0408 icir=+0.340 days=968 cov=0.99
+  cyq_perf       cost_50pct         lag0 ic=-0.0394 icir=-0.216 days=969 cov=0.99
+  cyq_perf       cost_50pct         lag1 ic=-0.0384 icir=-0.211 days=968 cov=0.99
+  margin_detail  buy_intensity      lag0 ic=-0.0757 icir=-0.605 days=951 cov=0.67
+  margin_detail  buy_intensity      lag1 ic=-0.0715 icir=-0.557 days=950 cov=0.67
+  margin_detail  repay_intensity    lag0 ic=-0.0742 icir=-0.584 days=951 cov=0.67
+  margin_detail  repay_intensity    lag1 ic=-0.0701 icir=-0.543 days=950 cov=0.67
+  margin_detail  net_fin_ratio      lag0 ic=-0.0144 icir=-0.277 days=951 cov=0.67
+  margin_detail  net_fin_ratio      lag1 ic=-0.0121 icir=-0.234 days=950 cov=0.67
+  margin_detail  short_to_long      lag0 ic=-0.0181 icir=-0.131 days=951 cov=0.67
+  margin_detail  short_to_long      lag1 ic=-0.0177 icir=-0.128 days=950 cov=0.67
+  margin_detail  rzye_chg5          lag0 ic=-0.0287 icir=-0.465 days=946 cov=0.66
+  margin_detail  rzye_chg5          lag1 ic=-0.0262 icir=-0.425 days=945 cov=0.66
+  margin_detail  rzye               lag0 ic=+0.0062 icir=+0.051 days=951 cov=0.67
+  margin_detail  rzye               lag1 ic=+0.0066 icir=+0.055 days=950 cov=0.67
+
+=== |ICIR| 排名前 20 ===
+      candidate  lag  mean_rank_ic      icir  valid_days  coverage_of_universe_member_days  directional_day_share
+  buy_intensity    0     -0.075704 -0.605298         951                          0.667122               0.730810
+repay_intensity    0     -0.074228 -0.584283         951                          0.667122               0.727655
+  buy_intensity    1     -0.071488 -0.557416         950                          0.666454               0.717895
+repay_intensity    1     -0.070131 -0.543148         950                          0.666454               0.710526
+      rzye_chg5    0     -0.028720 -0.465247         946                          0.663762               0.706131
+      rzye_chg5    1     -0.026201 -0.425408         945                          0.663092               0.701587
+      high_dist    0      0.042220  0.351022         969                          0.987374               0.660475
+      high_dist    1      0.040818  0.340140         968                          0.986324               0.654959
+    winner_rate    0     -0.032831 -0.284544         969                          0.987374               0.605779
+  net_fin_ratio    0     -0.014365 -0.277485         951                          0.667122               0.626709
+    winner_rate    1     -0.029380 -0.254496         968                          0.986324               0.608471
+   net_sm_ratio    0      0.016984  0.234981         969                          0.999990               0.610939
+  net_fin_ratio    1     -0.012078 -0.234424         950                          0.666454               0.610526
+  net_elg_ratio    0     -0.010979 -0.231582         969                          0.999990               0.589267
+   net_lg_ratio    0     -0.014884 -0.226829         969                          0.999990               0.594427
+     cost_50pct    0     -0.039413 -0.216464         969                          0.987374               0.567595
+     cost_50pct    1     -0.038441 -0.211188         968                          0.986324               0.564050
+cost_dispersion    1      0.020641  0.194362         968                          0.986324               0.572314
+cost_dispersion    0      0.020677  0.193453         969                          0.987374               0.570691
+   net_sm_ratio    1      0.011884  0.168770         968                          0.998920               0.598140

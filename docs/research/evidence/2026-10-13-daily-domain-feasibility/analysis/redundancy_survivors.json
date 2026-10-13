@@ -1,0 +1,1212 @@
+{
+ "scope": "DAILY_DOMAIN_REDUNDANCY_V2",
+ "window": "2025",
+ "threshold_abs_icir": 0.25,
+ "safe_lag": {
+  "moneyflow": 0,
+  "cyq_perf": 0,
+  "margin_detail": 1
+ },
+ "dense9": [
+  "yeslab_206",
+  "yeslab_357",
+  "yeslab_381",
+  "yeslab_425",
+  "yeslab_443_reg30_max20_v1",
+  "yeslab_464",
+  "yeslab_471",
+  "yeslab_484",
+  "yeslab_96"
+ ],
+ "all15": [
+  "yeslab_206",
+  "yeslab_357",
+  "yeslab_372",
+  "yeslab_375",
+  "yeslab_381",
+  "yeslab_384",
+  "yeslab_389",
+  "yeslab_390",
+  "yeslab_406",
+  "yeslab_425",
+  "yeslab_443_reg30_max20_v1",
+  "yeslab_464",
+  "yeslab_471",
+  "yeslab_484",
+  "yeslab_96"
+ ],
+ "frozen_v2_data_version": "888fd4b97bc66a617e30296b3ab7481f296824dc243308fa0d58295834d7bca2",
+ "pair_block": 0.9,
+ "pair_monitor": 0.8,
+ "retention_bar": 0.3,
+ "context_provenance": "universe_daily/label_daily filtered to the published data_version per YYYY-MM logical partition (walk_forward_common.filter_current)",
+ "candidates": [
+  {
+   "source": "margin_detail",
+   "candidate": "buy_intensity",
+   "lag": 1,
+   "safe_lag_for_source": 1,
+   "used_safe_lag": true,
+   "screen_icir": -0.5574160140325699,
+   "screen_mean_rank_ic": -0.0714883747050925,
+   "rows_2025_non_null": 676390,
+   "coverage_of_labelled_days": 0.7223942318680532,
+   "pairwise_vs_frozen15": {
+    "yeslab_206": {
+     "days": 242,
+     "median_abs_rho": 0.21165107502093744,
+     "mean_abs_rho": 0.20454524299963872,
+     "p90_abs_rho": 0.3417142996570597,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_357": {
+     "days": 242,
+     "median_abs_rho": 0.2708544173935013,
+     "mean_abs_rho": 0.2691110198988498,
+     "p90_abs_rho": 0.3245941309024669,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_372": {
+     "days": 242,
+     "median_abs_rho": 0.41798002334835715,
+     "mean_abs_rho": 0.4195348722335804,
+     "p90_abs_rho": 0.502047088253223,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_375": {
+     "days": 242,
+     "median_abs_rho": 0.5700683234490465,
+     "mean_abs_rho": 0.5642161509316399,
+     "p90_abs_rho": 0.6353148554588934,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_381": {
+     "days": 242,
+     "median_abs_rho": 0.5267370457004101,
+     "mean_abs_rho": 0.5212876331859674,
+     "p90_abs_rho": 0.6031393844498462,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_384": {
+     "days": 242,
+     "median_abs_rho": 0.48073937333415573,
+     "mean_abs_rho": 0.47447299883839966,
+     "p90_abs_rho": 0.5559604883574742,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_389": {
+     "days": 242,
+     "median_abs_rho": 0.3526120937649751,
+     "mean_abs_rho": 0.348116707054904,
+     "p90_abs_rho": 0.43098936397896515,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_390": {
+     "days": 242,
+     "median_abs_rho": 0.4504085602961655,
+     "mean_abs_rho": 0.43861249901663263,
+     "p90_abs_rho": 0.525966774403458,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_406": {
+     "days": 242,
+     "median_abs_rho": 0.42428748714332576,
+     "mean_abs_rho": 0.42310569163770045,
+     "p90_abs_rho": 0.5024364651595483,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_425": {
+     "days": 242,
+     "median_abs_rho": 0.5736303131872014,
+     "mean_abs_rho": 0.5595831230458626,
+     "p90_abs_rho": 0.6346342635631722,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_443_reg30_max20_v1": {
+     "days": 242,
+     "median_abs_rho": 0.4753206659403665,
+     "mean_abs_rho": 0.4762468635331268,
+     "p90_abs_rho": 0.5730411127639,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_464": {
+     "days": 242,
+     "median_abs_rho": 0.43563052044888106,
+     "mean_abs_rho": 0.4327223636001177,
+     "p90_abs_rho": 0.5274533424614779,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_471": {
+     "days": 242,
+     "median_abs_rho": 0.42269519864992244,
+     "mean_abs_rho": 0.40720126224354364,
+     "p90_abs_rho": 0.47414456536336047,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_484": {
+     "days": 242,
+     "median_abs_rho": 0.5316409289024234,
+     "mean_abs_rho": 0.5233973777226356,
+     "p90_abs_rho": 0.5827307563269075,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_96": {
+     "days": 242,
+     "median_abs_rho": 0.44376133392982486,
+     "mean_abs_rho": 0.4204586639185934,
+     "p90_abs_rho": 0.5310979635351778,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_frozen_partner": "yeslab_425",
+   "worst_frozen_median_abs_rho": 0.5736303131872014,
+   "pairwise_vs_frozen_verdict": "PASS",
+   "pairwise_vs_other_survivors": {
+    "high_dist": {
+     "days": 242,
+     "median_abs_rho": 0.20098802235276658,
+     "mean_abs_rho": 0.19944762917087666,
+     "p90_abs_rho": 0.263934337860206,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "net_fin_ratio": {
+     "days": 242,
+     "median_abs_rho": 0.06459278213617373,
+     "mean_abs_rho": 0.07618298851120484,
+     "p90_abs_rho": 0.15416351330426623,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "repay_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.880951801119473,
+     "mean_abs_rho": 0.8791651759784406,
+     "p90_abs_rho": 0.9023103337584096,
+     "share_ge_080": 0.9917355371900827,
+     "share_ge_090": 0.11570247933884298
+    },
+    "rzye_chg5": {
+     "days": 242,
+     "median_abs_rho": 0.2614454236777718,
+     "mean_abs_rho": 0.25662312931402476,
+     "p90_abs_rho": 0.3590527016846279,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "winner_rate": {
+     "days": 242,
+     "median_abs_rho": 0.2641277169400822,
+     "mean_abs_rho": 0.2662390710732448,
+     "p90_abs_rho": 0.45062356891006666,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_survivor_partner": "repay_intensity",
+   "worst_survivor_median_abs_rho": 0.880951801119473,
+   "pairwise_vs_survivor_verdict": "MONITOR",
+   "set_incremental_given_dense9": {
+    "days": 242,
+    "mean_raw_rank_ic": -0.07343278726305102,
+    "mean_residual_rank_ic": -0.01861910185079961,
+    "retention": 0.2535529774200486,
+    "mean_within_day_coverage": 0.9877150064539187,
+    "meets_retention_bar": false
+   },
+   "overall_verdict": "MONITOR",
+   "greedy_admitted": true,
+   "greedy_blockers": []
+  },
+  {
+   "source": "cyq_perf",
+   "candidate": "high_dist",
+   "lag": 0,
+   "safe_lag_for_source": 0,
+   "used_safe_lag": true,
+   "screen_icir": 0.3510221052613402,
+   "screen_mean_rank_ic": 0.0422196593946797,
+   "rows_2025_non_null": 935773,
+   "coverage_of_labelled_days": 0.9994190001890385,
+   "pairwise_vs_frozen15": {
+    "yeslab_206": {
+     "days": 243,
+     "median_abs_rho": 0.027839737208191235,
+     "mean_abs_rho": 0.031663049679282726,
+     "p90_abs_rho": 0.06521872051654282,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_357": {
+     "days": 243,
+     "median_abs_rho": 0.08716738856948042,
+     "mean_abs_rho": 0.085900045867535,
+     "p90_abs_rho": 0.12467510959909006,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_372": {
+     "days": 243,
+     "median_abs_rho": 0.04454689244535176,
+     "mean_abs_rho": 0.05635676732540928,
+     "p90_abs_rho": 0.11648809805634779,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_375": {
+     "days": 243,
+     "median_abs_rho": 0.039715930728620265,
+     "mean_abs_rho": 0.04776406763409483,
+     "p90_abs_rho": 0.09614671306800973,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_381": {
+     "days": 243,
+     "median_abs_rho": 0.15097513816996916,
+     "mean_abs_rho": 0.14899704591469404,
+     "p90_abs_rho": 0.21600410231980763,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_384": {
+     "days": 243,
+     "median_abs_rho": 0.09416833550412435,
+     "mean_abs_rho": 0.09209762909473676,
+     "p90_abs_rho": 0.1559858608119473,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_389": {
+     "days": 243,
+     "median_abs_rho": 0.07067296218774473,
+     "mean_abs_rho": 0.07559538283446209,
+     "p90_abs_rho": 0.15059897818460613,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_390": {
+     "days": 243,
+     "median_abs_rho": 0.05135592892317566,
+     "mean_abs_rho": 0.06473061680990509,
+     "p90_abs_rho": 0.13349443023229948,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_406": {
+     "days": 243,
+     "median_abs_rho": 0.03595080810546016,
+     "mean_abs_rho": 0.042716367483263996,
+     "p90_abs_rho": 0.08426189567557976,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_425": {
+     "days": 243,
+     "median_abs_rho": 0.07933005077823417,
+     "mean_abs_rho": 0.07691154318630408,
+     "p90_abs_rho": 0.13835964477914667,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_443_reg30_max20_v1": {
+     "days": 243,
+     "median_abs_rho": 0.1795794980417226,
+     "mean_abs_rho": 0.17557149090257312,
+     "p90_abs_rho": 0.22429240446070273,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_464": {
+     "days": 243,
+     "median_abs_rho": 0.09814736720311297,
+     "mean_abs_rho": 0.09742232905449354,
+     "p90_abs_rho": 0.16310283041593338,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_471": {
+     "days": 243,
+     "median_abs_rho": 0.1340980267153062,
+     "mean_abs_rho": 0.12858750327140117,
+     "p90_abs_rho": 0.16215176005145623,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_484": {
+     "days": 243,
+     "median_abs_rho": 0.09766533200074967,
+     "mean_abs_rho": 0.10224370302508191,
+     "p90_abs_rho": 0.1880275770797344,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_96": {
+     "days": 243,
+     "median_abs_rho": 0.07387058782966409,
+     "mean_abs_rho": 0.07767199594248159,
+     "p90_abs_rho": 0.1430406087016116,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_frozen_partner": "yeslab_443_reg30_max20_v1",
+   "worst_frozen_median_abs_rho": 0.1795794980417226,
+   "pairwise_vs_frozen_verdict": "PASS",
+   "pairwise_vs_other_survivors": {
+    "buy_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.20098802235276658,
+     "mean_abs_rho": 0.19944762917087666,
+     "p90_abs_rho": 0.26393433786020604,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "net_fin_ratio": {
+     "days": 243,
+     "median_abs_rho": 0.03332611843243717,
+     "mean_abs_rho": 0.04096347164584604,
+     "p90_abs_rho": 0.07896494396382579,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "repay_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.20723978394774986,
+     "mean_abs_rho": 0.2029540260854959,
+     "p90_abs_rho": 0.26284207939837445,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "rzye_chg5": {
+     "days": 242,
+     "median_abs_rho": 0.04177559863753294,
+     "mean_abs_rho": 0.04932211646562146,
+     "p90_abs_rho": 0.10435041211371351,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "winner_rate": {
+     "days": 243,
+     "median_abs_rho": 0.10604785349898874,
+     "mean_abs_rho": 0.11383498055448928,
+     "p90_abs_rho": 0.20452441616630282,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_survivor_partner": "repay_intensity",
+   "worst_survivor_median_abs_rho": 0.20723978394774986,
+   "pairwise_vs_survivor_verdict": "PASS",
+   "set_incremental_given_dense9": {
+    "days": 243,
+    "mean_raw_rank_ic": 0.04441663456432411,
+    "mean_residual_rank_ic": 0.027640709142271697,
+    "retention": 0.6223053460352215,
+    "mean_within_day_coverage": 0.9857460172761304,
+    "meets_retention_bar": true
+   },
+   "overall_verdict": "PASS",
+   "greedy_admitted": true,
+   "greedy_blockers": []
+  },
+  {
+   "source": "margin_detail",
+   "candidate": "net_fin_ratio",
+   "lag": 0,
+   "safe_lag_for_source": 1,
+   "used_safe_lag": false,
+   "screen_icir": -0.2774846802524612,
+   "screen_mean_rank_ic": -0.0143648084240488,
+   "rows_2025_non_null": 679180,
+   "coverage_of_labelled_days": 0.7253739919279475,
+   "pairwise_vs_frozen15": {
+    "yeslab_206": {
+     "days": 243,
+     "median_abs_rho": 0.06284460989019182,
+     "mean_abs_rho": 0.07553770683873555,
+     "p90_abs_rho": 0.15806239381850934,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_357": {
+     "days": 243,
+     "median_abs_rho": 0.09387969162590737,
+     "mean_abs_rho": 0.0881890170313062,
+     "p90_abs_rho": 0.14646700778194796,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_372": {
+     "days": 243,
+     "median_abs_rho": 0.1744231015122936,
+     "mean_abs_rho": 0.1774061489407482,
+     "p90_abs_rho": 0.28282863962582894,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_375": {
+     "days": 243,
+     "median_abs_rho": 0.1332442221481372,
+     "mean_abs_rho": 0.1306876220916032,
+     "p90_abs_rho": 0.21119057026095148,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_381": {
+     "days": 243,
+     "median_abs_rho": 0.08761853051529525,
+     "mean_abs_rho": 0.09045734798748965,
+     "p90_abs_rho": 0.16377550399170723,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_384": {
+     "days": 243,
+     "median_abs_rho": 0.12176140644551596,
+     "mean_abs_rho": 0.12016012944622935,
+     "p90_abs_rho": 0.19062773134904418,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_389": {
+     "days": 243,
+     "median_abs_rho": 0.13255945872104294,
+     "mean_abs_rho": 0.1317523585319137,
+     "p90_abs_rho": 0.2252470327808128,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_390": {
+     "days": 243,
+     "median_abs_rho": 0.1526848432959487,
+     "mean_abs_rho": 0.15117734835166313,
+     "p90_abs_rho": 0.2455846434188341,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_406": {
+     "days": 243,
+     "median_abs_rho": 0.14899634193031533,
+     "mean_abs_rho": 0.14211624180374194,
+     "p90_abs_rho": 0.21464359169628933,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_425": {
+     "days": 243,
+     "median_abs_rho": 0.06585925406655854,
+     "mean_abs_rho": 0.07259654401774258,
+     "p90_abs_rho": 0.13559589827737392,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_443_reg30_max20_v1": {
+     "days": 243,
+     "median_abs_rho": 0.0523206872830263,
+     "mean_abs_rho": 0.06283980171732663,
+     "p90_abs_rho": 0.1303539686992336,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_464": {
+     "days": 243,
+     "median_abs_rho": 0.07140675936529296,
+     "mean_abs_rho": 0.07617148326579842,
+     "p90_abs_rho": 0.13752147777696477,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_471": {
+     "days": 243,
+     "median_abs_rho": 0.039965305403939014,
+     "mean_abs_rho": 0.04727311269767348,
+     "p90_abs_rho": 0.10119961203601592,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_484": {
+     "days": 243,
+     "median_abs_rho": 0.04726244187616549,
+     "mean_abs_rho": 0.05503715727566401,
+     "p90_abs_rho": 0.11106464665197915,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_96": {
+     "days": 243,
+     "median_abs_rho": 0.04184404303776116,
+     "mean_abs_rho": 0.0526600042733984,
+     "p90_abs_rho": 0.1070965653971228,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_frozen_partner": "yeslab_372",
+   "worst_frozen_median_abs_rho": 0.1744231015122936,
+   "pairwise_vs_frozen_verdict": "PASS",
+   "pairwise_vs_other_survivors": {
+    "buy_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.06459278213617373,
+     "mean_abs_rho": 0.07618298851120484,
+     "p90_abs_rho": 0.15416351330426623,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "high_dist": {
+     "days": 243,
+     "median_abs_rho": 0.03332611843243717,
+     "mean_abs_rho": 0.04096347164584604,
+     "p90_abs_rho": 0.07896494396382579,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "repay_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.06416790979304171,
+     "mean_abs_rho": 0.07554044604770449,
+     "p90_abs_rho": 0.16041390456905025,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "rzye_chg5": {
+     "days": 242,
+     "median_abs_rho": 0.025573033315202505,
+     "mean_abs_rho": 0.03196970754498072,
+     "p90_abs_rho": 0.06905002350616221,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "winner_rate": {
+     "days": 243,
+     "median_abs_rho": 0.09958538711687452,
+     "mean_abs_rho": 0.10120118367675265,
+     "p90_abs_rho": 0.17129688748332658,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_survivor_partner": "winner_rate",
+   "worst_survivor_median_abs_rho": 0.09958538711687452,
+   "pairwise_vs_survivor_verdict": "PASS",
+   "set_incremental_given_dense9": {
+    "days": 243,
+    "mean_raw_rank_ic": -0.018657035699881076,
+    "mean_residual_rank_ic": -0.008489676214972021,
+    "retention": 0.455038857808807,
+    "mean_within_day_coverage": 0.9877288561995133,
+    "meets_retention_bar": true
+   },
+   "overall_verdict": "PASS",
+   "greedy_admitted": true,
+   "greedy_blockers": []
+  },
+  {
+   "source": "margin_detail",
+   "candidate": "repay_intensity",
+   "lag": 1,
+   "safe_lag_for_source": 1,
+   "used_safe_lag": true,
+   "screen_icir": -0.5431481598229039,
+   "screen_mean_rank_ic": -0.0701312548445255,
+   "rows_2025_non_null": 676390,
+   "coverage_of_labelled_days": 0.7223942318680532,
+   "pairwise_vs_frozen15": {
+    "yeslab_206": {
+     "days": 242,
+     "median_abs_rho": 0.20438373013271388,
+     "mean_abs_rho": 0.19941167248926428,
+     "p90_abs_rho": 0.3240511545775086,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_357": {
+     "days": 242,
+     "median_abs_rho": 0.26766771380071874,
+     "mean_abs_rho": 0.2597935166594971,
+     "p90_abs_rho": 0.32263080561390495,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_372": {
+     "days": 242,
+     "median_abs_rho": 0.41782582311889516,
+     "mean_abs_rho": 0.41981968422428706,
+     "p90_abs_rho": 0.5063791196138686,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_375": {
+     "days": 242,
+     "median_abs_rho": 0.562464888685325,
+     "mean_abs_rho": 0.5586106457397616,
+     "p90_abs_rho": 0.6295657238477851,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_381": {
+     "days": 242,
+     "median_abs_rho": 0.5112785100479595,
+     "mean_abs_rho": 0.5060162332920739,
+     "p90_abs_rho": 0.5907232769146011,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_384": {
+     "days": 242,
+     "median_abs_rho": 0.47974178006101165,
+     "mean_abs_rho": 0.467597302183995,
+     "p90_abs_rho": 0.5426418676203807,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_389": {
+     "days": 242,
+     "median_abs_rho": 0.3484018622690043,
+     "mean_abs_rho": 0.34926523854554814,
+     "p90_abs_rho": 0.4323489048316157,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_390": {
+     "days": 242,
+     "median_abs_rho": 0.43909130203728497,
+     "mean_abs_rho": 0.4270715004361331,
+     "p90_abs_rho": 0.5181686734260742,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_406": {
+     "days": 242,
+     "median_abs_rho": 0.41064667167850943,
+     "mean_abs_rho": 0.40745770767170464,
+     "p90_abs_rho": 0.48141453759919545,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_425": {
+     "days": 242,
+     "median_abs_rho": 0.5764455616799269,
+     "mean_abs_rho": 0.5583744972677267,
+     "p90_abs_rho": 0.6368229648842407,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_443_reg30_max20_v1": {
+     "days": 242,
+     "median_abs_rho": 0.4830257511804241,
+     "mean_abs_rho": 0.48515795259902184,
+     "p90_abs_rho": 0.5812949614323041,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_464": {
+     "days": 242,
+     "median_abs_rho": 0.4274812918539258,
+     "mean_abs_rho": 0.42284954391881957,
+     "p90_abs_rho": 0.5133919856042171,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_471": {
+     "days": 242,
+     "median_abs_rho": 0.4263290826076208,
+     "mean_abs_rho": 0.4137287170963097,
+     "p90_abs_rho": 0.48587415696114983,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_484": {
+     "days": 242,
+     "median_abs_rho": 0.5382119839585258,
+     "mean_abs_rho": 0.5321385072687963,
+     "p90_abs_rho": 0.590738773511657,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_96": {
+     "days": 242,
+     "median_abs_rho": 0.4542340911950789,
+     "mean_abs_rho": 0.4234991598563736,
+     "p90_abs_rho": 0.5309979724108916,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_frozen_partner": "yeslab_425",
+   "worst_frozen_median_abs_rho": 0.5764455616799269,
+   "pairwise_vs_frozen_verdict": "PASS",
+   "pairwise_vs_other_survivors": {
+    "buy_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.880951801119473,
+     "mean_abs_rho": 0.8791651759784406,
+     "p90_abs_rho": 0.9023103337584096,
+     "share_ge_080": 0.9917355371900827,
+     "share_ge_090": 0.11570247933884298
+    },
+    "high_dist": {
+     "days": 242,
+     "median_abs_rho": 0.20723978394774983,
+     "mean_abs_rho": 0.2029540260854959,
+     "p90_abs_rho": 0.26284207939837445,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "net_fin_ratio": {
+     "days": 242,
+     "median_abs_rho": 0.06416790979304171,
+     "mean_abs_rho": 0.07554044604770449,
+     "p90_abs_rho": 0.16041390456905025,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "rzye_chg5": {
+     "days": 242,
+     "median_abs_rho": 0.10321660112011063,
+     "mean_abs_rho": 0.11390969192325348,
+     "p90_abs_rho": 0.20780327531165463,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "winner_rate": {
+     "days": 242,
+     "median_abs_rho": 0.2506598211135775,
+     "mean_abs_rho": 0.2557440311804673,
+     "p90_abs_rho": 0.4514306503109082,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_survivor_partner": "buy_intensity",
+   "worst_survivor_median_abs_rho": 0.880951801119473,
+   "pairwise_vs_survivor_verdict": "MONITOR",
+   "set_incremental_given_dense9": {
+    "days": 242,
+    "mean_raw_rank_ic": -0.07000576532624601,
+    "mean_residual_rank_ic": -0.016111754594000965,
+    "retention": 0.23014896728741957,
+    "mean_within_day_coverage": 0.9877150064539187,
+    "meets_retention_bar": false
+   },
+   "overall_verdict": "MONITOR",
+   "greedy_admitted": true,
+   "greedy_blockers": []
+  },
+  {
+   "source": "margin_detail",
+   "candidate": "rzye_chg5",
+   "lag": 1,
+   "safe_lag_for_source": 1,
+   "used_safe_lag": true,
+   "screen_icir": -0.4254081072083858,
+   "screen_mean_rank_ic": -0.0262005330268213,
+   "rows_2025_non_null": 676200,
+   "coverage_of_labelled_days": 0.7221913091399601,
+   "pairwise_vs_frozen15": {
+    "yeslab_206": {
+     "days": 242,
+     "median_abs_rho": 0.08196535527210484,
+     "mean_abs_rho": 0.09701571850141544,
+     "p90_abs_rho": 0.20094731110744818,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_357": {
+     "days": 242,
+     "median_abs_rho": 0.09038203405441486,
+     "mean_abs_rho": 0.0911978398160457,
+     "p90_abs_rho": 0.13277220898325331,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_372": {
+     "days": 242,
+     "median_abs_rho": 0.09734765837669113,
+     "mean_abs_rho": 0.09754887772011063,
+     "p90_abs_rho": 0.18298556351914372,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_375": {
+     "days": 242,
+     "median_abs_rho": 0.19771330142733917,
+     "mean_abs_rho": 0.1918020922344299,
+     "p90_abs_rho": 0.2700922350860029,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_381": {
+     "days": 242,
+     "median_abs_rho": 0.18840876143133298,
+     "mean_abs_rho": 0.18090110870557688,
+     "p90_abs_rho": 0.2666090776157698,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_384": {
+     "days": 242,
+     "median_abs_rho": 0.18211759990694393,
+     "mean_abs_rho": 0.17634522010427284,
+     "p90_abs_rho": 0.2472065138209839,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_389": {
+     "days": 242,
+     "median_abs_rho": 0.0862428964989975,
+     "mean_abs_rho": 0.09211087196612334,
+     "p90_abs_rho": 0.16809542533984445,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_390": {
+     "days": 242,
+     "median_abs_rho": 0.13645270064902404,
+     "mean_abs_rho": 0.13791347907767124,
+     "p90_abs_rho": 0.21904438780164254,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_406": {
+     "days": 242,
+     "median_abs_rho": 0.18215704504598268,
+     "mean_abs_rho": 0.1765993565526883,
+     "p90_abs_rho": 0.2414091339055709,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_425": {
+     "days": 242,
+     "median_abs_rho": 0.1413811887204468,
+     "mean_abs_rho": 0.1445941767723224,
+     "p90_abs_rho": 0.23315831011563634,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_443_reg30_max20_v1": {
+     "days": 242,
+     "median_abs_rho": 0.09639296933186554,
+     "mean_abs_rho": 0.1036152913816335,
+     "p90_abs_rho": 0.19462785367319269,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_464": {
+     "days": 242,
+     "median_abs_rho": 0.1252654964038276,
+     "mean_abs_rho": 0.12685527556902973,
+     "p90_abs_rho": 0.2026157684176081,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_471": {
+     "days": 242,
+     "median_abs_rho": 0.08145844939006808,
+     "mean_abs_rho": 0.08427467296745635,
+     "p90_abs_rho": 0.15379486678707088,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_484": {
+     "days": 242,
+     "median_abs_rho": 0.10225411061854323,
+     "mean_abs_rho": 0.1083088526651316,
+     "p90_abs_rho": 0.19098057299149854,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_96": {
+     "days": 242,
+     "median_abs_rho": 0.11206557298493602,
+     "mean_abs_rho": 0.11232010490484577,
+     "p90_abs_rho": 0.19374941658962183,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_frozen_partner": "yeslab_375",
+   "worst_frozen_median_abs_rho": 0.19771330142733917,
+   "pairwise_vs_frozen_verdict": "PASS",
+   "pairwise_vs_other_survivors": {
+    "buy_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.2614454236777718,
+     "mean_abs_rho": 0.2566231293140248,
+     "p90_abs_rho": 0.3590527016846279,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "high_dist": {
+     "days": 242,
+     "median_abs_rho": 0.04177559863753294,
+     "mean_abs_rho": 0.04932211646562146,
+     "p90_abs_rho": 0.10435041211371351,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "net_fin_ratio": {
+     "days": 242,
+     "median_abs_rho": 0.025573033315202505,
+     "mean_abs_rho": 0.03196970754498072,
+     "p90_abs_rho": 0.06905002350616221,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "repay_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.10321660112011063,
+     "mean_abs_rho": 0.11390969192325348,
+     "p90_abs_rho": 0.20780327531165463,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "winner_rate": {
+     "days": 242,
+     "median_abs_rho": 0.09229480453851424,
+     "mean_abs_rho": 0.09299104072502959,
+     "p90_abs_rho": 0.16559354231861548,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_survivor_partner": "buy_intensity",
+   "worst_survivor_median_abs_rho": 0.2614454236777718,
+   "pairwise_vs_survivor_verdict": "PASS",
+   "set_incremental_given_dense9": {
+    "days": 242,
+    "mean_raw_rank_ic": -0.032018748241432714,
+    "mean_residual_rank_ic": -0.011849107015214728,
+    "retention": 0.3700677779739626,
+    "mean_within_day_coverage": 0.9877114825339325,
+    "meets_retention_bar": true
+   },
+   "overall_verdict": "PASS",
+   "greedy_admitted": true,
+   "greedy_blockers": []
+  },
+  {
+   "source": "cyq_perf",
+   "candidate": "winner_rate",
+   "lag": 0,
+   "safe_lag_for_source": 0,
+   "used_safe_lag": true,
+   "screen_icir": -0.2845441378547839,
+   "screen_mean_rank_ic": -0.0328311512908737,
+   "rows_2025_non_null": 935773,
+   "coverage_of_labelled_days": 0.9994190001890385,
+   "pairwise_vs_frozen15": {
+    "yeslab_206": {
+     "days": 243,
+     "median_abs_rho": 0.11922944608247762,
+     "mean_abs_rho": 0.14083788897206811,
+     "p90_abs_rho": 0.27871862722081486,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_357": {
+     "days": 243,
+     "median_abs_rho": 0.14449277498298763,
+     "mean_abs_rho": 0.13987147679887937,
+     "p90_abs_rho": 0.21579148428150838,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_372": {
+     "days": 243,
+     "median_abs_rho": 0.3245784811602177,
+     "mean_abs_rho": 0.3242730819153702,
+     "p90_abs_rho": 0.44002170344555613,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_375": {
+     "days": 243,
+     "median_abs_rho": 0.2201157339289012,
+     "mean_abs_rho": 0.22668804133841405,
+     "p90_abs_rho": 0.3977289550797274,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_381": {
+     "days": 243,
+     "median_abs_rho": 0.4148950135784984,
+     "mean_abs_rho": 0.4142940852233532,
+     "p90_abs_rho": 0.5483652410774242,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_384": {
+     "days": 243,
+     "median_abs_rho": 0.2348916583515359,
+     "mean_abs_rho": 0.23770232739180652,
+     "p90_abs_rho": 0.37617392850304704,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_389": {
+     "days": 243,
+     "median_abs_rho": 0.4480622433792601,
+     "mean_abs_rho": 0.43985049010426275,
+     "p90_abs_rho": 0.5260165988436672,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_390": {
+     "days": 243,
+     "median_abs_rho": 0.5063865902442212,
+     "mean_abs_rho": 0.495324521119483,
+     "p90_abs_rho": 0.593789870873136,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_406": {
+     "days": 243,
+     "median_abs_rho": 0.28119019452187966,
+     "mean_abs_rho": 0.2789857974436886,
+     "p90_abs_rho": 0.38359275174479257,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_425": {
+     "days": 243,
+     "median_abs_rho": 0.4626487700427522,
+     "mean_abs_rho": 0.4417972082831047,
+     "p90_abs_rho": 0.598866717468056,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_443_reg30_max20_v1": {
+     "days": 243,
+     "median_abs_rho": 0.10523722176637343,
+     "mean_abs_rho": 0.1420493676150971,
+     "p90_abs_rho": 0.32201277157141106,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_464": {
+     "days": 243,
+     "median_abs_rho": 0.28905275439938105,
+     "mean_abs_rho": 0.2839868520148583,
+     "p90_abs_rho": 0.4129757232383896,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_471": {
+     "days": 243,
+     "median_abs_rho": 0.08245416840583909,
+     "mean_abs_rho": 0.10893768062674244,
+     "p90_abs_rho": 0.23587155483832076,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_484": {
+     "days": 243,
+     "median_abs_rho": 0.11352863550428613,
+     "mean_abs_rho": 0.1337333807049162,
+     "p90_abs_rho": 0.2889214773351779,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "yeslab_96": {
+     "days": 243,
+     "median_abs_rho": 0.1035760948565563,
+     "mean_abs_rho": 0.11670285063550163,
+     "p90_abs_rho": 0.22980186996401256,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_frozen_partner": "yeslab_390",
+   "worst_frozen_median_abs_rho": 0.5063865902442212,
+   "pairwise_vs_frozen_verdict": "PASS",
+   "pairwise_vs_other_survivors": {
+    "buy_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.26412771694008225,
+     "mean_abs_rho": 0.2662390710732448,
+     "p90_abs_rho": 0.4506235689100667,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "high_dist": {
+     "days": 243,
+     "median_abs_rho": 0.10604785349898874,
+     "mean_abs_rho": 0.11383498055448928,
+     "p90_abs_rho": 0.20452441616630282,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "net_fin_ratio": {
+     "days": 243,
+     "median_abs_rho": 0.09958538711687451,
+     "mean_abs_rho": 0.10120118367675265,
+     "p90_abs_rho": 0.17129688748332655,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "repay_intensity": {
+     "days": 242,
+     "median_abs_rho": 0.2506598211135775,
+     "mean_abs_rho": 0.2557440311804673,
+     "p90_abs_rho": 0.45143065031090823,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    },
+    "rzye_chg5": {
+     "days": 242,
+     "median_abs_rho": 0.09229480453851424,
+     "mean_abs_rho": 0.0929910407250296,
+     "p90_abs_rho": 0.16559354231861548,
+     "share_ge_080": 0.0,
+     "share_ge_090": 0.0
+    }
+   },
+   "worst_survivor_partner": "buy_intensity",
+   "worst_survivor_median_abs_rho": 0.26412771694008225,
+   "pairwise_vs_survivor_verdict": "PASS",
+   "set_incremental_given_dense9": {
+    "days": 243,
+    "mean_raw_rank_ic": -0.03172551970071368,
+    "mean_residual_rank_ic": 0.00971772916538347,
+    "retention": -0.3063063822770054,
+    "mean_within_day_coverage": 0.9857460172761304,
+    "meets_retention_bar": true
+   },
+   "overall_verdict": "PASS",
+   "greedy_admitted": true,
+   "greedy_blockers": []
+  }
+ ],
+ "context_rows_2025": 938594,
+ "greedy_effective_dimension": {
+  "rule": "strongest |screen ICIR| first; admit if median |rho| < 0.9 vs frozen15 and vs admitted",
+  "admitted": [
+   "buy_intensity",
+   "repay_intensity",
+   "rzye_chg5",
+   "high_dist",
+   "winner_rate",
+   "net_fin_ratio"
+  ],
+  "count": 6,
+  "rejected": {},
+  "note": "greedy uses the BLOCK cap (0.90) so it counts near-duplicates; the 0.80 monitor cap is reported per candidate but not applied here"
+ }
+}

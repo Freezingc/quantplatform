@@ -1,0 +1,332 @@
+{
+ "scope": "DAILY_DOMAIN_DIMENSION_SUMMARY_V1",
+ "window_redundancy": "2025",
+ "window_screen": "2022-2025",
+ "icir_bar": 0.5,
+ "retention_bar": 0.3,
+ "greedy": {
+  "cap_0.90": {
+   "admitted": [
+    "buy_intensity",
+    "repay_intensity",
+    "rzye_chg5",
+    "high_dist",
+    "winner_rate",
+    "net_fin_ratio"
+   ],
+   "count": 6,
+   "rejected": {}
+  },
+  "cap_0.80": {
+   "admitted": [
+    "buy_intensity",
+    "rzye_chg5",
+    "high_dist",
+    "winner_rate",
+    "net_fin_ratio"
+   ],
+   "count": 5,
+   "rejected": {
+    "repay_intensity": [
+     "admitted:buy_intensity=0.881"
+    ]
+   }
+  },
+  "cap_0.80_retention_aware": {
+   "admitted": [
+    "rzye_chg5",
+    "high_dist",
+    "net_fin_ratio"
+   ],
+   "count": 3,
+   "rejected": {
+    "buy_intensity": [
+     "retention:0.254=WEAK"
+    ],
+    "repay_intensity": [
+     "retention:0.23=WEAK"
+    ],
+    "winner_rate": [
+     "retention:-0.306=SIGN_FLIP"
+    ]
+   }
+  }
+ },
+ "decision_table": [
+  {
+   "candidate": "high_dist",
+   "source": "cyq_perf",
+   "lag": 0,
+   "used_safe_lag": true,
+   "icir_2022_2025": 0.351,
+   "icir_2022_2024": 0.33,
+   "mean_ic": 0.0422,
+   "coverage": 0.999,
+   "worst_frozen_rho": 0.18,
+   "worst_frozen_partner": "yeslab_443_reg30_max20_v1",
+   "worst_survivor_rho": 0.207,
+   "worst_survivor_partner": "repay_intensity",
+   "retention_given_dense9": 0.622,
+   "retention_flag": "PASS",
+   "residual_rank_ic": 0.0276,
+   "raw_rank_ic_on_retention_days": 0.0444,
+   "retention_days": 243,
+   "within_day_coverage": 0.9857,
+   "clears_icir_bar": false,
+   "clears_residual_ic_bar": true,
+   "dim_at_cap_090": true,
+   "dim_at_cap_080": true,
+   "dim_retention_aware": true
+  },
+  {
+   "candidate": "buy_intensity",
+   "source": "margin_detail",
+   "lag": 1,
+   "used_safe_lag": true,
+   "icir_2022_2025": -0.557,
+   "icir_2022_2024": -0.564,
+   "mean_ic": -0.0715,
+   "coverage": 0.722,
+   "worst_frozen_rho": 0.574,
+   "worst_frozen_partner": "yeslab_425",
+   "worst_survivor_rho": 0.881,
+   "worst_survivor_partner": "repay_intensity",
+   "retention_given_dense9": 0.254,
+   "retention_flag": "WEAK",
+   "residual_rank_ic": -0.0186,
+   "raw_rank_ic_on_retention_days": -0.0734,
+   "retention_days": 242,
+   "within_day_coverage": 0.9877,
+   "clears_icir_bar": true,
+   "clears_residual_ic_bar": false,
+   "dim_at_cap_090": true,
+   "dim_at_cap_080": true,
+   "dim_retention_aware": false
+  },
+  {
+   "candidate": "repay_intensity",
+   "source": "margin_detail",
+   "lag": 1,
+   "used_safe_lag": true,
+   "icir_2022_2025": -0.543,
+   "icir_2022_2024": -0.561,
+   "mean_ic": -0.0701,
+   "coverage": 0.722,
+   "worst_frozen_rho": 0.576,
+   "worst_frozen_partner": "yeslab_425",
+   "worst_survivor_rho": 0.881,
+   "worst_survivor_partner": "buy_intensity",
+   "retention_given_dense9": 0.23,
+   "retention_flag": "WEAK",
+   "residual_rank_ic": -0.0161,
+   "raw_rank_ic_on_retention_days": -0.07,
+   "retention_days": 242,
+   "within_day_coverage": 0.9877,
+   "clears_icir_bar": true,
+   "clears_residual_ic_bar": false,
+   "dim_at_cap_090": true,
+   "dim_at_cap_080": false,
+   "dim_retention_aware": false
+  },
+  {
+   "candidate": "rzye_chg5",
+   "source": "margin_detail",
+   "lag": 1,
+   "used_safe_lag": true,
+   "icir_2022_2025": -0.425,
+   "icir_2022_2024": -0.386,
+   "mean_ic": -0.0262,
+   "coverage": 0.722,
+   "worst_frozen_rho": 0.198,
+   "worst_frozen_partner": "yeslab_375",
+   "worst_survivor_rho": 0.261,
+   "worst_survivor_partner": "buy_intensity",
+   "retention_given_dense9": 0.37,
+   "retention_flag": "PASS",
+   "residual_rank_ic": -0.0118,
+   "raw_rank_ic_on_retention_days": -0.032,
+   "retention_days": 242,
+   "within_day_coverage": 0.9877,
+   "clears_icir_bar": false,
+   "clears_residual_ic_bar": false,
+   "dim_at_cap_090": true,
+   "dim_at_cap_080": true,
+   "dim_retention_aware": true
+  },
+  {
+   "candidate": "winner_rate",
+   "source": "cyq_perf",
+   "lag": 0,
+   "used_safe_lag": true,
+   "icir_2022_2025": -0.285,
+   "icir_2022_2024": -0.276,
+   "mean_ic": -0.0328,
+   "coverage": 0.999,
+   "worst_frozen_rho": 0.506,
+   "worst_frozen_partner": "yeslab_390",
+   "worst_survivor_rho": 0.264,
+   "worst_survivor_partner": "buy_intensity",
+   "retention_given_dense9": -0.306,
+   "retention_flag": "SIGN_FLIP",
+   "residual_rank_ic": 0.0097,
+   "raw_rank_ic_on_retention_days": -0.0317,
+   "retention_days": 243,
+   "within_day_coverage": 0.9857,
+   "clears_icir_bar": false,
+   "clears_residual_ic_bar": false,
+   "dim_at_cap_090": true,
+   "dim_at_cap_080": true,
+   "dim_retention_aware": false
+  },
+  {
+   "candidate": "net_fin_ratio",
+   "source": "margin_detail",
+   "lag": 0,
+   "used_safe_lag": false,
+   "icir_2022_2025": -0.277,
+   "icir_2022_2024": -0.24,
+   "mean_ic": -0.0144,
+   "coverage": 0.725,
+   "worst_frozen_rho": 0.174,
+   "worst_frozen_partner": "yeslab_372",
+   "worst_survivor_rho": 0.1,
+   "worst_survivor_partner": "winner_rate",
+   "retention_given_dense9": 0.455,
+   "retention_flag": "PASS",
+   "residual_rank_ic": -0.0085,
+   "raw_rank_ic_on_retention_days": -0.0187,
+   "retention_days": 243,
+   "within_day_coverage": 0.9877,
+   "clears_icir_bar": false,
+   "clears_residual_ic_bar": false,
+   "dim_at_cap_090": true,
+   "dim_at_cap_080": true,
+   "dim_retention_aware": true
+  }
+ ],
+ "benchmark_frozen_v2_2022_2024": {
+  "min_abs_icir": 0.497,
+  "median_abs_icir": 0.656,
+  "max_abs_icir": 1.106,
+  "weakest_factor": "yeslab_206",
+  "factors": [
+   {
+    "factor_id": "yeslab_357",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": -0.055,
+    "icir_2224": -1.106,
+    "abs_icir": 1.106,
+    "per_year_icir": "{'2022': -1.014, '2023': -1.253, '2024': -1.104}"
+   },
+   {
+    "factor_id": "yeslab_471",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": 0.0575,
+    "icir_2224": 0.873,
+    "abs_icir": 0.873,
+    "per_year_icir": "{'2022': 0.827, '2023': 0.797, '2024': 1.009}"
+   },
+   {
+    "factor_id": "yeslab_390",
+    "role": "candidate_only",
+    "days": 726,
+    "mean_ic": -0.0907,
+    "icir_2224": -0.755,
+    "abs_icir": 0.755,
+    "per_year_icir": "{'2022': -0.684, '2023': -0.694, '2024': -0.896}"
+   },
+   {
+    "factor_id": "yeslab_406",
+    "role": "candidate_only",
+    "days": 726,
+    "mean_ic": -0.0791,
+    "icir_2224": -0.735,
+    "abs_icir": 0.735,
+    "per_year_icir": "{'2022': -0.74, '2023': -0.8, '2024': -0.719}"
+   },
+   {
+    "factor_id": "yeslab_464",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": -0.0795,
+    "icir_2224": -0.73,
+    "abs_icir": 0.73,
+    "per_year_icir": "{'2022': -0.733, '2023': -0.689, '2024': -0.77}"
+   },
+   {
+    "factor_id": "yeslab_381",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": -0.0879,
+    "icir_2224": -0.728,
+    "abs_icir": 0.728,
+    "per_year_icir": "{'2022': -0.91, '2023': -0.776, '2024': -0.598}"
+   },
+   {
+    "factor_id": "yeslab_389",
+    "role": "candidate_only",
+    "days": 726,
+    "mean_ic": -0.0865,
+    "icir_2224": -0.656,
+    "abs_icir": 0.656,
+    "per_year_icir": "{'2022': -0.801, '2023': -0.656, '2024': -0.591}"
+   },
+   {
+    "factor_id": "yeslab_96",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": -0.0701,
+    "icir_2224": -0.639,
+    "abs_icir": 0.639,
+    "per_year_icir": "{'2022': -0.737, '2023': -0.628, '2024': -0.616}"
+   },
+   {
+    "factor_id": "yeslab_372",
+    "role": "candidate_only",
+    "days": 726,
+    "mean_ic": -0.0904,
+    "icir_2224": -0.635,
+    "abs_icir": 0.635,
+    "per_year_icir": "{'2022': -0.719, '2023': -0.667, '2024': -0.586}"
+   },
+   {
+    "factor_id": "yeslab_484",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": -0.0766,
+    "icir_2224": -0.593,
+    "abs_icir": 0.593,
+    "per_year_icir": "{'2022': -0.73, '2023': -0.548, '2024': -0.541}"
+   },
+   {
+    "factor_id": "yeslab_425",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": -0.0769,
+    "icir_2224": -0.59,
+    "abs_icir": 0.59,
+    "per_year_icir": "{'2022': -0.684, '2023': -0.624, '2024': -0.516}"
+   },
+   {
+    "factor_id": "yeslab_384",
+    "role": "candidate_only",
+    "days": 726,
+    "mean_ic": -0.0829,
+    "icir_2224": -0.548,
+    "abs_icir": 0.548,
+    "per_year_icir": "{'2022': -0.614, '2023': -0.569, '2024': -0.517}"
+   },
+   {
+    "factor_id": "yeslab_206",
+    "role": "dense9",
+    "days": 726,
+    "mean_ic": -0.0333,
+    "icir_2224": -0.497,
+    "abs_icir": 0.497,
+    "per_year_icir": "{'2022': -0.404, '2023': -0.451, '2024': -0.642}"
+   }
+  ]
+ }
+}
