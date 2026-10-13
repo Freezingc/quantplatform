@@ -1,0 +1,615 @@
+{
+ "scope": "FUNDAMENTAL_PIT_FEASIBILITY_V1",
+ "database": "dfs://QuantResearchV2Test",
+ "years": [
+  2020,
+  2021,
+  2022,
+  2023,
+  2024
+ ],
+ "pit_violations": 0,
+ "per_metric_span": [
+  {
+   "metric_id": "cfoa",
+   "rows": 3829025,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "np_qoq",
+   "rows": 3934228,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "roa",
+   "rows": 3806031,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "road",
+   "rows": 2772797,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "roe",
+   "rows": 3909658,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "roe_yoy",
+   "rows": 2846359,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "roed",
+   "rows": 2846359,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "roic",
+   "rows": 3187037,
+   "d0": "2021-01-04T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "roicd",
+   "rows": 2772203,
+   "d0": "2020-01-02T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  },
+  {
+   "metric_id": "ta_yoy",
+   "rows": 2785840,
+   "d0": "2020-01-20T00:00:00.000",
+   "d1": "2024-12-31T00:00:00.000",
+   "stale_min": 0,
+   "stale_max": 180
+  }
+ ],
+ "universe_member_days": {
+  "2014": 395643,
+  "2015": 371169,
+  "2016": 431351,
+  "2017": 470439,
+  "2018": 551115,
+  "2019": 625442,
+  "2020": 721207,
+  "2021": 715655,
+  "2022": 804575,
+  "2023": 882426,
+  "2024": 1057371,
+  "2025": 1067960,
+  "2026": 618552
+ },
+ "coverage_by_metric_year": [
+  {
+   "metric_id": "cfoa",
+   "n": 674709,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 93.55
+  },
+  {
+   "metric_id": "np_qoq",
+   "n": 693480,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 96.16
+  },
+  {
+   "metric_id": "roa",
+   "n": 669598,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 92.84
+  },
+  {
+   "metric_id": "road",
+   "n": 444658,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 61.65
+  },
+  {
+   "metric_id": "roe",
+   "n": 689043,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 95.54
+  },
+  {
+   "metric_id": "roe_yoy",
+   "n": 458366,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 63.56
+  },
+  {
+   "metric_id": "roed",
+   "n": 458366,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 63.56
+  },
+  {
+   "metric_id": "roicd",
+   "n": 444513,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 61.63
+  },
+  {
+   "metric_id": "ta_yoy",
+   "n": 447063,
+   "yr": 2020,
+   "member_days": 721207,
+   "coverage_pct": 61.99
+  },
+  {
+   "metric_id": "cfoa",
+   "n": 678738,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 94.84
+  },
+  {
+   "metric_id": "np_qoq",
+   "n": 699047,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 97.68
+  },
+  {
+   "metric_id": "roa",
+   "n": 674297,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 94.22
+  },
+  {
+   "metric_id": "road",
+   "n": 497089,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 69.46
+  },
+  {
+   "metric_id": "roe",
+   "n": 694118,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 96.99
+  },
+  {
+   "metric_id": "roe_yoy",
+   "n": 511596,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 71.49
+  },
+  {
+   "metric_id": "roed",
+   "n": 511596,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 71.49
+  },
+  {
+   "metric_id": "roic",
+   "n": 674297,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 94.22
+  },
+  {
+   "metric_id": "roicd",
+   "n": 497047,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 69.45
+  },
+  {
+   "metric_id": "ta_yoy",
+   "n": 499879,
+   "yr": 2021,
+   "member_days": 715655,
+   "coverage_pct": 69.85
+  },
+  {
+   "metric_id": "cfoa",
+   "n": 769646,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 95.66
+  },
+  {
+   "metric_id": "np_qoq",
+   "n": 791030,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 98.32
+  },
+  {
+   "metric_id": "roa",
+   "n": 764205,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 94.98
+  },
+  {
+   "metric_id": "road",
+   "n": 565658,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 70.31
+  },
+  {
+   "metric_id": "roe",
+   "n": 785222,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 97.59
+  },
+  {
+   "metric_id": "roe_yoy",
+   "n": 580016,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 72.09
+  },
+  {
+   "metric_id": "roed",
+   "n": 580016,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 72.09
+  },
+  {
+   "metric_id": "roic",
+   "n": 764205,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 94.98
+  },
+  {
+   "metric_id": "roicd",
+   "n": 565379,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 70.27
+  },
+  {
+   "metric_id": "ta_yoy",
+   "n": 569009,
+   "yr": 2022,
+   "member_days": 804575,
+   "coverage_pct": 70.72
+  },
+  {
+   "metric_id": "cfoa",
+   "n": 851803,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 96.53
+  },
+  {
+   "metric_id": "np_qoq",
+   "n": 874528,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 99.1
+  },
+  {
+   "metric_id": "roa",
+   "n": 846473,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 95.93
+  },
+  {
+   "metric_id": "road",
+   "n": 613735,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 69.55
+  },
+  {
+   "metric_id": "roe",
+   "n": 868569,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 98.43
+  },
+  {
+   "metric_id": "roe_yoy",
+   "n": 629174,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 71.3
+  },
+  {
+   "metric_id": "roed",
+   "n": 629174,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 71.3
+  },
+  {
+   "metric_id": "roic",
+   "n": 846473,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 95.93
+  },
+  {
+   "metric_id": "roicd",
+   "n": 613696,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 69.55
+  },
+  {
+   "metric_id": "ta_yoy",
+   "n": 616942,
+   "yr": 2023,
+   "member_days": 882426,
+   "coverage_pct": 69.91
+  },
+  {
+   "metric_id": "cfoa",
+   "n": 1026578,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 97.09
+  },
+  {
+   "metric_id": "np_qoq",
+   "n": 1053157,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 99.6
+  },
+  {
+   "metric_id": "roa",
+   "n": 1023226,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 96.77
+  },
+  {
+   "metric_id": "road",
+   "n": 773120,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 73.12
+  },
+  {
+   "metric_id": "roe",
+   "n": 1048762,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 99.19
+  },
+  {
+   "metric_id": "roe_yoy",
+   "n": 791238,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 74.83
+  },
+  {
+   "metric_id": "roed",
+   "n": 791238,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 74.83
+  },
+  {
+   "metric_id": "roic",
+   "n": 1023226,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 96.77
+  },
+  {
+   "metric_id": "roicd",
+   "n": 772967,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 73.1
+  },
+  {
+   "metric_id": "ta_yoy",
+   "n": 774491,
+   "yr": 2024,
+   "member_days": 1057371,
+   "coverage_pct": 73.25
+  }
+ ],
+ "staleness_2022_2024": [
+  {
+   "metric_id": "cfoa",
+   "p50": 57.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "np_qoq",
+   "p50": 56.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "roa",
+   "p50": 56.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "road",
+   "p50": 42.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "roe",
+   "p50": 56.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "roe_yoy",
+   "p50": 42.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "roed",
+   "p50": 42.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "roic",
+   "p50": 56.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "roicd",
+   "p50": 42.0,
+   "p95": 0.0,
+   "mx": 180
+  },
+  {
+   "metric_id": "ta_yoy",
+   "p50": 43.0,
+   "p95": 0.0,
+   "mx": 180
+  }
+ ],
+ "value_sanity": [
+  {
+   "metric_id": "cfoa",
+   "n": 3829025,
+   "nulls": 0,
+   "vmin": -0.8013004357,
+   "vmax": 1.0422313871,
+   "vmean": 0.0124962191,
+   "vstd": 0.0605419881
+  },
+  {
+   "metric_id": "np_qoq",
+   "n": 3934228,
+   "nulls": 0,
+   "vmin": -70681.1327932152,
+   "vmax": 7444.2957278912,
+   "vmean": -0.9325313134,
+   "vstd": 237.2074112969
+  },
+  {
+   "metric_id": "roa",
+   "n": 3806031,
+   "nulls": 0,
+   "vmin": -69.5903,
+   "vmax": 144.6021,
+   "vmean": 3.1215586127,
+   "vstd": 5.1255313077
+  },
+  {
+   "metric_id": "road",
+   "n": 2772797,
+   "nulls": 0,
+   "vmin": -1718.941,
+   "vmax": 235.9034,
+   "vmean": -0.2873141908,
+   "vstd": 9.3851814228
+  },
+  {
+   "metric_id": "roe",
+   "n": 3909658,
+   "nulls": 0,
+   "vmin": -19210.0253,
+   "vmax": 1104.1024,
+   "vmean": 2.7755475447,
+   "vstd": 113.4881658636
+  },
+  {
+   "metric_id": "roe_yoy",
+   "n": 2846359,
+   "nulls": 0,
+   "vmin": -2419.95,
+   "vmax": 787.6481481481,
+   "vmean": -0.0840395736,
+   "vstd": 16.9425819608
+  },
+  {
+   "metric_id": "roed",
+   "n": 2846359,
+   "nulls": 0,
+   "vmin": -19181.1226,
+   "vmax": 11181.8399,
+   "vmean": -0.3616827443,
+   "vstd": 117.8596255856
+  },
+  {
+   "metric_id": "roic",
+   "n": 3187037,
+   "nulls": 0,
+   "vmin": -373.8229,
+   "vmax": 1327.3121,
+   "vmean": 3.4298867972,
+   "vstd": 8.207868562
+  },
+  {
+   "metric_id": "roicd",
+   "n": 2772203,
+   "nulls": 0,
+   "vmin": -632.7637,
+   "vmax": 1326.18,
+   "vmean": -0.1848842448,
+   "vstd": 11.1431362915
+  },
+  {
+   "metric_id": "ta_yoy",
+   "n": 2785840,
+   "nulls": 0,
+   "vmin": -0.9140175792,
+   "vmax": 87.3582275841,
+   "vmean": 0.1510370788,
+   "vstd": 0.8494710558
+  }
+ ],
+ "rows_by_year": {
+  "2020": 4772069,
+  "2021": 5937704,
+  "2022": 6734386,
+  "2023": 7390567,
+  "2024": 7854811
+ }
+}

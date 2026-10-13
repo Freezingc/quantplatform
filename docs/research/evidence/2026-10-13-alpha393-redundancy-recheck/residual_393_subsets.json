@@ -1,0 +1,33 @@
+{
+ "scope": "ALPHA393_RESIDUAL_SUBSETS_V1",
+ "window": "2025",
+ "conditioning_sets": {
+  "dense9": {
+   "days": 243,
+   "mean_raw_rank_ic": -0.08678056274519602,
+   "mean_residual_rank_ic": -0.008862525216001362,
+   "retention": 0.10212569422974814,
+   "mean_within_day_coverage": 0.9879866360775811,
+   "row_coverage_of_all_labelled": 1.0,
+   "n_factors": 9
+  },
+  "top3_most_correlated": {
+   "days": 243,
+   "mean_raw_rank_ic": -0.08656952083172495,
+   "mean_residual_rank_ic": -0.02256316567060162,
+   "retention": 0.2606363700968175,
+   "mean_within_day_coverage": 0.9969670218631503,
+   "row_coverage_of_all_labelled": 1.0,
+   "n_factors": 3
+  },
+  "all15": {
+   "days": 243,
+   "mean_raw_rank_ic": -0.0838594088252462,
+   "mean_residual_rank_ic": -0.003572264228802155,
+   "retention": 0.04259825198918778,
+   "mean_within_day_coverage": 0.2581212817068071,
+   "row_coverage_of_all_labelled": 1.0,
+   "n_factors": 15
+  }
+ }
+}
