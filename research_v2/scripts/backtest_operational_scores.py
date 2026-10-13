@@ -233,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
 
     client = tushare_replay._connect()
     try:
-        calendar = _load_calendar(client, max(args.end, args.verify_end) + timedelta(days=20))
+        calendar = load_calendar(client, max(args.end, args.verify_end) + timedelta(days=20))
     finally:
         client.close()
     priced_through = max(
@@ -365,7 +365,8 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def _load_calendar(client: object, end: date) -> TradingCalendar:
+def load_calendar(client: object, end: date) -> TradingCalendar:
+    """SSE open dates from 1990 to ``end``; listing age counts from the listing date."""
     frame = client.run(
         "select cal_date from loadTable('dfs://YesLab','trade_calendar') "
         "where exchange='SSE' and is_open=1 "

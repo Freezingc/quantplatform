@@ -100,6 +100,43 @@ policy defines. Benchmark = the same engine holding every rankable name (~3,900)
 
 ## Artifacts
 
+## Why the 2026 result looks modest — signal diagnostic
+
+`research_v2/scripts/diagnose_operational_scores.py` scores the signal on its own terms using the
+platform's own `compute_daily_rank_ic` / `summarize_rank_ic`, over two windows: the FINAL fold's
+validation year (2025, published labels) and the operational window (2026, recomputed labels).
+
+| window | carrier | mean RankIC | ICIR | positive days | days |
+|---|---|---|---|---|---|
+| 2025 reference | M0R | +0.1078 | 0.868 | 0.785 | 237 |
+| 2025 reference | M1 | +0.0947 | 0.682 | 0.738 | 237 |
+| 2025 reference | ensemble | +0.1048 | 0.785 | 0.755 | 237 |
+| 2026 operational | M0R | +0.0774 | 0.401 | 0.640 | 178 |
+| 2026 operational | M1 | +0.0764 | 0.403 | 0.640 | 178 |
+| 2026 operational | ensemble | +0.0783 | 0.402 | 0.635 | 178 |
+
+### Findings
+
+* The signal is **alive but weaker and much less stable**: mean RankIC down ~26%, ICIR down ~49%,
+  positive-day share down from 0.755 to 0.635.
+* The instability is **concentrated, not uniform**. Monthly ensemble RankIC in 2026: Jan +0.113,
+  Feb +0.024, Mar +0.116, Apr **-0.071**, May +0.007, Jun **-0.019**, Jul **+0.297**, Aug +0.062,
+  Sep +0.135. Four of nine months (74 of 178 days, 42%) sat at or below zero, while **2025 had no
+  negative month at all** (minimum +0.020).
+* **The two carriers converged.** In 2026 their monthly ICs sit within ~0.003 of each other and the
+  ensemble (+0.0783) barely exceeds either alone, so the M0R+M1 pair no longer diversifies. In 2025
+  they still disagreed materially (Jan: M0R +0.0395 vs M1 -0.0012). This is consistent with the
+  earlier finding that the 15 factors carry only ~4 effective dimensions.
+* So the modest **absolute** return is mostly market beta, not a dead signal: the equal-weight
+  universe fell 3.5% with a -19.9% drawdown, and every book was positive and beat it by 4.0-6.9pp.
+* Consistent with an IC of ~0.078, the narrowest book is the worst one: 10:50 had the lowest excess
+  and the highest turnover.
+
+Any response to this has to be validated on the 2022-2025 folds, not on 2026: the locked segment has
+now been read, so tuning against it would destroy what is left of its value as a test.
+
+## Artifacts
+
 Outside the repository, in `/data/zhangyudong/qrv2_operational/`:
 
 * `universe_2026ext.parquet` (+ `.meta.json` with the validation summary)
@@ -109,4 +146,5 @@ Outside the repository, in `/data/zhangyudong/qrv2_operational/`:
 * `backtest_2026ext_nooverlay.json` — the same window with the overlay pinned off (identical)
 * `backtest_2026full.json` — the full 2026 window (the result to use)
 * `scores_2026full.parquet`, `universe_2026full.parquet` — the combined inputs for that run
+* `diagnostic_2026.json` — per-carrier and per-month RankIC for both windows
 * earlier: `fidelity_2025Q4.*` (factor fidelity), `factors_2026H1.*`, `scores_2026H1.*`
